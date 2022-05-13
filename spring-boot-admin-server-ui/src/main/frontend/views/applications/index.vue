@@ -15,57 +15,95 @@
   -->
 
 <template>
-  <section class="section">
-    <div class="container">
-      <p v-if="!applicationsInitialized" class="is-muted is-loading" v-text="$t('applications.loading_applications')" />
-      <sba-alert :error="error" :title="$t('applications.server_connection_failed')" severity="WARN" />
+  <sba-wave />
+  <section>
+    <sba-sticky-subnav v-if="applications.length > 0">
+      <div class="container mx-auto flex">
+        <applications-stats :applications="applications" />
+        <div class="flex-1">
+          <sba-input
+            v-model="filter"
+            name="filter"
+            type="search"
+            :placeholder="$t('term.filter')"
+          >
+            <template #prepend>
+              <font-awesome-icon icon="filter" />
+            </template>
+          </sba-input>
+        </div>
+      </div>
+    </sba-sticky-subnav>
+
+    <div class="container mx-auto py-6">
+      <sba-alert
+        v-if="error"
+        :error="error"
+        :title="$t('applications.server_connection_failed')"
+        severity="WARN"
+        class-names="mb-6"
+      />
+      <sba-panel v-if="!applicationsInitialized || (applicationsInitialized && applications.length === 0)">
+        <p
+          v-if="!applicationsInitialized"
+          class="is-muted is-loading"
+          v-text="$t('applications.loading_applications')"
+        />
+        <div
+          v-if="applicationsInitialized && applications.length === 0"
+          class="flex flex-col items-center"
+        >
+          <font-awesome-icon
+            icon="frown-open"
+            class="text-gray-500 text-9xl pb-4"
+          />
+          <h1
+            class="font-bold text-2xl"
+            v-text="$t('applications.no_applications_registered')"
+          />
+        </div>
+      </sba-panel>
 
       <template v-if="applicationsInitialized">
-        <applications-stats :applications="applications" />
+        <application-status-hero
+          v-if="applications.length > 0"
+          :applications="applications"
+        />
 
-        <div class="field">
-          <p class="control is-expanded has-icons-left">
-            <input
-              :value="filter"
-              class="input"
-              type="search"
-              @input="handleFilterInput"
-            >
-            <span class="icon is-small is-left">
-              <font-awesome-icon icon="filter" />
-            </span>
-          </p>
-        </div>
-        <div
+        <sba-panel
           v-for="group in statusGroups"
           :key="group.status"
+          :seamless="true"
           class="application-group"
+          :title="$tc('term.applications_tc', group.applications.length)"
         >
-          <p class="heading" v-text="$t('applications.' + group.statusKey)" />
-          <div class="applications-list">
-            <applications-list-item v-for="application in group.applications"
-                                    :id="application.name"
-                                    :key="application.name"
-                                    v-on-clickaway="(event) => deselect(event, application.name)"
-                                    :application="application"
-                                    :has-notification-filters-support="hasNotificationFiltersSupport"
-                                    :is-expanded="selected === application.name || Boolean(filter)"
-                                    :notification-filters="notificationFilters"
-                                    @unregister="unregister"
-                                    @shutdown="shutdown"
-                                    @restart="restart"
-                                    @click.stop="select(application.name)"
-                                    @toggle-notification-filter-settings="toggleNotificationFilterSettings"
-            />
-          </div>
-        </div>
-        <p v-if="applications.length === 0" class="is-muted" v-text="$t('applications.no_applications_registered')" />
-        <notification-filter-settings v-if="showNotificationFilterSettingsObject"
-                                      v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
-                                      :notification-filters="notificationFilters"
-                                      :object="showNotificationFilterSettingsObject"
-                                      @filter-added="handleNotificationFilterChange"
-                                      @filter-deleted="handleNotificationFilterChange"
+          <template #title>
+            <sba-status-badge :status="group.statusKey" />
+          </template>
+
+          <applications-list-item
+            v-for="application in group.applications"
+            :key="application.name"
+            :application="application"
+            :has-notification-filters-support="hasNotificationFiltersSupport"
+            :is-expanded="selected === application.name || Boolean(filter)"
+            :notification-filters="notificationFilters"
+            @unregister="unregister"
+            @shutdown="shutdown"
+            @restart="restart"
+            @deselect="deselect"
+            @select="select"
+            @toggle-notification-filter-settings="toggleNotificationFilterSettings"
+          />
+        </sba-panel>
+
+        <notification-filter-settings
+          v-if="showNotificationFilterSettingsObject"
+          v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
+          :notification-filters="notificationFilters"
+          :object="showNotificationFilterSettingsObject"
+          @filter-added="handleNotificationFilterChange"
+          @filter-deleted="handleNotificationFilterChange"
         />
       </template>
     </div>
@@ -74,18 +112,18 @@
 
 <script>
 import Popper from '@/directives/popper';
-import subscribing from '@/mixins/subscribing';
+import subscribing from '../../mixins/subscribing.js';
 import NotificationFilter from '@/services/notification-filter';
 import {anyValueMatches} from '@/utils/collections';
 import {concatMap, mergeWith, Subject, timer} from '@/utils/rxjs';
-import groupBy from 'lodash/groupBy';
-import sortBy from 'lodash/sortBy';
-import transform from 'lodash/transform';
-import {directive as onClickaway} from 'vue-clickaway2';
-import ApplicationsListItem from './applications-list-item';
-import ApplicationsStats from './applications-stats';
-import handle from './handle';
-import NotificationFilterSettings from './notification-filter-settings';
+import {groupBy, sortBy, transform} from 'lodash-es';
+import ApplicationsListItem from './applications-list-item.vue';
+import ApplicationsStats from './applications-stats.vue';
+import handle from './handle.vue';
+import NotificationFilterSettings from './notification-filter-settings.vue';
+import ApplicationStatusHero from '@/views/applications/application-status-hero.vue';
+import SbaStickySubnav from "../../components/sba-sticky-subnav.vue";
+import SbaWave from "../../components/sba-wave.vue";
 
 const instanceMatchesFilter = (term, instance) => {
   const predicate = value => String(value).toLowerCase().includes(term);
@@ -96,6 +134,16 @@ const instanceMatchesFilter = (term, instance) => {
 };
 
 export default {
+  directives: {Popper},
+  components: {
+    SbaWave,
+    ApplicationStatusHero,
+    SbaStickySubnav,
+    ApplicationsStats,
+    ApplicationsListItem,
+    NotificationFilterSettings
+  },
+  mixins: [subscribing],
   props: {
     applications: {
       type: Array,
@@ -114,24 +162,30 @@ export default {
       default: false
     }
   },
-  directives: {onClickaway, Popper},
-  mixins: [subscribing],
-  components: {
-    ApplicationsStats,
-    ApplicationsListItem,
-    NotificationFilterSettings
-  },
   data: () => ({
     filter: null,
     hasNotificationFiltersSupport: false,
     showNotificationFilterSettingsObject: null,
-    notificationFilters: []
+    notificationFilters: [],
+    errors: [],
+    palette: {}
   }),
+  computed: {
+    statusGroups() {
+      const filteredApplications = this.filterInstances(this.applications);
+      const applicationsByStatus = groupBy(filteredApplications, application => application.status);
+      const list = transform(applicationsByStatus, (result, applications, status) => {
+        const statusKey = status.replace(/[^\w]/gi, '').toLowerCase();
+        result.push({statusKey, status: status, applications: sortBy(applications, [application => application.name])})
+      }, []);
+      return sortBy(list, [item => item.status]);
+    }
+  },
   watch: {
     '$route.query': {
       immediate: true,
       handler() {
-        this.filter = this.$route.query.q;
+        this.filter = this.$route.query.q || '';
       }
     },
     'selected': {
@@ -145,23 +199,23 @@ export default {
     this.hasNotificationFiltersSupport = NotificationFilter.isSupported();
   },
   methods: {
+    select(name) {
+      this.$router.replace({name: 'applications', params: {selected: name}});
+    },
+    deselect(event, expectedSelected) {
+      if (event && event.target instanceof HTMLAnchorElement) {
+        return;
+      }
+      this.toggleNotificationFilterSettings(null);
+      if (this.selected === expectedSelected || !expectedSelected) {
+        this.$router.replace({name: 'applications'});
+      }
+    },
     handleFilterInput(event) {
       this.$router.replace({
         name: 'applications',
         query: event.target.value ? {q: event.target.value} : null
       });
-    },
-    select(name) {
-      this.$router.replace({name: 'applications', params: {selected: name}});
-    },
-    deselect(event, expectedSelected) {
-      this.toggleNotificationFilterSettings(null);
-      if (event && event.target instanceof HTMLAnchorElement) {
-        return;
-      }
-      if (this.selected === expectedSelected || !expectedSelected) {
-        this.$router.replace({name: 'applications'});
-      }
     },
     async scrollIntoView(id, behavior) {
       if (id) {
@@ -235,17 +289,6 @@ export default {
       return applications
         .map(a => a.filterInstances(i => instanceMatchesFilter(this.filter.toLowerCase(), i)))
         .filter(a => a.instances.length > 0);
-    }
-  },
-  computed: {
-    statusGroups() {
-      const filteredApplications = this.filterInstances(this.applications);
-      const applicationsByStatus = groupBy(filteredApplications, application => application.status);
-      const list = transform(applicationsByStatus, (result, applications, status) => {
-        const statusKey = status.replace(/[^\w]/gi, '').toLowerCase();
-        result.push({statusKey, status: status, applications: sortBy(applications, [application => application.name])})
-      }, []);
-      return sortBy(list, [item => item.status]);
     }
   },
   install({viewRegistry}) {

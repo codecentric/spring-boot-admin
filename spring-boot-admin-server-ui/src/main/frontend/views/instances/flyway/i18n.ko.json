@@ -2,7 +2,6 @@
   "instances": {
     "flyway": {
       "label": "Flyway",
-      "fetch_failed": "Flyway 리포트를 가져오는데 실패했습니다.",
       "type": "타입",
       "checksum": "체크섬",
       "version": "버전",

@@ -16,38 +16,54 @@
 
 <template>
   <section class="wallboard section">
-    <p v-if="!applicationsInitialized" class="is-muted is-loading">
+    <p
+      v-if="!applicationsInitialized"
+      class="is-muted is-loading"
+    >
       Loading applications...
     </p>
-    <hex-mesh v-if="applicationsInitialized"
-              :items="applications"
-              :class-for-item="classForApplication"
-              @click="select"
+    <hex-mesh
+      v-if="applicationsInitialized"
+      :items="applications"
+      :class-for-item="classForApplication"
+      @click="select"
     >
-      <div class="hex__body application" slot="item" slot-scope="{item: application}" :key="application.name">
-        <div class="application__header application__time-ago is-muted">
-          <sba-time-ago :date="application.statusTimestamp" />
+      <template #item="{item: application}">
+        <div
+          :key="application.name"
+          class="hex__body application"
+        >
+          <div class="application__header application__time-ago is-muted">
+            <sba-time-ago :date="application.statusTimestamp" />
+          </div>
+          <div class="application__body">
+            <h1
+              class="application__name"
+              v-text="application.name"
+            />
+            <p
+              class="application__instances is-muted"
+              v-text="$tc('wallboard.instances_count', application.instances.length)"
+            />
+          </div>
+          <h2
+            class="application__footer application__version"
+            v-text="application.buildVersion"
+          />
         </div>
-        <div class="application__body">
-          <h1 class="application__name" v-text="application.name" />
-          <p class="application__instances is-muted" v-text="$tc('wallboard.instances_count', application.instances.length)" />
-        </div>
-        <h2 class="application__footer application__version" v-text="application.buildVersion" />
-      </div>
+      </template>
     </hex-mesh>
   </section>
 </template>
 
 <script>
-  import hexMesh from './hex-mesh';
+  import hexMesh from './hex-mesh.vue';
+  import {HealthStatus} from '../../HealthStatus.js';
+  import {useApplicationStore} from "../../composables/useApplicationStore.js";
 
   export default {
     components: {hexMesh},
     props: {
-      applications: {
-        type: Array,
-        default: () => []
-      },
       error: {
         type: Error,
         default: null
@@ -57,27 +73,31 @@
         default: false
       }
     },
+    setup() {
+      const {applications} = useApplicationStore();
+      return {applications}
+    },
     methods: {
       classForApplication(application) {
         if (!application) {
           return null;
         }
-        if (application.status === 'UP') {
-          return 'is-selectable is-primary';
+        if (application.status === HealthStatus.UP) {
+          return 'up';
         }
-        if (application.status === 'RESTRICTED') {
-          return 'is-selectable is-warning';
+        if (application.status === HealthStatus.RESTRICTED) {
+          return 'restricted';
         }
-        if (application.status === 'DOWN') {
-          return 'is-selectable is-danger';
+        if (application.status === HealthStatus.DOWN) {
+          return 'down';
         }
-        if (application.status === 'OUT_OF_SERVICE') {
-          return 'is-selectable is-danger';
+        if (application.status === HealthStatus.OUT_OF_SERVICE) {
+          return 'down';
         }
-        if (application.status === 'OFFLINE') {
-          return 'is-selectable is-light';
+        if (application.status === HealthStatus.OFFLINE) {
+          return '';
         }
-        return 'is-selectable is-light';
+        return '';
       },
       select(application) {
         if (application.instances.length === 1) {
@@ -99,49 +119,56 @@
   };
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
+<style lang="postcss">
+.wallboard {
+  background-color: #4a4a4a;
+  height: calc(100vh - 52px);
+  width: 100%;
+}
+.wallboard .application {
+  color: #f5f5f5;
+  font-size: 1em;
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.wallboard .application__name {
+  width: 100%;
+  padding: 2.5%;
+  color: #fff;
+  font-size: 2em;
+  font-weight: 600;
+  line-height: 1.125;
+}
+.wallboard .application__version {
+  color: #f5f5f5;
+  font-size: 1.25em;
+  line-height: 1.25;
+}
+.wallboard .application__header {
+  width: 90%;
+  margin-bottom: 0.5em;
+}
+.wallboard .application__footer {
+  width: 90%;
+  margin-top: 0.5em;
+}
 
-  .wallboard {
-    background-color: $grey-dark;
-    height: calc(100vh - #{$navbar-height-px});
-    width: 100%;
+.up > polygon {
+  stroke: theme('colors.green.400');
+  fill:  theme('colors.green.400');
+}
 
-    & .application {
-      color: $white-ter;
-      font-size: 1em;
-      font-weight: $weight-normal;
-      line-height: 1;
-      text-align: center;
+.down > polygon {
+  stroke: theme('colors.red.400');
+  fill:  theme('colors.red.400');
+}
 
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-
-      &__name {
-        width: 100%;
-        padding: 2.5%;
-        color: $white;
-        font-size: 2em;
-        font-weight: $weight-semibold;
-        line-height: 1.125;
-      }
-
-      &__version {
-        color: $white-ter;
-        font-size: 1.25em;
-        line-height: 1.25;
-      }
-
-      &__header {
-        width: 90%;
-        margin-bottom: 0.5em;
-      }
-
-      &__footer {
-        width: 90%;
-        margin-top: 0.5em;
-      }
-    }
-  }
+.restricted > polygon {
+  stroke: theme('colors.yellow.400');
+  fill:  theme('colors.yellow.400');
+}
 </style>

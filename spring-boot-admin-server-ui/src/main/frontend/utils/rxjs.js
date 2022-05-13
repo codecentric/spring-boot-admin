@@ -27,7 +27,7 @@ export {
   timer,
   Observable,
   Subject,
-  animationFrame as animationFrameScheduler,
+  animationFrameScheduler,
   concatMap,
   delay,
   debounceTime,

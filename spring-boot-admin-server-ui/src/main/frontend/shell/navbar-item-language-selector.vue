@@ -15,29 +15,35 @@
   -->
 
 <template>
-  <div class="navbar-item has-dropdown is-hoverable">
-    <a class="navbar-link" role="button">
-      {{ selectedLanguage.label }}
-    </a>
-    <div class="navbar-dropdown">
-      <a class="navbar-item"
-         role="button"
-         v-for="language in languages"
-         :key="language.locale"
-         @click="localeChanged(language.locale)"
-      >
-        {{ language.label }}
-      </a>
-    </div>
-  </div>
+  <NavbarMenu
+    :label="selectedLanguage.label"
+    :menu-items="languages"
+    @click="localeChanged"
+  >
+    <NavbarLink
+      :has-subitems="true"
+      :view="{label: selectedLanguage.label}"
+    />
+  </NavbarMenu>
 </template>
 
 <script>
+import {directive as onClickaway} from 'vue3-click-away';
+import NavbarMenu from "./navbar-menu.vue";
+import NavbarLink from "./NavbarLink.vue";
 
 export default {
+  components: {NavbarLink, NavbarMenu},
+  directives: {onClickaway},
   props: {
     availableLocales: {type: Array, required: true},
     currentLocale: {type: String, required: true}
+  },
+  emits: ['localeChanged'],
+  data() {
+    return {
+      showLanguages: false
+    }
   },
   computed: {
     selectedLanguage() {
@@ -48,15 +54,17 @@ export default {
     }
   },
   methods: {
-    localeChanged(selectedLocale) {
+    localeChanged($event) {
+      const selectedLocale = $event.locale;
       if (selectedLocale !== this.currentLocale) {
         this.$emit('localeChanged', selectedLocale)
       }
+      this.showLanguages = !this.showLanguages;
     },
     mapLocale(locale) {
       try {
         let languageTag = locale.split('-').reverse().pop();
-        let regionTag =  locale.split('-').length > 1 ? `-${locale.split('-').pop()}` : ''
+        let regionTag = locale.split('-').length > 1 ? `-${locale.split('-').pop()}` : ''
 
         if (locale.toLowerCase().startsWith('zh')) {
           if (locale.endsWith('CN')) {
@@ -88,7 +96,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>

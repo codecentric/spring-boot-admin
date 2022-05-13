@@ -1,9 +1,16 @@
 {
   "applications": {
+    "actions": {
+      "journal": "Journal",
+      "notification_filters": "Notification filters",
+      "unregister": "Unregister",
+      "shutdown": "Shutdown",
+      "restart": "Restart"
+    },
     "all_up": "all up",
     "applications": "Applications",
     "instances": "Instances",
-    "instances_down": "instances down",
+    "instances_down": "Some instances are down",
     "loading_applications": "Loading applications...",
     "no_applications_registered": "No applications registered.",
     "notifications_suppressed_for": "Notifications on <code>{name}</code> are suppressed for",
@@ -13,13 +20,17 @@
     "status": "Status",
     "label": "Applications",
     "up": "up",
+    "down": "down",
+    "offline": "offline",
     "shutdown": "Shutdown application <code>{name}</code>?",
     "restart": "Restart application <code>{name}</code>?",
-    "restarted": "Successfully restarted application <code>{name}</code>"
+    "restarted": "Successfully restarted application <code>{name}</code>",
+    "unregister": "Deregister application <code>{name}</code>?"
   },
   "instances": {
     "shutdown": "Shutdown instance <code>{name}</code>?",
     "restart": "Restart instance <code>{name}</code>?",
-    "restarted": "Successfully restarted instance"
+    "restarted": "Successfully restarted instance",
+    "unregister": "Deregister instance <code>{name}</code>?"
   }
 }

@@ -6,7 +6,7 @@
       "created_at": "Создано",
       "expired": "Истекла",
       "expiry": "Истечение",
-      "fetch_failed": "Ошибка при получении сессий.",
+
       "last_accessed_at": "Последний доступ",
       "loading_sessions": "Загрузка сессий...",
       "max_inactive_interval": "Максимальный неактивный<br>интервал",

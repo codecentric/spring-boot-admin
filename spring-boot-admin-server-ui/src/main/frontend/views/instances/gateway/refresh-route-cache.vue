@@ -17,10 +17,11 @@
 <template>
   <div class="field">
     <div class="control">
-      <button class="button is-light"
-              :class="{'is-loading' : refreshingRouteCache === 'executing', 'is-danger' : refreshingRouteCache === 'failed', 'is-info' : refreshingRouteCache === 'completed'}"
-              :disabled="refreshingRouteCache === 'executing'"
-              @click="refreshRoutesCache"
+      <button
+        class="button is-light"
+        :class="{'is-loading' : refreshingRouteCache === 'executing', 'is-danger' : refreshingRouteCache === 'failed', 'is-info' : refreshingRouteCache === 'completed'}"
+        :disabled="refreshingRouteCache === 'executing'"
+        @click="refreshRoutesCache"
       >
         <span v-if="refreshingRouteCache === 'completed'" v-text="$t('instances.gateway.route.cache_refreshed')" />
         <span v-else-if="refreshingRouteCache === 'failed'" v-text="$t('instances.gateway.route.cache_refresh_failed')" />
@@ -30,7 +31,7 @@
   </div>
 </template>
 <script>
-  import Instance from '@/services/instance';
+  import Instance from '@/services/instance.js';
   import {from, listen} from '@/utils/rxjs';
 
   export default {

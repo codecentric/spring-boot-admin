@@ -16,21 +16,41 @@
 
 <template>
   <div>
-    <sba-alert v-if="error" :error="error" :title="$t('instances.jolokia.mbean.fetch_failed')" />
+    <div
+      v-if="application.instances.length > 1"
+      class="field is-grouped control"
+    >
+      <sba-toggle-scope-button
+        v-model="scope"
+        :instance-count="application.instances.length"
+      />
+    </div>
 
-    <m-bean-attribute v-for="(attribute, name) in mBean.attr" :key="`attr-${name}`"
-                      :descriptor="attribute" :name="name" :on-save-value="value => writeAttribute(name, value)"
-                      :value="attributeValues && attributeValues[name]"
+    <sba-alert
+      v-if="error"
+      :error="error"
+      :title="$t('term.fetch_failed')"
+    />
+
+    <m-bean-attribute
+      v-for="(attribute, name) in mBean.attr"
+      :key="`attr-${name}`"
+      :descriptor="attribute"
+      :name="name"
+      :on-save-value="value => writeAttribute(name, value)"
+      :value="attributeValues && attributeValues[name]"
     />
   </div>
 </template>
 
 <script>
-import Instance from '@/services/instance';
-import {MBean} from './index';
-import mBeanAttribute from './m-bean-attribute';
+import Application from '@/services/application.js';
+import Instance from '@/services/instance.js';
+import mBeanAttribute from './m-bean-attribute.vue';
+import {MBean} from './MBean.js';
 
 export default {
+  components: {mBeanAttribute},
   props: {
     domain: {
       type: String,
@@ -43,14 +63,21 @@ export default {
     instance: {
       type: Instance,
       required: true
+    },
+    application: {
+      type: Application,
+      required: true
     }
   },
-  components: {mBeanAttribute},
   data: () => ({
     attributeValues: null,
-    error: null
+    error: null,
+    scope: 'instance'
   }),
   computed: {},
+  created() {
+    this.readAttributes();
+  },
   methods: {
     async readAttributes() {
       try {
@@ -63,14 +90,12 @@ export default {
     },
     async writeAttribute(attribute, value) {
       try {
-        await this.instance.writeMBeanAttribute(this.domain, this.mBean.descriptor.raw, attribute, value);
+        const target = (this.scope === 'instance') ? this.instance : this.application;
+        await target.writeMBeanAttribute(this.domain, this.mBean.descriptor.raw, attribute, value);
       } finally {
         await this.readAttributes();
       }
     }
-  },
-  created() {
-    this.readAttributes();
   },
 }
 </script>

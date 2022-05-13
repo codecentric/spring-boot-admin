@@ -29,23 +29,23 @@
       class="route-spacer"
     />
 
-    <div class="route" v-if="route.filters.length > 0">
+    <div v-if="route.filters.length > 0" class="route">
       <div class="route-header">
         <font-awesome-icon icon="filter" />&nbsp;
         <span v-text="$t('instances.gateway.route.filters')" />
       </div>
       <div
-        class="route-content"
         v-for="filter in route.filters"
         :key="filter"
+        class="route-content"
         v-text="filter"
       />
     </div>
 
     <font-awesome-icon
+      v-if="route.filters.length > 0"
       icon="angle-double-right"
       class="route-spacer"
-      v-if="route.filters.length > 0"
     />
 
     <div class="route">
@@ -77,46 +77,40 @@
   }
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
+<style lang="css">
+.route {
+  display: block;
+  min-width: 12em;
+  max-width: 28em;
+  padding: 0.5em;
+  margin: 1.25em;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+.route-container {
+  display: flex;
+  align-items: center;
+}
+.route-spacer {
+  font-size: 1.25rem;
+  min-width: 1em;
+  max-width: 3.5em;
+}
+.route-header {
+  font-size: 1.25rem;
+}
+.route-content {
+  background-color: #00d1b2;
+  color: #fff;
+  border-radius: 4px;
+  padding: 0.25em;
+  margin: 0.25em;
+}
+.route-category {
+  font-weight: 700;
+  border-bottom: 1px solid #fafafa;
+  display: block;
+}
 
-  .route {
-    display: block;
-    min-width: 12em;
-    max-width: 28em;
-    padding: 0.5em;
-    margin: 1.25em;
-    background-color: $white;
-    border-radius: $radius-large;
-    box-shadow: 0 2px 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
-
-    &-container {
-      display: flex;
-      align-items: center;
-    }
-
-    &-spacer {
-      font-size: $size-5;
-      min-width: 1em;
-      max-width: 3.5em;
-    }
-
-    &-header {
-      font-size: $size-5;
-    }
-
-    &-content {
-      background-color: $primary;
-      color: $primary-invert;
-      border-radius: $radius;
-      padding: 0.25em;
-      margin: 0.25em;
-    }
-
-    &-category {
-      font-weight: 700;
-      border-bottom: 1px solid $white-bis;
-      display: block;
-    }
-  }
 </style>

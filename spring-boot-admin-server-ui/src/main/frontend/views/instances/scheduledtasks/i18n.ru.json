@@ -8,7 +8,7 @@
         "runnable": "Runnable",
         "title": "Cron"
       },
-      "fetch_failed": "Ошибка при получении запланированных заданий.",
+
       "fixed_delay": {
         "initial_delay_ms": "Начальная задержка (мс)",
         "interval_ms": "Интервал (мс)",

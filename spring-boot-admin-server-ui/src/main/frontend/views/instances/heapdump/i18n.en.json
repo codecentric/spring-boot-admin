@@ -4,7 +4,7 @@
       "label": "Heap Dump",
       "download": "Download Heap Dump",
       "warn_dump_expensive": "Dumping the heap may be expensive in terms of cpu and disk space.",
-      "warn_sensitive_data": "A heap dump may contain <strong>sensitive data</strong>. Please handle with care."
+      "warn_sensitive_data": "A heap dump may contain sensitive data. Please handle with care."
     }
   }
 }

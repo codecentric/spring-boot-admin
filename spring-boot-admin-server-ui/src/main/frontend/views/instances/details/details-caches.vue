@@ -16,30 +16,31 @@
 
 <template>
   <div>
-    <details-cache v-for="cache in caches" :key="cache"
-                   :instance="instance" :cache-name="cache"
+    <details-cache
+      v-for="cache in caches" :key="cache"
+      :instance="instance" :cache-name="cache"
     />
   </div>
 </template>
 
 <script>
-  import sbaConfig from '@/sba-config';
-  import subscribing from '@/mixins/subscribing';
-  import Instance from '@/services/instance';
-  import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
-  import uniq from 'lodash/uniq';
-  import detailsCache from './details-cache';
+  import sbaConfig from '../../../sba-config';
+  import subscribing from '../../../mixins/subscribing';
+  import Instance from '../../../services/instance';
+  import {concatMap, delay, retryWhen, timer} from '../../../utils/rxjs.js';
+  import {uniq} from 'lodash-es';
+  import detailsCache from './details-cache.vue';
   import {take} from 'rxjs/operators';
 
   export default {
+    components: {detailsCache},
+    mixins: [subscribing],
     props: {
       instance: {
         type: Instance,
         required: true
       }
     },
-    mixins: [subscribing],
-    components: {detailsCache},
     data: () => ({
       caches: [],
     }),

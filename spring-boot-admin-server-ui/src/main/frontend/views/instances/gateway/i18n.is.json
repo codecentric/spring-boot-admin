@@ -11,7 +11,6 @@
         "deleted": "Eytt",
         "delete": "Eyða",
         "delete_failed": "Mistekist",
-        "fetch_failed": "Mistókst að sækja vegir gátta.",
         "filters": "Síur",
         "id": "Id",
         "loading": "Hlaða vegir…",
@@ -22,7 +21,6 @@
         "uri": "URI"
       },
       "filters": {
-        "fetch_failed": "Mistókst að sækja alheims-síur.",
         "filter_name": "Nafn síu",
         "loading": "Hlaða alheims-síur…",
         "no_filters_found": "Fundið engar alheims-síur.",

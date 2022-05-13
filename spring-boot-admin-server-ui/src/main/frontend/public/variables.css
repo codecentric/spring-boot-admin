@@ -1,0 +1,25 @@
+:root {
+    --main-50: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade50())})]*/ #E8FBEF;
+    --main-100: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade100())})]*/ #D0F7DF;
+    --main-200: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade200())})]*/ #A1EFBD;
+    --main-300: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade300())})]*/ #71E69C;
+    --main-400: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade400())})]*/ #41DE7B;
+    --main-500: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade500())})]*/ #22C55E;
+    --main-600: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade600())})]*/ #1A9547;
+    --main-700: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade700())})]*/ #116530;
+    --main-800: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade800())})]*/ #09351A;
+    --main-900: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade900())})]*/ #010603;
+
+    --bg-color-start: /*[(${uiSettings.theme.palette.getShade300()})]*/ #71E69C;
+    --bg-color-stop: /*[(${uiSettings.theme.palette.getShade700()})]*/ #09351A;
+}
+
+.bg-color-start {
+    transition: .4s ease;
+    stop-color: var(--bg-color-start);
+}
+
+.bg-color-stop {
+    transition: .4s ease;
+    stop-color: var(--bg-color-stop);
+}

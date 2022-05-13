@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import axios, {redirectOn401} from '@/utils/axios';
-import waitForPolyfill from '@/utils/eventsource-polyfill';
-import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
-import uri from '@/utils/uri';
-import sortBy from 'lodash/sortBy';
+import axios, {redirectOn401} from '../utils/axios';
+import waitForPolyfill from '../utils/eventsource-polyfill';
+import {concat, from, ignoreElements, Observable} from '../utils/rxjs.js';
+import uri from '../utils/uri';
+import {sortBy} from 'lodash-es';
 import Instance from './instance';
 
 const actuatorMimeTypes = [
@@ -46,6 +46,9 @@ class Application {
     this.name = name;
     this.axios = axios.create({
       baseURL: uri`applications/${this.name}/`,
+      headers: {
+        'X-SBA-REQUEST': true
+      }
     });
     this.axios.interceptors.response.use(response => response, redirectOn401()
     );
@@ -67,6 +70,14 @@ class Application {
     return this.instances.findIndex(i => i.isUnregisterable) >= 0;
   }
 
+  get hasShutdownEndpoint() {
+    return this.instances.some(i => i.hasEndpoint('shutdown'));
+  }
+
+  get hasRestartEndpoint() {
+    return this.instances.some(i => i.hasEndpoint('restart'));
+  }
+
   async unregister() {
     return this.axios.delete('', {
       headers: {'Accept': 'application/json'}
@@ -75,7 +86,7 @@ class Application {
 
   static async list() {
     return axios.get('applications', {
-      headers: {'Accept': 'application/json'},
+      headers: {'Accept': 'application/json', 'X-SBA-REQUEST': true},
       transformResponse: Application._transformResponse
     });
   }
@@ -112,6 +123,16 @@ class Application {
     return {responses};
   }
 
+  async setEnv(name, value) {
+    return this.axios.post(uri`actuator/env`, {name, value}, {
+      headers: {'Content-Type': 'application/json'}
+    });
+  }
+
+  async resetEnv() {
+    return this.axios.delete(uri`actuator/env`);
+  }
+
   async refreshContext() {
     return this.axios.post(uri`actuator/refresh`);
   }
@@ -127,6 +148,31 @@ class Application {
   restart() {
     return this.axios.post(uri`actuator/restart`);
   }
+
+  async writeMBeanAttribute(domain, mBean, attribute, value) {
+    const body = {
+      type: 'write',
+      mbean: `${domain}:${mBean}`,
+      attribute,
+      value
+    };
+    return this.axios.post(uri`actuator/jolokia`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
+  async invokeMBeanOperation(domain, mBean, operation, args) {
+    const body = {
+      type: 'exec',
+      mbean: `${domain}:${mBean}`,
+      operation,
+      'arguments': args
+    };
+    return this.axios.post(uri`actuator/jolokia`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
 
   static _transformResponse(data) {
     if (!data) {

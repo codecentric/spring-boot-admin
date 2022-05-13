@@ -18,15 +18,15 @@ import ResizeObserver from 'resize-observer-polyfill';
 
 const observers = new WeakMap();
 
-const bind = (el, binding) => {
-  unbind(el);
+const mounted = (el, binding) => {
+  beforeUnmount(el);
   const observer = new ResizeObserver(binding.value);
   observer.observe(el);
   observers.set(el, observer);
 
 };
 
-const unbind = (el) => {
+const beforeUnmount = (el) => {
   const observer = observers.get(el);
   if (observer) {
     observer.disconnect();
@@ -35,13 +35,13 @@ const unbind = (el) => {
 };
 
 export default {
-  bind,
+  mounted,
   update(el, binding) {
     if (binding.value === binding.oldValue) {
       return
     }
-    bind(el, binding)
+    mounted(el, binding)
   },
-  unbind
+  beforeUnmount
 }
 

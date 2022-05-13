@@ -19,19 +19,19 @@
     <div class="modal-background" @click="abort" />
     <div class="modal-content">
       <div class="modal-card">
-        <header class="modal-card-head">
+        <header class="modal-card-head is-block">
           <p class="modal-card-title" v-text="name" />
         </header>
 
         <template v-if="state === 'input-args'">
           <section class="modal-card-body" @keyup.ctrl.enter="invoke(args)">
-            <div class="field" v-for="(arg, idx) in descriptor.args" :key="arg.name">
+            <div v-for="(arg, idx) in descriptor.args" :key="arg.name" class="field">
               <label class="label">
                 <span v-text="arg.name" />
-                <small class="is-muted has-text-weight-normal" v-text="arg.type" />
+                <small class="is-muted has-text-weight-normal pl-1" v-text="arg.type" />
               </label>
               <div class="control">
-                <input type="text" class="input" v-model="args[idx]">
+                <input v-model="args[idx]" type="text" class="input">
               </div>
               <p class="help" v-text="arg.desc" />
             </div>
@@ -76,19 +76,22 @@
             <div class="message is-danger">
               <div class="message-body">
                 <strong>
-                  <font-awesome-icon class="has-text-danger"
-                                     icon="exclamation-triangle"
+                  <font-awesome-icon
+                    class="has-text-danger"
+                    icon="exclamation-triangle"
                   />
                   <span v-text="$t('instances.jolokia.execution_failed')" />
                 </strong>
                 <p v-text="error.message" />
               </div>
             </div>
-            <pre v-if="error.stacktrace"
-                 v-text="error.stacktrace"
+            <pre
+              v-if="error.stacktrace"
+              v-text="error.stacktrace"
             />
-            <pre v-if="error.response && error.response.data"
-                 v-text="error.response.data"
+            <pre
+              v-if="error.response && error.response.data"
+              v-text="error.response.data"
             />
           </section>
           <footer class="modal-card-foot">
@@ -105,99 +108,105 @@
 </template>
 
 <script>
+import {
+  responseHandler,
+  STATE_EXECUTING, STATE_FAILED,
+  STATE_INPUT_ARGS,
+  STATE_PREPARED
+} from '@/views/instances/jolokia/responseHandler.js';
 
-  export default {
-    props: {
-      name: {
-        type: String,
-        required: true
-      },
-      descriptor: {
-        type: Object,
-        required: true
-      },
-      value: {
-        type: null,
-        default: null
-      },
-      onClose: {
-        type: Function,
-        required: true
-      },
-      onExecute: {
-        type: Function,
-        required: true
-      }
+export default {
+  props: {
+    name: {
+      type: String,
+      required: true
     },
-    data: () => ({
-      state: null,
-      error: null,
-      args: null,
-      result: null
-    }),
-    computed: {
-      prettyPrintedResult() {
-        if (this.result && typeof this.result === 'string') {
-          try {
-            const o = JSON.parse(this.result);
-            return JSON.stringify(o, undefined, 4);
-          } catch (e) {
-            return this.result;
-          }
-        } else if (typeof result === 'object') {
-          return JSON.stringify(this.result, undefined, 4);
-        }
-        return this.result;
-      }
+    descriptor: {
+      type: Object,
+      required: true
     },
-    methods: {
-      abort() {
-        this.onClose();
-      },
-      invoke(args) {
-        this.state = (args || this.descriptor.args.length === 0) ? 'prepared' : 'input-args';
-        this.args = args || new Array(this.descriptor.args.length);
-        this.error = null;
-        this.result = null;
-
-        if (this.state === 'prepared') {
-          this.execute()
-        }
-      },
-      async execute() {
-        this.state = 'executing';
+    value: {
+      type: null,
+      default: null
+    },
+    onClose: {
+      type: Function,
+      required: true
+    },
+    onExecute: {
+      type: Function,
+      required: true
+    }
+  },
+  data: () => ({
+    state: null,
+    error: null,
+    args: null,
+    result: null
+  }),
+  computed: {
+    prettyPrintedResult() {
+      if (this.result && typeof this.result === 'string') {
         try {
-          const result = await this.onExecute(this.args);
-          if (result.data.status < 400) {
-            this.result = result.data.value;
-            this.state = 'completed';
-          } else {
-            const error = new Error(`Execution failed: ${result.data.error}`);
-            error.stacktrace = result.data.stacktrace;
-            this.state = 'failed';
-            this.error = error;
-            console.warn('Invocation failed', error);
-          }
-        } catch (error) {
-          this.state = 'failed';
-          this.error = error;
-          console.warn('Invocation failed', error);
+          const o = JSON.parse(this.result);
+          return JSON.stringify(o, undefined, 4);
+        } catch (e) {
+          return this.result;
         }
-      },
-      keyHandler(event) {
-        if (event.keyCode === 27) {
-          this.abort()
-        }
+      } else if (typeof result === 'object') {
+        return JSON.stringify(this.result, undefined, 4);
+      }
+      return this.result;
+    }
+  },
+  created() {
+    this.invoke();
+  },
+  mounted() {
+    document.addEventListener('keyup', this.keyHandler)
+  },
+  beforeUnmount() {
+    document.removeEventListener('keyup', this.keyHandler)
+  },
+  methods: {
+    abort() {
+      this.onClose();
+    },
+    invoke(args) {
+      this.state = (args || this.descriptor.args.length === 0) ? STATE_PREPARED : STATE_INPUT_ARGS;
+      this.args = args || new Array(this.descriptor.args.length);
+      this.error = null;
+      this.result = null;
+
+      if (this.state === STATE_PREPARED) {
+        this.execute()
       }
     },
-    created() {
-      this.invoke();
+    async execute() {
+      this.state = STATE_EXECUTING;
+      try {
+        const response = await this.onExecute(this.args);
+        const {result, state, error} = responseHandler(response);
+        this.result = result;
+        this.state = state;
+        this.error = error;
+      } catch (error) {
+        this.state = STATE_FAILED;
+        this.error = error;
+        console.warn('Invocation failed', error);
+      }
     },
-    mounted() {
-      document.addEventListener('keyup', this.keyHandler)
+    keyHandler(event) {
+      if (event.keyCode === 27) {
+        this.abort()
+      }
     },
-    beforeDestroy() {
-      document.removeEventListener('keyup', this.keyHandler)
-    },
-  }
+  },
+}
 </script>
+
+<style scoped>
+.modal-card-title {
+  word-break: break-all;
+}
+</style>

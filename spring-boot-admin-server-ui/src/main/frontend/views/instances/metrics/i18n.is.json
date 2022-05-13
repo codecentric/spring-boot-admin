@@ -3,7 +3,6 @@
     "metrics": {
       "label": "Firð",
       "add_metric": "Bæta við firð",
-      "fetch_failed": "Mistókst að sækja firð.",
       "fetching_tags": "Sækja tilbuin merki…",
       "no_tags": "(engin merki)",
       "no_tags_available": "Engin merki í boði.",

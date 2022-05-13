@@ -38,10 +38,6 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
@@ -59,6 +55,11 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-core</artifactId>
+            <version>${jolokia.version}</version>
         </dependency>
         <!-- Test -->
         <dependency>
@@ -115,7 +116,7 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run test:unit</arguments>
+                            <arguments>run test</arguments>
                         </configuration>
                     </execution>
                 </executions>

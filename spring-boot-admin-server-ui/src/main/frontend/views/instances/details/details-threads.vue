@@ -15,31 +15,48 @@
   -->
 
 <template>
-  <sba-panel v-if="hasLoaded" :title="$t('instances.details.threads.title')">
+  <sba-panel
+    v-if="hasLoaded"
+    :title="$t('instances.details.threads.title')"
+  >
     <div>
-      <sba-alert v-if="error" :error="error" :title="$t('instances.details.threads.fetch_failed')" />
+      <sba-alert
+        v-if="error"
+        :error="error"
+        :title="$t('term.fetch_failed')"
+      />
 
-      <div v-if="current" class="level threads-current">
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.threads.live')" />
-            <p v-text="current.live" />
-          </div>
+      <div
+        v-if="current"
+        class="flex w-full"
+      >
+        <div class="flex-1 text-center">
+          <p
+            class="font-bold"
+            v-text="$t('instances.details.threads.live')"
+          />
+          <p v-text="current.live" />
         </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading  has-bullet has-bullet-info" v-text="$t('instances.details.threads.daemon')" />
-            <p v-text="current.daemon" />
-          </div>
+        <div class="flex-1 text-center">
+          <p
+            class="font-bold"
+            v-text="$t('instances.details.threads.daemon')"
+          />
+          <p v-text="current.daemon" />
         </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading" v-text="$t('instances.details.threads.peak_live')" />
-            <p v-text="current.peak" />
-          </div>
+        <div class="flex-1 text-center">
+          <p
+            class="font-bold"
+            v-text="$t('instances.details.threads.peak_live')"
+          />
+          <p v-text="current.peak" />
         </div>
       </div>
-      <threads-chart v-if="chartData.length > 0" :data="chartData" />
+
+      <threads-chart
+        v-if="chartData.length > 0"
+        :data="chartData"
+      />
     </div>
   </sba-panel>
 </template>
@@ -47,21 +64,21 @@
 <script>
 import sbaConfig from '@/sba-config';
 import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance';
+import Instance from '@/services/instance.js';
 import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
 import moment from 'moment';
-import threadsChart from './threads-chart';
+import threadsChart from './threads-chart.vue';
 import {take} from 'rxjs/operators';
 
 export default {
+  components: {threadsChart},
+  mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
       required: true
     }
   },
-  mixins: [subscribing],
-  components: {threadsChart},
   data: () => ({
     hasLoaded: false,
     error: null,
@@ -107,7 +124,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="css">
 .threads-current {
   margin-bottom: 0 !important;
 }

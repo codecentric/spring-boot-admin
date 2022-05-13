@@ -1,28 +1,23 @@
 import {render as tlRender} from '@testing-library/vue';
-import VueI18n from 'vue-i18n';
-import components from '@/components';
-import Vue from 'vue';
-import i18n from '@/i18n';
-import VueRouter from 'vue-router';
-
-Vue.use(VueI18n);
-Vue.use(components);
-Vue.use(VueRouter);
-
-export const localVue = Vue;
+import {RouterLinkStub} from '@vue/test-utils';
+import {createI18n} from "vue-i18n";
+import components from "./components/index.js";
+import terms from "./i18n/i18n.en.json"
 
 export const render = (testComponent, options) => {
-  return tlRender(testComponent, options,
-    () => {
-      return {
-        stubs: {
-          'font-awesome-icon': true
-        },
-        i18n,
-        router: new VueRouter({
-          mode: 'history',
-          linkActiveClass: 'is-active',
+  return tlRender(testComponent, {
+    ...options,
+    global: {
+      plugins: [
+        createI18n({
+          messages: {
+            'en': terms
+          },
+          silentFallbackWarn: true, silentTranslationWarn: true
         }),
-      }
-    })
+        components
+      ],
+      stubs: {'font-awesome-icon': true, RouterLink: RouterLinkStub},
+    },
+  });
 }

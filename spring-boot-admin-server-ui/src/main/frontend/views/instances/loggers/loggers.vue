@@ -15,73 +15,110 @@
   -->
 
 <template>
-  <section :class="{ 'is-loading' : !hasLoaded }" class="section">
-    <sba-alert v-if="error" :error="error" :title="$t('instances.loggers.fetch_failed')" />
+  <sba-instance-section
+    :loading="!hasLoaded "
+    :error="error"
+  >
+    <template #before>
+      <sba-sticky-subnav>
+        <div class="flex gap-2">
+          <sba-toggle-scope-button
+            v-if="instanceCount >= 1"
+            v-model="scope"
+            :show-info="false"
+            :instance-count="instanceCount"
+            @changeScope="$emit('changeScope', $event)"
+          />
 
-    <div v-sticks-below="['#navigation']" class="loggers__header">
-      <div class="field is-grouped">
-        <div class="control">
-          <sba-toggle-scope-button v-if="instanceCount > 1"
-                                   v-model="scope"
-                                   :instance-count="instanceCount"
+          <div class="flex-1">
+            <sba-input
+              v-model="filter.name"
+              name="filter"
+              type="search"
+              :placeholder="$t('term.filter')"
+            >
+              <template #prepend>
+                <font-awesome-icon icon="filter" />
+              </template>
+              <template #append>
+                <span v-text="filteredLoggers.length" /> / <span v-text="loggerConfig.loggers.length" />
+              </template>
+            </sba-input>
+          </div>
+
+          <!-- FILTER -->
+          <div>
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <input
+                  id="classOnly"
+                  v-model="filter.classOnly"
+                  name="wraplines"
+                  type="checkbox"
+                  class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                >
+              </div>
+              <div class="ml-3 text-sm">
+                <label
+                  for="classOnly"
+                  class="font-medium text-gray-700"
+                  v-text="$t('instances.loggers.filter.class_only')"
+                />
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div class="flex items-center h-5">
+                <input
+                  id="configuredOnly"
+                  v-model="filter.configuredOnly"
+                  name="wraplines"
+                  type="checkbox"
+                  class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                >
+              </div>
+              <div class="ml-3 text-sm">
+                <label
+                  for="configuredOnly"
+                  class="font-medium text-gray-700"
+                  v-text="$t('instances.loggers.filter.configured')"
+                />
+              </div>
+            </div>
+          </div>
+          <!-- // FILTER -->
+        </div>
+      </sba-sticky-subnav>
+    </template>
+
+    <sba-panel>
+      <div
+        v-if="failedInstances > 0"
+        class="message is-warning"
+      >
+        <div class="message-body">
+          <sba-alert
+            severity="WARN"
+            :title="$t('instances.loggers.fetch_failed_some_instances', {failed: failedInstances, count: instanceCount})"
           />
         </div>
-        <div class="control is-expanded">
-          <div class="field has-addons">
-            <p class="control is-expanded has-icons-left">
-              <input v-model="filter.name" class="input" type="search">
-              <span class="icon is-small is-left">
-                <font-awesome-icon icon="filter" />
-              </span>
-            </p>
-            <p class="control">
-              <span class="button is-static">
-                <span v-text="filteredLoggers.length" /> / <span v-text="loggerConfig.loggers.length" />
-              </span>
-            </p>
-          </div>
-
-          <div class="field is-grouped">
-            <div class="control">
-              <label class="checkbox">
-                <input v-model="filter.classOnly" type="checkbox">
-                {{ $t('instances.loggers.filter.class_only') }}
-              </label>
-            </div>
-            <div class="control">
-              <label class="checkbox">
-                <input v-model="filter.configuredOnly" type="checkbox">
-                {{ $t('instances.loggers.filter.configured') }}
-              </label>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
 
-    <div v-if="failedInstances > 0" class="message is-warning">
-      <div class="message-body">
-        <font-awesome-icon class="has-text-warning" icon="exclamation-triangle" />
-        <span
-          v-text="$t('instances.loggers.fetch_failed_some_instances', {failed: failedInstances, count: instanceCount})"
-        />
-      </div>
-    </div>
-
-    <loggers-list
-      :levels="loggerConfig.levels"
-      :loggers="filteredLoggers"
-      :loggers-status="loggersStatus"
-      @configureLogger="({logger, level}) => configureLogger(logger, level)"
-    />
-  </section>
+      <loggers-list
+        :levels="loggerConfig.levels"
+        :loggers="filteredLoggers"
+        :loggers-status="loggersStatus"
+        @configureLogger="({logger, level}) => configureLogger(logger, level)"
+      />
+    </sba-panel>
+  </sba-instance-section>
 </template>
 
 <script>
-import sticksBelow from '@/directives/sticks-below';
 import {finalize, from, listen} from '@/utils/rxjs';
-import LoggersList from './loggers-list';
-import SbaToggleScopeButton from '@/components/sba-toggle-scope-button';
+import SbaInstanceSection from "../shell/sba-instance-section.vue";
+import LoggersList from "./loggers-list.vue";
+import SbaAlert from "../../../components/sba-alert.vue";
 
 const isClassName = name => /\.[A-Z]/.test(name);
 
@@ -105,8 +142,7 @@ const addLoggerCreationEntryIfLoggerNotPresent = (nameFilter, loggers) => {
 };
 
 export default {
-  components: {SbaToggleScopeButton, LoggersList},
-  directives: {sticksBelow},
+  components: {SbaAlert, SbaInstanceSection, LoggersList},
   props: {
     instanceCount: {
       type: Number,
@@ -153,7 +189,7 @@ export default {
       const vm = this;
       from(vm.loggersService.configureLogger(logger.name, level))
         .pipe(
-          listen(status => vm.$set(vm.loggersStatus, logger.name, {level, status})),
+          listen(status => vm.loggersStatus[logger.name] = {level, status}),
           finalize(() => vm.fetchLoggers())
         )
         .subscribe({
@@ -194,19 +230,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-@import "~@/assets/css/utilities";
-
-.loggers {
-  &__header {
-    background-color: $white;
-    z-index: 10;
-    padding: 0.5em 1em;
-  }
-
-  &__toggle-scope {
-    width: 10em;
-  }
-}
-</style>

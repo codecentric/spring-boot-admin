@@ -15,7 +15,7 @@
  */
 
 import {StartupActuatorService} from './startup-actuator'
-import {cloneDeep} from 'lodash';
+import {cloneDeep} from 'lodash-es';
 
 describe('StartupActuatorService', () => {
   let data = {};

@@ -27,7 +27,7 @@ describe('NavbarItemLanguageSelector', () => {
     const languageButton = await screen.findAllByRole('button', {name: 'Deutsch'});
     await userEvent.click(languageButton[0]);
 
-    expect(await screen.findByRole('button', {name: 'français'})).toBeDefined()
+    expect(await screen.findByRole('menuitem', {name: 'français'})).toBeDefined()
   });
 
   it('should print the locale as label when it cannot be translated', async () => {
@@ -43,7 +43,8 @@ describe('NavbarItemLanguageSelector', () => {
   });
 
   it('should emit the selected locale', async () => {
-    await userEvent.click(await screen.findByRole('button', {name: 'français'}));
+    await userEvent.click(await screen.findByRole('button', {name: 'Deutsch'}));
+    await userEvent.click(await screen.findByRole('menuitem', {name: 'français'}));
 
     expect(wrapper.emitted().localeChanged[0]).toContain('fr')
   });

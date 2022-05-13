@@ -51,17 +51,25 @@ import {faUserCircle} from '@fortawesome/free-solid-svg-icons/faUserCircle';
 import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 import {faAngleDoubleLeft} from '@fortawesome/free-solid-svg-icons';
+import {faInfoCircle} from "@fortawesome/free-solid-svg-icons/faInfoCircle.js";
+import {faExclamationCircle} from "@fortawesome/free-solid-svg-icons/faExclamationCircle.js";
+import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle.js";
+import {faFrownOpen} from "@fortawesome/free-solid-svg-icons/faFrownOpen.js";
+import {faBars} from "@fortawesome/free-solid-svg-icons/faBars.js";
+import {faChevronRight} from "@fortawesome/free-solid-svg-icons/faChevronRight.js";
+import {faChevronDown} from "@fortawesome/free-solid-svg-icons/faChevronDown.js";
 
 export default FontAwesomeIcon;
 
 library.add(
-//solid
+  //solid
   faAngleDoubleRight,
   faAngleDoubleLeft,
   faBan,
   faBell,
   faBellSlash,
   faBook,
+  faBars,
   faCheck,
   faCube,
   faCubes,
@@ -69,11 +77,17 @@ library.add(
   faExclamation,
   faExclamationTriangle,
   faFilter,
+  faFrownOpen,
   faHeartbeat,
   faHistory,
+  faInfoCircle,
+  faExclamationCircle,
   faHome,
   faMapMarkerAlt,
+  faCheckCircle,
   faMinusCircle,
+  faChevronRight,
+  faChevronDown,
   faPencilAlt,
   faQuestionCircle,
   faSearch,
@@ -93,5 +107,4 @@ library.add(
   faGithub,
   faGitter,
   faStackOverflow
-)
-;
+);

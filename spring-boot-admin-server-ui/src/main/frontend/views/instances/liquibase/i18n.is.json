@@ -12,7 +12,7 @@
       "execution": "Framkvæmd",
       "execution_date": "Dagsetning framkvæmdarinnar",
       "execution_order": "Röð framkvæmdarinnar",
-      "fetch_failed": "Mistókst að sækja Liuibase framkvæmdir.",
+
       "id": "Id",
       "labels": "Merkimiðar",
       "tag": "Merki"

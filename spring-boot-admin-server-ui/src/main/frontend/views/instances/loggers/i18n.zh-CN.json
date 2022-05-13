@@ -3,7 +3,6 @@
     "loggers": {
       "label": "日志配置",
       "application": "应用",
-      "fetch_failed": "获取日志配置失败。",
       "filter": {
         "class_only": "只显示类",
         "configured": "已配置"

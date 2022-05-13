@@ -1,4 +1,12 @@
 import {setupWorker} from 'msw'
-import {handlers} from '@/handlers';
+import mappingsEndpoint from "./instance/mappings/index.js";
+import liquibaseEndpoints from "./instance/liquibase/index.js";
+import flywayEndpoints from "./instance/flyway/index.js";
 
-export const worker = setupWorker(...handlers)
+const handler = [
+  ...mappingsEndpoint,
+  ...liquibaseEndpoints,
+  ...flywayEndpoints
+];
+
+export const worker = setupWorker(...handler)

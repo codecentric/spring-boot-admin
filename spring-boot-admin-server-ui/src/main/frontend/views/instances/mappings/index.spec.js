@@ -1,6 +1,6 @@
 import {render} from '@/test-utils';
 import Mappings from './index'
-import Instance from '@/services/instance';
+import Instance from '@/services/instance.js';
 import {screen, waitFor} from '@testing-library/vue';
 import {mappings} from '@/mocks/instance/mappings/data';
 

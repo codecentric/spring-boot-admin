@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import isEmpty from 'lodash/isEmpty';
-import isObject from 'lodash/isObject';
+import {isEmpty, isObject} from 'lodash-es';
 
 const nonEmptyComplexValue = value => (Array.isArray(value) || isObject(value)) && !isEmpty(value);
 

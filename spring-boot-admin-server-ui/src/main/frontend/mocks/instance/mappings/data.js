@@ -1166,11 +1166,11 @@ export const mappings = {
             'predicate': '/webjars/**',
             'details': null
           }, {
-            'handler': 'ResourceHttpRequestHandler [URL [file:../../spring-boot-admin-server-ui/target/dist/]]',
+            'handler': 'ResourceHttpRequestHandler',
             'predicate': '/**',
             'details': null
           }, {
-            'handler': 'ResourceHttpRequestHandler [URL [file:../spring-boot-admin-sample-custom-ui/target/dist/]]',
+            'handler': 'ResourceHttpRequestHandler',
             'predicate': '/extensions/**',
             'details': null
           }]

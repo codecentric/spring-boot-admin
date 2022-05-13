@@ -19,25 +19,23 @@ import i18n from '@/i18n';
 
 export default {
   component: SbaActionButtonScoped,
-  title: 'SBA Components/Action Button Scoped',
+  title: 'Components/Buttons/Action Button Scoped',
 };
 
-const TemplateWithProps = (args, {argTypes}) => ({
+const TemplateWithProps = (args) => ({
   components: {SbaActionButtonScoped},
-  props: Object.keys(argTypes),
-  template: '<sba-action-button-scoped v-bind="$props" />',
+  setup() { return { args }; },
+  template: '<sba-action-button-scoped v-bind="args" />',
   i18n
 });
 
 export const OneInstanceSuccessful = TemplateWithProps.bind({});
 OneInstanceSuccessful.args = {
   instanceCount: 1,
-  label: 'Label',
+  label: 'Push me!',
   actionFn() {
     return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve()
-      }, 2000);
+      setTimeout(() => resolve(), 2000);
     });
   },
 };
@@ -50,8 +48,8 @@ MultipleInstancesSuccessful.args = {
 
 export const OneInstanceFailing = TemplateWithProps.bind({});
 OneInstanceFailing.args = {
+  ...OneInstanceSuccessful.args,
   instanceCount: 1,
-  label: 'Label',
   actionFn() {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -61,16 +59,17 @@ OneInstanceFailing.args = {
   },
 };
 
-const TemplateWithSlot = (args, {argTypes}) => ({
+const TemplateWithSlot = (args) => ({
   components: {SbaActionButtonScoped},
-  props: Object.keys(argTypes),
+  setup() { return { args }; },
   template: `
-    <sba-action-button-scoped v-bind="$props">
-    <template v-slot="slotProps">
-      <span v-if="slotProps.refreshStatus === 'completed'">Status Is Completed</span>
-      <span v-else-if="slotProps.refreshStatus === 'failed'">Status Is Failed</span>
-      <span v-else>Default Label</span>
-    </template>
+    <sba-action-button-scoped v-bind="args">
+      <template v-slot="slotProps">
+        <span v-if="slotProps.refreshStatus === 'executing'">Working...</span>
+        <span v-else-if="slotProps.refreshStatus === 'completed'">Status Is Completed</span>
+        <span v-else-if="slotProps.refreshStatus === 'failed'">Status Is Failed</span>
+        <span v-else>Default Label</span>
+      </template>
     </sba-action-button-scoped>`,
   i18n
 });

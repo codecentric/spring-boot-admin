@@ -4,7 +4,7 @@
       "label": "Mappings",
       "class": "Class",
       "consumes": "Consumes",
-      "fetch_failed": "Echec de la récupération des mappings.",
+
       "filter_name": "Filtre sur le nom",
       "handler": "Handler",
       "headers": "Headers",

@@ -3,7 +3,7 @@
     "threaddump": {
       "label": "執行緒轉存",
       "download": "下載執行緒",
-      "fetch_failed": "抓取執行緒失敗。",
+
       "download_failed": "執行緒無法下載。",
       "thread_details_blocked_count": "阻塞數",
       "thread_details_blocked_time": "阻塞時間",

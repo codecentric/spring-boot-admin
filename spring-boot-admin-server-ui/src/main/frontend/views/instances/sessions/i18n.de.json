@@ -6,7 +6,7 @@
       "created_at": "Erstellt am",
       "expired": "Abgelaufen",
       "expiry": "Verfällt",
-      "fetch_failed": "Das Laden der Sitzungen ist fehlgeschlagen.",
+
       "last_accessed_at": "Letzter Zugriff",
       "loading_sessions": "Sitzungen laden...",
       "max_inactive_interval": "Max. Inaktivitäts-<br>intervall",

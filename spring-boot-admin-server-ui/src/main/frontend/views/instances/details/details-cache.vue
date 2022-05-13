@@ -15,51 +15,90 @@
   -->
 
 <template>
-  <sba-panel v-if="hasLoaded" :title="`Cache: ${cacheName}`">
+  <sba-panel
+    v-if="hasLoaded"
+    :title="`Cache: ${cacheName}`"
+  >
     <div>
-      <sba-alert v-if="error" :error="error" :title="$t('instances.details.cache.fetch_failed')" />
+      <sba-alert
+        v-if="error"
+        :error="error"
+        :title="$t('term.fetch_failed')"
+      />
 
-      <div v-if="current" class="level cache-current">
-        <div v-if="current.hit !== undefined" class="level-item has-text-centered">
+      <div
+        v-if="current"
+        class="level cache-current"
+      >
+        <div
+          v-if="current.hit !== undefined"
+          class="level-item has-text-centered"
+        >
           <div>
-            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.cache.hits')" />
+            <p
+              class="heading has-bullet has-bullet-info"
+              v-text="$t('instances.details.cache.hits')"
+            />
             <p v-text="current.hit" />
           </div>
         </div>
-        <div v-if="current.miss !== undefined" class="level-item has-text-centered">
+        <div
+          v-if="current.miss !== undefined"
+          class="level-item has-text-centered"
+        >
           <div>
-            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.cache.misses')" />
+            <p
+              class="heading has-bullet has-bullet-warning"
+              v-text="$t('instances.details.cache.misses')"
+            />
             <p v-text="current.miss" />
           </div>
         </div>
-        <div v-if="ratio !== undefined" class="level-item has-text-centered">
+        <div
+          v-if="ratio !== undefined"
+          class="level-item has-text-centered"
+        >
           <div>
-            <p class="heading" v-text="$t('instances.details.cache.hit_ratio')" />
+            <p
+              class="heading"
+              v-text="$t('instances.details.cache.hit_ratio')"
+            />
             <p v-text="ratio" />
           </div>
         </div>
-        <div v-if="current.size !== undefined" class="level-item has-text-centered">
+        <div
+          v-if="current.size !== undefined"
+          class="level-item has-text-centered"
+        >
           <div>
-            <p class="heading" v-text="$t('instances.details.cache.size')" />
+            <p
+              class="heading"
+              v-text="$t('instances.details.cache.size')"
+            />
             <p v-text="current.size" />
           </div>
         </div>
       </div>
-      <cache-chart v-if="chartData.length > 0" :data="chartData" />
+      <cache-chart
+        v-if="chartData.length > 0"
+        :data="chartData"
+      />
     </div>
   </sba-panel>
 </template>
 
 <script>
-import sbaConfig from '@/sba-config';
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance';
-import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
+import sbaConfig from '../../../sba-config.js';
+import subscribing from '../../../mixins/subscribing.js';
+import Instance from '../../../services/instance.js';
+import {concatMap, delay, retryWhen, timer} from '../../../utils/rxjs.js';
 import moment from 'moment';
-import cacheChart from './cache-chart';
+import cacheChart from './cache-chart.vue';
 import {take} from 'rxjs/operators';
 
 export default {
+  components: { cacheChart},
+  mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
@@ -70,8 +109,6 @@ export default {
       required: true
     }
   },
-  mixins: [subscribing],
-  components: { cacheChart},
   data: () => ({
     hasLoaded: false,
     error: null,
@@ -163,7 +200,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="css">
 .datasource-current {
   margin-bottom: 0 !important;
 }

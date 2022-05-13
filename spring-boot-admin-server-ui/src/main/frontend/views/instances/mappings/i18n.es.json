@@ -4,7 +4,7 @@
       "label": "Mapeos",
       "class": "Clase",
       "consumes": "Consumo",
-      "fetch_failed": "Falla recuperando mapeos.",
+
       "filter_name": "Filtro",
       "handler": "Manejador",
       "headers": "Encabezados",

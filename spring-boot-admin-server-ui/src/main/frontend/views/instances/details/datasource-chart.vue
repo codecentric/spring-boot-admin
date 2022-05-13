@@ -31,6 +31,36 @@
         default: () => []
       }
     },
+    watch: {
+      data: 'drawChart'
+    },
+    mounted() {
+      const margin = {
+        top: 5,
+        right: 5,
+        bottom: 30,
+        left: 50,
+      };
+
+      this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;
+      this.height = this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
+
+      this.chartLayer = d3.select(this.$el.querySelector('.datasource-chart__svg'))
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+
+      this.xAxis = this.chartLayer.append('g')
+        .attr('class', 'datasource-chart__axis-x')
+        .attr('transform', `translate(0,${this.height})`);
+
+      this.yAxis = this.chartLayer.append('g')
+        .attr('class', 'datasource-chart__axis-y')
+        .attr('stroke', null);
+
+      this.areas = this.chartLayer.append('g');
+
+      this.drawChart(this.data);
+    },
     methods: {
       drawChart(_data) {
         const vm = this;
@@ -79,58 +109,21 @@
           .ticks(5)
         );
       },
-    },
-    mounted() {
-      const margin = {
-        top: 5,
-        right: 5,
-        bottom: 30,
-        left: 50,
-      };
-
-      this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;
-      this.height = this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
-
-      this.chartLayer = d3.select(this.$el.querySelector('.datasource-chart__svg'))
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      this.xAxis = this.chartLayer.append('g')
-        .attr('class', 'datasource-chart__axis-x')
-        .attr('transform', `translate(0,${this.height})`);
-
-      this.yAxis = this.chartLayer.append('g')
-        .attr('class', 'datasource-chart__axis-y')
-        .attr('stroke', null);
-
-      this.areas = this.chartLayer.append('g');
-
-      this.drawChart(this.data);
-    },
-    watch: {
-      data: 'drawChart'
     }
   }
 </script>
 
-<style lang="scss">
-    @import "~@/assets/css/utilities";
+<style lang="css">
+.datasource-chart__svg {
+  height: 159px;
+  width: 100%;
+}
+.datasource-chart__area--active {
+  fill: #3e8ed0;
+  opacity: 0.8;
+}
+.datasource-chart__line--max {
+  stroke: #3e8ed0;
+}
 
-    .datasource-chart {
-        &__svg {
-            height: 159px;
-            width: 100%;
-        }
-
-        &__area {
-            &--active {
-                fill: $info;
-                opacity: 0.8;
-            }
-        }
-
-        &__line--max {
-            stroke: $grey;
-        }
-    }
 </style>

@@ -18,7 +18,7 @@ export default {
   created() {
     this.subscribe();
   },
-  beforeDestroy() {
+  beforeUnmount() {
     this.unsubscribe();
   },
   methods: {

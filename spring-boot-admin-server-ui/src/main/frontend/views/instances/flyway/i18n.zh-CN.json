@@ -2,7 +2,6 @@
   "instances": {
     "flyway": {
       "label": "Flyway",
-      "fetch_failed": "获取Flyway报告失败。",
       "type": "类型",
       "checksum": "校验码",
       "version": "版本",

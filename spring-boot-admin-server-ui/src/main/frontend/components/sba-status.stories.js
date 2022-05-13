@@ -2,13 +2,13 @@ import SbaStatus from './sba-status.vue';
 
 export default {
   component: SbaStatus,
-  title: 'SBA Components/Status',
+  title: 'Components/Status',
 };
 
-const Template = (args, { argTypes }) => ({
+const Template = (args) => ({
   components: { SbaStatus },
-  props: Object.keys(argTypes),
-  template: '<sba-status v-bind="$props" />',
+  setup() { return { args }; },
+  template: '<sba-status v-bind="args" />',
 });
 
 export const Status = Template.bind({})

@@ -3,7 +3,6 @@
     "loggers": {
       "label": "日誌配置",
       "application": "應用程式",
-      "fetch_failed": "抓取日誌配置失敗。",
       "filter": {
         "class_only": "只顯示類型",
         "configured": "已配置"

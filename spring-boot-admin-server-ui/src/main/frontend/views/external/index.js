@@ -15,7 +15,7 @@
  */
 
 import sbaConfig from '@/sba-config'
-import './style.scss';
+import './style.css';
 
 const addIframeView = (viewRegistry, {url, label, order}) => {
   const urlWithoutScheme = url.replace(/^https?:[/][/]/, '');

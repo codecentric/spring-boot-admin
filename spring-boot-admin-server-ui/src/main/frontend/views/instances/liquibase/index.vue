@@ -15,93 +15,114 @@
   -->
 
 <template>
-  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
-    <template v-if="hasLoaded">
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            <span v-text="$t('instances.liquibase.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
-      <template v-for="(context, ctxName) in contexts">
-        <h3 class="title" v-text="ctxName" :key="ctxName" />
-        <template v-for="(report, name) in context.liquibaseBeans">
-          <sba-panel :key="`${ctxName}-${name}`" :title="`name`" class="change-set"
-                     :header-sticks-below="['#navigation']"
-          >
-            <table class="table is-hoverable is-fullwidth">
-              <thead>
-                <tr>
-                  <th v-text="$t('instances.liquibase.id')" />
-                  <th v-text="$t('instances.liquibase.execution')" />
-                  <th v-text="$t('instances.liquibase.description')" />
-                  <th v-text="$t('instances.liquibase.tag')" />
-                  <th v-text="$t('instances.liquibase.contexts')" />
-                  <th v-text="$t('instances.liquibase.labels')" />
+  <sba-instance-section
+    :loading="!hasLoaded"
+    :error="error"
+  >
+    <template
+      v-for="(context, ctxName) in contexts"
+      :key="ctxName"
+    >
+      <template
+        v-for="(report, name) in context.liquibaseBeans"
+        :key="`${ctxName}-${name}`"
+      >
+        <sba-panel
+          :title="`${ctxName}: ${name}`"
+          class="change-set"
+          :header-sticks-below="'#subnavigation'"
+        >
+          <table class="table is-hoverable w-full">
+            <thead>
+              <tr>
+                <th v-text="$t('instances.liquibase.id')" />
+                <th v-text="$t('instances.liquibase.execution')" />
+                <th v-text="$t('instances.liquibase.description')" />
+                <th v-text="$t('instances.liquibase.tag')" />
+                <th v-text="$t('instances.liquibase.contexts')" />
+                <th v-text="$t('instances.liquibase.labels')" />
+              </tr>
+            </thead>
+            <tbody>
+              <template
+                v-for="changeSet in report.changeSets"
+                :key="`${ctxName}-${name}-${changeSet.id}`"
+              >
+                <tr
+                  class="is-selectable"
+                  @click="showDetails[changeSet.checksum] ? delete showDetails[changeSet.checksum] : showDetails[changeSet.checksum] = true"
+                >
+                  <td v-text="changeSet.id" />
+                  <td>
+                    <span
+                      class="tag"
+                      :class="execClass(execType)"
+                      v-text="changeSet.execType"
+                    />
+                  </td>
+                  <td v-text="changeSet.description" />
+                  <td v-text="changeSet.tag" />
+                  <td v-text="changeSet.contexts.join(', ')" />
+                  <td>
+                    <span
+                      v-for="label in changeSet.labels"
+                      :key="`${ctxName}-${name}-${changeSet.id}-${label}`"
+                      class="tag is-info"
+                      v-text="label"
+                    />
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                <template v-for="changeSet in report.changeSets">
-                  <tr :key="`${ctxName}-${name}-${changeSet.id}`" class="is-selectable"
-                      @click="showDetails[changeSet.checksum] ? $delete(showDetails, changeSet.checksum) : $set(showDetails, changeSet.checksum, true)"
-                  >
-                    <td v-text="changeSet.id" />
-                    <td>
-                      <span v-text="changeSet.execType" class="tag" :class="execClass(execType)" />
-                    </td>
-                    <td class="is-breakable" v-text="changeSet.description" />
-                    <td v-text="changeSet.tag" />
-                    <td v-text="changeSet.contexts.join(', ')" />
-                    <td>
-                      <span v-for="label in changeSet.labels" :key="`${ctxName}-${name}-${changeSet.id}-${label}`"
-                            class="tag is-info" v-text="label"
-                      />
-                    </td>
-                  </tr>
-                  <tr v-if="showDetails[changeSet.checksum]" :key="`${ctxName}-${name}-${changeSet.id}-details`">
-                    <td colspan="6">
-                      <table class="table is-fullwidth">
-                        <tr>
-                          <th v-text="$t('instances.liquibase.changelog')" />
-                          <td colspan="3" v-text="changeSet.changeLog" />
-                          <th v-text="$t('instances.liquibase.author')" />
-                          <td v-text="changeSet.author" />
-                        </tr>
-                        <tr>
-                          <th v-text="$t('instances.liquibase.checksum')" />
-                          <td v-text="changeSet.checksum" />
-                          <th v-text="$t('instances.liquibase.comments')" />
-                          <td colspan="3" v-text="changeSet.comments" />
-                        </tr>
-                        <tr>
-                          <th v-text="$t('instances.liquibase.execution_order')" />
-                          <td v-text="changeSet.orderExecuted" />
-                          <th v-text="$t('instances.liquibase.execution_date')" />
-                          <td v-text="changeSet.dateExecuted" />
-                          <th v-text="$t('instances.liquibase.deployment_id')" />
-                          <td v-text="changeSet.deploymentId" />
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
-          </sba-panel>
-        </template>
+                <tr
+                  v-if="showDetails[changeSet.checksum]"
+                  :key="`${ctxName}-${name}-${changeSet.id}-details`"
+                >
+                  <td colspan="6">
+                    <table class="table is-fullwidth">
+                      <tr>
+                        <th v-text="$t('instances.liquibase.changelog')" />
+                        <td
+                          colspan="3"
+                          v-text="changeSet.changeLog"
+                        />
+                        <th v-text="$t('instances.liquibase.author')" />
+                        <td v-text="changeSet.author" />
+                      </tr>
+                      <tr>
+                        <th v-text="$t('instances.liquibase.checksum')" />
+                        <td v-text="changeSet.checksum" />
+                        <th v-text="$t('instances.liquibase.comments')" />
+                        <td
+                          colspan="3"
+                          v-text="changeSet.comments"
+                        />
+                      </tr>
+                      <tr>
+                        <th v-text="$t('instances.liquibase.execution_order')" />
+                        <td v-text="changeSet.orderExecuted" />
+                        <th v-text="$t('instances.liquibase.execution_date')" />
+                        <td v-text="changeSet.dateExecuted" />
+                        <th v-text="$t('instances.liquibase.deployment_id')" />
+                        <td v-text="changeSet.deploymentId" />
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </sba-panel>
       </template>
     </template>
-  </section>
+  </sba-instance-section>
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import {VIEW_GROUP} from '../../index';
+  import Instance from '@/services/instance.js';
+  import {VIEW_GROUP} from '../../ViewGroup.js';
+  import SbaInstanceSection from "../shell/sba-instance-section.vue";
 
   export default {
+    components: {SbaInstanceSection},
     props: {
       instance: {
         type: Instance,

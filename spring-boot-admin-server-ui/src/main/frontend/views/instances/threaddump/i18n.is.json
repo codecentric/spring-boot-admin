@@ -3,7 +3,7 @@
     "threaddump": {
       "label": "Thread Dump",
       "download": "Hala Thread Dump niður",
-      "fetch_failed": "Mistókst að sækja thread dump.",
+
       "download_failed": "Mistókst að hala thread dump niður.",
       "thread_details_blocked_count": "Fjöldi lokað",
       "thread_details_blocked_time": "Tími lokað",

@@ -1,17 +1,32 @@
 <template>
-  <section class="section" :class="{ 'is-loading' : !hasLoaded }">
+  <section
+    class="section"
+    :class="{ 'is-loading' : !hasLoaded }"
+  >
     <template v-if="hasLoaded">
-      <div v-if="error" class="message is-danger">
+      <div
+        v-if="error"
+        class="message is-danger"
+      >
         <div class="message-body">
           <strong>
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            <span v-text="$t('instances.quartz.fetch_failed')" />
+            <font-awesome-icon
+              class="has-text-danger"
+              icon="exclamation-triangle"
+            />
+            <span v-text="$t('term.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
       </div>
-      <div v-else-if="!hasJobs" class="message is-warning">
-        <div class="message-body" v-text="$t('instances.quartz.no_data')" />
+      <div
+        v-else-if="!hasJobs"
+        class="message is-warning"
+      >
+        <div
+          class="message-body"
+          v-text="$t('instances.quartz.no_data')"
+        />
       </div>
 
       <!-- CONTENT -->
@@ -27,7 +42,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="jobDetail in jobDetails" :key="jobDetail.group + '-' + jobDetail.name">
+          <tr
+            v-for="jobDetail in jobDetails"
+            :key="jobDetail.group + '-' + jobDetail.name"
+          >
             <td>
               <span v-text="jobDetail.name" /> <small v-text="'('+jobDetail.className+')'" />
             </td>
@@ -56,16 +74,20 @@
           </tr>
         </thead>
 
-        <trigger-row v-for="triggerDetail in triggerDetails" :key="triggerDetail.group + '-' + triggerDetail.name" :trigger-detail="triggerDetail" />
+        <trigger-row
+          v-for="triggerDetail in triggerDetails"
+          :key="triggerDetail.group + '-' + triggerDetail.name"
+          :trigger-detail="triggerDetail"
+        />
       </table>
     </template>
   </section>
 </template>
 
 <script>
-import {VIEW_GROUP} from '@/views';
-import Instance from '@/services/instance';
-import TriggerRow from '@/views/instances/quartz/trigger-row';
+import {VIEW_GROUP} from '../../ViewGroup.js';
+import Instance from '@/services/instance.js';
+import TriggerRow from '@/views/instances/quartz/trigger-row.vue';
 
 export default {
   components: {TriggerRow},

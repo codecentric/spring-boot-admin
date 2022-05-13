@@ -13,7 +13,6 @@
       "context_update": "更新",
       "context_update_failed": "失败",
       "context_updated": "已更新",
-      "fetch_failed": "获取环境信息失败。",
       "no_properties": "属性未设置。",
       "title": "环境管理",
       "refresh": "Refresh environment",

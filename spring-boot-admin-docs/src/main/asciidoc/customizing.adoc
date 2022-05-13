@@ -126,6 +126,54 @@ or you must ensure yourself that the image gets served correctly (e.g. by regist
 
 - **spring.boot.admin.ui.title**: Use this option to customize the browsers window title.
 
+=== Customizing Colors ===
+You can provide a custom color theme to the application by overwriting the following properties:
+
+[source,yaml,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/application-themed.yml[]
+----
+
+
+|===
+| Property name | Default | Usage
+
+| `spring.boot.admin.ui.theme.color`
+| `#42d3a5`
+| Used in `meta` tag for setting theme color for user agents. Used to customize the display of the page or of the surrounding user interface.
+
+| `spring.boot.admin.ui.theme.background.enable`
+| `true`
+| Disable background image in UI
+
+| ``
+spring.boot.admin.ui.theme.background.start
+spring.boot.admin.ui.theme.background.stop
+``
+| ``
+start: #E5AC9C
+stop: #9F2A2A
+``
+| Start and stop colors of the background image.
+
+| `spring.boot.admin.ui.theme.palette.[50,100,200,300,400,500,600,700,800,900]`
+| ``
+50: #E8FBEF
+100: #D0F7DF
+200: #A1EFBD
+300: #71E69C
+400: #41DE7B
+500: #22C55E
+600: #1A9547
+700: #116530
+800: #09351A
+900: #010603
+``
+| Define a color palette that affects the colors in sidebar view
+  (e.g shade `600` of palette is used as text color and shade `50` as background color.)
+
+|===
+
 === Customizing Login Logo ===
 You can set a custom image to be displayed on the login page.
 

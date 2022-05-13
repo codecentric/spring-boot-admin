@@ -17,46 +17,92 @@ import sbaConfig from '@/sba-config'
 import ViewRegistry from './viewRegistry';
 
 describe('viewRegistry', () => {
-    describe('given view already in the registry', function () {
+  it('should replace the existing one', async () => {
+    const viewRegistry = new ViewRegistry();
 
+    viewRegistry.addView(...[
+      {name: 'view', group: 'group'},
+      {name: 'duplicateView', group: 'group'},
+      {name: 'duplicateView', group: 'group'}
+    ])
 
-        it('it should replace the existing one', async () => {
-            const viewRegistry = new ViewRegistry();
+    expect(viewRegistry.views).toHaveLength(2);
+  });
 
-            viewRegistry.addView(...[
-                {name: 'view', group: 'group'},
-                {name: 'duplicateView', group: 'group'},
-                {name: 'duplicateView', group: 'group'}
-            ])
+  it('should create a redirect based on path', () => {
+    const viewRegistry = new ViewRegistry();
 
-            expect(viewRegistry.views).toHaveLength(2);
-        });
+    viewRegistry.addRedirect("/", "asString")
+    viewRegistry.addRedirect("/", {name: 'asObject'})
 
-    });
+    expect(viewRegistry.routes).toContainEqual(expect.objectContaining({
+      "path": "/",
+      "redirect": {"name": "asString"}
+    }))
+    expect(viewRegistry.routes).toContainEqual(expect.objectContaining({
+      "path": "/",
+      "redirect": {"name": "asObject"}
+    }))
+  });
 
-    it('hide or show views depending on their settings', () => {
-        sbaConfig.uiSettings.viewSettings = [
-          {name: 'disabledView', enabled: false},
-          {name: 'explicitlyEnabledView', enabled: true}
-        ];
+  it('hide or show views depending on their settings', () => {
+    sbaConfig.uiSettings.viewSettings = [
+      {name: 'disabledView', enabled: false},
+      {name: 'explicitlyEnabledView', enabled: true}
+    ];
 
-        const viewRegistry = new ViewRegistry();
-        viewRegistry.addView(...[
-            {name: 'disabledView', group: 'group'},
-            {name: 'explicitlyEnabledView', group: 'group'},
-            {name: 'implicitlyEnabledView', group: 'group'}
-        ])
+    const viewRegistry = new ViewRegistry();
+    viewRegistry.addView(...[
+      {name: 'disabledView', group: 'group'},
+      {name: 'explicitlyEnabledView', group: 'group'},
+      {name: 'implicitlyEnabledView', group: 'group'}
+    ])
 
-        let disabledView = viewRegistry.getViewByName('disabledView');
-        expect(disabledView).toBeDefined();
-        expect(disabledView.isEnabled()).toBeFalsy();
+    let disabledView = viewRegistry.getViewByName('disabledView');
+    expect(disabledView).toBeDefined();
+    expect(disabledView.isEnabled()).toBeFalsy();
 
-        let implicitlyEnabledView = viewRegistry.getViewByName('implicitlyEnabledView');
-        expect(implicitlyEnabledView).toBeDefined();
-        expect(implicitlyEnabledView.isEnabled()).toBeTruthy();
+    let implicitlyEnabledView = viewRegistry.getViewByName('implicitlyEnabledView');
+    expect(implicitlyEnabledView).toBeDefined();
+    expect(implicitlyEnabledView.isEnabled()).toBeTruthy();
 
-        let explicitlyEnabledView = viewRegistry.getViewByName('explicitlyEnabledView');
-        expect(explicitlyEnabledView).toBeDefined();
-        expect(explicitlyEnabledView.isEnabled()).toBeTruthy();
-    });
+    let explicitlyEnabledView = viewRegistry.getViewByName('explicitlyEnabledView');
+    expect(explicitlyEnabledView).toBeDefined();
+    expect(explicitlyEnabledView.isEnabled()).toBeTruthy();
+  });
+
+  it('should render a translated label', () => {
+    const viewRegistry = new ViewRegistry();
+    viewRegistry.addView(...[
+      {path: 'parent', label: 'parent.label'},
+    ]);
+
+    expect(viewRegistry.views[0].handle.render).toBeDefined();
+  });
+
+  it('derives name from parent and path', () => {
+    const viewRegistry = new ViewRegistry();
+    viewRegistry.addView(...[
+      {path: 'parent'},
+      {parent: 'parent', path: 'path'},
+    ]);
+
+    expect(viewRegistry.views).toContainEqual(expect.objectContaining({name: "parent"}));
+    expect(viewRegistry.views).toContainEqual(expect.objectContaining({name: "parent/path"}));
+  });
+
+  it('parent/child routes are generated correctly', () => {
+    const viewRegistry = new ViewRegistry();
+    viewRegistry.addView(...[
+      {path: 'parent', component: {}},
+      {parent: 'parent', path: 'path', component: {}},
+    ]);
+
+    expect(viewRegistry.routes).toContainEqual(expect.objectContaining({
+      name: "parent"
+    }));
+    expect(viewRegistry.routes[0].children).toContainEqual(expect.objectContaining({
+      name: "parent/path"
+    }));
+  });
 });

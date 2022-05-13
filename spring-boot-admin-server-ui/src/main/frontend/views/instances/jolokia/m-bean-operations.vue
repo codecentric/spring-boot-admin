@@ -16,22 +16,30 @@
 
 <template>
   <div>
-    <mBeanOperation v-for="(operation, name) in mBean.op" :key="`op-${name}`"
-                    :name="name" :descriptor="operation" @click="invoke(name, operation)"
+    <div v-if="application.instances.length > 1" class="field is-grouped control">
+      <sba-toggle-scope-button v-model="scope" :instance-count="application.instances.length" />
+    </div>
+
+    <mBeanOperation
+      v-for="(operation, name) in mBean.op" :key="`op-${name}`"
+      :name="name" :descriptor="operation" @click="invoke(name, operation)"
     />
-    <m-bean-operation-invocation v-if="invocation" :name="invocation.name" :descriptor="invocation.descriptor"
-                                 :on-execute="execute" :on-close="closeInvocation"
+    <m-bean-operation-invocation
+      v-if="invocation" :name="invocation.name" :descriptor="invocation.descriptor"
+      :on-execute="execute" :on-close="closeInvocation"
     />
   </div>
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import {MBean} from './index';
-  import mBeanOperation from './m-bean-operation';
-  import mBeanOperationInvocation from './m-bean-operation-invocation';
+  import Application from '@/services/application.js';
+  import Instance from '@/services/instance.js';
+  import mBeanOperation from './m-bean-operation.vue';
+  import mBeanOperationInvocation from './m-bean-operation-invocation.vue';
+  import {MBean} from './MBean';
 
   export default {
+    components: {mBeanOperation, mBeanOperationInvocation},
     props: {
       domain: {
         type: String,
@@ -41,14 +49,18 @@
         type: MBean,
         required: true
       },
+      application: {
+        type: Application,
+        required: true
+      },
       instance: {
         type: Instance,
         required: true
       }
     },
-    components: {mBeanOperation, mBeanOperationInvocation},
     data: () => ({
-      invocation: null
+      invocation: null,
+      scope: 'instance'
     }),
     methods: {
       closeInvocation() {
@@ -58,7 +70,8 @@
         this.invocation = {name, descriptor};
       },
       execute(args) {
-        return this.instance.invokeMBeanOperation(this.domain, this.mBean.descriptor.raw, this.invocation.name, args);
+        const target = (this.scope === 'instance') ? this.instance : this.application;
+        return target.invokeMBeanOperation(this.domain, this.mBean.descriptor.raw, this.invocation.name, args);
       }
     }
   }

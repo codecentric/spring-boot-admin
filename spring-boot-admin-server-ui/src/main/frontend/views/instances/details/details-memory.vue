@@ -15,53 +15,78 @@
   -->
 
 <template>
-  <sba-panel v-if="hasLoaded" :title="$t('instances.details.memory.title') + `: ${name}`">
+  <sba-panel
+    v-if="hasLoaded"
+    :title="$t('instances.details.memory.title') + `: ${name}`"
+  >
     <div>
-      <sba-alert v-if="error" :error="error" :title="$t('instances.details.memory.fetch_failed')" />
+      <sba-alert
+        v-if="error"
+        :error="error"
+        :title="$t('term.fetch_failed')"
+      />
 
-      <div v-if="current" class="level memory-current">
-        <div v-if="current.metaspace" class="level-item has-text-centered">
-          <div>
-            <p class="heading has-bullet has-bullet-primary" v-text="$t('instances.details.memory.metaspace')" />
-            <p v-text="prettyBytes(current.metaspace)" />
-          </div>
+      <div
+        v-if="current"
+        class="flex w-full"
+      >
+        <div
+          v-if="current.metaspace"
+          class="flex-1 text-center"
+        >
+          <p
+            class="font-bold"
+            v-text="$t('instances.details.memory.metaspace')"
+          />
+          <p v-text="prettyBytes(current.metaspace)" />
         </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.memory.used')" />
-            <p v-text="prettyBytes(current.used)" />
-          </div>
+        <div class="flex-1 text-center">
+          <p
+            class="font-bold"
+            v-text="$t('instances.details.memory.used')"
+          />
+          <p v-text="prettyBytes(current.used)" />
         </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.memory.size')" />
-            <p v-text="prettyBytes(current.committed)" />
-          </div>
+        <div class="flex-1 text-center">
+          <p
+            class="font-bold"
+            v-text="$t('instances.details.memory.size')"
+          />
+          <p v-text="prettyBytes(current.committed)" />
         </div>
-        <div v-if="current.max >= 0" class="level-item has-text-centered">
-          <div>
-            <p class="heading" v-text="$t('instances.details.memory.max')" />
-            <p v-text="prettyBytes(current.max)" />
-          </div>
+        <div
+          v-if="current.max >= 0"
+          class="flex-1 text-center"
+        >
+          <p
+            class="font-bold"
+            v-text="$t('instances.details.memory.max')"
+          />
+          <p v-text="prettyBytes(current.max)" />
         </div>
       </div>
-      <mem-chart v-if="chartData.length > 0" :data="chartData" />
+
+      <mem-chart
+        v-if="chartData.length > 0"
+        :data="chartData"
+      />
     </div>
   </sba-panel>
 </template>
 
 <script>
-import sbaConfig from '@/sba-config'
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance';
-import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
-import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
-import memChart from './mem-chart';
 import {take} from 'rxjs/operators';
+import subscribing from '../../../mixins/subscribing';
+import Instance from '../../../services/instance.js';
+import {concatMap, delay, retryWhen, timer} from 'rxjs';
+import moment from 'moment';
+import memChart from './mem-chart.vue';
 
 export default {
   name: 'DetailsMemory',
+  components: { memChart},
+  mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
@@ -72,8 +97,6 @@ export default {
       required: true
     }
   },
-  mixins: [subscribing],
-  components: { memChart},
   data: () => ({
     hasLoaded: false,
     error: null,
@@ -111,7 +134,7 @@ export default {
     },
     createSubscription() {
       const vm = this;
-      return timer(0, sbaConfig.uiSettings.pollTimer.memory)
+      return timer(0, 1000)
         .pipe(concatMap(this.fetchMetrics), retryWhen(
           err => {
             return err.pipe(
@@ -136,9 +159,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
-@import "~@/assets/css/utilities";
-
+<style lang="css">
 .memory-current {
   margin-bottom: 0 !important;
 }

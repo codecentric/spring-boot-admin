@@ -15,29 +15,40 @@
   -->
 
 <template>
-  <sba-panel v-if="hasLoaded" :title="$t('instances.details.gc.title')">
-    <div>
-      <sba-alert v-if="error" :error="error" :title="$t('instances.details.gc.fetch_failed')" />
+  <sba-panel
+    v-if="hasLoaded"
+    :title="$t('instances.details.gc.title')"
+  >
+    <sba-alert
+      v-if="error"
+      :error="error"
+      :title="$t('term.fetch_failed')"
+    />
 
-      <div v-if="current" class="level">
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading" v-text="$t('instances.details.gc.count')" />
-            <p v-text="current.count" />
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading" v-text="$t('instances.details.gc.time_spent_total')" />
-            <p v-text="`${current.total_time.asSeconds().toFixed(4)}s`" />
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p class="heading" v-text="$t('instances.details.gc.time_spent_max')" />
-            <p v-text="`${current.max.asSeconds().toFixed(4)}s`" />
-          </div>
-        </div>
+    <div
+      v-if="current"
+      class="flex w-full"
+    >
+      <div class="flex-1 text-center">
+        <p
+          class="font-bold"
+          v-text="$t('instances.details.gc.count')"
+        />
+        <p v-text="current.count" />
+      </div>
+      <div class="flex-1 text-center">
+        <p
+          class="font-bold"
+          v-text="$t('instances.details.gc.time_spent_total')"
+        />
+        <p v-text="`${current.total_time.asSeconds().toFixed(4)}s`" />
+      </div>
+      <div class="flex-1 text-center">
+        <p
+          class="font-bold"
+          v-text="$t('instances.details.gc.time_spent_max')"
+        />
+        <p v-text="`${current.max.asSeconds().toFixed(4)}s`" />
       </div>
     </div>
   </sba-panel>
@@ -45,21 +56,21 @@
 
 <script>
 import sbaConfig from '@/sba-config';
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance';
+import subscribing from '../../../mixins/subscribing.js';
+import Instance from '@/services/instance.js';
 import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
 import moment from 'moment';
-import {toMillis} from '../metrics/metric';
+import {toMillis} from '../metrics/metric.vue';
 import {take} from 'rxjs/operators';
 
 export default {
+  mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
       required: true
     }
   },
-  mixins: [subscribing],
   data: () => ({
     hasLoaded: false,
     error: null,

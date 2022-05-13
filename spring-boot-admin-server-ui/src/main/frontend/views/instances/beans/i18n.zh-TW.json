@@ -6,8 +6,7 @@
       "aliases": "別名",
       "type": "類型",
       "resource": "資源",
-      "dependencies": "相依關係",
-      "fetch_failed": "Fetching beans failed."
+      "dependencies": "相依關係"
     }
   }
 }

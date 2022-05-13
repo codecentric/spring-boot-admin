@@ -15,37 +15,21 @@
   -->
 
 <template>
-  <div class="level">
-    <div class="level-item has-text-centered">
-      <div>
-        <p class="heading" v-text="$t('applications.applications')" />
-        <p class="title" v-text="applicationsCount">
-          1
-        </p>
-      </div>
-    </div>
-    <div class="level-item has-text-centered">
-      <div>
-        <p class="heading" v-text="$t('applications.instances')" />
-        <p class="title" v-text="instancesCount">
-          1
-        </p>
-      </div>
-    </div>
-    <div class="level-item has-text-centered">
-      <div v-if="downCount === 0">
-        <p class="heading" v-text="$t('applications.status')" />
-        <p class="title has-text-success" v-text="$t('applications.all_up')" />
-      </div>
-      <div v-else>
-        <p class="heading" v-text="$t('applications.instances_down')" />
-        <p class="title has-text-danger" v-text="downCount" />
-      </div>
-    </div>
+  <div class="hidden md:flex mr-1 gap-1">
+    <sba-tag
+      :label="$t('applications.applications')"
+      :value="applicationsCount"
+    />
+    <sba-tag
+      :label="$t('applications.instances')"
+      :value="instancesCount"
+    />
   </div>
 </template>
 <script>
+  import SbaTag from '@/components/sba-tag.vue';
   export default {
+    components: { SbaTag},
     props: {
       applications: {
         type: Array,

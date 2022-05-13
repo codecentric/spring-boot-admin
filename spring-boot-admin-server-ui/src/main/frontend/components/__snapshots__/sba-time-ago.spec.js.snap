@@ -1,5 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`time-ago given  a short time passed time should match the snapshot 1`] = `14m`;
-
-exports[`time-ago given a long time passed time should match the snapshot 1`] = `Jul 7`;

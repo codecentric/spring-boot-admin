@@ -11,7 +11,6 @@
         "deleted": "Supprimé",
         "delete": "Supprimer",
         "delete_failed": "Echec",
-        "fetch_failed": "Echec de la récupération des routes.",
         "filters": "Filtres",
         "id": "Id",
         "loading": "Chargement des routes...",
@@ -22,7 +21,6 @@
         "uri": "URI"
       },
       "filters": {
-        "fetch_failed": "Echec de la récupération des filtres globaux.",
         "filter_name": "Nom du filtre",
         "loading": "Chargement des filtres globaux...",
         "no_filters_found": "Aucun filtre global trouvé.",

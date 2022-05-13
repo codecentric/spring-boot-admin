@@ -2,8 +2,7 @@
   "instances" : {
     "quartz": {
       "label": "Quartz",
-      "no_data": "Engar upplýsingar fást um Quartz",
-      "fetch_failed": "Ekki tókst að hlaða kvarsupplýsingarnar."
+      "no_data": "Engar upplýsingar fást um Quartz"
     }
   }
 }

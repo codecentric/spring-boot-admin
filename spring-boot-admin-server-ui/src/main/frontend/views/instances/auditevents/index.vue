@@ -21,21 +21,21 @@
         <div class="field">
           <p class="control is-expanded">
             <input
+              v-model.trim="filter.principal"
               class="input"
               type="search"
               :placeholder="$t('instances.auditevents.principal')"
-              v-model.trim="filter.principal"
             >
           </p>
         </div>
         <div class="field">
           <p class="control is-expanded">
             <input
+              v-model="filter.type"
               list="auditevent-type"
               class="input"
               type="search"
               :placeholder="$t('instances.auditevents.type')"
-              v-model="filter.type"
             >
             <datalist id="auditevent-type">
               <option value="AUTHENTICATION_FAILURE" />
@@ -59,14 +59,17 @@
       </div>
     </div>
     <template>
-      <div v-if="error" class="message is-danger">
+      <div
+        v-if="error"
+        class="message is-danger"
+      >
         <div class="message-body">
           <strong>
             <font-awesome-icon
               class="has-text-danger"
               icon="exclamation-triangle"
             />
-            <span v-text="$t('instances.auditevents.fetch_failed')" />
+            <span v-text="$t('term.fetch_failed')" />
           </strong>
           <p v-text="error.message" />
         </div>
@@ -75,7 +78,10 @@
         v-if="isOldAuditevents"
         class="message is-warning"
       >
-        <div class="message-body" v-html="$t('instances.auditevents.audit_log_not_supported_spring_boot_1')" />
+        <div
+          class="message-body"
+          v-html="$t('instances.auditevents.audit_log_not_supported_spring_boot_1')"
+        />
       </div>
       <auditevents-list
         :instance="instance"
@@ -87,13 +93,13 @@
 </template>
 
 <script>
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance';
-import {concatMap, debounceTime, mergeWith, Subject, tap, timer} from '@/utils/rxjs';
-import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
-import uniqBy from 'lodash/uniqBy';
+import subscribing from '../../../mixins/subscribing.js';
+import Instance from '../../../services/instance';
+import {concatMap, debounceTime, mergeWith, Subject, tap, timer} from 'rxjs';
+import AuditeventsList from './auditevents-list.vue';
+import {uniqBy} from 'lodash-es';
 import moment from 'moment';
-import {VIEW_GROUP} from '../../index';
+import {VIEW_GROUP} from '../../ViewGroup.js';
 
 class Auditevent {
   constructor({timestamp, ...event}) {
@@ -124,14 +130,14 @@ class Auditevent {
 }
 
 export default {
+  components: {AuditeventsList},
+  mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
       required: true
     }
   },
-  mixins: [subscribing],
-  components: {AuditeventsList},
   data: () => ({
     isLoading: false,
     error: null,

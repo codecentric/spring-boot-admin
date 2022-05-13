@@ -6,8 +6,7 @@
       "aliases": "Samnefni",
       "type": "Gerð",
       "resource": "Resource",
-      "dependencies": "Fylgni",
-      "fetch_failed": "Mistókst að sækja baunir."
+      "dependencies": "Fylgni"
     }
   }
 }

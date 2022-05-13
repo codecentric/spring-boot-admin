@@ -1,16 +1,12 @@
-import merge from 'lodash/merge';
-import Vue from 'vue';
-import VueI18n from 'vue-i18n';
-import sbaConfig from '@/sba-config';
-import isEmpty from 'lodash/isEmpty';
+import {isEmpty, merge} from 'lodash-es';
+import {createI18n} from 'vue-i18n';
+import sbaConfig from "../sba-config.js";
 
-Vue.use(VueI18n);
-
-const context = require.context('../', true, /^\.\/*\/.*i18n\.?([^/]*)\.json$/);
-const messages = context.keys()
+const context = import.meta.globEager("../**/(*.)?i18n.*.json");
+const messages = Object.keys(context)
   .map(key => {
-    const localeFromFile = /^\.\/*\/.*i18n\.?([^/]*)\.json$/.exec(key);
-    const messages = context(key);
+    const localeFromFile = /\.*i18n\.?([^/]*)\.json$/.exec(key);
+    const messages = context[key].default;
     if (localeFromFile[1]) {
       return {
         [localeFromFile[1]]: messages
@@ -21,23 +17,24 @@ const messages = context.keys()
   })
   .reduce((prev, cur) => merge(prev, cur), {});
 
+export const AVAILABLE_LANGUAGES = getAvailableLocales();
 
-export const getAvailableLocales = () => {
+function getAvailableLocales() {
   let valueFromServer = sbaConfig.uiSettings.availableLanguages;
 
   const strings = Object.keys(messages);
   return (isEmpty(valueFromServer))
     ? strings : valueFromServer.filter(language => strings.includes(language));
-};
+}
 
 let browserLanguage = navigator.language;
 if (!browserLanguage.includes('zh')) {
   browserLanguage = browserLanguage.split('-')[0];
 }
 
-const i18n = new VueI18n({
+const i18n = createI18n({
+  locale: AVAILABLE_LANGUAGES.includes(browserLanguage) ? browserLanguage : 'en',
   fallbackLocale: 'en',
-  locale: getAvailableLocales().includes(browserLanguage) ? browserLanguage : 'en',
   silentFallbackWarn: process.env.NODE_ENV === 'production',
   silentTranslationWarn: process.env.NODE_ENV === 'production',
   messages

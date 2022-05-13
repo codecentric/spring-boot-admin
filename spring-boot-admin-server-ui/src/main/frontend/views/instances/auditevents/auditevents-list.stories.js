@@ -1,6 +1,6 @@
-import Index from './index';
-import Instance from "@/services/instance";
-import {applications} from '@/mocks/applications/data'
+import Index from './index.vue';
+import Instance from '../../../services/instance';
+import {applications} from '../../../mocks/applications/data'
 
 export default {
   component: Index,

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import sbaConfig from '@/sba-config'
-import {bufferTime, filter, Subject} from '@/utils/rxjs';
-import groupBy from 'lodash/groupBy';
-import values from 'lodash/values';
+import sbaConfig from './sba-config'
+import {bufferTime, filter, Subject} from './utils/rxjs';
+import {groupBy, values} from 'lodash-es';
+import {HealthStatus} from './HealthStatus.js';
 
 let granted = false;
 
@@ -36,7 +36,7 @@ const notifyForSingleChange = (application, oldApplication) => {
     tag: `${application.name}-${application.status}`,
     lang: 'en',
     body: `was ${oldApplication.status}.`,
-    icon: application.status === 'UP' ? sbaConfig.uiSettings.favicon : sbaConfig.uiSettings.faviconDanger,
+    icon: application.status === HealthStatus.UP ? sbaConfig.uiSettings.favicon : sbaConfig.uiSettings.faviconDanger,
     renotify: true,
     timeout: 5000
   });
@@ -46,7 +46,7 @@ const notifyForBulkChange = ({count, status, oldStatus}) => {
   return createNotification(`${count} applications are now ${status}`, {
     lang: 'en',
     body: `was ${oldStatus}.`,
-    icon: status === 'UP' ? sbaConfig.uiSettings.favicon : sbaConfig.uiSettings.faviconDanger,
+    icon: status === HealthStatus.UP ? sbaConfig.uiSettings.favicon : sbaConfig.uiSettings.faviconDanger,
     timeout: 5000
   });
 };

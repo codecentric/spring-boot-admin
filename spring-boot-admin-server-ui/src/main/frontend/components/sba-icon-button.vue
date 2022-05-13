@@ -15,13 +15,24 @@
   -->
 
 <template>
-  <button class="button icon-button" v-on="$listeners" :title="title">
-    <font-awesome-icon :icon="icon" :size="size" :class="iconClass" />
-  </button>
+  <sba-button
+    class="border-none sm:m-1 !bg-transparent"
+    :title="title"
+    size="xs"
+    v-on="$attrs"
+  >
+    <font-awesome-icon
+      :icon="icon"
+      :size="size"
+      :class="iconClass"
+    />
+  </sba-button>
 </template>
 
 <script>
+  import SbaButton from "./sba-button.vue";
   export default {
+    components: {SbaButton},
     props: {
       title: {
         type: String,
@@ -44,35 +55,6 @@
   }
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
+<style>
 
-  .icon-button {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 1em;
-    color: inherit;
-
-    &:not([disabled]) {
-      cursor: pointer;
-
-      &:hover {
-        color: $black;
-      }
-
-      & svg {
-        fill: currentcolor;
-      }
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    &:active {
-      outline: none;
-    }
-  }
 </style>

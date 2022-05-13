@@ -16,7 +16,7 @@
 
 <template>
   <div class="table-container">
-    <table class="table is-fullwidth" v-if="servlets.length">
+    <table v-if="servlets.length" class="table is-fullwidth">
       <thead>
         <tr>
           <th v-text="$t('instances.mappings.url_pattern')" />
@@ -25,11 +25,12 @@
         </tr>
       </thead>
       <tbody>
-        <template v-for="servletMapping in servlets">
-          <tr :key="`${servletMapping.name}`">
+        <template v-for="servletMapping in servlets" :key="`${servletMapping.name}`">
+          <tr>
             <td>
-              <div v-for="mapping in servletMapping.mappings"
-                   :key="`${servletMapping.name}_${mapping}`"
+              <div
+                v-for="mapping in servletMapping.mappings"
+                :key="`${servletMapping.name}_${mapping}`"
               >
                 <code v-text="mapping" />
               </div>

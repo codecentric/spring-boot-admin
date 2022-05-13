@@ -8,7 +8,7 @@
         "runnable": "Executável",
         "title": "Cron"
       },
-      "fetch_failed": "Falha na busca de tarefas agendadas.",
+
       "fixed_delay": {
         "initial_delay_ms": "Delay Inicial (ms)",
         "interval_ms": "Intervalo (ms)",

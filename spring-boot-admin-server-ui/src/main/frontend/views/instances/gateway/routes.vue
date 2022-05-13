@@ -16,10 +16,21 @@
 
 <template>
   <div :class="{ 'is-loading' : isLoading }">
-    <sba-panel v-if="routes" :header-sticks-below="['#navigation']" title="Routes">
-      <refresh-route-cache :instance="instance" @routes-refreshed="fetchRoutes" />
+    <sba-panel
+      v-if="routes"
+      :header-sticks-below="'#subnavigation'"
+      title="Routes"
+    >
+      <refresh-route-cache
+        :instance="instance"
+        @routes-refreshed="fetchRoutes"
+      />
 
-      <sba-alert v-if="error" :error="error" :title="$t('instances.gateway.route.fetch_failed')" />
+      <sba-alert
+        v-if="error"
+        :error="error"
+        :title="$t('term.fetch_failed')"
+      />
 
       <div class="field">
         <p class="control is-expanded has-icons-left">
@@ -34,20 +45,30 @@
         </p>
       </div>
 
-      <routes-list :instance="instance" :is-loading="isLoading" :routes="routes" @route-deleted="fetchRoutes" />
+      <routes-list
+        :instance="instance"
+        :is-loading="isLoading"
+        :routes="routes"
+        @route-deleted="fetchRoutes"
+      />
     </sba-panel>
-    <sba-panel :header-sticks-below="['#navigation']" title="Add Route">
-      <add-route :instance="instance" @route-added="fetchRoutes" />
+    <sba-panel
+      title="Add Route"
+    >
+      <add-route
+        :instance="instance"
+        @route-added="fetchRoutes"
+      />
     </sba-panel>
   </div>
 </template>
 
 <script>
-import Instance from '@/services/instance';
+import Instance from '@/services/instance.js';
 import {anyValueMatches, compareBy} from '@/utils/collections';
-import addRoute from './add-route';
-import refreshRouteCache from './refresh-route-cache';
-import routesList from './routes-list';
+import addRoute from './add-route.vue';
+import refreshRouteCache from './refresh-route-cache.vue';
+import routesList from './routes-list.vue';
 
 const routeDefinitionMatches = (routeDef, keyword) => {
   if (!routeDef) {
@@ -82,15 +103,15 @@ export default {
   data: () => ({
     isLoading: false,
     error: null,
-    _routes: [],
+    $routes: [],
     routesFilterCriteria: null
   }),
   computed: {
     routes() {
       if (!this.routesFilterCriteria) {
-        return sortRoutes(this.$data._routes);
+        return sortRoutes(this.$data.$routes);
       }
-      const filtered = this.$data._routes.filter(route => routeMatches(route, this.routesFilterCriteria.toLowerCase()));
+      const filtered = this.$data.$routes.filter(route => routeMatches(route, this.routesFilterCriteria.toLowerCase()));
       return sortRoutes(filtered);
     }
   },
@@ -103,7 +124,7 @@ export default {
       this.isLoading = true;
       try {
         const response = await this.instance.fetchGatewayRoutes();
-        this.$data._routes = response.data
+        this.$data.$routes = response.data
       } catch (error) {
         console.warn('Fetching routes failed:', error);
         this.error = error;

@@ -22,8 +22,10 @@
     "execution_failed": "Ausführung fehlgeschlagen.",
     "execution_successful": "Ausführung erfolgreich.",
     "failed": "Fehlgeschlagen",
+    "fetch_failed": "Abruf der Daten fehlgeschlagen.",
     "float": "Float",
     "hours": "{count} Stunde | {count} Stunden",
+    "instance": "Instanz",
     "instances": "Instanzen",
     "integer": "Integer",
     "milliseconds": "Millisekunden",
@@ -38,6 +40,7 @@
     "username": "Username",
     "go_to_previous_page": "Gehe zur vorherigen Seite",
     "go_to_page_n": "Gehe zu Seite {page}",
+    "current_page": "Seite {page}, aktuelle Seite",
     "go_to_next_page": "Gehe zur nächsten Seite"
   }
 }

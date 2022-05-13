@@ -15,23 +15,12 @@
   -->
 
 <template>
-  <table class="caches table is-fullwidth">
+  <table class="table-auto w-full">
     <thead>
       <tr>
         <th v-html="$t('instances.caches.name')" />
         <th v-html="$t('instances.caches.cache_manager')" />
-        <th class="is-narrow">
-          <sba-action-button-scoped :instance-count="application.instances.length" :action-fn="clearCaches">
-            <template v-slot="slotProps">
-              <span v-if="slotProps.refreshStatus === 'completed'" v-text="$t('term.execution_successful')" />
-              <span v-else-if="slotProps.refreshStatus === 'failed'" v-text="$t('term.execution_failed')" />
-              <span v-else>
-                <font-awesome-icon icon="trash" />&nbsp;
-                <span v-text="$t('term.clear')" />
-              </span>
-            </template>
-          </sba-action-button-scoped>
-        </th>
+        <th>&nbsp;</th>
       </tr>
     </thead>
     <tbody>
@@ -51,18 +40,19 @@
             v-text="cache.cacheManager"
           />
         </td>
-        <td class="is-narrow">
-          <button class="button"
-                  :class="{ 'is-loading' : clearing[cache.key] === 'executing', 'is-info' : clearing[cache.key] === 'completed', 'is-danger' : clearing[cache.key] === 'failed' }"
-                  :disabled="cache.key in clearing" @click="clearCache(cache)"
+        <td class="is-narrow text-right">
+          <sba-button
+            class="button"
+            :class="{ 'is-loading' : clearing[cache.key] === 'executing', 'is-info' : clearing[cache.key] === 'completed', 'is-danger' : clearing[cache.key] === 'failed' }"
+            :disabled="cache.key in clearing" @click="clearCache(cache)"
           >
             <span v-if="clearing[cache.key] === 'completed'" v-text="$t('term.cleared')" />
             <span v-else-if="clearing[cache.key] === 'failed'" v-text="$t('term.failed')" />
             <span v-else>
-              <font-awesome-icon icon="trash" />
+              <font-awesome-icon icon="trash" class="mr-2" />
               <span v-text="$t('term.clear')" />
             </span>
-          </button>
+          </sba-button>
         </td>
       </tr>
       <tr v-if="caches.length === 0">
@@ -75,14 +65,12 @@
   </table>
 </template>
 <script>
-import Instance from '@/services/instance';
+import Instance from '@/services/instance.js';
 import {concatMap, listen, of, tap} from '@/utils/rxjs';
-import SbaActionButtonScoped from '@/components/sba-action-button-scoped';
-import Application from '@/services/application';
+import Application from '@/services/application.js';
 
 export default {
   name: 'CachesList',
-  components: {SbaActionButtonScoped},
   props: {
     caches: {
       type: Array,
@@ -106,13 +94,6 @@ export default {
     clearingAll: null,
   }),
   methods: {
-    clearCaches(scope) {
-      if (scope === 'instance') {
-        return this.instance.clearCaches();
-      } else {
-        return this.application.clearCaches();
-      }
-    },
     clearCache(cache) {
       this._clearCache(cache)
         .pipe(listen(status => {
@@ -148,10 +129,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.caches {
-  td, th {
-    vertical-align: middle;
-  }
-}
-</style>

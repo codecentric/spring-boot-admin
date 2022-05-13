@@ -22,10 +22,10 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import globalFilters from './global-filters';
-  import routes from './routes';
-  import {VIEW_GROUP} from '../../index';
+  import Instance from '@/services/instance.js';
+  import globalFilters from './global-filters.vue';
+  import routes from './routes.vue';
+  import {VIEW_GROUP} from '../../ViewGroup.js';
 
   export default {
     components: {

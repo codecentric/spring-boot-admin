@@ -2,7 +2,6 @@
   "instances": {
     "flyway": {
       "label": "Flyway",
-      "fetch_failed": "Ошибка при получении отчетов Flyway.",
       "type": "Тип",
       "checksum": "Контрольная сумма",
       "version": "Версия",

@@ -2,7 +2,7 @@
   <tbody>
     <tr>
       <td>
-        <a class="icon" :class="{'icon--open': isOpen}" @click="toggle" role="button" />
+        <a class="icon" :class="{'icon--open': isOpen}" role="button" @click="toggle" />
         <span v-text="triggerDetail.name" />
       </td>
       <td v-text="triggerDetail.description" />
@@ -59,24 +59,20 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 .icon {
-  $iconSize: 6px;
-  width: $iconSize * 1.2;
-  height: $iconSize;
-
+  width: 7px;
+  height: 6px;
   margin-right: 10px;
-
-  border-top: $iconSize solid transparent;
-  border-left: $iconSize*1.2 solid #555;
-  border-bottom: $iconSize solid transparent;
-
-  &--open {
-    transform: rotate(90deg);
-  }
-
-  &.empty {
-    border: none;
-  }
+  border-top: 6px solid transparent;
+  border-left: 7px solid #555;
+  border-bottom: 6px solid transparent;
 }
+.icon--open {
+  transform: rotate(90deg);
+}
+.icon.empty {
+  border: none;
+}
+
 </style>

@@ -26,10 +26,10 @@ describe('sba-pagination-nav.vue', () => {
       }
     });
 
-    const prevPage = screen.getByLabelText('Go to previous page');
+    const prevPage = screen.getByRole('button', {name: 'Go to previous page'});
     expect(prevPage).toBeDisabled();
 
-    const nextPage = screen.getByLabelText('Go to next page');
+    const nextPage = screen.getByRole('button', {name: 'Go to next page'});
     expect(nextPage).toBeDisabled();
   });
 
@@ -40,39 +40,42 @@ describe('sba-pagination-nav.vue', () => {
       }
     });
 
-    const prevPage = screen.getByLabelText('Go to previous page');
+    const prevPage = screen.getByRole('button', {name: 'Go to previous page'});
     expect(prevPage).toBeDisabled();
 
-    const nextPage = screen.getByLabelText('Go to next page');
+    const nextPage = screen.getByRole('button', {name: 'Go to next page'});
     expect(nextPage).toBeDisabled();
 
-    screen.getByLabelText('Go to page 1');
+    screen.getByRole('button', {name: 'Page 1, current page'});
   });
 
   it('should show first and last page when page count is 12 including intermediate pages', async () => {
     await render(SbaPaginationNav, {
       props: {
         pageCount: 11,
-        current: 6
+        modelValue: 6
       }
     });
 
-    expect(screen.queryByLabelText('Go to previous page')).not.toBeDisabled();
+    expect(screen.queryByRole('button', {name: 'Go to previous page'})).not.toBeDisabled();
 
-    expect(screen.queryByLabelText('Go to page 1')).toBeVisible();
-    expect(screen.queryByLabelText('Go to page 2')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Go to page 3')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Go to page 4')).toBeVisible();
-    expect(screen.queryByLabelText('Go to page 5')).toBeVisible();
-    const selectedButton = screen.queryByLabelText('Go to page 6');
+    expect(screen.queryByRole('button', {name: 'Go to page 1'})).toBeVisible();
+    expect(screen.queryByRole('button', {name: 'Go to page 2'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: 'Go to page 3'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: 'Go to page 4'})).toBeVisible();
+    expect(screen.queryByRole('button', {name: 'Go to page 5'})).toBeVisible();
+
+    const selectedButton = screen.getByRole('button', {name: 'Page 6, current page'});
     expect(selectedButton).toBeVisible();
+    expect(selectedButton).toBeDisabled();
     expect(selectedButton).toHaveClass('is-active');
-    expect(screen.queryByLabelText('Go to page 7')).toBeVisible();
-    expect(screen.queryByLabelText('Go to page 8')).toBeVisible();
-    expect(screen.queryByLabelText('Go to page 9')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Go to page 10')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Go to page 11')).toBeVisible();
 
-    expect(screen.queryByLabelText('Go to next page')).not.toBeDisabled();
+    expect(screen.queryByRole('button', {name: 'Go to page 7'})).toBeVisible();
+    expect(screen.queryByRole('button', {name: 'Go to page 8'})).toBeVisible();
+    expect(screen.queryByRole('button', {name: 'Go to page 9'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: 'Go to page 10'})).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', {name: 'Go to page 11'})).toBeVisible();
+
+    expect(screen.queryByRole('button', {name: 'Go to previous page'})).not.toBeDisabled();
   });
 });

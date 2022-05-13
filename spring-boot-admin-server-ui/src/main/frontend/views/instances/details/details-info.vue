@@ -15,26 +15,48 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances.details.info.title')">
-    <div>
-      <sba-alert v-if="error" :error="error" :title="$t('instances.details.info.fetch_failed')" severity="WARN" />
-      <div class="content info">
-        <table v-if="!isEmptyInfo" class="table">
-          <tr v-for="(value, key) in info" :key="key">
-            <td class="info__key" v-text="key" />
-            <td>
-              <sba-formatted-obj :value="value" />
-            </td>
-          </tr>
-        </table>
-        <p v-else class="is-muted" v-text="$t('instances.details.info.no_info_provided')" />
-      </div>
+  <sba-panel
+    :title="$t('instances.details.info.title')"
+    :loading="loading"
+  >
+    <sba-alert
+      v-if="error"
+      :error="error"
+      class="border-l-4"
+      :title="$t('term.fetch_failed')"
+    />
+    <div
+      v-else
+      class="content info"
+    >
+      <table
+        v-if="!isEmptyInfo"
+        class="table"
+      >
+        <tr
+          v-for="(value, key) in info"
+          :key="key"
+        >
+          <td
+            class="info__key"
+            v-text="key"
+          />
+          <td>
+            <sba-formatted-obj :value="value" />
+          </td>
+        </tr>
+      </table>
+      <p
+        v-else
+        class="is-muted"
+        v-text="$t('instances.details.info.no_info_provided')"
+      />
     </div>
   </sba-panel>
 </template>
 
 <script>
-import Instance from '@/services/instance';
+import Instance from '@/services/instance.js';
 
 export default {
   props: {
@@ -45,6 +67,7 @@ export default {
   },
   data: () => ({
     error: null,
+    loading: false,
     liveInfo: null
   }),
   computed: {
@@ -61,13 +84,17 @@ export default {
   methods: {
     async fetchInfo() {
       if (this.instance.hasEndpoint('info')) {
+        this.loading = true;
+        this.error = null;
+
         try {
-          this.error = null;
           const res = await this.instance.fetchInfo();
           this.liveInfo = res.data;
         } catch (error) {
           this.error = error;
           console.warn('Fetching info failed:', error);
+        } finally {
+          this.loading = false;
         }
       }
     }
@@ -75,13 +102,12 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="css">
 .info {
   overflow: auto;
-
-  &__key {
-    vertical-align: top;
-  }
 }
 
+.info__key {
+  vertical-align: top;
+}
 </style>

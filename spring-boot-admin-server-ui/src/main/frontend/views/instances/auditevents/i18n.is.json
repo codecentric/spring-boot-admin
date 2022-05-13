@@ -3,7 +3,6 @@
     "auditevents": {
       "audit_log_not_supported_spring_boot_1": "Spring Boot 1.x forrit bjóða enga endurskoðunarannála (audit logs).",
       "event": "Atburður",
-      "fetch_failed": "Mistókst að sækja endurskoðunarannálana.",
       "loading_audit_events": "Endurskoðunaratburðir eru að hlaða…",
       "no_audit_events_found": "Engir endurskoðunaratburðir eru í boði.",
       "principal": "Principal",

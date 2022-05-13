@@ -1,27 +1,33 @@
 <template>
-  <sba-panel :header-sticks-below="['#navigation']"
-             :title="$t('instances.env.refresh')"
+  <sba-action-button-scoped
+    :instance-count="instanceCount"
+    :action-fn="refreshContext"
+    :show-info="false"
   >
-    <sba-action-button-scoped :instance-count="instanceCount" :action-fn="refreshContext">
-      <template v-slot="slotProps">
-        <span v-if="slotProps.refreshStatus === 'completed'" v-text="$t('instances.env.context_refreshed')" />
-        <span v-else-if="slotProps.refreshStatus === 'failed'"
-              v-text="$t('instances.env.context_refresh_failed')"
-        />
-        <span v-else v-text="$t('instances.env.context_refresh')" />
-      </template>
-    </sba-action-button-scoped>
-  </sba-panel>
+    <template #default="slotProps">
+      <span
+        v-if="slotProps.refreshStatus === 'completed'"
+        class="is-success"
+        v-text="$t('instances.env.context_refreshed')"
+      />
+      <span
+        v-else-if="slotProps.refreshStatus === 'failed'"
+        v-text="$t('instances.env.context_refresh_failed')"
+      />
+      <span
+        v-else
+        v-text="$t('instances.env.context_refresh')"
+      />
+    </template>
+  </sba-action-button-scoped>
 </template>
 
 <script>
 
-import Instance from '@/services/instance';
-import Application from '@/services/application';
-import SbaActionButtonScoped from '@/components/sba-action-button-scoped';
+import Instance from '@/services/instance.js';
+import Application from '@/services/application.js';
 
 export default {
-  components: {SbaActionButtonScoped},
   props: {
     instance: {
       type: Instance,
@@ -49,19 +55,15 @@ export default {
 }
 </script>
 
-<style lang="scss">
-@import "~@/assets/css/utilities";
-
-.refresh {
-  &__header {
-    background-color: $white;
-    z-index: 10;
-    padding: 0.5em 1em;
-  }
-
-  &__toggle-scope {
-    width: 10em;
-  }
+<style lang="css">
+.refresh__header {
+  background-color: #fff;
+  z-index: 10;
+  padding: 0.5em 1em;
 }
+.refresh__toggle-scope {
+  width: 10em;
+}
+
 </style>
 

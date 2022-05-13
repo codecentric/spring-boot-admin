@@ -4,7 +4,7 @@
       "label": "매핑",
       "class": "클래스",
       "consumes": "Consumes",
-      "fetch_failed": "매핑 정보를 가져오는데 실패했습니다.",
+
       "filter_name": "필터 이름",
       "handler": "핸들러",
       "headers": "헤더",

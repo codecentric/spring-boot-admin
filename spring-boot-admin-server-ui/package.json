@@ -3,135 +3,84 @@
   "private": true,
   "description": "Spring Boot Admin UI",
   "scripts": {
-    "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint",
-    "lint:fix": "vue-cli-service lint --fix",
-    "watch": "vue-cli-service build --watch",
-    "storybook": "start-storybook -p 6006 -s public",
+    "build": "vite build --emptyOutDir",
+    "build:watch": "vite build --emptyOutDir --watch --sourcemap --mode development",
+    "dev": "vite",
+    "test": "jest",
+    "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
-  },
-  "engines": {
-    "node": ">=15",
-    "npm": ">=7"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "1.2.36",
     "@fortawesome/free-brands-svg-icons": "5.15.4",
     "@fortawesome/free-regular-svg-icons": "5.15.4",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
-    "@fortawesome/vue-fontawesome": "2.0.6",
-    "ansi_up": "5.1.0",
-    "autolinker": "3.14.3",
-    "axios": "0.26.0",
-    "bulma": "0.9.3",
-    "bulma-badge": "3.0.1",
-    "core-js": "3.20.3",
-    "d3-array": "3.1.1",
-    "d3-axis": "3.0.0",
-    "d3-brush": "2.1.0",
-    "d3-scale": "3.3.0",
-    "d3-selection": "2.0.0",
-    "d3-shape": "2.1.0",
-    "d3-time": "2.1.1",
-    "event-source-polyfill": "1.0.25",
+    "@fortawesome/vue-fontawesome": "3.0.0-5",
+    "@headlessui/vue": "^1.6.1",
+    "@tailwindcss/forms": "^0.5.0",
+    "@tailwindcss/typography": "^0.5.2",
+    "ansi_up": "^5.1.0",
+    "autolinker": "^3.15.0",
+    "axios": "^0.26.1",
+    "chart.js": "^3.7.1",
+    "chartjs-adapter-moment": "^1.0.0",
+    "classnames": "^2.3.1",
+    "d3-array": "^3.1.5",
+    "d3-axis": "^3.0.0",
+    "d3-brush": "^3.0.0",
+    "d3-scale": "^4.0.2",
+    "d3-selection": "^3.0.0",
+    "d3-shape": "^3.1.0",
+    "d3-time": "^3.0.0",
+    "event-source-polyfill": "1.0.26",
     "file-saver": "2.0.5",
-    "iso8601-duration": "1.3.0",
-    "lodash": "4.17.21",
-    "moment": "2.29.1",
-    "popper.js": "1.16.1",
-    "pretty-bytes": "5.6.0",
-    "resize-observer-polyfill": "1.5.1",
-    "rxjs": "7.5.2",
-    "vue": "2.6.14",
-    "vue-clickaway2": "2.3.2",
-    "vue-i18n": "8.27.0",
-    "vue-infinite-loading": "2.4.5",
-    "vue-router": "3.5.3"
+    "iso8601-duration": "^1.3.0",
+    "lodash-es": "^4.17.21",
+    "moment": "^2.29.3",
+    "popper.js": "^1.16.1",
+    "pretty-bytes": "^6.0.0",
+    "resize-observer-polyfill": "^1.5.1",
+    "rxjs": "^7.5.5",
+    "v3-infinite-loading": "^1.0.6",
+    "vue": "3.2.33",
+    "vue-i18n": "9.1.9",
+    "vue-router": "4.0.14",
+    "vue3-click-away": "^1.2.4"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-optional-catch-binding": "7.16.7",
-    "@babel/plugin-proposal-optional-chaining": "7.16.7",
-    "@storybook/addon-actions": "6.4.14",
-    "@storybook/addon-essentials": "6.4.14",
-    "@storybook/addon-links": "6.4.14",
-    "@storybook/addon-postcss": "2.0.0",
-    "@storybook/preset-scss": "1.0.3",
-    "@storybook/vue": "6.4.14",
-    "@testing-library/jest-dom": "5.16.1",
-    "@testing-library/user-event": "13.5.0",
-    "@testing-library/vue": "5.8.2",
-    "@vue/cli-plugin-babel": "4.5.15",
-    "@vue/cli-plugin-eslint": "4.5.15",
-    "@vue/cli-plugin-unit-jest": "4.5.15",
-    "@vue/cli-service": "4.5.15",
-    "@vue/eslint-config-standard": "4.0.0",
-    "@vue/test-utils": "1.3.0",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "10.1.0",
-    "babel-jest": "27.4.6",
-    "babel-loader": "8.2.3",
-    "babel-plugin-require-context-hook": "1.0.0",
-    "babel-plugin-transform-require-context": "0.1.1",
-    "eslint": "6.8.0",
-    "eslint-plugin-vue": "6.2.2",
-    "html-loader": "1.3.2",
-    "jest": "27.4.7",
-    "jest-each": "27.4.6",
-    "jest-environment-jsdom-sixteen": "2.0.0",
-    "msw": "0.36.5",
-    "msw-storybook-addon": "1.6.0",
-    "sass": "^1.49.9",
-    "vue-loader": "15.9.8",
-    "vue-template-compiler": "2.6.14",
-    "webpack-bundle-analyzer": "4.5.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "eslint:recommended",
-      "plugin:vue/strongly-recommended"
-    ],
-    "rules": {
-      "quotes": [
-        "error",
-        "single"
-      ],
-      "no-console": [
-        "error",
-        {
-          "allow": [
-            "warn"
-          ]
-        }
-      ],
-      "vue/max-attributes-per-line": "off",
-      "vue/component-name-in-template-casing": [
-        "error",
-        "kebab-case"
-      ]
-    },
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "overrides": [
-      {
-        "files": [
-          "*.spec.js"
-        ],
-        "env": {
-          "jest": true
-        }
-      }
-    ]
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
+    "@babel/core": "^7.17.9",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@storybook/addon-actions": "^6.4.22",
+    "@storybook/addon-essentials": "^6.4.22",
+    "@storybook/addon-links": "^6.4.22",
+    "@storybook/addon-postcss": "^2.0.0",
+    "@storybook/builder-vite": "^0.1.28",
+    "@storybook/vue3": "^6.4.22",
+    "@testing-library/jest-dom": "5.16.4",
+    "@testing-library/user-event": "14.1.0",
+    "@testing-library/vue": "6.5.1",
+    "@vitejs/plugin-vue": "2.3.0",
+    "@vue/test-utils": "^2.0.0-rc.21",
+    "@vue/vue3-jest": "26.0.1",
+    "autoprefixer": "10.4.4",
+    "babel-jest": "26.6.3",
+    "babel-loader": "^8.2.4",
+    "eslint": "^6.8.0",
+    "eslint-plugin-storybook": "^0.5.8",
+    "eslint-plugin-vue": "8.6.0",
+    "jest": "26.6.3",
+    "jest-environment-jsdom": "^27.5.1",
+    "jest-transform-stub": "^2.0.0",
+    "msw": "^0.39.2",
+    "msw-storybook-addon": "^1.6.3",
+    "postcss": "8.4.12",
+    "rollup-plugin-visualizer": "^5.6.0",
+    "storybook-vue3-router": "^2.2.1",
+    "tailwindcss": "3.0.24",
+    "vite": "2.9.0",
+    "vite-plugin-static-copy": "^0.4.4",
+    "vue-loader": "^16.8.3"
   },
   "browserslist": [
     "> 1%",
@@ -139,38 +88,38 @@
     "not ie <= 8"
   ],
   "jest": {
-    "setupFiles": [
-      "<rootDir>/.jest/register-context.js"
-    ],
+    "verbose": true,
+    "collectCoverage": true,
     "setupFilesAfterEnv": [
       "<rootDir>/.jest/jest.setup.js"
     ],
-    "testEnvironment": "jest-environment-jsdom-sixteen",
+    "testEnvironment": "jest-environment-jsdom",
     "moduleFileExtensions": [
       "js",
       "json",
       "vue"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(d3-.*)/)"
+      "node_modules/(?!(d3-.*|internmap|lodash-es|pretty-bytes)/)"
     ],
     "transform": {
-      ".+\\.vue$": "vue-jest",
+      ".+\\.vue$": "@vue/vue3-jest",
       ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
       ".+\\.js$": "babel-jest"
     },
     "moduleNameMapper": {
       "@/(.*)$": "<rootDir>/src/main/frontend/$1"
     },
-    "snapshotSerializers": [
-      "jest-serializer-vue"
-    ],
     "testMatch": [
       "**/*.spec.js"
     ],
-    "testURL": "http://example.com"
+    "testURL": "https://example.com"
+  },
+  "engines": {
+    "node": ">=16",
+    "npm": ">=8"
   },
   "msw": {
-    "workerDirectory": "public"
+    "workerDirectory": "src/main/frontend/assets"
   }
 }

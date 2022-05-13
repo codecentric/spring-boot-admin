@@ -8,7 +8,7 @@
         "runnable": "Runnable",
         "title": "Cron"
       },
-      "fetch_failed": "Mistókst að sækja fastsett verkefni.",
+
       "fixed_delay": {
         "initial_delay_ms": "Töf framan af (ms)",
         "interval_ms": "Tíðni (ms)",

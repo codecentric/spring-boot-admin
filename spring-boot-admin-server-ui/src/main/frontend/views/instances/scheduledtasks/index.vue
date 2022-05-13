@@ -15,33 +15,52 @@
   -->
 
 <template>
-  <section :class="{ 'is-loading' : !hasLoaded }" class="section">
-    <template v-if="hasLoaded">
-      <sba-alert v-if="error" :error="error" :title="$t('instances.scheduledtasks.fetch_failed')" />
-
-      <div v-else-if="!hasData" class="message is-warning">
-        <div class="message-body" v-text="$t('instances.scheduledtasks.no_scheduledtasks')" />
+  <sba-instance-section
+    :loading="!hasLoaded"
+    :error="err"
+  >
+    <sba-panel>
+      <div
+        v-if="!hasData"
+        class="message is-warning"
+      >
+        <div
+          class="message-body"
+          v-text="$t('instances.scheduledtasks.no_scheduledtasks')"
+        />
       </div>
 
       <template v-if="hasCronData">
-        <table class="table is-fullwidth">
+        <table class="table-auto w-full">
           <thead>
             <tr>
-              <th v-text="$t('instances.scheduledtasks.cron.runnable')" />
+              <th
+                class="text-left"
+                v-text="$t('instances.scheduledtasks.cron.runnable')"
+              />
               <th v-text="$t('instances.scheduledtasks.cron.expression')" />
             </tr>
           </thead>
-          <tbody v-for="task in cron" :key="task.runnable.target">
+          <tbody
+            v-for="task in cron"
+            :key="task.runnable.target"
+          >
             <tr>
               <td v-text="task.runnable.target" />
-              <td class="monospaced" v-text="task.expression" />
+              <td
+                class="font-mono text-center text-sm"
+                v-text="task.expression"
+              />
             </tr>
           </tbody>
         </table>
       </template>
 
       <template v-if="hasFixedDelayData">
-        <h3 class="title" v-text="$t('instances.scheduledtasks.fixed_delay.title')" />
+        <h3
+          class="title"
+          v-text="$t('instances.scheduledtasks.fixed_delay.title')"
+        />
         <table class="metrics table is-fullwidth">
           <thead>
             <tr>
@@ -50,7 +69,10 @@
               <th v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')" />
             </tr>
           </thead>
-          <tbody v-for="task in fixedDelay" :key="task.runnable.target">
+          <tbody
+            v-for="task in fixedDelay"
+            :key="task.runnable.target"
+          >
             <tr>
               <td v-text="task.runnable.target" />
               <td v-text="task.initialDelay" />
@@ -61,7 +83,10 @@
       </template>
 
       <template v-if="hasFixedRateData">
-        <h3 class="title" v-text="$t('instances.scheduledtasks.fixed_rate.title')" />
+        <h3
+          class="title"
+          v-text="$t('instances.scheduledtasks.fixed_rate.title')"
+        />
         <table class="metrics table is-fullwidth">
           <thead>
             <tr>
@@ -70,7 +95,10 @@
               <th v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')" />
             </tr>
           </thead>
-          <tbody v-for="task in fixedRate" :key="task.runnable.target">
+          <tbody
+            v-for="task in fixedRate"
+            :key="task.runnable.target"
+          >
             <tr>
               <td v-text="task.runnable.target" />
               <td v-text="task.initialDelay" />
@@ -79,15 +107,17 @@
           </tbody>
         </table>
       </template>
-    </template>
-  </section>
+    </sba-panel>
+  </sba-instance-section>
 </template>
 
 <script>
-import Instance from '@/services/instance';
-import {VIEW_GROUP} from '../../index';
+import Instance from '@/services/instance.js';
+import {VIEW_GROUP} from '../../ViewGroup.js';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
 
 export default {
+  components: {SbaInstanceSection},
   props: {
     instance: {
       type: Instance,

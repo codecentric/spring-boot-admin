@@ -32,6 +32,36 @@
       }
     },
     data: () => ({}),
+    watch: {
+      data: 'drawChart'
+    },
+    mounted() {
+      const margin = {
+        top: 5,
+        right: 5,
+        bottom: 30,
+        left: 50,
+      };
+
+      this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;
+      this.height = this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
+
+      this.chartLayer = d3.select(this.$el.querySelector('.cache-chart__svg'))
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+
+      this.xAxis = this.chartLayer.append('g')
+        .attr('class', 'cache-chart__axis-x')
+        .attr('transform', `translate(0,${this.height})`);
+
+      this.yAxis = this.chartLayer.append('g')
+        .attr('class', 'cache-chart__axis-y')
+        .attr('stroke', null);
+
+      this.areas = this.chartLayer.append('g');
+
+      this.drawChart(this.data);
+    },
     methods: {
       drawChart(_data) {
         const vm = this;
@@ -82,58 +112,21 @@
         );
 
       },
-    },
-    mounted() {
-      const margin = {
-        top: 5,
-        right: 5,
-        bottom: 30,
-        left: 50,
-      };
-
-      this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;
-      this.height = this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
-
-      this.chartLayer = d3.select(this.$el.querySelector('.cache-chart__svg'))
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      this.xAxis = this.chartLayer.append('g')
-        .attr('class', 'cache-chart__axis-x')
-        .attr('transform', `translate(0,${this.height})`);
-
-      this.yAxis = this.chartLayer.append('g')
-        .attr('class', 'cache-chart__axis-y')
-        .attr('stroke', null);
-
-      this.areas = this.chartLayer.append('g');
-
-      this.drawChart(this.data);
-    },
-    watch: {
-      data: 'drawChart'
     }
   }
 </script>
 
-<style lang="scss">
-    @import "~@/assets/css/utilities";
-
-    .cache-chart {
-        &__svg {
-            height: 159px;
-            width: 100%;
-        }
-
-        &__area {
-            &--miss {
-                fill: $warning;
-                opacity: 0.8;
-            }
-            &--hit {
-                fill: $info;
-                opacity: 0.8;
-            }
-        }
-    }
+<style lang="css">
+.cache-chart__svg {
+  height: 159px;
+  width: 100%;
+}
+.cache-chart__area--miss {
+  fill: #ffe08a;
+  opacity: 0.8;
+}
+.cache-chart__area--hit {
+  fill: #3e8ed0;
+  opacity: 0.8;
+}
 </style>

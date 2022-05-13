@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import flatMap from 'lodash/flatMap';
-import groupBy from 'lodash/groupBy';
-import union from 'lodash/union';
+import {flatMap, groupBy, union} from 'lodash-es';
 
 const convertLoggers = function (loggers, instanceId) {
   return Object.entries(loggers)

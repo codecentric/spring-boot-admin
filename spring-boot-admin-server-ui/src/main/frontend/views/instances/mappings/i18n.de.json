@@ -4,7 +4,7 @@
       "label": "Mappings",
       "class": "Klasse",
       "consumes": "Erwartet",
-      "fetch_failed": "Das Laden der Mappings ist fehlgeschlagen.",
+
       "filter_name": "Filtername",
       "handler": "Handler",
       "headers": "Headers",

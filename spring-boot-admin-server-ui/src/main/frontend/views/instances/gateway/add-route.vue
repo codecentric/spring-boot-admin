@@ -29,35 +29,35 @@
     <div class="field">
       <label class="label" for="routeId" v-text="$t('instances.gateway.route.id')" />
       <p class="control">
-        <input class="input" id="routeId" v-model="routeId" required>
+        <input id="routeId" v-model="routeId" class="input" required>
       </p>
     </div>
 
     <div class="field">
       <label class="label" for="order" v-text="$t('instances.gateway.route.order')" />
       <p class="control">
-        <input class="input" id="order" placeholder="0" v-model="routeOrder" type="number">
+        <input id="order" v-model="routeOrder" class="input" placeholder="0" type="number">
       </p>
     </div>
 
     <div class="field">
       <label class="label" for="predicates" v-text="$t('instances.gateway.route.predicates')" />
       <p class="control">
-        <textarea rows="4" class="textarea" id="predicates" placeholder="[]" v-model="routePredicates" required />
+        <textarea id="predicates" v-model="routePredicates" rows="4" class="textarea" placeholder="[]" required />
       </p>
     </div>
 
     <div class="field">
       <label class="label" for="filters" v-text="$t('instances.gateway.route.filters')" />
       <p class="control">
-        <textarea rows="4" class="textarea" id="filters" placeholder="[]" v-model="routeFilters" />
+        <textarea id="filters" v-model="routeFilters" rows="4" class="textarea" placeholder="[]" />
       </p>
     </div>
 
     <div class="field">
       <label class="label" for="routeUri" v-text="$t('instances.gateway.route.uri')" />
       <p class="control">
-        <input class="input" id="routeUri" placeholder="http://example.com" v-model="routeUri" required>
+        <input id="routeUri" v-model="routeUri" class="input" placeholder="http://example.com" required>
       </p>
     </div>
 
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance';
+  import Instance from '@/services/instance.js';
   import {from} from '@/utils/rxjs';
 
   export default {

@@ -15,45 +15,61 @@
   -->
 
 <template>
-  <section :class="{ 'is-loading' : !hasLoaded }" class="section">
-    <sba-alert v-if="error" :error="error" :title="$t('instances.configprops.fetch_failed')" />
-
-    <div class="field">
-      <p class="control is-expanded has-icons-left">
-        <input
+  <sba-instance-section
+    :loading="!hasLoaded"
+    :error="error"
+  >
+    <template #before>
+      <sba-sticky-subnav>
+        <sba-input
           v-model="filter"
-          class="input"
+          name="filter"
           type="search"
+          :placeholder="$t('term.filter')"
         >
-        <span class="icon is-small is-left">
-          <font-awesome-icon icon="filter" />
-        </span>
-      </p>
-    </div>
-    <sba-panel v-for="bean in configurationPropertiesBeans"
-               :key="bean.name"
-               :header-sticks-below="['#navigation']"
-               :title=" bean.name"
+          <template #prepend>
+            <font-awesome-icon icon="filter" />
+          </template>
+        </sba-input>
+      </sba-sticky-subnav>
+    </template>
+
+    <sba-panel
+      v-for="bean in configurationPropertiesBeans"
+      :key="bean.name"
+      :header-sticks-below="'#subnavigation'"
+      :title=" bean.name"
     >
-      <table v-if="Object.keys(bean.properties).length > 0"
-             class="table is-fullwidth"
-      >
-        <tr v-for="(value, name) in bean.properties" :key="`${bean.name}-${name}`">
-          <td v-text="name" />
-          <td class="is-breakable" v-text="value" />
-        </tr>
-      </table>
-      <p v-else class="is-muted" v-text="$t('instances.configprops.fetch_failed')" />
+      <div class="-mx-4 -my-3">
+        <table
+          v-if="Object.keys(bean.properties).length > 0"
+          class="table-auto w-full"
+        >
+          <tr
+            v-for="(value, name, idx) in bean.properties"
+            :key="`${bean.name}-${name}`"
+            :class="{'bg-gray-50': idx%2===0}"
+          >
+            <td
+              class="w-1/2 px-4 py-3"
+              v-text="name"
+            />
+            <td
+              class="px-4 py-3"
+              v-text="value"
+            />
+          </tr>
+        </table>
+      </div>
     </sba-panel>
-  </section>
+  </sba-instance-section>
 </template>
 
 <script>
-import Instance from '@/services/instance';
-import isEmpty from 'lodash/isEmpty';
-import mapKeys from 'lodash/mapKeys';
-import pickBy from 'lodash/pickBy';
-import {VIEW_GROUP} from '../../index';
+import Instance from '@/services/instance.js';
+import {isEmpty, mapKeys, pickBy} from 'lodash-es';
+import {VIEW_GROUP} from '../../ViewGroup.js';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
 
 const filterProperty = (needle) => (value, name) => {
   return name.toString().toLowerCase().includes(needle) || (value && value.toString().toLowerCase().includes(needle));
@@ -115,6 +131,7 @@ const flattenConfigurationPropertiesBeans = (configprops) => {
 };
 
 export default {
+  components: {SbaInstanceSection},
   props: {
     instance: {
       type: Instance,

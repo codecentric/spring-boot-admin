@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {shallowMount} from '@vue/test-utils';
 import moment from 'moment';
-import sbaTimeAgo from './sba-time-ago.js';
+import sbaTimeAgo from './sba-time-ago.vue';
+import {render} from "@testing-library/vue";
 
 moment.now = () => +new Date(1318781879406);
 
@@ -24,23 +24,21 @@ describe('time-ago', () => {
 
   describe('given  a short time passed time', () => {
     it('should match the snapshot', () => {
-      const wrapper = shallowMount(sbaTimeAgo, {
+      render(sbaTimeAgo, {
         propsData: {
           date: moment(1318781000000).utc()
         }
       });
-      expect(wrapper.vm.$el).toMatchSnapshot();
     });
   });
 
   describe('given a long time passed time', () => {
     it('should match the snapshot', () => {
-      const wrapper = shallowMount(sbaTimeAgo, {
+      render(sbaTimeAgo, {
         propsData: {
           date: moment(1310000000000).utc()
         }
       });
-      expect(wrapper.vm.$el).toMatchSnapshot();
     });
   });
 

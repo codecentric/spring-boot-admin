@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import lombok.Data;
+import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
@@ -119,6 +121,8 @@ public class AdminServerUiProperties {
 
 	private PollTimer pollTimer = new PollTimer();
 
+	private UiTheme theme = new UiTheme();
+
 	@lombok.Data
 	public static class PollTimer {
 
@@ -185,6 +189,87 @@ public class AdminServerUiProperties {
 				return CacheControl.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
 			}
 			return CacheControl.empty();
+		}
+
+	}
+
+	@Data
+	public static class UiTheme {
+
+		private Palette palette = new Palette();
+
+		private String color = "#14615A";
+
+	}
+
+	/**
+	 * Color shades are based on Tailwind's color palettes:
+	 * https://tailwindcss.com/docs/customizing-colors
+	 *
+	 * name shade number mainColorLighter 50 mainColorLight 300 mainColor 500
+	 * mainColorDark 700 mainColorDarker 800
+	 */
+	@Getter
+	public static class Palette {
+
+		private String shade50 = "#EEFCFA";
+
+		private String shade100 = "#D9F7F4";
+
+		private String shade200 = "#B7F0EA";
+
+		private String shade300 = "#91E8E0";
+
+		private String shade400 = "#6BE0D5";
+
+		private String shade500 = "#47D9CB";
+
+		private String shade600 = "#27BEAF";
+
+		private String shade700 = "#1E9084";
+
+		private String shade800 = "#14615A";
+
+		private String shade900 = "#0A2F2B";
+
+		public void set50(String shade50) {
+			this.shade50 = shade50;
+		}
+
+		public void set100(String shade100) {
+			this.shade100 = shade100;
+		}
+
+		public void set200(String shade200) {
+			this.shade200 = shade200;
+		}
+
+		public void set300(String shade300) {
+			this.shade300 = shade300;
+		}
+
+		public void set400(String shade400) {
+			this.shade400 = shade400;
+		}
+
+		public void set500(String shade500) {
+			this.shade500 = shade500;
+		}
+
+		public void set600(String shade600) {
+			this.shade600 = shade600;
+		}
+
+		public void set700(String shade700) {
+			this.shade700 = shade700;
+		}
+
+		public void set800(String shade800) {
+			this.shade800 = shade800;
+		}
+
+		public void set900(String shade900) {
+			this.shade900 = shade900;
 		}
 
 	}

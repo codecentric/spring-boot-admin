@@ -1,6 +1,6 @@
 import {render} from '@/test-utils';
 import Auditevents from '@/views/instances/auditevents/index';
-import Instance from '@/services/instance';
+import Instance from '@/services/instance.js';
 import {screen, waitFor} from '@testing-library/vue';
 import userEvent from '@testing-library/user-event';
 
@@ -24,7 +24,7 @@ describe('Auditevents', () => {
   });
 
   it('fetches data when filter for Principal is changed', async () => {
-    const input = await screen.findByPlaceholderText('Principal');
+    const input = await screen.findByPlaceholderText('instances.auditevents.principal');
     userEvent.type(input, 'Abc')
 
     await waitFor(() => {
@@ -34,7 +34,7 @@ describe('Auditevents', () => {
   });
 
   it('fetches data when filter for Type is changed', async () => {
-    const input = await screen.findByPlaceholderText('Type');
+    const input = await screen.findByPlaceholderText('instances.auditevents.type');
     userEvent.type(input, 'AUTHENTICATION_FAILURE')
 
     await waitFor(() => {
@@ -56,7 +56,7 @@ describe('Auditevents', () => {
       }
     });
 
-    await screen.findByText('Fetching audit events failed.');
+    await screen.findByText('Fetching of data failed.');
   });
 
   it('handles error when fetching data from Spring 1 services', async () => {
@@ -72,7 +72,7 @@ describe('Auditevents', () => {
       }
     });
 
-    await screen.findByText('Audit Log is not supported for Spring Boot 1.x applications.');
+    await screen.findByText('instances.auditevents.audit_log_not_supported_spring_boot_1');
   });
 
   function createInstance(fetchAuditevents) {

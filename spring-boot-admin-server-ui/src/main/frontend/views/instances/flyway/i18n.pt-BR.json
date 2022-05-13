@@ -2,7 +2,6 @@
   "instances": {
     "flyway": {
       "label": "Flyway",
-      "fetch_failed": "Falha na obtenção dos relatórios do Flyway.",
       "type": "Tipo",
       "checksum": "Checksum",
       "version": "Versão",

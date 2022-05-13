@@ -1,9 +1,16 @@
 {
   "applications": {
+    "actions": {
+      "journal": "Journal",
+      "notification_filters": "Benachrichtigungsfilter",
+      "unregister": "Deregistrieren",
+      "shutdown": "Herunterfahren",
+      "restart": "Neu starten"
+    },
     "all_up": "Alle verfügbar",
     "applications": "Anwendungen",
     "instances": "Instanzen",
-    "instances_down": "Instanzen nicht verfügbar",
+    "instances_down": "Einige Instanzen sind ausgefallen",
     "loading_applications": "Anwendungen werden geladen ...",
     "no_applications_registered": "Keine Anwendungen registriert.",
     "notifications_suppressed_for": "Benachrichtigungen für <code>{name}</code> werden unterdrückt für",
@@ -12,10 +19,10 @@
     "suppress_notifications_on": "Benachrichtungen für <code>{name}</code> für",
     "status": "Status",
     "label": "Anwendungen",
-    "up": "OK",
     "shutdown": "Anwendung <code>{name}</code> herunterfahren?",
     "restart": "Anwendung <code>{name}</code> neu starten?",
-    "restarted": "Anwendung <code>{name}</code> erfolgreich neu gestartet"
+    "restarted": "Anwendung <code>{name}</code> erfolgreich neu gestartet",
+    "unregister": "Anwendung <code>{name}</code> deregistrieren?"
   },
   "instances": {
     "shutdown": "Instanz <code>{name}</code> herunterfahren?",

@@ -15,27 +15,26 @@
   -->
 
 <template>
-  <div class="field is-grouped is-grouped-multiline" v-if="hasTags">
-    <div class="control" v-for="(value, key) in tags" :key="key">
-      <div class="tags has-addons">
-        <span class="tag is-dark" v-text="key" />
-        <span class="tag is-light" v-text="value" />
-      </div>
-    </div>
+  <div class="inline-flex gap-1">
+    <template
+      v-for="(value, key) in tags"
+      :key="key"
+    >
+      <sba-tag
+        :label="key"
+        :value="value"
+      />
+    </template>
   </div>
 </template>
 
 <script>
-  export default {
+
+export default {
     props: {
       tags: {
         type: Object,
         required: true
-      }
-    },
-    computed: {
-      hasTags() {
-        return Object.keys(this.tags).length > 0;
       }
     }
   }

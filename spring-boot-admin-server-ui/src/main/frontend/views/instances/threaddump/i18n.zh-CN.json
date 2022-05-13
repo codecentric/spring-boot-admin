@@ -3,7 +3,7 @@
     "threaddump": {
       "label": "线程转储",
       "download": "下载线程",
-      "fetch_failed": "获取线程失败。",
+
       "download_failed": "线程无法下载。",
       "thread_details_blocked_count": "阻塞数",
       "thread_details_blocked_time": "阻塞时间",

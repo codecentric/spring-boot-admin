@@ -23,11 +23,11 @@
 </template>
 
 <script>
-  import Application from '@/services/application';
-  import Instance from '@/services/instance';
-  import Loggers from './loggers';
-  import {ApplicationLoggers, InstanceLoggers} from './service';
-  import {VIEW_GROUP} from '../../index';
+  import Application from '@/services/application.js';
+  import Instance from '@/services/instance.js';
+  import Loggers from './loggers.vue';
+  import {ApplicationLoggers, InstanceLoggers} from './service.js';
+  import {VIEW_GROUP} from '../../ViewGroup.js';
 
   export default {
     components: {Loggers},

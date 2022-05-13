@@ -15,53 +15,68 @@
   -->
 
 <template>
-  <section :class="{ 'is-loading' : !hasLoaded }" class="section">
-    <template v-if="hasLoaded">
-      <sba-alert v-if="errorFetch" :error="errorFetch" :title="$t('instances.threaddump.fetch_failed')" />
-      <sba-alert v-if="errorDownload" :error="errorDownload" :title="$t('instances.threaddump.download_failed')" />
-
-      <div v-if="threads" class="control">
-        <button class="button is-primary" @click="downloadThreaddump">
-          <font-awesome-icon icon="download" />&nbsp;
-          <span v-text="$t('instances.threaddump.download')" />
-        </button>
-      </div>
-      <threads-list v-if="threads" :thread-timelines="threads" />
+  <sba-instance-section
+    :loading="!hasLoaded"
+    :error="errorFetch"
+  >
+    <template
+      v-if="threads"
+      #before
+    >
+      <sba-sticky-subnav>
+        <div class="text-right">
+          <sba-button @click="downloadThreaddump">
+            <font-awesome-icon icon="download" />&nbsp;
+            <span v-text="$t('instances.threaddump.download')" />
+          </sba-button>
+        </div>
+      </sba-sticky-subnav>
     </template>
-  </section>
+    <sba-alert
+      v-if="errorDownload"
+      :error="errorDownload"
+      :title="$t('instances.threaddump.download_failed')"
+    />
+    <sba-panel>
+      <threads-list
+        v-if="threads"
+        :thread-timelines="threads"
+      />
+    </sba-panel>
+  </sba-instance-section>
 </template>
 
 <script>
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance';
-import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
-import remove from 'lodash/remove';
-import moment from 'moment';
-import threadsList from './threads-list';
-import {VIEW_GROUP} from '../../index';
+import {remove} from 'lodash-es';
 import {take} from 'rxjs/operators';
+import subscribing from '@/mixins/subscribing';
+import Instance from '@/services/instance.js';
+import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs.js';
+import threadsList from './threads-list.vue';
+import moment from 'moment';
+import {VIEW_GROUP} from '../../ViewGroup.js';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
 
 export default {
+  components: {SbaInstanceSection, threadsList},
+  mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
       required: true
     }
   },
-  mixins: [subscribing],
-  components: {threadsList},
   data: () => ({
     hasLoaded: false,
     errorFetch: null,
     errorDownload: null,
-    threads: null
+    threads: {}
   }),
   computed: {},
   methods: {
     updateTimelines(threads) {
       const vm = this;
       const now = moment().valueOf();
-      vm.threads = vm.threads || {};
       //initialize with all known live threads, which will be removed from the list if still alive
       const terminatedThreads = Object.entries(vm.threads)
         .filter(([, value]) => value.threadState !== 'TERMINATED')
@@ -70,7 +85,7 @@ export default {
       threads.forEach(
         thread => {
           if (!vm.threads[thread.threadId]) {
-            vm.$set(vm.threads, thread.threadId, {
+            vm.threads[thread.threadId] = {
               threadId: thread.threadId,
               threadState: thread.threadState,
               threadName: thread.threadName,
@@ -80,7 +95,7 @@ export default {
                 details: thread,
                 threadState: thread.threadState,
               }]
-            });
+            };
           } else {
             const entry = vm.threads[thread.threadId];
             if (entry.threadState !== thread.threadState) {

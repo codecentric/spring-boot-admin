@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import axios, {redirectOn401} from '@/utils/axios';
-import waitForPolyfill from '@/utils/eventsource-polyfill';
-import logtail from '@/utils/logtail';
-import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
-import uri from '@/utils/uri';
+import axios, {redirectOn401} from '../utils/axios.js';
+import waitForPolyfill from '../utils/eventsource-polyfill';
+import logtail from '../utils/logtail';
+import {concat, from, ignoreElements, Observable} from '../utils/rxjs';
+import uri from '../utils/uri';
 import saveAs from 'file-saver';
 
 const actuatorMimeTypes = [
@@ -78,9 +78,7 @@ class Instance {
   }
 
   async fetchHealth() {
-    return await this.axios.get(uri`actuator/health`, {
-      validateStatus: null
-    });
+    return await this.axios.get(uri`actuator/health`);
   }
 
   async fetchEnv(name) {

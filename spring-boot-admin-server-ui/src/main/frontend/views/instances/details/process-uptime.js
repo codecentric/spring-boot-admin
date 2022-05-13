@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import subscribing from '@/mixins/subscribing';
+import subscribing from '../../../mixins/subscribing.js';
 import {timer} from '@/utils/rxjs';
 import moment from 'moment';
+import {h} from 'vue';
 
 export default {
   props: ['value'],
@@ -26,7 +27,7 @@ export default {
     offset: null
   }),
   render() {
-    return this._v(this.clock);
+    return h('span', this.clock);
   },
   computed: {
     clock() {

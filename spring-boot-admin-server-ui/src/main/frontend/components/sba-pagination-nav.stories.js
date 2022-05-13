@@ -15,17 +15,19 @@
  */
 
 import i18n from '@/i18n';
-import SbaPaginationNav from '@/components/sba-pagination-nav';
+import SbaPaginationNav from './sba-pagination-nav.vue';
 
 export default {
   component: SbaPaginationNav,
-  title: 'SBA Components/Pagination',
+  title: 'Components/Pagination',
 };
 
-const Template = (args, {argTypes}) => {
+const Template = (args) => {
   return ({
     components: {SbaPaginationNav},
-    props: Object.keys(argTypes),
+    setup() {
+      return {args};
+    },
     methods: {
       change($event) {
         this.current = $event;
@@ -37,7 +39,7 @@ const Template = (args, {argTypes}) => {
       }
     },
     template: `
-      <sba-pagination-nav v-model="current" v-bind="$props" @change="change"/>
+      <sba-pagination-nav v-bind="args" @update="change"/>
     `,
     i18n
   });
@@ -46,6 +48,7 @@ const Template = (args, {argTypes}) => {
 export const NoPages = Template.bind({});
 NoPages.args = {
   pageCount: 0,
+  modelValue: 1
 };
 
 export const OnePage = Template.bind({});
@@ -55,5 +58,6 @@ OnePage.args = {
 
 export const ManyPages = Template.bind({});
 ManyPages.args = {
+  modelValue: 1,
   pageCount: 12,
 };

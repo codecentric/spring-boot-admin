@@ -16,9 +16,10 @@
 
 <template>
   <div class="trace-chart">
-    <div class="trace-chart__tooltip"
-         v-if="tooltipSelection "
-         :class="`trace-chart__tooltip--${this.x(tooltipSelection[0]) > this.width / 2 ? 'left' : 'right'}`"
+    <div
+      v-if="tooltipSelection "
+      class="trace-chart__tooltip"
+      :class="`trace-chart__tooltip--${x(tooltipSelection[0]) > width / 2 ? 'left' : 'right'}`"
     >
       <table class="is-narrow is-size-7">
         <tr>
@@ -140,6 +141,54 @@ const interval = 1000;
         };
       }
     },
+    watch: {
+      chartData: 'drawChart',
+      hovered(newVal) {
+        if (newVal) {
+          this.hover.attr('opacity', 1)
+            .attr('d', `M${this.x(newVal)},${this.height} ${this.x(newVal)},0`);
+        } else {
+          this.hover.attr('opacity', 0);
+        }
+      },
+      brushSelection(newVal) {
+        this.$emit('selected', newVal);
+      }
+    },
+    mounted() {
+      const margin = {
+        top: 20,
+        right: 20,
+        bottom: 30,
+        left: 20,
+      };
+
+      this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;
+      this.height = this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
+
+      this.chartLayer = d3.select(this.$el.querySelector('.trace-chart__svg'))
+        .append('g')
+        .attr('transform', `translate(${margin.left},${margin.top})`);
+
+      this.xAxis = this.chartLayer.append('g')
+        .attr('class', 'trace-chart__axis-x')
+        .attr('transform', `translate(0,${this.height})`);
+
+      this.yAxis = this.chartLayer.append('g')
+        .attr('class', 'trace-chart__axis-y')
+        .attr('stroke', null);
+
+      this.areas = this.chartLayer.append('g');
+
+      this.hover = this.chartLayer.append('path')
+        .attr('class', 'trace-chart__hover')
+        .attr('opacity', 0);
+
+      this.brushGroup = this.chartLayer.append('g')
+        .attr('class', 'trace-chart__brush');
+
+      this.drawChart(this.chartData);
+    },
     methods: {
       drawChart(data) {
         const vm = this;
@@ -230,134 +279,65 @@ const interval = 1000;
 
         brush.move(vm.brushGroup, vm.brushSelection ? vm.brushSelection.map(x) : null);
       },
-    },
-    mounted() {
-      const margin = {
-        top: 20,
-        right: 20,
-        bottom: 30,
-        left: 20,
-      };
-
-      this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;
-      this.height = this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
-
-      this.chartLayer = d3.select(this.$el.querySelector('.trace-chart__svg'))
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      this.xAxis = this.chartLayer.append('g')
-        .attr('class', 'trace-chart__axis-x')
-        .attr('transform', `translate(0,${this.height})`);
-
-      this.yAxis = this.chartLayer.append('g')
-        .attr('class', 'trace-chart__axis-y')
-        .attr('stroke', null);
-
-      this.areas = this.chartLayer.append('g');
-
-      this.hover = this.chartLayer.append('path')
-        .attr('class', 'trace-chart__hover')
-        .attr('opacity', 0);
-
-      this.brushGroup = this.chartLayer.append('g')
-        .attr('class', 'trace-chart__brush');
-
-      this.drawChart(this.chartData);
-    },
-    watch: {
-      chartData: 'drawChart',
-      hovered(newVal) {
-        if (newVal) {
-          this.hover.attr('opacity', 1)
-            .attr('d', `M${this.x(newVal)},${this.height} ${this.x(newVal)},0`);
-        } else {
-          this.hover.attr('opacity', 0);
-        }
-      },
-      brushSelection(newVal) {
-        this.$emit('selected', newVal);
-      }
     }
   }
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
+<style lang="css">
+.trace-chart__svg {
+  height: 200px;
+  width: 100%;
+}
+.trace-chart__hover {
+  stroke: #b5b5b5;
+  stroke-width: 1px;
+}
+.trace-chart__tooltip {
+  position: absolute;
+  background: #000;
+  opacity: 0.8;
+  pointer-events: none;
+  border-radius: 6px;
+  padding: 0.825em;
+  width: 200px;
+}
+.trace-chart__tooltip table th, .trace-chart__tooltip table td {
+  border: none;
+  color: #b5b5b5;
+  padding: 0.25em 0.75em;
+}
+.trace-chart__tooltip table td {
+  text-align: right;
+}
+.trace-chart__tooltip--left {
+  left: 5px;
+}
+.trace-chart__tooltip--right {
+  right: 5px;
+}
+.trace-chart .selection {
+  stroke: none;
+  fill: rgba(0, 0, 0, 0.2);
+  fill-opacity: 1;
+}
+.trace-chart__axis-y .domain {
+  stroke: none;
+}
+.trace-chart__axis-y .tick:not(:first-of-type) line {
+  stroke-dasharray: 2, 2;
+  stroke: #b5b5b5;
+}
+.trace-chart__area--totalSuccess {
+  fill: #48c78e;
+  opacity: 0.8;
+}
+.trace-chart__area--totalClientErrors {
+  fill: #ffe08a;
+  opacity: 0.8;
+}
+.trace-chart__area--totalServerErrors {
+  fill: #f14668;
+  opacity: 0.8;
+}
 
-  .trace-chart {
-    &__svg {
-      height: 200px;
-      width: 100%;
-    }
-
-    &__hover {
-      stroke: $grey-light;
-      stroke-width: 1px;
-    }
-
-    &__tooltip {
-      position: absolute;
-      background: $black;
-      opacity: 0.8;
-      pointer-events: none;
-      border-radius: $radius-large;
-      padding: 0.825em;
-      width: 200px;
-
-      & table th,
-      & table td {
-        border: none;
-        color: $grey-light;
-        padding: 0.25em 0.75em;
-      }
-
-      & table td {
-        text-align: right;
-      }
-
-      &--left {
-        left: 5px;
-      }
-      &--right {
-        right: 5px;
-      }
-    }
-
-    & .selection {
-      stroke: none;
-      fill: rgba(0, 0, 0, 0.2);
-      fill-opacity: 1;
-    }
-
-    &__axis-y {
-      & .domain {
-        stroke: none;
-      }
-
-      .tick:not(:first-of-type) {
-        & line {
-          stroke-dasharray: 2, 2;
-          stroke: $grey-light;
-        }
-      }
-    }
-
-    &__area {
-      &--totalSuccess {
-        fill: $success;
-        opacity: 0.8;
-      }
-
-      &--totalClientErrors {
-        fill: $warning;
-        opacity: 0.8;
-      }
-
-      &--totalServerErrors {
-        fill: $danger;
-        opacity: 0.8;
-      }
-    }
-  }
 </style>

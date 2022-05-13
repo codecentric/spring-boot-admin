@@ -6,7 +6,7 @@
       "created_at": "Creado",
       "expired": "Expirado",
       "expiry": "Expiración",
-      "fetch_failed": "Falla recuperando las sesiones.",
+
       "last_accessed_at": "Último acceso",
       "loading_sessions": "Cargando sesiones...",
       "max_inactive_interval": "Intervalo de <br>Inactividad Máxima",

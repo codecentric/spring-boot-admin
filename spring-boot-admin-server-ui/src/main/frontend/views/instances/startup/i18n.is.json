@@ -3,7 +3,7 @@
     "startup": {
       "label": "Ræsitími",
       "expand_all": "Þenjast allt út",
-      "fetch_failed": "Mistókst að sækja ræsigögn.",
+
       "column": {
         "name": "Nafn",
         "duration": "Tímalengd (ms)",

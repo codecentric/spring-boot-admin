@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-import sbaConfig from '@/sba-config'
-import {VIEW_GROUP} from './views';
+import sbaConfig from './sba-config.js'
+import {VIEW_GROUP} from './views/ViewGroup.js';
+import {h, markRaw, reactive} from 'vue';
 
-import remove from 'lodash/remove';
+import {remove} from 'lodash-es';
 
-const createTextVNode = (label) => {
+const createI18nTextVNode = (label) => {
   return {
     render() {
-      return this._v(this.$t(label))
+      const value = this.$t(label);
+      return h('span', value)
     }
   }
 };
 
 export default class ViewRegistry {
   constructor() {
-    this._views = [];
+    this._views = reactive([]);
     this._redirects = [];
   }
 
@@ -39,13 +41,13 @@ export default class ViewRegistry {
 
   get routes() {
     return [
-      ...this._toRoutes(this._views, v => v.path && !v.parent),
+      ...this._toRoutes(this._views, v => v.path && (!v.parent || !v.isChildRoute)),
       ...this._redirects
     ]
   }
 
   getViewByName(name) {
-    return this._views.find(v => v.name === name);
+    return Array.prototype.find.call(this._views, v => v.name === name)
   }
 
   addView(...views) {
@@ -62,10 +64,22 @@ export default class ViewRegistry {
 
   _addView(view) {
     if (view.label && !view.handle) {
-      view.handle = createTextVNode(view.label);
+      view.handle = createI18nTextVNode(view.label);
     }
     if (!view.group) {
       view.group = VIEW_GROUP.NONE;
+    }
+    if (!view.name) {
+      view.name = [view.parent, view.path].filter(p => !!p).join("/");
+    }
+    if (view.handle) {
+      view.handle = markRaw(view.handle);
+    }
+    if (view.component) {
+      view.component = markRaw(view.component);
+    }
+    if (view.isChildRoute === undefined) {
+      view.isChildRoute = true;
     }
 
     if (!view.isEnabled) {
@@ -87,11 +101,11 @@ export default class ViewRegistry {
   _toRoutes(views, filter) {
     return views.filter(filter).map(
       p => {
-        const children = this._toRoutes(views, v => v.parent === p.name);
+        const children = this._toRoutes(views, v => v.parent === p.name && v.isChildRoute);
         return ({
           path: p.path,
           name: p.name,
-          component: p.component,
+          component: markRaw(p.component),
           props: p.props,
           meta: {view: p},
           children

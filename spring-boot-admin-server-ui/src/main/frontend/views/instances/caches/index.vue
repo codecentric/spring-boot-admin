@@ -15,54 +15,72 @@
   -->
 
 <template>
-  <section class="section">
-    <div
-      v-if="error"
-      class="message is-danger"
-    >
-      <div class="message-body">
-        <strong>
-          <font-awesome-icon
-            class="has-text-danger"
-            icon="exclamation-triangle"
-          />
-          <span v-text="$t('instances.caches.fetch_failed')" />
-        </strong>
-        <p v-text="error.message" />
-      </div>
-    </div>
-    <div class="field-body">
-      <div class="field has-addons has-icons-left">
-        <p class="control is-expanded has-icons-left">
-          <input
-            class="input"
-            type="search"
-            v-model="filter"
+  <sba-instance-section :error="error">
+    <template #before>
+      <sba-sticky-subnav>
+        <div class="flex gap-2">
+          <sba-action-button-scoped
+            :instance-count="2"
+            :action-fn="clearCaches"
+            :show-info="false"
           >
-          <span class="icon is-small is-left">
-            <font-awesome-icon icon="filter" />
-          </span>
-        </p>
-        <p class="control">
-          <span class="button is-static">
-            <span v-text="filteredCaches.length" />
-            /
-            <span v-text="caches.length" />
-          </span>
-        </p>
-      </div>
-    </div>
-    <caches-list :instance="instance" :caches="filteredCaches" :is-loading="isLoading" :application="application" />
-  </section>
+            <template #default="slotProps">
+              <span
+                v-if="slotProps.refreshStatus === 'completed'"
+                v-text="$t('term.execution_successful')"
+              />
+              <span
+                v-else-if="slotProps.refreshStatus === 'failed'"
+                v-text="$t('term.execution_failed')"
+              />
+              <span v-else>
+                <font-awesome-icon icon="trash" />&nbsp;
+                <span v-text="$t('term.clear')" />
+              </span>
+            </template>
+          </sba-action-button-scoped>
+
+          <div class="flex-1">
+            <sba-input
+              v-model="filter"
+              name="filter"
+              type="search"
+              :placeholder="$t('term.filter')"
+            >
+              <template #prepend>
+                <font-awesome-icon icon="filter" />
+              </template>
+              <template #append>
+                <span class="button is-static">
+                  <span v-text="filteredCaches.length" />
+                  /
+                  <span v-text="caches.length" />
+                </span>
+              </template>
+            </sba-input>
+          </div>
+        </div>
+      </sba-sticky-subnav>
+    </template>
+
+    <sba-panel>
+      <caches-list
+        :instance="instance"
+        :caches="filteredCaches"
+        :is-loading="isLoading"
+        :application="application"
+      />
+    </sba-panel>
+  </sba-instance-section>
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import CachesList from '@/views/instances/caches/caches-list';
-  import flatMap from 'lodash/flatMap';
-  import isEmpty from 'lodash/isEmpty';
-  import {VIEW_GROUP} from '../../index';
-  import Application from '@/services/application';
+  import Instance from '@/services/instance.js';
+  import CachesList from '@/views/instances/caches/caches-list.vue';
+  import {flatMap, isEmpty} from 'lodash-es';
+  import {VIEW_GROUP} from '../../ViewGroup.js';
+  import Application from '@/services/application.js';
+  import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
 
   const flattenCaches = cacheData => {
     if (isEmpty(cacheData.cacheManagers)) {
@@ -76,7 +94,7 @@
   };
 
   export default {
-    components: {CachesList},
+    components: {SbaInstanceSection, CachesList},
     props: {
       instance: {
         type: Instance,
@@ -99,7 +117,17 @@
         return filterFn ? this.caches.filter(filterFn) : this.caches;
       }
     },
+    created() {
+      this.fetchCaches();
+    },
     methods: {
+      clearCaches(scope) {
+        if (scope === 'instance') {
+          return this.instance.clearCaches();
+        } else {
+          return this.application.clearCaches();
+        }
+      },
       async fetchCaches() {
         this.error = null;
         this.isLoading = true;
@@ -122,9 +150,6 @@
 
         return filterFn;
       }
-    },
-    created() {
-      this.fetchCaches();
     },
     install({viewRegistry}) {
       viewRegistry.addView({

@@ -12,7 +12,7 @@
       "execution": "Выполнение",
       "execution_date": "Дата выполнения",
       "execution_order": "Порядок выполнения",
-      "fetch_failed": "Ошибка при получении Liquibase миграций.",
+
       "id": "Id",
       "labels": "Метки",
       "tag": "Тег"
