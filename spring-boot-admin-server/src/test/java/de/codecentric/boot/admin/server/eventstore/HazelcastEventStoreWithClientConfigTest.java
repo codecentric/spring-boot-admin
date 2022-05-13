@@ -34,6 +34,8 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 @Tag("docker")
 public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreTest {
 
+	HazelcastEventStore hazelcastEventStore;
+
 	@Container
 	private static final GenericContainer<?> hazelcastServer = new GenericContainer<>("hazelcast/hazelcast:4.2.2")
 			.withExposedPorts(5701);
@@ -47,7 +49,14 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 	@Override
 	protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
 		IMap<InstanceId, List<InstanceEvent>> eventLog = this.hazelcast.getMap("testList" + System.currentTimeMillis());
-		return new HazelcastEventStore(maxLogSizePerAggregate, eventLog);
+		hazelcastEventStore = new HazelcastEventStore(maxLogSizePerAggregate, eventLog);
+		return hazelcastEventStore;
+	}
+
+	@Override
+	protected void shutdownStore() {
+		this.hazelcast.shutdown();
+		;
 	}
 
 	private HazelcastInstance createHazelcastInstance() {

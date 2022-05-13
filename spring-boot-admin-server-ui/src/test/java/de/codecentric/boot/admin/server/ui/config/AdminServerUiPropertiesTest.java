@@ -30,23 +30,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @SpringBootTest(classes = AdminServerUiProperties.class)
 @ExtendWith(SpringExtension.class)
-@TestPropertySource(properties = {
-	"spring.boot.admin.ui.cache.maxAge: -1s",
-	"spring.boot.admin.ui.cache.noCache: true",
-	"spring.boot.admin.ui.cache.noStore: true",
-	"spring.boot.admin.ui.theme.color: #ffffff",
-	"spring.boot.admin.ui.theme.palette.50: #50",
-	"spring.boot.admin.ui.theme.palette.100: #100",
-	"spring.boot.admin.ui.theme.palette.200: #200",
-	"spring.boot.admin.ui.theme.palette.300: #300",
-	"spring.boot.admin.ui.theme.palette.400: #400",
-	"spring.boot.admin.ui.theme.palette.500: #500",
-	"spring.boot.admin.ui.theme.palette.600: #600",
-	"spring.boot.admin.ui.theme.palette.700: #700",
-	"spring.boot.admin.ui.theme.palette.800: #800",
-	"spring.boot.admin.ui.theme.palette.900: #900"
-})
-@EnableConfigurationProperties({AdminServerUiProperties.class})
+@TestPropertySource(properties = { "spring.boot.admin.ui.cache.maxAge: -1s", "spring.boot.admin.ui.cache.noCache: true",
+		"spring.boot.admin.ui.cache.noStore: true", "spring.boot.admin.ui.theme.color: #ffffff",
+		"spring.boot.admin.ui.theme.palette.50: #50", "spring.boot.admin.ui.theme.palette.100: #100",
+		"spring.boot.admin.ui.theme.palette.200: #200", "spring.boot.admin.ui.theme.palette.300: #300",
+		"spring.boot.admin.ui.theme.palette.400: #400", "spring.boot.admin.ui.theme.palette.500: #500",
+		"spring.boot.admin.ui.theme.palette.600: #600", "spring.boot.admin.ui.theme.palette.700: #700",
+		"spring.boot.admin.ui.theme.palette.800: #800", "spring.boot.admin.ui.theme.palette.900: #900" })
+@EnableConfigurationProperties({ AdminServerUiProperties.class })
 class AdminServerUiPropertiesTest implements WithAssertions {
 
 	@Autowired
@@ -54,6 +45,7 @@ class AdminServerUiPropertiesTest implements WithAssertions {
 
 	@Nested
 	class CacheTest {
+
 		@Test
 		void maxAge() {
 			assertThat(adminServerUiProperties.getCache().getMaxAge()).isEqualTo(Duration.ofSeconds(-1));
@@ -68,10 +60,12 @@ class AdminServerUiPropertiesTest implements WithAssertions {
 		void noStore() {
 			assertThat(adminServerUiProperties.getCache().getNoStore()).isEqualTo(true);
 		}
+
 	}
 
 	@Nested
 	class ThemeTest {
+
 		@Test
 		void color() {
 			assertThat(adminServerUiProperties.getTheme().getColor()).isEqualTo("#ffffff");
@@ -79,6 +73,7 @@ class AdminServerUiPropertiesTest implements WithAssertions {
 
 		@Nested
 		class PaletteTest {
+
 			@Test
 			void shades() {
 				AdminServerUiProperties.UiTheme theme = adminServerUiProperties.getTheme();
@@ -95,6 +90,9 @@ class AdminServerUiPropertiesTest implements WithAssertions {
 				assertThat(palette.getShade800()).isEqualTo("#800");
 				assertThat(palette.getShade900()).isEqualTo("#900");
 			}
+
 		}
+
 	}
+
 }
