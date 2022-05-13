@@ -3074,11 +3074,11 @@ There are some helpful methods on the application and instances object available
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Name of the view and the route to the view</td>
+<td>Name of the view and the route to the view.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Path where the view will be accessible</td>
+<td>Path where the view will be accessible.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -3094,12 +3094,49 @@ There are some helpful methods on the application and instances object available
 </tr>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_example"><a class="anchor" href="#_example"></a><a class="link" href="#_example">Example</a></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="javascript">SBA.use({
+  install({viewRegistry}) {
+    viewRegistry.addView({
+      <span class="key">name</span>: <span class="string"><span class="delimiter">'</span><span class="content">customSub</span><span class="delimiter">'</span></span>,
+      <span class="key">parent</span>: <span class="string"><span class="delimiter">'</span><span class="content">custom</span><span class="delimiter">'</span></span>, <i class="conum" data-value="1"></i><b>(1)</b>
+      <span class="key">path</span>: <span class="string"><span class="delimiter">'</span><span class="content">custom-sub</span><span class="delimiter">'</span></span>, <i class="conum" data-value="2"></i><b>(2)</b>
+      <span class="key">isChildRoute</span>: <span class="predefined-constant">false</span>, <i class="conum" data-value="3"></i><b>(3)</b>
+      <span class="key">component</span>: customSubitem,
+      <span class="key">label</span>: <span class="string"><span class="delimiter">'</span><span class="content">Custom Sub</span><span class="delimiter">'</span></span>,
+      <span class="key">order</span>: <span class="integer">1000</span>,
+    });
+  }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>References the name of the parent view.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Router path used to navigate to.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Define whether the path should be registered as child route in parent&#8217;s route.
+When set to <code>true</code>, the parent component has to implement <code>&lt;router-view&gt;</code></td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>The <code>routes.txt</code> config with the added route:</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="text">/custom/**</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -3175,8 +3212,8 @@ There are some helpful methods on the application and instances object available
 
     vueI18n.mergeLocaleMessage(<span class="string"><span class="delimiter">'</span><span class="content">en</span><span class="delimiter">'</span></span>, { <i class="conum" data-value="4"></i><b>(4)</b>
       <span class="key">sidebar</span>: {
-        <span class="key">custom</span> : {
-          <span class="key">title</span> : <span class="string"><span class="delimiter">&quot;</span><span class="content">My Custom Extensions</span><span class="delimiter">&quot;</span></span>
+        <span class="key">custom</span>: {
+          <span class="key">title</span>: <span class="string"><span class="delimiter">&quot;</span><span class="content">My Custom Extensions</span><span class="delimiter">&quot;</span></span>
         }
       }
     });
