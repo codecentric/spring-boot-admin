@@ -50,7 +50,8 @@ installables.forEach(view => view.install({
 }));
 
 const routesKnownToBackend = sbaConfig.uiSettings.routes.map(r => new RegExp(`^${r.replace('/**', '(/.*)?')}$`));
-const unknownRoutes = viewRegistry.routes.filter(vr => vr.path !== '/' && !routesKnownToBackend.some(br => br.test(vr.path)));
+const routes = viewRegistry.routes;
+const unknownRoutes = routes.filter(vr => vr.path !== '/' && !routesKnownToBackend.some(br => br.test(vr.path)));
 if (unknownRoutes.length > 0) {
   console.warn(`The routes ${JSON.stringify(unknownRoutes.map(r => r.path))} aren't known to the backend and may be not properly routed!`)
 }
@@ -60,7 +61,7 @@ new Vue({
   router: new VueRouter({
     mode: 'history',
     linkActiveClass: 'is-active',
-    routes: viewRegistry.routes
+    routes
   }),
   el: '#app',
   render(h) {
