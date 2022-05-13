@@ -55,7 +55,6 @@ public class HazelcastEventStoreWithServerConfigTest extends AbstractEventStoreT
 	@Override
 	protected void shutdownStore() {
 		hazelcast.shutdown();
-		;
 	}
 
 	private HazelcastInstance createHazelcastInstance() {
