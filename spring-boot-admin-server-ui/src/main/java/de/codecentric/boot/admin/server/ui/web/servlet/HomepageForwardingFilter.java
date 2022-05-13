@@ -66,8 +66,7 @@ public class HomepageForwardingFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		if (request instanceof HttpServletRequest) {
-			HttpServletRequest httpRequest = (HttpServletRequest) request;
+		if (request instanceof HttpServletRequest httpRequest) {
 			if (this.matcher.test(httpRequest)) {
 				log.trace("Forwarding request with URL {} to index", httpRequest.getRequestURI());
 				request.getRequestDispatcher(this.homepage).forward(request, response);

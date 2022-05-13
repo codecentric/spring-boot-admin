@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -87,10 +87,8 @@ public class UiController {
 		return this.uiExtensions.getJsExtensions();
 	}
 
-	// FIXME: add @Nullable to principal parameter
-	// see https://github.com/spring-projects/spring-framework/issues/25981
 	@ModelAttribute(value = "user", binding = false)
-	public Map<String, Object> getUser(Principal principal) {
+	public Map<String, Object> getUser(@Nullable Principal principal) {
 		if (principal != null) {
 			return singletonMap("name", principal.getName());
 		}
@@ -151,7 +149,6 @@ public class UiController {
 
 	@lombok.Data
 	@JsonInclude(Include.NON_EMPTY)
-	@ConstructorBinding
 	public static class ExternalView {
 
 		/**
@@ -187,7 +184,6 @@ public class UiController {
 
 	@lombok.Data
 	@JsonInclude(Include.NON_EMPTY)
-	@ConstructorBinding
 	public static class ViewSettings {
 
 		/**
