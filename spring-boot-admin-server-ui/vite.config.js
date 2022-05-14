@@ -27,9 +27,8 @@ export default defineConfig(({mode}) => {
         targets: [
           {
             src: [
-              resolve(root, './sba-settings.js'),
-              resolve(root, './variables.css'),
-              resolve(root, 'assets')
+              'sba-settings.js',
+              'assets/',
             ],
             dest: outDir
           }
