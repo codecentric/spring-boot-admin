@@ -26,7 +26,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.reactivestreams.Publisher;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -70,9 +70,8 @@ import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = MailSenderAutoConfiguration.class)
 @EnableConfigurationProperties(NotifierProxyProperties.class)
-@AutoConfigureAfter({ MailSenderAutoConfiguration.class })
 public class AdminServerNotifierAutoConfiguration {
 
 	private static RestTemplate createNotifierRestTemplate(NotifierProxyProperties proxyProperties) {
