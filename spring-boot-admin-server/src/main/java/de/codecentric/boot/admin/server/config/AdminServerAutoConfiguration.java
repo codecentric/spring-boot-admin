@@ -17,7 +17,7 @@
 package de.codecentric.boot.admin.server.config;
 
 import org.reactivestreams.Publisher;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.web.reactive.function.client.WebCl
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -34,6 +33,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.services.ApiMediaTypeHandler;
 import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.EndpointDetectionTrigger;
 import de.codecentric.boot.admin.server.services.EndpointDetector;
@@ -49,12 +49,11 @@ import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrateg
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = WebClientAutoConfiguration.class)
 @Conditional(SpringBootAdminServerEnabledCondition.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @EnableConfigurationProperties(AdminServerProperties.class)
 @ImportAutoConfiguration({ AdminServerInstanceWebClientConfiguration.class, AdminServerWebConfiguration.class })
-@AutoConfigureAfter({ WebClientAutoConfiguration.class })
 @Lazy(false)
 public class AdminServerAutoConfiguration {
 
@@ -88,7 +87,7 @@ public class AdminServerAutoConfiguration {
 	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBulder) {
-		return new StatusUpdater(instanceRepository, instanceWebClientBulder.build());
+		return new StatusUpdater(instanceRepository, instanceWebClientBulder.build(), new ApiMediaTypeHandler());
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
@@ -105,7 +104,8 @@ public class AdminServerAutoConfiguration {
 	public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		InstanceWebClient instanceWebClient = instanceWebClientBuilder.build();
-		ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(instanceWebClient),
+		ChainingStrategy strategy = new ChainingStrategy(
+				new QueryIndexEndpointStrategy(instanceWebClient, new ApiMediaTypeHandler()),
 				new ProbeEndpointsStrategy(instanceWebClient, this.adminServerProperties.getProbedEndpoints()));
 		return new EndpointDetector(instanceRepository, strategy);
 	}
@@ -121,7 +121,7 @@ public class AdminServerAutoConfiguration {
 	@ConditionalOnMissingBean
 	public InfoUpdater infoUpdater(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
-		return new InfoUpdater(instanceRepository, instanceWebClientBuilder.build());
+		return new InfoUpdater(instanceRepository, instanceWebClientBuilder.build(), new ApiMediaTypeHandler());
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")

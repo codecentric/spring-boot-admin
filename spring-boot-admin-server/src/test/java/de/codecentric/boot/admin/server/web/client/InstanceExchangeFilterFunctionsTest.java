@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpHeaders;
@@ -51,8 +51,6 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.web.client.cookies.PerInstanceCookieStore;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 
-import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
-import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.ATTRIBUTE_ENDPOINT;
 import static de.codecentric.boot.admin.server.web.client.InstanceWebClient.ATTRIBUTE_INSTANCE;
 import static java.util.Collections.emptyMap;
@@ -91,16 +89,15 @@ class InstanceExchangeFilterFunctionsTest {
 		void should_convert_v1_actuator() {
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
 					.attribute(ATTRIBUTE_ENDPOINT, "test").build();
-			@SuppressWarnings("deprecation")
 			ClientResponse legacyResponse = ClientResponse.create(HttpStatus.OK)
-					.header(CONTENT_TYPE, ACTUATOR_V1_MEDIATYPE.toString())
+					.header(CONTENT_TYPE, InstanceExchangeFilterFunctions.V1_ACTUATOR_JSON.toString())
 					.header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
 					.body(Flux.just(this.original)).build();
 
 			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (r) -> Mono.just(legacyResponse));
 
 			StepVerifier.create(response).assertNext((r) -> {
-				assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
+				assertThat(r.headers().contentType()).hasValue(new MediaType(ApiVersion.LATEST.getProducedMimeType()));
 				assertThat(r.headers().contentLength()).isEmpty();
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.converted).verifyComplete();
 			}).verifyComplete();
@@ -118,7 +115,7 @@ class InstanceExchangeFilterFunctionsTest {
 			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (r) -> Mono.just(legacyResponse));
 
 			StepVerifier.create(response).assertNext((r) -> {
-				assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
+				assertThat(r.headers().contentType()).hasValue(new MediaType(ApiVersion.LATEST.getProducedMimeType()));
 				assertThat(r.headers().contentLength()).isEmpty();
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.converted).verifyComplete();
 			}).verifyComplete();
@@ -133,14 +130,14 @@ class InstanceExchangeFilterFunctionsTest {
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
 					.attribute(ATTRIBUTE_ENDPOINT, "test").build();
 			ClientResponse response = ClientResponse.create(HttpStatus.OK)
-					.header(CONTENT_TYPE, ActuatorMediaType.V2_JSON)
+					.header(CONTENT_TYPE, ApiVersion.LATEST.getProducedMimeType().toString())
 					.header(CONTENT_LENGTH, Integer.toString(this.original.readableByteCount()))
 					.body(Flux.just(this.original)).build();
 
 			Mono<ClientResponse> convertedResponse = filter.filter(INSTANCE, request, (r) -> Mono.just(response));
 
 			StepVerifier.create(convertedResponse).assertNext((r) -> {
-				assertThat(r.headers().contentType()).hasValue(MediaType.valueOf(ActuatorMediaType.V2_JSON));
+				assertThat(r.headers().contentType()).hasValue(new MediaType(ApiVersion.LATEST.getProducedMimeType()));
 				assertThat(r.headers().contentLength()).hasValue(this.original.readableByteCount());
 				StepVerifier.create(r.body(BodyExtractors.toDataBuffers())).expectNext(this.original).verifyComplete();
 			}).verifyComplete();
@@ -300,8 +297,10 @@ class InstanceExchangeFilterFunctionsTest {
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test")).build();
 
 			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
-				assertThat(req.headers().getAccept()).containsExactly(ACTUATOR_V2_MEDIATYPE, ACTUATOR_V1_MEDIATYPE,
-						MediaType.APPLICATION_JSON);
+				assertThat(req.headers().getAccept()).containsExactly(
+						new MediaType(ApiVersion.V3.getProducedMimeType()),
+						new MediaType(ApiVersion.V2.getProducedMimeType()),
+						InstanceExchangeFilterFunctions.V1_ACTUATOR_JSON, MediaType.APPLICATION_JSON);
 				return Mono.just(ClientResponse.create(HttpStatus.OK).build());
 			});
 

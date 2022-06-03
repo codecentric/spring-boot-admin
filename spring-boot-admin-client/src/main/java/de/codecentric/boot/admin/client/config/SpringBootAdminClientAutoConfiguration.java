@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -60,11 +61,10 @@ import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadat
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = { WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class,
+		WebClientAutoConfiguration.class })
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
-@AutoConfigureAfter({ WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class,
-		WebClientAutoConfiguration.class })
 @EnableConfigurationProperties({ ClientProperties.class, InstanceProperties.class, ServerProperties.class,
 		ManagementServerProperties.class })
 public class SpringBootAdminClientAutoConfiguration {

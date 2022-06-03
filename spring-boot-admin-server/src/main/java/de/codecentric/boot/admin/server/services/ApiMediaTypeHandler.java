@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.utils;
+package de.codecentric.boot.admin.server.services;
 
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import java.util.stream.Stream;
 
-public final class MediaType {
+import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.http.MediaType;
 
-	public static final org.springframework.http.MediaType ACTUATOR_V1_MEDIATYPE = org.springframework.http.MediaType
-			.parseMediaType("application/vnd.spring-boot.actuator.v1+json");
+public class ApiMediaTypeHandler {
 
-	public static final org.springframework.http.MediaType ACTUATOR_V2_MEDIATYPE = org.springframework.http.MediaType
-			.parseMediaType(ActuatorMediaType.V2_JSON);
-
-	private MediaType() {
+	public boolean isApiMediaType(MediaType mediaType) {
+		return Stream.of(ApiVersion.values()).map(ApiVersion::getProducedMimeType)
+				.anyMatch((mimeType) -> mimeType.isCompatibleWith(mediaType));
 	}
 
 }

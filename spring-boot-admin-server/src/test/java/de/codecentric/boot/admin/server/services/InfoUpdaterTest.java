@@ -62,6 +62,8 @@ public class InfoUpdaterTest {
 
 	private InstanceRepository repository;
 
+	private final ApiMediaTypeHandler apiMediaTypeHandler = new ApiMediaTypeHandler();
+
 	@BeforeEach
 	public void setup() {
 		this.eventStore = new InMemoryEventStore();
@@ -69,7 +71,8 @@ public class InfoUpdaterTest {
 		this.updater = new InfoUpdater(this.repository,
 				InstanceWebClient.builder().filter(rewriteEndpointUrl())
 						.filter(retry(0, singletonMap(Endpoint.INFO, 1)))
-						.filter(timeout(Duration.ofSeconds(2), emptyMap())).build());
+						.filter(timeout(Duration.ofSeconds(2), emptyMap())).build(),
+				this.apiMediaTypeHandler);
 		this.wireMock.start();
 	}
 
@@ -152,7 +155,7 @@ public class InfoUpdaterTest {
 
 	@Test
 	public void should_clear_info_on_exception() {
-		this.updater = new InfoUpdater(this.repository, InstanceWebClient.builder().build());
+		this.updater = new InfoUpdater(this.repository, InstanceWebClient.builder().build(), this.apiMediaTypeHandler);
 
 		// given
 		Instance instance = Instance.create(InstanceId.of("onl"))
