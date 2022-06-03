@@ -117,10 +117,6 @@ import Application from '../../../services/application';
 
 export default {
   props: {
-    application: {
-      type: Application,
-      required: true
-    },
     instance: {
       type: Instance,
       required: true
@@ -133,7 +129,6 @@ export default {
   emits: ['refresh', 'update'],
   data: () => ({
     error: null,
-    scope: 'instance',
     resetStatus: null,
     updateStatus: null,
     managedProperties: [{

@@ -29,7 +29,9 @@ spring:
 
 ---
 spring:
-  profiles: dev
+  config:
+    activate:
+      on-profile: dev
   boot:
     admin:
       ui:
@@ -41,11 +43,11 @@ spring:
 
 ---
 spring:
-  profiles: insecure
-
+  config:
+    activate:
+      on-profile: insecure
 ---
 spring:
-  profiles: secure
   security:
     user:
       name: "user"
@@ -59,5 +61,8 @@ spring:
           metadata:
             user.name: "user"         #These two are needed so that the server
             user.password: "password" #can access the protected client endpoints
+  config:
+    activate:
+      on-profile: secure
 
 

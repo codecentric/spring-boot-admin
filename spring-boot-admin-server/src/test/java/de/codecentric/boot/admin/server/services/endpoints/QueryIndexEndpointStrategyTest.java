@@ -37,6 +37,7 @@ import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.services.ApiMediaTypeHandler;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -57,6 +58,8 @@ import static java.util.Collections.singletonMap;
 public class QueryIndexEndpointStrategyTest {
 
 	public WireMockServer wireMock = new WireMockServer(wireMockConfig().dynamicPort().dynamicHttpsPort());
+
+	private final ApiMediaTypeHandler apiMediaTypeHandler = new ApiMediaTypeHandler();
 
 	private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
 			.webClient(WebClient.builder().clientConnector(httpConnector())).filter(rewriteEndpointUrl())
@@ -86,9 +89,10 @@ public class QueryIndexEndpointStrategyTest {
 				+ "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" + host + "/mgmt/info\"}}}";
 
 		this.wireMock.stubFor(get("/mgmt")
-				.willReturn(ok(body).withHeader("Content-Type", ApiVersion.V2.getProducedMimeType().toString())));
+				.willReturn(ok(body).withHeader("Content-Type", ApiVersion.LATEST.getProducedMimeType().toString())));
 
-		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
 
 		// when
 		StepVerifier.create(strategy.detectEndpoints(instance))
@@ -110,9 +114,10 @@ public class QueryIndexEndpointStrategyTest {
 				+ "/mgmt/stats\"},\"info\":{\"templated\":false,\"href\":\"" + host + "/mgmt/info\"}}}";
 
 		this.wireMock.stubFor(get("/mgmt")
-				.willReturn(ok(body).withHeader("Content-Type", ApiVersion.V2.getProducedMimeType().toString())));
+				.willReturn(ok(body).withHeader("Content-Type", ApiVersion.LATEST.getProducedMimeType().toString())));
 
-		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
 
 		// when
 		String secureHost = "https://localhost:" + this.wireMock.httpsPort();
@@ -130,10 +135,11 @@ public class QueryIndexEndpointStrategyTest {
 				.create("test", this.wireMock.url("/mgmt/health")).managementUrl(this.wireMock.url("/mgmt")).build());
 
 		String body = "{\"_links\":{}}";
-		this.wireMock.stubFor(get("/mgmt")
-				.willReturn(okJson(body).withHeader("Content-Type", ApiVersion.V2.getProducedMimeType().toString())));
+		this.wireMock.stubFor(get("/mgmt").willReturn(
+				okJson(body).withHeader("Content-Type", ApiVersion.LATEST.getProducedMimeType().toString())));
 
-		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
 
 		// when
 		StepVerifier.create(strategy.detectEndpoints(instance))
@@ -149,7 +155,8 @@ public class QueryIndexEndpointStrategyTest {
 
 		this.wireMock.stubFor(get("/mgmt").willReturn(notFound()));
 
-		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
 
 		// when
 		StepVerifier.create(strategy.detectEndpoints(instance))
@@ -165,7 +172,8 @@ public class QueryIndexEndpointStrategyTest {
 
 		this.wireMock.stubFor(get("/mgmt").willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
 
-		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
 
 		// when
 		StepVerifier.create(strategy.detectEndpoints(instance))
@@ -182,7 +190,8 @@ public class QueryIndexEndpointStrategyTest {
 		String body = "HELLOW WORLD";
 		this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)));
 
-		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
 
 		// when
 		StepVerifier.create(strategy.detectEndpoints(instance))
@@ -197,7 +206,8 @@ public class QueryIndexEndpointStrategyTest {
 				.register(Registration.create("test", this.wireMock.url("/app/health"))
 						.managementUrl(this.wireMock.url("/app")).serviceUrl(this.wireMock.url("/app")).build());
 
-		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
 
 		// when/then
 		StepVerifier.create(strategy.detectEndpoints(instance)).verifyComplete();
@@ -216,9 +226,10 @@ public class QueryIndexEndpointStrategyTest {
 				.willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)).willSetStateTo("recovered"));
 
 		this.wireMock.stubFor(get("/mgmt").inScenario("retry").whenScenarioStateIs("recovered")
-				.willReturn(ok(body).withHeader("Content-Type", ApiVersion.V2.getProducedMimeType().toString())));
+				.willReturn(ok(body).withHeader("Content-Type", ApiVersion.LATEST.getProducedMimeType().toString())));
 
-		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient);
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
 
 		// when
 		StepVerifier.create(strategy.detectEndpoints(instance))

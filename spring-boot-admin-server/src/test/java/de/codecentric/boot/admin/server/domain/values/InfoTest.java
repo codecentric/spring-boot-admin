@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.assertj.core.data.MapEntry;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +35,8 @@ public class InfoTest {
 
 		Iterator<Map.Entry<String, Object>> iterator = Info.from(map).getValues().entrySet().iterator();
 
-		assertThat(iterator.next()).isEqualTo(Map.entry("z", "1"));
-		assertThat(iterator.next()).isEqualTo(Map.entry("x", "2"));
+		assertThat(iterator.next()).isEqualTo(MapEntry.entry("z", "1"));
+		assertThat(iterator.next()).isEqualTo(MapEntry.entry("x", "2"));
 	}
 
 }

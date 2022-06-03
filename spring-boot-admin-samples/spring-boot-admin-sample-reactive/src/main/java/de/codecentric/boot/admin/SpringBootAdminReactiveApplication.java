@@ -24,11 +24,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.notify.LoggingNotifier;
+import de.codecentric.boot.admin.server.notify.Notifier;
 
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
@@ -65,8 +65,8 @@ public class SpringBootAdminReactiveApplication {
 	}
 
 	@Bean
-	public LoggingNotifier loggerNotifier(InstanceRepository repository) {
-		return new LoggingNotifier(repository);
+	public Notifier notifier() {
+		return (e) -> Mono.empty();
 	}
 
 }
