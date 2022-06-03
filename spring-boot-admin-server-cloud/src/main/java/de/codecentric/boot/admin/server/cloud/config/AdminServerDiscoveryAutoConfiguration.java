@@ -42,8 +42,8 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
 @AutoConfiguration(after = AdminServerAutoConfiguration.class,
-	afterName = {"org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
-		"org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration"})
+		afterName = { "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
+				"org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration" })
 @ConditionalOnSingleCandidate(DiscoveryClient.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)

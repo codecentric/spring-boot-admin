@@ -104,7 +104,8 @@ public class AdminServerAutoConfiguration {
 	public EndpointDetector endpointDetector(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		InstanceWebClient instanceWebClient = instanceWebClientBuilder.build();
-		ChainingStrategy strategy = new ChainingStrategy(new QueryIndexEndpointStrategy(instanceWebClient, new ApiMediaTypeHandler()),
+		ChainingStrategy strategy = new ChainingStrategy(
+				new QueryIndexEndpointStrategy(instanceWebClient, new ApiMediaTypeHandler()),
 				new ProbeEndpointsStrategy(instanceWebClient, this.adminServerProperties.getProbedEndpoints()));
 		return new EndpointDetector(instanceRepository, strategy);
 	}

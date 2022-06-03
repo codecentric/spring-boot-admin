@@ -57,7 +57,8 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
-	private static final String ACTUATOR_CONTENT_TYPE = ApiVersion.LATEST.getProducedMimeType().toString() + ";charset=UTF-8";
+	private static final String ACTUATOR_CONTENT_TYPE = ApiVersion.LATEST.getProducedMimeType().toString()
+			+ ";charset=UTF-8";
 
 	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
 	};
@@ -100,39 +101,45 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	@Test
 	public void should_return_status_503() {
 		// 503 on invalid instance
-		this.client.get().uri("/instances/{instanceId}/actuator/info", "UNKNOWN").accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
-				.exchange().expectStatus().isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+		this.client.get().uri("/instances/{instanceId}/actuator/info", "UNKNOWN")
+				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
+				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
 	@Test
 	public void should_return_status_404() {
 		// 404 on non-existent endpoint
 		this.client.get().uri("/instances/{instanceId}/actuator/not-exist", this.instanceId)
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus().isEqualTo(HttpStatus.NOT_FOUND);
+				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
+				.isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
 	public void should_return_status_502() {
 		// 502 on invalid response
-		this.client.get().uri("/instances/{instanceId}/actuator/invalid", this.instanceId).accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
-				.exchange().expectStatus().isEqualTo(HttpStatus.BAD_GATEWAY);
+		this.client.get().uri("/instances/{instanceId}/actuator/invalid", this.instanceId)
+				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
+				.isEqualTo(HttpStatus.BAD_GATEWAY);
 	}
 
 	@Test
 	public void should_return_status_504() {
 		// 502 on invalid response
-		this.client.get().uri("/instances/{instanceId}/actuator/invalid", this.instanceId).accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
-				.exchange().expectStatus().isEqualTo(HttpStatus.BAD_GATEWAY);
+		this.client.get().uri("/instances/{instanceId}/actuator/invalid", this.instanceId)
+				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
+				.isEqualTo(HttpStatus.BAD_GATEWAY);
 	}
 
 	@Test
 	public void should_forward_requests() {
-		this.client.options().uri("/instances/{instanceId}/actuator/env", this.instanceId).accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
-				.exchange().expectStatus().isEqualTo(HttpStatus.OK).expectHeader()
+		this.client.options().uri("/instances/{instanceId}/actuator/env", this.instanceId)
+				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
+				.isEqualTo(HttpStatus.OK).expectHeader()
 				.valueEquals(ALLOW, HttpMethod.HEAD.name(), HttpMethod.GET.name(), HttpMethod.OPTIONS.name());
 
-		this.client.get().uri("/instances/{instanceId}/actuator/test", this.instanceId).accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
-				.exchange().expectStatus().isEqualTo(HttpStatus.OK).expectBody().json("{ \"foo\" : \"bar\" }");
+		this.client.get().uri("/instances/{instanceId}/actuator/test", this.instanceId)
+				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
+				.isEqualTo(HttpStatus.OK).expectBody().json("{ \"foo\" : \"bar\" }");
 
 		this.client.post().uri("/instances/{instanceId}/actuator/post", this.instanceId).bodyValue("PAYLOAD").exchange()
 				.expectStatus().isEqualTo(HttpStatus.OK);
@@ -149,8 +156,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	@Test
 	public void should_forward_requests_with_spaces_in_path() {
 		this.client.get().uri("/instances/{instanceId}/actuator/test/has spaces", this.instanceId)
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus().isEqualTo(HttpStatus.OK).expectBody()
-				.json("{ \"foo\" : \"bar-with-spaces\" }");
+				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
+				.isEqualTo(HttpStatus.OK).expectBody().json("{ \"foo\" : \"bar-with-spaces\" }");
 
 		this.wireMock.verify(getRequestedFor(urlEqualTo("/instance1/test/has%20spaces")));
 	}
@@ -159,7 +166,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	public void should_forward_requests_to_mutliple_instances() {
 		String instance2Id = registerInstance("/instance2");
 
-		this.client.get().uri("applications/test/actuator/test").accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
+		this.client.get().uri("applications/test/actuator/test")
+				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
 				.isEqualTo(HttpStatus.OK).expectBody()
 				.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].status").isEqualTo(200)
 				.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].body").isEqualTo("{ \"foo\" : \"bar\" }")
@@ -197,8 +205,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 							"\"timeout\": { \"href\": \"" + managementUrl + "/timeout\", \"templated\": false }" +
 							" } }";
 		//@formatter:on
-		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/health"))
-				.willReturn(ok("{ \"status\" : \"UP\" }").withHeader(CONTENT_TYPE, ApiVersion.LATEST.getProducedMimeType().toString())));
+		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/health")).willReturn(ok("{ \"status\" : \"UP\" }")
+				.withHeader(CONTENT_TYPE, ApiVersion.LATEST.getProducedMimeType().toString())));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/info"))
 				.willReturn(ok("{ }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 		this.wireMock.stubFor(options(urlEqualTo(managementPath + "/env")).willReturn(

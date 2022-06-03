@@ -79,9 +79,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 				return response.releaseBody().then(Mono.empty());
 			}
 
-			if (!response.headers().contentType()
-				.filter(this.apiMediaTypeHandler::isApiMediaType)
-				.isPresent()) {
+			if (!response.headers().contentType().filter(this.apiMediaTypeHandler::isApiMediaType).isPresent()) {
 				log.debug("Querying actuator-index for instance {} on '{}' failed with incompatible Content-Type '{}'.",
 						instance.getId(), managementUrl,
 						response.headers().contentType().map(Objects::toString).orElse("(missing)"));

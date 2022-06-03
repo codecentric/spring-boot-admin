@@ -52,7 +52,8 @@ public class InfoUpdater {
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
-	public InfoUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient, ApiMediaTypeHandler apiMediaTypeHandler) {
+	public InfoUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
+			ApiMediaTypeHandler apiMediaTypeHandler) {
 		this.repository = repository;
 		this.instanceWebClient = instanceWebClient;
 		this.apiMediaTypeHandler = apiMediaTypeHandler;
@@ -77,10 +78,9 @@ public class InfoUpdater {
 	}
 
 	protected Mono<Info> convertInfo(Instance instance, ClientResponse response) {
-		if (response.statusCode().is2xxSuccessful()
-			&& response.headers().contentType()
-			.filter((mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || this.apiMediaTypeHandler.isApiMediaType(mt))
-			.isPresent()) {
+		if (response.statusCode().is2xxSuccessful() && response.headers().contentType().filter(
+				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || this.apiMediaTypeHandler.isApiMediaType(mt))
+				.isPresent()) {
 			return response.bodyToMono(RESPONSE_TYPE).map(Info::from).defaultIfEmpty(Info.empty());
 		}
 		log.info("Couldn't retrieve info for {}: {}", instance, response.statusCode());

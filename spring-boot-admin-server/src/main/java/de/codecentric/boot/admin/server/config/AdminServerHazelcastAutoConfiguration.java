@@ -41,7 +41,7 @@ import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
 
 @AutoConfiguration(before = { AdminServerAutoConfiguration.class, AdminServerNotifierAutoConfiguration.class },
-	after = HazelcastAutoConfiguration.class)
+		after = HazelcastAutoConfiguration.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnSingleCandidate(HazelcastInstance.class)
 @ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enabled", matchIfMissing = true)

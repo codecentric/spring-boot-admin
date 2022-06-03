@@ -57,7 +57,8 @@ public class StatusUpdater {
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
-	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient, ApiMediaTypeHandler apiMediaTypeHandler) {
+	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
+			ApiMediaTypeHandler apiMediaTypeHandler) {
 		this.repository = repository;
 		this.instanceWebClient = instanceWebClient;
 		this.apiMediaTypeHandler = apiMediaTypeHandler;
@@ -81,9 +82,9 @@ public class StatusUpdater {
 	}
 
 	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
-		boolean hasCompatibleContentType = response.headers().contentType()
-			.filter((mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || this.apiMediaTypeHandler.isApiMediaType(mt))
-			.isPresent();
+		boolean hasCompatibleContentType = response.headers().contentType().filter(
+				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || this.apiMediaTypeHandler.isApiMediaType(mt))
+				.isPresent();
 
 		StatusInfo statusInfoFromStatus = this.getStatusInfoFromStatus(response.statusCode(), emptyMap());
 		if (hasCompatibleContentType) {

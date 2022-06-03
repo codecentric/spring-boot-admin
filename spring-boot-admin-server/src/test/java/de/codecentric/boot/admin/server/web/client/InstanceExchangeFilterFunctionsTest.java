@@ -300,8 +300,7 @@ class InstanceExchangeFilterFunctionsTest {
 				assertThat(req.headers().getAccept()).containsExactly(
 						new MediaType(ApiVersion.V3.getProducedMimeType()),
 						new MediaType(ApiVersion.V2.getProducedMimeType()),
-						InstanceExchangeFilterFunctions.V1_ACTUATOR_JSON,
-						MediaType.APPLICATION_JSON);
+						InstanceExchangeFilterFunctions.V1_ACTUATOR_JSON, MediaType.APPLICATION_JSON);
 				return Mono.just(ClientResponse.create(HttpStatus.OK).build());
 			});
 

@@ -62,7 +62,7 @@ import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebA
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 @AutoConfiguration(after = { WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class,
-	WebClientAutoConfiguration.class })
+		WebClientAutoConfiguration.class })
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @EnableConfigurationProperties({ ClientProperties.class, InstanceProperties.class, ServerProperties.class,

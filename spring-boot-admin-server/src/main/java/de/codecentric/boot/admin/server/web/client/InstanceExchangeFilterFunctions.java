@@ -57,10 +57,8 @@ public final class InstanceExchangeFilterFunctions {
 	static MediaType V1_ACTUATOR_JSON = MediaType.valueOf("application/vnd.spring-boot.actuator.v1+json");
 
 	private static final List<MediaType> DEFAULT_ACCEPT_MEDIA_TYPES = asList(
-		new MediaType(ApiVersion.V3.getProducedMimeType()),
-		new MediaType(ApiVersion.V2.getProducedMimeType()),
-		V1_ACTUATOR_JSON, MediaType.APPLICATION_JSON
-	);
+			new MediaType(ApiVersion.V3.getProducedMimeType()), new MediaType(ApiVersion.V2.getProducedMimeType()),
+			V1_ACTUATOR_JSON, MediaType.APPLICATION_JSON);
 
 	private InstanceExchangeFilterFunctions() {
 	}
@@ -137,13 +135,14 @@ public final class InstanceExchangeFilterFunctions {
 
 	private static Boolean isLegacyResponse(ClientResponse response) {
 		return response.headers().contentType()
-			.filter((t) -> V1_ACTUATOR_JSON.isCompatibleWith(t) || MediaType.APPLICATION_JSON.isCompatibleWith(t))
-			.isPresent();
+				.filter((t) -> V1_ACTUATOR_JSON.isCompatibleWith(t) || MediaType.APPLICATION_JSON.isCompatibleWith(t))
+				.isPresent();
 	}
 
 	private static ClientResponse convertLegacyResponse(LegacyEndpointConverter converter, ClientResponse response) {
 		return response.mutate().headers((headers) -> {
-			headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(ApiVersion.LATEST.getProducedMimeType().toString()));
+			headers.replace(HttpHeaders.CONTENT_TYPE,
+					singletonList(ApiVersion.LATEST.getProducedMimeType().toString()));
 			headers.remove(HttpHeaders.CONTENT_LENGTH);
 		}).body(converter::convert).build();
 	}

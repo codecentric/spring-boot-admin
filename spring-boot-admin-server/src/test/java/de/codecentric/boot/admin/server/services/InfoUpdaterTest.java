@@ -72,7 +72,7 @@ public class InfoUpdaterTest {
 				InstanceWebClient.builder().filter(rewriteEndpointUrl())
 						.filter(retry(0, singletonMap(Endpoint.INFO, 1)))
 						.filter(timeout(Duration.ofSeconds(2), emptyMap())).build(),
-			this.apiMediaTypeHandler);
+				this.apiMediaTypeHandler);
 		this.wireMock.start();
 	}
 
