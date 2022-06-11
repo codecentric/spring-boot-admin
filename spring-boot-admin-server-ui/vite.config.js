@@ -14,6 +14,7 @@ export default defineConfig(({mode}) => {
 
   return {
     root,
+    base: '',
     logLevel: "info",
     define: {
       '__PROJECT_VERSION__': JSON.stringify(`${process.env.PROJECT_VERSION || '0.0.0'}`)
@@ -56,7 +57,6 @@ export default defineConfig(({mode}) => {
       extensions: ['.vue', '.js'],
     },
     server: {
-      base: '/',
       proxy: {
         '^(/sba-settings.js|/variables.css)': {
           target: 'http://localhost:8080',
