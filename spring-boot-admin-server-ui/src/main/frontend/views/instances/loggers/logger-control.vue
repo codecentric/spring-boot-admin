@@ -62,9 +62,7 @@ export default {
   },
   methods: {
     hasEffectiveLevel(level) {
-      let b = this.value.some(l => l.effectiveLevel === level);
-      console.log("Checking level", this.value, level, b)
-      return b
+      return this.value.some(l => l.effectiveLevel === level)
     },
     hasConfiguredLevel(level) {
       return this.value.some(l => l.configuredLevel === level)
