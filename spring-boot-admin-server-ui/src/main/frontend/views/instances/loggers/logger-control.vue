@@ -20,7 +20,7 @@
       <sba-button
         v-for="levelOption in levelOptions"
         :key="levelOption"
-        :button-class="cssClass(levelOption)"
+        :class="cssClass(levelOption)"
         @click.stop="selectLevel(levelOption)"
         v-text="levelOption"
       />
@@ -62,7 +62,9 @@ export default {
   },
   methods: {
     hasEffectiveLevel(level) {
-      return this.value.some(l => l.effectiveLevel === level)
+      let b = this.value.some(l => l.effectiveLevel === level);
+      console.log("Checking level", this.value, level, b)
+      return b
     },
     hasConfiguredLevel(level) {
       return this.value.some(l => l.configuredLevel === level)
