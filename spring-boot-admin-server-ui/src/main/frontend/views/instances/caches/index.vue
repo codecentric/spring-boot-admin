@@ -20,7 +20,7 @@
       <sba-sticky-subnav>
         <div class="flex gap-2">
           <sba-action-button-scoped
-            :instance-count="2"
+            :instance-count="this.application.instances.length"
             :action-fn="clearCaches"
             :show-info="false"
           >
