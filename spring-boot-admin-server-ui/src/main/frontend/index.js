@@ -26,8 +26,8 @@ import {createApp, h, reactive} from 'vue';
 import i18n from './i18n';
 import router from './router.js';
 import {createApplicationStore, useApplicationStore} from "./composables/useApplicationStore.js";
-import {createViewRegistry, useViewRegistry} from "./composables/ViewRegistry.js";
-import about from "./views/about/index.vue";
+import {createViewRegistry} from "./composables/ViewRegistry.js";
+import { worker } from './mocks/browser';
 
 moment.locale(navigator.language.split('-')[0]);
 
@@ -39,6 +39,14 @@ const installables = [
   ...views,
   ...sbaConfig.extensions
 ];
+
+if (process.env.NODE_ENV === 'development') {
+  worker.start({
+    serviceWorker: {
+      url: "./mockServiceWorker.js"
+    }
+  })
+}
 
 installables.forEach(installable => {
   installable.install({

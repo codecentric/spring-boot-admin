@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <table class="auditevents table is-hoverable is-fullwidth">
+  <table class="auditevents table w-full">
     <thead>
       <tr>
         <th v-html="$t('instances.auditevents.timestamp')" />

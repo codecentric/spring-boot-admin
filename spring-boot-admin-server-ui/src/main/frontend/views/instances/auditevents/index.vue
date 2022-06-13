@@ -15,81 +15,60 @@
   -->
 
 <template>
-  <section class="section">
-    <div class="field is-horizontal">
-      <div class="field-body">
-        <div class="field">
-          <p class="control is-expanded">
-            <input
-              v-model.trim="filter.principal"
-              class="input"
-              type="search"
-              :placeholder="$t('instances.auditevents.principal')"
-            >
-          </p>
+  <sba-instance-section
+    :error="error"
+    :loading="isLoading"
+  >
+    <template #before>
+      <sba-sticky-subnav>
+        <div class="flex gap-2">
+          <sba-input
+            name="filter_principal"
+            v-model.trim="filter.principal"
+            type="search"
+            :placeholder="$t('instances.auditevents.principal')"
+          />
+          <sba-input
+            name="filter_type"
+            v-model="filter.type"
+            :list="[
+              'AUTHENTICATION_FAILURE',
+              'AUTHENTICATION_SUCCESS',
+              'AUTHENTICATION_SWITCH',
+              'AUTHORIZATION_FAILURE',
+            ]"
+            type="search"
+            :placeholder="$t('instances.auditevents.type')"
+          />
+
+          <sba-input
+            name="filter_datetime"
+            type="datetime-local"
+            placeholder="Date"
+            :value="formatDate(filter.after)"
+            @input="filter.after = parseDate($event.target.value)"
+          />
         </div>
-        <div class="field">
-          <p class="control is-expanded">
-            <input
-              v-model="filter.type"
-              list="auditevent-type"
-              class="input"
-              type="search"
-              :placeholder="$t('instances.auditevents.type')"
-            >
-            <datalist id="auditevent-type">
-              <option value="AUTHENTICATION_FAILURE" />
-              <option value="AUTHENTICATION_SUCCESS" />
-              <option value="AUTHENTICATION_SWITCH" />
-              <option value="AUTHORIZATION_FAILURE" />
-            </datalist>
-          </p>
-        </div>
-        <div class="field">
-          <p class="control is-expanded">
-            <input
-              class="input"
-              type="datetime-local"
-              placeholder="Date"
-              :value="formatDate(filter.after)"
-              @input="filter.after = parseDate($event.target.value)"
-            >
-          </p>
-        </div>
-      </div>
-    </div>
-    <template>
-      <div
-        v-if="error"
-        class="message is-danger"
-      >
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon
-              class="has-text-danger"
-              icon="exclamation-triangle"
-            />
-            <span v-text="$t('term.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
-      <div
-        v-if="isOldAuditevents"
-        class="message is-warning"
-      >
-        <div
-          class="message-body"
-          v-html="$t('instances.auditevents.audit_log_not_supported_spring_boot_1')"
-        />
-      </div>
-      <auditevents-list
-        :instance="instance"
-        :events="events"
-        :is-loading="isLoading"
-      />
+      </sba-sticky-subnav>
     </template>
-  </section>
+
+    <sba-panel :seamless="true">
+        <div
+          v-if="isOldAuditevents"
+          class="message is-warning"
+        >
+          <div
+            class="message-body"
+            v-html="$t('instances.auditevents.audit_log_not_supported_spring_boot_1')"
+          />
+        </div>
+        <auditevents-list
+          :instance="instance"
+          :events="events"
+          :is-loading="isLoading"
+        />
+    </sba-panel>
+  </sba-instance-section>
 </template>
 
 <script>
@@ -100,6 +79,10 @@ import AuditeventsList from './auditevents-list.vue';
 import {uniqBy} from 'lodash-es';
 import moment from 'moment';
 import {VIEW_GROUP} from '../../ViewGroup.js';
+import SbaInstanceSection from "../shell/sba-instance-section.vue";
+import SbaStickySubnav from "../../../components/sba-sticky-subnav.vue";
+import SbaPanel from "../../../components/sba-panel.vue";
+import SbaInput from "../../../components/sba-input.vue";
 
 class Auditevent {
   constructor({timestamp, ...event}) {
@@ -130,7 +113,7 @@ class Auditevent {
 }
 
 export default {
-  components: {AuditeventsList},
+  components: {SbaInput, SbaInstanceSection, SbaStickySubnav, SbaPanel, AuditeventsList},
   mixins: [subscribing],
   props: {
     instance: {

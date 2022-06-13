@@ -120,6 +120,6 @@
     "npm": ">=8"
   },
   "msw": {
-    "workerDirectory": "src/main/frontend/assets"
+    "workerDirectory": "./public"
   }
 }
