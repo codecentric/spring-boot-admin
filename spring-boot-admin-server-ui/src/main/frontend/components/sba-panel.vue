@@ -20,7 +20,7 @@
       v-if="hasTitle"
       ref="header"
       v-sticks-below="headerSticksBelow"
-      class="rounded-t flex justify-between px-4 pt-5 pb-5  sm:px-6 items-center bg-white transition-all"
+      class="rounded-t flex justify-between px-4 pt-5 pb-5 border-b sm:px-6 items-center bg-white transition-all"
     >
       <h3 class="text-lg leading-6 font-medium text-gray-900">
         <span v-text="title" />&nbsp;
