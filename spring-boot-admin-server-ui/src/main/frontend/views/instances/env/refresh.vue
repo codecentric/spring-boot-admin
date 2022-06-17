@@ -34,7 +34,7 @@ import Instance from '@/services/instance';
 import Application from '@/services/application';
 import SbaActionButtonScoped from '@/components/sba-action-button-scoped';
 import SbaModal from '@/components/sba-modal';
-import SbaPanel from "@/components/sba-panel";
+import SbaPanel from '@/components/sba-panel';
 
 export default {
   components: {SbaActionButtonScoped, SbaPanel, SbaModal},
