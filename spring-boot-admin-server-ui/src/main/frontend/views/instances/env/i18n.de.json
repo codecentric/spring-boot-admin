@@ -17,7 +17,8 @@
       "no_properties": "Keine Eigenschaften gesetzt",
       "refresh": "Umgebungskonfiguration neu laden",
       "application": "Anwendung",
-      "instance": "Instanz"
+      "instance": "Instanz",
+      "refreshed_configurations": "Aktualisierte Konfigurationen:"
     }
   }
 }

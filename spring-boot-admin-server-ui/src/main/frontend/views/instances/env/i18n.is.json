@@ -18,7 +18,8 @@
       "title": "Umhverfisstjórnandi",
       "refresh": "Refresh environment",
       "application": "Application",
-      "instance": "Instance"
+      "instance": "Instance",
+      "refreshed_configurations": "Refreshed configurations:"
     }
   }
 }
