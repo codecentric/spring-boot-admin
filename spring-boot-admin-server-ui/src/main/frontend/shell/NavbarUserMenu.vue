@@ -16,6 +16,11 @@
     </template>
 
     <template #menuItems>
+      <div class="link link--no-hover" v-if="userName">
+        <span>
+          {{$t('navbar.signedInAs')}} <strong v-text="userName"></strong>
+        </span>
+      </div>
 
       <NavbarLink v-for="userSubMenuItem in submenuItems" :key="userSubMenuItem.name" :view="userSubMenuItem"/>
 
@@ -53,6 +58,10 @@ export default {
       type: String,
       default: undefined
     },
+    userName: {
+      type: String,
+      default: undefined
+    },
     csrfToken: {
       type: String,
       default: undefined
@@ -67,6 +76,10 @@ export default {
 
 <style scoped>
 .link {
-  @apply flex w-full items-center rounded-md px-3 py-2 text-sm hover:bg-gray-100;
+  @apply flex w-full items-center rounded-md px-3 py-2 text-sm hover:bg-gray-100 break-all;
+}
+
+.link--no-hover {
+  @apply hover:bg-white;
 }
 </style>

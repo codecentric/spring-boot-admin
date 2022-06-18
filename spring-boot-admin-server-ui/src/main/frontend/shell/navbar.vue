@@ -160,11 +160,9 @@
               class="text-base font-medium leading-none text-white"
               v-text="userName"
             />
-            adsa
           </div>
         </div>
         <div class="mt-3 px-2 space-y-1 text-black">
-
           <NavbarLink v-for="userSubMenuItem in userSubMenuItems" :key="userSubMenuItem.name"
                        :applications="applications" :error="error" :view="userSubMenuItem"/>
 
@@ -231,7 +229,7 @@ export default {
   data: () => ({
     showMenu: false,
     brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
-    userName: 'Stephan Köninger',
+    userName: 'a.very.long.email.address.that.may.break@example.com',
     csrfToken: null,
     csrfParameterName: null,
     currentLanguage: null
@@ -257,7 +255,7 @@ export default {
   },
   created() {
     this.brand = sbaConfig.uiSettings.brand;
-    this.userName = sbaConfig.user ? sbaConfig.user.name : null;
+    //this.userName = sbaConfig.user ? sbaConfig.user.name : null;
     this.availableLocales = AVAILABLE_LANGUAGES;
     this.csrfToken = readCookie('XSRF-TOKEN');
     this.csrfParameterName = sbaConfig.csrf.parameterName;
