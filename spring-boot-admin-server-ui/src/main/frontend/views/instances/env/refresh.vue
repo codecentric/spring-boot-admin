@@ -87,7 +87,7 @@ export default {
                 changedProperties: JSON.parse(entry.body),
               })
           );
-          this.isModalOpen = this.refreshedProperties.some(props => { return props.changedProperties.length > 0; });
+          this.isModalOpen = this.refreshedProperties.some(props =>  props.changedProperties.length > 0;);
         });
       }
     },
