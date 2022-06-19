@@ -58,8 +58,8 @@ public class SpringBootAdminReactiveApplication {
 		return http
 				.authorizeExchange((authorizeExchange) -> authorizeExchange
 						.pathMatchers(this.adminServer.path("/assets/**")).permitAll()
-						.pathMatchers("/actuator/health/**").permitAll()
-						.pathMatchers(this.adminServer.path("/login")).permitAll().anyExchange().authenticated())
+						.pathMatchers("/actuator/health/**").permitAll().pathMatchers(this.adminServer.path("/login"))
+						.permitAll().anyExchange().authenticated())
 				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login")))
 				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
 				.httpBasic(Customizer.withDefaults()).csrf(ServerHttpSecurity.CsrfSpec::disable).build();
