@@ -18,8 +18,7 @@
       "title": "環境管理",
       "refresh": "Refresh environment",
       "application": "Application",
-      "instance": "Instance",
-      "refreshed_configurations": "Refreshed configurations:"
+      "instance": "Instance"
     }
   }
 }

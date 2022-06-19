@@ -18,8 +18,7 @@
       "title": "Administrador de configuración de ambiente",
       "refresh": "Refrescar configuración",
       "application": "Aplicación",
-      "instance": "Instancia",
-      "refreshed_configurations": "Refreshed configurations:"
+      "instance": "Instancia"
     }
   }
 }

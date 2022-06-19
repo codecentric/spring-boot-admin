@@ -18,8 +18,7 @@
       "title": "Gestion d'environnement",
       "refresh": "Refresh environment",
       "application": "Application",
-      "instance": "Instance",
-      "refreshed_configurations": "Refreshed configurations:"
+      "instance": "Instance"
     }
   }
 }
