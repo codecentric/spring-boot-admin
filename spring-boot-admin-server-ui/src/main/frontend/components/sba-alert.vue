@@ -20,7 +20,7 @@
       <strong>
         <font-awesome-icon :class="iconClass" icon="exclamation-triangle" />&nbsp;<span v-text="title" />
       </strong>
-      <p v-text="error.message" />
+      <p style="white-space: pre-line" v-text="error.message" />
     </div>
   </div>
 </template>

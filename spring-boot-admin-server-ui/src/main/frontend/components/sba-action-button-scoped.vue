@@ -42,8 +42,11 @@
 <script>
 
 import {from, listen} from '@/utils/rxjs';
+import SbaToggleScopeButton from '@/components/sba-toggle-scope-button';
+import SbaConfirmButton from '@/components/sba-confirm-button';
 
 export default {
+  components: {SbaConfirmButton, SbaToggleScopeButton},
   props: {
     instanceCount: {
       type: Number,
