@@ -53,15 +53,6 @@
     </template>
 
     <sba-panel :seamless="true">
-        <div
-          v-if="isOldAuditevents"
-          class="message is-warning"
-        >
-          <div
-            class="message-body"
-            v-html="$t('instances.auditevents.audit_log_not_supported_spring_boot_1')"
-          />
-        </div>
         <auditevents-list
           :instance="instance"
           :events="events"
@@ -83,6 +74,7 @@ import SbaInstanceSection from "../shell/sba-instance-section.vue";
 import SbaStickySubnav from "../../../components/sba-sticky-subnav.vue";
 import SbaPanel from "../../../components/sba-panel.vue";
 import SbaInput from "../../../components/sba-input.vue";
+import SbaAlert from "../../../components/sba-alert.vue";
 
 class Auditevent {
   constructor({timestamp, ...event}) {
@@ -130,7 +122,6 @@ export default {
       type: null,
       principal: null
     },
-    isOldAuditevents: false
   }),
   watch: {
     filter: {
@@ -176,11 +167,7 @@ export default {
           },
           error: error => {
             console.warn('Fetching audit events failed:', error);
-            if (error.response.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
-              vm.error = error;
-            } else {
-              vm.isOldAuditevents = true;
-            }
+            vm.error = error;
           }
         });
     },

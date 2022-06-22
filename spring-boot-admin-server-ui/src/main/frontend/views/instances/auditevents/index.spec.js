@@ -1,7 +1,7 @@
 import {render} from '@/test-utils';
 import Auditevents from '@/views/instances/auditevents/index';
 import Instance from '@/services/instance.js';
-import {screen, waitFor} from '@testing-library/vue';
+import {getByText, screen, waitFor} from '@testing-library/vue';
 import userEvent from '@testing-library/user-event';
 
 describe('Auditevents', () => {
@@ -57,22 +57,6 @@ describe('Auditevents', () => {
     });
 
     await screen.findByText('Fetching of data failed.');
-  });
-
-  it('handles error when fetching data from Spring 1 services', async () => {
-    await render(Auditevents, {
-      props: {
-        instance: createInstance(jest.fn().mockRejectedValue({
-          response: {
-            headers: {
-              'content-type': ''
-            }
-          }
-        }))
-      }
-    });
-
-    await screen.findByText('instances.auditevents.audit_log_not_supported_spring_boot_1');
   });
 
   function createInstance(fetchAuditevents) {
