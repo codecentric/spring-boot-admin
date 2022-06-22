@@ -16,12 +16,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: '8'
 
       - name: Cache local Maven repository
@@ -62,12 +62,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up settings.xml for GitHub Packages
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: '8'
 
       - name: Cache local Maven repository
