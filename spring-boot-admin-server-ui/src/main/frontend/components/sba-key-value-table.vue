@@ -6,7 +6,7 @@
     :class="{'bg-white': index%2===0, 'bg-gray-50': index%2!==0}"
   >
     <dt
-      class="text-sm font-medium text-gray-500"
+      class="text-sm font-medium text-gray-500 break-all"
       v-text="getLabel(key, value)"
     />
     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">

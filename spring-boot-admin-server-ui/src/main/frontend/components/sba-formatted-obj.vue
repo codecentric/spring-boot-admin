@@ -44,6 +44,7 @@
 
 <style>
   .formatted {
-    white-space: pre;
+    white-space: break-spaces;
+    word-break: break-word;
   }
 </style>
