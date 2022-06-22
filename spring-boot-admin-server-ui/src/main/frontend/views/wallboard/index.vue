@@ -95,7 +95,10 @@
           return 'down';
         }
         if (application.status === HealthStatus.OFFLINE) {
-          return '';
+          return 'down';
+        }
+        if (application.status === HealthStatus.UNKNOWN) {
+          return 'unknown';
         }
         return '';
       },
@@ -162,9 +165,29 @@
   fill:  theme('colors.green.400');
 }
 
-.down > polygon {
+.down > polygon, .offline > polygon {
   stroke: theme('colors.red.400');
   fill:  theme('colors.red.400');
+  stroke-width: 2;
+}
+.hex .hex__body::after {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  font-size: 15em;
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+}
+
+.hex.down .hex__body::after {
+  content: "!";
+  color: theme('colors.red.400');
+}
+
+.hex.unknown .hex__body::after {
+  content: "?";
+  color: theme('colors.gray.500');
 }
 
 .restricted > polygon {

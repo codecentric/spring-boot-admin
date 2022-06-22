@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {HealthStatus} from "../../HealthStatus.js";
+
 export const instance = {
   'id': 'bba333956ae6',
   'version': 3,
@@ -92,13 +94,17 @@ export const instance = {
   'tags': {'environment': 'test', 'security': 'insecure'}
 };
 
-export const applications = [{
-  'name': 'spring-boot-admin-sample-servlet',
-  'buildVersion': '2.5.2-SNAPSHOT',
-  'status': 'UP',
-  'statusTimestamp': '2021-10-29T06:50:09.600276Z',
-  'instances': [
-    instance
-  ]
-}];
+export const applications = Object.entries(HealthStatus).map(e => {
+  let STATUS = e[0];
+
+  return {
+    'name': `application-${STATUS}`,
+    'buildVersion': '2.5.2-SNAPSHOT',
+    'status': STATUS,
+    'statusTimestamp': '2021-10-29T06:50:09.600276Z',
+    'instances': [
+      instance
+    ]
+  };
+});
 

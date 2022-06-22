@@ -37,5 +37,5 @@ export function useApplicationStore() {
     return applicationStore.stop();
   });
 
-  return {applications, applicationsInitialized, error};
+  return {applications, applicationsInitialized, error, applicationStore};
 }

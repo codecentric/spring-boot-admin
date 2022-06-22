@@ -1,11 +1,12 @@
 import "../src/main/frontend/index.css";
 import "./storybook.css";
 
-import { app } from '@storybook/vue3';
+import {app} from '@storybook/vue3';
 import i18n from "../src/main/frontend/i18n/index.js";
-import mappingsEndpoint from '@/mocks/instance/mappings';
+import mappingsEndpoint from '../src/main/frontend/mocks/instance/mappings';
+import applicationsEndpoint from "../src/main/frontend/mocks/applications";
 
-import { initialize, mswDecorator } from 'msw-storybook-addon';
+import {initialize, mswDecorator} from 'msw-storybook-addon';
 import components from "../src/main/frontend/components/index.js";
 
 initialize();
@@ -24,7 +25,7 @@ export const parameters = {
   msw: {
     handlers: {
       auth: null,
-      others: [...mappingsEndpoint]
+      others: [...mappingsEndpoint, ...applicationsEndpoint]
     }
   }
 }
@@ -32,3 +33,4 @@ export const parameters = {
 export const decorators = [
   mswDecorator,
 ]
+
