@@ -229,7 +229,7 @@ export default {
   data: () => ({
     showMenu: false,
     brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
-    userName: 'a.very.long.email.address.that.may.break@example.com',
+    userName: '',
     csrfToken: null,
     csrfParameterName: null,
     currentLanguage: null
@@ -255,7 +255,7 @@ export default {
   },
   created() {
     this.brand = sbaConfig.uiSettings.brand;
-    //this.userName = sbaConfig.user ? sbaConfig.user.name : null;
+    this.userName = sbaConfig.user ? sbaConfig.user.name : null;
     this.availableLocales = AVAILABLE_LANGUAGES;
     this.csrfToken = readCookie('XSRF-TOKEN');
     this.csrfParameterName = sbaConfig.csrf.parameterName;
