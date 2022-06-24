@@ -183,8 +183,7 @@ export default {
 }
 
 .hex polygon {
-  fill: theme('colors.gray.200');
-  stroke: theme('colors.gray.200');
+  fill: transparent;
   transition: all ease-out 250ms;
 }
 
@@ -192,16 +191,5 @@ export default {
   fill-opacity: 0.25;
   stroke-opacity: 1;
   stroke-width: 2;
-}
-
-.hex__body {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 </style>

@@ -33,6 +33,7 @@
           :key="application.name"
           class="hex__body application"
         >
+          <div class="application__status-indicator"></div>
           <div class="application__header application__time-ago is-muted">
             <sba-time-ago :date="application.statusTimestamp" />
           </div>
@@ -170,6 +171,7 @@
   fill:  theme('colors.red.400');
   stroke-width: 2;
 }
+
 .hex .hex__body::after {
   display: flex;
   justify-content: center;
@@ -178,6 +180,17 @@
   position: absolute;
   z-index: -1;
   width: 100%;
+}
+
+.hex .hex__body {
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .hex.down .hex__body::after {
