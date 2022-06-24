@@ -102,15 +102,17 @@
         class="font-bold text-lg"
         v-text="application.name"
       />
-      <ApplicationListItemActions
-        :application="application"
-        :has-active-notification-filter="hasActiveNotificationFilter(application)"
-        :has-notification-filters-support="hasNotificationFiltersSupport"
-        @restart="confirmRestartApplication"
-        @shutdown="confirmShutdownApplication"
-        @filter-settings="$emit('toggle-notification-filter-settings', application)"
-        @unregister="isModalUnregisterApplicationOpen = true"
-      />
+      <div class="w-1/6">
+        <ApplicationListItemActions
+          :application="application"
+          :has-active-notification-filter="hasActiveNotificationFilter(application)"
+          :has-notification-filters-support="hasNotificationFiltersSupport"
+          @restart="confirmRestartApplication"
+          @shutdown="confirmShutdownApplication"
+          @filter-settings="$emit('toggle-notification-filter-settings', application)"
+          @unregister="isModalUnregisterApplicationOpen = true"
+        />
+      </div>
     </header>
     <!-- EXPANDED -->
     <ul

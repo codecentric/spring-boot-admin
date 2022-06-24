@@ -25,6 +25,22 @@ const routes = [
   {path: "/journal", name: "journal"}
 ];
 
+const firstInstance = {...application.instances[0]};
+const secondInstance = {...application.instances[0]};
+secondInstance.statusTimestamp = Date.now();
+
+const instanceWithoutRestart = {...firstInstance}
+instanceWithoutRestart.endpoints = instanceWithoutRestart.endpoints.filter(e => e.id === "restart")
+const instanceWithABunchOfTags = {...firstInstance}
+instanceWithABunchOfTags.tags = {
+  "tag0": "Tag value",
+  "tag1": "Tag value",
+  "tag2": "Tag value",
+  "tag3": "Tag value",
+  "tag4": "Tag value",
+  "tag5": "Tag value"
+}
+
 export default {
   component: ApplicationsListItem,
   title: 'Views/Applications/ApplicationListItem',
@@ -39,7 +55,7 @@ const Template = (args) => ({
   },
   template: `
     <sba-panel :seamless="true">
-      <applications-list-item v-bind="args"/>
+    <applications-list-item v-bind="args"/>
     </sba-panel>`,
 });
 
@@ -64,17 +80,14 @@ OneInstanceExpanded.args = {
 export const MultipleInstances = Template.bind({});
 MultipleInstances.decorators = [
   withVueRouter(routes)
-
 ];
-const firstInstance = {...application.instances[0]};
-const secondInstance = {...application.instances[0]};
-secondInstance.statusTimestamp = Date.now();
+
 MultipleInstances.args = {
   application: new Application({
     ...application,
     instances: [
       firstInstance,
-      secondInstance
+      secondInstance,
     ]
   })
 }
@@ -85,5 +98,49 @@ MultipleInstancesExpanded.decorators = [
 ];
 MultipleInstancesExpanded.args = {
   ...MultipleInstances.args,
+  application: new Application({
+    ...application,
+    instances: [
+      firstInstance,
+      secondInstance,
+      instanceWithoutRestart,
+      instanceWithABunchOfTags
+    ]
+  }),
   isExpanded: true,
+}
+
+const TemplateWithMultipleApplications = (args) => ({
+  components: {ApplicationsListItem, SbaPanel},
+  setup() {
+    return {
+      args
+    };
+  },
+  template: `
+    <sba-panel :seamless="true">
+    <applications-list-item
+      v-for="application in args.applications"
+      :application="application"
+    />
+    </sba-panel>`,
+});
+
+export const MultipleApplications = TemplateWithMultipleApplications.bind({});
+MultipleApplications.decorators = [
+  withVueRouter(routes)
+];
+
+MultipleApplications.args = {
+  applications: [
+    new Application({
+      ...application,
+    }),
+    new Application({
+      ...application,
+      instances: [
+        instanceWithoutRestart
+      ]
+    })
+  ]
 }

@@ -1,17 +1,30 @@
 <template>
-  <span class="inline-flex bg-white leading-none rounded p-1 shadow-sm text-sm border border-gray-300">
+  <span class="inline-flex leading-none rounded shadow-sm text-sm overflow-hidden"
+        :class="{
+          'p-1 border border-gray-300 bg-white': !small,
+          'p-0 border text-xs': small,
+         }"
+  >
     <span
       v-if="label"
-      class="inline-flex bg-sba-200 rounded text-sba-900 py-1 px-3 justify-center items-center transition-all"
+      class="inline-flex bg-sba-200 rounded text-sba-900  justify-center items-center transition-all"
+      :class="{
+         'py-1.5 px-3': !small,
+         'py-1.5 px-2 rounded-r-none': small
+      }"
       v-text="label"
     />
     <span
-      class="inline-flex px-2 justify-center items-center"
-      :class="{'pl-2': !!label}"
+      class="inline-flex px-2 justify-center items-center whitespace-nowrap"
+      :class="{
+        'pl-2': !!label,
+        'bg-white': small
+      }"
       v-text="value"
     />
   </span>
 </template>
+
 <script>
 export default {
   name: 'SbaTag',
@@ -19,6 +32,10 @@ export default {
     label: {
       type: [String, Number],
       default: null
+    },
+    small: {
+      type: Boolean,
+      default: false
     },
     value: {
       type: [String, Number],

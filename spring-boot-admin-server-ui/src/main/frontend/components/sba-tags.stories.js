@@ -18,6 +18,14 @@ SingleTag.args = {
   }
 };
 
+export const SingleTagSmall = Template.bind({});
+SingleTagSmall.args = {
+  small: true,
+  tags: {
+    'This is a key': 'This a value',
+  }
+};
+
 export const MultipleTags = Template.bind({});
 MultipleTags.args = {
   tags: {

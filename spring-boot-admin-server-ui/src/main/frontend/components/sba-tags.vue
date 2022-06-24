@@ -21,6 +21,7 @@
       :key="key"
     >
       <sba-tag
+        :small="small"
         :label="key"
         :value="value"
       />
@@ -35,7 +36,11 @@ export default {
       tags: {
         type: Object,
         required: true
-      }
+      },
+      small: {
+        type: Boolean,
+        default: false
+      },
     }
   }
 </script>

@@ -38,14 +38,14 @@
         v-text="instance.id"
       />
     </div>
-    <div class="hidden lg:block">
-      <sba-tags :tags="instance.tags" />
+    <div class="hidden lg:block w-1/4 overflow-x-scroll">
+      <sba-tags :tags="instance.tags" :small="true" />
     </div>
     <div
       class="hidden md:block w-1/4 text-center"
       v-text="instance.buildVersion"
     />
-    <div class="instance-list-item__actions items-right">
+    <div class="instance-list-item__actions text-right">
       <slot
         name="actions"
         :instance="instance"
@@ -83,6 +83,7 @@ export default {
 }
 
 .instance-list-item__actions {
+  @apply w-1/6;
   transition: all ease-out 86ms;
   will-change: opacity;
   opacity: 0;

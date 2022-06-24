@@ -1,6 +1,6 @@
 <template>
   <sba-button-group
-    class="application-list-item__header__actions"
+    class="application-list-item__header__actions text-right"
   >
     <router-link
       v-slot="{ navigate }"
@@ -71,7 +71,7 @@ export default {
 <style scoped>
 .application-list-item__header__actions {
   @apply hidden md:flex;
-  justify-self: end;
+  justify-content: flex-end;
   opacity: 0;
   transition: all ease-out 86ms;
   will-change: opacity;
