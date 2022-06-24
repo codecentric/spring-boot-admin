@@ -30,13 +30,11 @@
 
     <template #default>
       <sba-alert
-        v-if="error"
         :error="error"
         class="border-l-4"
         :title="$t('term.fetch_failed')"
       />
       <div
-        v-else
         class="-mx-4 -my-3"
       >
         <health-details
