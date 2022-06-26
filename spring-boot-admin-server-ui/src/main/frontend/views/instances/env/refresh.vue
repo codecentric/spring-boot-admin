@@ -101,7 +101,6 @@ export default {
 
 <style lang="scss">
 @import "~@/assets/css/utilities";
-@import "~@/assets/css/base";
 
 .properties-list {
   list-style: disc inside;
