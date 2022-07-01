@@ -97,4 +97,4 @@ jobs:
             ### Things that changed in this release
             ${{ steps.changelog.outputs.changelog }}
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(github.event.inputs.releaseversion, '-') }}
