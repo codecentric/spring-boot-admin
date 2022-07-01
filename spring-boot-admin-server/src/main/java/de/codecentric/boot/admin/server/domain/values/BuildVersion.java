@@ -32,9 +32,10 @@ public final class BuildVersion implements Serializable, Comparable<BuildVersion
 	private final String value;
 
 	private BuildVersion(String value) {
-		if(!StringUtils.hasText(value)) {
+		if (!StringUtils.hasText(value)) {
 			this.value = DEFAULT_VERSION;
-		} else {
+		}
+		else {
 			this.value = value;
 		}
 	}

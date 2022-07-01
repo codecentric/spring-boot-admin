@@ -26,6 +26,7 @@ public class BuildVersionTest {
 
 	@Test
 	public void should_return_version() {
+		assertThat(BuildVersion.valueOf(null).getValue()).isEqualTo("UNKNOWN");
 		assertThat(BuildVersion.from(emptyMap())).isNull();
 		assertThat(BuildVersion.from(singletonMap("version", "1.0.0"))).isEqualTo(BuildVersion.valueOf("1.0.0"));
 		assertThat(BuildVersion.from(singletonMap("build.version", "1.0.0"))).isEqualTo(BuildVersion.valueOf("1.0.0"));
