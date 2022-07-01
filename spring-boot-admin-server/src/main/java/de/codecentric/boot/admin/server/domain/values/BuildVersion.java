@@ -22,16 +22,21 @@ import java.util.Scanner;
 
 import javax.annotation.Nullable;
 
-import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 @lombok.Data
 public final class BuildVersion implements Serializable, Comparable<BuildVersion> {
 
+	private static final String DEFAULT_VERSION = "UNKNOWN";
+
 	private final String value;
 
 	private BuildVersion(String value) {
-		Assert.hasText(value, "'value' must not be empty");
-		this.value = value;
+		if(!StringUtils.hasText(value)) {
+			this.value = DEFAULT_VERSION;
+		} else {
+			this.value = value;
+		}
 	}
 
 	public static BuildVersion valueOf(String s) {
