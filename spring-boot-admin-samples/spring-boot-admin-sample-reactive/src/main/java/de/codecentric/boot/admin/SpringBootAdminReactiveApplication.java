@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin;
 
+import java.net.URI;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +33,6 @@ import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.notify.LoggingNotifier;
-
-import java.net.URI;
 
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
