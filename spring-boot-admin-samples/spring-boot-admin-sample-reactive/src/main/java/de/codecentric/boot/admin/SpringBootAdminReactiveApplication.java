@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin;
 
+import java.net.URI;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +26,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
+import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
@@ -61,8 +65,16 @@ public class SpringBootAdminReactiveApplication {
 						.pathMatchers("/actuator/health/**").permitAll().pathMatchers(this.adminServer.path("/login"))
 						.permitAll().anyExchange().authenticated())
 				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login")))
-				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
+				.logout((logout) -> logout
+						.logoutUrl(this.adminServer.path("/logout"))
+						.logoutSuccessHandler(logoutSuccessHandler(this.adminServer.path("/login?logout"))))
 				.httpBasic(Customizer.withDefaults()).csrf(ServerHttpSecurity.CsrfSpec::disable).build();
+	}
+
+	public ServerLogoutSuccessHandler logoutSuccessHandler(String uri) {
+		RedirectServerLogoutSuccessHandler successHandler = new RedirectServerLogoutSuccessHandler();
+		successHandler.setLogoutSuccessUrl(URI.create(uri));
+		return successHandler;
 	}
 
 	@Bean
