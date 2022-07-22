@@ -87,37 +87,42 @@ public class InstancesProxyController {
 			RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS })
 	public void instanceProxy(@PathVariable("instanceId") String instanceId, HttpServletRequest servletRequest) {
 		// start async because we will commit from different thread.
-		// otherwise incorrect thread local objects (session and security context) will be stored.
-		// check for example org.springframework.security.web.context.HttpSessionSecurityContextRepository.SaveToSessionRequestWrapper.startAsync()
+		// otherwise incorrect thread local objects (session and security context) will be
+		// stored.
+		// check for example
+		// org.springframework.security.web.context.HttpSessionSecurityContextRepository.SaveToSessionRequestWrapper.startAsync()
 		AsyncContext asyncContext = servletRequest.startAsync();
-		asyncContext.setTimeout(-1); // no timeout because instanceWebProxy will handle it for us
+		asyncContext.setTimeout(-1); // no timeout because instanceWebProxy will handle it
+										// for us
 		try {
-			ServletServerHttpRequest request = new ServletServerHttpRequest((HttpServletRequest) asyncContext.getRequest());
+			ServletServerHttpRequest request = new ServletServerHttpRequest(
+					(HttpServletRequest) asyncContext.getRequest());
 			Flux<DataBuffer> requestBody = DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 4096);
 			InstanceWebProxy.ForwardRequest fwdRequest = createForwardRequest(request, requestBody,
-				this.adminContextPath + INSTANCE_MAPPED_PATH);
-
+					this.adminContextPath + INSTANCE_MAPPED_PATH);
 
 			this.instanceWebProxy
-				.forward(this.registry.getInstance(InstanceId.of(instanceId)), fwdRequest, (clientResponse) -> {
-					ServerHttpResponse response = new ServletServerHttpResponse((HttpServletResponse) asyncContext.getResponse());
-					response.setStatusCode(clientResponse.statusCode());
-					response.getHeaders()
-						.addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
-					try {
-						OutputStream responseBody = response.getBody();
-						response.flush();
-						return clientResponse.body(BodyExtractors.toDataBuffers()).window(1)
-							.concatMap((body) -> writeAndFlush(body, responseBody)).then();
-					}
-					catch (IOException ex) {
-						return Mono.error(ex);
-					}
-				})
-				// We need to explicitly block so the headers are recieved and written
-				// before any async dispatch otherwise the FrameworkServlet will add wrong
-				// Allow header for OPTIONS request
-				.block();
+					.forward(this.registry.getInstance(InstanceId.of(instanceId)), fwdRequest, (clientResponse) -> {
+						ServerHttpResponse response = new ServletServerHttpResponse(
+								(HttpServletResponse) asyncContext.getResponse());
+						response.setStatusCode(clientResponse.statusCode());
+						response.getHeaders()
+								.addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
+						try {
+							OutputStream responseBody = response.getBody();
+							response.flush();
+							return clientResponse.body(BodyExtractors.toDataBuffers()).window(1)
+									.concatMap((body) -> writeAndFlush(body, responseBody)).then();
+						}
+						catch (IOException ex) {
+							return Mono.error(ex);
+						}
+					})
+					// We need to explicitly block so the headers are recieved and written
+					// before any async dispatch otherwise the FrameworkServlet will add
+					// wrong
+					// Allow header for OPTIONS request
+					.block();
 		}
 		finally {
 			asyncContext.complete();
