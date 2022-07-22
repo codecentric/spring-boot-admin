@@ -126,7 +126,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	public void should_return_status_504() {
 		// 504 on read timeout
 		this.client.get().uri("/instances/{instanceId}/actuator/timeout", this.instanceId)
-    .accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).
+    .accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
 		.exchange().expectStatus().isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
 	}
 
