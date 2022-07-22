@@ -29,7 +29,7 @@
         class="flex-1"
         placeholder="Property name"
         :list="allPropertyNames"
-        :name="prop.name"
+        :name="prop.name || 'new-prop-name'"
         :error="prop.validation"
         @input="handlePropertyNameChange(prop, index)"
       />
@@ -38,7 +38,7 @@
         type="text"
         class="flex-1"
         placeholder="Value"
-        :name="prop.name"
+        :name="prop.name || 'new-prop-value'"
         @input="prop.status = null"
       >
         <template #append>
@@ -64,7 +64,6 @@
     <div class="flex gap-2 justify-end items-start">
       <sba-toggle-scope-button
         v-if="application.instances.length > 1"
-
         v-model="scope"
         :instance-count="application.instances.length"
       />
@@ -114,9 +113,14 @@ import Instance from '../../../services/instance';
 import {concatMap, filter, from, listen} from '../../../utils/rxjs.js';
 import {debounce, uniq} from 'lodash-es';
 import Application from '../../../services/application';
+import {ActionScope} from "../../../components/ActionScope.js";
 
 export default {
   props: {
+    application: {
+      type: Application,
+      required: true
+    },
     instance: {
       type: Instance,
       required: true
@@ -131,6 +135,7 @@ export default {
     error: null,
     resetStatus: null,
     updateStatus: null,
+    scope: ActionScope.INSTANCE,
     managedProperties: [{
       name: null,
       input: null,

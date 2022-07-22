@@ -27,7 +27,7 @@ export const redirectOn401 = (predicate = () => true) => error => {
 
 };
 
-const instance = axios.create({headers: {'Accept': 'application/json'}});
+const instance = axios.create({withCredentials: true, headers: {'Accept': 'application/json'}});
 instance.interceptors.response.use(response => response, redirectOn401());
 instance.create = axios.create;
 

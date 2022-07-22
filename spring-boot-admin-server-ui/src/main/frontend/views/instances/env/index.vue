@@ -28,9 +28,8 @@
           >
             <refresh
               :instance="instance"
-              :instance-count="application.instances.length"
               :application="application"
-              @reset="fetchEnv"
+              @refresh="fetchEnv"
             />
           </div>
           <div class="flex-1">
@@ -74,6 +73,15 @@
         @refresh="fetchEnv"
         @update="fetchEnv"
       />
+
+      <sba-modal data-testid="refreshModal">
+        <template #header>
+          <span v-text="$t('instances.env.context_refreshed')" />
+        </template>
+        <template #body>
+          <span v-html="$t('instances.env.refreshed_configurations')" />
+        </template>
+      </sba-modal>
 
       <sba-panel
         v-for="propertySource in propertySources"

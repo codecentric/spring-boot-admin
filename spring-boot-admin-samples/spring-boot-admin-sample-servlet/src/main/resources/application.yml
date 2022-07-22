@@ -17,6 +17,8 @@ management:
       exposure:
         include: "*"
   endpoint:
+    refresh:
+      enabled: true
     restart:
       enabled: true
     env:
@@ -38,6 +40,8 @@ spring:
             tags:
               environment: test
             kubectl.kubernetes.io/last-applied-configuration: '{"name":"jvm.threads.peak","description":"The peak live thread count since the Java virtual machine started or peak was reset","baseUnit":"threads","measurements":[{"statistic":"VALUE","value":64.0}],"availableTags":[]}'
+  config:
+    import: optional:configserver:http://localhost:8888/
   jmx:
     enabled: true
   main:

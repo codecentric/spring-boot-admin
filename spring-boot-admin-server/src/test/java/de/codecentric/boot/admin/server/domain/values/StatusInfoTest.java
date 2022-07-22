@@ -80,6 +80,15 @@ public class StatusInfoTest {
 	}
 
 	@Test
+	public void when_first_level_key_is_components() {
+		Map<String, Object> map = new HashMap<>();
+		map.put("status", "UP");
+		map.put("components", singletonMap("foo", "bar"));
+
+		assertThat(StatusInfo.from(map)).isEqualTo(StatusInfo.ofUp(singletonMap("foo", "bar")));
+	}
+
+	@Test
 	public void should_sort_by_status_order() {
 		List<String> unordered = asList(STATUS_OUT_OF_SERVICE, STATUS_UNKNOWN, STATUS_OFFLINE, STATUS_DOWN, STATUS_UP,
 				STATUS_RESTRICTED);

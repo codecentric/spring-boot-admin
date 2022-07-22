@@ -17,13 +17,16 @@
 import {render} from '../test-utils';
 import SbaModal from './sba-modal';
 import userEvent from '@testing-library/user-event';
-import {screen} from '@testing-library/vue';
+import {screen, waitFor} from '@testing-library/vue';
 
 describe('sba-modal.vue', () => {
   it('modal is closed when close button is clicked', async () => {
-    const {emitted} = render(SbaModal, {props: {modelValue: true}})
+    const {emitted} = render(SbaModal, {props: {modelValue: true}, slots: {body: '<div>test</div>'}});
 
-    await userEvent.click(screen.getByLabelText('close'));
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Close')).toBeInTheDocument()
+    });
+    await userEvent.click(screen.getByLabelText('Close'));
 
     expect(emitted()['update:modelValue'][0]).toContain(false);
   })
