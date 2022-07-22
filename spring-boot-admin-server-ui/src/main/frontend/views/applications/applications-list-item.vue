@@ -332,7 +332,7 @@ export default {
       opacity: 0;
       transition: all $easing $speed;
       will-change: opacity;
-      margin-right: ($gap / 2);
+      margin-right: calc(#{$gap} / 2);
       display: flex;
 
       *:hover > &,
@@ -341,8 +341,8 @@ export default {
       }
 
       & > * {
-        width: ($gap / 2);
-        height: ($gap / 2);
+        width: calc(#{$gap} / 2);
+        height: calc(#{$gap} / 2);
       }
     }
   }

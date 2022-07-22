@@ -61,10 +61,10 @@
 
           <div v-if="mBean === selectedMBean" class="card-content">
             <m-bean-attributes v-if="selected.view === 'attributes'" :domain="selectedDomain.domain"
-                               :instance="instance" :m-bean="mBean"
+                               :application="application" :instance="instance" :m-bean="mBean"
             />
             <m-bean-operations v-if="selected.view === 'operations'" :domain="selectedDomain.domain"
-                               :instance="instance" :m-bean="mBean"
+                               :application="application" :instance="instance" :m-bean="mBean"
             />
           </div>
         </div>
@@ -76,7 +76,8 @@
             <li>
               <a v-for="domain in domains" :key="domain.domain" :class="{'is-active' : domain === selectedDomain}"
                  class=""
-                 @click="select(domain)" v-text="domain.domain"
+                 :title="domain.domain"
+                 @click="select(domain)" v-text="truncatePackageName(domain.domain, 25)"
               />
             </li>
           </ul>
@@ -88,6 +89,7 @@
 
 <script>
 import sticksBelow from '@/directives/sticks-below';
+import Application from '@/services/application';
 import Instance from '@/services/instance';
 import flatMap from 'lodash/flatMap';
 import fromPairs from 'lodash/fromPairs';
@@ -97,6 +99,7 @@ import {directive as onClickaway} from 'vue-clickaway2';
 import mBeanAttributes from './m-bean-attributes';
 import mBeanOperations from './m-bean-operations';
 import {VIEW_GROUP} from '../../index';
+import {truncatePackageName} from '@/views/instances/jolokia/utils';
 
 const getOperationName = (name, descriptor) => {
   const params = descriptor.args.map(arg => arg.type).join(',');
@@ -135,6 +138,10 @@ export class MBean {
 
 export default {
   props: {
+    application: {
+      type: Application,
+      required: true
+    },
     instance: {
       type: Instance,
       required: true
@@ -146,6 +153,7 @@ export default {
     hasLoaded: false,
     error: null,
     domains: [],
+    truncatePackageName,
     selected: {
       domain: null,
       mBean: null,

@@ -1,0 +1,4 @@
+de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration
+de.codecentric.boot.admin.server.config.AdminServerNotifierAutoConfiguration
+de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration
+de.codecentric.boot.admin.server.config.AdminServerCloudFoundryAutoConfiguration

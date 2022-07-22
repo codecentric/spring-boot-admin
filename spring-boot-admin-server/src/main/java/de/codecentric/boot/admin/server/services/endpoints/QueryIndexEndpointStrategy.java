@@ -28,8 +28,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
-import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Mono;
 
@@ -38,6 +36,7 @@ import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.services.ApiMediaTypeHandler;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
@@ -46,10 +45,11 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 
 	private final InstanceWebClient instanceWebClient;
 
-	private static final MediaType actuatorMediaType = MediaType.parseMediaType(ActuatorMediaType.V2_JSON);
+	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
-	public QueryIndexEndpointStrategy(InstanceWebClient instanceWebClient) {
+	public QueryIndexEndpointStrategy(InstanceWebClient instanceWebClient, ApiMediaTypeHandler apiMediaTypeHandler) {
 		this.instanceWebClient = instanceWebClient;
+		this.apiMediaTypeHandler = apiMediaTypeHandler;
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 				return response.releaseBody().then(Mono.empty());
 			}
 
-			if (!response.headers().contentType().map(actuatorMediaType::isCompatibleWith).orElse(false)) {
+			if (!response.headers().contentType().filter(this.apiMediaTypeHandler::isApiMediaType).isPresent()) {
 				log.debug("Querying actuator-index for instance {} on '{}' failed with incompatible Content-Type '{}'.",
 						instance.getId(), managementUrl,
 						response.headers().contentType().map(Objects::toString).orElse("(missing)"));

@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -43,23 +43,22 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.cookies.PerInstanceCookieStore;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
 
-import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V1_MEDIATYPE;
-import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 public final class InstanceExchangeFilterFunctions {
 
-	private static final Logger log = LoggerFactory.getLogger(InstanceExchangeFilterFunctions.class);
-
 	public static final String ATTRIBUTE_ENDPOINT = "endpointId";
 
-	@SuppressWarnings("deprecation") // We need to support Spring Boot 1.x apps...
-	private static final List<MediaType> DEFAULT_ACCEPT_MEDIATYPES = asList(ACTUATOR_V2_MEDIATYPE,
-			ACTUATOR_V1_MEDIATYPE, MediaType.APPLICATION_JSON);
+	private static final Logger log = LoggerFactory.getLogger(InstanceExchangeFilterFunctions.class);
 
-	private static final List<MediaType> DEFAULT_LOGFILE_ACCEPT_MEDIATYPES = singletonList(MediaType.TEXT_PLAIN);
+	private static final List<MediaType> DEFAULT_LOGFILE_ACCEPT_MEDIA_TYPES = singletonList(MediaType.TEXT_PLAIN);
+
+	static MediaType V1_ACTUATOR_JSON = MediaType.valueOf("application/vnd.spring-boot.actuator.v1+json");
+
+	private static final List<MediaType> DEFAULT_ACCEPT_MEDIA_TYPES = asList(
+			new MediaType(ApiVersion.V3.getProducedMimeType()), new MediaType(ApiVersion.V2.getProducedMimeType()),
+			V1_ACTUATOR_JSON, MediaType.APPLICATION_JSON);
 
 	private InstanceExchangeFilterFunctions() {
 	}
@@ -136,13 +135,14 @@ public final class InstanceExchangeFilterFunctions {
 
 	private static Boolean isLegacyResponse(ClientResponse response) {
 		return response.headers().contentType()
-				.map((t) -> ACTUATOR_V1_MEDIATYPE.isCompatibleWith(t) || APPLICATION_JSON.isCompatibleWith(t))
-				.orElse(false);
+				.filter((t) -> V1_ACTUATOR_JSON.isCompatibleWith(t) || MediaType.APPLICATION_JSON.isCompatibleWith(t))
+				.isPresent();
 	}
 
 	private static ClientResponse convertLegacyResponse(LegacyEndpointConverter converter, ClientResponse response) {
 		return response.mutate().headers((headers) -> {
-			headers.replace(HttpHeaders.CONTENT_TYPE, singletonList(ActuatorMediaType.V2_JSON));
+			headers.replace(HttpHeaders.CONTENT_TYPE,
+					singletonList(ApiVersion.LATEST.getProducedMimeType().toString()));
 			headers.remove(HttpHeaders.CONTENT_LENGTH);
 		}).body(converter::convert).build();
 	}
@@ -152,8 +152,8 @@ public final class InstanceExchangeFilterFunctions {
 			if (request.headers().getAccept().isEmpty()) {
 				Boolean isRequestForLogfile = request.attribute(ATTRIBUTE_ENDPOINT).map(Endpoint.LOGFILE::equals)
 						.orElse(false);
-				List<MediaType> acceptedHeaders = isRequestForLogfile ? DEFAULT_LOGFILE_ACCEPT_MEDIATYPES
-						: DEFAULT_ACCEPT_MEDIATYPES;
+				List<MediaType> acceptedHeaders = isRequestForLogfile ? DEFAULT_LOGFILE_ACCEPT_MEDIA_TYPES
+						: DEFAULT_ACCEPT_MEDIA_TYPES;
 				request = ClientRequest.from(request).headers((headers) -> headers.setAccept(acceptedHeaders)).build();
 			}
 			return next.exchange(request);

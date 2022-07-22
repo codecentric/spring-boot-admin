@@ -1,6 +1,6 @@
 import { rest } from 'msw';
 import { mappings } from './data';
-import { auditeventsresponse } from "./auditevents_data";
+import { auditeventsresponse } from './auditevents_data';
 
 const mappingsEndpoint = [
   rest.get(

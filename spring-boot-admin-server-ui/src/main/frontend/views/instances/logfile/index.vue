@@ -181,7 +181,7 @@ export default {
 
   &-actions {
     top: $navbar-height-px;
-    right: ($gap /2);
+    right: calc(#{$gap} / 2);
     display: flex;
     align-items: center;
     justify-content: flex-end;

@@ -36,7 +36,6 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
-import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
 import static java.util.Collections.emptyMap;
 
 /**
@@ -56,9 +55,13 @@ public class StatusUpdater {
 
 	private final InstanceWebClient instanceWebClient;
 
-	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient) {
+	private final ApiMediaTypeHandler apiMediaTypeHandler;
+
+	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
+			ApiMediaTypeHandler apiMediaTypeHandler) {
 		this.repository = repository;
 		this.instanceWebClient = instanceWebClient;
+		this.apiMediaTypeHandler = apiMediaTypeHandler;
 	}
 
 	public Mono<Void> updateStatus(InstanceId id) {
@@ -79,9 +82,9 @@ public class StatusUpdater {
 	}
 
 	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
-		Boolean hasCompatibleContentType = response.headers().contentType().map(
-				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || mt.isCompatibleWith(ACTUATOR_V2_MEDIATYPE))
-				.orElse(false);
+		boolean hasCompatibleContentType = response.headers().contentType().filter(
+				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || this.apiMediaTypeHandler.isApiMediaType(mt))
+				.isPresent();
 
 		StatusInfo statusInfoFromStatus = this.getStatusInfoFromStatus(response.statusCode(), emptyMap());
 		if (hasCompatibleContentType) {

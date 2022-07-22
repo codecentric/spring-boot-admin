@@ -17,8 +17,9 @@
 <template>
   <div class="field">
     <div class="control">
-      <button class="button is-light is-fullwidth" @click="$emit('click', $event)">
-        <small class="is-light is-muted" v-text="descriptor.ret" />&nbsp;<span v-text="name" />
+      <button class="button is-light is-fullwidth columns has-text-left" @click="$emit('click', $event)">
+        <small class="is-light is-muted column is-flex-grow-0 is-flex-shrink-0 p-1" v-text="shortenedRet" :title="descriptor.ret" />
+        <span class="column is-flex-grow-1 is-flex-shrink-0 p-1 is-truncated" v-text="shortenedName" :title="name" />
       </button>
       <p class="help" v-text="descriptor.desc" />
     </div>
@@ -26,6 +27,8 @@
 </template>
 
 <script>
+  import {truncateJavaType} from '@/views/instances/jolokia/utils';
+
   export default {
     props: {
       name: {
@@ -37,5 +40,20 @@
         required: true
       }
     },
+    computed: {
+      shortenedName() {
+        return truncateJavaType(this.name);
+      },
+      shortenedRet() {
+        return truncateJavaType(this.descriptor.ret);
+      }
+    }
   }
 </script>
+
+<style>
+.is-truncated {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

@@ -88,8 +88,8 @@
       }
 
       & > * {
-        width: ($gap / 2);
-        height: ($gap / 2);
+        width: calc(#{$gap} / 2);
+        height: calc(#{$gap} / 2);
       }
     }
   }

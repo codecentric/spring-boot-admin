@@ -11,17 +11,17 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2016]
+        os: [ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Set up JDK 1.8
-        uses: actions/setup-java@v2
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: '8'
 
       - name: Cache local Maven repository
@@ -62,12 +62,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up settings.xml for GitHub Packages
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: '8'
 
       - name: Cache local Maven repository
@@ -107,7 +107,7 @@ jobs:
         run: echo ${{ steps.project.outputs.version }}
 
       - name: Deploy Asciidoc docs output to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.2.2
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
