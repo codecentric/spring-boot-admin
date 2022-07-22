@@ -127,8 +127,8 @@ public final class StatusInfo implements Serializable {
 		Map<String, ?> details = Collections.emptyMap();
 
 		/*
-		 * Key "details" is present when accessing Spring Boot Actuator Health
-		 * using Accept-Header {@link org.springframework.boot.actuate.endpoint.ApiVersion#V2}.
+		 * Key "details" is present when accessing Spring Boot Actuator Health using
+		 * Accept-Header {@link org.springframework.boot.actuate.endpoint.ApiVersion#V2}.
 		 */
 		if (body.containsKey("details")) {
 			details = (Map<String, ?>) body.get("details");
