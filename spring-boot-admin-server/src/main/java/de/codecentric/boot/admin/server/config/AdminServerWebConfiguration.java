@@ -95,11 +95,11 @@ public class AdminServerWebConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 	@AutoConfigureAfter(WebMvcAutoConfiguration.class)
-	public static class ServletRestApiConfirguation {
+	public static class ServletRestApiConfiguration {
 
 		private final AdminServerProperties adminServerProperties;
 
-		public ServletRestApiConfirguation(AdminServerProperties adminServerProperties) {
+		public ServletRestApiConfiguration(AdminServerProperties adminServerProperties) {
 			this.adminServerProperties = adminServerProperties;
 		}
 

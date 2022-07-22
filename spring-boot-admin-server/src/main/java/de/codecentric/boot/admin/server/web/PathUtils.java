@@ -34,6 +34,9 @@ public final class PathUtils {
 		if (normalizedPath.endsWith("/")) {
 			normalizedPath = normalizedPath.substring(0, normalizedPath.length() - 1);
 		}
+		if (normalizedPath.startsWith("//")) {
+			normalizedPath = normalizedPath.substring(1);
+		}
 		return normalizedPath;
 	}
 
