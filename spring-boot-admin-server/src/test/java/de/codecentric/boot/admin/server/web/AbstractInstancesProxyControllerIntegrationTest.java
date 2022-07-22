@@ -72,7 +72,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 	@BeforeAll
 	public static void setUp() {
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(60));
+		StepVerifier.setDefaultTimeout(Duration.ofSeconds(600));
 	}
 
 	@AfterAll
@@ -124,10 +124,10 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 	@Test
 	public void should_return_status_504() {
-		// 502 on invalid response
-		this.client.get().uri("/instances/{instanceId}/actuator/invalid", this.instanceId)
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.BAD_GATEWAY);
+		// 504 on read timeout
+		this.client.get().uri("/instances/{instanceId}/actuator/timeout", this.instanceId)
+    .accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+		.exchange().expectStatus().isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
 	}
 
 	@Test
