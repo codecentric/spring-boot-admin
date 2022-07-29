@@ -20,6 +20,8 @@ import java.net.URI;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
@@ -45,15 +47,15 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServiceInstanceConverter.class);
 
-	private static final String KEY_MANAGEMENT_SCHEME = "management.scheme";
+	private static final String[] KEYS_MANAGEMENT_SCHEME = {"management.scheme", "management-scheme"};
 
-	private static final String KEY_MANAGEMENT_ADDRESS = "management.address";
+	private static final String[] KEYS_MANAGEMENT_ADDRESS = {"management.address", "management-address"};
 
-	private static final String KEY_MANAGEMENT_PORT = "management.port";
+	private static final String[] KEYS_MANAGEMENT_PORT = {"management.port", "management-port"};
 
-	private static final String KEY_MANAGEMENT_PATH = "management.context-path";
+	private static final String[] KEYS_MANAGEMENT_PATH = {"management.context-path", "management-context-path"};
 
-	private static final String KEY_HEALTH_PATH = "health.path";
+	private static final String[] KEYS_HEALTH_PATH = {"health.path", "health-path"};
 
 	/**
 	 * Default context-path to be appended to the url of the discovered service for the
@@ -67,23 +69,40 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	 */
 	private String healthEndpointPath = "health";
 
+	private static @Nullable String getMetadataValue(ServiceInstance instance, String[] keys) {
+		Map<String, String> metadata = instance.getMetadata();
+		for (String key : keys) {
+			String value = metadata.get(key);
+			if (value != null) {
+				return value;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public Registration convert(ServiceInstance instance) {
 		LOGGER.debug("Converting service '{}' running at '{}' with metadata {}", instance.getServiceId(),
-				instance.getUri(), instance.getMetadata());
+			instance.getUri(), instance.getMetadata());
 
-		return Registration.create(instance.getServiceId(), getHealthUrl(instance).toString())
-				.managementUrl(getManagementUrl(instance).toString()).serviceUrl(getServiceUrl(instance).toString())
-				.metadata(getMetadata(instance)).build();
+		String healthUrl = getHealthUrl(instance).toString();
+		String managementUrl = getManagementUrl(instance).toString();
+		String serviceUrl = getServiceUrl(instance).toString();
+
+		return Registration.create(instance.getServiceId(), healthUrl)
+			.managementUrl(managementUrl)
+			.serviceUrl(serviceUrl)
+			.metadata(getMetadata(instance))
+			.build();
 	}
 
 	protected URI getHealthUrl(ServiceInstance instance) {
 		return UriComponentsBuilder.fromUri(getManagementUrl(instance)).path("/").path(getHealthPath(instance)).build()
-				.toUri();
+			.toUri();
 	}
 
 	protected String getHealthPath(ServiceInstance instance) {
-		String healthPath = instance.getMetadata().get(KEY_HEALTH_PATH);
+		String healthPath = getMetadataValue(instance, KEYS_HEALTH_PATH);
 		if (hasText(healthPath)) {
 			return healthPath;
 		}
@@ -98,7 +117,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 		UriComponentsBuilder builder;
 		if (serviceUrl.getHost().equals(managementHost) && serviceUrl.getScheme().equals(managementScheme)
-				&& serviceUrl.getPort() == managementPort) {
+			&& serviceUrl.getPort() == managementPort) {
 			builder = UriComponentsBuilder.fromUri(serviceUrl);
 		}
 		else {
@@ -112,7 +131,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	private String getManagementScheme(ServiceInstance instance) {
-		String managementServerScheme = instance.getMetadata().get(KEY_MANAGEMENT_SCHEME);
+		String managementServerScheme = getMetadataValue(instance, KEYS_MANAGEMENT_SCHEME);
 		if (hasText(managementServerScheme)) {
 			return managementServerScheme;
 		}
@@ -120,7 +139,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected String getManagementHost(ServiceInstance instance) {
-		String managementServerHost = instance.getMetadata().get(KEY_MANAGEMENT_ADDRESS);
+		String managementServerHost = getMetadataValue(instance, KEYS_MANAGEMENT_ADDRESS);
 		if (hasText(managementServerHost)) {
 			return managementServerHost;
 		}
@@ -128,7 +147,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected int getManagementPort(ServiceInstance instance) {
-		String managementPort = instance.getMetadata().get(KEY_MANAGEMENT_PORT);
+		String managementPort = getMetadataValue(instance, KEYS_MANAGEMENT_PORT);
 		if (hasText(managementPort)) {
 			return Integer.parseInt(managementPort);
 		}
@@ -136,7 +155,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected String getManagementPath(ServiceInstance instance) {
-		String managementPath = instance.getMetadata().get(DefaultServiceInstanceConverter.KEY_MANAGEMENT_PATH);
+		String managementPath = getMetadataValue(instance, KEYS_MANAGEMENT_PATH);
 		if (hasText(managementPath)) {
 			return managementPath;
 		}
@@ -149,25 +168,25 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	protected Map<String, String> getMetadata(ServiceInstance instance) {
 		return (instance.getMetadata() != null)
-				? instance.getMetadata().entrySet().stream().filter((e) -> e.getKey() != null && e.getValue() != null)
-						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-				: emptyMap();
-	}
-
-	public void setManagementContextPath(String managementContextPath) {
-		this.managementContextPath = managementContextPath;
+			? instance.getMetadata().entrySet().stream().filter((e) -> e.getKey() != null && e.getValue() != null)
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+			: emptyMap();
 	}
 
 	public String getManagementContextPath() {
 		return this.managementContextPath;
 	}
 
-	public void setHealthEndpointPath(String healthEndpointPath) {
-		this.healthEndpointPath = healthEndpointPath;
+	public void setManagementContextPath(String managementContextPath) {
+		this.managementContextPath = managementContextPath;
 	}
 
 	public String getHealthEndpointPath() {
 		return this.healthEndpointPath;
+	}
+
+	public void setHealthEndpointPath(String healthEndpointPath) {
+		this.healthEndpointPath = healthEndpointPath;
 	}
 
 }
