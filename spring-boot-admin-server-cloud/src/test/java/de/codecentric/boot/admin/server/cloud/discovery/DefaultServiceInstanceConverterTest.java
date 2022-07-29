@@ -77,6 +77,27 @@ public class DefaultServiceInstanceConverterTest {
 		assertThat(registration.getMetadata()).isEqualTo(metadata);
 	}
 
+	// Fix for Issue #2076, #1737
+	@Test
+	public void should_convert_with_metadata_without_dots() {
+		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
+		Map<String, String> metadata = new HashMap<>();
+		metadata.put("health-path", "ping");
+		metadata.put("management-scheme", "https");
+		metadata.put("management-address", "127.0.0.1");
+		metadata.put("management-port", "1234");
+		metadata.put("management-context-path", "mgmt");
+		service.getMetadata().putAll(metadata);
+
+		Registration registration = new DefaultServiceInstanceConverter().convert(service);
+
+		assertThat(registration.getName()).isEqualTo("test");
+		assertThat(registration.getServiceUrl()).isEqualTo("http://localhost:80");
+		assertThat(registration.getManagementUrl()).isEqualTo("https://127.0.0.1:1234/mgmt");
+		assertThat(registration.getHealthUrl()).isEqualTo("https://127.0.0.1:1234/mgmt/ping");
+		assertThat(registration.getMetadata()).isEqualTo(metadata);
+	}
+
 	@Test
 	public void should_convert_with_metadata_having_null_value() {
 		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
