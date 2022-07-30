@@ -39,7 +39,7 @@
         <spring-boot.version>2.7.2</spring-boot.version>
         <spring-cloud.version>2021.0.3</spring-cloud.version>
         <wiremock.version>2.33.2</wiremock.version>
-        <hazelcast-tests.version>5.1.1</hazelcast-tests.version>
+        <hazelcast-tests.version>5.1.2</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.1.1</awaitility.version>
         <testcontainers.version>1.16.3</testcontainers.version>
