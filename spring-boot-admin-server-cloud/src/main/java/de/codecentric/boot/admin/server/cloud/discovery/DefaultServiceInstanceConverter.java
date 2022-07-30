@@ -47,15 +47,15 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultServiceInstanceConverter.class);
 
-	private static final String[] KEYS_MANAGEMENT_SCHEME = {"management.scheme", "management-scheme"};
+	private static final String[] KEYS_MANAGEMENT_SCHEME = { "management.scheme", "management-scheme" };
 
-	private static final String[] KEYS_MANAGEMENT_ADDRESS = {"management.address", "management-address"};
+	private static final String[] KEYS_MANAGEMENT_ADDRESS = { "management.address", "management-address" };
 
-	private static final String[] KEYS_MANAGEMENT_PORT = {"management.port", "management-port"};
+	private static final String[] KEYS_MANAGEMENT_PORT = { "management.port", "management-port" };
 
-	private static final String[] KEYS_MANAGEMENT_PATH = {"management.context-path", "management-context-path"};
+	private static final String[] KEYS_MANAGEMENT_PATH = { "management.context-path", "management-context-path" };
 
-	private static final String[] KEYS_HEALTH_PATH = {"health.path", "health-path"};
+	private static final String[] KEYS_HEALTH_PATH = { "health.path", "health-path" };
 
 	/**
 	 * Default context-path to be appended to the url of the discovered service for the
@@ -83,22 +83,19 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	@Override
 	public Registration convert(ServiceInstance instance) {
 		LOGGER.debug("Converting service '{}' running at '{}' with metadata {}", instance.getServiceId(),
-			instance.getUri(), instance.getMetadata());
+				instance.getUri(), instance.getMetadata());
 
 		String healthUrl = getHealthUrl(instance).toString();
 		String managementUrl = getManagementUrl(instance).toString();
 		String serviceUrl = getServiceUrl(instance).toString();
 
-		return Registration.create(instance.getServiceId(), healthUrl)
-			.managementUrl(managementUrl)
-			.serviceUrl(serviceUrl)
-			.metadata(getMetadata(instance))
-			.build();
+		return Registration.create(instance.getServiceId(), healthUrl).managementUrl(managementUrl)
+				.serviceUrl(serviceUrl).metadata(getMetadata(instance)).build();
 	}
 
 	protected URI getHealthUrl(ServiceInstance instance) {
 		return UriComponentsBuilder.fromUri(getManagementUrl(instance)).path("/").path(getHealthPath(instance)).build()
-			.toUri();
+				.toUri();
 	}
 
 	protected String getHealthPath(ServiceInstance instance) {
@@ -117,7 +114,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 		UriComponentsBuilder builder;
 		if (serviceUrl.getHost().equals(managementHost) && serviceUrl.getScheme().equals(managementScheme)
-			&& serviceUrl.getPort() == managementPort) {
+				&& serviceUrl.getPort() == managementPort) {
 			builder = UriComponentsBuilder.fromUri(serviceUrl);
 		}
 		else {
@@ -168,9 +165,9 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	protected Map<String, String> getMetadata(ServiceInstance instance) {
 		return (instance.getMetadata() != null)
-			? instance.getMetadata().entrySet().stream().filter((e) -> e.getKey() != null && e.getValue() != null)
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-			: emptyMap();
+				? instance.getMetadata().entrySet().stream().filter((e) -> e.getKey() != null && e.getValue() != null)
+						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+				: emptyMap();
 	}
 
 	public String getManagementContextPath() {
