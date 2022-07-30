@@ -153,7 +153,7 @@ export default {
       }, {});
     },
     listedEvents() {
-      return this.events.slice(this.indexStart, this.indexEnd);
+      return this.filterEvents(this.events).slice(this.indexStart, this.indexEnd);
     },
     newEventsCount() {
       return this.filterEvents(this.events.slice(0, this.listOffset)).length;
@@ -162,7 +162,7 @@ export default {
       return (this.current - 1) * (+this.pageSize);
     },
     pageCount() {
-      return Math.ceil(this.events.length / (+this.pageSize));
+      return Math.ceil(this.filterEvents(this.events).length / (+this.pageSize));
     },
     indexEnd() {
       return this.indexStart + (+this.pageSize);

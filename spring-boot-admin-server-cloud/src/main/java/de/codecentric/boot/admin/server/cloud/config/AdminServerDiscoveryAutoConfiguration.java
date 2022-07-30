@@ -17,7 +17,7 @@
 package de.codecentric.boot.admin.server.cloud.config;
 
 import com.netflix.discovery.EurekaClient;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,13 +41,12 @@ import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = AdminServerAutoConfiguration.class,
+		afterName = { "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
+				"org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration" })
 @ConditionalOnSingleCandidate(DiscoveryClient.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnProperty(prefix = "spring.boot.admin.discovery", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter(value = AdminServerAutoConfiguration.class,
-		name = { "org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration",
-				"org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration" })
 public class AdminServerDiscoveryAutoConfiguration {
 
 	@Bean

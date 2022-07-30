@@ -1,4 +1,5 @@
-consul:
-  image: library/consul
-  ports:
-    - "8500:8500"
+services:
+  consul:
+    image: library/consul
+    ports:
+      - "8500:8500"

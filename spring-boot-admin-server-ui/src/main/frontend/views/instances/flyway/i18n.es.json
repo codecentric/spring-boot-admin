@@ -1,0 +1,18 @@
+{
+  "instances": {
+    "flyway": {
+      "label": "Flyway",
+      "fetch_failed": "Falla recuperando reportes de Flyway.",
+      "type": "Tipo",
+      "checksum": "Checksum",
+      "version": "Versión",
+      "description": "Descripción",
+      "script": "Script",
+      "state": "Estado",
+      "installed_by": "Instalado por",
+      "installed_on": "Instalado en",
+      "installed_rank": "Rango instalado",
+      "execution_time": "Tiempo ejecución"
+    }
+  }
+}

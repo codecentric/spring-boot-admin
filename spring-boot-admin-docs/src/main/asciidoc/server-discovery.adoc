@@ -36,7 +36,7 @@ spring:
 ----
 
 ==== Other DiscoveryClients ====
-Spring Boot Admin supports all other implementations of Spring Cloud's `DiscoveryClient` (Eureka, Zookeeper, Consul, ...). You need to add it to the Spring Boot Admin Server and configure it properly.
+Spring Boot Admin supports all other implementations of Spring Cloud's `DiscoveryClient` (https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/[Eureka], https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery[Zookeeper], https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery[Consul], https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes[Kubernetes], ...). You need to add it to the Spring Boot Admin Server and configure it properly.
 An <<discover-clients-via-spring-cloud-discovery,example setup using Eureka>> is shown above.
 
 ==== Converting ServiceInstances ====
@@ -46,6 +46,8 @@ The information from the service registry are converted by the `ServiceInstanceC
 TIP: You can modify how the information from the registry is used to register the application by using SBA Server configuration options and instance metadata. The values from the metadata takes precedence over the server config. If the plenty of options don't fit your needs you can provide your own `ServiceInstanceConverter`.
 
 NOTE: When using Eureka, the `healthCheckUrl` known to Eureka is used for health-checking, which can be set on your client using `eureka.instance.healthCheckUrl`.
+
+WARNING: Consul does not allow dots (`.`) in metadata keys, use dashes instead (e.g. `management-context-path`).
 
 .Instance metadata options
 |===

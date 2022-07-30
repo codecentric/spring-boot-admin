@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  de.codecentric.boot.admin.server.cloud.config.AdminServerDiscoveryAutoConfiguration

@@ -33,8 +33,6 @@ import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
-import static de.codecentric.boot.admin.server.utils.MediaType.ACTUATOR_V2_MEDIATYPE;
-
 /**
  * The StatusUpdater is responsible for updating the status of all or a single application
  * querying the healthUrl.
@@ -52,9 +50,13 @@ public class InfoUpdater {
 
 	private final InstanceWebClient instanceWebClient;
 
-	public InfoUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient) {
+	private final ApiMediaTypeHandler apiMediaTypeHandler;
+
+	public InfoUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
+			ApiMediaTypeHandler apiMediaTypeHandler) {
 		this.repository = repository;
 		this.instanceWebClient = instanceWebClient;
+		this.apiMediaTypeHandler = apiMediaTypeHandler;
 	}
 
 	public Mono<Void> updateInfo(InstanceId id) {
@@ -76,9 +78,9 @@ public class InfoUpdater {
 	}
 
 	protected Mono<Info> convertInfo(Instance instance, ClientResponse response) {
-		if (response.statusCode().is2xxSuccessful() && response.headers().contentType().map(
-				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || mt.isCompatibleWith(ACTUATOR_V2_MEDIATYPE))
-				.orElse(false)) {
+		if (response.statusCode().is2xxSuccessful() && response.headers().contentType().filter(
+				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || this.apiMediaTypeHandler.isApiMediaType(mt))
+				.isPresent()) {
 			return response.bodyToMono(RESPONSE_TYPE).map(Info::from).defaultIfEmpty(Info.empty());
 		}
 		log.info("Couldn't retrieve info for {}: {}", instance, response.statusCode());

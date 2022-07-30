@@ -1,0 +1,6 @@
+{
+  "wallboard": {
+    "instances_count": "no hay instancias | {count} instancia | {count} instancias",
+    "label": "Tablero"
+  }
+}

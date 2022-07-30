@@ -112,6 +112,12 @@ class Application {
     return {responses};
   }
 
+  async setEnv(name, value) {
+    return this.axios.post(uri`actuator/env`, {name, value}, {
+      headers: {'Content-Type': 'application/json'}
+    });
+  }
+
   async refreshContext() {
     return this.axios.post(uri`actuator/refresh`);
   }
@@ -127,6 +133,31 @@ class Application {
   restart() {
     return this.axios.post(uri`actuator/restart`);
   }
+
+  async writeMBeanAttribute(domain, mBean, attribute, value) {
+    const body = {
+      type: 'write',
+      mbean: `${domain}:${mBean}`,
+      attribute,
+      value
+    };
+    return this.axios.post(uri`actuator/jolokia`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
+  async invokeMBeanOperation(domain, mBean, operation, args) {
+    const body = {
+      type: 'exec',
+      mbean: `${domain}:${mBean}`,
+      operation,
+      'arguments': args
+    };
+    return this.axios.post(uri`actuator/jolokia`, body, {
+      headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+    });
+  }
+
 
   static _transformResponse(data) {
     if (!data) {

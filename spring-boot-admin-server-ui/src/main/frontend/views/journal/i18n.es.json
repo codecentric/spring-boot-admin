@@ -1,0 +1,10 @@
+{
+  "journal": {
+    "title": "Bitácora de eventos",
+    "label": "Eventos",
+    "per_page": {
+      "per_page": "Por página:",
+      "all": "Todos"
+    }
+  }
+}

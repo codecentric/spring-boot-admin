@@ -151,29 +151,20 @@ public class ApplicationRegistryTest {
 	}
 
 	@ParameterizedTest
-	@CsvSource({
-		"UP, UP, UP",
-		"DOWN, DOWN, DOWN",
-		"UNKNOWN, UNKNOWN, UNKNOWN",
-		"UP, DOWN, RESTRICTED",
-		"UP, UNKNOWN, RESTRICTED",
-		"UP, OUT_OF_SERVICE, RESTRICTED",
-		"UP, OFFLINE, RESTRICTED",
-		"UP, RESTRICTED, RESTRICTED",
-		"DOWN, UP, RESTRICTED"
-	})
+	@CsvSource({ "UP, UP, UP", "DOWN, DOWN, DOWN", "UNKNOWN, UNKNOWN, UNKNOWN", "UP, DOWN, RESTRICTED",
+			"UP, UNKNOWN, RESTRICTED", "UP, OUT_OF_SERVICE, RESTRICTED", "UP, OFFLINE, RESTRICTED",
+			"UP, RESTRICTED, RESTRICTED", "DOWN, UP, RESTRICTED" })
 	public void getStatus(String instance1Status, String instance2Status, String expectedApplicationStatus) {
 		Instance instance1 = getInstance("App1").withStatusInfo(StatusInfo.valueOf(instance1Status));
 		Instance instance2 = getInstance("App1").withStatusInfo(StatusInfo.valueOf(instance2Status));
 
 		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
 
-		StepVerifier.create(this.applicationRegistry.getApplications())
-			.recordWith(ArrayList::new)
-			.thenConsumeWhile((a) -> true)
-			.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Application::getStatus))
-				.containsExactly(expectedApplicationStatus))
-			.verifyComplete();
+		StepVerifier.create(this.applicationRegistry.getApplications()).recordWith(ArrayList::new)
+				.thenConsumeWhile((a) -> true)
+				.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Application::getStatus))
+						.containsExactly(expectedApplicationStatus))
+				.verifyComplete();
 	}
 
 	private Instance getInstance(String applicationName, String version) {

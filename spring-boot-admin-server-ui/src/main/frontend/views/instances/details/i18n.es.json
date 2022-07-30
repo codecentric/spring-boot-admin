@@ -1,0 +1,66 @@
+{
+  "instances": {
+    "details": {
+      "label": "Detalles",
+      "fetch_failed": "Fallo recuperando las métricas.",
+      "cache":{
+        "fetch_failed": "Fallo recuperando las métricas de cache.",
+        "hit_ratio": "Índice de aciertos",
+        "hits": "Aciertos",
+        "misses": "Fallas",
+        "size": "Tamaño"
+      },
+      "datasource": {
+        "fetch_failed": "Fallo recuperando las métricas de fuentes de dato.",
+        "active_connections": "Conexiones activas",
+        "min_connections": "Conexiones Min",
+        "max_connections": "Conexiones Max ",
+        "title": "Fuente de datos: {datasource}",
+        "unlimited": "Sin límites"
+      },
+      "gc": {
+        "count": "Cantidad",
+        "time_spent_max": "Tiempo máximo utilizado",
+        "time_spent_total": "Tiempo total utilizado",
+        "title": "Pausas en la recolección de basura"
+      },
+      "health": {
+        "fetch_failed": "Fallo obteniendo el estado de salud actual. Esta es la última información conocida.",
+        "title": "Salud"
+      },
+      "info": {
+        "fetch_failed": "Fallo obteniendo información actual. Esta es la última información conocida.",
+        "no_info_provided": "No hay información provista.",
+        "title": "Info"
+      },
+      "memory": {
+        "fetch_failed": "Falla obteniendo métricas de memoria.",
+        "max": "Max",
+        "metaspace": "Metaspace",
+        "size": "Tamaño",
+        "title": "Memoria",
+        "used": "Usada"
+      },
+      "metadata": {
+        "no_data_provided": "No hay metadatos provistos.",
+        "title": "Metadatos"
+      },
+      "process": {
+        "cpus": "CPUs",
+        "fetch_failed": "Falla al obtener métricas de proceso.",
+        "pid": "PID",
+        "process_cpu_usage": "Uso CPU proceso",
+        "system_cpu_usage": "Uso CPU sistema",
+        "title": "Proceso",
+        "uptime": "Tiempo de actividad"
+      },
+      "threads": {
+        "daemon": "Daemon",
+        "fetch_failed": "Falla obteniendo métricas de los hilos.",
+        "live": "En vivo",
+        "peak_live": "Pico en vivo",
+        "title": "Hilos"
+      }
+    }
+  }
+}

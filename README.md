@@ -56,6 +56,18 @@ alt="Monitoring Spring Boot® Applications with Spring Boot Admin @ Spring I/O 2
 alt="Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime" width="240" height="135" border="10" /></a><br>
 **Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime**
 
+## Compatibility Matrix
+Spring Boot Admin's version matches the major and minor versions of Spring Boot:
+            
+ * SBA 2.0.X -> Spring Boot 2.0.Y
+ * SBA 2.1.X -> Spring Boot 2.1.Y
+ * SBA 2.2.X -> Spring Boot 2.2.Y
+
+etc. pp.
+
+Nevertheless, it is possible to monitor any version of a Spring Boot service independently of the underlying Spring Boot version in the service. 
+Hence, it is possible to run Spring Boot Admin Server version 2.6 and monitor a service that is running on Spring Boot 2.3 using Spring Boot Admin Client version 2.3.
+
 ## Getting Help
 
 Having trouble with codecentric's Spring Boot Admin? We’d like to help!
@@ -69,11 +81,17 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
-[Version 2.4.3](http://codecentric.github.io/spring-boot-admin/2.4.3/)
+[Version 2.6.6](http://codecentric.github.io/spring-boot-admin/2.6.6/)
 
-[Version 2.3.1](http://codecentric.github.io/spring-boot-admin/2.3.1/)
+[Version 2.5.6](http://codecentric.github.io/spring-boot-admin/2.5.6/)
 
 [Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
+
+**Translated version**
+The following reference guides have been translated by users of Spring Boot Admin and are not part of the official bundle.
+The maintainers of Spring Boot Admin will not update and maintain the guides mentioned below.
+
+[Version 2.6.6 (Chinese translated by @qq253498229)](https://consolelog.gitee.io/docs-spring-boot-admin-docs-chinese/)
 
 ## Trademarks and licenses
 The source code of codecentric's Spring Boot Admin is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)

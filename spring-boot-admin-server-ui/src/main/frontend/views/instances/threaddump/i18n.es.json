@@ -1,0 +1,20 @@
+{
+  "instances": {
+    "threaddump": {
+      "label": "Thread Dump",
+      "download": "Descargar Thread Dump",
+      "fetch_failed": "Falla recuperando el thread dump.",
+      "download_failed": "Falla descargando el thread dump.",
+      "thread_details_blocked_count": "Bloqueados count",
+      "thread_details_blocked_time": "Tiempo de bloqueo",
+      "thread_details_lock_name": "Nombre del Lock",
+      "thread_details_lock_owner_id": "Id del dueño del Lock",
+      "thread_details_lock_owner_name": "Nombre del dueño del Lock",
+      "thread_details_waited_count": "Cantidad Waited",
+      "thread_details_waited_time": "Tiempo Waited",
+      "thread_id": "Id Thread",
+      "thread_name": "Nombre Thread ",
+      "thread_state": "Estado Thread"
+    }
+  }
+}

@@ -1,0 +1,2 @@
+de.codecentric.boot.admin.client.config.SpringBootAdminClientAutoConfiguration
+de.codecentric.boot.admin.client.config.SpringBootAdminClientCloudFoundryAutoConfiguration

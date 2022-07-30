@@ -104,8 +104,11 @@ public class InstanceWebProxy {
 			log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'", instance.getId(),
 					forwardRequest.getUri());
 			return responseHandler.apply(ClientResponse.create(HttpStatus.NOT_FOUND, this.strategies).build());
-		}).onErrorResume(WebClientRequestException.class, (ex) -> {
-			Throwable cause = ex.getCause();
+		}).onErrorResume((ex) -> {
+			Throwable cause = ex;
+			if (ex instanceof WebClientRequestException) {
+				cause = ex.getCause();
+			}
 			if (cause instanceof ReadTimeoutException || cause instanceof TimeoutException) {
 				log.trace("Timeout for Proxy-Request for instance {} with URL '{}'", instance.getId(),
 						forwardRequest.getUri());

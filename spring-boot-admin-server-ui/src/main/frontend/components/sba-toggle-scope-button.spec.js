@@ -18,7 +18,6 @@ import {render} from '@/test-utils';
 import SbaToggleScopeButton from './sba-toggle-scope-button';
 import userEvent from '@testing-library/user-event';
 import {screen} from '@testing-library/vue';
-import {mount} from '@vue/test-utils';
 
 describe('SbaToggleScopeButton', function () {
   let wrapper;
