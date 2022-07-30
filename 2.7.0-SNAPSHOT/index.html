@@ -531,7 +531,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <h1>Spring Boot Admin Reference Guide</h1>
 <div class="details">
 <span id="revnumber">version 2.7.0-SNAPSHOT,</span>
-<span id="revdate">29.07.2022</span>
+<span id="revdate">30.07.2022</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1554,6 +1554,18 @@ You can modify how the information from the registry is used to register the app
 </td>
 <td class="content">
 When using Eureka, the <code>healthCheckUrl</code> known to Eureka is used for health-checking, which can be set on your client using <code>eureka.instance.healthCheckUrl</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Consul does not allow dots (<code>.</code>) in metadata keys, use dashes instead (e.g. <code>management-context-path</code>).
 </td>
 </tr>
 </table>
@@ -2828,8 +2840,8 @@ If your clients provide credentials via metadata (i.e., via service annotations)
 <pre class="CodeRay highlight"><code data-lang="yaml"><span class="key">spring.cloud.consul</span>:
   <span class="key">discovery</span>:
     <span class="key">metadata</span>:
-        <span class="key">user-name</span>: <span class="string"><span class="content">${spring.security.user.name}</span></span>
-        <span class="key">user-password</span>: <span class="string"><span class="content">${spring.security.user.password}</span></span></code></pre>
+      <span class="key">user-name</span>: <span class="string"><span class="content">${spring.security.user.name}</span></span>
+      <span class="key">user-password</span>: <span class="string"><span class="content">${spring.security.user.password}</span></span></code></pre>
 </div>
 </div>
 <div class="admonitionblock warning">
@@ -2839,7 +2851,7 @@ If your clients provide credentials via metadata (i.e., via service annotations)
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-Consul does not allow dots (".") in metadata keys, use dashes instead.
+Consul does not allow dots (<code>.</code>) in metadata keys, use dashes instead.
 </td>
 </tr>
 </table>
