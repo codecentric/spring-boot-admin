@@ -71,7 +71,7 @@
         <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
         <checkstyle.version>9.3</checkstyle.version>
         <spring-javaformat-checkstyle.version>0.0.29</spring-javaformat-checkstyle.version>
-        <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
         <node.version>v16.13.2</node.version>
         <npm.version>8.3.2</npm.version>
     </properties>
