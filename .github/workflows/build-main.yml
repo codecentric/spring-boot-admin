@@ -25,7 +25,7 @@ jobs:
           java-version: '8'
 
       - name: Cache local Maven repository
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3.0.5
         env:
           cache-name: cache-mvn
         with:
@@ -37,7 +37,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -71,7 +71,7 @@ jobs:
           java-version: '8'
 
       - name: Cache local Maven repository
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3.0.5
         env:
           cache-name: cache-mvn
         with:
@@ -83,7 +83,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
