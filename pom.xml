@@ -41,7 +41,7 @@
         <wiremock.version>2.33.2</wiremock.version>
         <hazelcast-tests.version>5.1.2</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
-        <awaitility.version>4.1.1</awaitility.version>
+        <awaitility.version>4.2.0</awaitility.version>
         <testcontainers.version>1.16.3</testcontainers.version>
         <jetty.version>9.4.48.v20220622</jetty.version>
 
