@@ -41,7 +41,7 @@
     "lodash": "4.17.21",
     "moment": "2.29.4",
     "popper.js": "1.16.1",
-    "pretty-bytes": "5.6.0",
+    "pretty-bytes": "6.0.0",
     "resize-observer-polyfill": "1.5.1",
     "rxjs": "7.5.6",
     "vue": "2.6.14",
@@ -153,7 +153,7 @@
       "vue"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(d3-.*)/)"
+      "node_modules/(?!(d3-.*|pretty-bytes)/)"
     ],
     "transform": {
       ".+\\.vue$": "vue-jest",
