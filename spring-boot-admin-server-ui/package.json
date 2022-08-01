@@ -37,7 +37,7 @@
     "d3-time": "2.1.1",
     "event-source-polyfill": "1.0.26",
     "file-saver": "2.0.5",
-    "iso8601-duration": "1.3.0",
+    "iso8601-duration": "2.1.1",
     "lodash": "4.17.21",
     "moment": "2.29.4",
     "popper.js": "1.16.1",
