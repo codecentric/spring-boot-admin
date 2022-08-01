@@ -42,14 +42,15 @@ describe('application-list-item.vue', () => {
     const {emitted} = render(ApplicationListItem, {props: {application: new Application(application)}})
 
     const element = screen.queryByTitle('shutdown');
-    userEvent.click(element);
+    await userEvent.click(element);
 
     await waitFor(() => {
       screen.findByRole('dialog');
     })
 
+    screen.logTestingPlaygroundURL();
     const buttonOK = screen.queryByRole('button', {name: 'OK'});
-    userEvent.click(buttonOK);
+    await userEvent.click(buttonOK);
 
     expect(emitted().shutdown).toBeDefined();
   })
@@ -67,14 +68,14 @@ describe('application-list-item.vue', () => {
     const {emitted} = render(ApplicationListItem, {props: {application: new Application(application)}})
 
     const element = screen.queryByTitle('restart');
-    userEvent.click(element);
+    await userEvent.click(element);
 
     await waitFor(() => {
       screen.findByRole('dialog');
     })
 
     const buttonOK = screen.queryByRole('button', {name: 'OK'});
-    userEvent.click(buttonOK);
+    await userEvent.click(buttonOK);
 
     expect(emitted().restart).toBeDefined();
   })
@@ -83,14 +84,14 @@ describe('application-list-item.vue', () => {
     render(ApplicationListItem, {props: {application: new Application(application)}})
 
     const element = screen.queryByTitle('restart');
-    userEvent.click(element);
+    await userEvent.click(element);
 
     await waitFor(() => {
       screen.findByRole('dialog');
     })
 
     const buttonOK = screen.queryByRole('button', {name: 'OK'});
-    userEvent.click(buttonOK);
+    await userEvent.click(buttonOK);
 
     await waitFor(() => {
       let successDialog = screen.queryByText('Successfully restarted application');
