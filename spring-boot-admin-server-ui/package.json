@@ -82,7 +82,7 @@
     "jest-environment-jsdom-sixteen": "2.0.0",
     "msw": "0.44.2",
     "msw-storybook-addon": "1.6.3",
-    "sass": "1.54.0",
+    "sass": "1.54.1",
     "vue-loader": "15.10.0",
     "vue-template-compiler": "2.6.14",
     "webpack-bundle-analyzer": "4.5.0"
