@@ -65,4 +65,8 @@ spring:
     activate:
       on-profile: secure
 
-
+---
+spring:
+  profiles: basepath
+  webflux:
+    base-path: /sba
