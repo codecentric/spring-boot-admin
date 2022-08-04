@@ -19,7 +19,7 @@ jobs:
       - name: Set up settings.xml for Maven Central Repository
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: 'adopt'
           java-version: '17'
           server-id: oss.sonatype.org
           server-username: MAVEN_USERNAME

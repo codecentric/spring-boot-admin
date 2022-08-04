@@ -20,11 +20,10 @@ import java.net.URI;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.lang.Nullable;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
