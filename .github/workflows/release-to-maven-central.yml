@@ -28,7 +28,7 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Cache local Maven repository
-        uses: actions/cache@v3.0.5
+        uses: actions/cache@v3.0.6
         env:
           cache-name: cache-mvn
         with:
