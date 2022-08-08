@@ -77,7 +77,6 @@ export default {
     async refreshInstance() {
       await this.instance.refreshContext()
         .then((response) => {
-          response.data = ['asd', 'asd', 'asd'];
           this.refreshedProperties = [{
             instanceId: this.instance.id,
             changedProperties: response.data,
