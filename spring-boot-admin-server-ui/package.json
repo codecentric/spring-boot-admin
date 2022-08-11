@@ -35,7 +35,7 @@
     "d3-selection": "2.0.0",
     "d3-shape": "2.1.0",
     "d3-time": "2.1.1",
-    "event-source-polyfill": "1.0.28",
+    "event-source-polyfill": "1.0.31",
     "file-saver": "2.0.5",
     "iso8601-duration": "2.1.1",
     "lodash": "4.17.21",
