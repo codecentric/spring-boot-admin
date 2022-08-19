@@ -18,11 +18,11 @@
     "@vue/eslint-config-standard": "4.0.0",
     "copy-webpack-plugin": "5.1.2",
     "eslint": "6.8.0",
-    "vue": "2.7.8",
-    "vue-template-compiler": "2.7.8"
+    "vue": "2.7.9",
+    "vue-template-compiler": "2.7.9"
   },
   "peerDependencies": {
-    "vue": "2.7.8"
+    "vue": "2.7.9"
   },
   "eslintConfig": {
     "root": true,
