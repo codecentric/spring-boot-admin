@@ -80,7 +80,7 @@ public class IntervalCheck {
 		this.subscription = Flux.interval(this.interval)
 				.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
 				.log(log.getName(), Level.FINEST).subscribeOn(this.scheduler).concatMap((i) -> this.checkAllInstances())
-				.retryWhen(Retry.indefinitely()
+				.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
 						.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
 				.subscribe();
 	}

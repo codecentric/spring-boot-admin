@@ -88,7 +88,7 @@ public class IntervalCheckTest {
 		when(this.checkFn.apply(any())).thenReturn(Mono.error(new RuntimeException("Test"))).thenReturn(Mono.empty());
 
 		this.intervalCheck.start();
-		Thread.sleep(100);
+		Thread.sleep(1500);
 		verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test"));
 	}
 
