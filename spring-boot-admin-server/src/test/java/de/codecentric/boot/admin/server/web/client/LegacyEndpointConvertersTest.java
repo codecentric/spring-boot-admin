@@ -17,8 +17,14 @@
 package de.codecentric.boot.admin.server.web.client;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
+import com.google.common.collect.ImmutableMap;
+import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -29,9 +35,7 @@ import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class LegacyEndpointConvertersTest {
+public class LegacyEndpointConvertersTest implements WithAssertions {
 
 	private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 
@@ -39,6 +43,20 @@ public class LegacyEndpointConvertersTest {
 
 	private final ResolvableType type = ResolvableType.forType(new ParameterizedTypeReference<Map<String, Object>>() {
 	});
+
+	public static Stream<Arguments> methodSignatureToExpectedMap() {
+		return Stream.of(
+				Arguments.of("public java.lang.Object bar.Handler.handle(java.util.List<java.lang.String>)",
+						ImmutableMap.of("className", "bar.Handler", "descriptor",
+								"(Ljava/util/List;)Ljava/lang/Object;", "name", "handle")),
+
+				Arguments.of("public SomeBean bar.Handler.handle(java.util.List)",
+						ImmutableMap.of("className", "bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;",
+								"name", "handle")),
+
+				Arguments.of("public synchronized SomeBean bar.Handler.handle(java.util.List)", ImmutableMap.of(
+						"className", "bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;", "name", "handle")));
+	}
 
 	@Test
 	public void should_convert_health() {
@@ -173,6 +191,19 @@ public class LegacyEndpointConvertersTest {
 
 		StepVerifier.create(Flux.zip(converted, expected)).assertNext((t) -> assertThat(t.getT1()).isEqualTo(t.getT2()))
 				.verifyComplete();
+	}
+
+	/*
+	 * see Bugticket #2107
+	 */
+	@ParameterizedTest
+	@MethodSource("methodSignatureToExpectedMap")
+	void convertMappingHandlerMethod__should_map_method_signature_to_Handler_method_description_map(
+			String methodDeclaration, Map<String, Object> expectedHandlerDescriptionMap) {
+		Map<String, Object> convertMappingHandlerMethodMap = LegacyEndpointConverters
+				.convertMappingHandlerMethod(methodDeclaration);
+
+		assertThat(convertMappingHandlerMethodMap).isEqualTo(expectedHandlerDescriptionMap);
 	}
 
 	private Flux<Object> unmarshal(Flux<DataBuffer> buffer) {
