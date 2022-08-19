@@ -85,7 +85,7 @@
     "sass": "1.54.4",
     "vue-loader": "15.10.0",
     "vue-template-compiler": "2.7.9",
-    "webpack-bundle-analyzer": "4.5.0"
+    "webpack-bundle-analyzer": "4.6.0"
   },
   "eslintConfig": {
     "root": true,
