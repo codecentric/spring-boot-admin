@@ -44,7 +44,7 @@
     "pretty-bytes": "6.0.0",
     "resize-observer-polyfill": "1.5.1",
     "rxjs": "7.5.6",
-    "vue": "2.7.9",
+    "vue": "2.7.10",
     "vue-clickaway2": "2.3.2",
     "vue-i18n": "8.27.2",
     "vue-infinite-loading": "2.4.5",
@@ -84,7 +84,7 @@
     "msw-storybook-addon": "1.6.3",
     "sass": "1.54.5",
     "vue-loader": "15.10.0",
-    "vue-template-compiler": "2.7.9",
+    "vue-template-compiler": "2.7.10",
     "webpack-bundle-analyzer": "4.6.1"
   },
   "eslintConfig": {
