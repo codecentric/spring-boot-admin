@@ -20,6 +20,7 @@ import logtail from '../utils/logtail';
 import {concat, from, ignoreElements, Observable} from '../utils/rxjs';
 import uri from '../utils/uri';
 import saveAs from 'file-saver';
+import {useToast} from "vue-toast-notification";
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',

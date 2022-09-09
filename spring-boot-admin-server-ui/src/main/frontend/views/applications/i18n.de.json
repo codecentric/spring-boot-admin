@@ -9,6 +9,7 @@
     },
     "all_up": "Alle verfügbar",
     "applications": "Anwendungen",
+    "fetching_notification_filters_failed": "Der Abruf der Benachrichtigungseinstellungen ist fehlgeschlagen.",
     "instances": "Instanzen",
     "instances_down": "Einige Instanzen sind ausgefallen",
     "loading_applications": "Anwendungen werden geladen ...",
@@ -19,14 +20,25 @@
     "suppress_notifications_on": "Benachrichtungen für <code>{name}</code> für",
     "status": "Status",
     "label": "Anwendungen",
-    "shutdown": "Anwendung <code>{name}</code> herunterfahren?",
-    "restart": "Anwendung <code>{name}</code> neu starten?",
-    "restarted": "Anwendung <code>{name}</code> erfolgreich neu gestartet",
-    "unregister": "Anwendung <code>{name}</code> deregistrieren?"
+    "shutdown": "Möchten Sie die Anwendung <code>{name}</code> herunterfahren?",
+    "restart": "Möchten Sie Anwendung <code>{name}</code> neu starten?",
+    "restarted": "Die Anwendung wurde neu gestartet.",
+    "unregister": "Möchten Sie die Anwendung <code>{name}</code> deregistrieren?",
+    "unregister_successful": "Die Anwendung {name} wurde erfolgreich deregistriert.",
+    "unregister_failed": "Deregistration der Anwendung <code>{name}</code> fehlgeschlagen."
   },
   "instances": {
-    "shutdown": "Instanz <code>{name}</code> herunterfahren?",
-    "restart": "Instanz <code>{name}</code> neu starten?",
-    "restarted": "Instanz erfolgreich neu gestartet"
+    "actions": {
+      "notification_filters": "Benachrichtigungsfilter",
+      "unregister": "Deregistrieren",
+      "shutdown": "Herunterfahren",
+      "restart": "Neu starten"
+    },
+    "shutdown": "Möchten Sie die Instanz <code>{name}</code> herunterfahren?",
+    "restart": "Möchten Sie die Instanz <code>{name}</code> neu starten?",
+    "restarted": "Die Instanz {name} wurde neu gestartet.",
+    "unregister": "Möchten Sie die Instanz <code>{name}</code> deregistrieren?",
+    "unregister_successful": "Die Instanz {name} wurde erfolgreich deregistriert.",
+    "unregister_failed": "Deregistration der Instanz <code>{name}</code> fehlgeschlagen."
   }
 }

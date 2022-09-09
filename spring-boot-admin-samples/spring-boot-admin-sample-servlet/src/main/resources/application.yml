@@ -6,6 +6,8 @@ info:
 logging:
   level:
     ROOT: info
+    de.codecentric: trace
+    org.springframework.web: debug
   file:
     name: "target/boot-admin-sample-servlet.log"
   pattern:
@@ -20,6 +22,8 @@ management:
     refresh:
       enabled: true
     restart:
+      enabled: true
+    shutdown:
       enabled: true
     env:
       post:
@@ -54,7 +58,7 @@ spring:
       ui:
         external-views:
           - label: "🚀"
-            url: http://codecentric.de
+            url: https://codecentric.de
             order: 2000
 # end::customization-external-views[]
 ---

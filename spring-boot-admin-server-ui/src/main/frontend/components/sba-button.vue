@@ -1,8 +1,8 @@
 <template>
   <button
-    :class="classNames"
-    :disabled="disabled===true"
     class="btn relative"
+    :class="cssClasses"
+    :disabled="disabled===true"
     @click="$emit('click', $event)"
   >
     <slot />
@@ -35,7 +35,7 @@ export default {
   },
   emits: ['click'],
   computed: {
-    classNames() {
+    cssClasses() {
       return {
         'shadow-sm': !this.flat,
         // Sizes

@@ -29,6 +29,9 @@ import {createApplicationStore, useApplicationStore} from "./composables/useAppl
 import {createViewRegistry} from "./composables/ViewRegistry.js";
 import { worker } from './mocks/browser';
 
+import VueToast from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-default.css';
+
 moment.locale(navigator.language.split('-')[0]);
 
 const applicationStore = createApplicationStore();
@@ -40,7 +43,8 @@ const installables = [
   ...sbaConfig.extensions
 ];
 
-if (process.env.NODE_ENV === 'development') {
+console.log(process.env.MSW_ENABLED);
+if (process.env.NODE_ENV === 'development' && process.env.MSW_ENABLED === "true") {
   worker.start({
     serviceWorker: {
       url: "./mockServiceWorker.js"
@@ -72,6 +76,7 @@ const app = createApp({
 
 app.use(components);
 app.use(i18n);
+app.use(VueToast);
 app.use(router(viewRegistry.routes));
 
 const vue = app.mount('#app');

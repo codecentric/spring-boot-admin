@@ -40,8 +40,8 @@
   </sba-modal-confirm>
 
   <sba-modal-confirm
-    v-model:open="isModalShutdownInstanceOpen"
-    :title="$t('applications.actions.shutdown')"
+    v-model:open="isModalRestartInstanceOpen"
+    :title="$t('applications.actions.restart')"
     @close="restartInstance($event)"
   >
     <span v-html="$t('instances.restart', {name: currentModalInstance.id})" />
@@ -61,24 +61,6 @@
     @close="unregisterInstance($event)"
   >
     <span v-html="$t('instances.unregister', {name: currentModalInstance.id})" />
-  </sba-modal-confirm>
-
-  <sba-modal-confirm
-    v-model:open="isApplicationRestarted"
-    :title="$t('applications.actions.restart')"
-    skip-cancel
-    @close="closeModals"
-  >
-    <span v-html="$t('applications.restarted', {name: application.name})" />
-  </sba-modal-confirm>
-
-  <sba-modal-confirm
-    v-model:open="isInstanceRestarted"
-    :title="$t('applications.actions.restart')"
-    skip-cancel
-    @close="closeModals"
-  >
-    <span v-html="$t('instances.restarted')" />
   </sba-modal-confirm>
 
   <div
@@ -125,6 +107,7 @@
             <sba-button
               v-if="hasNotificationFiltersSupport"
               :id="`nf-settings-${instance.id}`"
+              :title="$t('instances.actions.notification_filters')"
               size="xs"
               @click.stop="$emit('toggle-notification-filter-settings', instance)"
             >
@@ -133,9 +116,10 @@
                 class="h-3"
               />
             </sba-button>
+            &nbsp;
             <sba-button
               v-if="instance.isUnregisterable"
-              title="unregister"
+              :title="$t('instances.actions.unregister')"
               size="xs"
               @click.stop="confirmUnregisterInstance(instance)"
             >
@@ -145,25 +129,26 @@
               />
             </sba-button>
             <sba-button
-              v-if="instance.hasEndpoint('shutdown')"
-              title="shutdown"
-              size="xs"
-
-              @click.stop="confirmShutdownInstance(instance)"
-            >
-              <font-awesome-icon
-                :icon="['far', 'stop-circle']"
-                class="h-3"
-              />
-            </sba-button>
-            <sba-button
               v-if="instance.hasEndpoint('restart')"
-              title="restart"
+              :title="$t('instances.actions.restart')"
               size="xs"
               @click.stop="confirmRestartInstance(instance)"
             >
               <font-awesome-icon
                 icon="sync-alt"
+                class="h-3"
+              />
+            </sba-button>
+            &nbsp;
+            <sba-button
+              class="is-danger"
+              v-if="instance.hasEndpoint('shutdown')"
+              :title="$t('instances.actions.shutdown')"
+              size="xs"
+              @click.stop="confirmShutdownInstance(instance)"
+            >
+              <font-awesome-icon
+                :icon="['fa', 'power-off']"
                 class="h-3"
               />
             </sba-button>
@@ -212,8 +197,6 @@ export default {
       isModalShutdownInstanceOpen: false,
       isModalRestartInstanceOpen: false,
       isModalUnregisterInstanceOpen: false,
-      isApplicationRestarted: false,
-      isInstanceRestarted: false,
       currentModalInstance: undefined
     }
   },
@@ -294,14 +277,12 @@ export default {
       this.closeModals();
       if ($event === true) {
         this.$emit('restart', this.application);
-        this.isApplicationRestarted = true;
       }
     },
     restartInstance($event) {
       this.closeModals();
       if ($event === true) {
         this.$emit('restart', this.currentModalInstance);
-        this.isInstanceRestarted = true;
       }
     },
     unregisterInstance($event) {

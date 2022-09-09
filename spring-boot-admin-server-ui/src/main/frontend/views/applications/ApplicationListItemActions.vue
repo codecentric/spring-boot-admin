@@ -11,7 +11,7 @@
         :title="$t('applications.actions.journal')"
         @click.stop="navigate"
       >
-        <font-awesome-icon icon="history" />
+        <font-awesome-icon icon="history"/>
       </sba-button>
     </router-link>
     <sba-button
@@ -20,28 +20,31 @@
       :title="$t('applications.actions.notification_filters')"
       @click.stop="$emit('filter-settings', application)"
     >
-      <font-awesome-icon :icon="hasActiveNotificationFilter ? 'bell-slash' : 'bell'" />
+      <font-awesome-icon :icon="hasActiveNotificationFilter ? 'bell-slash' : 'bell'"/>
     </sba-button>
+    &nbsp;
     <sba-button
       v-if="application.isUnregisterable"
       :title="$t('applications.actions.unregister')"
       @click.stop="$emit('unregister', application)"
     >
-      <font-awesome-icon :icon="'trash'" />
-    </sba-button>
-    <sba-button
-      v-if="application.hasShutdownEndpoint"
-      :title="$t('applications.actions.shutdown')"
-      @click.stop="$emit('shutdown', application)"
-    >
-      <font-awesome-icon :icon="['far', 'stop-circle']" />
+      <font-awesome-icon :icon="'trash'"/>
     </sba-button>
     <sba-button
       v-if="application.hasRestartEndpoint"
       :title="$t('applications.actions.restart')"
       @click="$emit('restart', application)"
     >
-      <font-awesome-icon icon="sync-alt" />
+      <font-awesome-icon icon="sync-alt"/>
+    </sba-button>
+    &nbsp;
+    <sba-button
+      v-if="application.hasShutdownEndpoint"
+      :title="$t('applications.actions.shutdown')"
+      class="is-danger"
+      @click.stop="$emit('shutdown', application)"
+    >
+      <font-awesome-icon :icon="['fa', 'power-off']"/>
     </sba-button>
   </sba-button-group>
 </template>

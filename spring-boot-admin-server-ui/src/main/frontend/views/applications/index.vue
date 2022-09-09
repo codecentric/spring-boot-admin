@@ -15,11 +15,11 @@
   -->
 
 <template>
-  <sba-wave />
+  <sba-wave/>
   <section>
     <sba-sticky-subnav v-if="applications.length > 0">
       <div class="container mx-auto flex">
-        <applications-stats :applications="applications" />
+        <applications-stats :applications="applications"/>
         <div class="flex-1">
           <sba-input
             v-model="filter"
@@ -28,7 +28,7 @@
             :placeholder="$t('term.filter')"
           >
             <template #prepend>
-              <font-awesome-icon icon="filter" />
+              <font-awesome-icon icon="filter"/>
             </template>
           </sba-input>
         </div>
@@ -78,7 +78,7 @@
           :title="$tc('term.applications_tc', group.applications.length)"
         >
           <template #title>
-            <sba-status-badge :status="group.statusKey" />
+            <sba-status-badge :status="group.statusKey"/>
           </template>
 
           <applications-list-item
@@ -124,6 +124,9 @@ import NotificationFilterSettings from './notification-filter-settings.vue';
 import ApplicationStatusHero from '@/views/applications/application-status-hero.vue';
 import SbaStickySubnav from "../../components/sba-sticky-subnav.vue";
 import SbaWave from "../../components/sba-wave.vue";
+import {useToast} from "vue-toast-notification";
+import {useI18n} from "vue-i18n";
+import Application from "../../services/application";
 
 const instanceMatchesFilter = (term, instance) => {
   const predicate = value => String(value).toLowerCase().includes(term);
@@ -162,14 +165,21 @@ export default {
       default: false
     }
   },
-  data: () => ({
-    filter: null,
-    hasNotificationFiltersSupport: false,
-    showNotificationFilterSettingsObject: null,
-    notificationFilters: [],
-    errors: [],
-    palette: {}
-  }),
+  setup() {
+    const toast = useToast();
+    const {t} = useI18n();
+
+    return {
+      t,
+      toast,
+      filter: null,
+      hasNotificationFiltersSupport: false,
+      showNotificationFilterSettingsObject: null,
+      notificationFilters: [],
+      errors: [],
+      palette: {}
+    }
+  },
   computed: {
     statusGroups() {
       const filteredApplications = this.filterInstances(this.applications);
@@ -211,12 +221,6 @@ export default {
         this.$router.replace({name: 'applications'});
       }
     },
-    handleFilterInput(event) {
-      this.$router.replace({
-        name: 'applications',
-        query: event.target.value ? {q: event.target.value} : null
-      });
-    },
     async scrollIntoView(id, behavior) {
       if (id) {
         await this.$nextTick();
@@ -230,23 +234,32 @@ export default {
     async unregister(item) {
       this.toggleNotificationFilterSettings(null);
       try {
-        item.unregister();
+        await item.unregister();
+        const message = item instanceof Application ? 'applications.unregister_successful' : 'instances.unregister_successful';
+        this.toast.info(this.t(message, {name: item.id || item.name}));
       } catch (e) {
-        this.errors.push(e);
+        const message = item instanceof Application ? 'applications.unregister_failed' : 'instances.unregister_failed';
+        this.toast.error(this.t(message, {name: item.id || item.name}));
       }
     },
-    shutdown(item) {
+    async shutdown(item) {
       try {
-        item.shutdown();
+        await item.shutdown();
+        const message = item instanceof Application ? 'applications.shutdown_successful' : 'instances.shutdown_successful';
+        this.toast.info(this.t(message, {name: item.id || item.name}));
       } catch (e) {
-        this.errors.push(e);
+        const message = item instanceof Application ? 'applications.shutdown_failed' : 'instances.shutdown_failed';
+        this.toast.error(this.t(message, {name: item.id || item.name}));
       }
     },
-    restart(item) {
+    async restart(item) {
       try {
-        item.restart();
+        await item.restart();
+        const message = item instanceof Application ? 'applications.restarted' : 'instances.restarted';
+        this.toast.info(this.t(message, {name: item.id || item.name}));
       } catch (e) {
-        this.errors.push(e);
+        const message = item instanceof Application ? 'applications.restart_failed' : 'instances.restart_failed';
+        this.toast.error(this.t(message, {name: item.id || item.name}));
       }
     },
     createSubscription() {
@@ -262,8 +275,8 @@ export default {
             vm.notificationFilters = data;
           },
           error: error => {
-            console.warn('Fetching notification filters failed:', error);
-            vm.errors.push(error);
+            console.warn('Fetching notification filters failed with error:', error);
+            this.toast.error(this.t('applications.fetching_notification_filters_failed'));
           }
         });
     },
