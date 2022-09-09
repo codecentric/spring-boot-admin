@@ -18,6 +18,7 @@ import '@/assets/css/base.scss';
 import axios from '@/utils/axios';
 import moment from 'moment';
 import Vue from 'vue';
+import Toast from 'vue-toastification';
 import VueRouter from 'vue-router';
 import components from './components';
 import i18n from './i18n';
@@ -31,6 +32,7 @@ import views from './views';
 moment.locale(navigator.language.split('-')[0]);
 Vue.use(VueRouter);
 Vue.use(components);
+Vue.use(Toast);
 
 const applicationStore = new Store();
 const viewRegistry = new ViewRegistry();
