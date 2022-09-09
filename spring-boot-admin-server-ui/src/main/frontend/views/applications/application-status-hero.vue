@@ -1,6 +1,4 @@
 <template>
-  <sba-panel-no-applications :applications-length="applications.length"/>
-
   <sba-panel>
     <template v-if="applicationsCount > 0">
       <div class="flex flex-row md:flex-col items-center justify-center">
@@ -9,7 +7,7 @@
             icon="check-circle"
             class="text-green-500 icon"
           />
-          <div>
+          <div class="text-center">
             <h1
               class="font-bold text-2xl"
               v-text="$t('applications.all_up')"

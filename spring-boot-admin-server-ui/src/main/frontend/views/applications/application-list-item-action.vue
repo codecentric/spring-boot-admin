@@ -3,8 +3,9 @@
     class="application-list-item__header__actions text-right"
   >
     <router-link
+      v-if="isApplication"
       v-slot="{ navigate }"
-      :to="{ name: 'journal', query: { 'application' : application.name } }"
+      :to="{ name: 'journal', query: { 'application' : item.name } }"
       custom
     >
       <sba-button
@@ -16,33 +17,33 @@
     </router-link>
     <sba-button
       v-if="hasNotificationFiltersSupport"
-      :id="`nf-settings-${application.name}`"
+      :id="`nf-settings-${item.name}`"
       :title="$t('applications.actions.notification_filters')"
-      @click.stop="$emit('filter-settings', application)"
+      @click.stop="$emit('filter-settings', item)"
     >
       <font-awesome-icon :icon="hasActiveNotificationFilter ? 'bell-slash' : 'bell'"/>
     </sba-button>
     &nbsp;
     <sba-button
-      v-if="application.isUnregisterable"
+      v-if="item.isUnregisterable"
       :title="$t('applications.actions.unregister')"
-      @click.stop="$emit('unregister', application)"
+      @click.stop="$emit('unregister', item)"
     >
       <font-awesome-icon :icon="'trash'"/>
     </sba-button>
     <sba-button
-      v-if="application.hasRestartEndpoint"
+      v-if="item.hasEndpoint('restart')"
       :title="$t('applications.actions.restart')"
-      @click="$emit('restart', application)"
+      @click.stop="$emit('restart', item)"
     >
       <font-awesome-icon icon="sync-alt"/>
     </sba-button>
     &nbsp;
     <sba-button
-      v-if="application.hasShutdownEndpoint"
+      v-if="item.hasEndpoint('shutdown')"
       :title="$t('applications.actions.shutdown')"
       class="is-danger"
-      @click.stop="$emit('shutdown', application)"
+      @click.stop="$emit('shutdown', item)"
     >
       <font-awesome-icon :icon="['fa', 'power-off']"/>
     </sba-button>
@@ -50,12 +51,13 @@
 </template>
 <script>
 import Application from "../../services/application.js";
+import Instance from "../../services/instance";
 
 export default {
   name: 'ApplicationListItemActions',
   props: {
-    application: {
-      type: Application,
+    item: {
+      type: [Application, Instance],
       required: true
     },
     hasActiveNotificationFilter: {
@@ -66,6 +68,11 @@ export default {
       type: Boolean,
       default: false
     },
+  },
+  setup(props) {
+    return {
+      isApplication: props.item instanceof Application
+    }
   },
   emits: ['filter-settings', 'unregister', 'shutdown', 'restart']
 }

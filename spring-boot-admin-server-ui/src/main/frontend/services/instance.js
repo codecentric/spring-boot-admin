@@ -35,6 +35,7 @@ class Instance {
     Object.assign(this, instance);
     this.id = id;
     this.axios = axios.create({
+      withCredentials: true,
       baseURL: uri`instances/${this.id}/`,
       headers: {'Accept': actuatorMimeTypes}
     });
@@ -45,7 +46,7 @@ class Instance {
   }
 
   hasEndpoint(endpointId) {
-    return this.endpoints.findIndex(endpoint => endpoint.id === endpointId) >= 0;
+    return this.endpoints.some(endpoint => endpoint.id === endpointId);
   }
 
   get isUnregisterable() {

@@ -29,21 +29,15 @@
     "restarted": "Successfully restarted application <code>{name}</code>.",
     "unregister": "Deregister application <code>{name}</code>?",
     "unregister_successful": "Successfully deregistered application <code>{name}</code>.",
-    "unregister_failed": "Deregistration of application <code>{name}</code> failed."
+    "unregister_failed": "Deregistration of application <code>{name}</code> failed ({error})."
   },
   "instances": {
-    "actions": {
-      "notification_filters": "Notification filters",
-      "unregister": "Unregister",
-      "shutdown": "Shutdown",
-      "restart": "Restart"
-    },
     "shutdown": "Shutdown instance <code>{name}</code>?",
     "shutdown_successful": "Successfully restarted instances {name}.",
     "restart": "Restart instance <code>{name}</code>?",
     "restarted": "Successfully restarted instance {name}.",
     "unregister": "Deregister instance <code>{name}</code>?",
     "unregister_successful": "Successfully deregistered instance <code>{name}</code>.",
-    "unregister_failed": "Deregistration of instance <code>{name}</code> failed."
+    "unregister_failed": "Deregistration of instance <code>{name}</code> failed ({error})."
   }
 }

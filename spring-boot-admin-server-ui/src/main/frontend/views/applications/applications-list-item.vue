@@ -15,54 +15,6 @@
   -->
 
 <template>
-  <sba-modal-confirm
-    v-model:open="isModalShutdownApplicationOpen"
-    :title="$t('applications.actions.shutdown')"
-    @close="shutdownApplication($event)"
-  >
-    <span v-html="$t('applications.shutdown', {name: application.name})" />
-  </sba-modal-confirm>
-
-  <sba-modal-confirm
-    v-model:open="isModalRestartApplicationOpen"
-    :title="$t('applications.actions.restart')"
-    @close="restartApplication($event)"
-  >
-    <span v-html="$t('applications.restart', {name: application.name})" />
-  </sba-modal-confirm>
-
-  <sba-modal-confirm
-    v-model:open="isModalShutdownInstanceOpen"
-    :title="$t('applications.actions.shutdown')"
-    @close="shutdownInstance($event)"
-  >
-    <span v-html="$t('instances.shutdown', {name: currentModalInstance.id})" />
-  </sba-modal-confirm>
-
-  <sba-modal-confirm
-    v-model:open="isModalRestartInstanceOpen"
-    :title="$t('applications.actions.restart')"
-    @close="restartInstance($event)"
-  >
-    <span v-html="$t('instances.restart', {name: currentModalInstance.id})" />
-  </sba-modal-confirm>
-
-  <sba-modal-confirm
-    v-model:open="isModalUnregisterApplicationOpen"
-    :title="$t('applications.actions.unregister')"
-    @close="unregisterApplication($event)"
-  >
-    <span v-html="$t('applications.unregister', {name: application.name})" />
-  </sba-modal-confirm>
-
-  <sba-modal-confirm
-    v-model:open="isModalUnregisterInstanceOpen"
-    :title="$t('applications.actions.unregister')"
-    @close="unregisterInstance($event)"
-  >
-    <span v-html="$t('instances.unregister', {name: currentModalInstance.id})" />
-  </sba-modal-confirm>
-
   <div
     :id="application.name"
     v-on-clickaway="(event) => $emit('deselect', event, application.name)"
@@ -79,80 +31,40 @@
         v-if="!isExpanded"
         :application="application"
       />
-      <h1
-        v-else
+      <h2
+        v-if="isExpanded"
         class="font-bold text-lg"
         v-text="application.name"
       />
       <div class="w-1/6">
         <ApplicationListItemActions
-          :application="application"
+          :item="application"
           :has-active-notification-filter="hasActiveNotificationFilter(application)"
           :has-notification-filters-support="hasNotificationFiltersSupport"
+          @filter-settings="toggleFilterSettings"
           @restart="confirmRestartApplication"
           @shutdown="confirmShutdownApplication"
-          @filter-settings="$emit('toggle-notification-filter-settings', application)"
-          @unregister="isModalUnregisterApplicationOpen = true"
+          @unregister="confirmUnregisterApplication"
         />
       </div>
     </header>
-    <!-- EXPANDED -->
+
     <ul
       v-if="isExpanded"
       class="pt-2"
     >
       <instances-list :instances="application.instances">
         <template #actions="{instance}">
-          <sba-button-group class="hidden md:flex">
-            <sba-button
-              v-if="hasNotificationFiltersSupport"
-              :id="`nf-settings-${instance.id}`"
-              :title="$t('instances.actions.notification_filters')"
-              size="xs"
-              @click.stop="$emit('toggle-notification-filter-settings', instance)"
-            >
-              <font-awesome-icon
-                :icon="hasActiveNotificationFilter(instance) ? 'bell-slash' : 'bell'"
-                class="h-3"
-              />
-            </sba-button>
-            &nbsp;
-            <sba-button
-              v-if="instance.isUnregisterable"
-              :title="$t('instances.actions.unregister')"
-              size="xs"
-              @click.stop="confirmUnregisterInstance(instance)"
-            >
-              <font-awesome-icon
-                icon="trash"
-                class="h-3"
-              />
-            </sba-button>
-            <sba-button
-              v-if="instance.hasEndpoint('restart')"
-              :title="$t('instances.actions.restart')"
-              size="xs"
-              @click.stop="confirmRestartInstance(instance)"
-            >
-              <font-awesome-icon
-                icon="sync-alt"
-                class="h-3"
-              />
-            </sba-button>
-            &nbsp;
-            <sba-button
-              class="is-danger"
-              v-if="instance.hasEndpoint('shutdown')"
-              :title="$t('instances.actions.shutdown')"
-              size="xs"
-              @click.stop="confirmShutdownInstance(instance)"
-            >
-              <font-awesome-icon
-                :icon="['fa', 'power-off']"
-                class="h-3"
-              />
-            </sba-button>
-          </sba-button-group>
+          <ApplicationListItemActions
+            class="hidden md:flex"
+            :item="instance"
+            :has-active-notification-filter="hasActiveNotificationFilter(instance)"
+            :has-notification-filters-support="hasNotificationFiltersSupport"
+            @filter-settings="toggleFilterSettings"
+            @restart="confirmRestartInstance"
+            @shutdown="confirmShutdownInstance"
+            @unregister="confirmUnregisterInstance"
+          />
         </template>
       </instances-list>
     </ul>
@@ -163,7 +75,7 @@
 import Application from '../../services/application';
 import InstancesList from './instances-list.vue';
 import {HealthStatus} from '../../HealthStatus.js';
-import ApplicationListItemActions from "./ApplicationListItemActions.vue";
+import ApplicationListItemActions from "./application-list-item-action.vue";
 import ApplicationsListItemSummary from "./applications-list-item-summary.vue";
 import {directive as onClickaway} from 'vue3-click-away';
 
@@ -189,106 +101,54 @@ export default {
     },
   },
   emits: ['unregister', 'toggle-notification-filter-settings', 'shutdown', 'restart', 'deselected', 'deselect', 'select'],
-  data() {
-    return {
-      isModalShutdownApplicationOpen: false,
-      isModalRestartApplicationOpen: false,
-      isModalUnregisterApplicationOpen: false,
-      isModalShutdownInstanceOpen: false,
-      isModalRestartInstanceOpen: false,
-      isModalUnregisterInstanceOpen: false,
-      currentModalInstance: undefined
-    }
-  },
   computed: {
     headerClass() {
       if (!this.isExpanded) {
         return 'is-selectable';
       }
-      if (this.application.status === HealthStatus.UP) {
-        return 'is-primary';
-      }
-      if (this.application.status === HealthStatus.RESTRICTED) {
-        return 'is-warning';
-      }
-      if (this.application.status === HealthStatus.DOWN) {
-        return 'is-danger';
-      }
-      if (this.application.status === HealthStatus.OUT_OF_SERVICE) {
-        return 'is-danger';
-      }
-      if (this.application.status === HealthStatus.OFFLINE) {
-        return 'is-light';
-      }
-      return 'is-light';
     }
   },
   methods: {
-    hasActiveNotificationFilter(object) {
-      return this.notificationFilters.some(f => f.affects(object));
+    hasActiveNotificationFilter(item) {
+      return this.notificationFilters.some(filter => filter.affects(item));
     },
-    confirmShutdownApplication() {
-      this.isModalShutdownApplicationOpen = true;
+    toggleFilterSettings(item) {
+      this.$emit('toggle-notification-filter-settings', item)
     },
-    confirmShutdownInstance(instance) {
-      this.isModalShutdownInstanceOpen = true;
-      this.currentModalInstance = instance;
-    },
-    confirmUnregisterInstance(instance) {
-      this.isModalUnregisterInstanceOpen = true;
-      this.currentModalInstance = instance;
-    },
-    confirmRestartApplication() {
-      this.isModalRestartApplicationOpen = true;
-    },
-    confirmRestartInstance(instance) {
-      this.isModalRestartInstanceOpen = true;
-      this.currentModalInstance = instance;
-    },
-    closeModals() {
-      this.isModalShutdownApplicationOpen = false;
-      this.isModalShutdownInstanceOpen = false;
-      this.isModalRestartApplicationOpen = false;
-      this.isModalRestartInstanceOpen = false;
-      this.isApplicationRestarted = false;
-      this.isInstanceRestarted = false;
-      this.isModalUnregisterApplicationOpen = false;
-      this.isModalUnregisterInstanceOpen = false;
-    },
-    shutdownApplication($event) {
-      this.closeModals();
-      if ($event === true) {
-        this.$emit('shutdown', this.application);
+    async confirmShutdownApplication(application) {
+      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.shutdown'), this.$t('applications.shutdown', {name: application.name}));
+      if (isConfirmed) {
+        this.$emit('restart', application);
       }
     },
-    shutdownInstance($event) {
-      this.closeModals();
-      if ($event === true) {
-        this.$emit('shutdown', this.currentModalInstance);
+    async confirmUnregisterApplication(application) {
+      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.unregister'), this.$t('applications.unregister', {name: application.name}));
+      if (isConfirmed) {
+        this.$emit('unregister', application);
       }
     },
-    unregisterApplication($event) {
-      this.closeModals();
-      if ($event === true) {
-        this.$emit('unregister', this.application)
+    async confirmUnregisterInstance(instance) {
+      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.unregister'), this.$t('applications.unregister', {name: instance.id}));
+      if (isConfirmed) {
+        this.$emit('unregister', instance);
       }
     },
-    restartApplication($event) {
-      this.closeModals();
-      if ($event === true) {
-        this.$emit('restart', this.application);
+    async confirmRestartApplication(application) {
+      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.restart'), this.$t('applications.restart', {name: application.name}));
+      if (isConfirmed) {
+        this.$emit('restart', application);
       }
     },
-    restartInstance($event) {
-      this.closeModals();
-      if ($event === true) {
-        this.$emit('restart', this.currentModalInstance);
+    async confirmRestartInstance(instance) {
+      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.restart'), this.$t('instances.restart', {name: instance.id}));
+      if (isConfirmed) {
+        this.$emit('restart', instance);
       }
     },
-    unregisterInstance($event) {
-      this.closeModals();
-      if ($event === true) {
-        this.$emit('unregister', this.currentModalInstance)
+    async confirmShutdownInstance(instance) {
+      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.shutdown'), this.$t('instances.shutdown', {name: instance.id}));
+      if (isConfirmed) {
+        this.$emit('restart', instance);
       }
     },
   }

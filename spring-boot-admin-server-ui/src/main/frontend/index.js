@@ -31,6 +31,8 @@ import { worker } from './mocks/browser';
 
 import VueToast from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-default.css';
+import SbaModalPlugin from "./plugins/modal";
+import {useI18n} from "vue-i18n";
 
 moment.locale(navigator.language.split('-')[0]);
 
@@ -43,7 +45,6 @@ const installables = [
   ...sbaConfig.extensions
 ];
 
-console.log(process.env.MSW_ENABLED);
 if (process.env.NODE_ENV === 'development' && process.env.MSW_ENABLED === "true") {
   worker.start({
     serviceWorker: {
@@ -63,20 +64,22 @@ installables.forEach(installable => {
 const app = createApp({
   setup() {
     const {applications, applicationsInitialized, error} = useApplicationStore();
-
+    const {t} = useI18n()
     let props = reactive({
       applications,
       applicationsInitialized,
-      error
+      error,
+      t
     });
 
     return () => h(sbaShell, props);
   }
 })
 
-app.use(components);
 app.use(i18n);
+app.use(components);
 app.use(VueToast);
+app.use(SbaModalPlugin, {i18n});
 app.use(router(viewRegistry.routes));
 
 const vue = app.mount('#app');

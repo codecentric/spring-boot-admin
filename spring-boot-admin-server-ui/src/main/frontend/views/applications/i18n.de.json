@@ -25,20 +25,14 @@
     "restarted": "Die Anwendung wurde neu gestartet.",
     "unregister": "Möchten Sie die Anwendung <code>{name}</code> deregistrieren?",
     "unregister_successful": "Die Anwendung {name} wurde erfolgreich deregistriert.",
-    "unregister_failed": "Deregistration der Anwendung <code>{name}</code> fehlgeschlagen."
+    "unregister_failed": "Deregistration der Anwendung <code>{name}</code> fehlgeschlagen ({error})."
   },
   "instances": {
-    "actions": {
-      "notification_filters": "Benachrichtigungsfilter",
-      "unregister": "Deregistrieren",
-      "shutdown": "Herunterfahren",
-      "restart": "Neu starten"
-    },
     "shutdown": "Möchten Sie die Instanz <code>{name}</code> herunterfahren?",
     "restart": "Möchten Sie die Instanz <code>{name}</code> neu starten?",
     "restarted": "Die Instanz {name} wurde neu gestartet.",
     "unregister": "Möchten Sie die Instanz <code>{name}</code> deregistrieren?",
     "unregister_successful": "Die Instanz {name} wurde erfolgreich deregistriert.",
-    "unregister_failed": "Deregistration der Instanz <code>{name}</code> fehlgeschlagen."
+    "unregister_failed": "Deregistration der Instanz <code>{name}</code> fehlgeschlagen ({error})."
   }
 }

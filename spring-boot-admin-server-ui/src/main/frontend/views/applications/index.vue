@@ -220,9 +220,9 @@ export default {
         await item.unregister();
         const message = item instanceof Application ? 'applications.unregister_successful' : 'instances.unregister_successful';
         this.toast.info(this.t(message, {name: item.id || item.name}));
-      } catch (e) {
+      } catch (error) {
         const message = item instanceof Application ? 'applications.unregister_failed' : 'instances.unregister_failed';
-        this.toast.error(this.t(message, {name: item.id || item.name}));
+        this.toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
       }
     },
     async shutdown(item) {
@@ -230,20 +230,19 @@ export default {
         await item.shutdown();
         const message = item instanceof Application ? 'applications.shutdown_successful' : 'instances.shutdown_successful';
         this.toast.info(this.t(message, {name: item.id || item.name}));
-      } catch (e) {
+      } catch (error) {
         const message = item instanceof Application ? 'applications.shutdown_failed' : 'instances.shutdown_failed';
-        this.toast.error(this.t(message, {name: item.id || item.name}));
+        this.toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
       }
     },
     async restart(item) {
-      console.log("ASDASDASDSAD", this.toast)
       try {
         await item.restart();
         const message = item instanceof Application ? 'applications.restarted' : 'instances.restarted';
         this.toast.info(this.t(message, {name: item.id || item.name}));
-      } catch (e) {
+      } catch (error) {
         const message = item instanceof Application ? 'applications.restart_failed' : 'instances.restart_failed';
-        this.toast.error(this.t(message, {name: item.id || item.name}));
+        this.toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
       }
     },
     createSubscription() {

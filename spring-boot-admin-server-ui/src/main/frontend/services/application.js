@@ -45,6 +45,7 @@ class Application {
     Object.assign(this, application);
     this.name = name;
     this.axios = axios.create({
+      withCredentials: true,
       baseURL: uri`applications/${this.name}/`,
       headers: {
         'X-SBA-REQUEST': true
@@ -62,20 +63,24 @@ class Application {
     })
   }
 
+  hasEndpoint(endpointId) {
+    return this.instances.some(i => i.hasEndpoint(endpointId));
+  }
+
   findInstance(instanceId) {
     return this.instances.find(instance => instance.id === instanceId);
   }
 
   get isUnregisterable() {
-    return this.instances.findIndex(i => i.isUnregisterable) >= 0;
+    return this.instances.some(i => i.isUnregisterable) ;
   }
 
   get hasShutdownEndpoint() {
-    return this.instances.some(i => i.hasEndpoint('shutdown'));
+    return this.hasEndpoint('shutdown')
   }
 
   get hasRestartEndpoint() {
-    return this.instances.some(i => i.hasEndpoint('restart'));
+    return this.hasEndpoint('restart')
   }
 
   async unregister() {
