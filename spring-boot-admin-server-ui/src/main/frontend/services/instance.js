@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import axios, {redirectOn401} from '@/utils/axios';
+import axios, {redirectOn401, registerErrorToastInterceptor} from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
 import logtail from '@/utils/logtail';
 import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
@@ -41,6 +41,7 @@ class Instance {
       response => response,
       redirectOn401(error => !isInstanceActuatorRequest(error.config.baseURL + error.config.url))
     );
+    registerErrorToastInterceptor(this.axios);
   }
 
   hasEndpoint(endpointId) {

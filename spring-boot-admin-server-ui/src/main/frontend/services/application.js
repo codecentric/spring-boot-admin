@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import axios, {redirectOn401} from '@/utils/axios';
+import axios, {redirectOn401, registerErrorToastInterceptor} from '@/utils/axios';
 import waitForPolyfill from '@/utils/eventsource-polyfill';
 import {concat, from, ignoreElements, Observable} from '@/utils/rxjs';
 import uri from '@/utils/uri';
@@ -47,8 +47,8 @@ class Application {
     this.axios = axios.create({
       baseURL: uri`applications/${this.name}/`,
     });
-    this.axios.interceptors.response.use(response => response, redirectOn401()
-    );
+    this.axios.interceptors.response.use(response => response, redirectOn401());
+    registerErrorToastInterceptor(this.axios);
     this.instances = sortBy(instances.map(i => new Instance(i), [instance => instance.registration.healthUrl]));
   }
 
