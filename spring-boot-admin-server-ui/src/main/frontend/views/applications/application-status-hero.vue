@@ -1,45 +1,59 @@
 <template>
+  <sba-panel-no-applications :applications-length="applications.length"/>
+
   <sba-panel>
-    <div class="flex flex-row md:flex-col items-center justify-center">
-      <template v-if="downCount === 0">
+    <template v-if="applicationsCount > 0">
+      <div class="flex flex-row md:flex-col items-center justify-center">
+        <template v-if="downCount === 0">
+          <font-awesome-icon
+            icon="check-circle"
+            class="text-green-500 icon"
+          />
+          <div>
+            <h1
+              class="font-bold text-2xl"
+              v-text="$t('applications.all_up')"
+            />
+            <p
+              class="text-gray-400"
+              v-text="lastUpdate"
+            />
+          </div>
+        </template>
+        <template v-else>
+          <font-awesome-icon
+            icon="minus-circle"
+            class="text-red-500 icon "
+          />
+          <div class="text-center">
+            <h1
+              class="font-bold text-2xl"
+              v-text="$t('applications.instances_down')"
+            />
+            <p
+              class="text-gray-400"
+              v-text="lastUpdate"
+            />
+          </div>
+        </template>
+      </div>
+    </template>
+    <template v-else>
+      <div class="flex flex-col items-center">
         <font-awesome-icon
-          icon="check-circle"
-          class="text-green-500 icon"
+          icon="frown-open"
+          class="text-gray-500 text-9xl pb-4"
         />
-        <div>
-          <h1
-            class="font-bold text-2xl"
-            v-text="$t('applications.all_up')"
-          />
-          <p
-            class="text-gray-400"
-            v-text="lastUpdate"
-          />
-        </div>
-      </template>
-      <template v-else>
-        <font-awesome-icon
-          icon="minus-circle"
-          class="text-red-500 icon "
+        <h1
+          class="font-bold text-2xl"
+          v-text="$t('applications.no_applications_registered')"
         />
-        <div class="text-center">
-          <h1
-            class="font-bold text-2xl"
-            v-text="$t('applications.instances_down')"
-          />
-          <p
-            class="text-gray-400"
-            v-text="lastUpdate"
-          />
-        </div>
-      </template>
-    </div>
+      </div>
+    </template>
   </sba-panel>
 </template>
 
 <script>
-import SbaPanel from '@/components/sba-panel.vue';
-
 const options = {
   year: 'numeric', month: 'numeric', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric',
@@ -47,7 +61,6 @@ const options = {
 
 export default {
   name: 'ApplicationStatusHero',
-  components: {SbaPanel},
   props: {
     applications: {
       type: Array,

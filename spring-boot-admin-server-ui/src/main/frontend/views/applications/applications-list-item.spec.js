@@ -78,23 +78,4 @@ describe('application-list-item.vue', () => {
 
     expect(emitted().restart).toBeDefined();
   })
-
-  it('should show confirmation if application is restarted', async () => {
-    render(ApplicationListItem, {  props: {application: new Application(application)}})
-
-    const element = screen.queryByTitle('applications.actions.restart');
-    await userEvent.click(element);
-
-    await waitFor(() => {
-      screen.findByRole('dialog');
-    })
-
-    const buttonOK = screen.queryByRole('button', {name: 'OK'});
-    await userEvent.click(buttonOK);
-
-    await waitFor(() => {
-      let successDialog = screen.queryByText('applications.restarted');
-      expect(successDialog).toBeVisible();
-    })
-  })
 })
