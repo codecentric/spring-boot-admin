@@ -15,11 +15,11 @@
   -->
 
 <template>
-  <sba-panel>
+  <sba-panel class="shadow-lg">
     <template v-if="!activeFilter">
       <div class="field">
         <p class="control has-inline-text">
-          <span v-html="$t('applications.suppress_notifications_on', {name: object.id || object.name})" />&nbsp;
+          <span v-html="t('applications.suppress_notifications_on', {name: object.id || object.name})"/>&nbsp;
           <sba-select
             v-model="ttl"
             class="inline-flex"
@@ -35,7 +35,7 @@
             :class="{'is-loading' : actionState === 'executing'}"
             @click.stop="addFilter"
           >
-            <font-awesome-icon icon="bell-slash" />&nbsp;<span v-text="$t('term.suppress')" />
+            <font-awesome-icon icon="bell-slash"/>&nbsp;<span v-text="t('term.suppress')"/>
           </sba-button>
         </div>
       </div>
@@ -43,9 +43,9 @@
     <template v-else>
       <div class="field">
         <p class="control has-inline-text">
-          <span v-html="$t('applications.notifications_suppressed_for', {name: object.id || object.name})" />&nbsp;
+          <span v-html="t('applications.notifications_suppressed_for', {name: object.id || object.name})"/>&nbsp;
           <strong
-            v-text="activeFilter.expiry ? activeFilter.expiry.locale(currentLocale).fromNow(true) : $t('term.ever') "
+            v-text="activeFilter.expiry ? activeFilter.expiry.locale(currentLocale).fromNow(true) : t('term.ever') "
           />.
         </p>
       </div>
@@ -55,7 +55,7 @@
             :class="{'is-loading' : actionState === 'executing'}"
             @click.stop="deleteActiveFilter"
           >
-            <font-awesome-icon icon="bell" />&nbsp;<span v-text="$t('term.unsuppress')" />
+            <font-awesome-icon icon="bell"/>&nbsp;<span v-text="t('term.unsuppress')"/>
           </sba-button>
         </div>
       </div>
@@ -81,21 +81,22 @@ export default {
   setup() {
     const i18n = useI18n();
     return {
-      i18n
+      t: i18n.t,
+      currentLocale: i18n.locale
     }
   },
   data() {
     return {
       ttl: 5 * 60 * 1000,
       ttlOptions: [
-        {label: this.i18n.t('term.minutes', 5, {count: 5}), value: 5 * 60 * 1000},
-        {label: this.i18n.t('term.minutes', 15, {count: 15}), value: 15 * 60 * 1000},
-        {label: this.i18n.t('term.minutes', 30, {count: 30}), value: 30 * 60 * 1000},
-        {label: this.i18n.t('term.hours', 1, {count: 1}), value: 60 * 60 * 1000},
-        {label: this.i18n.t('term.hours', 3, {count: 3}), value: 3 * 60 * 60 * 1000},
-        {label: this.i18n.t('term.hours', 8, {count: 8}), value: 8 * 60 * 60 * 1000},
-        {label: this.i18n.t('term.hours', 24, {count: 24}), value: 24 * 60 * 60 * 1000},
-        {label: this.i18n.t('term.ever'), value: -1}
+        {label: this.t('term.minutes', 5, {count: 5}), value: 5 * 60 * 1000},
+        {label: this.t('term.minutes', 15, {count: 15}), value: 15 * 60 * 1000},
+        {label: this.t('term.minutes', 30, {count: 30}), value: 30 * 60 * 1000},
+        {label: this.t('term.hours', 1, {count: 1}), value: 60 * 60 * 1000},
+        {label: this.t('term.hours', 3, {count: 3}), value: 3 * 60 * 60 * 1000},
+        {label: this.t('term.hours', 8, {count: 8}), value: 8 * 60 * 60 * 1000},
+        {label: this.t('term.hours', 24, {count: 24}), value: 24 * 60 * 60 * 1000},
+        {label: this.t('term.ever'), value: -1}
       ],
       actionState: null
     };
@@ -104,9 +105,6 @@ export default {
     activeFilter() {
       return this.notificationFilters.find(f => f.affects(this.object));
     },
-    currentLocale() {
-      return this.$i18n.locale;
-    }
   },
   methods: {
     async addFilter() {
@@ -114,7 +112,8 @@ export default {
       try {
         const response = await NotificationFilter.addFilter(this.object, this.ttl);
         this.actionState = 'completed';
-        this.$emit('filter-added', response.data)
+        this.$emit('filter-added', response.data);
+        this.$toast.success(this.t('applications.filter.added'));
       } catch (error) {
         console.warn('Adding notification filter failed:', error);
       }
@@ -125,6 +124,7 @@ export default {
         await this.activeFilter.delete();
         this.actionState = 'completed';
         this.$emit('filter-deleted', this.activeFilter.id);
+        this.$toast.success(this.t('applications.filter.removed'));
       } catch (error) {
         this.actionState = 'failed';
         console.warn('Deleting notification filter failed:', error);

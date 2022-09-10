@@ -79,7 +79,6 @@
             @toggle-notification-filter-settings="toggleNotificationFilterSettings"
           />
         </sba-panel>
-
         <notification-filter-settings
           v-if="showNotificationFilterSettingsObject"
           v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
@@ -109,6 +108,7 @@ import SbaStickySubnav from "../../components/sba-sticky-subnav.vue";
 import SbaWave from "../../components/sba-wave.vue";
 import {useToast} from "vue-toast-notification";
 import {useI18n} from "vue-i18n";
+import {ref} from "vue";
 import Application from "../../services/application";
 
 const instanceMatchesFilter = (term, instance) => {
@@ -148,19 +148,19 @@ export default {
       default: false
     }
   },
-  setup() {
+  setup: function () {
     const toast = useToast();
     const {t} = useI18n();
 
     return {
       t,
       toast,
-      filter: null,
-      hasNotificationFiltersSupport: false,
-      showNotificationFilterSettingsObject: null,
-      notificationFilters: [],
-      errors: [],
-      palette: {}
+      filter: ref(null),
+      hasNotificationFiltersSupport: ref(false),
+      showNotificationFilterSettingsObject: ref(null),
+      notificationFilters: ref([]),
+      errors: ref([]),
+      palette: ref({})
     }
   },
   computed: {

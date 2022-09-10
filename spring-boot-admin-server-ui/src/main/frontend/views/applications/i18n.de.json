@@ -12,7 +12,7 @@
     "fetching_notification_filters_failed": "Der Abruf der Benachrichtigungseinstellungen ist fehlgeschlagen.",
     "instances": "Instanzen",
     "instances_down": "Einige Instanzen sind ausgefallen",
-    "loading_applications": "Anwendungen werden geladen ...",
+    "loading_applications": "Anwendungen werden geladen...",
     "no_applications_registered": "Keine Anwendungen registriert.",
     "notifications_suppressed_for": "Benachrichtigungen für <code>{name}</code> werden unterdrückt für",
     "restricted": "eingeschränkt",

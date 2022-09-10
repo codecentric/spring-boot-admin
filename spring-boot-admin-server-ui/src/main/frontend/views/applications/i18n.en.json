@@ -10,6 +10,10 @@
     "all_up": "all up",
     "applications": "Applications",
     "fetching_notification_filters_failed": "Fetching notification filters failed.",
+    "filter": {
+      "added": "New filter has been set.",
+      "removed": "Filter is removed."
+    },
     "instances": "Instances",
     "instances_down": "Some instances are down",
     "loading_applications": "Loading applications...",
