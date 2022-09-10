@@ -43,5 +43,8 @@
     "unregister": "Deregister instance <code>{name}</code>?",
     "unregister_successful": "Successfully deregistered instance <code>{name}</code>.",
     "unregister_failed": "Deregistration of instance <code>{name}</code> failed ({error})."
+  },
+  "notification_filter_center": {
+    "description": "Notifications on following applications or instances will be suppressed."
   }
 }

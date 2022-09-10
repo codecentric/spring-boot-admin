@@ -16,7 +16,7 @@
     "@fortawesome/free-regular-svg-icons": "5.15.4",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
     "@fortawesome/vue-fontawesome": "3.0.0-5",
-    "@headlessui/vue": "1.6.7",
+    "@headlessui/vue": "1.7.0",
     "@tailwindcss/forms": "0.5.0",
     "@tailwindcss/typography": "0.5.2",
     "ansi_up": "5.1.0",

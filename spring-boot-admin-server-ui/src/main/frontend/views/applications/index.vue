@@ -20,6 +20,11 @@
     <sba-sticky-subnav>
       <div class="container mx-auto flex">
         <applications-stats :applications="applications"/>
+        <application-notification-center
+          v-if="hasNotificationFiltersSupport"
+          :notification-filters="notificationFilters"
+          @filter-deleted="handleNotificationFilterChange"
+        />
         <div class="flex-1">
           <sba-input
             v-model="filter"
@@ -114,6 +119,7 @@ import {useToast} from "vue-toast-notification";
 import {useI18n} from "vue-i18n";
 import {ref} from "vue";
 import Application from "../../services/application";
+import ApplicationNotificationCenter from "./application-notification-center";
 
 const instanceMatchesFilter = (term, instance) => {
   const predicate = value => String(value).toLowerCase().includes(term);
@@ -126,6 +132,7 @@ const instanceMatchesFilter = (term, instance) => {
 export default {
   directives: {Popper},
   components: {
+    ApplicationNotificationCenter,
     SbaWave,
     ApplicationStatusHero,
     SbaStickySubnav,
@@ -176,6 +183,9 @@ export default {
         result.push({statusKey, status: status, applications: sortBy(applications, [application => application.name])})
       }, []);
       return sortBy(list, [item => item.status]);
+    },
+    hasActiveNotificationFilter() {
+      return this.notificationFilters.length > 0;
     }
   },
   watch: {

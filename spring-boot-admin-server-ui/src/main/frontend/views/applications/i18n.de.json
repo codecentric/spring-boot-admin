@@ -10,6 +10,10 @@
     "all_up": "Alle verfügbar",
     "applications": "Anwendungen",
     "fetching_notification_filters_failed": "Der Abruf der Benachrichtigungseinstellungen ist fehlgeschlagen.",
+    "filter": {
+      "added": "Filter wurde gesetzt.",
+      "removed": "Filter wurde entfernt."
+    },
     "instances": "Instanzen",
     "instances_down": "Einige Instanzen sind ausgefallen",
     "loading_applications": "Anwendungen werden geladen...",
@@ -34,5 +38,8 @@
     "unregister": "Möchten Sie die Instanz <code>{name}</code> deregistrieren?",
     "unregister_successful": "Die Instanz {name} wurde erfolgreich deregistriert.",
     "unregister_failed": "Deregistration der Instanz <code>{name}</code> fehlgeschlagen ({error})."
+  },
+  "notification_filter_center": {
+    "description": "Benachrichtigungen für folgende Applikationen / Instanzen werden unterdrückt."
   }
 }
