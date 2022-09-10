@@ -36,7 +36,7 @@ class Instance {
     this.id = id;
     this.axios = axios.create({
       withCredentials: true,
-      baseURL: uri`instances/${this.id}/`,
+      baseURL: uri`instances/${this.id}`,
       headers: {'Accept': actuatorMimeTypes}
     });
     this.axios.interceptors.response.use(

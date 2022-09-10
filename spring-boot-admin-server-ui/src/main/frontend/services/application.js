@@ -46,7 +46,7 @@ class Application {
     this.name = name;
     this.axios = axios.create({
       withCredentials: true,
-      baseURL: uri`applications/${this.name}/`,
+      baseURL: uri`applications/${this.name}`,
       headers: {
         'X-SBA-REQUEST': true
       }
