@@ -17,7 +17,7 @@
 <template>
   <sba-wave/>
   <section>
-    <sba-sticky-subnav v-if="applications.length > 0">
+    <sba-sticky-subnav>
       <div class="container mx-auto flex">
         <applications-stats :applications="applications"/>
         <div class="flex-1">
@@ -25,7 +25,7 @@
             v-model="filter"
             name="filter"
             type="search"
-            :placeholder="$t('term.filter')"
+            :placeholder="t('term.filter')"
           >
             <template #prepend>
               <font-awesome-icon icon="filter"/>
@@ -39,7 +39,7 @@
       <sba-alert
         v-if="error"
         :error="error"
-        :title="$t('applications.server_connection_failed')"
+        :title="t('applications.server_connection_failed')"
         severity="WARN"
         class-names="mb-6"
       />
@@ -47,38 +47,42 @@
       <sba-panel v-if="!applicationsInitialized">
         <p
           class="is-muted is-loading"
-          v-text="$t('applications.loading_applications')"
+          v-text="t('applications.loading_applications')"
         />
       </sba-panel>
-      <application-status-hero v-if="applicationsInitialized" :applications="applications" />
+
+      <application-status-hero v-if="applicationsInitialized" :applications="applications"/>
 
       <template v-if="applicationsInitialized">
-        <sba-panel
-          v-for="group in statusGroups"
-          :key="group.status"
-          :seamless="true"
-          class="application-group"
-          :title="$tc('term.applications_tc', group.applications.length)"
-        >
-          <template #title>
-            <sba-status-badge :status="group.statusKey"/>
-          </template>
+        <TransitionGroup>
+          <sba-panel
+            v-for="group in statusGroups"
+            :key="group.status"
+            :seamless="true"
+            class="application-group"
+            :title="t('term.applications_tc', group.applications.length)"
+          >
+            <template #title>
+              <sba-status-badge :status="group.statusKey"/>
+            </template>
 
-          <applications-list-item
-            v-for="application in group.applications"
-            :key="application.name"
-            :application="application"
-            :has-notification-filters-support="hasNotificationFiltersSupport"
-            :is-expanded="selected === application.name || Boolean(filter)"
-            :notification-filters="notificationFilters"
-            @unregister="unregister"
-            @shutdown="shutdown"
-            @restart="restart"
-            @deselect="deselect"
-            @select="select"
-            @toggle-notification-filter-settings="toggleNotificationFilterSettings"
-          />
-        </sba-panel>
+            <applications-list-item
+              v-for="application in group.applications"
+              :key="application.name"
+              :application="application"
+              :has-notification-filters-support="hasNotificationFiltersSupport"
+              :is-expanded="selected === application.name || Boolean(filter)"
+              :notification-filters="notificationFilters"
+              @unregister="unregister"
+              @shutdown="shutdown"
+              @restart="restart"
+              @deselect="deselect"
+              @select="select"
+              @toggle-notification-filter-settings="toggleNotificationFilterSettings"
+            />
+          </sba-panel>
+        </TransitionGroup>
+
         <notification-filter-settings
           v-if="showNotificationFilterSettingsObject"
           v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
