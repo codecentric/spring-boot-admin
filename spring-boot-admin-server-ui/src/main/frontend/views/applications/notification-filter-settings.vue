@@ -63,7 +63,6 @@
   </sba-panel>
 </template>
 <script>
-import NotificationFilter from '@/services/notification-filter';
 import {useI18n} from "vue-i18n";
 
 export default {
@@ -89,13 +88,13 @@ export default {
     return {
       ttl: 5 * 60 * 1000,
       ttlOptions: [
-        {label: this.t('term.minutes', 5, {count: 5}), value: 5 * 60 * 1000},
-        {label: this.t('term.minutes', 15, {count: 15}), value: 15 * 60 * 1000},
-        {label: this.t('term.minutes', 30, {count: 30}), value: 30 * 60 * 1000},
-        {label: this.t('term.hours', 1, {count: 1}), value: 60 * 60 * 1000},
-        {label: this.t('term.hours', 3, {count: 3}), value: 3 * 60 * 60 * 1000},
-        {label: this.t('term.hours', 8, {count: 8}), value: 8 * 60 * 60 * 1000},
-        {label: this.t('term.hours', 24, {count: 24}), value: 24 * 60 * 60 * 1000},
+        {label: this.t('term.minutes', {count: 5}), value: 5 * 60 * 1000},
+        {label: this.t('term.minutes', {count: 15}), value: 15 * 60 * 1000},
+        {label: this.t('term.minutes', {count: 30}), value: 30 * 60 * 1000},
+        {label: this.t('term.hours', {count: 1}), value: 60 * 60 * 1000},
+        {label: this.t('term.hours', {count: 3}), value: 3 * 60 * 60 * 1000},
+        {label: this.t('term.hours', {count: 8}), value: 8 * 60 * 60 * 1000},
+        {label: this.t('term.hours', {count: 24}), value: 24 * 60 * 60 * 1000},
         {label: this.t('term.ever'), value: -1}
       ],
       actionState: null
@@ -108,33 +107,19 @@ export default {
   },
   methods: {
     async addFilter() {
-      this.actionState = 'executing';
-      try {
-        const response = await NotificationFilter.addFilter(this.object, this.ttl);
-        this.actionState = 'completed';
-        this.$emit('filter-added', response.data);
-        this.$toast.success(this.t('applications.filter.added'));
-      } catch (error) {
-        console.warn('Adding notification filter failed:', error);
-      }
+      this.$emit('filter-add', {
+        object: this.object,
+        ttl: this.ttl,
+      });
     },
     async deleteActiveFilter() {
-      this.actionState = 'executing';
-      try {
-        await this.activeFilter.delete();
-        this.actionState = 'completed';
-        this.$emit('filter-deleted', this.activeFilter.id);
-        this.$toast.success(this.t('applications.filter.removed'));
-      } catch (error) {
-        this.actionState = 'failed';
-        console.warn('Deleting notification filter failed:', error);
-      }
+      this.$emit('filter-remove', this.activeFilter);
     }
   }
 }
 </script>
 
-<style lang="css">
+<style>
 .control.has-inline-text {
   line-height: 2.25em;
 }

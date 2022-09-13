@@ -10,9 +10,9 @@
     "all_up": "Alle verfügbar",
     "applications": "Anwendungen",
     "fetching_notification_filters_failed": "Der Abruf der Benachrichtigungseinstellungen ist fehlgeschlagen.",
-    "filter": {
-      "added": "Filter wurde gesetzt.",
-      "removed": "Filter wurde entfernt."
+    "notification_filter": {
+      "none": "Keine Benachrichtigungseinstellungen gesetzt.",
+      "removed": "Benachrichtigungseinstellungen wurden geändert."
     },
     "instances": "Instanzen",
     "instances_down": "Einige Instanzen sind ausgefallen",

@@ -81,7 +81,7 @@ app.use(i18n);
 app.use(components);
 app.use(VueToast, {
   position: 'top-right',
-  duration: 2_500
+  duration: 3_500
 });
 app.use(SbaModalPlugin, {i18n});
 app.use(router(viewRegistry.routes));

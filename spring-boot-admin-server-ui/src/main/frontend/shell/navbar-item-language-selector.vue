@@ -52,7 +52,6 @@ export default {
   },
   methods: {
     localeChanged($event) {
-      console.log($event);
       const selectedLocale = $event.locale;
       if (selectedLocale !== this.currentLocale) {
         this.$emit('localeChanged', selectedLocale)

@@ -23,7 +23,7 @@
         <application-notification-center
           v-if="hasNotificationFiltersSupport"
           :notification-filters="notificationFilters"
-          @filter-deleted="handleNotificationFilterChange"
+          @filter-remove="removeFilter"
         />
         <div class="flex-1">
           <sba-input
@@ -48,7 +48,6 @@
         severity="WARN"
         class-names="mb-6"
       />
-
       <sba-panel v-if="!applicationsInitialized">
         <p
           class="is-muted is-loading"
@@ -87,14 +86,13 @@
             />
           </sba-panel>
         </TransitionGroup>
-
         <notification-filter-settings
           v-if="showNotificationFilterSettingsObject"
           v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
           :notification-filters="notificationFilters"
           :object="showNotificationFilterSettingsObject"
-          @filter-added="handleNotificationFilterChange"
-          @filter-deleted="handleNotificationFilterChange"
+          @filter-add="addFilter"
+          @filter-remove="removeFilter"
         />
       </template>
     </div>
@@ -179,9 +177,6 @@ export default {
         result.push({statusKey, status: status, applications: sortBy(applications, [application => application.name])})
       }, []);
       return sortBy(list, [item => item.status]);
-    },
-    hasActiveNotificationFilter() {
-      return this.notificationFilters.length > 0;
     }
   },
   watch: {
@@ -280,9 +275,30 @@ export default {
       }
       return [];
     },
-    handleNotificationFilterChange(event) {
-      this.toggleNotificationFilterSettings(null);
-      this.notificationFilterSubject.next(event);
+    async addFilter({object, ttl}) {
+      try {
+        const response = await NotificationFilter.addFilter(object, ttl);
+        let notificationFilter = response.data;
+        this.notificationFilterSubject.next(notificationFilter);
+        this.$toast.success(
+          `${this.t('applications.notifications_suppressed_for', {name: notificationFilter.applicationName || notificationFilter.instanceId})} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`);
+      } catch (error) {
+        console.warn('Adding notification filter failed:', error);
+      } finally {
+        this.toggleNotificationFilterSettings(null);
+      }
+    },
+    async removeFilter(activeFilter) {
+      try {
+        await activeFilter.delete();
+        this.notificationFilterSubject.next(activeFilter.id);
+
+        this.$toast.success(this.t('applications.notification_filter.removed'));
+      } catch (error) {
+        console.warn('Deleting notification filter failed:', error);
+      } finally {
+        this.toggleNotificationFilterSettings(null);
+      }
     },
     toggleNotificationFilterSettings(obj) {
       this.showNotificationFilterSettingsObject = obj ? obj : null;

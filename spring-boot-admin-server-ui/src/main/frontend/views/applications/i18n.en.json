@@ -10,9 +10,9 @@
     "all_up": "all up",
     "applications": "Applications",
     "fetching_notification_filters_failed": "Fetching notification filters failed.",
-    "filter": {
-      "added": "New filter has been set.",
-      "removed": "Filter is removed."
+    "notification_filter": {
+      "none": "No notification filters set.",
+      "removed": "Notification filter removed."
     },
     "instances": "Instances",
     "instances_down": "Some instances are down",
