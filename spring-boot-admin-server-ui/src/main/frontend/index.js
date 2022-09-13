@@ -30,7 +30,8 @@ import {createViewRegistry} from "./composables/ViewRegistry.js";
 import { worker } from './mocks/browser';
 
 import VueToast from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-default.css';
+import './toast-theme.css';
+
 import SbaModalPlugin from "./plugins/modal";
 import {useI18n} from "vue-i18n";
 
@@ -45,7 +46,7 @@ const installables = [
   ...sbaConfig.extensions
 ];
 
-if (process.env.NODE_ENV === 'development' && process.env.MSW_ENABLED === "true") {
+if (process.env.NODE_ENV === 'development') {
   worker.start({
     serviceWorker: {
       url: "./mockServiceWorker.js"
@@ -78,7 +79,9 @@ const app = createApp({
 
 app.use(i18n);
 app.use(components);
-app.use(VueToast);
+app.use(VueToast, {
+  position: 'top-right'
+});
 app.use(SbaModalPlugin, {i18n});
 app.use(router(viewRegistry.routes));
 
