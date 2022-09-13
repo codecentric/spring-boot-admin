@@ -47,8 +47,8 @@
 </template>
 
 <script>
-import NavbarMenu from "./navbar-menu.vue";
-import NavbarLink from "./NavbarLink.vue";
+import NavbarMenu from "./NavbarMenu";
+import NavbarLink from "./NavbarLink";
 
 export default {
   name: 'NavbarUserMenu',

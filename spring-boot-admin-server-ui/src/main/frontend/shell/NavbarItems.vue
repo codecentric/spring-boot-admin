@@ -3,44 +3,21 @@
     v-for="view in topMenuItems"
     :key="view.name"
   >
-    <NavbarMenu
-      button-type="div"
-      :menu-items="subMenuItems(view)"
-    >
-      <template #default="slotProps">
-        <NavbarLink
-          :has-subitems="slotProps.hasSubitems"
-          :applications="applications"
-          :error="error"
-          :view="view"
-        />
-      </template>
-
-      <template #menuItems>
-        <MenuItem
-          v-for="menuItem in subMenuItems(view)"
-          :key="menuItem.name"
-          class="flex"
-        >
-          <NavbarLink
-            :applications="applications"
-            :error="error"
-            :view="menuItem"
-          />
-        </MenuItem>
-      </template>
-    </NavbarMenu>
+    <NavbarLink
+      :error="error"
+      :view="view"
+      :subitems="subMenuItems(view)"
+    />
   </template>
 </template>
 
 <script>
-import NavbarMenu from "./navbar-menu.vue"
 import NavbarLink from "./NavbarLink.vue";
 import {MenuItem} from "@headlessui/vue";
 
 export default {
   name: 'NavbarItems',
-  components: {NavbarLink, NavbarMenu, MenuItem},
+  components: {NavbarLink, MenuItem},
   props: {
     applications: {
       type: Array,
@@ -61,8 +38,8 @@ export default {
     }
   },
   methods: {
-    subMenuItems(menu) {
-      return this.enabledViews.filter(view => view.parent === menu.name);
+    subMenuItems(parentView) {
+      return this.enabledViews.filter(view => view.parent === parentView.name);
     }
   }
 }

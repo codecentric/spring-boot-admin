@@ -17,7 +17,7 @@
 <template>
   <nav
     id="navigation"
-    class="bg-black fixed top-0 w-full h-14 z-50 text-white"
+    class="bg-black fixed top-0 w-full h-14 z-50"
   >
     <div class="mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14">
@@ -31,7 +31,7 @@
           </div>
 
           <div class="hidden lg:block">
-            <div class="flex items-baseline gap-4">
+            <div class="navbar-top-menu">
               <NavbarItems
                 :applications="applications"
                 :enabled-views="enabledViews"
@@ -60,8 +60,8 @@
           </div>
         </div>
 
+        <!-- Mobile menu button -->
         <div class="-mr-2 flex lg:hidden">
-          <!-- Mobile menu button -->
           <button
             type="button"
             class="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
@@ -288,11 +288,7 @@ export default {
   @apply font-semibold text-xl;
 }
 
-.navbar-item {
-  @apply text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md;
-}
-
-.navbar-item.is-active {
-  @apply bg-gray-600 text-gray-50;
+.navbar-top-menu {
+  @apply flex items-baseline gap-2 text-white;
 }
 </style>

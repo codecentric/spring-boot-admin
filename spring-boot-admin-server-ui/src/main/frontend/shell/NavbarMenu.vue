@@ -15,25 +15,15 @@
   -->
 
 <template>
-  <Menu
-    as="div"
-    class="relative items-stretch"
-  >
-    <MenuButton
-      v-if="hasChildren"
-      :as="buttonType"
-      class="inline-flex items-center rounded-md text-gray-300 text-sm font-medium "
-      :open="open"
-    >
-      <slot :has-subitems="true"/>
+  <Menu as="div" class="submenu">
+    <MenuButton class="submenu-opener-button">
+      <font-awesome-icon
+        class="submenu-opener-icon"
+        :icon="['fas', 'chevron-down']"
+      />
     </MenuButton>
 
-    <slot v-if="!hasChildren"
-      :has-subitems="false"
-    />
-
     <transition
-      v-if="hasChildren"
       enter-active-class="transition ease-out duration-200"
       enter-from-class="opacity-0 translate-y-1"
       enter-to-class="opacity-100 translate-y-0"
@@ -41,20 +31,15 @@
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 translate-y-1"
     >
-      <MenuItems
-        class="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white text-black shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-      >
+      <MenuItems class="submenu-items">
         <div class="px-1 py-1">
           <slot name="menuItems">
             <MenuItem
               v-for="menuItem in menuItems"
               :key="menuItem.label"
+              @click="$emit('menuItemClicked', menuItem)"
             >
-              <button
-                class="flex w-full items-center rounded-md px-3 py-2 text-sm hover:bg-gray-100"
-                @click="$emit('click', menuItem)"
-                v-text="menuItem.label"
-              />
+              <NavbarLink :key="`${menuItem.parent}-${menuItem.name}`" :view="menuItem" />
             </MenuItem>
           </slot>
         </div>
@@ -65,23 +50,27 @@
 
 <script>
 import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
+import NavbarLink from "./NavbarLink";
 
 export default {
-  components: {Menu, MenuButton, MenuItem, MenuItems},
+  components: {Menu, MenuButton, MenuItem, MenuItems, NavbarLink},
   props: {
     buttonType: {type: String, default: "button"},
     menuItems: {type: Array, default: () => []}
   },
-  emits: ['click'],
-  data() {
-    return {
-      open: true
-    }
-  },
-  computed: {
-    hasChildren() {
-      return this.menuItems.length > 0;
-    }
-  }
+  emits: ['menuItemClicked']
 }
 </script>
+
+<style scoped>
+.submenu {
+  @apply inline-block text-left;
+}
+.submenu-opener-button {
+  @apply pl-2 border-l border-black;
+}
+.submenu-items {
+  @apply absolute right-0 text-black w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none;
+}
+</style>
+

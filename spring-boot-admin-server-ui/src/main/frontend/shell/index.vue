@@ -34,6 +34,7 @@
 <script>
 import SbaNavbar from './navbar.vue';
 import {useApplicationStore} from "../composables/useApplicationStore.js";
+import {useToast} from "vue-toast-notification";
 
 export default {
   components: {SbaNavbar},
@@ -49,9 +50,7 @@ export default {
   },
   setup() {
     const {applications} = useApplicationStore();
-
     return {applications}
   },
-
 }
 </script>

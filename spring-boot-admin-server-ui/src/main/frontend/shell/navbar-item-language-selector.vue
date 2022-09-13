@@ -15,22 +15,19 @@
   -->
 
 <template>
-  <NavbarMenu
-    :label="selectedLanguage.label"
-    :menu-items="languages"
-    @click="localeChanged"
-  >
+  <div class="text-white">
     <NavbarLink
-      :has-subitems="true"
       :view="{label: selectedLanguage.label}"
+      :subitems="languages"
+      @menuItemClicked="localeChanged"
     />
-  </NavbarMenu>
+  </div>
 </template>
 
 <script>
 import {directive as onClickaway} from 'vue3-click-away';
-import NavbarMenu from "./navbar-menu.vue";
-import NavbarLink from "./NavbarLink.vue";
+import NavbarMenu from "./NavbarMenu";
+import NavbarLink from "./NavbarLink";
 
 export default {
   components: {NavbarLink, NavbarMenu},
@@ -55,6 +52,7 @@ export default {
   },
   methods: {
     localeChanged($event) {
+      console.log($event);
       const selectedLocale = $event.locale;
       if (selectedLocale !== this.currentLocale) {
         this.$emit('localeChanged', selectedLocale)

@@ -1,0 +1,9 @@
+@import "vue-toast-notification/dist/theme-default.css";
+
+.v-toast {
+    @apply p-2 pt-14;
+}
+
+.v-toast__item {
+    @apply flex items-center p-4 mb-4 w-full max-w-xs rounded-lg shadow;
+}
