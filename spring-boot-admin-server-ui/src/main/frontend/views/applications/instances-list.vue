@@ -84,13 +84,5 @@ export default {
 
 .instance-list-item__actions {
   @apply w-1/6;
-  transition: all ease-out 86ms;
-  will-change: opacity;
-  opacity: 0;
 }
-
-*:hover > .instance-list-item__actions {
-  opacity: 1;
-}
-
 </style>

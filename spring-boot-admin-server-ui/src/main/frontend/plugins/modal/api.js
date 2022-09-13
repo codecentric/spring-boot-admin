@@ -5,7 +5,7 @@ import {h} from "vue";
 import ConfirmButtons from "./ConfirmButtons";
 
 export const useModal = (globalProps = {}) => {
-  const t = globalProps.i18n.global.t;
+  const t = globalProps.i18n?.global.t || function(value) { return value; };
 
   return {
     open(options, slots = {}) {

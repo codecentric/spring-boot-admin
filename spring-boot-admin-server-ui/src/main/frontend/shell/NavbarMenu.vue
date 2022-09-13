@@ -16,7 +16,7 @@
 
 <template>
   <Menu as="div" class="submenu">
-    <MenuButton class="submenu-opener-button">
+    <MenuButton class="submenu-opener-button" :aria-label="$t('term.menu.open')">
       <font-awesome-icon
         class="submenu-opener-icon"
         :icon="['fas', 'chevron-down']"

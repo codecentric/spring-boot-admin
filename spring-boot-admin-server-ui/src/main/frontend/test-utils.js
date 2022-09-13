@@ -4,19 +4,21 @@ import {createI18n} from "vue-i18n";
 import components from "./components/index.js";
 import terms from "./i18n/i18n.en.json"
 import ToastPlugin from "vue-toast-notification";
+import SbaModalPlugin from "./plugins/modal";
 
 export const render = (testComponent, options) => {
   return tlRender(testComponent, {
     ...options,
     global: {
       plugins: [
-        ToastPlugin,
         createI18n({
           messages: {
             'en': terms
           },
           silentFallbackWarn: true, silentTranslationWarn: true
         }),
+        ToastPlugin,
+        SbaModalPlugin,
         components
       ],
       stubs: {'font-awesome-icon': true, RouterLink: RouterLinkStub},

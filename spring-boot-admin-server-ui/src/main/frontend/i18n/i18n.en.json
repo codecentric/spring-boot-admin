@@ -36,6 +36,9 @@
     "instances": "Instances",
     "instances_tc": "{n} instance | {n} instances",
     "integer": "Integer",
+    "menu": {
+      "open": "Open menu"
+    },
     "milliseconds": "Milliseconds",
     "minutes": "{count} minute | {count} minutes",
     "name": "Name",

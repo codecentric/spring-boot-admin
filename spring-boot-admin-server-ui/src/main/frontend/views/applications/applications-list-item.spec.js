@@ -68,14 +68,14 @@ describe('application-list-item.vue', () => {
 
     const element = screen.queryByTitle('applications.actions.restart');
     await userEvent.click(element);
-
     await waitFor(() => {
       screen.findByRole('dialog');
     })
 
-    const buttonOK = screen.queryByRole('button', {name: 'OK'});
+    const buttonOK = screen.queryByRole('button', {name: 'term.ok'});
     await userEvent.click(buttonOK);
 
-    expect(emitted().restart).toBeDefined();
+    let emitted1 = emitted();
+    expect(emitted1.restart).toBeDefined();
   })
 })

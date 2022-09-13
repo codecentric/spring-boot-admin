@@ -28,6 +28,9 @@
     "instance": "Instanz",
     "instances": "Instanzen",
     "integer": "Integer",
+    "menu": {
+      "open": "Menü öffnen"
+    },
     "milliseconds": "Millisekunden",
     "minutes": "{count} Minute | {count} Minuten",
     "name": "Name",

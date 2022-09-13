@@ -292,7 +292,6 @@ export default {
       try {
         await activeFilter.delete();
         this.notificationFilterSubject.next(activeFilter.id);
-
         this.$toast.success(this.t('applications.notification_filter.removed'));
       } catch (error) {
         console.warn('Deleting notification filter failed:', error);
@@ -309,8 +308,8 @@ export default {
       }
 
       return applications
-        .map(a => a.filterInstances(i => instanceMatchesFilter(this.filter.toLowerCase(), i)))
-        .filter(a => a.instances.length > 0);
+        .map(application => application.filterInstances(i => instanceMatchesFilter(this.filter.toLowerCase(), i)))
+        .filter(application => application.instances.length > 0);
     }
   },
   install({viewRegistry}) {

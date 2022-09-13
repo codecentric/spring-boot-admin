@@ -82,13 +82,5 @@ export default {
 .application-list-item__header__actions {
   @apply hidden md:flex;
   justify-content: flex-end;
-  opacity: 0;
-  transition: all ease-out 86ms;
-  will-change: opacity;
-}
-
-.application-list-item:hover .application-list-item__header__actions,
-.application-list-item.is-active .application-list-item__header__actions {
-  opacity: 1;
 }
 </style>
