@@ -33,7 +33,6 @@
           <div class="hidden lg:block">
             <div class="navbar-top-menu">
               <NavbarItems
-                :applications="applications"
                 :enabled-views="enabledViews"
                 :error="error"
               />
@@ -134,7 +133,6 @@
           >
             <component
               :is="view.handle"
-              :applications="applications"
               :error="error"
             />
           </router-link>
@@ -163,8 +161,7 @@
           </div>
         </div>
         <div class="mt-3 px-2 space-y-1 text-black">
-          <NavbarLink v-for="userSubMenuItem in userSubMenuItems" :key="userSubMenuItem.name"
-                       :applications="applications" :error="error" :view="userSubMenuItem"/>
+          <NavbarLink v-for="userSubMenuItem in userSubMenuItems" :key="userSubMenuItem.name" :error="error" :view="userSubMenuItem"/>
 
           <form
             action="logout"
@@ -210,10 +207,6 @@ export default {
   name: 'SbaNavbar',
   components: {NavbarLink, NavbarUserMenu, NavbarItems, NavbarItemLanguageSelector},
   props: {
-    applications: {
-      type: Array,
-      default: () => [],
-    },
     error: {
       type: Error,
       default: null

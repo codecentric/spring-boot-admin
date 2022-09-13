@@ -19,7 +19,7 @@
   <section>
     <sba-sticky-subnav>
       <div class="container mx-auto flex">
-        <applications-stats :applications="applications"/>
+        <applications-stats/>
         <application-notification-center
           v-if="hasNotificationFiltersSupport"
           :notification-filters="notificationFilters"
@@ -56,7 +56,7 @@
         />
       </sba-panel>
 
-      <application-status-hero v-if="applicationsInitialized" :applications="applications"/>
+      <application-status-hero v-if="applicationsInitialized"/>
 
       <template v-if="applicationsInitialized">
         <TransitionGroup>
@@ -115,11 +115,11 @@ import NotificationFilterSettings from './notification-filter-settings.vue';
 import ApplicationStatusHero from '@/views/applications/application-status-hero.vue';
 import SbaStickySubnav from "../../components/sba-sticky-subnav.vue";
 import SbaWave from "../../components/sba-wave.vue";
-import {useToast} from "vue-toast-notification";
 import {useI18n} from "vue-i18n";
 import {ref} from "vue";
 import Application from "../../services/application";
 import ApplicationNotificationCenter from "./application-notification-center";
+import {useApplicationStore} from "../../composables/useApplicationStore";
 
 const instanceMatchesFilter = (term, instance) => {
   const predicate = value => String(value).toLowerCase().includes(term);
@@ -142,10 +142,6 @@ export default {
   },
   mixins: [subscribing],
   props: {
-    applications: {
-      type: Array,
-      default: () => [],
-    },
     error: {
       type: Error,
       default: null
@@ -161,8 +157,10 @@ export default {
   },
   setup: function () {
     const {t} = useI18n();
+    const {applications} = useApplicationStore();
 
     return {
+      applications,
       t,
       filter: ref(null),
       hasNotificationFiltersSupport: ref(false),
@@ -231,7 +229,7 @@ export default {
       try {
         await item.unregister();
         const message = item instanceof Application ? 'applications.unregister_successful' : 'instances.unregister_successful';
-        this.$toast.info(this.t(message, {name: item.id || item.name}));
+        this.$toast.success(this.t(message, {name: item.id || item.name}));
       } catch (error) {
         const message = item instanceof Application ? 'applications.unregister_failed' : 'instances.unregister_failed';
         this.$toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
@@ -241,7 +239,7 @@ export default {
       try {
         await item.shutdown();
         const message = item instanceof Application ? 'applications.shutdown_successful' : 'instances.shutdown_successful';
-        this.$toast.info(this.t(message, {name: item.id || item.name}));
+        this.$toast.success(this.t(message, {name: item.id || item.name}));
       } catch (error) {
         const message = item instanceof Application ? 'applications.shutdown_failed' : 'instances.shutdown_failed';
         this.$toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
@@ -251,7 +249,7 @@ export default {
       try {
         await item.restart();
         const message = item instanceof Application ? 'applications.restarted' : 'instances.restarted';
-        this.$toast.info(this.t(message, {name: item.id || item.name}));
+        this.$toast.success(this.t(message, {name: item.id || item.name}));
       } catch (error) {
         const message = item instanceof Application ? 'applications.restart_failed' : 'instances.restart_failed';
         this.$toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));

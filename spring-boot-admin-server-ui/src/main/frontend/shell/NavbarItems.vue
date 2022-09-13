@@ -19,10 +19,6 @@ export default {
   name: 'NavbarItems',
   components: {NavbarLink, MenuItem},
   props: {
-    applications: {
-      type: Array,
-      default: () => [],
-    },
     error: {
       type: Error,
       default: null

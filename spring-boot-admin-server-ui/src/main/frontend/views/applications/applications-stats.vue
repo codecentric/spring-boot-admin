@@ -26,28 +26,21 @@
     />
   </div>
 </template>
-<script>
-  import SbaTag from '@/components/sba-tag.vue';
-  export default {
-    components: { SbaTag},
-    props: {
-      applications: {
-        type: Array,
-        default: () => [],
-      }
-    },
-    computed: {
-      applicationsCount() {
-        return this.applications.length;
-      },
-      instancesCount() {
-        return this.applications.reduce((current, next) => current + next.instances.length, 0);
-      },
-      downCount() {
-        return this.applications.reduce((current, next) => {
-          return current + (next.instances.filter(instance => instance.statusInfo.status !== 'UP').length);
-        }, 0);
-      }
-    }
+
+<script setup>
+import {useApplicationStore} from "../../composables/useApplicationStore";
+import {computed} from "vue";
+
+const {applications} = useApplicationStore();
+const applicationsCount = computed({
+  get() {
+    return applications.value.length;
   }
+});
+
+const instancesCount = computed({
+  get() {
+    return applications.value.reduce((current, next) => current + next.instances.length, 0);
+  }
+});
 </script>

@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import {useApplicationStore} from "../../composables/useApplicationStore";
+
 const options = {
   year: 'numeric', month: 'numeric', day: 'numeric',
   hour: 'numeric', minute: 'numeric', second: 'numeric',
@@ -59,11 +61,9 @@ const options = {
 
 export default {
   name: 'ApplicationStatusHero',
-  props: {
-    applications: {
-      type: Array,
-      default: () => [],
-    }
+  setup() {
+    const {applications} = useApplicationStore();
+    return {applications}
   },
   data() {
     return {
