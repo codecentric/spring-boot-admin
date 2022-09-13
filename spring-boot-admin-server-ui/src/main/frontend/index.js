@@ -80,7 +80,8 @@ const app = createApp({
 app.use(i18n);
 app.use(components);
 app.use(VueToast, {
-  position: 'top-right'
+  position: 'top-right',
+  duration: 2_500
 });
 app.use(SbaModalPlugin, {i18n});
 app.use(router(viewRegistry.routes));

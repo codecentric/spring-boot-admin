@@ -160,12 +160,10 @@ export default {
     }
   },
   setup: function () {
-    const toast = useToast();
     const {t} = useI18n();
 
     return {
       t,
-      toast,
       filter: ref(null),
       hasNotificationFiltersSupport: ref(false),
       showNotificationFilterSettingsObject: ref(null),
@@ -233,30 +231,30 @@ export default {
       try {
         await item.unregister();
         const message = item instanceof Application ? 'applications.unregister_successful' : 'instances.unregister_successful';
-        this.toast.info(this.t(message, {name: item.id || item.name}));
+        this.$toast.info(this.t(message, {name: item.id || item.name}));
       } catch (error) {
         const message = item instanceof Application ? 'applications.unregister_failed' : 'instances.unregister_failed';
-        this.toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
+        this.$toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
       }
     },
     async shutdown(item) {
       try {
         await item.shutdown();
         const message = item instanceof Application ? 'applications.shutdown_successful' : 'instances.shutdown_successful';
-        this.toast.info(this.t(message, {name: item.id || item.name}));
+        this.$toast.info(this.t(message, {name: item.id || item.name}));
       } catch (error) {
         const message = item instanceof Application ? 'applications.shutdown_failed' : 'instances.shutdown_failed';
-        this.toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
+        this.$toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
       }
     },
     async restart(item) {
       try {
         await item.restart();
         const message = item instanceof Application ? 'applications.restarted' : 'instances.restarted';
-        this.toast.info(this.t(message, {name: item.id || item.name}));
+        this.$toast.info(this.t(message, {name: item.id || item.name}));
       } catch (error) {
         const message = item instanceof Application ? 'applications.restart_failed' : 'instances.restart_failed';
-        this.toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
+        this.$toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
       }
     },
     createSubscription() {
@@ -273,7 +271,7 @@ export default {
           },
           error: error => {
             console.warn('Fetching notification filters failed with error:', error);
-            this.toast.error(this.t('applications.fetching_notification_filters_failed'));
+            this.$toast.error(this.t('applications.fetching_notification_filters_failed'));
           }
         });
     },
