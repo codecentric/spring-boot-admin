@@ -50,7 +50,7 @@ import {faStopCircle as farStopCircle} from '@fortawesome/free-regular-svg-icons
 import {faUserCircle} from '@fortawesome/free-solid-svg-icons/faUserCircle';
 import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
-import {faAngleDoubleLeft, faPowerOff} from '@fortawesome/free-solid-svg-icons';
+import {faAngleDoubleLeft, faPowerOff, faUndoAlt} from '@fortawesome/free-solid-svg-icons';
 import {faInfoCircle} from "@fortawesome/free-solid-svg-icons/faInfoCircle.js";
 import {faExclamationCircle} from "@fortawesome/free-solid-svg-icons/faExclamationCircle.js";
 import {faCheckCircle} from "@fortawesome/free-solid-svg-icons/faCheckCircle.js";
@@ -99,6 +99,7 @@ library.add(
   faTrash,
   faRedo,
   faSyncAlt,
+  faUndoAlt,
   faUserCircle,
   faWrench,
 //regular

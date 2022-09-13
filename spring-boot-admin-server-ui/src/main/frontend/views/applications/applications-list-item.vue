@@ -36,7 +36,7 @@
         class="font-bold text-lg"
         v-text="application.name"
       />
-      <div class="w-1/6">
+      <div>
         <ApplicationListItemActions
           :item="application"
           :has-active-notification-filter="hasActiveNotificationFilter(application)"

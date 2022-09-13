@@ -38,11 +38,11 @@
         v-text="instance.id"
       />
     </div>
-    <div class="hidden lg:block w-1/4 overflow-x-scroll">
+    <div class="hidden xl:block w-1/4 overflow-x-scroll">
       <sba-tags :tags="instance.tags" :small="true" />
     </div>
     <div
-      class="hidden md:block w-1/4 text-center"
+      class="hidden xl:block w-1/4 text-center"
       v-text="instance.buildVersion"
     />
     <div class="instance-list-item__actions text-right">
@@ -83,6 +83,5 @@ export default {
 }
 
 .instance-list-item__actions {
-  @apply w-1/6;
 }
 </style>

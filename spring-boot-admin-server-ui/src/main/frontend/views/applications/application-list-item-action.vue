@@ -3,9 +3,8 @@
     class="application-list-item__header__actions text-right"
   >
     <router-link
-      v-if="isApplication"
       v-slot="{ navigate }"
-      :to="{ name: 'journal', query: { 'application' : item.name } }"
+      :to="journalLink"
       custom
     >
       <sba-button
@@ -36,7 +35,7 @@
       :title="$t('applications.actions.restart')"
       @click.stop="$emit('restart', item)"
     >
-      <font-awesome-icon icon="sync-alt"/>
+      <font-awesome-icon icon="undo-alt"/>
     </sba-button>
     &nbsp;
     <sba-button
@@ -70,8 +69,18 @@ export default {
     },
   },
   setup(props) {
+    let isApplication = props.item instanceof Application;
+
+    let journalLink;
+    if (isApplication) {
+      journalLink = {name: 'journal', query: {'application': props.item.name}}
+    } else {
+      journalLink = {name: 'journal', query: {'instanceId': props.item.id}}
+    }
+
     return {
-      isApplication: props.item instanceof Application
+      journalLink,
+      isApplication
     }
   },
   emits: ['filter-settings', 'unregister', 'shutdown', 'restart']
@@ -80,7 +89,10 @@ export default {
 
 <style scoped>
 .application-list-item__header__actions {
-  @apply hidden md:flex;
-  justify-content: flex-end;
+  @apply hidden lg:inline-flex p-1 bg-black/5 rounded-lg;
+}
+
+.btn-shutdown {
+  @apply rounded-full !important;
 }
 </style>

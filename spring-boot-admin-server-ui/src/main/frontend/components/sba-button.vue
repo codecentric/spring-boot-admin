@@ -13,10 +13,6 @@
 export default {
   name: 'SbaButton',
   props: {
-    flat: {
-      type: Boolean,
-      default: false
-    },
     size: {
       type: String,
       default: 'sm',
@@ -37,8 +33,6 @@ export default {
   computed: {
     cssClasses() {
       return {
-        'shadow-sm': !this.flat,
-        // Sizes
         'px-2 py-2 text-xs': this.size === 'xs',
         'px-3 py-2': this.size === 'sm',
         'px-4 py-3': this.size === 'base',
@@ -53,7 +47,9 @@ export default {
 
 <style scoped>
 .btn {
-  @apply focus:ring-2 rounded-l rounded-r font-medium text-sm text-center focus:outline-none text-black border-gray-300 border border-gray-300 bg-white focus:ring-indigo-500 focus:border-indigo-500;
+  @apply rounded-l rounded-r font-medium text-sm text-center text-black border-gray-300 border border-gray-300 bg-white;
+  @apply focus:ring-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500;
+  @apply hover:bg-gray-100;
 }
 
 .btn:disabled {
@@ -65,7 +61,7 @@ export default {
 }
 
 .btn.is-warning {
-  @apply focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500  focus:ring-yellow-300 font-medium text-sm;
+  @apply focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-yellow-300 font-medium text-sm;
 }
 
 .btn.is-info {
