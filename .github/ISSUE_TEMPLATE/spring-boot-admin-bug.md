@@ -7,16 +7,35 @@ assignees: ''
 
 ---
 
+## Spring Boot Admin Server information
+
+- **Version**:
+  <!-- Please specify the version of Spring Boot Admin server here -->
+
+- **Spring Boot version**:
+  <!-- Please specify the underlying Spring Boot version -->
+
+- **Configured Security**:
+  <!-- basic auth, LDAP, client-certificate, ... -->
+
+## Client information
+
+- **Spring Boot versions**: version
+  <!-- Please specify the Spring Boot version of the monitored instance(s) -->
+
+- **Used discovery mechanism**:
+  <!-- self registration, kubernetes, eureka, ... -->
+
 <!--
 Thanks for raising a Spring Boot Admin issue. Please take the time to review the following
 categories as some of them do not apply here.
 
 ** Question **
-STOP!! Please ask questions about how to use something, or to understand why something isn't
+🛑 STOP!! Please ask questions about how to use something, or to understand why something isn't
 working as you expect it to, on Stack Overflow using the spring-boot-admin tag.
 
 ** Bug report **
-Please provide details of the problem, including the version of Spring Boot Admin and Spring Boot that you are using. If possible, please provide a test case or sample application that reproduces
+🪳 Please provide details of the problem, including the version of Spring Boot Admin and Spring Boot that you are using. If possible, please provide a test case or sample application that reproduces
 the problem. This makes it much easier for us to diagnose the problem and to verify that
 we have fixed it.
 -->
