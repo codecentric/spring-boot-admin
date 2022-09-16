@@ -20,11 +20,15 @@ assignees: ''
 
 ## Client information
 
-- **Spring Boot versions**: version
+- **Spring Boot versions**:
   <!-- Please specify the Spring Boot version of the monitored instance(s) -->
 
 - **Used discovery mechanism**:
   <!-- self registration, kubernetes, eureka, ... -->
+
+## Description
+
+
 
 <!--
 Thanks for raising a Spring Boot Admin issue. Please take the time to review the following
