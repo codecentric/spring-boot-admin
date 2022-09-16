@@ -1,16 +1,16 @@
 <template>
   <span class="inline-flex leading-none rounded shadow-sm text-sm overflow-hidden"
         :class="{
-          'p-1 border border-gray-300 bg-white': !small,
-          'p-0 border text-xs': small,
+          'py-1 border border-gray-300 bg-white': !small,
+          'py-1 border text-xs': small,
          }"
   >
     <span
       v-if="label"
       class="inline-flex bg-sba-200 rounded text-sba-900  justify-center items-center transition-all"
       :class="{
-         'py-1.5 px-3': !small,
-         'py-1.5 px-2 rounded-r-none': small
+         'py-1.5 px-2 ml-1': !small,
+         'py-1.5 px-1.5 ml-1': small
       }"
       v-text="label"
     />
@@ -18,17 +18,15 @@
       class="inline-flex px-2 justify-center items-center whitespace-nowrap"
       :class="{
         'pl-2': !!label,
-        'bg-white': small
+        'bg-white pl-1.5': small
       }"
       v-text="value"
     />
   </span>
 </template>
 
-<script>
-export default {
-  name: 'SbaTag',
-  props: {
+<script setup>
+defineProps({
     label: {
       type: [String, Number],
       default: null
@@ -42,5 +40,6 @@ export default {
       required: true
     }
   }
-}
+);
 </script>
+

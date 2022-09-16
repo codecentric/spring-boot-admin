@@ -31,26 +31,20 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import SbaNavbar from './navbar.vue';
 import {useApplicationStore} from "../composables/useApplicationStore.js";
-import {useToast} from "vue-toast-notification";
 
-export default {
-  components: {SbaNavbar},
-  props: {
-    error: {
-      type: Error,
-      default: null
-    },
-    applicationsInitialized: {
-      type: Boolean,
-      default: false
-    }
+defineProps({
+  error: {
+    type: Error,
+    default: null
   },
-  setup() {
-    const {applications} = useApplicationStore();
-    return {applications}
-  },
-}
+  applicationsInitialized: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const {applications} = useApplicationStore();
 </script>
