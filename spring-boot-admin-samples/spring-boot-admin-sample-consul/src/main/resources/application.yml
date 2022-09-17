@@ -33,19 +33,3 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
-
----
-spring:
-  config:
-    activate:
-      on-profile: insecure
----
-spring:
-  security:
-    user:
-      name: "user"
-      password: "password"
-  config:
-    activate:
-      on-profile: secure
-

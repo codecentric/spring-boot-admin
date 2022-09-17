@@ -1,0 +1,9 @@
+spring:
+  boot:
+    admin:
+      ui:
+        cache:
+          no-cache: true
+        template-location: file:../../spring-boot-admin-server-ui/target/dist/
+        resource-locations: file:../../spring-boot-admin-server-ui/target/dist/
+        cache-templates: false
