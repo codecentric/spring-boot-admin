@@ -22,9 +22,9 @@
     >
       <font-awesome-icon :icon="hasActiveNotificationFilter ? 'bell-slash' : 'bell'"/>
     </sba-button>
-    &nbsp;
     <sba-button
       v-if="item.isUnregisterable"
+      class="btn-unregister"
       :title="$t('applications.actions.unregister')"
       @click.stop="$emit('unregister', item)"
     >
@@ -37,11 +37,10 @@
     >
       <font-awesome-icon icon="undo-alt"/>
     </sba-button>
-    &nbsp;
     <sba-button
       v-if="item.hasEndpoint('shutdown')"
       :title="$t('applications.actions.shutdown')"
-      class="is-danger"
+      class="is-danger btn-shutdown"
       @click.stop="$emit('shutdown', item)"
     >
       <font-awesome-icon :icon="['fa', 'power-off']"/>
@@ -92,7 +91,7 @@ export default {
   @apply hidden lg:inline-flex p-1 bg-black/5 rounded-lg;
 }
 
-.btn-shutdown {
-  @apply rounded-full !important;
+.btn-shutdown, .btn-unregister {
+  @apply ml-1 !important;
 }
 </style>
