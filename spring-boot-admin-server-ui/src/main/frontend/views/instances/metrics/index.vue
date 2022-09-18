@@ -122,7 +122,7 @@ const ApiVersion = Object.freeze({
 });
 
 function isActuatorApiVersionSupported(headerContentType) {
-  return headerContentType.includes(ApiVersion.V2) || headerContentType.includes(ApiVersion.V2);
+  return headerContentType.includes(ApiVersion.V2) || headerContentType.includes(ApiVersion.V3);
 }
 
 export default {
