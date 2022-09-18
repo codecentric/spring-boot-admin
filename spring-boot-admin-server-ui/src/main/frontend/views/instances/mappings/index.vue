@@ -90,7 +90,7 @@ export default {
       this.error = null;
       try {
         const res = await this.instance.fetchMappings();
-        if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
+        if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v3')) {
           this.contexts = res.data.contexts;
         } else {
           this.isOldMetrics = true;
