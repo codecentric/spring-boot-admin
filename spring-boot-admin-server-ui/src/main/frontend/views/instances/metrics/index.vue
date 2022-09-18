@@ -111,10 +111,19 @@
 
 <script>
 import {sortBy} from 'lodash-es';
-import Instance from '@/services/instance.js';
 import Metric from './metric.vue';
 import {VIEW_GROUP} from '../../ViewGroup.js';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
+import Instance from "../../../services/instance";
+
+const ApiVersion = Object.freeze({
+   V2: 'application/vnd.spring-boot.actuator.v2',
+   V3: 'application/vnd.spring-boot.actuator.v3'
+});
+
+function isActuatorApiVersionSupported(headerContentType) {
+  return headerContentType.includes(ApiVersion.V2) || headerContentType.includes(ApiVersion.V2);
+}
 
 export default {
   components: {SbaInstanceSection, Metric},
@@ -202,7 +211,7 @@ export default {
       this.error = null;
       try {
         const res = await this.instance.fetchMetrics();
-        if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
+        if (isActuatorApiVersionSupported(res.headers['content-type'])) {
           this.availableMetrics = res.data.names;
           this.availableMetrics.sort();
           this.selectedMetric = this.availableMetrics[0];
