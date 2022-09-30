@@ -52,7 +52,7 @@ public class ReactiveApplicationFactoryTest {
 	private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
 
 	private WebEndpointProperties webEndpoint = new WebEndpointProperties();
-	
+
 	private WebFluxProperties webflux = new WebFluxProperties();
 
 	private ReactiveApplicationFactory factory = new ReactiveApplicationFactory(instanceProperties, management, server,
