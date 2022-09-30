@@ -44,8 +44,6 @@ describe('redirectOn401', () => {
   });
 
   it('should redirect on 401', async () => {
-
-
     const error = {
       response: {
         status: 401
@@ -58,7 +56,7 @@ describe('redirectOn401', () => {
       expect(e).toBe(error);
     }
 
-    expect(window.location.assign).toBeCalledWith('login?redirectTo=http%3A%2F%2Fexample.com%2F');
+    expect(window.location.assign).toBeCalledWith('login?redirectTo=http%3A%2F%2Fexample.com%2F&error=401');
   });
 
   it('should not redirect on 401 for predicate yields false', async () => {
