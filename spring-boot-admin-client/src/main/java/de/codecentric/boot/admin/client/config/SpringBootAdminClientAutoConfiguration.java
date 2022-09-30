@@ -126,8 +126,7 @@ public class SpringBootAdminClientAutoConfiguration {
 		@ConditionalOnMissingBean
 		public ApplicationFactory applicationFactory(InstanceProperties instance, ManagementServerProperties management,
 				ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
-				ObjectProvider<List<MetadataContributor>> metadataContributors,
-				WebFluxProperties webFluxProperties) {
+				ObjectProvider<List<MetadataContributor>> metadataContributors, WebFluxProperties webFluxProperties) {
 			return new ReactiveApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint,
 					new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
 					webFluxProperties);

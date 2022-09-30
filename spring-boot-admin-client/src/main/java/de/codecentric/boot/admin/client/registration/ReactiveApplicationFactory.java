@@ -54,5 +54,4 @@ public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 		return webflux.getBasePath();
 	}
 
-
 }
