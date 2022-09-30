@@ -16,11 +16,14 @@
 
 package de.codecentric.boot.admin.client.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
@@ -34,8 +37,6 @@ import org.springframework.web.client.RestTemplate;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.BlockingRegistrationClient;
 import de.codecentric.boot.admin.client.registration.RegistrationClient;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpringBootAdminClientAutoConfigurationTest {
 
@@ -77,7 +78,8 @@ public class SpringBootAdminClientAutoConfigurationTest {
 		ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
 				.withConfiguration(
 						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
+								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class))
+				.withBean(WebFluxProperties.class);
 		reactiveContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
 				.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
 	}
@@ -85,9 +87,11 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	@Test
 	public void customBlockingClientInReactiveEnvironment() {
 		ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class)).withConfiguration(
+				.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class))
+				.withConfiguration(
 						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
+								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class))
+				.withBean(WebFluxProperties.class);
 
 		reactiveContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
 				.run((context) -> {
