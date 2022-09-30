@@ -22,6 +22,7 @@
     "execution_failed": "Ausführung fehlgeschlagen.",
     "execution_successful": "Ausführung erfolgreich.",
     "failed": "Fehlgeschlagen",
+    "fetching_data": "Lade Daten...",
     "fetch_failed": "Abruf der Daten fehlgeschlagen.",
     "float": "Float",
     "hours": "{count} Stunde | {count} Stunden",

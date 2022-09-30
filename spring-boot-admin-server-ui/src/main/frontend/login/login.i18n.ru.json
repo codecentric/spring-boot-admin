@@ -1,9 +1,11 @@
 {
   "login": {
     "button_login": "Войти",
-    "invalid_username_or_password": "Неверные имя пользователя или пароль",
     "logout_successful": "Вы успешно вышли из системы",
     "remember_me": "Запомнить меня",
+    "error": {
+      "invalid_username_or_password": "Неверные имя пользователя или пароль"
+    },
     "placeholder": {
       "username": "Имя пользователя",
       "password": "Пароль"

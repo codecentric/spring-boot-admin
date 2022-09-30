@@ -16,7 +16,7 @@
 
 <!DOCTYPE html>
 <html class="h-full">
-<head >
+<head>
     <base th:href="${baseUrl}" href="/">
     <meta charset="utf-8">
     <title th:text="${uiSettings.title}">Spring Boot Admin</title>
@@ -34,7 +34,7 @@
     <link th:each="cssExtension : ${cssExtensions}" th:href="'extensions/' + ${cssExtension.resourcePath}" rel="stylesheet">
 
 </head>
-<body>
+<body class="h-full">
     <div id="app"></div>
 
     <script lang="javascript" src="sba-settings.js"></script>

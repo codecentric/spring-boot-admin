@@ -21,7 +21,7 @@
       :error="error"
       :applications-initialized="applicationsInitialized"
     />
-    <div class="mt-14">
+    <div class="sba-container">
       <router-view
         :applications="applications"
         :error="error"
@@ -48,3 +48,10 @@ defineProps({
 
 const {applications} = useApplicationStore();
 </script>
+
+<style scoped>
+.sba-container {
+  @apply pt-14;
+  height: 100%;
+}
+</style>

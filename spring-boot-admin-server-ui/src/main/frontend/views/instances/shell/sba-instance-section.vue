@@ -1,6 +1,6 @@
 <template>
   <section :class="{'loading': loading}">
-    <slot name="before" />
+    <slot name="before"/>
 
     <div class="px-2 md:px-6 py-6">
       <sba-alert
@@ -10,8 +10,15 @@
         :title="$t('term.fetch_failed')"
       />
 
-      <slot v-if="!loading" />
-      <sba-loading-spinner :loading="loading" />
+      <div v-if="showLoadingSpinner" class="loading-spinner-wrapper">
+        <div class="loading-spinner-wrapper-container">
+          <sba-loading-spinner :loading="showLoadingSpinner" size="sm"/>
+          {{ $t('term.fetching_data') }}
+        </div>
+      </div>
+
+      <slot/>
+
     </div>
   </section>
 </template>
@@ -31,7 +38,31 @@ export default {
       type: Error,
       default: null
     }
+  },
+  data() {
+    return {
+      showLoadingSpinner: false,
+      debouncedLoader: null
+    }
+  },
+  watch: {
+    loading: function(newVal, oldVal) {
+      window.clearTimeout(this.debouncedLoader);
+
+      this.debouncedLoader = window.setTimeout(() => {
+        this.loading = newVal;
+      }, 250);
+    }
   }
 }
 </script>
 
+<style scoped>
+.loading-spinner-wrapper {
+  @apply w-full h-full flex flex-col bg-black/30 absolute z-50 top-0 left-0 justify-center items-center backdrop-blur-sm;
+}
+
+.loading-spinner-wrapper-container {
+  @apply rounded-md bg-black/30 py-4 px-5 flex w-auto gap-4 flex items-center text-white backdrop-blur;
+}
+</style>

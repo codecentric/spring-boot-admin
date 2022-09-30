@@ -1,20 +1,20 @@
 <template>
   <form
-    method="post"
     class="w-5/6 md:1/2 max-w-lg"
+    method="post"
   >
     <sba-panel>
       <input
         v-if="csrf"
-        type="hidden"
         :name="csrf.parameterName"
         :value="csrf.token"
+        type="hidden"
       >
       <div class="flex text-lg pb-3 items-center">
         <img
           v-if="icon"
-          class="w-8 h-8 mr-2"
           :src="icon"
+          class="w-8 h-8 mr-2"
         >
         <h1
           class="title has-text-primary"
@@ -30,23 +30,23 @@
             :error="error"
           />
           <sba-alert
-            :severity="Severity.INFO"
             :error="logout"
+            :severity="Severity.INFO"
           />
           <div
-            class="pb-4 form-group"
             :class="{'has-errors': error}"
+            class="pb-4 form-group"
           >
             <sba-input
-              type="text"
+              :label="t('login.placeholder.username')"
               name="username"
-              :label="$t('login.placeholder.username')"
+              type="text"
             />
             <sba-input
-              type="password"
-              name="password"
+              :label="t('login.placeholder.password')"
               autocomplete="current-password"
-              :label="$t('login.placeholder.password')"
+              name="password"
+              type="password"
             />
           </div>
         </div>
@@ -55,7 +55,7 @@
       <template #footer>
         <div class="text-right">
           <sba-button>
-            {{ $t('login.button_login') }}
+            {{ t('login.button_login') }}
           </sba-button>
         </div>
       </template>
@@ -63,52 +63,60 @@
   </form>
 </template>
 
-<script>
+<script setup>
 import SbaPanel from "../components/sba-panel.vue";
 import SbaInput from "../components/sba-input.vue";
 import SbaButton from "../components/sba-button.vue";
 import SbaAlert, {Severity} from "../components/sba-alert.vue";
 import SbaWave from "../components/sba-wave.vue";
+import {computed} from "vue";
+import {useI18n} from "vue-i18n";
 
-export default {
-  components: {SbaWave, SbaAlert, SbaButton, SbaInput, SbaPanel},
-  props: {
-    param: {
-      type: Object,
-      default: () => ({})
-    },
-    icon: {
-      type: String,
-      default: undefined
-    },
-    title: {
-      type: String,
-      required: true
-    },
-    csrf: {
-      type: Object,
-      default: undefined
-    },
-    theme: {
-      type: Object,
-      default: undefined
-    }
+const i18n = useI18n();
+const t = i18n.t;
+
+const props = defineProps({
+  param: {
+    type: Object,
+    default: () => ({})
   },
-  data() {
-    return {
-      Severity,
-      background: this.theme?.background,
-    }
+  icon: {
+    type: String,
+    default: undefined
   },
-  computed: {
-    error() {
-      return (this.param.error !== undefined) ? this.$t('login.invalid_username_or_password') : undefined;
-    },
-    logout() {
-      return (this.param.logout !== undefined) ? this.$t('login.logout_successful') : undefined;
-    }
+  title: {
+    type: String,
+    required: true
+  },
+  csrf: {
+    type: Object,
+    default: undefined
+  },
+  theme: {
+    type: Object,
+    default: undefined
   }
-}
+})
+
+const background = props.theme.background;
+
+const error = computed(() => {
+  let errors = props.param.error;
+
+  if (Array.isArray(errors)) {
+    if (errors.includes("401")) {
+      return t('login.error.login_required', {code: errors[0]});
+    } else {
+      return t('login.invalid_username_or_password');
+    }
+  } else {
+    return undefined;
+  }
+})
+
+const logout = computed(() => {
+  return (props.param.logout !== undefined) ? t('login.logout_successful') : undefined
+})
 </script>
 
 <style scoped>

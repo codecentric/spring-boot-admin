@@ -28,6 +28,7 @@
     "execution_failed": "Execution failed",
     "execution_successful": "Execution successful",
     "failed": "Failed",
+    "fetching_data": "Fetching data...",
     "fetch_failed": "Fetching of data failed.",
     "float": "Float",
     "filter": "Filter",

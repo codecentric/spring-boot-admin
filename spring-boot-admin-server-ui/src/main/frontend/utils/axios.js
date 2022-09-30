@@ -21,10 +21,9 @@ axios.defaults.xsrfHeaderName = sbaConfig.csrf.headerName;
 
 export const redirectOn401 = (predicate = () => true) => error => {
   if (error.response && error.response.status === 401 && predicate(error)) {
-    window.location.assign(`login?redirectTo=${encodeURIComponent(window.location.href)}`);
+    window.location.assign(`login?redirectTo=${encodeURIComponent(window.location.href)}&error=401`);
   }
   return Promise.reject(error);
-
 };
 
 const instance = axios.create({withCredentials: true, headers: {'Accept': 'application/json'}});

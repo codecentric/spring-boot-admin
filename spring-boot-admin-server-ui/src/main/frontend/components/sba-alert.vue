@@ -38,7 +38,7 @@
         />
         <p
           class="text-sm"
-          v-text="message"
+          v-html="message"
         />
       </div>
     </div>

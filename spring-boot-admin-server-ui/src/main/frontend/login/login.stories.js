@@ -6,8 +6,10 @@ export default {
 };
 
 const Template = (args) => ({
-  components: { Login },
-  setup() { return { args }; },
+  components: {Login},
+  setup() {
+    return {args};
+  },
   template: '<Login v-bind="args" />',
 });
 
