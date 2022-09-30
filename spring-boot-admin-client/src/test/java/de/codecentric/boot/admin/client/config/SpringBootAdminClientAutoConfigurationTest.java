@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.client.config;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -37,6 +36,8 @@ import org.springframework.web.client.RestTemplate;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.BlockingRegistrationClient;
 import de.codecentric.boot.admin.client.registration.RegistrationClient;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpringBootAdminClientAutoConfigurationTest {
 
