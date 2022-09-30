@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,38 +20,38 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.util.StringUtils;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;
 import de.codecentric.boot.admin.client.config.InstanceProperties;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
-public class CloudFoundryApplicationFactory extends DefaultApplicationFactory {
+public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 
-	private final CloudFoundryApplicationProperties cfApplicationProperties;
+	private WebFluxProperties webflux;
 
-	private final InstanceProperties instance;
+	private InstanceProperties instance;
 
-	public CloudFoundryApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
+	public ReactiveApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
 			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
-			MetadataContributor metadataContributor, CloudFoundryApplicationProperties cfApplicationProperties) {
+			MetadataContributor metadataContributor, WebFluxProperties webFluxProperties) {
 		super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
-		this.cfApplicationProperties = cfApplicationProperties;
+		this.webflux = webFluxProperties;
 		this.instance = instance;
 	}
 
 	@Override
-	protected String getServiceBaseUrl() {
-		String baseUrl = this.instance.getServiceBaseUrl();
-		if (StringUtils.hasText(baseUrl)) {
-			return baseUrl;
+	protected String getServiceUrl() {
+		if (instance.getServiceUrl() != null) {
+			return instance.getServiceUrl();
 		}
 
-		if (this.cfApplicationProperties.getUris().isEmpty()) {
-			return super.getServiceBaseUrl();
-		}
+		return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path(getServicePath()).path(getWebfluxBasePath())
+				.toUriString();
+	}
 
-		return "http://" + this.cfApplicationProperties.getUris().get(0);
+	protected String getWebfluxBasePath() {
+		return webflux.getBasePath();
 	}
 
 }

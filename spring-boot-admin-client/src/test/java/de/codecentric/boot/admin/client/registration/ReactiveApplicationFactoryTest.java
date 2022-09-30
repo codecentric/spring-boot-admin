@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package de.codecentric.boot.admin.client.registration;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,46 +26,43 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServe
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.mock.web.MockServletContext;
 
 import de.codecentric.boot.admin.client.config.InstanceProperties;
 
+import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ServletApplicationFactoryTest {
+public class ReactiveApplicationFactoryTest {
 
-	private InstanceProperties instance = new InstanceProperties();
+	private InstanceProperties instanceProperties = new InstanceProperties();
 
 	private ServerProperties server = new ServerProperties();
 
 	private ManagementServerProperties management = new ManagementServerProperties();
 
-	private MockServletContext servletContext = new MockServletContext();
-
 	private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
 
 	private WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
-	private DispatcherServletPath dispatcherServletPath = mock(DispatcherServletPath.class);
+	private WebFluxProperties webflux = new WebFluxProperties();
 
-	private ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
-			servletContext, pathMappedEndpoints, webEndpoint, Collections::emptyMap, dispatcherServletPath);
+	private ReactiveApplicationFactory factory = new ReactiveApplicationFactory(instanceProperties, management, server,
+			pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"), webflux);
 
 	@BeforeEach
 	public void setup() {
-		instance.setName("test");
-		when(dispatcherServletPath.getPrefix()).thenReturn("");
+		instanceProperties.setName("test");
 	}
 
 	@Test
 	public void test_contextPath_mgmtPath() {
-		servletContext.setContextPath("app");
+		webflux.setBasePath("/app");
 		webEndpoint.setBasePath("/admin");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
 		publishApplicationReadyEvent(factory, 8080, null);
@@ -79,7 +75,7 @@ public class ServletApplicationFactoryTest {
 
 	@Test
 	public void test_contextPath_mgmtPortPath() {
-		servletContext.setContextPath("app");
+		webflux.setBasePath("/app");
 		webEndpoint.setBasePath("/admin");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
 		publishApplicationReadyEvent(factory, 8080, 8081);
@@ -91,8 +87,8 @@ public class ServletApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_contextPath() {
-		servletContext.setContextPath("app");
+	public void test_basePath() {
+		webflux.setBasePath("/app");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		publishApplicationReadyEvent(factory, 80, null);
 
@@ -103,29 +99,14 @@ public class ServletApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_servletPath() {
-		when(dispatcherServletPath.getPrefix()).thenReturn("app");
-		servletContext.setContextPath("srv");
+	public void test_noBasePath() {
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		publishApplicationReadyEvent(factory, 80, null);
 
 		Application app = factory.createApplication();
-		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/actuator");
-		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/actuator/health");
-		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/srv");
-	}
-
-	@Test
-	public void test_servicePath() {
-		servletContext.setContextPath("app");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-		publishApplicationReadyEvent(factory, 80, null);
-		instance.setServicePath("/servicePath/");
-
-		Application app = factory.createApplication();
-		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/servicePath/app/actuator");
-		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/servicePath/app/actuator/health");
-		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/servicePath/app");
+		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/actuator");
+		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/actuator/health");
+		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/");
 	}
 
 	private String getHostname() {

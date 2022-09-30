@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
@@ -77,7 +78,8 @@ public class SpringBootAdminClientAutoConfigurationTest {
 		ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
 				.withConfiguration(
 						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
+								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class))
+				.withBean(WebFluxProperties.class);
 		reactiveContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
 				.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
 	}
@@ -85,9 +87,11 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	@Test
 	public void customBlockingClientInReactiveEnvironment() {
 		ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class)).withConfiguration(
+				.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class))
+				.withConfiguration(
 						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
+								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class))
+				.withBean(WebFluxProperties.class);
 
 		reactiveContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
 				.run((context) -> {
