@@ -120,6 +120,12 @@ public class AdminServerUiProperties {
 
 	private PollTimer pollTimer = new PollTimer();
 
+	/**
+	 * Additional routes to exclude from home page redirecting filter. Requests to these
+	 * routes will not redirected to home page
+	 */
+	private List<String> additionalRouteExcludes = new ArrayList<>();
+
 	@lombok.Data
 	public static class PollTimer {
 
