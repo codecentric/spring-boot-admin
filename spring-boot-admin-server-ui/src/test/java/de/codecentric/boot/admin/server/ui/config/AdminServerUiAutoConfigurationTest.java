@@ -97,7 +97,7 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 						HomepageForwardingFilter bean = context.getBean(HomepageForwardingFilter.class);
 						bean.filter(serverWebExchange, webFilterChain);
 
-						verify(serverWebExchange, atMostOnce()).mutate();
+						verify(serverWebExchange).mutate();
 					});
 		}
 
@@ -142,7 +142,7 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 								de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter.class);
 						bean.doFilter(httpServletRequest, new MockHttpServletResponse(), mock(FilterChain.class));
 
-						verify(httpServletRequest, atMostOnce()).getRequestDispatcher(any());
+						verify(httpServletRequest).getRequestDispatcher(any());
 					});
 		}
 
