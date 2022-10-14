@@ -71,6 +71,15 @@ public final class InstanceExchangeFilterFunctions {
 		};
 	}
 
+	public static InstanceExchangeFilterFunction addHeadersReactive(ReactiveHttpHeadersProvider httpHeadersProvider) {
+		return (instance, request, next) -> httpHeadersProvider.getHeaders(instance).flatMap((httpHeaders) -> {
+			ClientRequest requestWithAdditionalHeaders = ClientRequest.from(request)
+					.headers((headers) -> headers.addAll(httpHeaders)).build();
+
+			return next.exchange(requestWithAdditionalHeaders);
+		}).switchIfEmpty(next.exchange(request));
+	}
+
 	public static InstanceExchangeFilterFunction rewriteEndpointUrl() {
 		return (instance, request, next) -> {
 			if (request.url().isAbsolute()) {

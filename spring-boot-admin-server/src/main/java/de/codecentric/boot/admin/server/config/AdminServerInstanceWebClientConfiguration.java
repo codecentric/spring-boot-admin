@@ -33,6 +33,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.CompositeHttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.CompositeReactiveHttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
 import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions;
@@ -40,6 +41,7 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClientCustomizer;
 import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverter;
 import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverters;
+import de.codecentric.boot.admin.server.web.client.ReactiveHttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.cookies.CookieStoreCleanupTrigger;
 import de.codecentric.boot.admin.server.web.client.cookies.JdkPerInstanceCookieStore;
 import de.codecentric.boot.admin.server.web.client.cookies.PerInstanceCookieStore;
@@ -84,6 +86,16 @@ public class AdminServerInstanceWebClientConfiguration {
 			public InstanceExchangeFilterFunction addHeadersInstanceExchangeFilter(
 					List<HttpHeadersProvider> headersProviders) {
 				return InstanceExchangeFilterFunctions.addHeaders(new CompositeHttpHeadersProvider(headersProviders));
+			}
+
+			@Bean
+			@Order(0)
+			@ConditionalOnBean(ReactiveHttpHeadersProvider.class)
+			@ConditionalOnMissingBean(name = "addReactiveHeadersInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction addReactiveHeadersInstanceExchangeFilter(
+					List<ReactiveHttpHeadersProvider> reactiveHeadersProviders) {
+				return InstanceExchangeFilterFunctions
+						.addHeadersReactive(new CompositeReactiveHttpHeadersProvider(reactiveHeadersProviders));
 			}
 
 			@Bean
