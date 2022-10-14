@@ -45,8 +45,7 @@ import static org.mockito.Mockito.verify;
 public class ServletAdminServerUiAutoConfigurationTest implements WithAssertions {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withPropertyValues("--spring.boot.admin.ui.available-languages=de",
-					"--spring.boot.admin.contextPath=test")
+			.withPropertyValues("--spring.boot.admin.ui.available-languages=de", "--spring.boot.admin.contextPath=test")
 			.withBean(AdminServerProperties.class)
 			.withConfiguration(AutoConfigurations.of(AdminServerUiAutoConfiguration.class));
 
@@ -59,8 +58,8 @@ public class ServletAdminServerUiAutoConfigurationTest implements WithAssertions
 
 		this.contextRunner.withUserConfiguration(SpringBootAdminServerEnabledCondition.class,
 				AdminServerMarkerConfiguration.Marker.class).run((context) -> {
-					de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter bean = context.getBean(
-							de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter.class);
+					de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter bean = context
+							.getBean(de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter.class);
 					bean.doFilter(httpServletRequest, mock(ServletResponse.class), mock(FilterChain.class));
 
 					verify(httpServletRequest, never()).getRequestDispatcher(any());
@@ -76,8 +75,8 @@ public class ServletAdminServerUiAutoConfigurationTest implements WithAssertions
 
 		this.contextRunner.withUserConfiguration(SpringBootAdminServerEnabledCondition.class,
 				AdminServerMarkerConfiguration.Marker.class).run((context) -> {
-					de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter bean = context.getBean(
-							de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter.class);
+					de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter bean = context
+							.getBean(de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter.class);
 					bean.doFilter(httpServletRequest, new MockHttpServletResponse(), mock(FilterChain.class));
 
 					verify(httpServletRequest).getRequestDispatcher(any());
