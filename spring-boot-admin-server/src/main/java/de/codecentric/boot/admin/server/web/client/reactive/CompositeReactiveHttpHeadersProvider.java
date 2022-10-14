@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin.server.web.client;
+package de.codecentric.boot.admin.server.web.client.reactive;
 
 import java.util.Arrays;
 import java.util.Collection;
