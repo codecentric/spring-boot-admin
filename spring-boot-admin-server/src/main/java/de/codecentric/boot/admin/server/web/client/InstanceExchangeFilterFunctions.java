@@ -42,6 +42,7 @@ import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.cookies.PerInstanceCookieStore;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
+import de.codecentric.boot.admin.server.web.client.reactive.ReactiveHttpHeadersProvider;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -69,6 +70,15 @@ public final class InstanceExchangeFilterFunctions {
 					.headers((headers) -> headers.addAll(httpHeadersProvider.getHeaders(instance))).build();
 			return next.exchange(request);
 		};
+	}
+
+	public static InstanceExchangeFilterFunction addHeadersReactive(ReactiveHttpHeadersProvider httpHeadersProvider) {
+		return (instance, request, next) -> httpHeadersProvider.getHeaders(instance).flatMap((httpHeaders) -> {
+			ClientRequest requestWithAdditionalHeaders = ClientRequest.from(request)
+					.headers((headers) -> headers.addAll(httpHeaders)).build();
+
+			return next.exchange(requestWithAdditionalHeaders);
+		}).switchIfEmpty(Mono.defer(() -> next.exchange(request)));
 	}
 
 	public static InstanceExchangeFilterFunction rewriteEndpointUrl() {
