@@ -45,7 +45,7 @@ public class CompositeReactiveHttpHeadersProvider implements ReactiveHttpHeaders
 	}
 
 	private HttpHeaders mergeMonosToHeaders(Object[] e) {
-		return Arrays.stream(e).map((httpHeaders) -> (HttpHeaders) httpHeaders).reduce(new HttpHeaders(), (h1, h2) -> {
+		return Arrays.stream(e).map(HttpHeaders.class::cast).reduce(new HttpHeaders(), (h1, h2) -> {
 			h1.addAll(h2);
 			return h1;
 		});
