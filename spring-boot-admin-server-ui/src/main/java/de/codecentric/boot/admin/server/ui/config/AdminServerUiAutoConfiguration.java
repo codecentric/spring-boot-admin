@@ -160,7 +160,8 @@ public class AdminServerUiAutoConfiguration {
 						.collect(Collectors.toList());
 				routesIncludes.add("");
 
-				List<String> routesExcludes = DEFAULT_UI_ROUTE_EXCLUDES.stream()
+				List<String> routesExcludes = Stream
+						.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
 						.map((path) -> webfluxBasePathSet ? webFluxBasePath + path : this.adminServer.path(path))
 						.collect(Collectors.toList());
 
@@ -217,8 +218,9 @@ public class AdminServerUiAutoConfiguration {
 						.scan(this.adminUi.getExtensionResourceLocations());
 				List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
 						.map(this.adminServer::path).collect(Collectors.toList());
-				List<String> routesExcludes = DEFAULT_UI_ROUTE_EXCLUDES.stream().map(this.adminServer::path)
-						.collect(Collectors.toList());
+				List<String> routesExcludes = Stream
+						.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
+						.map(this.adminServer::path).collect(Collectors.toList());
 
 				return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
 			}

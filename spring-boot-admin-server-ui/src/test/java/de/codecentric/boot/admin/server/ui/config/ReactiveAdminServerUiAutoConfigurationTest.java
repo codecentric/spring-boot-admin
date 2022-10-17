@@ -47,7 +47,7 @@ public abstract class ReactiveAdminServerUiAutoConfigurationTest {
 
 	@ParameterizedTest
 	@CsvSource({ "/test/extensions/myextension", "/test/instances/1/actuator/heapdump",
-			"/test/instances/1/actuator/logfile" })
+			"/test/instances/1/actuator/logfile", "/test/instances/1/actuator/some-extension/file.html" })
 	public void contextPathIsRespectedInExcludedRoutes(String routeExcludes) {
 		MockServerHttpRequest serverHttpRequest = MockServerHttpRequest.get(routeExcludes)
 				.header(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE).build();

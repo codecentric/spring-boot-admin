@@ -45,13 +45,14 @@ import static org.mockito.Mockito.verify;
 public class ServletAdminServerUiAutoConfigurationTest implements WithAssertions {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withPropertyValues("--spring.boot.admin.ui.available-languages=de", "--spring.boot.admin.contextPath=test")
+			.withPropertyValues("--spring.boot.admin.ui.available-languages=de", "--spring.boot.admin.contextPath=test",
+					"--spring.boot.admin.ui.additional-route-excludes[0]=/instances/*/actuator/some-extension/**")
 			.withBean(AdminServerProperties.class)
 			.withConfiguration(AutoConfigurations.of(AdminServerUiAutoConfiguration.class));
 
 	@ParameterizedTest
 	@CsvSource({ "/test/extensions/myextension", "/test/instances/1/actuator/heapdump",
-			"/test/instances/1/actuator/logfile" })
+			"/test/instances/1/actuator/logfile", "/test/instances/1/actuator/some-extension/file.html" })
 	public void contextPathIsRespectedInExcludedRoutes(String routeExcludes) {
 		MockHttpServletRequest httpServletRequest = spy(new MockHttpServletRequest("GET", routeExcludes));
 		httpServletRequest.addHeader(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE);
