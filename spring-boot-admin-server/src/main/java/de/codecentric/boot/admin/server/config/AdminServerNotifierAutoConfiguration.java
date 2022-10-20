@@ -56,6 +56,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.DingTalkNotifier;
 import de.codecentric.boot.admin.server.notify.DiscordNotifier;
+import de.codecentric.boot.admin.server.notify.FeiShuNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
@@ -322,6 +323,21 @@ public class AdminServerNotifierAutoConfiguration {
 		public DingTalkNotifier dingTalkNotifier(InstanceRepository repository,
 				NotifierProxyProperties proxyProperties) {
 			return new DingTalkNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.feishu", name = "webhook-url")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	@Lazy(false)
+	public static class FeiShuNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.feishu")
+		public FeiShuNotifier feiShuNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
+			return new FeiShuNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
 	}
