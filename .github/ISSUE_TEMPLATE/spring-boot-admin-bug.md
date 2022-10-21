@@ -18,6 +18,9 @@ assignees: ''
 - **Configured Security**:
   <!-- basic auth, LDAP, client-certificate, ... -->
 
+- **Webflux or Servlet application**:
+  <!-- Please specify whether your Admin server is as webflux or servlet application ... -->
+
 ## Client information
 
 - **Spring Boot versions**:
@@ -25,6 +28,9 @@ assignees: ''
 
 - **Used discovery mechanism**:
   <!-- self registration, kubernetes, eureka, ... -->
+
+- **Webflux or Servlet application**:
+  <!-- Please specify whether your client application is as webflux or servlet application ... -->
 
 ## Description
 
