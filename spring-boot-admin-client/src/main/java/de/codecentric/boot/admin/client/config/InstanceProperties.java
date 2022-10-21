@@ -19,9 +19,9 @@ package de.codecentric.boot.admin.client.config;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.lang.Nullable;
 
 @lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client.instance")

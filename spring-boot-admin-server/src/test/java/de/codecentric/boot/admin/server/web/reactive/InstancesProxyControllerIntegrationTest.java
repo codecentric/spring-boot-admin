@@ -16,12 +16,12 @@
 
 package de.codecentric.boot.admin.server.web.reactive;
 
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.lang.Nullable;
 
 import de.codecentric.boot.admin.server.AdminReactiveApplicationTest;
 import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerIntegrationTest;

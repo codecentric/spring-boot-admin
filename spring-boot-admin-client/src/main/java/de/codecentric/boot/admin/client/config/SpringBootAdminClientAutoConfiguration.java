@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import de.codecentric.boot.admin.client.registration.ApplicationFactory;
@@ -138,12 +139,13 @@ public class SpringBootAdminClientAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public RegistrationClient registrationClient(ClientProperties client) {
-			RestTemplateBuilder builder = new RestTemplateBuilder().setConnectTimeout(client.getConnectTimeout())
-					.setReadTimeout(client.getReadTimeout());
+			RestTemplateBuilder builder = new RestTemplateBuilder().setConnectTimeout(client.getConnectTimeout());
+			builder.setReadTimeout(client.getReadTimeout());
 			if (client.getUsername() != null && client.getPassword() != null) {
 				builder = builder.basicAuthentication(client.getUsername(), client.getPassword());
 			}
-			return new BlockingRegistrationClient(builder.build());
+			RestTemplate build = builder.build();
+			return new BlockingRegistrationClient(build);
 		}
 
 	}

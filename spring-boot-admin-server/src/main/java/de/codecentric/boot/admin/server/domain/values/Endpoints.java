@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
+import org.springframework.lang.Nullable;
 
 import static java.util.stream.Collectors.toMap;
 

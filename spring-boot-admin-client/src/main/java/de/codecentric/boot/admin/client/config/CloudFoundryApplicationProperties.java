@@ -19,8 +19,8 @@ package de.codecentric.boot.admin.client.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.lang.Nullable;
 
 @lombok.Data
 @ConfigurationProperties("vcap.application")

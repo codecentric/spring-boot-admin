@@ -53,7 +53,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-            <version>${eureka-client.version}</version>
             <optional>true</optional>
             <exclusions>
                 <exclusion>

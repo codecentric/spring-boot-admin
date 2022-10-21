@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.Data;
 import lombok.Getter;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
+import org.springframework.lang.Nullable;
 
 import de.codecentric.boot.admin.server.ui.web.UiController;
 
