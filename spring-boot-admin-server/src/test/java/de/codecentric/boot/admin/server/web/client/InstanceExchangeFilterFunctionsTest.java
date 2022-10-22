@@ -1,11 +1,11 @@
 /*
- * Copyright 2014-2021 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -279,6 +279,46 @@ class InstanceExchangeFilterFunctionsTest {
 
 			Mono<ClientResponse> response = this.filter.filter(INSTANCE, request, (req) -> {
 				assertThat(req.headers().get("X-INSTANCE-ID")).containsExactly(INSTANCE.getId().getValue());
+				return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+			});
+
+			StepVerifier.create(response).expectNextCount(1).verifyComplete();
+		}
+
+	}
+
+	@Nested
+	class AddHeadersReactive {
+
+		@Test
+		void should_add_headers_from_provider() {
+			InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.addHeadersReactive((i) -> {
+				HttpHeaders headers = new HttpHeaders();
+				headers.add("X-INSTANCE-ID", i.getId().getValue());
+				return Mono.just(headers);
+			});
+
+			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+					.attribute(ATTRIBUTE_INSTANCE, INSTANCE).build();
+
+			Mono<ClientResponse> response = filter.filter(INSTANCE, request, (req) -> {
+				assertThat(req.headers().get("X-INSTANCE-ID")).containsExactly(INSTANCE.getId().getValue());
+				return Mono.just(ClientResponse.create(HttpStatus.OK).build());
+			});
+
+			StepVerifier.create(response).expectNextCount(1).verifyComplete();
+		}
+
+		@Test
+		void should_pass_on_mono_empty() {
+			InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions
+					.addHeadersReactive((i) -> Mono.empty());
+
+			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/test"))
+					.attribute(ATTRIBUTE_INSTANCE, INSTANCE).build();
+
+			Mono<ClientResponse> response = filter.filter(INSTANCE, request, (req) -> {
+				assertThat(req.headers().size()).isEqualTo(0);
 				return Mono.just(ClientResponse.create(HttpStatus.OK).build());
 			});
 

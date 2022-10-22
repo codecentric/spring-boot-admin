@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -134,6 +134,72 @@ public final class LegacyEndpointConverters {
 
 	public static LegacyEndpointConverter startup() {
 		return new LegacyEndpointConverter(Endpoint.STARTUP, (flux) -> flux);
+	}
+
+	static Map<String, Object> convertMappingHandlerMethod(String methodDeclaration) {
+		// In order to keep parsing logic sane, parameterized types are dropped early
+		// and then we split the method declaration parts on space
+		// Example:
+		// public java.lang.Object bar.Handler.handle(java.util.List<java.lang.String>)
+		// -> "public","java.lang.Object","bar.Handler.handle(java.util.List)"
+		String[] declarationParts = methodDeclaration
+				// remove parameterized types using the regex below
+				.replaceAll("<[a-zA-Z1-9$_\\.,<> ]*>", "").replace(" synchronized ", " ")
+				// and split on single space to get the decl parts
+				.split(" ");
+
+		// method -> "bar.Handler.handle(java.util.List)"
+		String method = declarationParts[2];
+
+		// methodRef -> "bar.Handler.handle"
+		String methodRef = method.substring(0, method.indexOf('('));
+
+		// className -> "bar.Handler"
+		String className = methodRef.substring(0, methodRef.lastIndexOf('.'));
+
+		// methodName -> "handle"
+		String methodName = methodRef.substring(methodRef.lastIndexOf('.') + 1);
+
+		// In order to simulate descriptors' output we need to read the return type and
+		// the arguments of the handler method. Parameterized types were stripped early
+		// in the parsing process to maintain parsing simplicity.
+		// We also assume object types (see L) which is highly likely for spring-web
+		// @RequestMapping methods but there will be false positives (eg. on void).
+		//
+		// returnType -> Ljava/lang/Object;
+
+		String returnType = declarationParts[1].replaceFirst("^", "L").replace(".", "/").concat(";");
+
+		// In order to simulate descriptors' output we need to read the return type and
+		// the arguments of the handler method. Parameterized types were stripped early
+		// in the parsing process to maintain parsing simplicity.
+		// We also assume object types (see L) which is highly likely for spring-web
+		// @RequestMapping methods but there will be false positives.
+		//
+		// methodArgs -> (Ljava/util/List;)
+		String methodArgs = Arrays.stream(method
+				// get what's included in parenthesis
+				.substring(method.indexOf('('), method.length() - 1)
+				// now remove the parenthesis
+				.replaceAll("[()]", "")
+				// and split on comma
+				.split(",")
+		// then for each argument
+		).map((arg) -> arg
+				// prepend L char - indicated ObjectType
+				.replaceFirst("^", "L")
+				// replace dots with slashes
+				.replace(".", "/")
+				// and append ;
+				.concat(";")
+		// then join back to simulate MethodDescriptors output
+		).collect(joining("", "(", ")"));
+
+		Map<String, Object> handlerMethod = new LinkedHashMap<>();
+		handlerMethod.put("className", className);
+		handlerMethod.put("descriptor", methodArgs + returnType);
+		handlerMethod.put("name", methodName);
+		return handlerMethod;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -370,7 +436,7 @@ public final class LegacyEndpointConverters {
 
 	private static Map<String, Object> convertMappingConditions(String predicate) {
 		// Before further processing we need to remove the following occurencies
-		// {[, ]}, [, ] and split on comma to get get condition pairs from the
+		// {[, ]}, [, ] and split on comma to get condition pairs from the
 		// predicate string.
 		// Example:
 		// {[/scratch/{ticketId}/selectPrize/{prizeId}],methods=[POST]}
@@ -424,72 +490,6 @@ public final class LegacyEndpointConverters {
 		});
 
 		return conditionsMap;
-	}
-
-	private static Map<String, Object> convertMappingHandlerMethod(String methodDeclaration) {
-		// In order to keep parsing logic sane, parameterized types are dropped early
-		// and then we split the method declaration parts on space
-		// Example:
-		// public java.lang.Object bar.Handler.handle(java.util.List<java.lang.String>)
-		// -> "public","java.lang.Object","bar.Handler.handle(java.util.List)"
-		String[] declarationParts = methodDeclaration
-				// remove parameterized types using the regex below
-				.replaceAll("<[a-zA-Z1-9$_\\.,<> ]*>", "")
-				// and split on single space to get the decl parts
-				.split(" ");
-
-		// method -> "bar.Handler.handle(java.util.List)"
-		String method = declarationParts[2];
-
-		// methodRef -> "bar.Handler.handle"
-		String methodRef = method.substring(0, method.indexOf('('));
-
-		// className -> "bar.Handler"
-		String className = methodRef.substring(0, methodRef.lastIndexOf('.'));
-
-		// methodName -> "handle"
-		String methodName = methodRef.substring(methodRef.lastIndexOf('.') + 1);
-
-		// In order to simulate descriptors' output we need to read the return type and
-		// the arguments of the handler method. Parameterized types were stripped early
-		// in the parsing process to maintain parsing simplicity.
-		// We also assume object types (see L) which is highly likely for spring-web
-		// @RequestMapping methods but there will be false positives (eg. on void).
-		//
-		// returnType -> Ljava/lang/Object;
-
-		String returnType = declarationParts[1].replaceFirst("^", "L").replace(".", "/").concat(";");
-
-		// In order to simulate descriptors' output we need to read the return type and
-		// the arguments of the handler method. Parameterized types were stripped early
-		// in the parsing process to maintain parsing simplicity.
-		// We also assume object types (see L) which is highly likely for spring-web
-		// @RequestMapping methods but there will be false positives.
-		//
-		// methodArgs -> (Ljava/util/List;)
-		String methodArgs = Arrays.stream(method
-				// get what's included in parenthesis
-				.substring(method.indexOf('('), method.length() - 1)
-				// now remove the parenthesis
-				.replaceAll("[()]", "")
-				// and split on comma
-				.split(",")
-		// then for each argument
-		).map((arg) -> arg
-				// prepend L char - indicated ObjectType
-				.replaceFirst("^", "L")
-				// replace dots with slashes
-				.replace(".", "/")
-				// and append ;
-				.concat(";")
-		// then join back to simulate MethodDescriptors output
-		).collect(joining("", "(", ")"));
-
-		Map<String, Object> handlerMethod = new LinkedHashMap<>();
-		handlerMethod.put("className", className);
-		handlerMethod.put("descriptor", methodArgs + returnType);
-		handlerMethod.put("name", methodName);
-		return handlerMethod;
 	}
 
 	@Nullable

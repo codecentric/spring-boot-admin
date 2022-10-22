@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -164,10 +164,13 @@ public class AdminServerUiAutoConfiguration {
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 						.scan(this.adminUi.getExtensionResourceLocations());
 				List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-						.map(this.adminServer::path).collect(Collectors.toList());
+						.map((path) -> webfluxBasePathSet ? webFluxBasePath + path : this.adminServer.path(path))
+						.collect(Collectors.toList());
 				routesIncludes.add("");
 
-				List<String> routesExcludes = DEFAULT_UI_ROUTE_EXCLUDES.stream().map(this.adminServer::path)
+				List<String> routesExcludes = Stream
+						.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
+						.map((path) -> webfluxBasePathSet ? webFluxBasePath + path : this.adminServer.path(path))
 						.collect(Collectors.toList());
 
 				return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
@@ -228,8 +231,9 @@ public class AdminServerUiAutoConfiguration {
 						.scan(this.adminUi.getExtensionResourceLocations());
 				List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
 						.map(this.adminServer::path).collect(Collectors.toList());
-				List<String> routesExcludes = DEFAULT_UI_ROUTE_EXCLUDES.stream().map(this.adminServer::path)
-						.collect(Collectors.toList());
+				List<String> routesExcludes = Stream
+						.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
+						.map(this.adminServer::path).collect(Collectors.toList());
 
 				return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
 			}
