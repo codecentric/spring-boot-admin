@@ -224,30 +224,30 @@ export default {
       try {
         await item.unregister();
         const message = item instanceof Application ? 'applications.unregister_successful' : 'instances.unregister_successful';
-        this.$toast.success(this.t(message, {name: item.id || item.name}));
+        this.$notificationCenter.success(this.t(message, {name: item.id || item.name}));
       } catch (error) {
         const message = item instanceof Application ? 'applications.unregister_failed' : 'instances.unregister_failed';
-        this.$toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
+        this.$notificationCenter.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
       }
     },
     async shutdown(item) {
       try {
         await item.shutdown();
         const message = item instanceof Application ? 'applications.shutdown_successful' : 'instances.shutdown_successful';
-        this.$toast.success(this.t(message, {name: item.id || item.name}));
+        this.$notificationCenter.success(this.t(message, {name: item.id || item.name}));
       } catch (error) {
         const message = item instanceof Application ? 'applications.shutdown_failed' : 'instances.shutdown_failed';
-        this.$toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
+        this.$notificationCenter.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
       }
     },
     async restart(item) {
       try {
         await item.restart();
         const message = item instanceof Application ? 'applications.restarted' : 'instances.restarted';
-        this.$toast.success(this.t(message, {name: item.id || item.name}));
+        this.$notificationCenter.success(this.t(message, {name: item.id || item.name}));
       } catch (error) {
         const message = item instanceof Application ? 'applications.restart_failed' : 'instances.restart_failed';
-        this.$toast.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
+        this.$notificationCenter.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
       }
     },
     createSubscription() {
@@ -264,7 +264,7 @@ export default {
           },
           error: error => {
             console.warn('Fetching notification filters failed with error:', error);
-            this.$toast.error(this.t('applications.fetching_notification_filters_failed'));
+            this.$notificationCenter.error(this.t('applications.fetching_notification_filters_failed'));
           }
         });
     },
@@ -280,7 +280,7 @@ export default {
         const response = await NotificationFilter.addFilter(object, ttl);
         let notificationFilter = response.data;
         this.notificationFilterSubject.next(notificationFilter);
-        this.$toast.success(
+        this.$notificationCenter.success(
           `${this.t('applications.notifications_suppressed_for', {name: notificationFilter.applicationName || notificationFilter.instanceId})} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`);
       } catch (error) {
         console.warn('Adding notification filter failed:', error);
@@ -292,7 +292,7 @@ export default {
       try {
         await activeFilter.delete();
         this.notificationFilterSubject.next(activeFilter.id);
-        this.$toast.success(this.t('applications.notification_filter.removed'));
+        this.$notificationCenter.success(this.t('applications.notification_filter.removed'));
       } catch (error) {
         console.warn('Deleting notification filter failed:', error);
       } finally {

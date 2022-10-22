@@ -8,13 +8,7 @@ const handler = [
   ...mappingsEndpoint,
   ...liquibaseEndpoints,
   ...flywayEndpoints,
-  ...auditEventsEndpoint,
-  rest.post(
-    '*/actuator/shutdown',
-    (req, res, ctx) => {
-      return res(ctx.status(403), ctx.json("Knöterich is pöterich"));
-    }
-  ),
+  ...auditEventsEndpoint
 ];
 
 export const worker = setupWorker(...handler)

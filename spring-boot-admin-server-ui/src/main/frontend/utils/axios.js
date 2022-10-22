@@ -15,6 +15,13 @@
  */
 import sbaConfig from '../sba-config.js'
 import axios from 'axios';
+import {useNotificationCenter} from "@stekoe/vue-toast-notificationcenter";
+import {useI18n} from "vue-i18n";
+
+
+const nc = useNotificationCenter({
+
+});
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.xsrfHeaderName = sbaConfig.csrf.headerName;
@@ -31,3 +38,21 @@ instance.interceptors.response.use(response => response, redirectOn401());
 instance.create = axios.create;
 
 export default instance;
+
+export const registerErrorToastInterceptor = (axios) => {
+  axios.interceptors.response.use(
+    response => response,
+    (error) => {
+      const data = error.request;
+      let message = `
+              Request failed: ${data.statusText}<br>
+              <small>${data.responseURL}</small>
+      `;
+      nc.error(message, {
+        context: data.status ?? 'axios',
+        title: `Error ${data.status}`,
+        duration: 10_000
+      });
+    }
+  )
+}

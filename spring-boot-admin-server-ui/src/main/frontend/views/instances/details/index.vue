@@ -192,8 +192,9 @@ export default {
         } catch (error) {
           console.warn('Fetching metric index failed:', error);
           this.error = error;
+        } finally {
+          this.hasLoaded = true;
         }
-        this.hasLoaded = true;
       }
     }
   },

@@ -29,11 +29,11 @@ import {createApplicationStore, useApplicationStore} from "./composables/useAppl
 import {createViewRegistry} from "./composables/ViewRegistry.js";
 import { worker } from './mocks/browser';
 
-import VueToast from 'vue-toast-notification';
 import './toast-theme.css';
 
 import SbaModalPlugin from "./plugins/modal";
 import {useI18n} from "vue-i18n";
+import NotificationcenterPlugin from "@stekoe/vue-toast-notificationcenter";
 
 moment.locale(navigator.language.split('-')[0]);
 
@@ -79,9 +79,8 @@ const app = createApp({
 
 app.use(i18n);
 app.use(components);
-app.use(VueToast, {
-  position: 'top-right',
-  duration: 3_500
+app.use(NotificationcenterPlugin, {
+  duration: 10_000
 });
 app.use(SbaModalPlugin, {i18n});
 app.use(router(viewRegistry.routes));

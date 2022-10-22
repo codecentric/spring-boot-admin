@@ -1,5 +1,5 @@
 <template>
-  <section :class="{'loading': loading}">
+  <section :class="{'loading': showLoadingSpinner}">
     <slot name="before"/>
 
     <div class="px-2 md:px-6 py-6">
@@ -46,11 +46,10 @@ export default {
     }
   },
   watch: {
-    loading: function(newVal, oldVal) {
+    loading: function (newVal) {
       window.clearTimeout(this.debouncedLoader);
-
       this.debouncedLoader = window.setTimeout(() => {
-        this.loading = newVal;
+        this.showLoadingSpinner = newVal;
       }, 250);
     }
   }
