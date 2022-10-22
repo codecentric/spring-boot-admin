@@ -1,6 +1,6 @@
 
 [[clustering-support]]
-=== Clustering ===
+== Clustering ==
 Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts.
 Also have a look at the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/[Spring Boot support for Hazelcast].
 

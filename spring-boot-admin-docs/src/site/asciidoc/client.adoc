@@ -1,8 +1,8 @@
 [[client-applications]]
-== Client Applications ==
+= Client Applications =
 
 [[show-version-in-application-list]]
-=== Show Version in Application List ===
+== Show Version in Application List ==
 
 For *Spring Boot* applications the easiest way to show the version, is to use the `build-info` goal from the `spring-boot-maven-plugin`, which generates the `META-INF/build-info.properties`.
 See also the http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#howto-build-info[Spring Boot Reference Guide].
@@ -39,7 +39,7 @@ springBoot {
 ----
 
 [[jmx-bean-management]]
-=== JMX-Bean Management ===
+== JMX-Bean Management ==
 
 To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application.
 As Jolokia is servlet based there is no support for reactive applications.
@@ -56,7 +56,7 @@ With Spring Boot 2.2.0 you might want to set `spring.jmx.enabled=true` if you wa
 ----
 
 [[logfile]]
-=== Logfile Viewer ===
+== Logfile Viewer ==
 
 By default the logfile is not accessible via actuator endpoints and therefore not visible in Spring Boot Admin.
 In order to enable the logfile actuator endpoint you need to configure Spring Boot to write a logfile, either by setting
@@ -80,7 +80,7 @@ Enables the logfile actuator endpoint.
 <2> File log pattern using ANSI colors.
 
 [[show-instance-tags]]
-=== Show Tags per Instance ===
+== Show Tags per Instance ==
 
 `Tags` are a way to add visual markers per instance, they will appear in the application list as well as in the instance view.
 By default no tags are added to instances, and it's up to the client to specify the desired tags by adding the information to the metadata or info endpoint.
@@ -95,7 +95,7 @@ info.tags.environment=test
 ----
 
 [[spring-boot-admin-client]]
-=== Spring Boot Admin Client ===
+== Spring Boot Admin Client ==
 
 The Spring Boot Admin Client registers the application at the admin server.
 This is done by periodically doing a HTTP post request to the SBA Server providing information about the application.

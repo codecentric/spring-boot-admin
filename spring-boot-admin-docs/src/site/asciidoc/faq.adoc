@@ -1,5 +1,6 @@
 [[faqs]]
-== FAQs ==
+= FAQ =
+
 [q-and-a]
 Can I include spring-boot-admin into my business application?::
   *tl;dr* You can, but you shouldn't. +

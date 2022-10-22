@@ -1,10 +1,10 @@
 [[spring-cloud-discovery-support]]
-=== Spring Cloud Discovery ===
+== Spring Cloud Discovery ==
 
 The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don't have to include the `spring-boot-admin-starter-client`. You just have to add a `DiscoveryClient` implementation to your admin server - everything else is done by AutoConfiguration.
 
 [[spring-cloud-discovery-static-config]]
-==== Static Configuration using SimpleDiscoveryClient ====
+=== Static Configuration using SimpleDiscoveryClient ===
 
 Spring Cloud provides a `SimpleDiscoveryClient`. It allows you to specify client applications via static configuration:
 
@@ -35,19 +35,17 @@ spring:
                   management.context-path: /actuator
 ----
 
-==== Other DiscoveryClients ====
+=== Other DiscoveryClients ===
 Spring Boot Admin supports all other implementations of Spring Cloud's `DiscoveryClient` (https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/[Eureka], https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery[Zookeeper], https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery[Consul], https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes[Kubernetes], ...). You need to add it to the Spring Boot Admin Server and configure it properly.
-An <<discover-clients-via-spring-cloud-discovery,example setup using Eureka>> is shown above.
+An <<getting-started#discover-clients-via-spring-cloud-discovery,example setup using Eureka>> is shown above.
 
-==== Converting ServiceInstances ====
+=== Converting ServiceInstances ===
 
 The information from the service registry are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration.
 
 TIP: You can modify how the information from the registry is used to register the application by using SBA Server configuration options and instance metadata. The values from the metadata takes precedence over the server config. If the plenty of options don't fit your needs you can provide your own `ServiceInstanceConverter`.
 
 NOTE: When using Eureka, the `healthCheckUrl` known to Eureka is used for health-checking, which can be set on your client using `eureka.instance.healthCheckUrl`.
-
-WARNING: Consul does not allow dots (`.`) in metadata keys, use dashes instead (e.g. `management-context-path`).
 
 .Instance metadata options
 |===
@@ -112,7 +110,7 @@ user.password
 |
 |===
 
-==== CloudFoundry ====
+=== CloudFoundry ===
 If you are deploying your applications to CloudFoundry then `vcap.application.application_id` and `vcap.application.instance_index` *_must_* be added to the metadata for proper registration of applications with Spring Boot Admin Server.
 Here is a sample configuration for Eureka:
 

@@ -1,10 +1,16 @@
 [[getting-started]]
-== Getting started ==
+= Getting started =
+
+== Overview ==
+Spring Boot Admin is a monitoring tool that aims to visualize information provided by Spring Boot Actuators in a nice and accessible way. It consists of two major parts:
+
+ * A server that provides a user interface to display and interact with Spring Boot Actuators.
+ * A client that is used to register at the server and allow to access actuator endpoints.
 
 [[set-up-admin-server]]
-=== Setting up Spring Boot Admin Server ===
+== Quick Start ==
 
-First, you need to setup your server. To do this just setup a simple boot project (using http://start.spring.io). As Spring Boot Admin Server is capable of running as servlet or webflux application, you need to decide on this and add the according Spring Boot Starter. In this example we're using the servlet web starter.
+Since Spring Boot Admin relies on Spring Boot, you have to set up a Spring Boot application first. We recommend doing this by using http://start.spring.io. Spring Boot Admin Server is capable of running as servlet or webflux application, you need to decide on this and add the according Spring Boot Starter. In this example we're using the servlet web starter.
 
 . Add Spring Boot Admin Server starter to your dependencies:
 +
@@ -22,43 +28,6 @@ First, you need to setup your server. To do this just setup a simple boot projec
 </dependency>
 ----
 
-[TIP]
-====
-If you want to use a snapshot version of Spring Boot Admin Server you most likely need to include the spring and sonatype snapshot repositories:
-
-[source,xml]
-.pom.xml
-----
-<repositories>
-    <repository>
-        <id>spring-milestone</id>
-        <snapshots>
-            <enabled>false</enabled>
-        </snapshots>
-        <url>http://repo.spring.io/milestone</url>
-    </repository>
-    <repository>
-        <id>spring-snapshot</id>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-        <url>http://repo.spring.io/snapshot</url>
-    </repository>
-    <repository>
-        <id>sonatype-nexus-snapshots</id>
-        <name>Sonatype Nexus Snapshots</name>
-        <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        <snapshots>
-            <enabled>true</enabled>
-        </snapshots>
-        <releases>
-            <enabled>false</enabled>
-        </releases>
-    </repository>
-</repositories>
-----
-====
-
 . Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
 +
 [source,java]
@@ -75,15 +44,15 @@ public class SpringBootAdminApplication {
 
 NOTE: If you want to setup the Spring Boot Admin Server via war-deployment in a servlet-container, please have a look at the {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-war/[spring-boot-admin-sample-war].
 
-See also the {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-servlet/[spring-boot-admin-sample-servlet] project, which also adds security.
+NOTE: See also the {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-servlet/[spring-boot-admin-sample-servlet] project, which also adds security.
 
 [[register-client-applications]]
-=== Registering Client Applications ===
+== Registering Client Applications ==
 
-To register your application at the SBA Server, you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka, Consul, ...). There is also a <<spring-cloud-discovery-static-config,simple option using a static configuration on the SBA Server side>>.
+To register your application at the SBA Server, you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka, Consul, ...). There is also a <<server#spring-cloud-discovery-static-config,simple option using a static configuration on the SBA Server side>>.
 
 [[register-clients-via-spring-boot-admin]]
-==== Spring Boot Admin Client ====
+=== Spring Boot Admin Client ===
 
 Each application that wants to register has to include the Spring Boot Admin Client. In order to secure the endpoints, also add the `spring-boot-starter-security`.
 
@@ -129,11 +98,10 @@ public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter
     }
 }
 ----
-<1> For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
-
+<1> For the sake of brevity we're disabling the security for now. Have a look at the <<security#securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
 
 [[discover-clients-via-spring-cloud-discovery]]
-==== Spring Cloud Discovery ====
+=== Spring Cloud Discovery ===
 
 If you already use Spring Cloud Discovery for your applications you don't need the SBA Client. Just add a DiscoveryClient to Spring Boot Admin Server, the rest is done by our AutoConfiguration.
 
@@ -173,7 +141,7 @@ public class SpringBootAdminApplication {
     }
 }
 ----
-<1> For the sake of brevity we're disabling the security for now. Have a look at the <<securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
+<1> For the sake of brevity we're disabling the security for now. Have a look at the <<security#securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
 
 
 . Tell the Eureka client where to find the service registry:
@@ -190,47 +158,37 @@ See also {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-eureka/
 
 TIP: You can include the Spring Boot Admin Server to your Eureka server. Setup everything as described above and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eureka's one.
 
-[[register-python-applications]]
-==== Registering Python Applications Using Pyctuator ====
+== Use of SNAPSHOT-Versions ==
+If you want to use a snapshot version of Spring Boot Admin Server you most likely need to include the spring and sonatype snapshot repositories:
 
-You can easily integrate Spring Boot Admin with https://flask.palletsprojects.com[Flask] or https://fastapi.tiangolo.com/[FastAPI] Python applications using the https://github.com/SolarEdgeTech/pyctuator[Pyctuator] project.
-
-
-The following steps uses Flask, but other web frameworks are supported as well. See Pyctuator's documentation for an updated list of supported frameworks and features.
-
-. Install the pyctuator package:
-+
-[source,bash]
+[source,xml]
+.pom.xml
 ----
-pip install pyctuator
+<repositories>
+    <repository>
+        <id>spring-milestone</id>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <url>http://repo.spring.io/milestone</url>
+    </repository>
+    <repository>
+        <id>spring-snapshot</id>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+        <url>http://repo.spring.io/snapshot</url>
+    </repository>
+    <repository>
+        <id>sonatype-nexus-snapshots</id>
+        <name>Sonatype Nexus Snapshots</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+        <releases>
+            <enabled>false</enabled>
+        </releases>
+    </repository>
+</repositories>
 ----
-
-. Enable pyctuator by pointing it to your Flask app and letting it know where Spring Boot Admin is running:
-+
-[source,python]
-----
-import os
-from flask import Flask
-from pyctuator.pyctuator import Pyctuator
-
-app_name = "Flask App with Pyctuator"
-app = Flask(app_name)
-
-
-@app.route("/")
-def hello():
-    return "Hello World!"
-
-
-Pyctuator(
-    app,
-    app_name,
-    app_url="http://example-app.com",
-    pyctuator_endpoint_url="http://example-app.com/pyctuator",
-    registration_url=os.getenv("SPRING_BOOT_ADMIN_URL")
-)
-
-app.run()
-----
-
-For further details and examples, see Pyctuator's https://github.com/SolarEdgeTech/pyctuator/blob/master/README.md[documentation] and https://github.com/SolarEdgeTech/pyctuator/tree/master/examples[examples].
