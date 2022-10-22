@@ -15,6 +15,7 @@
   -->
 
 <template>
+  <sba-wave />
   <div class="container prose prose-slate mx-auto pt-10">
     <h1
       class="mb-1"
@@ -117,9 +118,10 @@
 
 <script>
 import SbaButton from '@/components/sba-button.vue';
+import SbaWave from "../../components/sba-wave";
 
 export default {
-  components: {SbaButton},
+  components: {SbaWave, SbaButton},
   data: () => ({
     // eslint-disable-next-line no-undef
     version: __PROJECT_VERSION__

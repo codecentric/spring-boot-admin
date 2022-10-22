@@ -25,7 +25,7 @@
         :instance="instance"
         :application="application"
       />
-      <main class="h-full relative z-0 ml-10 md:ml-60 transition-all">
+      <main class="min-h-full relative z-0 ml-10 md:ml-60 transition-all">
         <div class="">
           <router-view
             v-if="instance"

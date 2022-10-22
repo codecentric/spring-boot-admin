@@ -195,14 +195,14 @@ export default {
 
 <style scoped>
 .instance-info-block {
-  @apply bg-sba-50 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
+  @apply bg-sba-50 bg-opacity-40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
 }
 .navbar-link {
-  @apply cursor-pointer duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
+  @apply cursor-pointer bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
   @apply text-gray-700;
 }
 .navbar-link:hover, .navbar-link__active {
-  @apply bg-sba-50 text-sba-900;
+  @apply bg-sba-50 bg-opacity-80 text-sba-900;
 }
 
 .navbar-link__group_item {
