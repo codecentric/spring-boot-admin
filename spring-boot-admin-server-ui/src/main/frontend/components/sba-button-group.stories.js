@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import SbaButtonGroup from './sba-button-group.vue';
-import SbaButton from "./sba-button.vue";
+import SbaButton from './sba-button.vue';
 
 export default {
   component: SbaButtonGroup,
@@ -24,15 +23,17 @@ export default {
 
 const Template = (args) => {
   return {
-    components: {SbaButtonGroup, SbaButton},
-    setup() { return { args }; },
+    components: { SbaButtonGroup, SbaButton },
+    setup() {
+      return { args };
+    },
     template: `<sba-button-group v-bind="args">${args.slot}</sba-button-group>`,
-  }
+  };
 };
 
 export const OneButton = Template.bind({});
 OneButton.args = {
-  slot: `<sba-button>First</sba-button>`
+  slot: '<sba-button>First</sba-button>',
 };
 
 export const TwoButtons = Template.bind({});
@@ -40,7 +41,7 @@ TwoButtons.args = {
   slot: `
     <sba-button>First</sba-button>
     <sba-button>Second</sba-button>
-  `
+  `,
 };
 
 export const MoreButtons = Template.bind({});
@@ -49,5 +50,5 @@ MoreButtons.args = {
     <sba-button>First</sba-button>
     <sba-button>Second</sba-button>
     <sba-button>Third</sba-button>
-  `
+  `,
 };

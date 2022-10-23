@@ -15,62 +15,59 @@
   -->
 
 <template>
-  <canvas
-    id="chart"
-    ref="chart"
-  />
+  <canvas id="chart" ref="chart" />
 </template>
 
 <script>
-import Chart from "chart.js/auto";
-import {useI18n} from "vue-i18n";
-import {shallowRef} from "vue";
-import {merge} from "lodash-es";
+import Chart from 'chart.js/auto';
+import { merge } from 'lodash-es';
+import { shallowRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 export default {
   props: {
     data: {
       type: Array,
-      required: true
+      required: true,
     },
     label: {
       type: String,
-      required: true
+      required: true,
     },
     datasets: {
       type: Object,
-      required: true
+      required: true,
     },
     config: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props) {
-    const {t} = useI18n();
-    return {...props, t};
+    const { t } = useI18n();
+    return { ...props, t };
   },
   data() {
     return {
       chart: undefined,
       colors: [
         {
-          borderColor: "rgb(255, 224, 138)",
-          backgroundColor: "rgba(255, 224, 138, .1)",
+          borderColor: 'rgb(255, 224, 138)',
+          backgroundColor: 'rgba(255, 224, 138, .1)',
         },
         {
-          borderColor: "rgb(62, 142, 208)",
-          backgroundColor: "rgba(62, 142, 208, .1)",
+          borderColor: 'rgb(62, 142, 208)',
+          backgroundColor: 'rgba(62, 142, 208, .1)',
         },
         {
-          borderColor: "rgb(0, 209, 178)",
-          backgroundColor: "rgba(0, 209, 178, .1)",
+          borderColor: 'rgb(0, 209, 178)',
+          backgroundColor: 'rgba(0, 209, 178, .1)',
         },
       ],
-    }
+    };
   },
   watch: {
-    '$i18n.locale': function() {
+    '$i18n.locale': function () {
       this.chart.update();
     },
     data: {
@@ -80,22 +77,22 @@ export default {
           const chartData = this.chart.data;
           const datasets = chartData.datasets;
 
-          Object.keys(this.datasets).forEach(id => {
-            datasets.find(dataset => dataset.id === id).data.push(data[id]);
-          })
+          Object.keys(this.datasets).forEach((id) => {
+            datasets.find((dataset) => dataset.id === id).data.push(data[id]);
+          });
 
           chartData.labels.push(data[this.label]);
 
-          this.chart.update()
+          this.chart.update();
         }
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   mounted() {
     const vm = this;
     const _data = this.data;
-    const labels = _data.map(d => d[this.label]);
+    const labels = _data.map((d) => d[this.label]);
     const minTimestamp = Math.min(...labels);
 
     const datasets = Object.keys(this.datasets).map((id, idx) => {
@@ -104,33 +101,36 @@ export default {
       return {
         id,
         borderColor: config.borderColor ?? this.colors[idx].borderColor,
-        backgroundColor: config.backgroundColor ?? this.colors[idx].backgroundColor,
+        backgroundColor:
+          config.backgroundColor ?? this.colors[idx].backgroundColor,
         pointHoverRadius: 5,
         label: config.label,
-        data: [..._data.map(d => d[id])]
-      }
-    })
+        data: [..._data.map((d) => d[id])],
+      };
+    });
 
     const config = {
       type: 'line',
       data: {
         labels,
-        datasets
+        datasets,
       },
       options: {
         animation: {
-          duration: 0
+          duration: 0,
         },
         plugins: {
           filler: {
-            propagate: true
+            propagate: true,
           },
           legend: {
             labels: {
               generateLabels(chart) {
                 const data = chart.data;
                 if (data.datasets.length) {
-                  const {labels: {pointStyle}} = chart.legend.options;
+                  const {
+                    labels: { pointStyle },
+                  } = chart.legend.options;
 
                   return data.datasets.map((dataset, i) => {
                     const style = vm.colors[i];
@@ -144,24 +144,24 @@ export default {
                       hidden: !chart.getDataVisibility(i),
 
                       // Extra data used for toggling the correct item
-                      index: i
+                      index: i,
                     };
                   });
                 }
                 return [];
-              }
-            }
-          }
+              },
+            },
+          },
         },
         elements: {
           line: {
             tension: 0,
-            borderWidth: 2
+            borderWidth: 2,
           },
           point: {
             radius: 0,
             hitRadius: 30,
-          }
+          },
         },
         scales: {
           y: {
@@ -172,22 +172,24 @@ export default {
             min: minTimestamp,
             time: {
               displayFormats: {
-                quarter: 'HH:mm:ss'
-              }
+                quarter: 'HH:mm:ss',
+              },
             },
             ticks: {
               autoSkip: false,
-              minRotation: 45
+              minRotation: 45,
             },
-          }
-        }
-      }
+          },
+        },
+      },
     };
 
-    this.chart = shallowRef(new Chart(this.$refs.chart, merge(config, this.config)));
+    this.chart = shallowRef(
+      new Chart(this.$refs.chart, merge(config, this.config))
+    );
   },
   beforeUnmount() {
     this.chart.destroy();
   },
-}
+};
 </script>

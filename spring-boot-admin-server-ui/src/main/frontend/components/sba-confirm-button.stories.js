@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import SbaConfirmButton from './sba-confirm-button.vue';
 
 export default {
@@ -23,10 +22,12 @@ export default {
 
 const Template = (args) => {
   return {
-    components: {SbaConfirmButton},
-    setup() { return { args }; },
+    components: { SbaConfirmButton },
+    setup() {
+      return { args };
+    },
     template: `<sba-confirm-button v-bind="args">${args.label}</sba-confirm-button>`,
-  }
+  };
 };
 
 export const DefaultButton = Template.bind({});

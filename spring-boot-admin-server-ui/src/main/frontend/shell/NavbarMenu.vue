@@ -16,7 +16,10 @@
 
 <template>
   <Menu as="div" class="submenu">
-    <MenuButton class="submenu-opener-button" :aria-label="$t('term.menu.open')">
+    <MenuButton
+      class="submenu-opener-button"
+      :aria-label="$t('term.menu.open')"
+    >
       <font-awesome-icon
         class="submenu-opener-icon"
         :icon="['fas', 'chevron-down']"
@@ -39,7 +42,10 @@
               :key="menuItem.label"
               @click="$emit('menuItemClicked', menuItem)"
             >
-              <NavbarLink :key="`${menuItem.parent}-${menuItem.name}`" :view="menuItem" />
+              <NavbarLink
+                :key="`${menuItem.parent}-${menuItem.name}`"
+                :view="menuItem"
+              />
             </MenuItem>
           </slot>
         </div>
@@ -49,17 +55,16 @@
 </template>
 
 <script>
-import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/vue'
-import NavbarLink from "./NavbarLink";
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 
 export default {
-  components: {Menu, MenuButton, MenuItem, MenuItems, NavbarLink},
+  components: { Menu, MenuButton, MenuItem, MenuItems },
   props: {
-    buttonType: {type: String, default: "button"},
-    menuItems: {type: Array, default: () => []}
+    buttonType: { type: String, default: 'button' },
+    menuItems: { type: Array, default: () => [] },
   },
-  emits: ['menuItemClicked']
-}
+  emits: ['menuItemClicked'],
+};
 </script>
 
 <style scoped>
@@ -73,4 +78,3 @@ export default {
   @apply absolute right-0 text-black w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none;
 }
 </style>
-

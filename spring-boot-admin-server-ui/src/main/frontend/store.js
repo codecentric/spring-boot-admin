@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 import Application from './services/application.js';
-import {bufferTime, concat, concatMap, defer, delay, filter, map, retryWhen, tap} from './utils/rxjs.js';
+import {
+  bufferTime,
+  concat,
+  concatMap,
+  defer,
+  delay,
+  filter,
+  map,
+  retryWhen,
+  tap,
+} from './utils/rxjs.js';
 
 export const findInstance = (applications, instanceId) => {
   for (let application of applications) {
@@ -24,11 +34,13 @@ export const findInstance = (applications, instanceId) => {
     }
   }
   return undefined;
-}
+};
 
 export const findApplicationForInstance = (applications, instanceId) => {
-  return applications.find(application => Boolean(application.findInstance(instanceId)));
-}
+  return applications.find((application) =>
+    Boolean(application.findInstance(instanceId))
+  );
+};
 
 export default class ApplicationStore {
   constructor() {
@@ -60,9 +72,7 @@ export default class ApplicationStore {
       return;
     }
     const target = this;
-    this._listeners[type].forEach(
-      listener => listener.call(target, ...args)
-    )
+    this._listeners[type].forEach((listener) => listener.call(target, ...args));
   }
 
   start() {
@@ -70,33 +80,31 @@ export default class ApplicationStore {
     if (this.subscription !== undefined) {
       return;
     }
-    const list = defer(() => Application.list())
-      .pipe(
-        tap(
-          () => this._dispatchEvent('connected')
-        ),
-        concatMap(message => message.data)
-      );
+    const list = defer(() => Application.list()).pipe(
+      tap(() => this._dispatchEvent('connected')),
+      concatMap((message) => message.data)
+    );
 
-    const stream = Application.getStream()
-      .pipe(map(message => message.data))
+    const stream = Application.getStream().pipe(map((message) => message.data));
 
     this.subscription = concat(list, stream)
       .pipe(
-        retryWhen(errors => errors.pipe(
-          tap(error => this._dispatchEvent('error', error)),
-          delay(5000)
-        )),
+        retryWhen((errors) =>
+          errors.pipe(
+            tap((error) => this._dispatchEvent('error', error)),
+            delay(5000)
+          )
+        ),
         bufferTime(250),
-        filter(a => a.length > 0)
+        filter((a) => a.length > 0)
       )
       .subscribe({
-        next: applications => this.updateApplications(applications)
+        next: (applications) => this.updateApplications(applications),
       });
   }
 
   updateApplications(applications) {
-    applications.forEach(a => this.updateApplication(a));
+    applications.forEach((a) => this.updateApplication(a));
     this.applications = [...this._applications.values()];
     this._dispatchEvent('changed', this.applications);
   }

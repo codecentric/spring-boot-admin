@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import SbaActionButtonScoped from './sba-action-button-scoped.vue';
+
 import i18n from '@/i18n';
 
 export default {
@@ -23,10 +23,12 @@ export default {
 };
 
 const TemplateWithProps = (args) => ({
-  components: {SbaActionButtonScoped},
-  setup() { return { args }; },
+  components: { SbaActionButtonScoped },
+  setup() {
+    return { args };
+  },
   template: '<sba-action-button-scoped v-bind="args" />',
-  i18n
+  i18n,
 });
 
 export const OneInstanceSuccessful = TemplateWithProps.bind({});
@@ -43,7 +45,7 @@ OneInstanceSuccessful.args = {
 export const MultipleInstancesSuccessful = TemplateWithProps.bind({});
 MultipleInstancesSuccessful.args = {
   ...OneInstanceSuccessful.args,
-  instanceCount: 10
+  instanceCount: 10,
 };
 
 export const OneInstanceFailing = TemplateWithProps.bind({});
@@ -53,15 +55,17 @@ OneInstanceFailing.args = {
   actionFn() {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        reject()
+        reject();
       }, 2000);
     });
   },
 };
 
 const TemplateWithSlot = (args) => ({
-  components: {SbaActionButtonScoped},
-  setup() { return { args }; },
+  components: { SbaActionButtonScoped },
+  setup() {
+    return { args };
+  },
   template: `
     <sba-action-button-scoped v-bind="args">
       <template v-slot="slotProps">
@@ -71,7 +75,7 @@ const TemplateWithSlot = (args) => ({
         <span v-else>Default Label</span>
       </template>
     </sba-action-button-scoped>`,
-  i18n
+  i18n,
 });
 
 export const SlottedOneInstanceSuccessful = TemplateWithSlot.bind({});
@@ -80,7 +84,7 @@ SlottedOneInstanceSuccessful.args = {
   actionFn() {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve()
+        resolve();
       }, 2000);
     });
   },
@@ -92,7 +96,7 @@ SlottedOneInstanceFailing.args = {
   actionFn() {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        reject()
+        reject();
       }, 2000);
     });
   },

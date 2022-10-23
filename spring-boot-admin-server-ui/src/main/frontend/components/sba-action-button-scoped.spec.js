@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {render} from '@/test-utils';
-import SbaActionButtonScoped from './sba-action-button-scoped';
 import userEvent from '@testing-library/user-event';
-import {screen} from '@testing-library/vue';
+import { screen } from '@testing-library/vue';
+
+import SbaActionButtonScoped from './sba-action-button-scoped';
+
+import { render } from '@/test-utils';
 
 describe('SbaActionButtonScoped', function () {
   let actionFn = jest.fn().mockResolvedValue([]);
@@ -27,14 +28,18 @@ describe('SbaActionButtonScoped', function () {
       props: {
         instanceCount: 10,
         label: 'Execute',
-        actionFn
-      }
-    })
-  })
+        actionFn,
+      },
+    });
+  });
 
   it('should cal actionFn when confirmed', async () => {
-    await userEvent.click(await screen.findByRole('button', {name: 'Execute'}));
-    await userEvent.click(await screen.findByRole('button', {name: 'Confirm'}));
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Execute' })
+    );
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Confirm' })
+    );
 
     expect(actionFn).toHaveBeenCalledTimes(1);
   });

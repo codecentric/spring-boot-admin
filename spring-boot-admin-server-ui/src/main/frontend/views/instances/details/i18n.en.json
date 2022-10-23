@@ -2,7 +2,7 @@
   "instances": {
     "details": {
       "label": "Details",
-      "cache":{
+      "cache": {
         "hit_ratio": "Hit ratio",
         "hits": "Hits",
         "misses": "Misses",

@@ -15,17 +15,11 @@
   -->
 
 <template>
-  <sba-instance-section
-    :loading="isLoading"
-    :error="error"
-  >
+  <sba-instance-section :loading="isLoading" :error="error">
     <template #before>
       <sba-sticky-subnav v-if="env">
         <div class="flex">
-          <div
-            v-if="instance.hasEndpoint('refresh')"
-            class="mr-1"
-          >
+          <div v-if="instance.hasEndpoint('refresh')" class="mr-1">
             <refresh
               :instance="instance"
               :application="application"
@@ -49,14 +43,8 @@
     </template>
 
     <template #default>
-      <div
-        v-if="env && env?.activeProfiles.length > 0"
-        class="mb-6 gap-1 flex"
-      >
-        <span
-          v-for="profile in env.activeProfiles"
-          :key="profile"
-        >
+      <div v-if="env && env?.activeProfiles.length > 0" class="mb-6 gap-1 flex">
+        <span v-for="profile in env.activeProfiles" :key="profile">
           <sba-tag
             :key="profile"
             :label="$t('instances.env.active_profile')"
@@ -90,7 +78,10 @@
         :header-sticks-below="'#subnavigation'"
       >
         <div
-          v-if="propertySource.properties && Object.keys(propertySource.properties).length > 0"
+          v-if="
+            propertySource.properties &&
+            Object.keys(propertySource.properties).length > 0
+          "
           class="-mx-4 -my-3"
         >
           <div
@@ -99,11 +90,8 @@
             class="bg-white px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
           >
             <dt class="text-sm font-medium text-gray-500">
-              <span v-text="name" /><br>
-              <small
-                v-if="value.origin"
-                v-text="value.origin"
-              />
+              <span v-text="name" /><br />
+              <small v-if="value.origin" v-text="value.origin" />
             </dt>
             <dd
               class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
@@ -111,50 +99,51 @@
             />
           </div>
         </div>
-        <p
-          v-else
-          class="is-muted"
-          v-text="$t('instances.env.no_properties')"
-        />
+        <p v-else class="is-muted" v-text="$t('instances.env.no_properties')" />
       </sba-panel>
     </template>
   </sba-instance-section>
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import {pickBy} from 'lodash-es';
-import {VIEW_GROUP} from '../../ViewGroup.js';
-import sbaEnvManager from './env-manager.vue';
-import refresh from './refresh.vue';
-import Application from '../../../services/application';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import { pickBy } from 'lodash-es';
+
+import Application from '@/services/application';
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import sbaEnvManager from '@/views/instances/env/env-manager';
+import refresh from '@/views/instances/env/refresh';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 const filterProperty = (needle) => (property, name) => {
-  return name.toString().toLowerCase().includes(needle) || (property.value && property.value.toString().toLowerCase().includes(needle));
+  return (
+    name.toString().toLowerCase().includes(needle) ||
+    (property.value && property.value.toString().toLowerCase().includes(needle))
+  );
 };
-const filterProperties = (needle, properties) => pickBy(properties, filterProperty(needle));
+const filterProperties = (needle, properties) =>
+  pickBy(properties, filterProperty(needle));
 const filterPropertySource = (needle) => (propertySource) => {
   if (!propertySource || !propertySource.properties) {
     return null;
   }
   return {
     ...propertySource,
-    properties: filterProperties(needle, propertySource.properties)
+    properties: filterProperties(needle, propertySource.properties),
   };
 };
 
 export default {
-  components: {SbaInstanceSection, sbaEnvManager, refresh},
+  components: { SbaInstanceSection, sbaEnvManager, refresh },
   props: {
     instance: {
       type: Instance,
-      required: true
+      required: true,
     },
     application: {
       type: Application,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     isLoading: true,
@@ -162,9 +151,7 @@ export default {
     env: null,
     filter: null,
     hasEnvManagerSupport: false,
-    propertyNamesToEscape: [
-      'line.separator'
-    ]
+    propertyNamesToEscape: ['line.separator'],
   }),
   computed: {
     propertySources() {
@@ -176,8 +163,8 @@ export default {
       }
       return this.env.propertySources
         .map(filterPropertySource(this.filter.toLowerCase()))
-        .filter(ps => ps && Object.keys(ps.properties).length > 0);
-    }
+        .filter((ps) => ps && Object.keys(ps.properties).length > 0);
+    },
   },
   created() {
     this.fetchEnv();
@@ -205,13 +192,12 @@ export default {
     },
     getValue(name, value) {
       if (this.propertyNamesToEscape.includes(name)) {
-        return value.replace(/\n/g, '\\n')
-          .replace(/\r/g, '\\r');
+        return value.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
       }
       return value;
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/env',
       parent: 'instances',
@@ -220,8 +206,8 @@ export default {
       label: 'instances.env.label',
       group: VIEW_GROUP.INSIGHTS,
       order: 100,
-      isEnabled: ({instance}) => instance.hasEndpoint('env')
+      isEnabled: ({ instance }) => instance.hasEndpoint('env'),
     });
-  }
-}
+  },
+};
 </script>

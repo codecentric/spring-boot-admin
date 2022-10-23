@@ -40,7 +40,10 @@
           :key="`${thread.threadId}-detail`"
         >
           <td colspan="2">
-            <thread-list-item :thread="thread" :details="getThreadDetails(thread, showDetails[thread.threadId])" />
+            <thread-list-item
+              :thread="thread"
+              :details="getThreadDetails(thread, showDetails[thread.threadId])"
+            />
           </td>
         </tr>
       </tbody>
@@ -48,118 +51,152 @@
   </table>
 </template>
 <script>
-import d3 from '@/utils/d3';
 import moment from 'moment';
-import threadTag from './thread-tag.vue';
-import ThreadListItem from "./thread-list-item.vue";
+
+import d3 from '@/utils/d3';
+import ThreadListItem from '@/views/instances/threaddump/thread-list-item';
+import threadTag from '@/views/instances/threaddump/thread-tag';
 
 const maxPixelsPerSeconds = 15;
 
-  export default {
-    components: {ThreadListItem, threadTag},
-    props: {
-      threadTimelines: {
-        type: Object,
-        required: true
-      }
+export default {
+  components: { ThreadListItem, threadTag },
+  props: {
+    threadTimelines: {
+      type: Object,
+      required: true,
     },
-    data: () => ({
-      showDetails: {},
-      lastEndPosition: 0
-    }),
-    watch: {
-      threadTimelines: {
-        deep: true,
-        handler: 'drawTimelines',
-        immediate: true
-      }
+  },
+  data: () => ({
+    showDetails: {},
+    lastEndPosition: 0,
+  }),
+  watch: {
+    threadTimelines: {
+      deep: true,
+      handler: 'drawTimelines',
+      immediate: true,
     },
-    methods: {
-      getThreadDetails(thread, start) {
-        return thread.timeline.find(entry => entry.start === start).details
-      },
-      getTimeExtent(timelines) {
-        return Object.entries(timelines).map(([, value]) => value.timeline)
-          .map(timeline => ({
-            start: timeline[0].start,
-            end: timeline[timeline.length - 1].end
-          }))
-          .reduce((current, next) => ({
+  },
+  methods: {
+    getThreadDetails(thread, start) {
+      return thread.timeline.find((entry) => entry.start === start).details;
+    },
+    getTimeExtent(timelines) {
+      return Object.entries(timelines)
+        .map(([, value]) => value.timeline)
+        .map((timeline) => ({
+          start: timeline[0].start,
+          end: timeline[timeline.length - 1].end,
+        }))
+        .reduce(
+          (current, next) => ({
             start: Math.min(current.start, next.start),
-            end: Math.max(current.end, next.end)
-          }), {start: Number.MAX_SAFE_INTEGER, end: Number.MIN_SAFE_INTEGER});
-      },
-      showThreadDetails({threadId, start}) {
-        const previousSelectedStart = this.showDetails[threadId];
-        if (previousSelectedStart) {
-          d3.selectAll('#rect-threadid-' + threadId + '-start-' + previousSelectedStart)
-            .attr('class', d => `thread thread--${d.threadState.toLowerCase()}`);
-        }
+            end: Math.max(current.end, next.end),
+          }),
+          { start: Number.MAX_SAFE_INTEGER, end: Number.MIN_SAFE_INTEGER }
+        );
+    },
+    showThreadDetails({ threadId, start }) {
+      const previousSelectedStart = this.showDetails[threadId];
+      if (previousSelectedStart) {
+        d3.selectAll(
+          '#rect-threadid-' + threadId + '-start-' + previousSelectedStart
+        ).attr('class', (d) => `thread thread--${d.threadState.toLowerCase()}`);
+      }
 
-        if (previousSelectedStart === start) {
-          this.showDetails = {
-            ...this.showDetails,
-            [threadId]: null
-          };
-        } else {
-          this.showDetails = {
-            ...this.showDetails,
-            [threadId]: start
-          };
-          d3.selectAll('#rect-threadid-' + threadId + '-start-' + start)
-            .attr('class', d => `thread thread--${d.threadState.toLowerCase()} thread--clicked`)
-        }
-      },
-      async drawTimelines(timelines) {
-        if (timelines) {
-          const wasInView = this.isInView(this.lastEndPosition);
-          await this.$nextTick();
+      if (previousSelectedStart === start) {
+        this.showDetails = {
+          ...this.showDetails,
+          [threadId]: null,
+        };
+      } else {
+        this.showDetails = {
+          ...this.showDetails,
+          [threadId]: start,
+        };
+        d3.selectAll('#rect-threadid-' + threadId + '-start-' + start).attr(
+          'class',
+          (d) => `thread thread--${d.threadState.toLowerCase()} thread--clicked`
+        );
+      }
+    },
+    async drawTimelines(timelines) {
+      if (timelines) {
+        const wasInView = this.isInView(this.lastEndPosition);
+        await this.$nextTick();
 
-          const {start, end} = this.getTimeExtent(timelines);
-          const width = this.$el.querySelector('.threads__timeline').getBoundingClientRect().width;
-          const totalSeconds = Math.floor(width / maxPixelsPerSeconds);
-          const x = d3.scaleTime()
-            .range([0, width])
-            .domain([start, Math.max(start + (totalSeconds + 1) * 1000, end)]);
+        const { start, end } = this.getTimeExtent(timelines);
+        const width = this.$el
+          .querySelector('.threads__timeline')
+          .getBoundingClientRect().width;
+        const totalSeconds = Math.floor(width / maxPixelsPerSeconds);
+        const x = d3
+          .scaleTime()
+          .range([0, width])
+          .domain([start, Math.max(start + (totalSeconds + 1) * 1000, end)]);
 
-          d3.select('.threads__scale')
-            .attr('width', width)
-            .call(d3.axisBottom(x)
+        d3.select('.threads__scale')
+          .attr('width', width)
+          .call(
+            d3
+              .axisBottom(x)
               .ticks(Math.max(2, Math.floor(width / 50)))
-              .tickFormat(d => moment(d).format('HH:mm:ss'))
+              .tickFormat((d) => moment(d).format('HH:mm:ss'))
+          );
+
+        Object.entries(timelines).forEach(([threadId, value]) => {
+          const svg = d3.select(`#thread-${threadId}`).attr('width', width);
+          const d = svg.selectAll('rect').data(value.timeline);
+
+          d.enter()
+            .append('rect')
+            .attr(
+              'id',
+              'rect-threadid-' +
+                threadId +
+                '-start-' +
+                value.timeline[value.timeline.length - 1].start
+            )
+            .attr(
+              'class',
+              (d) => `thread thread--${d.threadState.toLowerCase()}`
+            )
+            .merge(d)
+            .attr('height', '2em')
+            .attr('x', (d) => x(d.start))
+            .transition(150)
+            .attr('width', (d) =>
+              Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start))
             );
 
-          Object.entries(timelines).forEach(([threadId, value]) => {
-            const svg = d3.select(`#thread-${threadId}`).attr('width', width);
-            const d = svg.selectAll('rect').data(value.timeline);
+          d3.selectAll(
+            '#rect-threadid-' +
+              threadId +
+              '-start-' +
+              value.timeline[value.timeline.length - 1].start
+          ).on('click', (event, d) =>
+            this.showThreadDetails({ threadId: threadId, start: d.start })
+          );
+        });
 
-            d.enter()
-              .append('rect')
-              .attr('id', 'rect-threadid-' + threadId + '-start-' + value.timeline[value.timeline.length - 1].start)
-              .attr('class', d => `thread thread--${d.threadState.toLowerCase()}`)
-              .merge(d)
-              .attr('height', '2em')
-              .attr('x', d => x(d.start))
-              .transition(150)
-              .attr('width', d => Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start)));
-
-            d3.selectAll('#rect-threadid-' + threadId + '-start-' + value.timeline[value.timeline.length - 1].start)
-              .on('click', (event, d) => this.showThreadDetails({threadId: threadId, start: d.start}))
-         });
-
-          this.lastEndPosition = x(end);
-          if (wasInView && !this.isInView(this.lastEndPosition)) {
-            const scrollable = this.$el;
-            scrollable.scroll(this.lastEndPosition, scrollable.scrollHeight);
-          }
+        this.lastEndPosition = x(end);
+        if (wasInView && !this.isInView(this.lastEndPosition)) {
+          const scrollable = this.$el;
+          scrollable.scroll(this.lastEndPosition, scrollable.scrollHeight);
         }
-      },
-      isInView(xPos) {
-        const scrollable = this.$el;
-        return scrollable && xPos >= scrollable.scrollLeft && xPos <= (scrollable.scrollLeft + scrollable.clientWidth);
       }
-    }
-  }
+    },
+    isInView(xPos) {
+      const scrollable = this.$el;
+      return (
+        scrollable &&
+        xPos >= scrollable.scrollLeft &&
+        xPos <= scrollable.scrollLeft + scrollable.clientWidth
+      );
+    },
+  },
+};
 </script>
 <style lang="css">
 .threads {
@@ -193,25 +230,29 @@ const maxPixelsPerSeconds = 15;
 .thread--runnable {
   fill: #48c78e;
 }
-.thread--runnable:hover, .thread--runnable.thread--clicked {
+.thread--runnable:hover,
+.thread--runnable.thread--clicked {
   fill: #288159;
 }
 .thread--waiting {
   fill: #ffe08a;
 }
-.thread--waiting:hover, .thread--waiting.thread--clicked {
+.thread--waiting:hover,
+.thread--waiting.thread--clicked {
   fill: #ffc524;
 }
 .thread--timed_waiting {
   fill: #ffe08a;
 }
-.thread--timed_waiting:hover, .thread--timed_waiting.thread--clicked {
+.thread--timed_waiting:hover,
+.thread--timed_waiting.thread--clicked {
   fill: #ffc524;
 }
 .thread--blocked {
   fill: #f14668;
 }
-.thread--blocked:hover, .thread--blocked.thread--clicked {
+.thread--blocked:hover,
+.thread--blocked.thread--clicked {
   fill: #ffc524;
 }
 </style>

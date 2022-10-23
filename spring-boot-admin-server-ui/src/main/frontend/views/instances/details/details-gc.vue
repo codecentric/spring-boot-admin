@@ -15,25 +15,12 @@
   -->
 
 <template>
-  <sba-panel
-    v-if="hasLoaded"
-    :title="$t('instances.details.gc.title')"
-  >
-    <sba-alert
-      v-if="error"
-      :error="error"
-      :title="$t('term.fetch_failed')"
-    />
+  <sba-panel v-if="hasLoaded" :title="$t('instances.details.gc.title')">
+    <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
-    <div
-      v-if="current"
-      class="flex w-full"
-    >
+    <div v-if="current" class="flex w-full">
       <div class="flex-1 text-center">
-        <p
-          class="font-bold"
-          v-text="$t('instances.details.gc.count')"
-        />
+        <p class="font-bold" v-text="$t('instances.details.gc.count')" />
         <p v-text="current.count" />
       </div>
       <div class="flex-1 text-center">
@@ -55,21 +42,22 @@
 </template>
 
 <script>
-import sbaConfig from '@/sba-config';
-import subscribing from '../../../mixins/subscribing.js';
-import Instance from '@/services/instance.js';
-import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
 import moment from 'moment';
-import {toMillis} from '../metrics/metric.vue';
-import {take} from 'rxjs/operators';
+import { take } from 'rxjs/operators';
+
+import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
+import Instance from '@/services/instance';
+import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import { toMillis } from '@/views/instances/metrics/metric';
 
 export default {
   mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
@@ -82,38 +70,39 @@ export default {
       const measurements = response.data.measurements.reduce(
         (current, measurement) => ({
           ...current,
-          [measurement.statistic.toLowerCase()]: measurement.value
+          [measurement.statistic.toLowerCase()]: measurement.value,
         }),
         {}
       );
       return {
         ...measurements,
-        total_time: moment.duration(toMillis(measurements.total_time, response.baseUnit)),
+        total_time: moment.duration(
+          toMillis(measurements.total_time, response.baseUnit)
+        ),
         max: moment.duration(toMillis(measurements.max, response.baseUnit)),
       };
     },
     createSubscription() {
       const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.gc)
-        .pipe(concatMap(this.fetchMetrics), retryWhen(
-          err => {
-            return err.pipe(
-              delay(1000),
-              take(5)
-            )
-          }))
+        .pipe(
+          concatMap(this.fetchMetrics),
+          retryWhen((err) => {
+            return err.pipe(delay(1000), take(5));
+          })
+        )
         .subscribe({
-          next: data => {
+          next: (data) => {
             vm.hasLoaded = true;
             vm.current = data;
           },
-          error: error => {
+          error: (error) => {
             vm.hasLoaded = true;
             console.warn('Fetching GC metrics failed:', error);
             vm.error = error;
-          }
+          },
         });
-    }
-  }
-}
+    },
+  },
+};
 </script>

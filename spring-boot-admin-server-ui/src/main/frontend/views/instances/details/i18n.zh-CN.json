@@ -2,7 +2,7 @@
   "instances": {
     "details": {
       "label": "细节",
-      "cache":{
+      "cache": {
         "hit_ratio": "命中率",
         "hits": "命中次数",
         "size": "粒度"

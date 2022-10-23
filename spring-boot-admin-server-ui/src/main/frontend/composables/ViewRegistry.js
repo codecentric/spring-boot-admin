@@ -1,4 +1,4 @@
-import ViewRegistry from "../viewRegistry.js";
+import ViewRegistry from '../viewRegistry.js';
 
 let viewRegistry;
 
@@ -10,6 +10,6 @@ export function createViewRegistry() {
 export function useViewRegistry() {
   return {
     addView: viewRegistry.addView.bind(viewRegistry),
-    views: viewRegistry.views
-  }
+    views: viewRegistry.views,
+  };
 }

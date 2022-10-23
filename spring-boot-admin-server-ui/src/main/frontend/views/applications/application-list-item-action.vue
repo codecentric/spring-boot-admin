@@ -1,17 +1,11 @@
 <template>
-  <sba-button-group
-    class="application-list-item__header__actions text-right"
-  >
-    <router-link
-      v-slot="{ navigate }"
-      :to="journalLink"
-      custom
-    >
+  <sba-button-group class="application-list-item__header__actions text-right">
+    <router-link v-slot="{ navigate }" :to="journalLink" custom>
       <sba-button
         :title="$t('applications.actions.journal')"
         @click.stop="navigate"
       >
-        <font-awesome-icon icon="history"/>
+        <font-awesome-icon icon="history" />
       </sba-button>
     </router-link>
     <sba-button
@@ -20,7 +14,9 @@
       :title="$t('applications.actions.notification_filters')"
       @click.stop="$emit('filter-settings', item)"
     >
-      <font-awesome-icon :icon="hasActiveNotificationFilter ? 'bell-slash' : 'bell'"/>
+      <font-awesome-icon
+        :icon="hasActiveNotificationFilter ? 'bell-slash' : 'bell'"
+      />
     </sba-button>
     <sba-button
       v-if="item.isUnregisterable"
@@ -28,14 +24,14 @@
       :title="$t('applications.actions.unregister')"
       @click.stop="$emit('unregister', item)"
     >
-      <font-awesome-icon :icon="'trash'"/>
+      <font-awesome-icon :icon="'trash'" />
     </sba-button>
     <sba-button
       v-if="item.hasEndpoint('restart')"
       :title="$t('applications.actions.restart')"
       @click.stop="$emit('restart', item)"
     >
-      <font-awesome-icon icon="undo-alt"/>
+      <font-awesome-icon icon="undo-alt" />
     </sba-button>
     <sba-button
       v-if="item.hasEndpoint('shutdown')"
@@ -43,47 +39,50 @@
       class="is-danger btn-shutdown"
       @click.stop="$emit('shutdown', item)"
     >
-      <font-awesome-icon :icon="['fa', 'power-off']"/>
+      <font-awesome-icon :icon="['fa', 'power-off']" />
     </sba-button>
   </sba-button-group>
 </template>
 <script>
-import Application from "../../services/application.js";
-import Instance from "../../services/instance";
+import Application from '@/services/application';
+import Instance from '@/services/instance';
 
 export default {
   name: 'ApplicationListItemActions',
   props: {
     item: {
       type: [Application, Instance],
-      required: true
+      required: true,
     },
     hasActiveNotificationFilter: {
       type: Boolean,
-      default: false
+      default: false,
     },
     hasNotificationFiltersSupport: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
+  emits: ['filter-settings', 'unregister', 'shutdown', 'restart'],
   setup(props) {
     let isApplication = props.item instanceof Application;
 
     let journalLink;
     if (isApplication) {
-      journalLink = {name: 'journal', query: {'application': props.item.name}}
+      journalLink = {
+        name: 'journal',
+        query: { application: props.item.name },
+      };
     } else {
-      journalLink = {name: 'journal', query: {'instanceId': props.item.id}}
+      journalLink = { name: 'journal', query: { instanceId: props.item.id } };
     }
 
     return {
       journalLink,
-      isApplication
-    }
+      isApplication,
+    };
   },
-  emits: ['filter-settings', 'unregister', 'shutdown', 'restart']
-}
+};
 </script>
 
 <style scoped>
@@ -91,7 +90,8 @@ export default {
   @apply hidden lg:inline-flex p-1 bg-black/5 rounded-lg;
 }
 
-.btn-shutdown, .btn-unregister {
+.btn-shutdown,
+.btn-unregister {
   @apply ml-1 !important;
 }
 </style>

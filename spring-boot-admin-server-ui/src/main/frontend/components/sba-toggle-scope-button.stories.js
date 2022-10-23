@@ -1,6 +1,7 @@
-import SbaToggleScopeButton from "./sba-toggle-scope-button.vue";
-import {reactive} from "vue";
-import {ActionScope} from "./ActionScope.js";
+import { reactive } from 'vue';
+
+import { ActionScope } from './ActionScope.js';
+import SbaToggleScopeButton from './sba-toggle-scope-button.vue';
 
 export default {
   component: SbaToggleScopeButton,
@@ -8,15 +9,17 @@ export default {
 };
 
 const Template = (args) => ({
-  components: {SbaToggleScopeButton},
-  setup() { return reactive({args}); },
-  template: '<sba-toggle-scope-button v-bind="args" v-model:model-value="args.modelValue" />'
+  components: { SbaToggleScopeButton },
+  setup() {
+    return reactive({ args });
+  },
+  template:
+    '<sba-toggle-scope-button v-bind="args" v-model:model-value="args.modelValue" />',
 });
 
 export const Default = Template.bind({});
 Default.args = {
   modelValue: ActionScope.INSTANCE,
   instanceCount: 2,
-  showInfo: true
+  showInfo: true,
 };
-

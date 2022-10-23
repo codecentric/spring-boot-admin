@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-import SbaInput from "./sba-input.vue";
+import SbaInput from './sba-input.vue';
 
 export default {
   component: SbaInput,
@@ -24,31 +22,31 @@ export default {
 
 const Template = (args) => {
   return {
-    components: {SbaInput},
+    components: { SbaInput },
     setup() {
-      return {args};
+      return { args };
     },
     template: `
       <sba-input v-bind="args">${args.slots}</sba-input>
     `,
-  }
+  };
 };
 
 export const SimpleInput = Template.bind({});
 SimpleInput.args = {
-  modelValue: 'Hello there!'
+  modelValue: 'Hello there!',
 };
 
 export const InputWithError = Template.bind({});
 InputWithError.args = {
   ...SimpleInput.args,
-  error: 'Please provide a value.'
+  error: 'Please provide a value.',
 };
 
 export const InputWithHint = Template.bind({});
 InputWithHint.args = {
   ...SimpleInput.args,
-  hint: 'This is a hint'
+  hint: 'This is a hint',
 };
 
 export const InputWithPrepend = Template.bind({});
@@ -56,7 +54,7 @@ InputWithPrepend.args = {
   ...SimpleInput.args,
   slots: `
     <template #prepend>Prepend</template>
-  `
+  `,
 };
 
 export const InputWithAppend = Template.bind({});
@@ -65,7 +63,7 @@ InputWithAppend.args = {
   inputClass: 'text-right',
   slots: `
     <template #append>EUR</template>
-  `
+  `,
 };
 
 export const Complex = Template.bind({});
@@ -73,5 +71,5 @@ Complex.args = {
   ...SimpleInput.args,
   label: 'Label',
   error: 'Please provide a value.',
-  hint: 'I am a hint!'
+  hint: 'I am a hint!',
 };

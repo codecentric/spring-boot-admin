@@ -15,14 +15,13 @@
   -->
 
 <template>
-  <sba-instance-section
-    :error="error"
-    :loading="!hasLoaded"
-  >
+  <sba-instance-section :error="error" :loading="!hasLoaded">
     <div class="flex">
       <div class="flex-1">
         <sba-panel
-          v-on-clickaway="() => mBean === selectedMBean && select(selectedDomain)"
+          v-on-clickaway="
+            () => mBean === selectedMBean && select(selectedDomain)
+          "
           :title="selectedDomain.domain"
         >
           <div
@@ -31,7 +30,10 @@
             :key="mBean.descriptor.raw"
           >
             <header
-              :class="{'is-primary': mBean === selectedMBean, 'is-selectable' : mBean !== selectedMBean }"
+              :class="{
+                'is-primary': mBean === selectedMBean,
+                'is-selectable': mBean !== selectedMBean,
+              }"
               class="m-bean--header hero"
               @click="select(selectedDomain, mBean)"
             >
@@ -46,14 +48,8 @@
                       :title="`${attribute.name} ${attribute.value}`"
                       class="is-clipped"
                     >
-                      <p
-                        class="heading"
-                        v-text="attribute.name"
-                      />
-                      <p
-                        class="title is-size-6"
-                        v-text="attribute.value"
-                      />
+                      <p class="heading" v-text="attribute.name" />
+                      <p class="title is-size-6" v-text="attribute.value" />
                     </div>
                   </div>
                 </div>
@@ -71,19 +67,23 @@
                 <ul>
                   <li
                     v-if="mBean.attr"
-                    :class="{'is-active' : selected.view === 'attributes' }"
+                    :class="{ 'is-active': selected.view === 'attributes' }"
                   >
                     <a
-                      @click.stop="select(selectedDomain, selectedMBean, 'attributes')"
+                      @click.stop="
+                        select(selectedDomain, selectedMBean, 'attributes')
+                      "
                       v-text="$t('term.attributes')"
                     />
                   </li>
                   <li
                     v-if="mBean.op"
-                    :class="{'is-active' : selected.view === 'operations' }"
+                    :class="{ 'is-active': selected.view === 'operations' }"
                   >
                     <a
-                      @click.stop="select(selectedDomain, selectedMBean, 'operations')"
+                      @click.stop="
+                        select(selectedDomain, selectedMBean, 'operations')
+                      "
                       v-text="$t('term.operations')"
                     />
                   </li>
@@ -91,10 +91,7 @@
               </div>
             </header>
 
-            <div
-              v-if="mBean === selectedMBean"
-              class="card-content"
-            >
+            <div v-if="mBean === selectedMBean" class="card-content">
               <m-bean-attributes
                 v-if="selected.view === 'attributes'"
                 :domain="selectedDomain.domain"
@@ -114,17 +111,11 @@
 
       <div class="w-80 truncate">
         <nav>
-          <p
-            class="menu-label"
-            v-text="$t('instances.jolokia.domains')"
-          />
+          <p class="menu-label" v-text="$t('instances.jolokia.domains')" />
           <ul class="list-disc">
-            <li
-              v-for="domain in domains"
-              :key="domain.domain"
-            >
+            <li v-for="domain in domains" :key="domain.domain">
               <a
-                :class="{'is-active' : domain === selectedDomain}"
+                :class="{ 'is-active': domain === selectedDomain }"
                 class=""
                 @click="select(domain)"
                 v-text="domain.domain"
@@ -138,23 +129,23 @@
 </template>
 
 <script>
-import {isEmpty, sortBy} from 'lodash-es';
-import {directive as onClickaway} from 'vue3-click-away';
+import { isEmpty, sortBy } from 'lodash-es';
+import { directive as onClickaway } from 'vue3-click-away';
 
-import Instance from '@/services/instance.js';
-import mBeanAttributes from './m-bean-attributes.vue';
-import mBeanOperations from './m-bean-operations.vue';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
-import {MBean} from './MBean.js';
+import Instance from '@/services/instance';
+import { MBean } from '@/views/instances/jolokia/MBean';
+import mBeanAttributes from '@/views/instances/jolokia/m-bean-attributes';
+import mBeanOperations from '@/views/instances/jolokia/m-bean-operations';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
-  components: {SbaInstanceSection, mBeanOperations, mBeanAttributes},
-  directives: {onClickaway},
+  components: { SbaInstanceSection, mBeanOperations, mBeanAttributes },
+  directives: { onClickaway },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
@@ -163,19 +154,24 @@ export default {
     selected: {
       domain: null,
       mBean: null,
-      view: null
-    }
+      view: null,
+    },
   }),
   computed: {
     selectedDomain() {
-      return this.domains.find(d => d.domain === this.selected.domain)
+      return this.domains.find((d) => d.domain === this.selected.domain);
     },
     selectedMBean() {
-      return this.selectedDomain && this.selectedDomain.mBeans.find(b => b.descriptor.raw === this.selected.mBean)
-    }
+      return (
+        this.selectedDomain &&
+        this.selectedDomain.mBeans.find(
+          (b) => b.descriptor.raw === this.selected.mBean
+        )
+      );
+    },
   },
   watch: {
-    '$route': {
+    $route: {
       immediate: true,
       handler() {
         if (!isEmpty(this.$route.query)) {
@@ -183,7 +179,7 @@ export default {
         } else if (this.domains.length > 0) {
           this.select(this.domains[0]);
         }
-      }
+      },
     },
     async selectedMBean(newVal) {
       if (newVal) {
@@ -192,16 +188,20 @@ export default {
         if (el) {
           const scrollingEl = document.querySelector('main');
           const navigation = document.querySelector('#navigation');
-          const navbarOffset = (navigation ? navigation.getBoundingClientRect().bottom : 120) + 10;
-          const top = scrollingEl.scrollTop + el.getBoundingClientRect().top - navbarOffset;
+          const navbarOffset =
+            (navigation ? navigation.getBoundingClientRect().bottom : 120) + 10;
+          const top =
+            scrollingEl.scrollTop +
+            el.getBoundingClientRect().top -
+            navbarOffset;
           if (scrollingEl.scrollTo) {
-            scrollingEl.scrollTo({top, behavior: 'smooth'})
+            scrollingEl.scrollTo({ top, behavior: 'smooth' });
           } else {
             scrollingEl.scrollTop = top;
           }
         }
       }
-    }
+    },
   },
   created() {
     this.fetchMBeans();
@@ -211,10 +211,13 @@ export default {
       this.error = null;
       try {
         const res = await this.instance.listMBeans();
-        const domains = sortBy(res.data, [d => d.domain]);
-        this.domains = domains.map(domain => ({
+        const domains = sortBy(res.data, [(d) => d.domain]);
+        this.domains = domains.map((domain) => ({
           ...domain,
-          mBeans: sortBy(domain.mBeans.map(mBean => new MBean(mBean)), [b => b.descriptor.displayName])
+          mBeans: sortBy(
+            domain.mBeans.map((mBean) => new MBean(mBean)),
+            [(b) => b.descriptor.displayName]
+          ),
         }));
         if (!this.selectedDomain && this.domains.length > 0) {
           this.select(this.domains[0]);
@@ -229,15 +232,23 @@ export default {
       const selected = {
         domain: domain && domain.domain,
         mBean: mBean && mBean.descriptor.raw,
-        view: view || (mBean ? (mBean.attr ? 'attributes' : (mBean.op ? 'operations' : null)) : null)
+        view:
+          view ||
+          (mBean
+            ? mBean.attr
+              ? 'attributes'
+              : mBean.op
+              ? 'operations'
+              : null
+            : null),
       };
       this.$router.replace({
         name: 'instances/jolokia',
-        query: selected
+        query: selected,
       });
-    }
+    },
   },
-}
+};
 </script>
 
 <style lang="css">
@@ -278,5 +289,4 @@ export default {
   right: 0.75rem;
   top: 0.75rem;
 }
-
 </style>

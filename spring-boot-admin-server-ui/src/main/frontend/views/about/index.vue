@@ -17,19 +17,12 @@
 <template>
   <sba-wave />
   <div class="container prose prose-slate mx-auto pt-10">
-    <h1
-      class="mb-1"
-      v-text="$t('about.title')"
-    />
-    <h2
-      v-if="version"
-      v-text="`Version ${version}`"
-    />
+    <h1 class="mb-1" v-text="$t('about.title')" />
+    <h2 v-if="version" v-text="`Version ${version}`" />
+    <p>This is an administration UI for Spring Boot applications.</p>
     <p>
-      This is an administration UI for Spring Boot applications.
-    </p>
-    <p>
-      To monitor applications, they must be registered at this server. This is either done by including the
+      To monitor applications, they must be registered at this server. This is
+      either done by including the
       <a
         :href="`${documentationBaseUrl}/#register-clients-via-spring-boot-admin`"
         target="_blank"
@@ -44,107 +37,109 @@
         rel="noreferrer"
       >
         Spring Cloud Discovery Client
-      </a> implementation.
+      </a>
+      implementation.
     </p>
     <p>
       If you have any question please consult the
-      <a :href="`${documentationBaseUrl}`">
-        Reference Guide
-      </a>, ask
-      on <a
+      <a :href="`${documentationBaseUrl}`"> Reference Guide </a>, ask on
+      <a
         href="https://stackoverflow.com/questions/tagged/spring-boot-admin"
         target="_blank"
         rel="noreferrer"
-      >Stack Overflow</a> or
-      have a chat on the <a
+        >Stack Overflow</a
+      >
+      or have a chat on the
+      <a
         href="https://gitter.im/codecentric/spring-boot-admin"
         target="_blank"
         rel="noreferrer"
-      >Gitter</a> channel.
+        >Gitter</a
+      >
+      channel.
     </p>
     <p>
-      If you found a bug, want to propose a feature or submit a pull request please use the
+      If you found a bug, want to propose a feature or submit a pull request
+      please use the
       <a href="https://github.com/codecentric/spring-boot-admin/issues">
-        issue tracker
-      </a>.
+        issue tracker </a
+      >.
     </p>
     <div class="flex justify-between">
       <sba-button @click="openLink(documentationBaseUrl)">
-        <font-awesome-icon
-          size="lg"
-          icon="book"
-        />&nbsp;Reference Guide
+        <font-awesome-icon size="lg" icon="book" />&nbsp;Reference Guide
       </sba-button>
-      <sba-button @click="openLink('https://github.com/codecentric/spring-boot-admin')">
-        <font-awesome-icon
-          size="lg"
-          :icon="['fab', 'github']"
-        />&nbsp;Sources
+      <sba-button
+        @click="openLink('https://github.com/codecentric/spring-boot-admin')"
+      >
+        <font-awesome-icon size="lg" :icon="['fab', 'github']" />&nbsp;Sources
       </sba-button>
-      <sba-button @click="openLink('https://stackoverflow.com/questions/tagged/spring-boot-admin')">
+      <sba-button
+        @click="
+          openLink(
+            'https://stackoverflow.com/questions/tagged/spring-boot-admin'
+          )
+        "
+      >
         <font-awesome-icon
           size="lg"
           :icon="['fab', 'stack-overflow']"
         />&nbsp;Stack Overflow
       </sba-button>
-      <sba-button @click="openLink('https://gitter.im/codecentric/spring-boot-admin')">
-        <font-awesome-icon
-          size="lg"
-          :icon="['fab', 'gitter']"
-        />&nbsp;Gitter
+      <sba-button
+        @click="openLink('https://gitter.im/codecentric/spring-boot-admin')"
+      >
+        <font-awesome-icon size="lg" :icon="['fab', 'gitter']" />&nbsp;Gitter
       </sba-button>
     </div>
 
-    <h1 class="mt-5">
-      Trademarks and Licenses
-    </h1>
+    <h1 class="mt-5">Trademarks and Licenses</h1>
     <p>
-      The source code of Spring Boot Admin is licensed under <a
-        href="https://www.apache.org/licenses/LICENSE-2.0"
-      >
-        Apache License 2.0
-      </a>.
+      The source code of Spring Boot Admin is licensed under
+      <a href="https://www.apache.org/licenses/LICENSE-2.0">
+        Apache License 2.0 </a
+      >.
     </p>
     <p>
-      Spring, Spring Boot and Spring Cloud are trademarks of <a
-        href="https://www.vmware.com/"
-        target="_blank"
-        rel="noreferrer"
-      >VMware, Inc.</a> or its
-      affiliates in the U.S. and other countries.
+      Spring, Spring Boot and Spring Cloud are trademarks of
+      <a href="https://www.vmware.com/" target="_blank" rel="noreferrer"
+        >VMware, Inc.</a
+      >
+      or its affiliates in the U.S. and other countries.
     </p>
   </div>
 </template>
 
 <script>
-import SbaButton from '@/components/sba-button.vue';
-import SbaWave from "../../components/sba-wave";
+import SbaButton from '@/components/sba-button';
+import SbaWave from '@/components/sba-wave';
 
 export default {
-  components: {SbaWave, SbaButton},
+  components: { SbaWave, SbaButton },
   data: () => ({
     // eslint-disable-next-line no-undef
-    version: __PROJECT_VERSION__
+    version: __PROJECT_VERSION__,
   }),
   computed: {
     documentationBaseUrl() {
-      return `https://codecentric.github.io/spring-boot-admin/${this.version || 'current'}`;
-    }
+      return `https://codecentric.github.io/spring-boot-admin/${
+        this.version || 'current'
+      }`;
+    },
   },
   methods: {
     openLink(url) {
       window.open(url, '_blank');
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       path: '/about',
       name: 'about',
       label: 'about.label',
       order: 200,
-      component: this
+      component: this,
     });
-  }
+  },
 };
 </script>
-

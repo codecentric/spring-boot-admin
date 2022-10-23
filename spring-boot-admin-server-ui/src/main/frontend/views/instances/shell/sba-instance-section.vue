@@ -1,6 +1,6 @@
 <template>
-  <section :class="{'loading': showLoadingSpinner}">
-    <slot name="before"/>
+  <section :class="{ loading: showLoadingSpinner }">
+    <slot name="before" />
 
     <div class="px-2 md:px-6 py-6">
       <sba-alert
@@ -12,38 +12,37 @@
 
       <div v-if="showLoadingSpinner" class="loading-spinner-wrapper">
         <div class="loading-spinner-wrapper-container">
-          <sba-loading-spinner :loading="showLoadingSpinner" size="sm"/>
+          <sba-loading-spinner :loading="showLoadingSpinner" size="sm" />
           {{ $t('term.fetching_data') }}
         </div>
       </div>
 
-      <slot/>
-
+      <slot />
     </div>
   </section>
 </template>
 
 <script>
-import SbaLoadingSpinner from "../../../components/sba-loading-spinner.vue";
+import SbaLoadingSpinner from '@/components/sba-loading-spinner';
 
 export default {
   name: 'SbaInstanceSection',
-  components: {SbaLoadingSpinner},
+  components: { SbaLoadingSpinner },
   props: {
     loading: {
       type: Boolean,
-      default: false
+      default: false,
     },
     error: {
       type: Error,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
       showLoadingSpinner: false,
-      debouncedLoader: null
-    }
+      debouncedLoader: null,
+    };
   },
   watch: {
     loading: function (newVal) {
@@ -51,9 +50,9 @@ export default {
       this.debouncedLoader = window.setTimeout(() => {
         this.showLoadingSpinner = newVal;
       }, 250);
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>

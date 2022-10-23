@@ -15,19 +15,13 @@
   -->
 
 <template>
-  <sba-instance-section
-    :loading="!hasLoaded"
-    :error="error"
-  >
+  <sba-instance-section :loading="!hasLoaded" :error="error">
     <template #before>
       <sba-sticky-subnav>
         <div class="flex items-center justify-end gap-1">
           <div class="flex-1">
             <span v-text="$t('instances.logfile.label')" />&nbsp;
-            <small
-              class="hidden md:block"
-              v-text="skippedBytesString"
-            />
+            <small class="hidden md:block" v-text="skippedBytesString" />
           </div>
           <div class="flex items-start">
             <div class="flex items-center h-5">
@@ -37,7 +31,7 @@
                 name="wraplines"
                 type="checkbox"
                 class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-              >
+              />
             </div>
             <div class="ml-3 text-sm">
               <label
@@ -49,10 +43,7 @@
           </div>
 
           <div class="mx-3 btn-group">
-            <sba-button
-              :disabled="atTop"
-              @click="scrollToTop"
-            >
+            <sba-button :disabled="atTop" @click="scrollToTop">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4"
@@ -68,10 +59,7 @@
                 />
               </svg>
             </sba-button>
-            <sba-button
-              :disabled="atBottom"
-              @click="scrollToBottom"
-            >
+            <sba-button :disabled="atBottom" @click="scrollToBottom">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4"
@@ -89,10 +77,7 @@
             </sba-button>
           </div>
 
-          <sba-button
-            class="hidden md:block"
-            @click="downloadLogfile()"
-          >
+          <sba-button class="hidden md:block" @click="downloadLogfile()">
             <font-awesome-icon icon="download" />&nbsp;
             <span v-text="$t('instances.logfile.download')" />
           </sba-button>
@@ -101,7 +86,7 @@
     </template>
 
     <div
-      :class="{'wrap-lines': wrapLines}"
+      :class="{ 'wrap-lines': wrapLines }"
       class="log-viewer overflow-x-auto text-sm -mx-6 -my-20 pt-14"
     >
       <table class="table-striped" />
@@ -110,25 +95,33 @@
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import autolink from '@/utils/autolink';
-import {animationFrameScheduler, concatAll, concatMap, map, of, tap} from '@/utils/rxjs';
 import AnsiUp from 'ansi_up';
-import {chunk} from 'lodash-es';
+import { chunk } from 'lodash-es';
 import prettyBytes from 'pretty-bytes';
-import {VIEW_GROUP} from '../../ViewGroup.js';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import { debounceTime, fromEvent } from 'rxjs';
+
 import subscribing from '@/mixins/subscribing';
-import {debounceTime, fromEvent} from 'rxjs';
+import Instance from '@/services/instance';
+import autolink from '@/utils/autolink';
+import {
+  animationFrameScheduler,
+  concatAll,
+  concatMap,
+  map,
+  of,
+  tap,
+} from '@/utils/rxjs';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
-  components: {SbaInstanceSection},
+  components: { SbaInstanceSection },
   mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
@@ -137,7 +130,7 @@ export default {
     atTop: true,
     skippedBytes: null,
     wrapLines: true,
-    scrollSubcription: null
+    scrollSubcription: null,
   }),
   computed: {
     skippedBytesString() {
@@ -145,19 +138,22 @@ export default {
         return `skipped ${prettyBytes(this.skippedBytes)}`;
       }
       return '';
-    }
+    },
   },
   created() {
     this.ansiUp = new AnsiUp();
     this.scrollSubcription = fromEvent(window, 'scroll')
       .pipe(
         debounceTime(25),
-        map(event => event.target.scrollingElement.scrollTop)
+        map((event) => event.target.scrollingElement.scrollTop)
       )
-      .subscribe(scrollTop => {
+      .subscribe((scrollTop) => {
         this.atTop = scrollTop === 0;
-        this.atBottom = document.scrollingElement.clientHeight === document.scrollingElement.scrollHeight - document.scrollingElement.scrollTop
-      })
+        this.atBottom =
+          document.scrollingElement.clientHeight ===
+          document.scrollingElement.scrollHeight -
+            document.scrollingElement.scrollTop;
+      });
   },
   beforeUnmount() {
     if (this.scrollSubcription) {
@@ -173,23 +169,24 @@ export default {
     createSubscription() {
       const vm = this;
       vm.error = null;
-      return this.instance.streamLogfile(1000)
+      return this.instance
+        .streamLogfile(1000)
         .pipe(
-          tap(part => vm.skippedBytes = vm.skippedBytes || part.skipped),
-          concatMap(part => chunk(part.addendum.split(/\r?\n/), 250)),
-          map(lines => of(lines, animationFrameScheduler)),
+          tap((part) => (vm.skippedBytes = vm.skippedBytes || part.skipped)),
+          concatMap((part) => chunk(part.addendum.split(/\r?\n/), 250)),
+          map((lines) => of(lines, animationFrameScheduler)),
           concatAll()
         )
         .subscribe({
-          next: lines => {
+          next: (lines) => {
             vm.hasLoaded = true;
-            lines.forEach(line => {
-              const row = document.createElement('tr')
+            lines.forEach((line) => {
+              const row = document.createElement('tr');
               const col = document.createElement('td');
               const pre = document.createElement('pre');
               pre.innerHTML = autolink(this.ansiUp.ansi_to_html(line));
-              col.appendChild(pre)
-              row.appendChild(col)
+              col.appendChild(pre);
+              row.appendChild(col);
               document.querySelector('.log-viewer > table')?.appendChild(row);
             });
 
@@ -197,24 +194,25 @@ export default {
               vm.scrollToBottom();
             }
           },
-          error: error => {
+          error: (error) => {
             vm.hasLoaded = true;
             console.warn('Fetching logfile failed:', error);
             vm.error = error;
-          }
+          },
         });
     },
     scrollToTop() {
       document.scrollingElement.scrollTop = 0;
     },
     scrollToBottom() {
-      document.scrollingElement.scrollTop = document.scrollingElement.scrollHeight;
+      document.scrollingElement.scrollTop =
+        document.scrollingElement.scrollHeight;
     },
     downloadLogfile() {
       window.open(`instances/${this.instance.id}/actuator/logfile`, '_blank');
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/logfile',
       parent: 'instances',
@@ -223,10 +221,10 @@ export default {
       label: 'instances.logfile.label',
       group: VIEW_GROUP.LOGGING,
       order: 200,
-      isEnabled: ({instance}) => instance.hasEndpoint('logfile')
+      isEnabled: ({ instance }) => instance.hasEndpoint('logfile'),
     });
-  }
-}
+  },
+};
 </script>
 
 <style lang="css">

@@ -5,10 +5,14 @@ export class MBeanDescriptor {
   }
 
   static parse(raw) {
-    const attributes = raw.split(',')
-      .map(attribute => attribute.split('='))
-      .map(([name, value]) => ({name, value}));
-    const displayName = attributes.map(({value}) => value).join(' ').trim();
-    return {attributes, displayName}
+    const attributes = raw
+      .split(',')
+      .map((attribute) => attribute.split('='))
+      .map(([name, value]) => ({ name, value }));
+    const displayName = attributes
+      .map(({ value }) => value)
+      .join(' ')
+      .trim();
+    return { attributes, displayName };
   }
 }

@@ -17,15 +17,9 @@
 <template>
   <table class="w-full">
     <tbody>
-      <tr
-        v-for="logger in loggers.slice(0, visibleLimit)"
-        :key="logger.name"
-      >
+      <tr v-for="logger in loggers.slice(0, visibleLimit)" :key="logger.name">
         <td class="w-9/12">
-          <span
-            class="break-all"
-            v-text="logger.name"
-          />&nbsp;
+          <span class="break-all" v-text="logger.name" />&nbsp;
           <sba-tag
             v-if="logger.isNew"
             class="tag is-primary is-uppercase"
@@ -39,11 +33,14 @@
             :value="logger.level"
             :status="loggersStatus[logger.name]"
             :allow-reset="logger.name !== 'ROOT'"
-            @input="level => $emit('configureLogger', {logger, level})"
+            @input="(level) => $emit('configureLogger', { logger, level })"
           />
 
           <p
-            v-if="loggersStatus[logger.name] && loggersStatus[logger.name].status === 'failed'"
+            v-if="
+              loggersStatus[logger.name] &&
+              loggersStatus[logger.name].status === 'failed'
+            "
             class="has-text-danger"
           >
             <font-awesome-icon
@@ -51,7 +48,12 @@
               icon="exclamation-triangle"
             />
             <span
-              v-text="$t('instances.loggers.setting_loglevel_failed', {logger: logger.name, loglevel: loggersStatus[logger.name].level})"
+              v-text="
+                $t('instances.loggers.setting_loglevel_failed', {
+                  logger: logger.name,
+                  loglevel: loggersStatus[logger.name].level,
+                })
+              "
             />
           </p>
         </td>
@@ -73,30 +75,31 @@
 </template>
 
 <script>
-import InfiniteLoading from "v3-infinite-loading";
-import "v3-infinite-loading/lib/style.css";
+import InfiniteLoading from 'v3-infinite-loading';
 
-import SbaLoggerControl from './logger-control.vue'
+import 'v3-infinite-loading/lib/style.css';
+
+import SbaLoggerControl from '@/views/instances/loggers/logger-control';
 
 export default {
-  components: {InfiniteLoading, SbaLoggerControl},
+  components: { InfiniteLoading, SbaLoggerControl },
   props: {
     levels: {
       type: Array,
-      required: true
+      required: true,
     },
     loggers: {
       type: Array,
-      required: true
+      required: true,
     },
     loggersStatus: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   emits: ['configureLogger'],
   data: () => ({
-    visibleLimit: 25
+    visibleLimit: 25,
   }),
   methods: {
     increaseScroll($state) {
@@ -106,7 +109,7 @@ export default {
       } else {
         $state.complete();
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

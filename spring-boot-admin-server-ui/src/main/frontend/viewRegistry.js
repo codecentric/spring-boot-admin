@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { remove } from 'lodash-es';
+import { h, markRaw, reactive } from 'vue';
 
-import sbaConfig from './sba-config.js'
-import {VIEW_GROUP} from './views/ViewGroup.js';
-import {h, markRaw, reactive} from 'vue';
-
-import {remove} from 'lodash-es';
+import sbaConfig from './sba-config.js';
+import { VIEW_GROUP } from './views/ViewGroup.js';
 
 const createI18nTextVNode = (label) => {
   return {
     render() {
       const value = this.$t(label);
-      return h('span', value)
-    }
-  }
+      return h('span', value);
+    },
+  };
 };
 
 export default class ViewRegistry {
@@ -41,24 +40,27 @@ export default class ViewRegistry {
 
   get routes() {
     return [
-      ...this._toRoutes(this._views, v => v.path && (!v.parent || !v.isChildRoute)),
-      ...this._redirects
-    ]
+      ...this._toRoutes(
+        this._views,
+        (v) => v.path && (!v.parent || !v.isChildRoute)
+      ),
+      ...this._redirects,
+    ];
   }
 
   getViewByName(name) {
-    return Array.prototype.find.call(this._views, v => v.name === name)
+    return Array.prototype.find.call(this._views, (v) => v.name === name);
   }
 
   addView(...views) {
-    views.forEach(view => this._addView(view));
+    views.forEach((view) => this._addView(view));
   }
 
   addRedirect(path, redirect) {
     if (typeof redirect === 'string') {
-      this._redirects.push({path, redirect: {name: redirect}});
+      this._redirects.push({ path, redirect: { name: redirect } });
     } else {
-      this._redirects.push({path, redirect});
+      this._redirects.push({ path, redirect });
     }
   }
 
@@ -70,7 +72,7 @@ export default class ViewRegistry {
       view.group = VIEW_GROUP.NONE;
     }
     if (!view.name) {
-      view.name = [view.parent, view.path].filter(p => !!p).join("/");
+      view.name = [view.parent, view.path].filter((p) => !!p).join('/');
     }
     if (view.handle) {
       view.handle = markRaw(view.handle);
@@ -84,9 +86,11 @@ export default class ViewRegistry {
 
     if (!view.isEnabled) {
       view.isEnabled = () => {
-        let viewSettings = sbaConfig.uiSettings.viewSettings.find(vs => vs.name === view.name);
-        return (!viewSettings || viewSettings.enabled === true);
-      }
+        let viewSettings = sbaConfig.uiSettings.viewSettings.find(
+          (vs) => vs.name === view.name
+        );
+        return !viewSettings || viewSettings.enabled === true;
+      };
     }
     this._removeExistingView(view);
     this._views.push(view);
@@ -94,23 +98,24 @@ export default class ViewRegistry {
 
   _removeExistingView(view) {
     remove(this._views, (v) => {
-      return v.name === view.name && v.group === view.group
+      return v.name === view.name && v.group === view.group;
     });
   }
 
   _toRoutes(views, filter) {
-    return views.filter(filter).map(
-      p => {
-        const children = this._toRoutes(views, v => v.parent === p.name && v.isChildRoute);
-        return ({
-          path: p.path,
-          name: p.name,
-          component: markRaw(p.component),
-          props: p.props,
-          meta: {view: p},
-          children
-        });
-      }
-    )
+    return views.filter(filter).map((p) => {
+      const children = this._toRoutes(
+        views,
+        (v) => v.parent === p.name && v.isChildRoute
+      );
+      return {
+        path: p.path,
+        name: p.name,
+        component: markRaw(p.component),
+        props: p.props,
+        meta: { view: p },
+        children,
+      };
+    });
   }
 }

@@ -55,36 +55,36 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance.js';
-  import {VIEW_GROUP} from '../../ViewGroup.js';
-  import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
-  export default {
-    components: {SbaInstanceSection},
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
+export default {
+  components: { SbaInstanceSection },
+  props: {
+    instance: {
+      type: Instance,
+      required: true,
     },
-    methods: {
-      downloadHeap() {
-        window.open(`instances/${this.instance.id}/actuator/heapdump`, '_blank')
-      }
+  },
+  methods: {
+    downloadHeap() {
+      window.open(`instances/${this.instance.id}/actuator/heapdump`, '_blank');
     },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        name: 'instances/heapdump',
-        parent: 'instances',
-        path: 'heapdump',
-        component: this,
-        label: 'instances.heapdump.label',
-        group: VIEW_GROUP.JVM,
-        order: 800,
-        isEnabled: ({instance}) => instance.hasEndpoint('heapdump')
-      });
-    }
-  }
+  },
+  install({ viewRegistry }) {
+    viewRegistry.addView({
+      name: 'instances/heapdump',
+      parent: 'instances',
+      path: 'heapdump',
+      component: this,
+      label: 'instances.heapdump.label',
+      group: VIEW_GROUP.JVM,
+      order: 800,
+      isEnabled: ({ instance }) => instance.hasEndpoint('heapdump'),
+    });
+  },
+};
 </script>
 
 <style lang="css">
@@ -96,5 +96,4 @@
   display: flex;
   flex-direction: column;
 }
-
 </style>

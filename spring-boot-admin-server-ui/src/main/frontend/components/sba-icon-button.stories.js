@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import SbaIconButton from "./sba-icon-button.vue";
+import SbaIconButton from './sba-icon-button.vue';
 
 export default {
   component: SbaIconButton,
@@ -23,17 +22,17 @@ export default {
 
 const Template = (args) => {
   return {
-    components: {SbaIconButton},
+    components: { SbaIconButton },
     setup() {
-      return {args};
+      return { args };
     },
     template: `
       <sba-icon-button v-bind="args">${args.label}</sba-icon-button>`,
-  }
+  };
 };
 
 export const DefaultButton = Template.bind({});
 DefaultButton.args = {
-  icon: "trash",
-  title: "unregister"
+  icon: 'trash',
+  title: 'unregister',
 };

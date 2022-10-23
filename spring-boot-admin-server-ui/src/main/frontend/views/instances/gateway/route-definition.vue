@@ -74,28 +74,25 @@
         <font-awesome-icon icon="map-marker-alt" />&nbsp;
         <span v-text="$t('instances.gateway.route.uri')" />
       </div>
-      <div
-        class="route-definition-content"
-        v-text="routeDefinition.uri"
-      />
+      <div class="route-definition-content" v-text="routeDefinition.uri" />
     </div>
   </div>
 </template>
 
 <script>
-  export default {
-    props: {
-      routeDefinition: {
-        type: Object,
-        required: true
-      }
+export default {
+  props: {
+    routeDefinition: {
+      type: Object,
+      required: true,
     },
-    methods: {
-      transformArgs(args) {
-        return Object.entries(args).map(([key, value]) => `${key} : ${value}`);
-      }
-    }
-  }
+  },
+  methods: {
+    transformArgs(args) {
+      return Object.entries(args).map(([key, value]) => `${key} : ${value}`);
+    },
+  },
+};
 </script>
 
 <style lang="css">
@@ -133,5 +130,4 @@
   border-bottom: 1px solid #fafafa;
   display: block;
 }
-
 </style>

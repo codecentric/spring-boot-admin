@@ -15,28 +15,16 @@
   -->
 
 <template>
-  <sba-instance-section
-    :error="error"
-    :loading="!hasLoaded"
-  >
+  <sba-instance-section :error="error" :loading="!hasLoaded">
     <template #before>
-      <details-nav
-        :instance="instance"
-        :application="application"
-      />
+      <details-nav :instance="instance" :application="application" />
       <details-hero :instance="instance" />
     </template>
 
     <div class="flex gap-6 flex-col lg:flex-row">
       <div class="flex-1">
-        <details-info
-          v-if="hasInfo"
-          :instance="instance"
-        />
-        <details-metadata
-          v-if="hasMetadata"
-          :instance="instance"
-        />
+        <details-info v-if="hasInfo" :instance="instance" />
+        <details-metadata v-if="hasMetadata" :instance="instance" />
       </div>
       <div class="flex-1">
         <details-health :instance="instance" />
@@ -50,69 +38,49 @@
           :instance="instance"
           class="break-inside-avoid"
         />
-        <details-gc
-          v-if="hasGc"
-          :instance="instance"
-        />
+        <details-gc v-if="hasGc" :instance="instance" />
       </div>
       <div class="flex-1">
-        <details-threads
-          v-if="hasThreads"
-          :instance="instance"
-        />
+        <details-threads v-if="hasThreads" :instance="instance" />
       </div>
     </div>
 
     <div class="flex gap-6 flex-col lg:flex-row">
       <div class="flex-1">
-        <details-memory
-          v-if="hasMemory"
-          :instance="instance"
-          type="heap"
-        />
+        <details-memory v-if="hasMemory" :instance="instance" type="heap" />
       </div>
       <div class="flex-1">
-        <details-memory
-          v-if="hasMemory"
-          :instance="instance"
-          type="nonheap"
-        />
+        <details-memory v-if="hasMemory" :instance="instance" type="nonheap" />
       </div>
     </div>
 
     <div class="flex gap-6 flex-col lg:flex-row">
       <div class="flex-1">
-        <details-datasources
-          v-if="hasDatasources"
-          :instance="instance"
-        />
+        <details-datasources v-if="hasDatasources" :instance="instance" />
       </div>
       <div class="flex-1">
-        <details-caches
-          v-if="hasCaches"
-          :instance="instance"
-        />
+        <details-caches v-if="hasCaches" :instance="instance" />
       </div>
     </div>
   </sba-instance-section>
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import detailsCaches from './details-caches.vue';
-import detailsDatasources from './details-datasources.vue';
-import detailsGc from './details-gc.vue';
-import detailsHealth from './details-health.vue';
-import detailsInfo from './details-info.vue';
-import detailsMemory from './details-memory.vue';
-import detailsMetadata from './details-metadata.vue';
-import detailsProcess from './details-process.vue';
-import detailsThreads from './details-threads.vue';
-import DetailsHero from './details-hero.vue';
-import {VIEW_GROUP} from '../../ViewGroup.js';
-import DetailsNav from '@/views/instances/details/details-nav.vue';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
-import Application from '@/services/application.js';
+import Application from '@/services/application';
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import detailsCaches from '@/views/instances/details/details-caches';
+import detailsDatasources from '@/views/instances/details/details-datasources';
+import detailsGc from '@/views/instances/details/details-gc';
+import detailsHealth from '@/views/instances/details/details-health';
+import DetailsHero from '@/views/instances/details/details-hero';
+import detailsInfo from '@/views/instances/details/details-info';
+import detailsMemory from '@/views/instances/details/details-memory';
+import detailsMetadata from '@/views/instances/details/details-metadata';
+import DetailsNav from '@/views/instances/details/details-nav';
+import detailsProcess from '@/views/instances/details/details-process';
+import detailsThreads from '@/views/instances/details/details-threads';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
   components: {
@@ -127,7 +95,7 @@ export default {
     detailsMemory,
     detailsGc,
     detailsCaches,
-    detailsMetadata
+    detailsMetadata,
   },
   props: {
     application: {
@@ -136,13 +104,13 @@ export default {
     },
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
     error: null,
-    metrics: []
+    metrics: [],
   }),
   computed: {
     hasCaches() {
@@ -168,12 +136,12 @@ export default {
     },
     hasMetadata() {
       return this.instance.registration && this.instance.registration.metadata;
-    }
+    },
   },
   watch: {
     instance() {
-      this.fetchMetricIndex()
-    }
+      this.fetchMetricIndex();
+    },
   },
   created() {
     this.fetchMetricIndex();
@@ -196,9 +164,9 @@ export default {
           this.hasLoaded = true;
         }
       }
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/details',
       parent: 'instances',
@@ -206,8 +174,8 @@ export default {
       component: this,
       label: 'instances.details.label',
       group: VIEW_GROUP.INSIGHTS,
-      order: 0
+      order: 0,
     });
-  }
-}
+  },
+};
 </script>

@@ -1,6 +1,5 @@
-import {setupServer} from 'msw/node';
-import mappingsEndpoint from "./instance/mappings/index.js";
+import { setupServer } from 'msw/node';
 
-export const server = setupServer(...[
-  ...mappingsEndpoint
-]);
+import mappingsEndpoint from './instance/mappings/index.js';
+
+export const server = setupServer(...[...mappingsEndpoint]);

@@ -3,15 +3,13 @@
     "details": {
       "label": "Detalles",
 
-      "cache":{
-
+      "cache": {
         "hit_ratio": "Índice de aciertos",
         "hits": "Aciertos",
         "misses": "Fallas",
         "size": "Tamaño"
       },
       "datasource": {
-
         "active_connections": "Conexiones activas",
         "min_connections": "Conexiones Min",
         "max_connections": "Conexiones Max ",
@@ -25,16 +23,13 @@
         "title": "Pausas en la recolección de basura"
       },
       "health": {
-
         "title": "Salud"
       },
       "info": {
-
         "no_info_provided": "No hay información provista.",
         "title": "Info"
       },
       "memory": {
-
         "max": "Max",
         "metaspace": "Metaspace",
         "size": "Tamaño",

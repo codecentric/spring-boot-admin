@@ -19,7 +19,7 @@
     :id="application.name"
     v-on-clickaway="(event) => $emit('deselect', event, application.name)"
     class="application-list-item"
-    :class="{'is-active': isExpanded}"
+    :class="{ 'is-active': isExpanded }"
     @click="$emit('select', application.name)"
   >
     <header
@@ -37,9 +37,11 @@
         v-text="application.name"
       />
       <div>
-        <ApplicationListItemActions
+        <ApplicationListItemAction
           :item="application"
-          :has-active-notification-filter="hasActiveNotificationFilter(application)"
+          :has-active-notification-filter="
+            hasActiveNotificationFilter(application)
+          "
           :has-notification-filters-support="hasNotificationFiltersSupport"
           @filter-settings="toggleFilterSettings"
           @restart="confirmRestartApplication"
@@ -49,16 +51,15 @@
       </div>
     </header>
 
-    <ul
-      v-if="isExpanded"
-      class="pt-2"
-    >
+    <ul v-if="isExpanded" class="pt-2">
       <instances-list :instances="application.instances">
-        <template #actions="{instance}">
-          <ApplicationListItemActions
+        <template #actions="{ instance }">
+          <ApplicationListItemAction
             class="hidden md:flex"
             :item="instance"
-            :has-active-notification-filter="hasActiveNotificationFilter(instance)"
+            :has-active-notification-filter="
+              hasActiveNotificationFilter(instance)
+            "
             :has-notification-filters-support="hasNotificationFiltersSupport"
             @filter-settings="toggleFilterSettings"
             @restart="confirmRestartInstance"
@@ -72,87 +73,118 @@
 </template>
 
 <script>
-import Application from '../../services/application';
-import InstancesList from './instances-list.vue';
-import {HealthStatus} from '../../HealthStatus.js';
-import ApplicationListItemActions from "./application-list-item-action.vue";
-import ApplicationsListItemSummary from "./applications-list-item-summary.vue";
-import {directive as onClickaway} from 'vue3-click-away';
+import { directive as onClickaway } from 'vue3-click-away';
+
+import Application from '@/services/application';
+import ApplicationListItemAction from '@/views/applications/application-list-item-action';
+import ApplicationsListItemSummary from '@/views/applications/applications-list-item-summary';
+import InstancesList from '@/views/applications/instances-list';
 
 export default {
-  components: {ApplicationsListItemSummary, ApplicationListItemActions, InstancesList},
-  directives: {onClickaway},
+  components: {
+    ApplicationListItemAction,
+    ApplicationsListItemSummary,
+    InstancesList,
+  },
+  directives: { onClickaway },
   props: {
     application: {
       type: Application,
-      required: true
+      required: true,
     },
     isExpanded: {
       type: Boolean,
-      default: false
+      default: false,
     },
     notificationFilters: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     hasNotificationFiltersSupport: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
-  emits: ['unregister', 'toggle-notification-filter-settings', 'shutdown', 'restart', 'deselected', 'deselect', 'select'],
+  emits: [
+    'unregister',
+    'toggle-notification-filter-settings',
+    'shutdown',
+    'restart',
+    'deselected',
+    'deselect',
+    'select',
+  ],
   computed: {
     headerClass() {
       if (!this.isExpanded) {
         return 'is-selectable';
       }
-    }
+      return '';
+    },
   },
   methods: {
     hasActiveNotificationFilter(item) {
-      return this.notificationFilters.some(filter => filter.affects(item));
+      return this.notificationFilters.some((filter) => filter.affects(item));
     },
     toggleFilterSettings(item) {
-      this.$emit('toggle-notification-filter-settings', item)
+      this.$emit('toggle-notification-filter-settings', item);
     },
     async confirmShutdownApplication(application) {
-      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.shutdown'), this.$t('applications.shutdown', {name: application.name}));
+      const isConfirmed = await this.$sbaModal.confirm(
+        this.$t('applications.actions.shutdown'),
+        this.$t('applications.shutdown', { name: application.name })
+      );
       if (isConfirmed) {
         this.$emit('restart', application);
       }
     },
     async confirmUnregisterApplication(application) {
-      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.unregister'), this.$t('applications.unregister', {name: application.name}));
+      const isConfirmed = await this.$sbaModal.confirm(
+        this.$t('applications.actions.unregister'),
+        this.$t('applications.unregister', { name: application.name })
+      );
       if (isConfirmed) {
         this.$emit('unregister', application);
       }
     },
     async confirmUnregisterInstance(instance) {
-      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.unregister'), this.$t('applications.unregister', {name: instance.id}));
+      const isConfirmed = await this.$sbaModal.confirm(
+        this.$t('applications.actions.unregister'),
+        this.$t('applications.unregister', { name: instance.id })
+      );
       if (isConfirmed) {
         this.$emit('unregister', instance);
       }
     },
     async confirmRestartApplication(application) {
-      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.restart'), this.$t('applications.restart', {name: application.name}));
+      const isConfirmed = await this.$sbaModal.confirm(
+        this.$t('applications.actions.restart'),
+        this.$t('applications.restart', { name: application.name })
+      );
       if (isConfirmed) {
         this.$emit('restart', application);
       }
     },
     async confirmRestartInstance(instance) {
-      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.restart'), this.$t('instances.restart', {name: instance.id}));
+      const isConfirmed = await this.$sbaModal.confirm(
+        this.$t('applications.actions.restart'),
+        this.$t('instances.restart', { name: instance.id })
+      );
       if (isConfirmed) {
         this.$emit('restart', instance);
       }
     },
     async confirmShutdownInstance(instance) {
-      const isConfirmed = await this.$sbaModal.confirm(this.$t('applications.actions.shutdown'), this.$t('instances.shutdown', {name: instance.id}));
+      const isConfirmed = await this.$sbaModal.confirm(
+        this.$t('applications.actions.shutdown'),
+        this.$t('instances.shutdown', { name: instance.id })
+      );
       if (isConfirmed) {
         this.$emit('restart', instance);
       }
     },
-  }
-}
+  },
+};
 </script>
 
 <style>

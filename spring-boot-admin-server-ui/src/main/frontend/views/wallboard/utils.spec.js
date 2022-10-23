@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import * as hm from './utils.js';
 
 describe('utils.js', () => {
-
   it('should calculate optimum layout for 12 in 1594x879', () => {
     const result = hm.calcLayout(12, 1594, 879);
 
     expect(result).toEqual({
       rows: 3,
       cols: 5,
-      sideLength: 175.8
+      sideLength: 175.8,
     });
   });
 
@@ -34,8 +32,7 @@ describe('utils.js', () => {
     expect(result).toEqual({
       rows: 1,
       cols: 1,
-      sideLength: 50
+      sideLength: 50,
     });
   });
-
 });

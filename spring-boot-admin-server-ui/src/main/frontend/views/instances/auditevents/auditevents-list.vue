@@ -26,49 +26,52 @@
       </tr>
     </thead>
     <tbody>
-      <template
-        v-for="event in events"
-        :key="event.key"
-      >
+      <template v-for="event in events" :key="event.key">
         <tr
           class="is-selectable"
-          :class="{ 'auditevents__event--is-detailed' : showDetails[event.key] }"
-          @click="showDetails[event.key] ? delete showDetails[event.key] : showDetails[event.key] = true"
+          :class="{ 'auditevents__event--is-detailed': showDetails[event.key] }"
+          @click="
+            showDetails[event.key]
+              ? delete showDetails[event.key]
+              : (showDetails[event.key] = true)
+          "
         >
           <td v-text="event.timestamp.format('L HH:mm:ss.SSS')" />
           <td>
             <span
               class="tag"
-              :class="{ 'is-success' : event.isSuccess(), 'is-danger' : event.isFailure() }"
+              :class="{
+                'is-success': event.isSuccess(),
+                'is-danger': event.isFailure(),
+              }"
               v-text="event.type"
             />
           </td>
           <td v-if="hasSessionEndpoint && event.principal">
             <router-link
-              :to="{ name: 'instances/sessions', params: { 'instanceId' : instance.id }, query: { username : event.principal} }"
+              :to="{
+                name: 'instances/sessions',
+                params: { instanceId: instance.id },
+                query: { username: event.principal },
+              }"
               v-text="event.principal"
             />
           </td>
-          <td
-            v-else
-            v-text="event.principal"
-          />
+          <td v-else v-text="event.principal" />
           <td v-text="event.remoteAddress" />
           <td v-if="hasSessionEndpoint && event.sessionId">
             <router-link
-              :to="{ name: 'instances/sessions', params: { 'instanceId' : instance.id }, query: { sessionId : event.sessionId } }"
+              :to="{
+                name: 'instances/sessions',
+                params: { instanceId: instance.id },
+                query: { sessionId: event.sessionId },
+              }"
               v-text="event.sessionId"
             />
           </td>
-          <td
-            v-else
-            v-text="event.sessionId"
-          />
+          <td v-else v-text="event.sessionId" />
         </tr>
-        <tr
-          v-if="showDetails[event.key]"
-          :key="`${event.key}-detail`"
-        >
+        <tr v-if="showDetails[event.key]" :key="`${event.key}-detail`">
           <td colspan="5">
             <pre
               class="auditevents__event-detail"
@@ -78,10 +81,7 @@
         </tr>
       </template>
       <tr v-if="events.length === 0">
-        <td
-          class="is-muted"
-          colspan="5"
-        >
+        <td class="is-muted" colspan="5">
           <p
             v-if="isLoading"
             class="is-loading"
@@ -98,39 +98,40 @@
 </template>
 
 <script>
-  import prettyBytes from 'pretty-bytes';
-  import Instance from '@/services/instance.js';
+import prettyBytes from 'pretty-bytes';
 
-  export default {
-    props: {
-      events: {
-        type: Array,
-        default: () => []
-      },
-      instance: {
-        type: Instance,
-        required: true
-      },
-      isLoading: {
-        type: Boolean,
-        default: false
-      }
+import Instance from '@/services/instance';
+
+export default {
+  props: {
+    events: {
+      type: Array,
+      default: () => [],
     },
-    data: () => ({
-      showDetails: {}
-    }),
-    computed: {
-      hasSessionEndpoint() {
-        return this.instance.hasEndpoint('sessions');
-      }
+    instance: {
+      type: Instance,
+      required: true,
     },
-    methods: {
-      prettyBytes,
-      toJson(obj) {
-        return JSON.stringify(obj, null, 4);
-      }
-    }
-  }
+    isLoading: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data: () => ({
+    showDetails: {},
+  }),
+  computed: {
+    hasSessionEndpoint() {
+      return this.instance.hasEndpoint('sessions');
+    },
+  },
+  methods: {
+    prettyBytes,
+    toJson(obj) {
+      return JSON.stringify(obj, null, 4);
+    },
+  },
+};
 </script>
 
 <style lang="css">

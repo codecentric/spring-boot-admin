@@ -1,5 +1,11 @@
 <template>
-  <TransitionRoot appear :show="isOpen" as="template" ref="root" @close="closeModal">
+  <TransitionRoot
+    ref="root"
+    appear
+    :show="isOpen"
+    as="template"
+    @close="closeModal"
+  >
     <Dialog as="div" class="relative z-10 modal">
       <TransitionChild
         as="template"
@@ -29,11 +35,14 @@
             <DialogPanel
               class="w-full max-w-md transform overflow-hidden rounded bg-white p-6 text-left align-middle shadow-xl transition-all"
             >
-              <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 flex justify-between">
+              <DialogTitle
+                as="h3"
+                class="text-lg font-medium leading-6 text-gray-900 flex justify-between"
+              >
                 {{ title }}
               </DialogTitle>
               <div class="mt-2 mb-2">
-                <slot name="body"/>
+                <slot name="body" />
               </div>
               <div class="mt-4">
                 <slot name="buttons" />
@@ -47,30 +56,43 @@
 </template>
 
 <script>
-import {defineComponent, ref, render} from 'vue';
-import {Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot,} from '@headlessui/vue'
-import eventBus from "./bus";
-import {removeElement} from "./helpers";
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  TransitionChild,
+  TransitionRoot,
+} from '@headlessui/vue';
+import { defineComponent, ref, render } from 'vue';
+
+import eventBus from '@/plugins/modal/bus';
+import { removeElement } from '@/plugins/modal/helpers';
 
 export default defineComponent({
-  components: {Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild},
+  components: {
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+    TransitionRoot,
+    TransitionChild,
+  },
   props: {
     title: {
       type: String,
-      required: true
+      required: true,
     },
   },
   emits: ['close'],
   setup() {
     return {
-      isOpen: ref(true)
-    }
+      isOpen: ref(true),
+    };
   },
   mounted() {
-    eventBus.on('sba-modal-close', this.closeModal)
+    eventBus.on('sba-modal-close', this.closeModal);
   },
   beforeUnmount() {
-    eventBus.off('sba-modal-close', this.closeModal)
+    eventBus.off('sba-modal-close', this.closeModal);
   },
   methods: {
     closeModal() {
@@ -79,9 +101,9 @@ export default defineComponent({
       setTimeout(() => {
         const wrapper = this.$refs.root;
         render(null, wrapper);
-        removeElement(wrapper)
-      }, 150)
+        removeElement(wrapper);
+      }, 150);
     },
-  }
-})
+  },
+});
 </script>

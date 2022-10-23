@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 class HealthStatusEnum {
   static DOWN = 'DOWN';
   static UP = 'UP';
@@ -8,4 +9,3 @@ class HealthStatusEnum {
 }
 
 export const HealthStatus = Object.freeze(HealthStatusEnum);
-

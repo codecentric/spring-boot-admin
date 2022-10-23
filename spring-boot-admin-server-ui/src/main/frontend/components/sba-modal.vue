@@ -1,6 +1,6 @@
 <template>
   <TransitionRoot appear :show="modelValue" as="template">
-    <Dialog as="div" @close="close" class="relative z-10 modal">
+    <Dialog as="div" class="relative z-10 modal" @close="close">
       <TransitionChild
         as="template"
         enter="duration-300 ease-out"
@@ -10,7 +10,7 @@
         leave-from="opacity-100"
         leave-to="opacity-0"
       >
-        <div class="fixed inset-0 bg-black bg-opacity-25"/>
+        <div class="fixed inset-0 bg-black bg-opacity-25" />
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-y-auto">
@@ -34,24 +34,26 @@
                 class="text-lg font-medium leading-6 text-gray-900 flex justify-between"
               >
                 <div>
-                  <slot name="header"/>
+                  <slot name="header" />
                 </div>
-                <button @click="close" :aria-label="$t('term.close')">
+                <button :aria-label="$t('term.close')" @click="close">
                   <span aria-hidden="true">&times;</span>
                 </button>
               </DialogTitle>
               <div class="mt-2 mb-2">
-                <slot name="body"/>
+                <slot name="body" />
               </div>
 
               <div class="mt-4">
-                <slot name="footer"/>
+                <slot name="footer" />
                 <button
                   v-if="!('footer' in slots)"
                   class="modal-close is-large"
                   aria-label="close"
                   @click="close"
-                >{{ $t('term.close') }}</button>
+                >
+                  {{ $t('term.close') }}
+                </button>
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -59,34 +61,41 @@
       </div>
     </Dialog>
   </TransitionRoot>
-
 </template>
 <script>
 import {
   Dialog,
   DialogPanel,
-  DialogTitle, TransitionChild, TransitionRoot,
-} from '@headlessui/vue'
-import {useSlots} from "vue";
+  DialogTitle,
+  TransitionChild,
+  TransitionRoot,
+} from '@headlessui/vue';
+import { useSlots } from 'vue';
 
 export default {
-  name: "SbaModal",
-  components: {Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild},
+  name: 'SbaModal',
+  components: {
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+    TransitionRoot,
+    TransitionChild,
+  },
   props: {
-    modelValue: {type: Boolean, default: false},
+    modelValue: { type: Boolean, default: false },
   },
   emits: ['update:modelValue'],
   setup() {
     const slots = useSlots();
 
     return {
-      slots
-    }
+      slots,
+    };
   },
   methods: {
     close() {
       this.$emit('update:modelValue', false);
-    }
-  }
-}
+    },
+  },
+};
 </script>

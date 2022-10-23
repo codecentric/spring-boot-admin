@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <div :class="{ 'is-loading' : isLoading }">
+  <div :class="{ 'is-loading': isLoading }">
     <sba-panel
       v-if="routes"
       :header-sticks-below="'#subnavigation'"
@@ -26,19 +26,11 @@
         @routes-refreshed="fetchRoutes"
       />
 
-      <sba-alert
-        v-if="error"
-        :error="error"
-        :title="$t('term.fetch_failed')"
-      />
+      <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
       <div class="field">
         <p class="control is-expanded has-icons-left">
-          <input
-            v-model="routesFilterCriteria"
-            class="input"
-            type="search"
-          >
+          <input v-model="routesFilterCriteria" class="input" type="search" />
           <span class="icon is-small is-left">
             <font-awesome-icon icon="filter" />
           </span>
@@ -52,68 +44,70 @@
         @route-deleted="fetchRoutes"
       />
     </sba-panel>
-    <sba-panel
-      title="Add Route"
-    >
-      <add-route
-        :instance="instance"
-        @route-added="fetchRoutes"
-      />
+    <sba-panel title="Add Route">
+      <add-route :instance="instance" @route-added="fetchRoutes" />
     </sba-panel>
   </div>
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import {anyValueMatches, compareBy} from '@/utils/collections';
-import addRoute from './add-route.vue';
-import refreshRouteCache from './refresh-route-cache.vue';
-import routesList from './routes-list.vue';
+import Instance from '@/services/instance';
+import { anyValueMatches, compareBy } from '@/utils/collections';
+import addRoute from '@/views/instances/gateway/add-route';
+import refreshRouteCache from '@/views/instances/gateway/refresh-route-cache';
+import routesList from '@/views/instances/gateway/routes-list';
 
 const routeDefinitionMatches = (routeDef, keyword) => {
   if (!routeDef) {
     return false;
   }
-  const predicate = value => String(value).toLowerCase().includes(keyword);
-  return (routeDef.uri && anyValueMatches(routeDef.uri.toString(), predicate)) ||
+  const predicate = (value) => String(value).toLowerCase().includes(keyword);
+  return (
+    (routeDef.uri && anyValueMatches(routeDef.uri.toString(), predicate)) ||
     anyValueMatches(routeDef.predicates, predicate) ||
-    anyValueMatches(routeDef.filters, predicate);
+    anyValueMatches(routeDef.filters, predicate)
+  );
 };
 
 const routeMatches = (route, keyword) => {
-  return route.route_id.toString().toLowerCase().includes(keyword) || routeDefinitionMatches(route.route_definition, keyword);
+  return (
+    route.route_id.toString().toLowerCase().includes(keyword) ||
+    routeDefinitionMatches(route.route_definition, keyword)
+  );
 };
 
-const sortRoutes = routes => {
-  return [...routes].sort(compareBy(r => r.order))
+const sortRoutes = (routes) => {
+  return [...routes].sort(compareBy((r) => r.order));
 };
 
 export default {
   components: {
     refreshRouteCache,
     routesList,
-    addRoute
+    addRoute,
   },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     isLoading: false,
     error: null,
     $routes: [],
-    routesFilterCriteria: null
+    routesFilterCriteria: null,
   }),
   computed: {
     routes() {
       if (!this.routesFilterCriteria) {
         return sortRoutes(this.$data.$routes);
       }
-      const filtered = this.$data.$routes.filter(route => routeMatches(route, this.routesFilterCriteria.toLowerCase()));
+      const filtered = this.$data.$routes.filter((route) =>
+        routeMatches(route, this.routesFilterCriteria.toLowerCase())
+      );
       return sortRoutes(filtered);
-    }
+    },
   },
   created() {
     this.fetchRoutes();
@@ -124,14 +118,13 @@ export default {
       this.isLoading = true;
       try {
         const response = await this.instance.fetchGatewayRoutes();
-        this.$data.$routes = response.data
+        this.$data.$routes = response.data;
       } catch (error) {
         console.warn('Fetching routes failed:', error);
         this.error = error;
       }
       this.isLoading = false;
-    }
-  }
-}
+    },
+  },
+};
 </script>
-

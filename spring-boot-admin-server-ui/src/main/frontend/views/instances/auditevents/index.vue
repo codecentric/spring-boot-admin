@@ -15,22 +15,19 @@
   -->
 
 <template>
-  <sba-instance-section
-    :error="error"
-    :loading="isLoading"
-  >
+  <sba-instance-section :error="error" :loading="isLoading">
     <template #before>
       <sba-sticky-subnav>
         <div class="flex gap-2">
           <sba-input
-            name="filter_principal"
             v-model.trim="filter.principal"
+            name="filter_principal"
             type="search"
             :placeholder="$t('instances.auditevents.principal')"
           />
           <sba-input
-            name="filter_type"
             v-model="filter.type"
+            name="filter_type"
             :list="[
               'AUTHENTICATION_FAILURE',
               'AUTHENTICATION_SUCCESS',
@@ -53,31 +50,32 @@
     </template>
 
     <sba-panel :seamless="true">
-        <auditevents-list
-          :instance="instance"
-          :events="events"
-          :is-loading="isLoading"
-        />
+      <auditevents-list
+        :instance="instance"
+        :events="events"
+        :is-loading="isLoading"
+      />
     </sba-panel>
   </sba-instance-section>
 </template>
 
 <script>
-import subscribing from '../../../mixins/subscribing.js';
-import Instance from '../../../services/instance';
-import {concatMap, debounceTime, mergeWith, Subject, tap, timer} from 'rxjs';
-import AuditeventsList from './auditevents-list.vue';
-import {uniqBy} from 'lodash-es';
+import { uniqBy } from 'lodash-es';
 import moment from 'moment';
-import {VIEW_GROUP} from '../../ViewGroup.js';
-import SbaInstanceSection from "../shell/sba-instance-section.vue";
-import SbaStickySubnav from "../../../components/sba-sticky-subnav.vue";
-import SbaPanel from "../../../components/sba-panel.vue";
-import SbaInput from "../../../components/sba-input.vue";
-import SbaAlert from "../../../components/sba-alert.vue";
+import { Subject, concatMap, debounceTime, mergeWith, tap, timer } from 'rxjs';
+
+import SbaInput from '@/components/sba-input';
+import SbaPanel from '@/components/sba-panel';
+import SbaStickySubnav from '@/components/sba-sticky-subnav';
+
+import subscribing from '@/mixins/subscribing';
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 class Auditevent {
-  constructor({timestamp, ...event}) {
+  constructor({ timestamp, ...event }) {
     Object.assign(this, event);
     this.zonedTimestamp = timestamp;
     this.timestamp = moment(timestamp);
@@ -88,11 +86,16 @@ class Auditevent {
   }
 
   get remoteAddress() {
-    return this.data && this.data.details && this.data.details.remoteAddress || null;
+    return (
+      (this.data && this.data.details && this.data.details.remoteAddress) ||
+      null
+    );
   }
 
   get sessionId() {
-    return this.data && this.data.details && this.data.details.sessionId || null;
+    return (
+      (this.data && this.data.details && this.data.details.sessionId) || null
+    );
   }
 
   isSuccess() {
@@ -105,13 +108,19 @@ class Auditevent {
 }
 
 export default {
-  components: {SbaInput, SbaInstanceSection, SbaStickySubnav, SbaPanel, AuditeventsList},
+  components: {
+    SbaInput,
+    SbaInstanceSection,
+    SbaStickySubnav,
+    SbaPanel,
+    AuditeventsList,
+  },
   mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     isLoading: false,
@@ -120,7 +129,7 @@ export default {
     filter: {
       after: moment().startOf('day'),
       type: null,
-      principal: null
+      principal: null,
     },
   }),
   watch: {
@@ -128,8 +137,8 @@ export default {
       deep: true,
       handler() {
         this.filterChanged.next();
-      }
-    }
+      },
+    },
   },
   methods: {
     formatDate(value) {
@@ -141,7 +150,9 @@ export default {
     async fetchAuditevents() {
       this.isLoading = true;
       const response = await this.instance.fetchAuditevents(this.filter);
-      const converted = response.data.events.map(event => new Auditevent(event));
+      const converted = response.data.events.map(
+        (event) => new Auditevent(event)
+      );
       converted.reverse();
       this.isLoading = false;
       return converted;
@@ -153,29 +164,34 @@ export default {
 
       return timer(0, 5000)
         .pipe(
-          mergeWith(vm.filterChanged.pipe(
-            debounceTime(250),
-            tap({
-              next: () => vm.events = []
-            })
-          )),
+          mergeWith(
+            vm.filterChanged.pipe(
+              debounceTime(250),
+              tap({
+                next: () => (vm.events = []),
+              })
+            )
+          ),
           concatMap(this.fetchAuditevents)
         )
         .subscribe({
-          next: events => {
+          next: (events) => {
             vm.addEvents(events);
           },
-          error: error => {
+          error: (error) => {
             console.warn('Fetching audit events failed:', error);
             vm.error = error;
-          }
+          },
         });
     },
     addEvents(events) {
-      this.events = uniqBy(this.events ? events.concat(this.events) : events, event => event.key);
-    }
+      this.events = uniqBy(
+        this.events ? events.concat(this.events) : events,
+        (event) => event.key
+      );
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/auditevents',
       parent: 'instances',
@@ -184,8 +200,8 @@ export default {
       label: 'instances.auditevents.label',
       group: VIEW_GROUP.SECURITY,
       order: 600,
-      isEnabled: ({instance}) => instance.hasEndpoint('auditevents')
+      isEnabled: ({ instance }) => instance.hasEndpoint('auditevents'),
     });
-  }
-}
+  },
+};
 </script>

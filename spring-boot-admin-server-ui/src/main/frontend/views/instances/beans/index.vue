@@ -15,10 +15,7 @@
   -->
 
 <template>
-  <sba-instance-section
-    :loading="isLoading"
-    :error="error"
-  >
+  <sba-instance-section :loading="isLoading" :error="error">
     <template #before>
       <sba-sticky-subnav>
         <sba-input
@@ -37,31 +34,23 @@
       </sba-sticky-subnav>
     </template>
 
-    <template
-      v-for="context in filteredContexts"
-      :key="context.name"
-    >
-      <sba-panel
-        :title="context.name"
-        :header-sticks-below="'#subnavigation'"
-      >
-        <beans-list
-          :key="`${context.name}-beans`"
-          :beans="context.beans"
-        />
+    <template v-for="context in filteredContexts" :key="context.name">
+      <sba-panel :title="context.name" :header-sticks-below="'#subnavigation'">
+        <beans-list :key="`${context.name}-beans`" :beans="context.beans" />
       </sba-panel>
     </template>
   </sba-instance-section>
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import {compareBy} from '@/utils/collections';
+import { isEmpty } from 'lodash-es';
+
+import Instance from '@/services/instance';
+import { compareBy } from '@/utils/collections';
 import shortenClassname from '@/utils/shortenClassname';
-import BeansList from '@/views/instances/beans/beans-list.vue';
-import {isEmpty} from 'lodash-es';
-import {VIEW_GROUP} from '../../ViewGroup.js';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import BeansList from '@/views/instances/beans/beans-list';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 class Bean {
   constructor(name, bean) {
@@ -72,32 +61,30 @@ class Bean {
   }
 }
 
-const flattenBeans = beans => {
-  return Object.keys(beans)
-    .map((key) => {
-      return new Bean(key, beans[key]);
-    });
+const flattenBeans = (beans) => {
+  return Object.keys(beans).map((key) => {
+    return new Bean(key, beans[key]);
+  });
 };
 
-const flattenContexts = beanData => {
+const flattenContexts = (beanData) => {
   if (isEmpty(beanData.contexts)) {
     return [];
   }
-  return Object.keys(beanData.contexts)
-    .map((key) => ({
-      beans: flattenBeans(beanData.contexts[key].beans),
-      name: key,
-      parent: beanData.contexts[key].parentId
-    }));
+  return Object.keys(beanData.contexts).map((key) => ({
+    beans: flattenBeans(beanData.contexts[key].beans),
+    name: key,
+    parent: beanData.contexts[key].parentId,
+  }));
 };
 
 export default {
-  components: {SbaInstanceSection, BeansList},
+  components: { SbaInstanceSection, BeansList },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     isLoading: false,
@@ -108,21 +95,21 @@ export default {
   computed: {
     filterResultString() {
       const totalBeans = this.contexts.reduce((count, ctx) => {
-        return count + ctx.beans?.length
-      }, 0)
+        return count + ctx.beans?.length;
+      }, 0);
       const filteredBeansLength = this.filteredContexts.reduce((count, ctx) => {
-        return count + ctx.beans?.length
-      }, 0)
+        return count + ctx.beans?.length;
+      }, 0);
 
       return `${filteredBeansLength}/${totalBeans}`;
     },
     filteredContexts() {
       const filterFn = this.getFilterFn();
-      return this.contexts.map(ctx => ({
+      return this.contexts.map((ctx) => ({
         ...ctx,
-        beans: ctx.beans.filter(filterFn).sort(compareBy(bean => bean.name))
+        beans: ctx.beans.filter(filterFn).sort(compareBy((bean) => bean.name)),
       }));
-    }
+    },
   },
   created() {
     this.fetchBeans();
@@ -133,8 +120,9 @@ export default {
         return () => true;
       }
       const regex = new RegExp(this.filter, 'i');
-      return bean => (bean.name.match(regex) ||
-        (bean.aliases && bean.aliases.some(alias => alias.match(regex))));
+      return (bean) =>
+        bean.name.match(regex) ||
+        (bean.aliases && bean.aliases.some((alias) => alias.match(regex)));
     },
     async fetchBeans() {
       this.error = null;
@@ -147,9 +135,9 @@ export default {
         this.error = error;
       }
       this.isLoading = false;
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/beans',
       parent: 'instances',
@@ -158,9 +146,8 @@ export default {
       group: VIEW_GROUP.INSIGHTS,
       component: this,
       order: 110,
-      isEnabled: ({instance}) => instance.hasEndpoint('beans')
+      isEnabled: ({ instance }) => instance.hasEndpoint('beans'),
     });
-  }
-}
+  },
+};
 </script>
-

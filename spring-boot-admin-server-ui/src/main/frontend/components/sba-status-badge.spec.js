@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { render } from '@testing-library/vue';
 
-import sbaStatusBadge from "./sba-status-badge.vue";
-import {HealthStatus} from "../HealthStatus.js";
-import {render} from "@testing-library/vue";
+import { HealthStatus } from '../HealthStatus.js';
+import sbaStatusBadge from './sba-status-badge.vue';
 
 describe('sba-status-badge.vue', () => {
   it('should accept valid HealthStatus', () => {
     render(sbaStatusBadge, {
       props: {
-        status: HealthStatus.DOWN
-      }
+        status: HealthStatus.DOWN,
+      },
     });
   });
 
   it('should accept String', () => {
     render(sbaStatusBadge, {
       props: {
-        status: "down"
-      }
+        status: 'down',
+      },
     });
   });
 });

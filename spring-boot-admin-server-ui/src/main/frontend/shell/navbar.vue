@@ -15,27 +15,17 @@
   -->
 
 <template>
-  <nav
-    id="navigation"
-    class="bg-black fixed top-0 w-full h-14 z-50"
-  >
+  <nav id="navigation" class="bg-black fixed top-0 w-full h-14 z-50">
     <div class="mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14">
         <div class="flex">
           <div class="flex flex-shrink-0 text-white mr-6">
-            <router-link
-              class="brand"
-              to="/"
-              v-html="brand"
-            />
+            <router-link class="brand" to="/" v-html="brand" />
           </div>
 
           <div class="hidden lg:block">
             <div class="navbar-top-menu">
-              <NavbarItems
-                :enabled-views="enabledViews"
-                :error="error"
-              />
+              <NavbarItems :enabled-views="enabledViews" :error="error" />
             </div>
           </div>
         </div>
@@ -70,7 +60,7 @@
           >
             <span class="sr-only">Open main menu</span>
             <svg
-              :class="{'block': !showMenu, 'hidden': showMenu}"
+              :class="{ block: !showMenu, hidden: showMenu }"
               class="h-6 w-6"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -86,7 +76,7 @@
               />
             </svg>
             <svg
-              :class="{'block': showMenu, 'hidden': !showMenu}"
+              :class="{ block: showMenu, hidden: !showMenu }"
               class="h-6 w-6"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -107,11 +97,7 @@
     </div>
 
     <!-- Mobile menu, show/hide based on menu state. -->
-    <div
-      v-if="showMenu"
-      id="mobile-menu"
-      class="lg:hidden bg-black"
-    >
+    <div v-if="showMenu" id="mobile-menu" class="lg:hidden bg-black">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
         <!-- LINKS -->
         <template v-for="view in enabledViews">
@@ -128,22 +114,16 @@
           <router-link
             v-else
             :key="view.name"
-            :to="{name: view.name}"
+            :to="{ name: view.name }"
             class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
           >
-            <component
-              :is="view.handle"
-              :error="error"
-            />
+            <component :is="view.handle" :error="error" />
           </router-link>
         </template>
         <!-- LINKS -->
       </div>
 
-      <div
-        v-if="userName"
-        class="pt-4 pb-3 border-t"
-      >
+      <div v-if="userName" class="pt-4 pb-3 border-t">
         <div class="flex items-center px-5">
           <div class="flex-shrink-0">
             <font-awesome-icon
@@ -161,24 +141,28 @@
           </div>
         </div>
         <div class="mt-3 px-2 space-y-1 text-black">
-          <NavbarLink v-for="userSubMenuItem in userSubMenuItems" :key="userSubMenuItem.name" :error="error" :view="userSubMenuItem"/>
+          <NavbarLink
+            v-for="userSubMenuItem in userSubMenuItems"
+            :key="userSubMenuItem.name"
+            :error="error"
+            :view="userSubMenuItem"
+          />
 
-          <form
-            action="logout"
-            method="post"
-          >
+          <form action="logout" method="post">
             <input
               v-if="csrfToken"
               type="hidden"
               :name="csrfParameterName"
               :value="csrfToken"
-            >
+            />
             <button
               type="submit"
               class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 text-left py-2 rounded-md font-medium w-full"
               value="logout"
             >
-              <font-awesome-icon icon="sign-out-alt" />&nbsp;<span v-text="$t('navbar.logout')" />
+              <font-awesome-icon icon="sign-out-alt" />&nbsp;<span
+                v-text="$t('navbar.logout')"
+              />
             </button>
           </form>
         </div>
@@ -188,63 +172,76 @@
 </template>
 
 <script>
-import sbaConfig from '../sba-config';
-import {compareBy} from "../utils/collections";
 import moment from 'moment';
-import NavbarItemLanguageSelector from './navbar-item-language-selector.vue';
-import {AVAILABLE_LANGUAGES} from '../i18n';
-import NavbarItems from "./NavbarItems.vue";
-import NavbarUserMenu from "./NavbarUserMenu.vue";
-import {useViewRegistry} from "../composables/ViewRegistry.js";
-import NavbarLink from "./NavbarLink.vue";
+
+import { useViewRegistry } from '@/composables/ViewRegistry';
+import { AVAILABLE_LANGUAGES } from '@/i18n';
+import sbaConfig from '@/sba-config';
+import NavbarItems from '@/shell/NavbarItems';
+import NavbarLink from '@/shell/NavbarLink';
+import NavbarUserMenu from '@/shell/NavbarUserMenu';
+import NavbarItemLanguageSelector from '@/shell/navbar-item-language-selector';
+import { compareBy } from '@/utils/collections';
 
 const readCookie = (name) => {
-  const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-  return (match ? decodeURIComponent(match[3]) : null);
+  const match = document.cookie.match(
+    new RegExp('(^|;\\s*)(' + name + ')=([^;]*)')
+  );
+  return match ? decodeURIComponent(match[3]) : null;
 };
 
 export default {
   name: 'SbaNavbar',
-  components: {NavbarLink, NavbarUserMenu, NavbarItems, NavbarItemLanguageSelector},
+  components: {
+    NavbarLink,
+    NavbarUserMenu,
+    NavbarItems,
+    NavbarItemLanguageSelector,
+  },
   props: {
     error: {
       type: Error,
-      default: null
-    }
+      default: null,
+    },
   },
   setup() {
-    const {views} = useViewRegistry();
+    const { views } = useViewRegistry();
 
     return {
-      views
-    }
+      views,
+    };
   },
   data: () => ({
     showMenu: false,
-    brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
+    brand:
+      '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
     userName: '',
     csrfToken: null,
     csrfParameterName: null,
-    currentLanguage: null
+    currentLanguage: null,
   }),
   computed: {
     enabledViews() {
-      return this.topLevelViews.filter(
-        view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
-      ).sort(compareBy(v => v.order));
+      return this.topLevelViews
+        .filter(
+          (view) =>
+            view.handle &&
+            (typeof view.isEnabled === 'undefined' || view.isEnabled())
+        )
+        .sort(compareBy((v) => v.order));
     },
     topLevelViews() {
-      return this.views.filter(view => !['instances'].includes(view.parent))
+      return this.views.filter((view) => !['instances'].includes(view.parent));
     },
     userSubMenuItems() {
-      return this.enabledViews.filter(v => v.parent === 'user');
-    }
+      return this.enabledViews.filter((v) => v.parent === 'user');
+    },
   },
   watch: {
-    '$route': function () {
+    $route: function () {
       this.showMenu = false;
       this.showUserMenu = false;
-    }
+    },
   },
   created() {
     this.brand = sbaConfig.uiSettings.brand;
@@ -257,15 +254,15 @@ export default {
     document.documentElement.classList.add('has-navbar-fixed-top');
   },
   beforeUnmount() {
-    document.documentElement.classList.remove('has-navbar-fixed-top')
+    document.documentElement.classList.remove('has-navbar-fixed-top');
   },
   methods: {
     changeLocale(locale) {
       this.$i18n.locale = locale;
       moment.locale(this.$i18n.locale);
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>

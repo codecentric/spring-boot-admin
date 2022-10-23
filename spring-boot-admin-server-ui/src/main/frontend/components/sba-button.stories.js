@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import SbaButton from './sba-button.vue';
 
 export default {
@@ -23,10 +22,12 @@ export default {
 
 const Template = (args) => {
   return {
-    components: {SbaButton},
-    setup() { return { args }; },
+    components: { SbaButton },
+    setup() {
+      return { args };
+    },
     template: `<sba-button v-bind="args">${args.label}</sba-button>`,
-  }
+  };
 };
 
 export const DefaultButton = Template.bind({});
@@ -37,29 +38,29 @@ DefaultButton.args = {
 export const PrimaryButton = Template.bind({});
 PrimaryButton.args = {
   label: 'Primary button',
-  'primary': 'primary'
+  primary: 'primary',
 };
 
 export const DangerButton = Template.bind({});
 DangerButton.args = {
   label: 'Danger button',
-  'class': 'is-danger'
+  class: 'is-danger',
 };
 
 export const SuccessButton = Template.bind({});
 SuccessButton.args = {
   label: 'Danger button',
-  'class': 'is-success'
+  class: 'is-success',
 };
 
 const SizeTemplate = () => {
   return {
-    components: {SbaButton},
+    components: { SbaButton },
     template: `
       <sba-button size="xs">button xs</sba-button>
       <sba-button size="sm">button sm</sba-button>
       <sba-button size="base">button base</sba-button>
     `,
-  }
+  };
 };
 export const ButtonSizes = SizeTemplate.bind({});

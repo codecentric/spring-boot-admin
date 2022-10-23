@@ -17,21 +17,21 @@
 <template>
   <aside
     class="h-full flex flex-col bg-white border-r backdrop-filter backdrop-blur-lg bg-opacity-80 z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
-    :class="{'w-60': sidebarOpen}"
+    :class="{ 'w-60': sidebarOpen }"
   >
     <ul class="relative px-1 py-1 overflow-y-auto">
       <!-- Instance info block -->
       <li class="relative mb-1 hidden md:block">
         <router-link
           class="instance-info-block"
-          :to="{name: 'instances/details', params: {instanceId: instance.id}}"
+          :to="{
+            name: 'instances/details',
+            params: { instanceId: instance.id },
+          }"
           :class="`instance-summary--${instance.statusInfo.status}`"
         >
           <span class="overflow-hidden text-ellipsis">
-            <span
-              class="font-bold"
-              v-text="instance.registration.name"
-            /><br>
+            <span class="font-bold" v-text="instance.registration.name" /><br />
             <small><em v-text="instance.id" /></small>
           </span>
         </router-link>
@@ -39,10 +39,7 @@
 
       <!-- sm: button toggle navigation -->
       <li class="block md:hidden">
-        <a
-          class="navbar-link navbar-link__group"
-          @click.stop="toggleSidebar"
-        >
+        <a class="navbar-link navbar-link__group" @click.stop="toggleSidebar">
           <font-awesome-icon :icon="['fas', 'bars']" />
         </a>
       </li>
@@ -52,20 +49,25 @@
         v-for="group in enabledGroupedViews"
         :key="group.name"
         :data-sba-group="group.id"
-        class="relative "
+        class="relative"
       >
         <router-link
           class="navbar-link navbar-link__group"
-          :to="{ name: group.views[0].name, params: { 'instanceId' : instance.id } }"
+          :to="{
+            name: group.views[0].name,
+            params: { instanceId: instance.id },
+          }"
           active-class=""
           exact-active-class=""
-          :class="{'navbar-link__active' : isActiveGroup(group) }"
+          :class="{ 'navbar-link__active': isActiveGroup(group) }"
         >
+          <span v-html="group.icon" />
           <span
-            v-html="group.icon"
-          />
-          <span
-            v-text="hasMultipleViews(group) ? getGroupTitle(group.id) : $t(group.views[0].label)"
+            v-text="
+              hasMultipleViews(group)
+                ? getGroupTitle(group.id)
+                : $t(group.views[0].label)
+            "
           />
           <svg
             v-if="hasMultipleViews(group)"
@@ -73,7 +75,10 @@
             focusable="false"
             data-prefix="fas"
             class="h-3 ml-auto hidden md:block"
-            :class="{'-rotate-90': !isActiveGroup(group), '': isActiveGroup(group)}"
+            :class="{
+              '-rotate-90': !isActiveGroup(group),
+              '': isActiveGroup(group),
+            }"
             role="img"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 448 512"
@@ -89,7 +94,7 @@
         <ul
           v-if="hasMultipleViews(group) && isActiveGroup(group)"
           class="relative block"
-          :class="{'hidden md:block': !sidebarOpen}"
+          :class="{ 'hidden md:block': !sidebarOpen }"
         >
           <li
             v-for="view in group.views"
@@ -98,7 +103,7 @@
           >
             <router-link
               class="navbar-link navbar-link__group_item"
-              :to="{ name: view.name, params: { 'instanceId' : instance.id } }"
+              :to="{ name: view.name, params: { instanceId: instance.id } }"
               active-class="navbar-link__active"
               exact-active-class=""
             >
@@ -112,32 +117,35 @@
 </template>
 
 <script>
-import Application from '../../../services/application';
-import Instance from '../../../services/instance';
-import {VIEW_GROUP_ICON} from "../../index.js";
-import {compareBy} from "../../../utils/collections.js";
-import SbaButton from "../../../components/sba-button.vue";
+import { defineComponent } from 'vue';
 
-export default {
-  components: {SbaButton},
+import SbaButton from '@/components/sba-button';
+
+import Application from '@/services/application';
+import Instance from '@/services/instance';
+import { compareBy } from '@/utils/collections';
+import { VIEW_GROUP_ICON } from '@/views';
+
+export default defineComponent({
+  components: { SbaButton },
   props: {
     views: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     instance: {
       type: Instance,
-      default: null
+      default: null,
     },
     application: {
       type: Application,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
-      sidebarOpen: false
-    }
+      sidebarOpen: false,
+    };
   },
   computed: {
     enabledViews() {
@@ -145,41 +153,44 @@ export default {
         return [];
       }
 
-      return [...this.views].filter(
-        view => typeof view.isEnabled === 'undefined' || view.isEnabled({instance: this.instance})
-      ).sort(compareBy(v => v.order));
+      return [...this.views]
+        .filter(
+          (view) =>
+            typeof view.isEnabled === 'undefined' ||
+            view.isEnabled({ instance: this.instance })
+        )
+        .sort(compareBy((v) => v.order));
     },
     enabledGroupedViews() {
       const groups = new Map();
-      this.enabledViews.forEach(view => {
-          const groupName = view.group;
-          const group = groups.get(groupName) || {
-            id: groupName,
-            order: Number.MAX_SAFE_INTEGER,
-            views: []
-          };
-          groups.set(groupName, {
-            ...group,
-            order: Math.min(group.order, view.order),
-            icon: VIEW_GROUP_ICON[groupName],
-            views: [...group.views, view]
-          })
-        }
-      );
+      this.enabledViews.forEach((view) => {
+        const groupName = view.group;
+        const group = groups.get(groupName) || {
+          id: groupName,
+          order: Number.MAX_SAFE_INTEGER,
+          views: [],
+        };
+        groups.set(groupName, {
+          ...group,
+          order: Math.min(group.order, view.order),
+          icon: VIEW_GROUP_ICON[groupName],
+          views: [...group.views, view],
+        });
+      });
       return Array.from(groups.values());
-    }
+    },
   },
   watch: {
     $route() {
       this.sidebarOpen = false;
-    }
+    },
   },
   methods: {
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
     },
     getGroupTitle(groupId) {
-      const key = 'sidebar.' + groupId + '.title'
+      const key = 'sidebar.' + groupId + '.title';
       const translated = this.$t(key);
       return key === translated ? groupId : translated;
     },
@@ -190,7 +201,7 @@ export default {
       return group.views.length > 1;
     },
   },
-}
+});
 </script>
 
 <style scoped>
@@ -201,7 +212,8 @@ export default {
   @apply cursor-pointer bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
   @apply text-gray-700;
 }
-.navbar-link:hover, .navbar-link__active {
+.navbar-link:hover,
+.navbar-link__active {
   @apply bg-sba-50 bg-opacity-80 text-sba-900;
 }
 

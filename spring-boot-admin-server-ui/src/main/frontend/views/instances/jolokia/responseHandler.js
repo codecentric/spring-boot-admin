@@ -11,7 +11,7 @@ export function resultContainsErrorStatus(result) {
 
   const parsedResponse = parseValue(result.data);
   if (Array.isArray(parsedResponse)) {
-    return parsedResponse.some(r => r.status >= 400);
+    return parsedResponse.some((r) => r.status >= 400);
   } else {
     return result.data.status >= 400;
   }
@@ -19,11 +19,11 @@ export function resultContainsErrorStatus(result) {
 
 export function parseValue(data) {
   if (Array.isArray(data)) {
-    return data.map(elem => {
+    return data.map((elem) => {
       const parsedBody = JSON.parse(elem['body']);
       return {
         instanceId: elem['instanceId'],
-        ...parsedBody
+        ...parsedBody,
       };
     });
   } else {
@@ -47,12 +47,12 @@ export function responseHandler(result) {
 
     return {
       state: STATE_FAILED,
-      error
-    }
+      error,
+    };
   } else {
     return {
       result: parseValue(result.data),
-      state: STATE_COMPLETED
-    }
+      state: STATE_COMPLETED,
+    };
   }
 }

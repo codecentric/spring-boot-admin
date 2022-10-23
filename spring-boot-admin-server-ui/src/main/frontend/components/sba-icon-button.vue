@@ -21,40 +21,35 @@
     size="xs"
     v-on="$attrs"
   >
-    <font-awesome-icon
-      :icon="icon"
-      :size="size"
-      :class="iconClass"
-    />
+    <font-awesome-icon :icon="icon" :size="size" :class="iconClass" />
   </sba-button>
 </template>
 
 <script>
-  import SbaButton from "./sba-button.vue";
-  export default {
-    components: {SbaButton},
-    props: {
-      title: {
-        type: String,
-        required: false,
-        default: null
-      },
-      icon: {
-        type: [String, Array],
-        required: true,
-      },
-      size: {
-        type: String,
-        default: null
-      },
-      iconClass: {
-        type: String,
-        default: null
-      }
-    }
-  }
+import SbaButton from '@/components/sba-button';
+
+export default {
+  components: { SbaButton },
+  props: {
+    title: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    icon: {
+      type: [String, Array],
+      required: true,
+    },
+    size: {
+      type: String,
+      default: null,
+    },
+    iconClass: {
+      type: String,
+      default: null,
+    },
+  },
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

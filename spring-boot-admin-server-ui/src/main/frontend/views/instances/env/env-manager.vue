@@ -15,9 +15,7 @@
   -->
 
 <template>
-  <sba-panel
-    :title="$t('instances.env.manager')"
-  >
+  <sba-panel :title="$t('instances.env.manager')">
     <div
       v-for="(prop, index) in managedProperties"
       :key="`managed-${index}`"
@@ -51,7 +49,9 @@
           <span v-else-if="prop.status === 'failed'">
             <font-awesome-icon icon="exclamation-triangle" />
           </span>
-          <span v-else-if="prop.status === 'completed' || prop.input === prop.value">
+          <span
+            v-else-if="prop.status === 'completed' || prop.input === prop.value"
+          >
             <font-awesome-icon icon="check" />
           </span>
           <span v-else-if="prop.input !== prop.value">
@@ -81,14 +81,15 @@
           v-else-if="resetStatus === 'failed'"
           v-text="$t('instances.env.context_reset_failed')"
         />
-        <span
-          v-else
-          v-text="$t('instances.env.context_reset')"
-        />
+        <span v-else v-text="$t('instances.env.context_reset')" />
       </sba-confirm-button>
       <sba-confirm-button
         class="button is-primary"
-        :disabled="hasErrorProperty || !hasChangedProperty || updateStatus === 'executing'"
+        :disabled="
+          hasErrorProperty ||
+          !hasChangedProperty ||
+          updateStatus === 'executing'
+        "
         @click="updateEnvironment"
       >
         <span
@@ -99,36 +100,35 @@
           v-else-if="updateStatus === 'failed'"
           v-text="$t('instances.env.context_update_failed')"
         />
-        <span
-          v-else
-          v-text="$t('instances.env.context_update')"
-        />
+        <span v-else v-text="$t('instances.env.context_update')" />
       </sba-confirm-button>
     </div>
   </sba-panel>
 </template>
 
 <script>
-import Instance from '../../../services/instance';
-import {concatMap, filter, from, listen} from '../../../utils/rxjs.js';
-import {debounce, uniq} from 'lodash-es';
-import Application from '../../../services/application';
-import {ActionScope} from "../../../components/ActionScope.js";
+import { debounce, uniq } from 'lodash-es';
+
+import { ActionScope } from '@/components/ActionScope';
+
+import Application from '@/services/application';
+import Instance from '@/services/instance';
+import { concatMap, filter, from, listen } from '@/utils/rxjs';
 
 export default {
   props: {
     application: {
       type: Application,
-      required: true
+      required: true,
     },
     instance: {
       type: Instance,
-      required: true
+      required: true,
     },
     propertySources: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   emits: ['refresh', 'update'],
   data: () => ({
@@ -136,50 +136,69 @@ export default {
     resetStatus: null,
     updateStatus: null,
     scope: ActionScope.INSTANCE,
-    managedProperties: [{
-      name: null,
-      input: null,
-      value: null,
-      status: null,
-      validation: null
-    }]
+    managedProperties: [
+      {
+        name: null,
+        input: null,
+        value: null,
+        status: null,
+        validation: null,
+      },
+    ],
   }),
   computed: {
     allPropertyNames() {
-      return uniq(this.propertySources.map(ps => ps.properties ? Object.keys(ps.properties) : [])
-        .reduce((result, names) => result.concat(names))
-        .sort());
+      return uniq(
+        this.propertySources
+          .map((ps) => (ps.properties ? Object.keys(ps.properties) : []))
+          .reduce((result, names) => result.concat(names))
+          .sort()
+      );
     },
     managerPropertySource() {
-      return this.propertySources.find(ps => ps.name === 'manager') || {name: 'manager', properties: {}};
+      return (
+        this.propertySources.find((ps) => ps.name === 'manager') || {
+          name: 'manager',
+          properties: {},
+        }
+      );
     },
     hasManagedProperty() {
-      return this.managedProperties.findIndex(property => !!property.name) >= 0;
+      return (
+        this.managedProperties.findIndex((property) => !!property.name) >= 0
+      );
     },
     hasChangedProperty() {
-      return this.managedProperties.findIndex(property => property.input !== property.value) >= 0;
+      return (
+        this.managedProperties.findIndex(
+          (property) => property.input !== property.value
+        ) >= 0
+      );
     },
     hasErrorProperty() {
-      return this.managedProperties.findIndex(property => property.validation !== null) >= 0;
-    }
+      return (
+        this.managedProperties.findIndex(
+          (property) => property.validation !== null
+        ) >= 0
+      );
+    },
   },
   watch: {
     managerPropertySource: {
       handler: 'updateManagedProperties',
-      immediate: true
+      immediate: true,
     },
     managedProperties: {
       deep: true,
       handler() {
-        const counts = this.managedProperties.reduce(
-          (acc, v) => {
-            if (v.name) {
-              acc[v.name] = (acc[v.name] || 0) + 1;
-            }
-            return acc;
-          }, {});
+        const counts = this.managedProperties.reduce((acc, v) => {
+          if (v.name) {
+            acc[v.name] = (acc[v.name] || 0) + 1;
+          }
+          return acc;
+        }, {});
 
-        this.managedProperties.forEach(property => {
+        this.managedProperties.forEach((property) => {
           if (!property.name) {
             if (property.input) {
               property.validation = 'Property name is required';
@@ -193,8 +212,8 @@ export default {
           }
           property.validation = null;
         });
-      }
-    }
+      },
+    },
   },
   methods: {
     handlePropertyNameChange: debounce(function (prop, idx) {
@@ -204,7 +223,7 @@ export default {
           input: null,
           value: null,
           status: null,
-          validation: null
+          validation: null,
         });
       }
     }, 250),
@@ -212,32 +231,31 @@ export default {
       const vm = this;
       from(vm.managedProperties)
         .pipe(
-          filter(property => !!property.name && property.input !== property.value),
-          listen(status => vm.updateStatus = status),
-          concatMap(
-            property => {
-              let target;
+          filter(
+            (property) => !!property.name && property.input !== property.value
+          ),
+          listen((status) => (vm.updateStatus = status)),
+          concatMap((property) => {
+            let target;
 
-              if (vm.scope === 'instance') {
-                target = vm.instance;
-              } else {
-                target = vm.application;
-              }
-
-              return from(target.setEnv(property.name, property.input))
-                .pipe(
-                  listen(status => property.status = status),
-                  listen(status => vm.updateStatus = status),
-                );
+            if (vm.scope === 'instance') {
+              target = vm.instance;
+            } else {
+              target = vm.application;
             }
-          )
+
+            return from(target.setEnv(property.name, property.input)).pipe(
+              listen((status) => (property.status = status)),
+              listen((status) => (vm.updateStatus = status))
+            );
+          })
         )
         .subscribe({
           complete: () => {
-            setTimeout(() => vm.updateStatus = null, 2500);
+            setTimeout(() => (vm.updateStatus = null), 2500);
             return vm.$emit('update');
           },
-          error: () => vm.$emit('update')
+          error: () => vm.$emit('update'),
         });
     },
     resetEnvironment() {
@@ -251,27 +269,31 @@ export default {
       }
 
       from(target.resetEnv())
-        .pipe(listen(status => vm.resetStatus = status))
+        .pipe(listen((status) => (vm.resetStatus = status)))
         .subscribe({
           complete: () => {
-            vm.managedProperties = [{
-              name: null,
-              input: null,
-              value: null,
-              status: null,
-              validation: null
-            }];
-            setTimeout(() => vm.resetStatus = null, 2500);
+            vm.managedProperties = [
+              {
+                name: null,
+                input: null,
+                value: null,
+                status: null,
+                validation: null,
+              },
+            ];
+            setTimeout(() => (vm.resetStatus = null), 2500);
             return vm.$emit('refresh');
           },
-          error: () => vm.$emit('refresh')
+          error: () => vm.$emit('refresh'),
         });
     },
     updateManagedProperties(manager) {
       Object.entries(manager.properties).forEach(([name, property]) => {
-        const managedProperty = this.managedProperties.find(property => property.name === name);
+        const managedProperty = this.managedProperties.find(
+          (property) => property.name === name
+        );
         if (managedProperty) {
-          managedProperty.value = property.value
+          managedProperty.value = property.value;
         } else {
           const idx = this.managedProperties.length - 1;
           this.managedProperties.splice(idx, 0, {
@@ -279,11 +301,11 @@ export default {
             input: property.value,
             value: property.value,
             status: null,
-            validation: null
-          })
+            validation: null,
+          });
         }
       });
-    }
+    },
   },
-}
+};
 </script>

@@ -6,12 +6,8 @@
       type="checkbox"
       class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
       @change="$emit('update:modelValue', $event.target.checked)"
-    >
-    <label
-      :for="id"
-      class="ml-2 font-medium text-gray-700"
-      v-text="label"
     />
+    <label :for="id" class="ml-2 font-medium text-gray-700" v-text="label" />
   </div>
 </template>
 
@@ -20,18 +16,18 @@ export default {
   props: {
     modelValue: {
       type: Boolean,
-      required: true
+      required: true,
     },
     label: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   emits: ['update:modelValue'],
   computed: {
     id() {
       return 'checkbox-' + this._.uid;
-    }
-  }
-}
+    },
+  },
+};
 </script>

@@ -13,69 +13,77 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {render} from '../../test-utils';
-import Application from '../../services/application';
-import ApplicationListItem from './applications-list-item';
-import {applications} from '../../mocks/applications/data';
-import {screen, waitFor} from '@testing-library/vue';
 import userEvent from '@testing-library/user-event';
-import {cloneDeep} from "lodash-es";
+import { screen, waitFor } from '@testing-library/vue';
+import { cloneDeep } from 'lodash-es';
+
+import { applications } from '../../mocks/applications/data';
+import Application from '../../services/application';
+import { render } from '../../test-utils';
+import ApplicationListItem from './applications-list-item';
 
 describe('application-list-item.vue', () => {
   let application;
 
   beforeEach(() => {
-    application = cloneDeep(applications[0])
+    application = cloneDeep(applications[0]);
   });
 
   it('does not show shutdown button when shutdown endpoint is missing', () => {
     application.instances[0].endpoints = [];
 
-    render(ApplicationListItem, { props: {application: new Application(application)}})
+    render(ApplicationListItem, {
+      props: { application: new Application(application) },
+    });
 
     const shutdownButton = screen.queryByTitle('shutdown');
     expect(shutdownButton).toBeNull();
-  })
+  });
 
   it('should call shutdown endpoint when modal is confirmed', async () => {
-    const {emitted} = render(ApplicationListItem, {  props: {application: new Application(application)}})
+    const { emitted } = render(ApplicationListItem, {
+      props: { application: new Application(application) },
+    });
 
     const element = screen.queryByTitle('shutdown');
     await userEvent.click(element);
 
     await waitFor(() => {
       screen.findByRole('dialog');
-    })
+    });
 
-    const buttonOK = screen.queryByRole('button', {name: 'OK'});
+    const buttonOK = screen.queryByRole('button', { name: 'OK' });
     await userEvent.click(buttonOK);
 
     expect(emitted()).toBeDefined();
-  })
+  });
 
   it('does not show restart button when restart endpoint is missing', () => {
     application.instances[0].endpoints = [];
 
-    render(ApplicationListItem, {  props: {application: new Application(application)}})
+    render(ApplicationListItem, {
+      props: { application: new Application(application) },
+    });
 
-    const shutdownButton = screen.queryByTitle('applications.actions.restart')
+    const shutdownButton = screen.queryByTitle('applications.actions.restart');
     expect(shutdownButton).toBeNull();
-  })
+  });
 
   it('should call restart endpoint when modal is confirmed', async () => {
-    const {emitted} = render(ApplicationListItem, { props: {application: new Application(application)}})
+    const { emitted } = render(ApplicationListItem, {
+      props: { application: new Application(application) },
+    });
 
     const element = screen.queryByTitle('applications.actions.restart');
     await userEvent.click(element);
     await waitFor(() => {
       screen.findByRole('dialog');
-    })
+    });
 
-    const buttonOK = screen.queryByRole('button', {name: 'term.ok'});
+    const buttonOK = screen.queryByRole('button', { name: 'term.ok' });
     await userEvent.click(buttonOK);
 
     let emitted1 = emitted();
     expect(emitted1.restart).toBeDefined();
-  })
-})
+  });
+});

@@ -17,55 +17,47 @@
 <template>
   <div class="application-summary">
     <div class="pr-3 text-center">
-      <sba-status
-        :status="application.status"
-      />
+      <sba-status :status="application.status" />
     </div>
     <div class="flex-1">
-      <div
-        class="font-semibold"
-        v-text="application.name"
-      />
+      <div class="font-semibold" v-text="application.name" />
       <small>
         <a
           v-if="application.instances.length === 1"
           :href="healthUrl"
           v-text="healthUrl"
         />
-        <span
-          v-else
-          v-text="`${application.instances.length} instances`"
-        />
+        <span v-else v-text="`${application.instances.length} instances`" />
       </small>
     </div>
-    <p
-      class="hidden md:block w-1/4"
-      v-text="application.buildVersion"
-    />
+    <p class="hidden md:block w-1/4" v-text="application.buildVersion" />
   </div>
 </template>
 
 <script>
-  import Application from '../../services/application';
+import Application from '@/services/application';
 
-  export default {
-    name: 'ApplicationsListItemSummary',
-    props: {
-      application: {
-        type: Application,
-        required: true
+export default {
+  name: 'ApplicationsListItemSummary',
+  props: {
+    application: {
+      type: Application,
+      required: true,
+    },
+  },
+  computed: {
+    healthUrl() {
+      if (this.application.instances.length === 1) {
+        return (
+          this.application.instances[0].registration.serviceUrl ||
+          this.application.instances[0].registration.healthUrl
+        );
+      } else {
+        return '';
       }
     },
-    computed: {
-      healthUrl() {
-        if (this.application.instances.length === 1) {
-          return this.application.instances[0].registration.serviceUrl || this.application.instances[0].registration.healthUrl;
-        } else {
-          return ''
-        }
-      }
-    }
-  }
+  },
+};
 </script>
 
 <style scoped>

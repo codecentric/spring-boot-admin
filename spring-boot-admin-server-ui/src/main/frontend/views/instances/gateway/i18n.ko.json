@@ -2,7 +2,7 @@
   "instances": {
     "gateway": {
       "label": "게이트웨이",
-      "route":{
+      "route": {
         "add_route": "라우트 추가",
         "adding_failed": "라우트 추가 실패했습니다.",
         "cache_refreshed": "라우트 캐시가 갱신되었습니다.",

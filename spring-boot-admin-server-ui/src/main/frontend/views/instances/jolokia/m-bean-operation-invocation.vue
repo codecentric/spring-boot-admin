@@ -25,13 +25,20 @@
 
         <template v-if="state === 'input-args'">
           <section class="modal-card-body" @keyup.ctrl.enter="invoke(args)">
-            <div v-for="(arg, idx) in descriptor.args" :key="arg.name" class="field">
+            <div
+              v-for="(arg, idx) in descriptor.args"
+              :key="arg.name"
+              class="field"
+            >
               <label class="label">
                 <span v-text="arg.name" />
-                <small class="is-muted has-text-weight-normal pl-1" v-text="arg.type" />
+                <small
+                  class="is-muted has-text-weight-normal pl-1"
+                  v-text="arg.type"
+                />
               </label>
               <div class="control">
-                <input v-model="args[idx]" type="text" class="input">
+                <input v-model="args[idx]" type="text" class="input" />
               </div>
               <p class="help" v-text="arg.desc" />
             </div>
@@ -39,7 +46,11 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-primary" @click="invoke(args)" v-text="$t('instances.jolokia.execute')" />
+                <button
+                  class="button is-primary"
+                  @click="invoke(args)"
+                  v-text="$t('instances.jolokia.execute')"
+                />
               </div>
             </div>
           </footer>
@@ -60,12 +71,19 @@
                 <strong v-text="$t('instances.jolokia.execution_successful')" />
               </div>
             </div>
-            <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrintedResult" />
+            <pre
+              v-if="descriptor.ret !== 'void'"
+              v-text="prettyPrintedResult"
+            />
           </section>
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort" v-text="$t('term.close')" />
+                <button
+                  class="button is-light"
+                  @click="abort"
+                  v-text="$t('term.close')"
+                />
               </div>
             </div>
           </footer>
@@ -85,10 +103,7 @@
                 <p v-text="error.message" />
               </div>
             </div>
-            <pre
-              v-if="error.stacktrace"
-              v-text="error.stacktrace"
-            />
+            <pre v-if="error.stacktrace" v-text="error.stacktrace" />
             <pre
               v-if="error.response && error.response.data"
               v-text="error.response.data"
@@ -97,7 +112,11 @@
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort" v-text="$t('instances.jolokia.close')" />
+                <button
+                  class="button is-light"
+                  @click="abort"
+                  v-text="$t('instances.jolokia.close')"
+                />
               </div>
             </div>
           </footer>
@@ -109,40 +128,41 @@
 
 <script>
 import {
-  responseHandler,
-  STATE_EXECUTING, STATE_FAILED,
+  STATE_EXECUTING,
+  STATE_FAILED,
   STATE_INPUT_ARGS,
-  STATE_PREPARED
-} from '@/views/instances/jolokia/responseHandler.js';
+  STATE_PREPARED,
+  responseHandler,
+} from '@/views/instances/jolokia/responseHandler';
 
 export default {
   props: {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     descriptor: {
       type: Object,
-      required: true
+      required: true,
     },
     value: {
       type: null,
-      default: null
+      default: null,
     },
     onClose: {
       type: Function,
-      required: true
+      required: true,
     },
     onExecute: {
       type: Function,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     state: null,
     error: null,
     args: null,
-    result: null
+    result: null,
   }),
   computed: {
     prettyPrintedResult() {
@@ -157,36 +177,39 @@ export default {
         return JSON.stringify(this.result, undefined, 4);
       }
       return this.result;
-    }
+    },
   },
   created() {
     this.invoke();
   },
   mounted() {
-    document.addEventListener('keyup', this.keyHandler)
+    document.addEventListener('keyup', this.keyHandler);
   },
   beforeUnmount() {
-    document.removeEventListener('keyup', this.keyHandler)
+    document.removeEventListener('keyup', this.keyHandler);
   },
   methods: {
     abort() {
       this.onClose();
     },
     invoke(args) {
-      this.state = (args || this.descriptor.args.length === 0) ? STATE_PREPARED : STATE_INPUT_ARGS;
+      this.state =
+        args || this.descriptor.args.length === 0
+          ? STATE_PREPARED
+          : STATE_INPUT_ARGS;
       this.args = args || new Array(this.descriptor.args.length);
       this.error = null;
       this.result = null;
 
       if (this.state === STATE_PREPARED) {
-        this.execute()
+        this.execute();
       }
     },
     async execute() {
       this.state = STATE_EXECUTING;
       try {
         const response = await this.onExecute(this.args);
-        const {result, state, error} = responseHandler(response);
+        const { result, state, error } = responseHandler(response);
         this.result = result;
         this.state = state;
         this.error = error;
@@ -198,11 +221,11 @@ export default {
     },
     keyHandler(event) {
       if (event.keyCode === 27) {
-        this.abort()
+        this.abort();
       }
     },
   },
-}
+};
 </script>
 
 <style scoped>

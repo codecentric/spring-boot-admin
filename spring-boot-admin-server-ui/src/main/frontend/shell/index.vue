@@ -16,7 +16,7 @@
 
 <template>
   <div id="app">
-    <sba-navbar
+    <SbaNavbar
       :applications="applications"
       :error="error"
       :applications-initialized="applicationsInitialized"
@@ -32,21 +32,21 @@
 </template>
 
 <script setup>
-import SbaNavbar from './navbar.vue';
-import {useApplicationStore} from "../composables/useApplicationStore.js";
+import { useApplicationStore } from '@/composables/useApplicationStore';
+import SbaNavbar from '@/shell/navbar';
 
 defineProps({
   error: {
     type: Error,
-    default: null
+    default: null,
   },
   applicationsInitialized: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
-const {applications} = useApplicationStore();
+const { applications } = useApplicationStore();
 </script>
 
 <style scoped>

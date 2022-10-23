@@ -16,14 +16,11 @@
 
 <template>
   <span>
-    <span
-      v-if="error"
-      class="mr-2"
-    >
-      <font-awesome-icon icon="exclamation-triangle"/>
+    <span v-if="error" class="mr-2">
+      <font-awesome-icon icon="exclamation-triangle" />
     </span>
     <span
-      :class="{ 'has-badge has-badge-rounded has-badge-danger' : downCount > 0 }"
+      :class="{ 'has-badge has-badge-rounded has-badge-danger': downCount > 0 }"
       :data-badge="downCount > 0 ? downCount : undefined"
       v-text="$t('applications.label')"
     />
@@ -31,35 +28,45 @@
 </template>
 
 <script setup>
-import {useApplicationStore} from "../../composables/useApplicationStore";
-import {computed, watch} from "vue";
-import sbaConfig from '@/sba-config'
+import { computed, defineProps, watch } from 'vue';
 
-const props = defineProps({
+import { useApplicationStore } from '@/composables/useApplicationStore';
+import sbaConfig from '@/sba-config';
+
+defineProps({
   error: {
     type: Error,
-    default: null
-  }
+    default: null,
+  },
 });
 
 const favicon = sbaConfig.uiSettings.favicon;
 const faviconDanger = sbaConfig.uiSettings.faviconDanger;
 
-const {applications} = useApplicationStore();
+const { applications } = useApplicationStore();
 const downCount = computed({
   get() {
     return applications.value.reduce((current, next) => {
-      return current + (next.instances.filter(instance => instance.statusInfo.status !== 'UP').length);
+      return (
+        current +
+        next.instances.filter((instance) => instance.statusInfo.status !== 'UP')
+          .length
+      );
     }, 0);
-  }
+  },
 });
 
-watch(() => downCount, (newVal, oldVal) => {
-  if ((newVal === 0) !== (oldVal === 0)) {
-    updateFavicon(newVal === 0);
+watch(
+  () => downCount,
+  (newVal, oldVal) => {
+    if ((newVal === 0) !== (oldVal === 0)) {
+      updateFavicon(newVal === 0);
+    }
   }
-})
+);
 
-const updateFavicon = (up)  => document.querySelector('link[rel*="icon"]').href = up ? favicon : faviconDanger
+const updateFavicon = (up) =>
+  (document.querySelector('link[rel*="icon"]').href = up
+    ? favicon
+    : faviconDanger);
 </script>
-

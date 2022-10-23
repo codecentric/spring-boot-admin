@@ -15,35 +15,41 @@
   -->
 
 <template>
-  <LineChart label="timestamp" :datasets="datasets" :config="config" :data="data"></LineChart>
+  <LineChart
+    label="timestamp"
+    :datasets="datasets"
+    :config="config"
+    :data="data"
+  />
 </template>
 
 <script>
 import moment from 'moment';
-import LineChart from "./LineChart.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from 'vue-i18n';
+
+import LineChart from '@/views/instances/details/LineChart';
 
 export default {
-  components: {LineChart},
+  components: { LineChart },
   props: {
     data: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   setup(props) {
-    const {t} = useI18n();
-    return {...props, t};
+    const { t } = useI18n();
+    return { ...props, t };
   },
   data() {
     return {
       datasets: {
         live: {
-          label: this.t('instances.details.threads.live')
+          label: this.t('instances.details.threads.live'),
         },
         daemon: {
-          label: this.t('instances.details.threads.daemon')
-        }
+          label: this.t('instances.details.threads.daemon'),
+        },
       },
       config: {
         options: {
@@ -55,22 +61,22 @@ export default {
                 },
                 label: function (ctx) {
                   return ctx.dataset.label;
-                }
-              }
-            }
+                },
+              },
+            },
           },
           scales: {
             x: {
               ticks: {
                 callback: (label) => {
-                  return moment(label).format("HH:mm:ss");
+                  return moment(label).format('HH:mm:ss');
                 },
               },
-            }
-          }
+            },
+          },
         },
-      }
-    }
-  }
-}
+      },
+    };
+  },
+};
 </script>

@@ -7,14 +7,14 @@ export default {
 
 const Template = (args) => {
   return {
-    components: {SbaPanel},
+    components: { SbaPanel },
     setup() {
-      return {args};
+      return { args };
     },
     methods: {
       onClose(event) {
-        alert('Close clicked! ' + JSON.stringify(event))
-      }
+        alert('Close clicked! ' + JSON.stringify(event));
+      },
     },
     template: `
       <sba-panel @close="onClose" v-bind="args">
@@ -29,7 +29,7 @@ const Template = (args) => {
       </template>
       </sba-panel>
     `,
-  }
+  };
 };
 
 export const WithTitle = Template.bind({});
@@ -72,7 +72,7 @@ WithTitle.args = {
             erat a rutrum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
             Donec
             semper erat nec ipsum molestie, eu commodo dui lobortis.</p>
-</article>`
+</article>`,
 };
 
 export const WithTable = Template.bind({});
@@ -92,13 +92,13 @@ WithTable.args = {
           <dt class="text-sm font-medium text-gray-500">Max duration</dt>
           <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">0.0040s</dd>
       </div>
-    </div>`
+    </div>`,
 };
 
 export const Closable = Template.bind({});
 Closable.args = {
   ...WithTitle.args,
-  closeable: true
+  closeable: true,
 };
 
 export const ClosableWithActions = Template.bind({});
@@ -117,17 +117,17 @@ StickyHeader.args = {
 export const NoTitle = Template.bind({});
 NoTitle.args = {
   ...WithTitle.args,
-  title: undefined
+  title: undefined,
 };
 
 export const WithTitleAndFooter = Template.bind({});
 WithTitleAndFooter.args = {
   ...WithTitle.args,
-  footer: 'Hello from the footer!'
+  footer: 'Hello from the footer!',
 };
 
 export const LoadingContent = Template.bind({});
 LoadingContent.args = {
   ...WithTitle.args,
-  loading: true
+  loading: true,
 };

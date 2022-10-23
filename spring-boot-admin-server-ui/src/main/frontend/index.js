@@ -13,82 +13,83 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
+import moment from 'moment';
+import { createApp, h, reactive } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import './index.css';
-import axios from './utils/axios.js';
-import moment from 'moment';
+
 import components from './components';
-import Notifications from './notifications.js';
-import sbaConfig from './sba-config.js'
-import sbaShell from './shell/index.vue';
-import views from './views';
-import {createApp, h, reactive} from 'vue';
+import { createViewRegistry } from './composables/ViewRegistry.js';
+import {
+  createApplicationStore,
+  useApplicationStore,
+} from './composables/useApplicationStore.js';
 import i18n from './i18n';
-import router from './router.js';
-import {createApplicationStore, useApplicationStore} from "./composables/useApplicationStore.js";
-import {createViewRegistry} from "./composables/ViewRegistry.js";
 import { worker } from './mocks/browser';
-
-import './toast-theme.css';
-
-import SbaModalPlugin from "./plugins/modal";
-import {useI18n} from "vue-i18n";
-import NotificationcenterPlugin from "@stekoe/vue-toast-notificationcenter";
+import Notifications from './notifications.js';
+import SbaModalPlugin from './plugins/modal';
+import router from './router.js';
+import sbaConfig from './sba-config.js';
+import sbaShell from './shell/index.vue';
+import axios from './utils/axios.js';
+import views from './views';
 
 moment.locale(navigator.language.split('-')[0]);
 
 const applicationStore = createApplicationStore();
 const viewRegistry = createViewRegistry();
 
-const installables = [
-  Notifications,
-  ...views,
-  ...sbaConfig.extensions
-];
+const installables = [Notifications, ...views, ...sbaConfig.extensions];
 
 if (process.env.NODE_ENV === 'development') {
   worker.start({
     serviceWorker: {
-      url: "./mockServiceWorker.js"
-    }
-  })
+      url: './mockServiceWorker.js',
+    },
+  });
 }
 
-installables.forEach(installable => {
+installables.forEach((installable) => {
   installable.install({
     viewRegistry,
     applicationStore,
-  })
+  });
 });
-
 
 const app = createApp({
   setup() {
-    const {applications, applicationsInitialized, error} = useApplicationStore();
-    const {t} = useI18n()
+    const { applications, applicationsInitialized, error } =
+      useApplicationStore();
+    const { t } = useI18n();
     let props = reactive({
       applications,
       applicationsInitialized,
       error,
-      t
+      t,
     });
 
     return () => h(sbaShell, props);
-  }
-})
+  },
+});
 
 app.use(i18n);
 app.use(components);
 app.use(NotificationcenterPlugin, {
-  duration: 10_000
+  duration: 10_000,
 });
-app.use(SbaModalPlugin, {i18n});
+app.use(SbaModalPlugin, { i18n });
 app.use(router(viewRegistry.routes));
 
 const vue = app.mount('#app');
 
-installables.forEach(view => view.configure ? view.configure({
-  vue,
-  i18n: vue.$i18n,
-  axios
-}) : void (0));
+installables.forEach((view) =>
+  view.configure
+    ? view.configure({
+        vue,
+        i18n: vue.$i18n,
+        axios,
+      })
+    : void 0
+);

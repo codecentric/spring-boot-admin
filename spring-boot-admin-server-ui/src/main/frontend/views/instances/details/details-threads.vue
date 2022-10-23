@@ -15,26 +15,13 @@
   -->
 
 <template>
-  <sba-panel
-    v-if="hasLoaded"
-    :title="$t('instances.details.threads.title')"
-  >
+  <sba-panel v-if="hasLoaded" :title="$t('instances.details.threads.title')">
     <div>
-      <sba-alert
-        v-if="error"
-        :error="error"
-        :title="$t('term.fetch_failed')"
-      />
+      <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
-      <div
-        v-if="current"
-        class="flex w-full"
-      >
+      <div v-if="current" class="flex w-full">
         <div class="flex-1 text-center">
-          <p
-            class="font-bold"
-            v-text="$t('instances.details.threads.live')"
-          />
+          <p class="font-bold" v-text="$t('instances.details.threads.live')" />
           <p v-text="current.live" />
         </div>
         <div class="flex-1 text-center">
@@ -53,31 +40,29 @@
         </div>
       </div>
 
-      <threads-chart
-        v-if="chartData.length > 0"
-        :data="chartData"
-      />
+      <threads-chart v-if="chartData.length > 0" :data="chartData" />
     </div>
   </sba-panel>
 </template>
 
 <script>
-import sbaConfig from '@/sba-config';
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance.js';
-import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
 import moment from 'moment';
-import threadsChart from './threads-chart.vue';
-import {take} from 'rxjs/operators';
+import { take } from 'rxjs/operators';
+
+import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
+import Instance from '@/services/instance';
+import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import threadsChart from '@/views/instances/details/threads-chart';
 
 export default {
-  components: {threadsChart},
+  components: { threadsChart },
   mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
@@ -94,34 +79,33 @@ export default {
       return {
         live: (await responseLive).data.measurements[0].value,
         peak: (await responsePeak).data.measurements[0].value,
-        daemon: (await responseDaemon).data.measurements[0].value
+        daemon: (await responseDaemon).data.measurements[0].value,
       };
     },
     createSubscription() {
       const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.threads)
-        .pipe(concatMap(this.fetchMetrics), retryWhen(
-          err => {
-            return err.pipe(
-              delay(1000),
-              take(5)
-            )
-          }))
+        .pipe(
+          concatMap(this.fetchMetrics),
+          retryWhen((err) => {
+            return err.pipe(delay(1000), take(5));
+          })
+        )
         .subscribe({
-          next: data => {
+          next: (data) => {
             vm.hasLoaded = true;
             vm.current = data;
-            vm.chartData.push({...data, timestamp: moment().valueOf()});
+            vm.chartData.push({ ...data, timestamp: moment().valueOf() });
           },
-          error: error => {
+          error: (error) => {
             vm.hasLoaded = true;
             console.warn('Fetching threads metrics failed:', error);
             vm.error = error;
-          }
+          },
         });
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="css">

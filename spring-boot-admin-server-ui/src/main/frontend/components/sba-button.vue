@@ -2,7 +2,7 @@
   <button
     class="btn relative"
     :class="cssClasses"
-    :disabled="disabled===true"
+    :disabled="disabled === true"
     @click="$emit('click', $event)"
   >
     <slot />
@@ -17,17 +17,17 @@ export default {
       type: String,
       default: 'sm',
       validate(value) {
-        return ["xs", "sm", "base"].includes(value);
-      }
+        return ['xs', 'sm', 'base'].includes(value);
+      },
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     primary: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   emits: ['click'],
   computed: {
@@ -40,9 +40,9 @@ export default {
         // Types
         'is-primary': this.primary === true,
       };
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -65,11 +65,11 @@ export default {
 }
 
 .btn.is-info {
-  @apply text-white bg-blue-700 hover:bg-blue-800  focus:ring-blue-300 font-medium text-sm focus:outline-none ;
+  @apply text-white bg-blue-700 hover:bg-blue-800  focus:ring-blue-300 font-medium text-sm focus:outline-none;
 }
 
 .btn.is-success {
-  @apply text-white bg-green-700 hover:bg-green-800  focus:ring-green-300 font-medium text-sm focus:outline-none ;
+  @apply text-white bg-green-700 hover:bg-green-800  focus:ring-green-300 font-medium text-sm focus:outline-none;
 }
 
 .btn.is-light {
@@ -88,7 +88,7 @@ export default {
   @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-300;
 }
 
-@supports (-moz-appearance:none) {
+@supports (-moz-appearance: none) {
   .backdrop-filter.bg-opacity-40 {
     --tw-bg-opacity: 1 !important;
   }

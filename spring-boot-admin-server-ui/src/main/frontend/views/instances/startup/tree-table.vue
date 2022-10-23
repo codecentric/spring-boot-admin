@@ -20,7 +20,10 @@
       <div class="inline-flex items-center">
         <span v-text="$t('instances.startup.column.name')" />
       </div>
-      <div class="text-right" v-text="$t('instances.startup.column.duration')" />
+      <div
+        class="text-right"
+        v-text="$t('instances.startup.column.duration')"
+      />
       <div class="break-all" v-text="$t('instances.startup.column.details')" />
     </div>
     <ul v-if="tree">
@@ -36,31 +39,31 @@
 </template>
 
 <script>
-import {StartupActuatorEventTree} from '@/services/startup-activator-tree';
-import TreeItem from "./tree-item.vue";
+import { StartupActuatorEventTree } from '@/services/startup-activator-tree';
+import TreeItem from '@/views/instances/startup/tree-item';
 
 export default {
-  components: {TreeItem},
+  components: { TreeItem },
   props: {
     tree: {
       type: StartupActuatorEventTree,
-      required: true
+      required: true,
     },
     expand: {
       type: Set,
       required: false,
-      default: null
-    }
+      default: null,
+    },
   },
   emits: ['change'],
   data: () => ({
     expandedNodes: new Set(),
-    isExpanded: false
+    isExpanded: false,
   }),
   computed: {
     treeSize() {
-      return new Set(this.tree.getEvents()).size
-    }
+      return new Set(this.tree.getEvents()).size;
+    },
   },
   watch: {
     expand(expandedNodes) {
@@ -68,9 +71,9 @@ export default {
     },
     expandedNodes() {
       this.$emit('change', {
-        expandedNodes: this.expandedNodes
+        expandedNodes: this.expandedNodes,
       });
-    }
+    },
   },
   created() {
     if (this.expand) {
@@ -80,17 +83,17 @@ export default {
   methods: {
     onToggle($event) {
       if ($event.isOpen === true) {
-        this.expandedNodes.add($event.target.startupStep.id)
-        this.expandedNodes = new Set(this.expandedNodes)
+        this.expandedNodes.add($event.target.startupStep.id);
+        this.expandedNodes = new Set(this.expandedNodes);
       } else {
-        this.expandedNodes.delete($event.target.startupStep.id)
-        this.expandedNodes = new Set(this.expandedNodes)
+        this.expandedNodes.delete($event.target.startupStep.id);
+        this.expandedNodes = new Set(this.expandedNodes);
       }
 
-      this.isExpanded = this.expandedNodes.size === this.treeSize
-    }
-  }
-}
+      this.isExpanded = this.expandedNodes.size === this.treeSize;
+    },
+  },
+};
 </script>
 
 <style lang="css">
@@ -149,35 +152,34 @@ export default {
 }
 .tree-item .icon.empty {
 }
-.tree-item[tree-item-depth="1"] {
+.tree-item[tree-item-depth='1'] {
   background-color: rgba(66, 211, 165, 0.2);
 }
-.tree-item[tree-item-depth="1"] .column--name {
+.tree-item[tree-item-depth='1'] .column--name {
   padding-left: 22px;
 }
-.tree-item[tree-item-depth="2"] {
+.tree-item[tree-item-depth='2'] {
   background-color: rgba(66, 211, 165, 0.2);
 }
-.tree-item[tree-item-depth="2"] .column--name {
+.tree-item[tree-item-depth='2'] .column--name {
   padding-left: 44px;
 }
-.tree-item[tree-item-depth="3"] {
+.tree-item[tree-item-depth='3'] {
   background-color: rgba(66, 211, 165, 0.2);
 }
-.tree-item[tree-item-depth="3"] .column--name {
+.tree-item[tree-item-depth='3'] .column--name {
   padding-left: 66px;
 }
-.tree-item[tree-item-depth="4"] {
+.tree-item[tree-item-depth='4'] {
   background-color: rgba(66, 211, 165, 0.2);
 }
-.tree-item[tree-item-depth="4"] .column--name {
+.tree-item[tree-item-depth='4'] .column--name {
   padding-left: 88px;
 }
-.tree-item[tree-item-depth="5"] {
+.tree-item[tree-item-depth='5'] {
   background-color: rgba(66, 211, 165, 0.2);
 }
-.tree-item[tree-item-depth="5"] .column--name {
+.tree-item[tree-item-depth='5'] .column--name {
   padding-left: 110px;
 }
-
 </style>

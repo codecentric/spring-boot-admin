@@ -16,10 +16,7 @@
 
 <template>
   <div>
-    <sba-panel
-      :title="metricName"
-      :header-sticks-below="'#navigation'"
-    >
+    <sba-panel :title="metricName" :header-sticks-below="'#navigation'">
       <template #actions>
         <div
           v-for="statistic in statistics"
@@ -35,31 +32,16 @@
             <select
               :value="statisticTypes[statistic]"
               class="focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm border-gray-300 rounded-md"
-              @change="$emit('type-select', metricName, statistic, $event.target.value)"
+              @change="
+                $emit('type-select', metricName, statistic, $event.target.value)
+              "
             >
-              <option :value="undefined">
-                -
-              </option>
-              <option
-                value="integer"
-                v-text="$t('term.integer')"
-              />
-              <option
-                value="float"
-                v-text="$t('term.float')"
-              />
-              <option
-                value="duration"
-                v-text="$t('term.duration')"
-              />
-              <option
-                value="millis"
-                v-text="$t('term.milliseconds')"
-              />
-              <option
-                value="bytes"
-                v-text="$t('term.bytes')"
-              />
+              <option :value="undefined">-</option>
+              <option value="integer" v-text="$t('term.integer')" />
+              <option value="float" v-text="$t('term.float')" />
+              <option value="duration" v-text="$t('term.duration')" />
+              <option value="millis" v-text="$t('term.milliseconds')" />
+              <option value="bytes" v-text="$t('term.bytes')" />
             </select>
           </div>
         </div>
@@ -70,9 +52,11 @@
           v-for="(tags, idx) in tagSelections"
           :key="idx"
           class="bg-white px-4 py-3 grid grid-cols-3 gap-4"
-          :class="{'bg-gray-50': idx%2!==0}"
+          :class="{ 'bg-gray-50': idx % 2 !== 0 }"
         >
-          <div class="text-sm flex items-center font-medium text-gray-500 col-span-2">
+          <div
+            class="text-sm flex items-center font-medium text-gray-500 col-span-2"
+          >
             <span
               class="whitespace-pre"
               :title="getLabel(tags)"
@@ -111,17 +95,20 @@
 </template>
 
 <script>
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance.js';
-import {concatMap, delay, from, retryWhen, timer} from '@/utils/rxjs';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
-import {take} from 'rxjs/operators';
-import {useI18n} from "vue-i18n";
+import { take } from 'rxjs/operators';
+import { useI18n } from 'vue-i18n';
+
+import subscribing from '@/mixins/subscribing';
+import Instance from '@/services/instance';
+import { concatMap, delay, from, retryWhen, timer } from '@/utils/rxjs';
 
 const formatDuration = (value, baseUnit) => {
   const duration = moment.duration(toMillis(value, baseUnit));
-  return `${Math.floor(duration.asDays())}d ${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s`;
+  return `${Math.floor(
+    duration.asDays()
+  )}d ${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s`;
 };
 
 const formatMillis = (value, baseUnit) => {
@@ -149,31 +136,31 @@ export default {
   props: {
     metricName: {
       type: String,
-      required: true
+      required: true,
     },
     instance: {
       type: Instance,
-      required: true
+      required: true,
     },
     tagSelections: {
       type: Array,
-      default: () => [{}]
+      default: () => [{}],
     },
     statisticTypes: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     index: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   emits: ['type-select', 'remove'],
   setup() {
     const i18n = useI18n();
     return {
-      i18n
-    }
+      i18n,
+    };
   },
   data: () => ({
     description: '',
@@ -184,17 +171,19 @@ export default {
   }),
   watch: {
     tagSelections(newVal, oldVal) {
-      newVal.map((v, i) => [v, i])
+      newVal
+        .map((v, i) => [v, i])
         .filter(([v]) => !oldVal.includes(v))
         .forEach(([v, i]) => this.fetchMetric(v, i));
-    }
+    },
   },
   methods: {
     handleRemove(idx) {
       this.$emit('remove', this.metricName, idx);
     },
     getValue(measurements, statistic) {
-      const measurement = measurements && measurements.find(m => m.statistic === statistic);
+      const measurement =
+        measurements && measurements.find((m) => m.statistic === statistic);
       if (!measurement) {
         return undefined;
       }
@@ -215,9 +204,12 @@ export default {
       }
     },
     getLabel(tags) {
-      return Object.entries(tags).filter(([, value]) => typeof value !== 'undefined')
-        .map(pair => pair.join(':'))
-        .join('\n') || this.i18n.t('instances.metrics.no_tags');
+      return (
+        Object.entries(tags)
+          .filter(([, value]) => typeof value !== 'undefined')
+          .map((pair) => pair.join(':'))
+          .join('\n') || this.i18n.t('instances.metrics.no_tags')
+      );
     },
     async fetchMetric(tags, idx) {
       try {
@@ -227,7 +219,7 @@ export default {
         if (idx === 0) {
           this.description = response.data.description;
           this.baseUnit = response.data.baseUnit;
-          this.statistics = response.data.measurements.map(m => m.statistic);
+          this.statistics = response.data.measurements.map((m) => m.statistic);
         }
       } catch (error) {
         console.warn(`Fetching metric ${this.metricName} failed:`, error);
@@ -240,20 +232,18 @@ export default {
     createSubscription() {
       const vm = this;
       return timer(0, 2500)
-        .pipe(concatMap(vm.fetchAllTags), retryWhen(
-          err => {
-            return err.pipe(
-              delay(1000),
-              take(2)
-            )
-          }))
+        .pipe(
+          concatMap(vm.fetchAllTags),
+          retryWhen((err) => {
+            return err.pipe(delay(1000), take(2));
+          })
+        )
         .subscribe({
-          next: () => {
-          }
+          next: () => {},
         });
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="css">
 table .metrics__label {
@@ -274,5 +264,4 @@ table .metrics__statistic-value {
   text-align: right;
   vertical-align: middle;
 }
-
 </style>

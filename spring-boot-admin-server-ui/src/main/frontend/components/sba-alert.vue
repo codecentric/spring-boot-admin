@@ -23,23 +23,11 @@
   >
     <div class="flex">
       <div class="py-1">
-        <font-awesome-icon
-          :icon="icon"
-          prefix="fa"
-          size="1x"
-          class="mr-4"
-        />
+        <font-awesome-icon :icon="icon" prefix="fa" size="1x" class="mr-4" />
       </div>
       <div class="grid grid-cols-1 place-content-center">
-        <p
-          v-if="title"
-          class="font-bold"
-          v-text="title"
-        />
-        <p
-          class="text-sm"
-          v-html="message"
-        />
+        <p v-if="title" class="font-bold" v-text="title" />
+        <p class="text-sm" v-html="message" />
       </div>
     </div>
   </div>
@@ -47,7 +35,8 @@
 
 <script>
 import classNames from 'classnames';
-import FontAwesomeIcon from "./font-awesome-icon.js"
+
+import FontAwesomeIcon from '@/components/font-awesome-icon';
 
 export const Severity = {
   ERROR: 'ERROR',
@@ -58,29 +47,33 @@ export const Severity = {
 
 export default {
   name: 'SbaAlert',
-  components: {FontAwesomeIcon},
+  components: { FontAwesomeIcon },
   props: {
     title: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     error: {
       type: [Error, String],
-      default: null
+      default: null,
     },
     severity: {
       type: String,
-      default: Severity.ERROR
-    }
+      default: Severity.ERROR,
+    },
   },
   data() {
     return {
       classNames,
       alertClass: {
-        'bg-red-100 border-red-400 text-red-700': this.severity.toUpperCase() === Severity.ERROR,
-        'bg-orange-100 border-orange-500 text-orange-700': this.severity.toUpperCase() === Severity.WARN,
-        'bg-blue-100 border-blue-500 text-blue-900': this.severity.toUpperCase() === Severity.INFO,
-        'bg-teal-100 border-teal-500 text-teal-900': this.severity.toUpperCase() === Severity.SUCCESS,
+        'bg-red-100 border-red-400 text-red-700':
+          this.severity.toUpperCase() === Severity.ERROR,
+        'bg-orange-100 border-orange-500 text-orange-700':
+          this.severity.toUpperCase() === Severity.WARN,
+        'bg-blue-100 border-blue-500 text-blue-900':
+          this.severity.toUpperCase() === Severity.INFO,
+        'bg-teal-100 border-teal-500 text-teal-900':
+          this.severity.toUpperCase() === Severity.SUCCESS,
       },
       textColor: {
         'text-red-700': this.severity.toUpperCase() === Severity.ERROR,
@@ -88,7 +81,7 @@ export default {
         'text-blue-900': this.severity.toUpperCase() === Severity.INFO,
         'text-teal-900': this.severity.toUpperCase() === Severity.SUCCESS,
       },
-    }
+    };
   },
   computed: {
     message() {
@@ -122,7 +115,7 @@ export default {
         default:
           return ['fa', 'info-circle'];
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

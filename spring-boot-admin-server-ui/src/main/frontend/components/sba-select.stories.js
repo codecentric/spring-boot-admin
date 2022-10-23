@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-import SbaSelect from "./sba-select.vue";
+import SbaSelect from './sba-select.vue';
 
 export default {
   component: SbaSelect,
@@ -24,9 +22,9 @@ export default {
 
 const Template = (args) => {
   return {
-    components: {SbaSelect},
+    components: { SbaSelect },
     setup() {
-      return {args};
+      return { args };
     },
     template: `
       <sba-select v-bind="args">
@@ -34,14 +32,15 @@ const Template = (args) => {
         <template #append>Append</template>
       </sba-select>
     `,
-  }
+  };
 };
 
 export const SimpleSelect = Template.bind({});
 SimpleSelect.args = {
   modelValue: 'berlin',
   options: [
-    {value: 'beer', label: 'Beer'},
-    {value: 'water', label: 'Water'},
-    {value: 'wine', label: 'Wine'},
-  ]};
+    { value: 'beer', label: 'Beer' },
+    { value: 'water', label: 'Water' },
+    { value: 'wine', label: 'Wine' },
+  ],
+};

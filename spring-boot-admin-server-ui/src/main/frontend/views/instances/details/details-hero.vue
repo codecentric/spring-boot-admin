@@ -8,28 +8,23 @@
       <small><em v-text="instance.id" /></small>
     </div>
     <div class="mt-4 text-center">
-      <sba-tags
-        v-if="instance"
-        :tags="instance.tags"
-      />
+      <sba-tags v-if="instance" :tags="instance.tags" />
     </div>
   </div>
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
+import Instance from '@/services/instance';
 
 export default {
   name: 'DetailsHero',
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
-  }
-}
+      required: true,
+    },
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -15,11 +15,11 @@
   -->
 
 <template>
-  <sba-wave/>
+  <sba-wave />
   <section>
     <sba-sticky-subnav>
       <div class="container mx-auto flex">
-        <applications-stats/>
+        <application-stats />
         <application-notification-center
           v-if="hasNotificationFiltersSupport"
           :notification-filters="notificationFilters"
@@ -33,7 +33,7 @@
             :placeholder="t('term.filter')"
           >
             <template #prepend>
-              <font-awesome-icon icon="filter"/>
+              <font-awesome-icon icon="filter" />
             </template>
           </sba-input>
         </div>
@@ -55,7 +55,7 @@
         />
       </sba-panel>
 
-      <application-status-hero v-if="applicationsInitialized"/>
+      <application-status-hero v-if="applicationsInitialized" />
 
       <template v-if="applicationsInitialized">
         <TransitionGroup>
@@ -67,7 +67,7 @@
             :title="t('term.applications_tc', group.applications.length)"
           >
             <template #title>
-              <sba-status-badge :status="group.statusKey"/>
+              <sba-status-badge :status="group.statusKey" />
             </template>
 
             <applications-list-item
@@ -82,13 +82,20 @@
               @restart="restart"
               @deselect="deselect"
               @select="select"
-              @toggle-notification-filter-settings="toggleNotificationFilterSettings"
+              @toggle-notification-filter-settings="
+                toggleNotificationFilterSettings
+              "
             />
           </sba-panel>
         </TransitionGroup>
         <notification-filter-settings
           v-if="showNotificationFilterSettingsObject"
-          v-popper="`nf-settings-${showNotificationFilterSettingsObject.id || showNotificationFilterSettingsObject.name}`"
+          v-popper="
+            `nf-settings-${
+              showNotificationFilterSettingsObject.id ||
+              showNotificationFilterSettingsObject.name
+            }`
+          "
           :notification-filters="notificationFilters"
           :object="showNotificationFilterSettingsObject"
           @filter-add="addFilter"
@@ -100,62 +107,64 @@
 </template>
 
 <script>
+import { groupBy, sortBy, transform } from 'lodash-es';
+import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import SbaStickySubnav from '@/components/sba-sticky-subnav';
+import SbaWave from '@/components/sba-wave';
+
+import { useApplicationStore } from '@/composables/useApplicationStore';
 import Popper from '@/directives/popper';
-import subscribing from '../../mixins/subscribing.js';
+import subscribing from '@/mixins/subscribing';
+import Application from '@/services/application';
 import NotificationFilter from '@/services/notification-filter';
-import {anyValueMatches} from '@/utils/collections';
-import {concatMap, mergeWith, Subject, timer} from '@/utils/rxjs';
-import {groupBy, sortBy, transform} from 'lodash-es';
-import ApplicationsListItem from './applications-list-item.vue';
-import ApplicationsStats from './applications-stats.vue';
-import handle from './handle.vue';
-import NotificationFilterSettings from './notification-filter-settings.vue';
-import ApplicationStatusHero from '@/views/applications/application-status-hero.vue';
-import SbaStickySubnav from "../../components/sba-sticky-subnav.vue";
-import SbaWave from "../../components/sba-wave.vue";
-import {useI18n} from "vue-i18n";
-import {ref} from "vue";
-import Application from "../../services/application";
-import ApplicationNotificationCenter from "./application-notification-center";
-import {useApplicationStore} from "../../composables/useApplicationStore";
+import { anyValueMatches } from '@/utils/collections';
+import { Subject, concatMap, mergeWith, timer } from '@/utils/rxjs';
+import ApplicationStats from '@/views/applications/application-stats';
+import ApplicationStatusHero from '@/views/applications/application-status-hero';
+import ApplicationsListItem from '@/views/applications/applications-list-item';
+import handle from '@/views/applications/handle';
+import NotificationFilterSettings from '@/views/applications/notification-filter-settings';
 
 const instanceMatchesFilter = (term, instance) => {
-  const predicate = value => String(value).toLowerCase().includes(term);
-  return anyValueMatches(instance.registration, predicate) ||
+  const predicate = (value) => String(value).toLowerCase().includes(term);
+  return (
+    anyValueMatches(instance.registration, predicate) ||
     anyValueMatches(instance.buildVersion, predicate) ||
     anyValueMatches(instance.id, predicate) ||
-    anyValueMatches(instance.tags, predicate);
+    anyValueMatches(instance.tags, predicate)
+  );
 };
 
 export default {
-  directives: {Popper},
+  directives: { Popper },
   components: {
-    ApplicationNotificationCenter,
     SbaWave,
     ApplicationStatusHero,
     SbaStickySubnav,
-    ApplicationsStats,
+    ApplicationStats,
     ApplicationsListItem,
-    NotificationFilterSettings
+    NotificationFilterSettings,
   },
   mixins: [subscribing],
   props: {
     error: {
       type: Error,
-      default: null
+      default: null,
     },
     selected: {
       type: String,
-      default: null
+      default: null,
     },
     applicationsInitialized: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   setup: function () {
-    const {t} = useI18n();
-    const {applications} = useApplicationStore();
+    const { t } = useI18n();
+    const { applications } = useApplicationStore();
 
     return {
       applications,
@@ -165,40 +174,56 @@ export default {
       showNotificationFilterSettingsObject: ref(null),
       notificationFilters: ref([]),
       errors: ref([]),
-      palette: ref({})
-    }
+      palette: ref({}),
+    };
   },
   computed: {
     statusGroups() {
       const filteredApplications = this.filterInstances(this.applications);
-      const applicationsByStatus = groupBy(filteredApplications, application => application.status);
-      const list = transform(applicationsByStatus, (result, applications, status) => {
-        const statusKey = status.replace(/[^\w]/gi, '').toLowerCase();
-        result.push({statusKey, status: status, applications: sortBy(applications, [application => application.name])})
-      }, []);
-      return sortBy(list, [item => item.status]);
-    }
+      const applicationsByStatus = groupBy(
+        filteredApplications,
+        (application) => application.status
+      );
+      const list = transform(
+        applicationsByStatus,
+        (result, applications, status) => {
+          const statusKey = status.replace(/[^\w]/gi, '').toLowerCase();
+          result.push({
+            statusKey,
+            status: status,
+            applications: sortBy(applications, [
+              (application) => application.name,
+            ]),
+          });
+        },
+        []
+      );
+      return sortBy(list, [(item) => item.status]);
+    },
   },
   watch: {
     '$route.query': {
       immediate: true,
       handler() {
         this.filter = this.$route.query.q || '';
-      }
+      },
     },
-    'selected': {
+    selected: {
       immediate: true,
       handler(newVal) {
         this.scrollIntoView(newVal);
-      }
-    }
+      },
+    },
   },
   mounted() {
     this.hasNotificationFiltersSupport = NotificationFilter.isSupported();
   },
   methods: {
     select(name) {
-      this.$router.replace({name: 'applications', params: {selected: name}});
+      this.$router.replace({
+        name: 'applications',
+        params: { selected: name },
+      });
     },
     deselect(event, expectedSelected) {
       if (event && event.target instanceof HTMLAnchorElement) {
@@ -206,7 +231,7 @@ export default {
       }
       this.toggleNotificationFilterSettings(null);
       if (this.selected === expectedSelected || !expectedSelected) {
-        this.$router.replace({name: 'applications'});
+        this.$router.replace({ name: 'applications' });
       }
     },
     async scrollIntoView(id, behavior) {
@@ -215,7 +240,11 @@ export default {
         const el = document.getElementById(id);
         if (el) {
           const top = el.getBoundingClientRect().top + window.scrollY - 100;
-          window.scroll({top, left: window.scrollX, behavior: behavior || 'smooth'});
+          window.scroll({
+            top,
+            left: window.scrollX,
+            behavior: behavior || 'smooth',
+          });
         }
       }
     },
@@ -223,31 +252,70 @@ export default {
       this.toggleNotificationFilterSettings(null);
       try {
         await item.unregister();
-        const message = item instanceof Application ? 'applications.unregister_successful' : 'instances.unregister_successful';
-        this.$notificationCenter.success(this.t(message, {name: item.id || item.name}));
+        const message =
+          item instanceof Application
+            ? 'applications.unregister_successful'
+            : 'instances.unregister_successful';
+        this.$notificationCenter.success(
+          this.t(message, { name: item.id || item.name })
+        );
       } catch (error) {
-        const message = item instanceof Application ? 'applications.unregister_failed' : 'instances.unregister_failed';
-        this.$notificationCenter.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
+        const message =
+          item instanceof Application
+            ? 'applications.unregister_failed'
+            : 'instances.unregister_failed';
+        this.$notificationCenter.error(
+          this.t(message, {
+            name: item.id || item.name,
+            error: error.response.status,
+          })
+        );
       }
     },
     async shutdown(item) {
       try {
         await item.shutdown();
-        const message = item instanceof Application ? 'applications.shutdown_successful' : 'instances.shutdown_successful';
-        this.$notificationCenter.success(this.t(message, {name: item.id || item.name}));
+        const message =
+          item instanceof Application
+            ? 'applications.shutdown_successful'
+            : 'instances.shutdown_successful';
+        this.$notificationCenter.success(
+          this.t(message, { name: item.id || item.name })
+        );
       } catch (error) {
-        const message = item instanceof Application ? 'applications.shutdown_failed' : 'instances.shutdown_failed';
-        this.$notificationCenter.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
+        const message =
+          item instanceof Application
+            ? 'applications.shutdown_failed'
+            : 'instances.shutdown_failed';
+        this.$notificationCenter.error(
+          this.t(message, {
+            name: item.id || item.name,
+            error: error.response.status,
+          })
+        );
       }
     },
     async restart(item) {
       try {
         await item.restart();
-        const message = item instanceof Application ? 'applications.restarted' : 'instances.restarted';
-        this.$notificationCenter.success(this.t(message, {name: item.id || item.name}));
+        const message =
+          item instanceof Application
+            ? 'applications.restarted'
+            : 'instances.restarted';
+        this.$notificationCenter.success(
+          this.t(message, { name: item.id || item.name })
+        );
       } catch (error) {
-        const message = item instanceof Application ? 'applications.restart_failed' : 'instances.restart_failed';
-        this.$notificationCenter.error(this.t(message, {name: item.id || item.name, error: error.response.status}));
+        const message =
+          item instanceof Application
+            ? 'applications.restart_failed'
+            : 'instances.restart_failed';
+        this.$notificationCenter.error(
+          this.t(message, {
+            name: item.id || item.name,
+            error: error.response.status,
+          })
+        );
       }
     },
     createSubscription() {
@@ -256,16 +324,21 @@ export default {
       return timer(0, 60000)
         .pipe(
           mergeWith(vm.notificationFilterSubject),
-          concatMap(this.fetchNotificationFilters),
+          concatMap(this.fetchNotificationFilters)
         )
         .subscribe({
-          next: data => {
+          next: (data) => {
             vm.notificationFilters = data;
           },
-          error: error => {
-            console.warn('Fetching notification filters failed with error:', error);
-            this.$notificationCenter.error(this.t('applications.fetching_notification_filters_failed'));
-          }
+          error: (error) => {
+            console.warn(
+              'Fetching notification filters failed with error:',
+              error
+            );
+            this.$notificationCenter.error(
+              this.t('applications.fetching_notification_filters_failed')
+            );
+          },
         });
     },
     async fetchNotificationFilters() {
@@ -275,13 +348,18 @@ export default {
       }
       return [];
     },
-    async addFilter({object, ttl}) {
+    async addFilter({ object, ttl }) {
       try {
         const response = await NotificationFilter.addFilter(object, ttl);
         let notificationFilter = response.data;
         this.notificationFilterSubject.next(notificationFilter);
         this.$notificationCenter.success(
-          `${this.t('applications.notifications_suppressed_for', {name: notificationFilter.applicationName || notificationFilter.instanceId})} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`);
+          `${this.t('applications.notifications_suppressed_for', {
+            name:
+              notificationFilter.applicationName ||
+              notificationFilter.instanceId,
+          })} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`
+        );
       } catch (error) {
         console.warn('Adding notification filter failed:', error);
       } finally {
@@ -292,7 +370,9 @@ export default {
       try {
         await activeFilter.delete();
         this.notificationFilterSubject.next(activeFilter.id);
-        this.$notificationCenter.success(this.t('applications.notification_filter.removed'));
+        this.$notificationCenter.success(
+          this.t('applications.notification_filter.removed')
+        );
       } catch (error) {
         console.warn('Deleting notification filter failed:', error);
       } finally {
@@ -308,11 +388,15 @@ export default {
       }
 
       return applications
-        .map(application => application.filterInstances(i => instanceMatchesFilter(this.filter.toLowerCase(), i)))
-        .filter(application => application.instances.length > 0);
-    }
+        .map((application) =>
+          application.filterInstances((i) =>
+            instanceMatchesFilter(this.filter.toLowerCase(), i)
+          )
+        )
+        .filter((application) => application.instances.length > 0);
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       path: '/applications/:selected?',
       props: true,
@@ -320,9 +404,9 @@ export default {
       label: 'applications.title',
       handle,
       order: 0,
-      component: this
+      component: this,
     });
     viewRegistry.addRedirect('/', 'applications');
-  }
+  },
 };
 </script>

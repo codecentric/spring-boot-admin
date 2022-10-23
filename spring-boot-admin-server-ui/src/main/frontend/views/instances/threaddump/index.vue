@@ -15,14 +15,8 @@
   -->
 
 <template>
-  <sba-instance-section
-    :loading="!hasLoaded"
-    :error="errorFetch"
-  >
-    <template
-      v-if="threads"
-      #before
-    >
+  <sba-instance-section :loading="!hasLoaded" :error="errorFetch">
+    <template v-if="threads" #before>
       <sba-sticky-subnav>
         <div class="text-right">
           <sba-button @click="downloadThreaddump">
@@ -38,39 +32,37 @@
       :title="$t('instances.threaddump.download_failed')"
     />
     <sba-panel>
-      <threads-list
-        v-if="threads"
-        :thread-timelines="threads"
-      />
+      <threads-list v-if="threads" :thread-timelines="threads" />
     </sba-panel>
   </sba-instance-section>
 </template>
 
 <script>
-import {remove} from 'lodash-es';
-import {take} from 'rxjs/operators';
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance.js';
-import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs.js';
-import threadsList from './threads-list.vue';
+import { remove } from 'lodash-es';
 import moment from 'moment';
-import {VIEW_GROUP} from '../../ViewGroup.js';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import { take } from 'rxjs/operators';
+
+import subscribing from '@/mixins/subscribing';
+import Instance from '@/services/instance';
+import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
+import threadsList from '@/views/instances/threaddump/threads-list';
 
 export default {
-  components: {SbaInstanceSection, threadsList},
+  components: { SbaInstanceSection, threadsList },
   mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
     errorFetch: null,
     errorDownload: null,
-    threads: {}
+    threads: {},
   }),
   computed: {},
   methods: {
@@ -82,39 +74,40 @@ export default {
         .filter(([, value]) => value.threadState !== 'TERMINATED')
         .map(([threadId]) => parseInt(threadId));
 
-      threads.forEach(
-        thread => {
-          if (!vm.threads[thread.threadId]) {
-            vm.threads[thread.threadId] = {
-              threadId: thread.threadId,
+      threads.forEach((thread) => {
+        if (!vm.threads[thread.threadId]) {
+          vm.threads[thread.threadId] = {
+            threadId: thread.threadId,
+            threadState: thread.threadState,
+            threadName: thread.threadName,
+            timeline: [
+              {
+                start: now,
+                end: now,
+                details: thread,
+                threadState: thread.threadState,
+              },
+            ],
+          };
+        } else {
+          const entry = vm.threads[thread.threadId];
+          if (entry.threadState !== thread.threadState) {
+            entry.threadState = thread.threadState;
+            entry.timeline[entry.timeline.length - 1].end = now;
+            entry.timeline.push({
+              start: now,
+              end: now,
+              details: thread,
               threadState: thread.threadState,
-              threadName: thread.threadName,
-              timeline: [{
-                start: now,
-                end: now,
-                details: thread,
-                threadState: thread.threadState,
-              }]
-            };
+            });
           } else {
-            const entry = vm.threads[thread.threadId];
-            if (entry.threadState !== thread.threadState) {
-              entry.threadState = thread.threadState;
-              entry.timeline[entry.timeline.length - 1].end = now;
-              entry.timeline.push({
-                start: now,
-                end: now,
-                details: thread,
-                threadState: thread.threadState,
-              });
-            } else {
-              entry.timeline[entry.timeline.length - 1].end = now;
-            }
+            entry.timeline[entry.timeline.length - 1].end = now;
           }
-          remove(terminatedThreads, threadId => threadId === thread.threadId);
-        });
+        }
+        remove(terminatedThreads, (threadId) => threadId === thread.threadId);
+      });
 
-      terminatedThreads.forEach(threadId => {
+      terminatedThreads.forEach((threadId) => {
         const entry = vm.threads[threadId];
         entry.threadState = 'TERMINATED';
         entry.timeline[entry.timeline.length - 1].end = now;
@@ -138,27 +131,26 @@ export default {
       const vm = this;
       vm.errorFetch = null;
       return timer(0, 1000)
-        .pipe(concatMap(vm.fetchThreaddump), retryWhen(
-          err => {
-            return err.pipe(
-              delay(1000),
-              take(2)
-            )
-          }))
+        .pipe(
+          concatMap(vm.fetchThreaddump),
+          retryWhen((err) => {
+            return err.pipe(delay(1000), take(2));
+          })
+        )
         .subscribe({
-          next: threads => {
+          next: (threads) => {
             vm.hasLoaded = true;
             vm.updateTimelines(threads);
           },
-          error: error => {
+          error: (error) => {
             vm.hasLoaded = true;
             console.warn('Fetching threaddump failed:', error);
             vm.errorFetch = error;
-          }
+          },
         });
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/threaddump',
       parent: 'instances',
@@ -167,8 +159,8 @@ export default {
       component: this,
       group: VIEW_GROUP.JVM,
       order: 400,
-      isEnabled: ({instance}) => instance.hasEndpoint('threaddump')
+      isEnabled: ({ instance }) => instance.hasEndpoint('threaddump'),
     });
-  }
-}
+  },
+};
 </script>

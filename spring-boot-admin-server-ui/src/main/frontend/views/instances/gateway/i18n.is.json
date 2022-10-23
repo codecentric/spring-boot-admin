@@ -2,7 +2,7 @@
   "instances": {
     "gateway": {
       "label": "Gátt",
-      "route":{
+      "route": {
         "add_route": "Bæta við vegi",
         "adding_failed": "Mistókst að bæta við vegi.",
         "cache_refreshed": "Skyndiminni vega uppfært",

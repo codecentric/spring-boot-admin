@@ -1,13 +1,11 @@
 <template>
-  <span
-    :class="classNames('status-badge', healthStatus)"
-    v-text="status"
-  />
+  <span :class="classNames('status-badge', healthStatus)" v-text="status" />
 </template>
 
 <script>
 import classNames from 'classnames';
-import {HealthStatus} from '../HealthStatus.js';
+
+import { HealthStatus } from '@/HealthStatus';
 
 export default {
   props: {
@@ -15,19 +13,22 @@ export default {
       type: [HealthStatus, String, Number],
       required: true,
       validator(value) {
-        return HealthStatus.hasOwnProperty(value.toUpperCase());
-      }
-    }
+        return Object.prototype.hasOwnProperty.call(
+          HealthStatus,
+          value.toUpperCase()
+        );
+      },
+    },
   },
   computed: {
     healthStatus() {
-      return `${this.status}`.toLowerCase()
-    }
+      return `${this.status}`.toLowerCase();
+    },
   },
   methods: {
-    classNames
-  }
-}
+    classNames,
+  },
+};
 </script>
 
 <style scoped>
@@ -35,12 +36,12 @@ export default {
   @apply bg-gray-200 text-black text-xs inline-flex items-center uppercase  rounded overflow-hidden px-3 py-1;
 }
 .up {
-  @apply bg-green-200 text-green-700 ;
+  @apply bg-green-200 text-green-700;
 }
 .down {
-  @apply bg-red-200 text-red-700 ;
+  @apply bg-red-200 text-red-700;
 }
 .restricted {
-  @apply bg-yellow-200 text-yellow-700 ;
+  @apply bg-yellow-200 text-yellow-700;
 }
 </style>

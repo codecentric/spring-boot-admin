@@ -15,13 +15,8 @@
   -->
 
 <template>
-  <sba-instance-section
-    :error="error"
-    :loading="!hasLoaded"
-  >
-    <sba-panel
-      v-if="!isOldMetrics && availableMetrics.length > 0"
-    >
+  <sba-instance-section :error="error" :loading="!hasLoaded">
+    <sba-panel v-if="!isOldMetrics && availableMetrics.length > 0">
       <form class="grid grid-cols-6 gap-6">
         <div class="col-span-3">
           <div>
@@ -47,23 +42,19 @@
         </div>
         <div class="col-span-3 space-y-3">
           <template v-if="availableTags">
-            <div
-              v-for="tag in availableTags"
-              :key="tag.tag"
-            >
+            <div v-for="tag in availableTags" :key="tag.tag">
               <label
                 for="metric2"
                 class="block text-sm font-medium text-gray-700"
-              >{{ tag.tag }}</label>
+                >{{ tag.tag }}</label
+              >
               <div class="mt-1 relative rounded-md shadow-sm">
                 <select
                   id="metric2"
                   v-model="selectedTags[tag.tag]"
                   class="focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
                 >
-                  <option :value="undefined">
-                    -
-                  </option>
+                  <option :value="undefined">-</option>
                   <option
                     v-for="value in tag.values"
                     :key="value"
@@ -79,10 +70,7 @@
 
       <template #footer>
         <div class="text-right">
-          <sba-button
-            type="primary"
-            @click="handleSubmit"
-          >
+          <sba-button type="primary" @click="handleSubmit">
             {{ $t('instances.metrics.add_metric') }}
           </sba-button>
         </div>
@@ -110,28 +98,32 @@
 </template>
 
 <script>
-import {sortBy} from 'lodash-es';
-import Metric from './metric.vue';
-import {VIEW_GROUP} from '../../ViewGroup.js';
+import { sortBy } from 'lodash-es';
+
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import Metric from '@/views/instances/metrics/metric';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
-import Instance from "../../../services/instance";
 
 const ApiVersion = Object.freeze({
-   V2: 'application/vnd.spring-boot.actuator.v2',
-   V3: 'application/vnd.spring-boot.actuator.v3'
+  V2: 'application/vnd.spring-boot.actuator.v2',
+  V3: 'application/vnd.spring-boot.actuator.v3',
 });
 
 function isActuatorApiVersionSupported(headerContentType) {
-  return headerContentType.includes(ApiVersion.V2) || headerContentType.includes(ApiVersion.V3);
+  return (
+    headerContentType.includes(ApiVersion.V2) ||
+    headerContentType.includes(ApiVersion.V3)
+  );
 }
 
 export default {
-  components: {SbaInstanceSection, Metric},
+  components: { SbaInstanceSection, Metric },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     metrics: [],
@@ -142,7 +134,7 @@ export default {
     availableTags: null,
     selectedTags: null,
     isOldMetrics: false,
-    hasLoaded: false
+    hasLoaded: false,
   }),
   watch: {
     selectedMetric: 'fetchAvailableTags',
@@ -150,8 +142,8 @@ export default {
       deep: true,
       handler(value) {
         this.persistMetrics(value);
-      }
-    }
+      },
+    },
   },
   created() {
     this.fetchMetricIndex();
@@ -159,43 +151,51 @@ export default {
   },
   methods: {
     handleSubmit() {
-      this.addMetric(this.selectedMetric, this.selectedTags)
+      this.addMetric(this.selectedMetric, this.selectedTags);
     },
     handleTypeSelect(metricName, statistic, type) {
-      const metric = this.metrics.find(m => m.name === metricName);
+      const metric = this.metrics.find((m) => m.name === metricName);
       if (metric) {
-        metric.types = {...metric.types, [statistic]: type}
+        metric.types = { ...metric.types, [statistic]: type };
       }
     },
     removeMetric(metricName, idxTagSelection) {
-      const idxMetric = this.metrics.findIndex(m => m.name === metricName);
+      const idxMetric = this.metrics.findIndex((m) => m.name === metricName);
       if (idxMetric >= 0) {
         const metric = this.metrics[idxMetric];
         if (idxTagSelection < metric.tagSelections.length) {
           metric.tagSelections.splice(idxTagSelection, 1);
         }
         if (metric.tagSelections.length === 0) {
-          this.metrics.splice(idxMetric, 1)
+          this.metrics.splice(idxMetric, 1);
         }
       }
     },
     addMetric(metricName, tagSelection = {}) {
       if (metricName) {
-        const metric = this.metrics.find(m => m.name === metricName);
+        const metric = this.metrics.find((m) => m.name === metricName);
         if (metric) {
-          metric.tagSelections = [...metric.tagSelections, {...tagSelection}]
+          metric.tagSelections = [...metric.tagSelections, { ...tagSelection }];
         } else {
-          this.metrics = sortBy([...this.metrics, {
-            name: metricName,
-            tagSelections: [{...tagSelection}],
-            types: {}
-          }], [m => m.name]);
+          this.metrics = sortBy(
+            [
+              ...this.metrics,
+              {
+                name: metricName,
+                tagSelections: [{ ...tagSelection }],
+                types: {},
+              },
+            ],
+            [(m) => m.name]
+          );
         }
       }
     },
     loadMetrics() {
       if (window.localStorage) {
-        let persistedMetrics = localStorage.getItem(`applications/${this.instance.registration.name}/metrics`);
+        let persistedMetrics = localStorage.getItem(
+          `applications/${this.instance.registration.name}/metrics`
+        );
         if (persistedMetrics) {
           return JSON.parse(persistedMetrics);
         }
@@ -204,7 +204,10 @@ export default {
     },
     persistMetrics(value) {
       if (window.localStorage) {
-        localStorage.setItem(`applications/${this.instance.registration.name}/metrics`, JSON.stringify(value));
+        localStorage.setItem(
+          `applications/${this.instance.registration.name}/metrics`,
+          JSON.stringify(value)
+        );
       }
     },
     async fetchMetricIndex() {
@@ -216,7 +219,9 @@ export default {
           this.availableMetrics.sort();
           this.selectedMetric = this.availableMetrics[0];
         } else {
-          this.error = new Error(this.$t('instances.metrics.metrics_not_supported_spring_boot_1'));
+          this.error = new Error(
+            this.$t('instances.metrics.metrics_not_supported_spring_boot_1')
+          );
           this.isOldMetrics = true;
         }
       } catch (error) {
@@ -235,15 +240,17 @@ export default {
         this.stateFetchingTags = 'completed';
         this.selectedTags = {};
         if (this.availableTags) {
-          this.availableTags.forEach(t => this.selectedTags[t.tag] = undefined);
+          this.availableTags.forEach(
+            (t) => (this.selectedTags[t.tag] = undefined)
+          );
         }
       } catch (error) {
         console.warn('Fetching metric tags failed:', error);
         this.stateFetchingTags = 'failed';
       }
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       id: 'metrics',
       name: 'instances/metrics',
@@ -253,9 +260,8 @@ export default {
       label: 'instances.metrics.label',
       group: VIEW_GROUP.INSIGHTS,
       order: 50,
-      isEnabled: ({instance}) => instance.hasEndpoint('metrics')
+      isEnabled: ({ instance }) => instance.hasEndpoint('metrics'),
     });
-  }
-}
+  },
+};
 </script>
-

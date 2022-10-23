@@ -20,10 +20,7 @@
       <sba-sticky-subnav>
         <div class="inline-flex items-center">
           <div class="mx-3">
-            <sba-button
-              v-if="!isExpanded"
-              @click="expandTree"
-            >
+            <sba-button v-if="!isExpanded" @click="expandTree">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -36,10 +33,7 @@
                 />
               </svg>
             </sba-button>
-            <sba-button
-              v-if="isExpanded"
-              @click="expandTree"
-            >
+            <sba-button v-if="isExpanded" @click="expandTree">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="currentColor"
@@ -71,26 +65,26 @@
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import {StartupActuatorService} from '@/services/startup-actuator';
-import {VIEW_GROUP} from '../../ViewGroup.js';
-import TreeTable from '@/views/instances/startup/tree-table.vue';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import Instance from '@/services/instance';
+import { StartupActuatorService } from '@/services/startup-actuator';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
+import TreeTable from '@/views/instances/startup/tree-table';
 
 export default {
-  components: {SbaInstanceSection, TreeTable},
+  components: { SbaInstanceSection, TreeTable },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     error: null,
     hasLoaded: false,
     expandedNodes: null,
     eventTree: null,
-    isExpanded: false
+    isExpanded: false,
   }),
   async created() {
     await this.fetchStartup();
@@ -103,7 +97,9 @@ export default {
   methods: {
     expandTree() {
       if (!this.isExpanded) {
-        this.expandedNodes = new Set(this.eventTree.getEvents().map(e => e.startupStep.id));
+        this.expandedNodes = new Set(
+          this.eventTree.getEvents().map((e) => e.startupStep.id)
+        );
         this.isExpanded = true;
       } else {
         this.expandedNodes = new Set();
@@ -128,7 +124,9 @@ export default {
     },
     loadTreeState() {
       if (window.localStorage) {
-        let value = localStorage.getItem(`applications/${this.instance.registration.name}/startup`);
+        let value = localStorage.getItem(
+          `applications/${this.instance.registration.name}/startup`
+        );
         if (value) {
           let parse = JSON.parse(value);
           this.expandedNodes = new Set(parse.expandedNodes);
@@ -137,13 +135,16 @@ export default {
     },
     saveTreeState($event) {
       if (window.localStorage) {
-        localStorage.setItem(`applications/${this.instance.registration.name}/startup`, JSON.stringify({
-          expandedNodes: [...$event.expandedNodes]
-        }));
+        localStorage.setItem(
+          `applications/${this.instance.registration.name}/startup`,
+          JSON.stringify({
+            expandedNodes: [...$event.expandedNodes],
+          })
+        );
       }
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/startup',
       parent: 'instances',
@@ -152,8 +153,8 @@ export default {
       label: 'instances.startup.label',
       group: VIEW_GROUP.LOGGING,
       order: 600,
-      isEnabled: ({instance}) => instance.hasEndpoint('startup')
+      isEnabled: ({ instance }) => instance.hasEndpoint('startup'),
     });
-  }
-}
+  },
+};
 </script>

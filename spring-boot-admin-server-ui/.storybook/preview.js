@@ -1,13 +1,14 @@
-import "../src/main/frontend/index.css";
-import "./storybook.css";
+import { app } from '@storybook/vue3';
+import { initialize, mswDecorator } from 'msw-storybook-addon';
 
-import {app} from '@storybook/vue3';
-import i18n from "../src/main/frontend/i18n/index.js";
-import mappingsEndpoint from '../src/main/frontend/mocks/instance/mappings';
-import applicationsEndpoint from "../src/main/frontend/mocks/applications";
+import './storybook.css';
+import '@/index.css';
 
-import {initialize, mswDecorator} from 'msw-storybook-addon';
-import components from "../src/main/frontend/components/index.js";
+import components from '@/components/index.js';
+
+import i18n from '@/i18n/index.js';
+import applicationsEndpoint from '@/mocks/applications';
+import mappingsEndpoint from '@/mocks/instance/mappings';
 
 initialize();
 
@@ -15,7 +16,7 @@ app.use(components);
 app.use(i18n);
 
 export const parameters = {
-  actions: {argTypesRegex: "^on[A-Z].*"},
+  actions: { argTypesRegex: '^on[A-Z].*' },
   controls: {
     matchers: {
       color: /(background|color)$/i,
@@ -25,12 +26,9 @@ export const parameters = {
   msw: {
     handlers: {
       auth: null,
-      others: [...mappingsEndpoint, ...applicationsEndpoint]
-    }
-  }
-}
+      others: [...mappingsEndpoint, ...applicationsEndpoint],
+    },
+  },
+};
 
-export const decorators = [
-  mswDecorator,
-]
-
+export const decorators = [mswDecorator];

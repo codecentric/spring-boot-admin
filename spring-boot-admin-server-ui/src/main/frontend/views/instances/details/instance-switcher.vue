@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="otherInstances.length > 0"
-    class="relative inline-block z-50"
-  >
+  <div v-if="otherInstances.length > 0" class="relative inline-block z-50">
     <button
       class="inline-flex justify-center items-center bg-gray-100 w-full rounded-md text-black hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
       @click="showInstances = !showInstances"
@@ -41,10 +38,12 @@
     >
       <div
         v-if="showInstances"
-        v-on-clickaway="() => showInstances = false"
+        v-on-clickaway="() => (showInstances = false)"
         class="absolute -ml-2 mt-3 transform px-2 w-screen max-w-md"
       >
-        <div class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden overflow-y-auto max-h-32 md:max-h-96">
+        <div
+          class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden overflow-y-auto max-h-32 md:max-h-96"
+        >
           <div class="relative grid gap-4 bg-white p-4">
             <a
               v-for="otherInstance in otherInstances"
@@ -58,10 +57,7 @@
               />
               <div>
                 <div v-text="otherInstance.registration.name" />
-                <div
-                  class="text-xs italic"
-                  v-text="otherInstance.id"
-                />
+                <div class="text-xs italic" v-text="otherInstance.id" />
               </div>
             </a>
           </div>
@@ -72,40 +68,44 @@
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import {directive as onClickaway} from 'vue3-click-away';
+import { directive as onClickaway } from 'vue3-click-away';
+
+import Instance from '@/services/instance';
 
 export default {
-  directives: {onClickaway},
+  directives: { onClickaway },
   props: {
     instances: {
       type: Array,
-      required: true
+      required: true,
     },
     currentInstance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      showInstances: false
-    }
+      showInstances: false,
+    };
   },
   computed: {
     otherInstances() {
-      return this.instances.filter(i => i.id !== this.currentInstance.id).sort((a,b) => a.id.localeCompare(b.id));
-    }
+      return this.instances
+        .filter((i) => i.id !== this.currentInstance.id)
+        .sort((a, b) => a.id.localeCompare(b.id));
+    },
   },
   methods: {
     switchToInstance(instance) {
       this.showInstances = false;
-      this.$router.push({name: 'instances/details', params: {instanceId: instance.id}});
-    }
-  }
-}
+      this.$router.push({
+        name: 'instances/details',
+        params: { instanceId: instance.id },
+      });
+    },
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

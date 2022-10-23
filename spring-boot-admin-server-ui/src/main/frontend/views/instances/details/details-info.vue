@@ -15,32 +15,17 @@
   -->
 
 <template>
-  <sba-panel
-    :title="$t('instances.details.info.title')"
-    :loading="loading"
-  >
+  <sba-panel :title="$t('instances.details.info.title')" :loading="loading">
     <sba-alert
       v-if="error"
       :error="error"
       class="border-l-4"
       :title="$t('term.fetch_failed')"
     />
-    <div
-      v-else
-      class="content info"
-    >
-      <table
-        v-if="!isEmptyInfo"
-        class="table"
-      >
-        <tr
-          v-for="(value, key) in info"
-          :key="key"
-        >
-          <td
-            class="info__key"
-            v-text="key"
-          />
+    <div v-else class="content info">
+      <table v-if="!isEmptyInfo" class="table">
+        <tr v-for="(value, key) in info" :key="key">
+          <td class="info__key" v-text="key" />
           <td>
             <sba-formatted-obj :value="value" />
           </td>
@@ -56,27 +41,27 @@
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
+import Instance from '@/services/instance';
 
 export default {
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     error: null,
     loading: false,
-    liveInfo: null
+    liveInfo: null,
   }),
   computed: {
     info() {
-      return this.liveInfo || this.instance.info
+      return this.liveInfo || this.instance.info;
     },
     isEmptyInfo() {
       return Object.keys(this.info).length <= 0;
-    }
+    },
   },
   created() {
     this.fetchInfo();
@@ -97,9 +82,9 @@ export default {
           this.loading = false;
         }
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="css">

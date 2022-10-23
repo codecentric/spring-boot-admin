@@ -2,7 +2,7 @@
   "instances": {
     "details": {
       "label": "Smáatriði",
-      "cache":{
+      "cache": {
         "hit_ratio": "Hit ratio",
         "hits": "Hits",
         "misses": "Misses",

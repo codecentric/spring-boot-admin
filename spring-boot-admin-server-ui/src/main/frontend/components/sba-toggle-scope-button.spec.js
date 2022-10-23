@@ -13,33 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {render} from '../test-utils.js';
-import SbaToggleScopeButton from './sba-toggle-scope-button';
 import userEvent from '@testing-library/user-event';
-import {screen} from '@testing-library/vue';
-import {ActionScope} from "./ActionScope.js";
+import { screen } from '@testing-library/vue';
+
+import { render } from '../test-utils.js';
+import { ActionScope } from './ActionScope.js';
+import SbaToggleScopeButton from './sba-toggle-scope-button';
 
 describe('SbaToggleScopeButton', function () {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = render(SbaToggleScopeButton, {props: {instanceCount: 2, modelValue: ActionScope.INSTANCE}})
-  })
+    wrapper = render(SbaToggleScopeButton, {
+      props: { instanceCount: 2, modelValue: ActionScope.INSTANCE },
+    });
+  });
 
   it('should emit changed scope when clicked', async () => {
-    await userEvent.click(await screen.findByRole('button', {name: 'Instance'}));
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Instance' })
+    );
 
     expect(wrapper.emitted()['update:modelValue'][0]).toEqual(['application']);
   });
 
   it('should toggle the scope when clicked twice', async () => {
-    await userEvent.click(await screen.findByRole('button', {name: 'Instance'}));
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Instance' })
+    );
     expect(wrapper.emitted()['update:modelValue'][0]).toEqual(['application']);
 
-    await wrapper.rerender({modelValue: ActionScope.APPLICATION})
+    await wrapper.rerender({ modelValue: ActionScope.APPLICATION });
 
-    await userEvent.click(await screen.findByRole('button', {name: 'Application'}));
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Application' })
+    );
     expect(wrapper.emitted()['update:modelValue'][1]).toEqual(['instance']);
   });
 });

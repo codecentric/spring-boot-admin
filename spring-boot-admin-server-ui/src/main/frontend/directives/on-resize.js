@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import ResizeObserver from 'resize-observer-polyfill';
 
 const observers = new WeakMap();
@@ -23,7 +22,6 @@ const mounted = (el, binding) => {
   const observer = new ResizeObserver(binding.value);
   observer.observe(el);
   observers.set(el, observer);
-
 };
 
 const beforeUnmount = (el) => {
@@ -38,10 +36,9 @@ export default {
   mounted,
   update(el, binding) {
     if (binding.value === binding.oldValue) {
-      return
+      return;
     }
-    mounted(el, binding)
+    mounted(el, binding);
   },
-  beforeUnmount
-}
-
+  beforeUnmount,
+};

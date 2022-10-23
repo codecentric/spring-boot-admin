@@ -21,46 +21,44 @@
       class="application-status__icon"
       :class="`application-status__icon--${status}`"
     />
-    <small
-      v-if="date"
-      class="hidden md:block"
-    >
+    <small v-if="date" class="hidden md:block">
       <sba-time-ago :date="date" />
     </small>
   </div>
 </template>
 
 <script>
-  import moment from 'moment';
-  import sbaTimeAgo from './sba-time-ago.vue';
+import moment from 'moment';
 
-  const icons = {
-    'UP': 'check-circle',
-    'RESTRICTED': 'exclamation',
-    'OUT_OF_SERVICE': 'ban',
-    'DOWN': 'times-circle',
-    'OFFLINE': 'minus-circle',
-    'UNKNOWN': 'question-circle'
-  };
+import sbaTimeAgo from '@/components/sba-time-ago';
 
-  export default {
-    components: {sbaTimeAgo},
-    props: {
-      status: {
-        type: String,
-        default: 'UNKNOWN'
-      },
-      date: {
-        type: [String, Date, Number, moment],
-        default: null
-      },
+const icons = {
+  UP: 'check-circle',
+  RESTRICTED: 'exclamation',
+  OUT_OF_SERVICE: 'ban',
+  DOWN: 'times-circle',
+  OFFLINE: 'minus-circle',
+  UNKNOWN: 'question-circle',
+};
+
+export default {
+  components: { sbaTimeAgo },
+  props: {
+    status: {
+      type: String,
+      default: 'UNKNOWN',
     },
-    computed: {
-      icon() {
-        return icons[this.status];
-      }
-    }
-  }
+    date: {
+      type: [String, Date, Number, moment],
+      default: null,
+    },
+  },
+  computed: {
+    icon() {
+      return icons[this.status];
+    },
+  },
+};
 </script>
 
 <style>
@@ -76,11 +74,12 @@
 .application-status__icon--RESTRICTED {
   color: #ffe08a;
 }
-.application-status__icon--OUT_OF_SERVICE, .application-status__icon--DOWN {
+.application-status__icon--OUT_OF_SERVICE,
+.application-status__icon--DOWN {
   color: #f14668;
 }
-.application-status__icon--UNKNOWN, .application-status__icon--OFFLINE {
+.application-status__icon--UNKNOWN,
+.application-status__icon--OFFLINE {
   color: #7a7a7a;
 }
-
 </style>

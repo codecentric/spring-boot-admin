@@ -1,7 +1,7 @@
 {
   "instances": {
     "scheduledtasks": {
-      "label" : "Планировщик заданий",
+      "label": "Планировщик заданий",
       "no_scheduledtasks": "Нет запланированных заданий.",
       "cron": {
         "expression": "Expression",

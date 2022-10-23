@@ -20,17 +20,11 @@
       class="relative z-0 btn-group rounded shadow-sm -space-x-px"
       aria-label="Pagination"
     >
-      <sba-button
-        :disabled="modelValue <= 1"
-        @click="goPrev()"
-      >
-        <span
-          class="sr-only"
-          v-text="$t('term.go_to_previous_page')"
-        />
+      <sba-button :disabled="modelValue <= 1" @click="goPrev()">
+        <span class="sr-only" v-text="$t('term.go_to_previous_page')" />
         <font-awesome-icon
           class="h-5 w-5"
-          :icon="['fas','angle-double-left']"
+          :icon="['fas', 'angle-double-left']"
         />
       </sba-button>
       <sba-button
@@ -39,37 +33,28 @@
         :aria-hidden="page === skipPageString"
         :aria-current="page === modelValue"
         :disabled="page === skipPageString || page === modelValue"
-        :class="{'is-active': page === modelValue, 'cursor-not-allowed': page === skipPageString}"
+        :class="{
+          'is-active': page === modelValue,
+          'cursor-not-allowed': page === skipPageString,
+        }"
         @click="() => changePage(page)"
       >
         <span class="sr-only">
           <span
             v-if="page !== modelValue"
-            v-text="$t('term.go_to_page_n', {page})"
+            v-text="$t('term.go_to_page_n', { page })"
           />
-          <span
-            v-else
-            v-text="$t('term.current_page', {page})"
-          />
+          <span v-else v-text="$t('term.current_page', { page })" />
         </span>
 
-        <span
-          aria-hidden="true"
-          v-text="page"
-        />
+        <span aria-hidden="true" v-text="page" />
       </sba-button>
 
-      <sba-button
-        :disabled="modelValue >= pageCount"
-        @click="goNext"
-      >
-        <span
-          class="sr-only"
-          v-text="$t('term.go_to_next_page')"
-        />
+      <sba-button :disabled="modelValue >= pageCount" @click="goNext">
+        <span class="sr-only" v-text="$t('term.go_to_next_page')" />
         <font-awesome-icon
           class="h-5 w-10"
-          :icon="['fas','angle-double-right']"
+          :icon="['fas', 'angle-double-right']"
         />
       </sba-button>
     </sba-button-group>
@@ -77,23 +62,23 @@
 </template>
 
 <script>
-import SbaButtonGroup from "./sba-button-group.vue";
-import SbaButton from "./sba-button.vue";
+import SbaButton from '@/components/sba-button';
+import SbaButtonGroup from '@/components/sba-button-group';
 
 export default {
   name: 'SbaPaginationNav',
-  components: {SbaButton, SbaButtonGroup},
+  components: { SbaButton, SbaButtonGroup },
   props: {
-    modelValue: {type: Number, default: 1},
-    pageCount: {type: Number, required: true},
+    modelValue: { type: Number, default: 1 },
+    pageCount: { type: Number, required: true },
     // Define amount of pages shown before and after current page.
-    delta: {type: Number, default: 2}
+    delta: { type: Number, default: 2 },
   },
   emits: ['update:modelValue'],
   data() {
     return {
-      skipPageString: '...'
-    }
+      skipPageString: '...',
+    };
   },
   computed: {
     pageRange() {
@@ -105,10 +90,15 @@ export default {
 
       let prevPageNum;
 
-      return Array(pageCount).fill(0)
+      return Array(pageCount)
+        .fill(0)
         .reduce((pageNumsRemaining, cur, idx) => {
           const pageNum = idx + 1;
-          if (pageNum === 1 || pageNum === pageCount || (pageNum >= left && pageNum < right)) {
+          if (
+            pageNum === 1 ||
+            pageNum === pageCount ||
+            (pageNum >= left && pageNum < right)
+          ) {
             pageNumsRemaining.push(pageNum);
           }
           return pageNumsRemaining;
@@ -125,28 +115,28 @@ export default {
           prevPageNum = pageNum;
           return paginationNavEntries;
         }, []);
-    }
+    },
   },
   methods: {
     goPrev() {
       const newPage = this.modelValue - 1;
       if (newPage > 0) {
-        this.$emit('update:modelValue', newPage)
+        this.$emit('update:modelValue', newPage);
       }
     },
     goNext() {
       const newPage = this.modelValue + 1;
       if (newPage <= this.pageCount) {
-        this.$emit('update:modelValue', newPage)
+        this.$emit('update:modelValue', newPage);
       }
     },
     changePage(page) {
       if (page !== this.skipPageString) {
-        this.$emit('update:modelValue', page)
+        this.$emit('update:modelValue', page);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -155,4 +145,3 @@ export default {
   @apply font-extrabold;
 }
 </style>
-

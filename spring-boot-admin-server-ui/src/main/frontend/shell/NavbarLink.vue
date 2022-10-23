@@ -9,7 +9,7 @@
       :class="classes"
       rel="noopener noreferrer"
     >
-      <component :is="view.handle" :error="error"/>
+      <component :is="view.handle" :error="error" />
     </a>
 
     <div
@@ -27,46 +27,51 @@
       class="link"
       :class="classes"
       active-class="link--active"
-      :to="{name: view.name}"
+      :to="{ name: view.name }"
     >
-      <component :is="view.handle" :error="error"/>
+      <component :is="view.handle" :error="error" />
     </router-link>
-    <NavbarMenu v-if="hasSubitems" :menuItems="subitems" @menuItemClicked="$emit('menuItemClicked', $event)"/>
+    <NavbarMenu
+      v-if="hasSubitems"
+      :menu-items="subitems"
+      @menu-item-clicked="$emit('menuItemClicked', $event)"
+    />
   </div>
 </template>
 
 <script setup>
-import {computed} from "vue";
-import NavbarMenu from "./NavbarMenu";
+import { computed, defineEmits, defineProps } from 'vue';
+
+import NavbarMenu from '@/shell/NavbarMenu';
 
 const props = defineProps({
   error: {
     type: Error,
-    default: null
+    default: null,
   },
   view: {
     type: Object,
-    required: true
+    required: true,
   },
   subitems: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 });
 
+defineEmits(['menuItemClicked']);
 
 const hasSubitems = computed({
   get() {
     return props.subitems.length > 0;
-  }
-})
+  },
+});
 
 const classes = computed({
   get() {
-    return (props.subitems.length > 0) ? ['link--has-submenu'] : [];
-  }
+    return props.subitems.length > 0 ? ['link--has-submenu'] : [];
+  },
 });
-
 </script>
 
 <style>
@@ -86,14 +91,12 @@ const classes = computed({
 }
 
 .link--active,
-.link-wrapper:hover
-{
+.link-wrapper:hover {
   @apply bg-sba-700;
 }
 
 .link-wrapper:hover .submenu .submenu-opener-button,
-.link--active + .submenu .submenu-opener-button
-{
+.link--active + .submenu .submenu-opener-button {
   @apply bg-sba-800;
 }
 

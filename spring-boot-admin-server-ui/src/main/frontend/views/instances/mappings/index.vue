@@ -15,27 +15,15 @@
   -->
 
 <template>
-  <sba-instance-section
-    :loading="!hasLoaded"
-    :error="error"
-  >
-    <div
-      v-if="isOldMetrics"
-      class="message is-warning"
-    >
+  <sba-instance-section :loading="!hasLoaded" :error="error">
+    <div v-if="isOldMetrics" class="message is-warning">
       <div
         class="message-body"
         v-text="$t('instances.mappings.mappings_not_supported_spring_boot_1')"
       />
     </div>
-    <template
-      v-for="(context, ctxName) in contexts"
-      :key="ctxName"
-    >
-      <sba-panel
-        :title="ctxName"
-        :seamless="true"
-      >
+    <template v-for="(context, ctxName) in contexts" :key="ctxName">
+      <sba-panel :title="ctxName" :seamless="true">
         <dispatcher-mappings
           v-if="hasDispatcherServlets(context)"
           :key="`${ctxName}_dispatcherServlets`"
@@ -65,27 +53,34 @@
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings.vue';
-import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings.vue';
-import ServletMappings from '@/views/instances/mappings/ServletMappings.vue';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
-import {VIEW_GROUP} from "../../ViewGroup.js";
-import SbaPanel from "../../../components/sba-panel.vue";
+import SbaPanel from '@/components/sba-panel';
+
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings';
+import ServletFilterMappings from '@/views/instances/mappings/ServletFilterMappings';
+import ServletMappings from '@/views/instances/mappings/ServletMappings';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
-  components: {SbaPanel, SbaInstanceSection, DispatcherMappings, ServletMappings, ServletFilterMappings},
+  components: {
+    SbaPanel,
+    SbaInstanceSection,
+    DispatcherMappings,
+    ServletMappings,
+    ServletFilterMappings,
+  },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
     error: null,
     contexts: null,
-    isOldMetrics: false
+    isOldMetrics: false,
   }),
   created() {
     this.fetchMappings();
@@ -107,7 +102,11 @@ export default {
       this.error = null;
       try {
         const res = await this.instance.fetchMappings();
-        if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
+        if (
+          res.headers['content-type'].includes(
+            'application/vnd.spring-boot.actuator.v2'
+          )
+        ) {
           this.contexts = res.data.contexts;
         } else {
           this.isOldMetrics = true;
@@ -117,9 +116,9 @@ export default {
         this.error = error;
       }
       this.hasLoaded = true;
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/mappings',
       parent: 'instances',
@@ -128,8 +127,8 @@ export default {
       group: VIEW_GROUP.WEB,
       component: this,
       order: 450,
-      isEnabled: ({instance}) => instance.hasEndpoint('mappings')
+      isEnabled: ({ instance }) => instance.hasEndpoint('mappings'),
     });
-  }
-}
+  },
+};
 </script>

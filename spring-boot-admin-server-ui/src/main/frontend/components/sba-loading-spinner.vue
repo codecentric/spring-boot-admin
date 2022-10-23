@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="loading"
-    class="flex text-center h-full"
-  >
+  <div v-if="loading" class="flex text-center h-full">
     <svg
       role="status"
       class="inline text-gray-900 animate-spin"
@@ -23,35 +20,35 @@
   </div>
 </template>
 <script>
-import classNames from "classnames";
+import classNames from 'classnames';
 
 export default {
   props: {
     loading: {
       type: Boolean,
-      required: true
+      required: true,
     },
     size: {
       type: String,
-      default: "md",
+      default: 'md',
       validate(value) {
-        return ["sm", "md"].includes(value);
-      }
-    }
+        return ['sm', 'md'].includes(value);
+      },
+    },
   },
   computed: {
     sizeClassNames() {
-      switch(this.size) {
+      switch (this.size) {
         case 'sm':
           return 'w-8 h-8';
         case 'md':
         default:
           return 'w-10 h-10';
       }
-    }
+    },
   },
   methods: {
-    classNames
-  }
-}
+    classNames,
+  },
+};
 </script>

@@ -15,13 +15,10 @@
   -->
 
 <template>
-  <sba-panel
-    :title="$t('instances.details.health.title')"
-    :loading="loading"
-  >
+  <sba-panel :title="$t('instances.details.health.title')" :loading="loading">
     <template #actions>
       <router-link
-        :to="{ name: 'journal', query: { 'instanceId' : instance.id } }"
+        :to="{ name: 'journal', query: { instanceId: instance.id } }"
         class="text-sm inline-flex items-center leading-sm border border-gray-400 bg-white text-gray-700 rounded overflow-hidden px-3 py-1 hover:bg-gray-200 ml-1"
       >
         <font-awesome-icon icon="history" />
@@ -34,29 +31,24 @@
         class="border-l-4"
         :title="$t('term.fetch_failed')"
       />
-      <div
-        class="-mx-4 -my-3"
-      >
-        <health-details
-          :health="health"
-          name="Instance"
-        />
+      <div class="-mx-4 -my-3">
+        <health-details :health="health" name="Instance" />
       </div>
     </template>
   </sba-panel>
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import healthDetails from './health-details.vue';
+import Instance from '@/services/instance';
+import healthDetails from '@/views/instances/details/health-details';
 
 export default {
-  components: {healthDetails},
+  components: { healthDetails },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     error: null,
@@ -66,7 +58,7 @@ export default {
   computed: {
     health() {
       return this.liveHealth || this.instance.statusInfo;
-    }
+    },
   },
   created() {
     this.fetchHealth();
@@ -84,7 +76,7 @@ export default {
       } finally {
         this.loading = false;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

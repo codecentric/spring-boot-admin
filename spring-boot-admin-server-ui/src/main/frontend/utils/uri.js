@@ -20,4 +20,4 @@ export default (strings, ...values) => {
     result += encodeURIComponent(values[i]) + strings[i + 1];
   }
   return result;
-}
+};

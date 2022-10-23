@@ -2,7 +2,7 @@
   "instances": {
     "gateway": {
       "label": "Gateway",
-      "route":{
+      "route": {
         "add_route": "Ajouter une route",
         "adding_failed": "Echec de l'ajout d'une route.",
         "cache_refreshed": "Cache des routes rafraîchi",

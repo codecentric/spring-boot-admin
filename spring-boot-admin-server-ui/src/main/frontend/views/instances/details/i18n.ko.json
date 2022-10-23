@@ -2,7 +2,7 @@
   "instances": {
     "details": {
       "label": "상세",
-      "cache":{
+      "cache": {
         "hit_ratio": "히트율",
         "hits": "히트",
         "size": "사이즈"

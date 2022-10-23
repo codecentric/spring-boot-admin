@@ -2,7 +2,7 @@
   "instances": {
     "details": {
       "label": "Подробности",
-      "cache":{
+      "cache": {
         "hit_ratio": "Коэффициент попадания",
         "hits": "Попадания",
         "size": "Размер"

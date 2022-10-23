@@ -2,10 +2,7 @@
   <NavbarMenu :menu-items="['']">
     <template #default>
       <div class="px-0.5 py-0.5">
-        <span
-          class="sr-only"
-        >
-          Open user menu</span>
+        <span class="sr-only"> Open user menu</span>
         <font-awesome-icon
           color="white"
           class="rounded-full"
@@ -16,30 +13,29 @@
     </template>
 
     <template #menuItems>
-      <div class="link link--no-hover" v-if="userName">
+      <div v-if="userName" class="link link--no-hover">
         <span>
-          {{$t('navbar.signedInAs')}} <strong v-text="userName"></strong>
+          {{ $t('navbar.signedInAs') }} <strong v-text="userName" />
         </span>
       </div>
 
-      <NavbarLink v-for="userSubMenuItem in submenuItems" :key="userSubMenuItem.name" :view="userSubMenuItem"/>
+      <NavbarLink
+        v-for="userSubMenuItem in submenuItems"
+        :key="userSubMenuItem.name"
+        :view="userSubMenuItem"
+      />
 
-      <form
-        action="logout"
-        method="post"
-      >
+      <form action="logout" method="post">
         <input
           v-if="csrfToken"
           type="hidden"
           :name="csrfParameterName"
           :value="csrfToken"
-        >
-        <button
-          type="submit"
-          value="logout"
-          class="link"
-        >
-          <font-awesome-icon icon="sign-out-alt" />&nbsp;<span v-text="$t('navbar.logout')" />
+        />
+        <button type="submit" value="logout" class="link">
+          <font-awesome-icon icon="sign-out-alt" />&nbsp;<span
+            v-text="$t('navbar.logout')"
+          />
         </button>
       </form>
     </template>
@@ -47,31 +43,31 @@
 </template>
 
 <script>
-import NavbarMenu from "./NavbarMenu";
-import NavbarLink from "./NavbarLink";
+import NavbarLink from '@/shell/NavbarLink';
+import NavbarMenu from '@/shell/NavbarMenu';
 
 export default {
   name: 'NavbarUserMenu',
-  components: {NavbarMenu, NavbarLink},
+  components: { NavbarMenu, NavbarLink },
   props: {
     csrfParameterName: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     userName: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     csrfToken: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     submenuItems: {
       type: Array,
-      default: () => []
-    }
-  }
-}
+      default: () => [],
+    },
+  },
+};
 </script>
 
 <style scoped>

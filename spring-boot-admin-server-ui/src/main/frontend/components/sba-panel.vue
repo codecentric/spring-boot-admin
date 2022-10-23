@@ -24,22 +24,12 @@
     >
       <h3 class="text-lg leading-6 font-medium text-gray-900">
         <span v-text="title" />&nbsp;
-        <span
-          v-if="subtitle"
-          class="text-sm text-gray-500"
-          v-text="subtitle"
-        />
-        <slot
-          v-if="'title' in $slots"
-          name="title"
-        />
+        <span v-if="subtitle" class="text-sm text-gray-500" v-text="subtitle" />
+        <slot v-if="'title' in $slots" name="title" />
       </h3>
 
       <div>
-        <slot
-          v-if="'actions' in $slots"
-          name="actions"
-        />
+        <slot v-if="'actions' in $slots" name="actions" />
         <sba-icon-button
           v-if="closeable"
           :icon="['far', 'times-circle']"
@@ -50,9 +40,12 @@
     <div
       v-if="'default' in $slots"
       class="border-gray-200 px-4 py-3 bg-white"
-      :class="{'rounded-t': !hasTitle, 'rounded-b overflow-hidden': !('footer' in $slots) }"
+      :class="{
+        'rounded-t': !hasTitle,
+        'rounded-b overflow-hidden': !('footer' in $slots),
+      }"
     >
-      <div :class="{'-mx-4 -my-3': seamless}">
+      <div :class="{ '-mx-4 -my-3': seamless }">
         <sba-loading-spinner
           v-if="loading"
           size="sm"
@@ -71,46 +64,48 @@
 </template>
 
 <script>
-import SbaIconButton from './sba-icon-button.vue';
-import SbaLoadingSpinner from "./sba-loading-spinner.vue";
-import sticksBelow from "../directives/sticks-below.js";
-import {throttle} from "lodash-es";
+import { throttle } from 'lodash-es';
+
+import SbaIconButton from '@/components/sba-icon-button';
+import SbaLoadingSpinner from '@/components/sba-loading-spinner';
+
+import sticksBelow from '@/directives/sticks-below';
 
 export default {
-  components: {SbaLoadingSpinner, SbaIconButton},
-  directives: {sticksBelow},
+  components: { SbaLoadingSpinner, SbaIconButton },
+  directives: { sticksBelow },
   props: {
     title: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     subtitle: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     closeable: {
       type: Boolean,
-      default: false
+      default: false,
     },
     headerSticksBelow: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     loading: {
       type: Boolean,
-      default: false
+      default: false,
     },
     seamless: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   emits: ['close'],
   data() {
     return {
       headerTopValue: 0,
       onScrollFn: undefined,
-    }
+    };
   },
   computed: {
     hasTitle() {
@@ -120,7 +115,10 @@ export default {
   mounted() {
     if (this.headerSticksBelow) {
       const header = this.$refs.header;
-      this.headerTopValue = +header.style.top.substr(0, header.style.top.length - 2)
+      this.headerTopValue = +header.style.top.substr(
+        0,
+        header.style.top.length - 2
+      );
 
       this.onScrollFn = throttle(this.onScroll, 150);
       document.addEventListener('scroll', this.onScrollFn);
@@ -136,11 +134,11 @@ export default {
       const header = this.$refs.header;
       const boundingClientRect = header.getBoundingClientRect();
       if (boundingClientRect.top <= this.headerTopValue) {
-        header.classList.add("!rounded-none", "!py-2")
+        header.classList.add('!rounded-none', '!py-2');
       } else {
-        header.classList.remove("!rounded-none", "!py-2")
+        header.classList.remove('!rounded-none', '!py-2');
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

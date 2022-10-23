@@ -4,12 +4,13 @@
   </div>
 </template>
 
-<style>
+<style type="text/css">
 .btn-group {
-  @apply inline-flex z-0 relative -space-x-px ;
+  @apply inline-flex z-0 relative -space-x-px;
 }
 
-.btn-group .btn, .btn-group button {
+.btn-group .btn,
+.btn-group button {
   @apply items-center relative inline-flex rounded-none border focus:z-10;
 }
 

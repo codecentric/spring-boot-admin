@@ -24,10 +24,7 @@
       <div class="route-content" v-text="route.predicate" />
     </div>
 
-    <font-awesome-icon
-      icon="angle-double-right"
-      class="route-spacer"
-    />
+    <font-awesome-icon icon="angle-double-right" class="route-spacer" />
 
     <div v-if="route.filters.length > 0" class="route">
       <div class="route-header">
@@ -53,28 +50,25 @@
         <font-awesome-icon icon="map-marker-alt" />&nbsp;
         <span v-text="$t('instances.gateway.route.uri')" />
       </div>
-      <div
-        class="route-content"
-        v-text="route.uri"
-      />
+      <div class="route-content" v-text="route.uri" />
     </div>
   </div>
 </template>
 
 <script>
-  export default {
-    props: {
-      route: {
-        type: Object,
-        required: true
-      }
+export default {
+  props: {
+    route: {
+      type: Object,
+      required: true,
     },
-    methods: {
-      transformArgs(args) {
-        return Object.entries(args).map(([key, value]) => `${key} : ${value}`);
-      }
-    }
-  }
+  },
+  methods: {
+    transformArgs(args) {
+      return Object.entries(args).map(([key, value]) => `${key} : ${value}`);
+    },
+  },
+};
 </script>
 
 <style lang="css">
@@ -112,5 +106,4 @@
   border-bottom: 1px solid #fafafa;
   display: block;
 }
-
 </style>

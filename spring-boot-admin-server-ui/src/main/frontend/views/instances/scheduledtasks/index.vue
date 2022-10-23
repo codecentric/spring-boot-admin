@@ -15,15 +15,9 @@
   -->
 
 <template>
-  <sba-instance-section
-    :loading="!hasLoaded"
-    :error="err"
-  >
+  <sba-instance-section :loading="!hasLoaded" :error="err">
     <sba-panel>
-      <div
-        v-if="!hasData"
-        class="message is-warning"
-      >
+      <div v-if="!hasData" class="message is-warning">
         <div
           class="message-body"
           v-text="$t('instances.scheduledtasks.no_scheduledtasks')"
@@ -41,10 +35,7 @@
               <th v-text="$t('instances.scheduledtasks.cron.expression')" />
             </tr>
           </thead>
-          <tbody
-            v-for="task in cron"
-            :key="task.runnable.target"
-          >
+          <tbody v-for="task in cron" :key="task.runnable.target">
             <tr>
               <td v-text="task.runnable.target" />
               <td
@@ -64,15 +55,20 @@
         <table class="metrics table is-fullwidth">
           <thead>
             <tr>
-              <th v-text="$t('instances.scheduledtasks.fixed_delay.runnable')" />
-              <th v-text="$t('instances.scheduledtasks.fixed_delay.initial_delay_ms')" />
-              <th v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')" />
+              <th
+                v-text="$t('instances.scheduledtasks.fixed_delay.runnable')"
+              />
+              <th
+                v-text="
+                  $t('instances.scheduledtasks.fixed_delay.initial_delay_ms')
+                "
+              />
+              <th
+                v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')"
+              />
             </tr>
           </thead>
-          <tbody
-            v-for="task in fixedDelay"
-            :key="task.runnable.target"
-          >
+          <tbody v-for="task in fixedDelay" :key="task.runnable.target">
             <tr>
               <td v-text="task.runnable.target" />
               <td v-text="task.initialDelay" />
@@ -90,15 +86,20 @@
         <table class="metrics table is-fullwidth">
           <thead>
             <tr>
-              <th v-text="$t('instances.scheduledtasks.fixed_delay.runnable')" />
-              <th v-text="$t('instances.scheduledtasks.fixed_delay.initial_delay_ms')" />
-              <th v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')" />
+              <th
+                v-text="$t('instances.scheduledtasks.fixed_delay.runnable')"
+              />
+              <th
+                v-text="
+                  $t('instances.scheduledtasks.fixed_delay.initial_delay_ms')
+                "
+              />
+              <th
+                v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')"
+              />
             </tr>
           </thead>
-          <tbody
-            v-for="task in fixedRate"
-            :key="task.runnable.target"
-          >
+          <tbody v-for="task in fixedRate" :key="task.runnable.target">
             <tr>
               <td v-text="task.runnable.target" />
               <td v-text="task.initialDelay" />
@@ -112,24 +113,24 @@
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import {VIEW_GROUP} from '../../ViewGroup.js';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
-  components: {SbaInstanceSection},
+  components: { SbaInstanceSection },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
     error: null,
     cron: null,
     fixedDelay: null,
-    fixedRate: null
+    fixedRate: null,
   }),
   computed: {
     hasCronData: function () {
@@ -142,8 +143,10 @@ export default {
       return this.fixedRate && this.fixedRate.length;
     },
     hasData: function () {
-      return this.hasCronData || this.hasFixedDelayData || this.hasFixedRateData;
-    }
+      return (
+        this.hasCronData || this.hasFixedDelayData || this.hasFixedRateData
+      );
+    },
   },
   created() {
     this.fetchScheduledTasks();
@@ -161,9 +164,9 @@ export default {
         this.error = error;
       }
       this.hasLoaded = true;
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/scheduledtasks',
       parent: 'instances',
@@ -172,8 +175,8 @@ export default {
       label: 'instances.scheduledtasks.label',
       group: VIEW_GROUP.INSIGHTS,
       order: 950,
-      isEnabled: ({instance}) => instance.hasEndpoint('scheduledtasks')
+      isEnabled: ({ instance }) => instance.hasEndpoint('scheduledtasks'),
     });
-  }
-}
+  },
+};
 </script>

@@ -1,4 +1,4 @@
-import Login from "./login.vue";
+import Login from './login.vue';
 
 export default {
   component: Login,
@@ -6,15 +6,15 @@ export default {
 };
 
 const Template = (args) => ({
-  components: {Login},
+  components: { Login },
   setup() {
-    return {args};
+    return { args };
   },
   template: '<Login v-bind="args" />',
 });
 
-export const LoginForm = Template.bind({})
+export const LoginForm = Template.bind({});
 LoginForm.args = {
-  title: "Spring Boot Admin",
-  param: {}
-}
+  title: 'Spring Boot Admin',
+  param: {},
+};

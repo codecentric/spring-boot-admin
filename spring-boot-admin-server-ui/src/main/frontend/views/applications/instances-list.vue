@@ -29,14 +29,15 @@
     </div>
     <div class="flex-1">
       <a
-        :href="instance.registration.serviceUrl || instance.registration.healthUrl"
+        :href="
+          instance.registration.serviceUrl || instance.registration.healthUrl
+        "
         @click.stop
-        v-text="instance.registration.serviceUrl || instance.registration.healthUrl"
-      /><br>
-      <span
-        class="text-sm italic"
-        v-text="instance.id"
-      />
+        v-text="
+          instance.registration.serviceUrl || instance.registration.healthUrl
+        "
+      /><br />
+      <span class="text-sm italic" v-text="instance.id" />
     </div>
     <div class="hidden xl:block w-1/4 overflow-x-scroll">
       <sba-tags :tags="instance.tags" :small="true" />
@@ -46,10 +47,7 @@
       v-text="instance.buildVersion"
     />
     <div class="instance-list-item__actions text-right">
-      <slot
-        name="actions"
-        :instance="instance"
-      />
+      <slot name="actions" :instance="instance" />
     </div>
   </li>
 </template>
@@ -62,19 +60,22 @@ export default {
     },
     showNotificationSettings: {
       type: Boolean,
-      default: false
+      default: false,
     },
     hasActiveNotificationFilter: {
       type: Function,
-      default: () => false
-    }
+      default: () => false,
+    },
   },
   methods: {
     showDetails(instance) {
-      this.$router.push({name: 'instances/details', params: {instanceId: instance.id}});
-    }
-  }
-}
+      this.$router.push({
+        name: 'instances/details',
+        params: { instanceId: instance.id },
+      });
+    },
+  },
+};
 </script>
 
 <style lang="css">

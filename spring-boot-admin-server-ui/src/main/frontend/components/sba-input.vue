@@ -23,10 +23,7 @@
         class="block text-sm font-medium text-gray-700"
         v-text="label"
       />
-      <div
-        class="flex rounded shadow-sm"
-        :class="{'mt-1': hasLabel}"
-      >
+      <div class="flex rounded shadow-sm" :class="{ 'mt-1': hasLabel }">
         <!-- PREPEND -->
         <span
           v-if="$slots.prepend"
@@ -38,9 +35,9 @@
         <!-- INPUT -->
         <datalist :id="datalistId">
           <option
-            v-for="name in list"
-            :key="name"
-            v-text="name"
+            v-for="optionName in list"
+            :key="optionName"
+            v-text="optionName"
           />
         </datalist>
         <input
@@ -55,7 +52,7 @@
           class="focus:z-10 p-2 relative flex-1 block w-full rounded-none sm:text-sm bg-opacity-40 backdrop-blur-sm"
           :class="classNames(inputFieldClassNames, inputClass)"
           @input="handleInput"
-        >
+        />
         <!-- APPEND -->
         <span
           v-if="$slots.append"
@@ -64,80 +61,66 @@
           <slot name="append" />
         </span>
       </div>
-      <span
-        v-if="$slots.info"
-        class="mt-2 text-sm text-gray-500"
-      >
+      <span v-if="$slots.info" class="mt-2 text-sm text-gray-500">
         <slot name="info" />
       </span>
     </div>
-    <div
-      v-if="error || hint"
-      class="py-2"
-    >
-      <div
-        v-if="hint && !error"
-        class="text-xs text-gray-500"
-        v-text="hint"
-      />
-      <div
-        v-if="error"
-        class="text-xs text-red-500"
-        v-text="error"
-      />
+    <div v-if="error || hint" class="py-2">
+      <div v-if="hint && !error" class="text-xs text-gray-500" v-text="hint" />
+      <div v-if="error" class="text-xs text-red-500" v-text="error" />
     </div>
   </div>
 </template>
 
 <script>
-import classNames from "classnames";
+import classNames from 'classnames';
 
 export default {
   props: {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     label: {
       type: String,
-      default: null
+      default: null,
     },
     placeholder: {
       type: String,
-      default: null
+      default: null,
     },
     type: {
       type: String,
-      default: 'text'
+      default: 'text',
     },
     modelValue: {
       type: [String, Number],
-      default: null
+      default: null,
     },
     min: {
       type: Number,
-      default: undefined
+      default: undefined,
     },
     list: {
       type: Array,
-      default: undefined
+      default: undefined,
     },
     inputClass: {
       type: [String, Array, Object],
-      default: undefined
+      default: undefined,
     },
     error: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     hint: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     autocomplete: {
       type: String,
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   emits: ['update:modelValue', 'input'],
   computed: {
@@ -145,10 +128,10 @@ export default {
       return this.label !== null && this.label.trim() !== '';
     },
     id() {
-      return (this.name || "").replace(/[^\w]/gi, '')
+      return (this.name || '').replace(/[^\w]/gi, '');
     },
     datalistId() {
-      return "listId-" + this._.uid;
+      return 'listId-' + this._.uid;
     },
     inputFieldClassNames() {
       const hasAppend = this.hasSlot('append');
@@ -157,16 +140,20 @@ export default {
       const classNames = [];
 
       if (this.error !== undefined) {
-        classNames.push('focus:ring-red-500 focus:border-red-500 border-red-400')
+        classNames.push(
+          'focus:ring-red-500 focus:border-red-500 border-red-400'
+        );
       } else {
-        classNames.push('focus:ring-indigo-500 focus:border-indigo-500 border-gray-300')
+        classNames.push(
+          'focus:ring-indigo-500 focus:border-indigo-500 border-gray-300'
+        );
       }
 
       if (!hasAppend) {
-        classNames.push('rounded-r')
+        classNames.push('rounded-r');
       }
       if (!hasPrepend) {
-        classNames.push('rounded-l')
+        classNames.push('rounded-l');
       }
 
       return classNames;
@@ -175,14 +162,12 @@ export default {
   methods: {
     classNames,
     handleInput($event) {
-      this.$emit('update:modelValue', $event.target.value)
-      this.$emit('input', $event.target.value)
+      this.$emit('update:modelValue', $event.target.value);
+      this.$emit('input', $event.target.value);
     },
     hasSlot(slot) {
-      return !!this.$slots[slot]
-        && Object.keys(this.$slots[slot]).length > 0
-    }
-  }
-}
+      return !!this.$slots[slot] && Object.keys(this.$slots[slot]).length > 0;
+    },
+  },
+};
 </script>
-

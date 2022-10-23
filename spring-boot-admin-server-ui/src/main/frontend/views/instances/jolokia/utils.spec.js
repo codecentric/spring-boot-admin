@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {truncateJavaType, truncatePackageName} from '@/views/instances/jolokia/utils';
+import {
+  truncateJavaType,
+  truncatePackageName,
+} from '@/views/instances/jolokia/utils';
 
 describe('utils.js', () => {
   it('truncateJavaType', () => {
@@ -22,14 +24,14 @@ describe('utils.js', () => {
   });
 
   it.each`
-    length    | expected
-    ${0}      | ${'Bar'}
-    ${5}      | ${'m.s.s.Bar'}
-    ${10}     | ${'m.s.s.Bar'}
-    ${15}     | ${'m.s.sample.Bar'}
-    ${16}     | ${'m.sub.sample.Bar'}
-    ${26}     | ${'mainPackage.sub.sample.Bar'}
-  `('truncatePackageName having length $length', ({expected, length}) => {
+    length | expected
+    ${0}   | ${'Bar'}
+    ${5}   | ${'m.s.s.Bar'}
+    ${10}  | ${'m.s.s.Bar'}
+    ${15}  | ${'m.s.sample.Bar'}
+    ${16}  | ${'m.sub.sample.Bar'}
+    ${26}  | ${'mainPackage.sub.sample.Bar'}
+  `('truncatePackageName having length $length', ({ expected, length }) => {
     const result = truncatePackageName('mainPackage.sub.sample.Bar', length);
     expect(result).toEqual(expected);
   });

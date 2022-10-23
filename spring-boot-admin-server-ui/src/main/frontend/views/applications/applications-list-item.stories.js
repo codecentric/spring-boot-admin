@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import withVueRouter from 'storybook-vue3-router';
 
-import ApplicationsListItem from "./applications-list-item.vue";
-import {applications} from "../../mocks/applications/data.js";
-import Application from "../../services/application.js";
-import SbaPanel from "../../components/sba-panel.vue";
-import withVueRouter from "storybook-vue3-router";
+import SbaPanel from '../../components/sba-panel.vue';
+import { applications } from '../../mocks/applications/data.js';
+import Application from '../../services/application.js';
+import ApplicationsListItem from './applications-list-item.vue';
 
 const application = applications[0];
-const routes = [
-  {path: "/journal", name: "journal"}
-];
+const routes = [{ path: '/journal', name: 'journal' }];
 
-const firstInstance = {...application.instances[0]};
-const secondInstance = {...application.instances[0]};
+const firstInstance = { ...application.instances[0] };
+const secondInstance = { ...application.instances[0] };
 secondInstance.statusTimestamp = Date.now();
 
-const instanceWithoutRestart = {...firstInstance}
-instanceWithoutRestart.endpoints = instanceWithoutRestart.endpoints.filter(e => e.id === "restart")
-const instanceWithABunchOfTags = {...firstInstance}
+const instanceWithoutRestart = { ...firstInstance };
+instanceWithoutRestart.endpoints = instanceWithoutRestart.endpoints.filter(
+  (e) => e.id === 'restart'
+);
+const instanceWithABunchOfTags = { ...firstInstance };
 instanceWithABunchOfTags.tags = {
-  "tag0": "Tag value",
-  "tag1": "Tag value",
-  "tag2": "Tag value",
-  "tag3": "Tag value",
-  "tag4": "Tag value",
-  "tag5": "Tag value"
-}
+  tag0: 'Tag value',
+  tag1: 'Tag value',
+  tag2: 'Tag value',
+  tag3: 'Tag value',
+  tag4: 'Tag value',
+  tag5: 'Tag value',
+};
 
 export default {
   component: ApplicationsListItem,
@@ -47,10 +47,10 @@ export default {
 };
 
 const Template = (args) => ({
-  components: {ApplicationsListItem, SbaPanel},
+  components: { ApplicationsListItem, SbaPanel },
   setup() {
     return {
-      args
+      args,
     };
   },
   template: `
@@ -60,42 +60,30 @@ const Template = (args) => ({
 });
 
 export const OneInstance = Template.bind({});
-OneInstance.decorators = [
-  withVueRouter(routes)
-];
+OneInstance.decorators = [withVueRouter(routes)];
 OneInstance.args = {
-  application: new Application(application)
-}
+  application: new Application(application),
+};
 
 export const OneInstanceExpanded = Template.bind({});
-OneInstance.decorators = [
-  withVueRouter(routes)
-
-];
+OneInstance.decorators = [withVueRouter(routes)];
 OneInstanceExpanded.args = {
   ...OneInstance.args,
   isExpanded: true,
-}
+};
 
 export const MultipleInstances = Template.bind({});
-MultipleInstances.decorators = [
-  withVueRouter(routes)
-];
+MultipleInstances.decorators = [withVueRouter(routes)];
 
 MultipleInstances.args = {
   application: new Application({
     ...application,
-    instances: [
-      firstInstance,
-      secondInstance,
-    ]
-  })
-}
+    instances: [firstInstance, secondInstance],
+  }),
+};
 
 export const MultipleInstancesExpanded = Template.bind({});
-MultipleInstancesExpanded.decorators = [
-  withVueRouter(routes)
-];
+MultipleInstancesExpanded.decorators = [withVueRouter(routes)];
 MultipleInstancesExpanded.args = {
   ...MultipleInstances.args,
   application: new Application({
@@ -104,17 +92,17 @@ MultipleInstancesExpanded.args = {
       firstInstance,
       secondInstance,
       instanceWithoutRestart,
-      instanceWithABunchOfTags
-    ]
+      instanceWithABunchOfTags,
+    ],
   }),
   isExpanded: true,
-}
+};
 
 const TemplateWithMultipleApplications = (args) => ({
-  components: {ApplicationsListItem, SbaPanel},
+  components: { ApplicationsListItem, SbaPanel },
   setup() {
     return {
-      args
+      args,
     };
   },
   template: `
@@ -127,9 +115,7 @@ const TemplateWithMultipleApplications = (args) => ({
 });
 
 export const MultipleApplications = TemplateWithMultipleApplications.bind({});
-MultipleApplications.decorators = [
-  withVueRouter(routes)
-];
+MultipleApplications.decorators = [withVueRouter(routes)];
 
 MultipleApplications.args = {
   applications: [
@@ -138,9 +124,7 @@ MultipleApplications.args = {
     }),
     new Application({
       ...application,
-      instances: [
-        instanceWithoutRestart
-      ]
-    })
-  ]
-}
+      instances: [instanceWithoutRestart],
+    }),
+  ],
+};

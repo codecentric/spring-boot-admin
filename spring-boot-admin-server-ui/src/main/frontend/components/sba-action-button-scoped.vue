@@ -25,19 +25,13 @@
     />
     <sba-confirm-button
       class="inline-flex focus:z-10"
-      :class="{'!rounded-l-none' : instanceCount > 1 }"
+      :class="{ '!rounded-l-none': instanceCount > 1 }"
       :disabled="disabled"
       @click="click"
     >
       <slot v-if="label">
-        <span
-          v-if="refreshStatus === 'completed'"
-          v-text="labelCompleted"
-        />
-        <span
-          v-else-if="refreshStatus === 'failed'"
-          v-text="labelFailed"
-        />
+        <span v-if="refreshStatus === 'completed'" v-text="labelCompleted" />
+        <span v-else-if="refreshStatus === 'failed'" v-text="labelFailed" />
         <div v-else-if="refreshStatus === 'executing'">
           <svg
             class="inline w-4 h-4 text-gray-900 animate-spin"
@@ -55,84 +49,78 @@
             />
           </svg>
         </div>
-        <span
-          v-else
-          v-text="label"
-        />
+        <span v-else v-text="label" />
       </slot>
-      <slot
-        v-else
-        :refresh-status="refreshStatus"
-      />
+      <slot v-else :refresh-status="refreshStatus" />
     </sba-confirm-button>
   </div>
 </template>
 
 <script>
+import { finalize } from 'rxjs';
+import { useI18n } from 'vue-i18n';
 
-import {from, listen} from '@/utils/rxjs';
-import {useI18n} from "vue-i18n";
-import {ActionScope} from "./ActionScope.js";
-import {finalize} from "rxjs";
+import { ActionScope } from '@/components/ActionScope';
 
-export default  {
+import { from, listen } from '@/utils/rxjs';
+
+export default {
   props: {
     instanceCount: {
       type: Number,
-      required: true
+      required: true,
     },
     actionFn: {
       type: Function,
-      required: true
+      required: true,
     },
-    disabled: {type: Boolean, default: false},
+    disabled: { type: Boolean, default: false },
     label: {
       type: String,
-      default: undefined
+      default: undefined,
     },
     labelFailed: {
       type: String,
       default() {
-        const {tm} = useI18n()
-        return tm('term.execution_failed')
-      }
+        const { tm } = useI18n();
+        return tm('term.execution_failed');
+      },
     },
     labelCompleted: {
       type: String,
       default() {
-        const {tm} = useI18n()
-        return tm('term.execution_successful')
-      }
+        const { tm } = useI18n();
+        return tm('term.execution_successful');
+      },
     },
     showInfo: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
       status: null,
       refreshStatus: '',
-      currentScope: ActionScope.INSTANCE
+      currentScope: ActionScope.INSTANCE,
     };
   },
   methods: {
     resetRefreshState() {
       setTimeout(() => {
         this.refreshStatus = null;
-      }, 2000)
+      }, 2000);
     },
     click() {
       this.refreshStatus = 'executing';
 
       from(this.actionFn(this.currentScope))
         .pipe(
-          listen(status => this.refreshStatus = status),
+          listen((status) => (this.refreshStatus = status)),
           finalize(() => this.resetRefreshState())
         )
         .subscribe();
-    }
-  }
-}
+    },
+  },
+};
 </script>
-

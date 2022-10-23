@@ -9,6 +9,6 @@
 
 <script>
 export default {
-  name: 'SbaStickySubnav'
-}
+  name: 'SbaStickySubnav',
+};
 </script>

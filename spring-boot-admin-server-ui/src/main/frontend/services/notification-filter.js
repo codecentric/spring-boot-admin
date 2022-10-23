@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import sbaConfig from '@/sba-config'
-import axios from '@/utils/axios';
-import uri from '@/utils/uri';
 import moment from 'moment';
 
+import sbaConfig from '@/sba-config';
+import axios from '@/utils/axios';
+import uri from '@/utils/uri';
+
 class NotificationFilter {
-  constructor({expiry, ...filter}) {
+  constructor({ expiry, ...filter }) {
     Object.assign(this, filter);
     this.expiry = expiry ? moment(expiry) : null;
   }
@@ -59,12 +59,12 @@ class NotificationFilter {
 
   static async getFilters() {
     return axios.get('notifications/filters', {
-      transformResponse: NotificationFilter._transformResponse
+      transformResponse: NotificationFilter._transformResponse,
     });
   }
 
   static async addFilter(object, ttl) {
-    const params = {ttl};
+    const params = { ttl };
     if ('name' in object) {
       params.applicationName = object.name;
     } else if ('id' in object) {
@@ -72,7 +72,7 @@ class NotificationFilter {
     }
     return axios.post('notifications/filters', null, {
       params,
-      transformResponse: NotificationFilter._transformResponse
+      transformResponse: NotificationFilter._transformResponse,
     });
   }
 
@@ -82,7 +82,9 @@ class NotificationFilter {
     }
     const json = JSON.parse(data);
     if (json instanceof Array) {
-      return json.map(NotificationFilter._toNotificationFilters).filter(f => !f.expired);
+      return json
+        .map(NotificationFilter._toNotificationFilters)
+        .filter((f) => !f.expired);
     }
     return NotificationFilter._toNotificationFilters(json);
   }
@@ -90,8 +92,6 @@ class NotificationFilter {
   static _toNotificationFilters(notificationFilter) {
     return new NotificationFilter(notificationFilter);
   }
-
 }
 
 export default NotificationFilter;
-

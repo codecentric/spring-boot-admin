@@ -15,14 +15,8 @@
   -->
 
 <template>
-  <sba-instance-section
-    :loading="!hasLoaded"
-    :error="error"
-  >
-    <template
-      v-for="(context, ctxName) in contexts"
-      :key="ctxName"
-    >
+  <sba-instance-section :loading="!hasLoaded" :error="error">
+    <template v-for="(context, ctxName) in contexts" :key="ctxName">
       <template
         v-for="(report, name) in context.liquibaseBeans"
         :key="`${ctxName}-${name}`"
@@ -50,7 +44,11 @@
               >
                 <tr
                   class="is-selectable"
-                  @click="showDetails[changeSet.checksum] ? delete showDetails[changeSet.checksum] : showDetails[changeSet.checksum] = true"
+                  @click="
+                    showDetails[changeSet.checksum]
+                      ? delete showDetails[changeSet.checksum]
+                      : (showDetails[changeSet.checksum] = true)
+                  "
                 >
                   <td v-text="changeSet.id" />
                   <td>
@@ -80,10 +78,7 @@
                     <table class="table is-fullwidth">
                       <tr>
                         <th v-text="$t('instances.liquibase.changelog')" />
-                        <td
-                          colspan="3"
-                          v-text="changeSet.changeLog"
-                        />
+                        <td colspan="3" v-text="changeSet.changeLog" />
                         <th v-text="$t('instances.liquibase.author')" />
                         <td v-text="changeSet.author" />
                       </tr>
@@ -91,13 +86,12 @@
                         <th v-text="$t('instances.liquibase.checksum')" />
                         <td v-text="changeSet.checksum" />
                         <th v-text="$t('instances.liquibase.comments')" />
-                        <td
-                          colspan="3"
-                          v-text="changeSet.comments"
-                        />
+                        <td colspan="3" v-text="changeSet.comments" />
                       </tr>
                       <tr>
-                        <th v-text="$t('instances.liquibase.execution_order')" />
+                        <th
+                          v-text="$t('instances.liquibase.execution_order')"
+                        />
                         <td v-text="changeSet.orderExecuted" />
                         <th v-text="$t('instances.liquibase.execution_date')" />
                         <td v-text="changeSet.dateExecuted" />
@@ -117,67 +111,68 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance.js';
-  import {VIEW_GROUP} from '../../ViewGroup.js';
-  import SbaInstanceSection from "../shell/sba-instance-section.vue";
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
-  export default {
-    components: {SbaInstanceSection},
-    props: {
-      instance: {
-        type: Instance,
-        required: true
+export default {
+  components: { SbaInstanceSection },
+  props: {
+    instance: {
+      type: Instance,
+      required: true,
+    },
+  },
+  data: () => ({
+    hasLoaded: false,
+    error: null,
+    contexts: null,
+    showDetails: {},
+  }),
+  computed: {},
+  created() {
+    this.fetchLiquibase();
+  },
+  methods: {
+    async fetchLiquibase() {
+      this.error = null;
+      try {
+        const res = await this.instance.fetchLiquibase();
+        this.contexts = res.data.contexts;
+      } catch (error) {
+        console.warn('Fetching Liquibase changeSets failed:', error);
+        this.error = error;
+      }
+      this.hasLoaded = true;
+    },
+    execClass(execType) {
+      switch (execType) {
+        case 'EXECUTED':
+          return 'is-success';
+        case 'FAILED':
+          return 'is-danger';
+        case 'SKIPPED':
+          return 'is-light';
+        case 'RERAN':
+        case 'MARK_RAN':
+          return 'is-warning';
+        default:
+          return 'is-info';
       }
     },
-    data: () => ({
-      hasLoaded: false,
-      error: null,
-      contexts: null,
-      showDetails: {}
-    }),
-    computed: {},
-    created() {
-      this.fetchLiquibase();
-    },
-    methods: {
-      async fetchLiquibase() {
-        this.error = null;
-        try {
-          const res = await this.instance.fetchLiquibase();
-          this.contexts = res.data.contexts;
-        } catch (error) {
-          console.warn('Fetching Liquibase changeSets failed:', error);
-          this.error = error;
-        }
-        this.hasLoaded = true;
-      },
-      execClass(execType) {
-        switch (execType) {
-          case 'EXECUTED':
-            return 'is-success';
-          case 'FAILED':
-            return 'is-danger';
-          case 'SKIPPED':
-            return 'is-light';
-          case 'RERAN':
-          case 'MARK_RAN':
-            return 'is-warning';
-          default:
-            return 'is-info';
-        }
-      }
-    },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        name: 'instances/liquibase',
-        parent: 'instances',
-        path: 'liquibase',
-        component: this,
-        label: 'instances.liquibase.label',
-        group: VIEW_GROUP.DATA,
-        order: 900,
-        isEnabled: ({instance}) => instance.hasEndpoint('liquibase')
-      });
-    }
-  }
-</script>å
+  },
+  install({ viewRegistry }) {
+    viewRegistry.addView({
+      name: 'instances/liquibase',
+      parent: 'instances',
+      path: 'liquibase',
+      component: this,
+      label: 'instances.liquibase.label',
+      group: VIEW_GROUP.DATA,
+      order: 900,
+      isEnabled: ({ instance }) => instance.hasEndpoint('liquibase'),
+    });
+  },
+};
+</script>
+å

@@ -187,6 +187,6 @@ const TemplateWithProps = () => ({
 
 export const Default = TemplateWithProps.bind({});
 Default.args = {
-  startColor: "#ff0000",
-  stopColor: "#00fa73",
+  startColor: '#ff0000',
+  stopColor: '#00fa73',
 };

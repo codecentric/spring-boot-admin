@@ -2,7 +2,7 @@
   "instances": {
     "gateway": {
       "label": "Шлюз",
-      "route":{
+      "route": {
         "add_route": "Добавить маршрут",
         "adding_failed": "Ошибка при добавлении маршрута.",
         "cache_refreshed": "Кэш маршрутов обновлен",

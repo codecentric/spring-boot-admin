@@ -14,13 +14,8 @@
   - limitations under the License.
   -->
 
-
 <template>
-  <div
-    ref="root"
-    v-on-resize="onResize"
-    class="hex-mesh"
-  >
+  <div ref="root" v-on-resize="onResize" class="hex-mesh">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       :width="meshWidth"
@@ -31,30 +26,25 @@
           <polygon :points="hexPath" />
         </clipPath>
       </defs>
-      <template
-        v-for="row in rows"
-      >
+      <template v-for="row in rows">
         <g
           v-for="col in cols + (row % 2 ? 0 : -1)"
           :key="`${col}-${row}`"
           class="hex"
           :transform="translate(col, row)"
-          :class="classForItem(item(col,row))"
-          @click="click($event,col,row)"
+          :class="classForItem(item(col, row))"
+          @click="click($event, col, row)"
         >
           <polygon :points="hexPath" />
           <foreignObject
-            v-if="item(col,row)"
+            v-if="item(col, row)"
             x="0"
             y="0"
             :width="hexWidth"
             :height="hexHeight"
             style="pointer-events: none"
           >
-            <slot
-              name="item"
-              :item="item(col,row)"
-            />
+            <slot name="item" :item="item(col, row)" />
           </foreignObject>
         </g>
       </template>
@@ -63,42 +53,44 @@
 </template>
 
 <script>
-import onResize from '../../directives/on-resize';
-import {calcLayout} from "./utils.js";
-import {ref} from "vue";
+import { ref } from 'vue';
+
+import onResize from '@/directives/on-resize';
+import { calcLayout } from '@/views/wallboard/utils';
 
 export default {
-  directives: {onResize},
+  directives: { onResize },
   props: {
     items: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     classForItem: {
       type: Function,
-      default: () => {
-      }
-    }
+      default: () => {},
+    },
   },
   emits: ['click'],
   setup() {
-    const root = ref(null)
+    const root = ref(null);
 
     return {
-      root
-    }
+      root,
+    };
   },
   data: () => ({
     cols: 1,
     rows: 1,
-    sideLength: 1
+    sideLength: 1,
   }),
   computed: {
     itemCount() {
       return this.items.length;
     },
     hexPath() {
-      return `${this.point(0)} ${this.point(1)} ${this.point(2)} ${this.point(3)} ${this.point(4)} ${this.point(5)}`
+      return `${this.point(0)} ${this.point(1)} ${this.point(2)} ${this.point(
+        3
+      )} ${this.point(4)} ${this.point(5)}`;
     },
     hexHeight() {
       return this.sideLength * 2;
@@ -111,7 +103,7 @@ export default {
     },
     meshHeight() {
       return this.sideLength * (2 + (this.rows - 1) * 1.5);
-    }
+    },
   },
   watch: {
     sideLength(newVal) {
@@ -119,8 +111,8 @@ export default {
     },
     itemCount: {
       handler: 'updateLayout',
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     translate(col, row) {
@@ -129,7 +121,8 @@ export default {
       return `translate(${x},${y})`;
     },
     item(col, row) {
-      const rowOffset = (row - 1) * this.cols - Math.max(Math.floor((row - 1) / 2), 0);
+      const rowOffset =
+        (row - 1) * this.cols - Math.max(Math.floor((row - 1) / 2), 0);
       const index = rowOffset + col - 1;
       return this.items[index];
     },
@@ -137,7 +130,9 @@ export default {
       const innerSideLength = this.sideLength * 0.95;
       const marginTop = this.hexHeight / 2;
       const marginLeft = this.hexWidth / 2;
-      return `${marginLeft + (innerSideLength * Math.cos((1 + i * 2) * Math.PI / 6))},${marginTop + (innerSideLength * Math.sin((1 + i * 2) * Math.PI / 6))}`
+      return `${
+        marginLeft + innerSideLength * Math.cos(((1 + i * 2) * Math.PI) / 6)
+      },${marginTop + innerSideLength * Math.sin(((1 + i * 2) * Math.PI) / 6)}`;
     },
     click(event, col, row) {
       const item = this.item(col, row);
@@ -148,7 +143,11 @@ export default {
     updateLayout() {
       if (this.root) {
         const boundingClientRect = this.root.getBoundingClientRect();
-        const layout = calcLayout(this.itemCount, boundingClientRect.width, boundingClientRect.height);
+        const layout = calcLayout(
+          this.itemCount,
+          boundingClientRect.width,
+          boundingClientRect.height
+        );
         this.cols = layout.cols;
         this.rows = layout.rows;
         this.sideLength = layout.sideLength;
@@ -160,8 +159,8 @@ export default {
           this.updateLayout();
         }
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

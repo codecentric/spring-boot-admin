@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import SbaKeyValueTable from './sba-key-value-table.vue';
 
 export default {
@@ -23,8 +22,10 @@ export default {
 
 const Template = (args) => {
   return {
-    components: {SbaKeyValueTable},
-    setup() { return { args }; },
+    components: { SbaKeyValueTable },
+    setup() {
+      return { args };
+    },
     template: `<sba-key-value-table v-bind="args">
       <template #customContent="slotProps">
         {{slotProps}}
@@ -33,7 +34,7 @@ const Template = (args) => {
         {{slotProps}}
       </template>
     </sba-key-value-table>`,
-  }
+  };
 };
 
 export const Default = Template.bind({});
@@ -42,9 +43,8 @@ Default.args = {
     key1: 'value 1',
     key2: 'value 2',
     key3: 'value 3',
-  }
+  },
 };
-
 
 export const UsingSlots = Template.bind({});
 UsingSlots.args = {
@@ -53,7 +53,7 @@ UsingSlots.args = {
     slotProps: 'Special Value',
     'a key with sapces': {
       id: 'customId',
-      value: 'Custom value'
-    }
-  }
+      value: 'Custom value',
+    },
+  },
 };

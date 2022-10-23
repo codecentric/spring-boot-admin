@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import SbaCheckbox from "./sba-checkbox.vue";
+import SbaCheckbox from './sba-checkbox.vue';
 
 export default {
   component: SbaCheckbox,
@@ -23,14 +22,16 @@ export default {
 
 const Template = (args) => {
   return {
-    components: {SbaCheckbox},
-    setup() { return { args }; },
-    template: `<sba-checkbox v-bind="args" />{{args}}`,
-  }
+    components: { SbaCheckbox },
+    setup() {
+      return { args };
+    },
+    template: '<sba-checkbox v-bind="args" />{{args}}',
+  };
 };
 
 export const OneButton = Template.bind({});
 OneButton.args = {
   modelValue: true,
-  label: 'I am a label'
+  label: 'I am a label',
 };

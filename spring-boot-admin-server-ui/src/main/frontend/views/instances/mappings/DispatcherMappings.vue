@@ -23,10 +23,7 @@
       >
         <thead>
           <tr>
-            <th
-              colspan="99"
-              v-text="dispatcherName"
-            />
+            <th colspan="99" v-text="dispatcherName" />
           </tr>
         </thead>
         <tbody>
@@ -37,10 +34,21 @@
             <template v-if="mapping.details">
               <tr>
                 <td
-                  :rowspan="2 + countNonEmptyArrays(mapping.details.requestMappingConditions, 'methods', 'consumes', 'produces', 'params', 'headers')"
+                  :rowspan="
+                    2 +
+                    countNonEmptyArrays(
+                      mapping.details.requestMappingConditions,
+                      'methods',
+                      'consumes',
+                      'produces',
+                      'params',
+                      'headers'
+                    )
+                  "
                 >
                   <div
-                    v-for="pattern in mapping.details.requestMappingConditions.patterns"
+                    v-for="pattern in mapping.details.requestMappingConditions
+                      .patterns"
                     :key="`${dispatcherName}_${idx}_${pattern}`"
                   >
                     <code v-text="pattern" />
@@ -57,7 +65,9 @@
                 </th>
                 <td
                   class="font-mono is-breakable"
-                  v-text="mapping.details.requestMappingConditions.methods.join(', ')"
+                  v-text="
+                    mapping.details.requestMappingConditions.methods.join(', ')
+                  "
                 />
               </tr>
 
@@ -70,7 +80,11 @@
                 </th>
                 <td
                   class="font-mono is-breakable"
-                  v-text="mediaTypePredicates(mapping.details.requestMappingConditions.consumes)"
+                  v-text="
+                    mediaTypePredicates(
+                      mapping.details.requestMappingConditions.consumes
+                    )
+                  "
                 />
               </tr>
 
@@ -83,7 +97,11 @@
                 </th>
                 <td
                   class="font-mono is-breakable"
-                  v-text="mediaTypePredicates(mapping.details.requestMappingConditions.produces)"
+                  v-text="
+                    mediaTypePredicates(
+                      mapping.details.requestMappingConditions.produces
+                    )
+                  "
                 />
               </tr>
 
@@ -96,7 +114,11 @@
                 </th>
                 <td
                   class="font-mono is-breakable"
-                  v-text="paramPredicates(mapping.details.requestMappingConditions.params)"
+                  v-text="
+                    paramPredicates(
+                      mapping.details.requestMappingConditions.params
+                    )
+                  "
                 />
               </tr>
 
@@ -109,7 +131,11 @@
                 </th>
                 <td
                   class="font-mono is-breakable"
-                  v-text="paramPredicates(mapping.details.requestMappingConditions.headers)"
+                  v-text="
+                    paramPredicates(
+                      mapping.details.requestMappingConditions.headers
+                    )
+                  "
                 />
               </tr>
 
@@ -117,24 +143,15 @@
                 <th class="is-narrow">
                   <small v-text="$t('instances.mappings.handler')" />
                 </th>
-                <td
-                  class="is-breakable"
-                  v-text="mapping.handler"
-                />
+                <td class="is-breakable" v-text="mapping.handler" />
               </tr>
             </template>
-            <tr
-              v-else
-              :key="`${dispatcherName}_${idx}`"
-            >
+            <tr v-else :key="`${dispatcherName}_${idx}`">
               <td><code v-text="mapping.predicate" /></td>
               <th class="is-narrow is-breakable">
                 <small v-text="$t('instances.mappings.handler')" />
               </th>
-              <td
-                colspan="4"
-                v-text="mapping.handler"
-              />
+              <td colspan="4" v-text="mapping.handler" />
             </tr>
           </template>
         </tbody>
@@ -143,23 +160,27 @@
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      dispatchers: {
-        type: Object,
-        default: () => ({})
-      }
+export default {
+  props: {
+    dispatchers: {
+      type: Object,
+      default: () => ({}),
     },
-    methods: {
-      countNonEmptyArrays(obj, ...keys) {
-        return keys.map(key => obj[key]).filter(a => a && a.length).length;
-      },
-      mediaTypePredicates(types) {
-        return types.map(p => `${p.negate ? '!' : ''}${p.mediaType}`).join(', ');
-      },
-      paramPredicates(params) {
-        return params.map(p => `${p.name}: ${p.negate ? '!' : ''}${p.value}`).join(', ');
-      }
-    }
-  }
+  },
+  methods: {
+    countNonEmptyArrays(obj, ...keys) {
+      return keys.map((key) => obj[key]).filter((a) => a && a.length).length;
+    },
+    mediaTypePredicates(types) {
+      return types
+        .map((p) => `${p.negate ? '!' : ''}${p.mediaType}`)
+        .join(', ');
+    },
+    paramPredicates(params) {
+      return params
+        .map((p) => `${p.name}: ${p.negate ? '!' : ''}${p.value}`)
+        .join(', ');
+    },
+  },
+};
 </script>

@@ -78,33 +78,31 @@
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import Application from '@/services/application.js';
-import InstanceSwitcher from "./instance-switcher.vue";
-import SbaButtonGroup from "../../../components/sba-button-group.vue";
+import SbaButtonGroup from '@/components/sba-button-group';
+
+import Application from '@/services/application';
+import Instance from '@/services/instance';
+import InstanceSwitcher from '@/views/instances/details/instance-switcher';
 
 export default {
   name: 'DetailsNav',
-  components: {SbaButtonGroup, InstanceSwitcher},
+  components: { SbaButtonGroup, InstanceSwitcher },
   props: {
     application: {
       type: Application,
-      default: () => {
-      },
+      default: () => {},
     },
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     openLink(url) {
       window.location.href = url;
-    }
+    },
   },
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@import "./toast-theme.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-    font-family: BlinkMacSystemFont, -apple-system, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-family: BlinkMacSystemFont, -apple-system, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, Helvetica, Arial,
+    sans-serif;
 }
 
 #app {
@@ -41,7 +46,8 @@ th {
     @apply border-b bg-gray-100 rounded-md;
 }
 
-.table th, .table td {
+.table th,
+.table td {
     @apply py-3 px-3;
 }
 
@@ -79,6 +85,7 @@ table.table-striped tr:nth-child(even) {
     @apply bg-gray-50;
 }
 
-td.label, td .label {
+td.label,
+td .label {
     @apply text-sm font-medium text-gray-500;
 }

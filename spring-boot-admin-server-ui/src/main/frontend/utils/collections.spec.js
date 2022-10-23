@@ -1,21 +1,19 @@
 /*
  * Copyright 2014-2019 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-import {anyValueMatches} from './collections';
+import { anyValueMatches } from './collections';
 
 describe('anyValueMatches', () => {
   it('should return predicate value', () => {
@@ -56,18 +54,21 @@ describe('anyValueMatches', () => {
   it('should not call predicate for empty object', () => {
     const predicate = jest.fn();
     anyValueMatches({}, predicate);
-    expect(predicate).not.toHaveBeenCalled()
+    expect(predicate).not.toHaveBeenCalled();
   });
 
   it('should not call predicate for empty array', () => {
     const predicate = jest.fn();
     anyValueMatches([], predicate);
-    expect(predicate).not.toHaveBeenCalled()
+    expect(predicate).not.toHaveBeenCalled();
   });
 
   it('should not call predicate for elements in array', () => {
     const predicate = jest.fn();
-    anyValueMatches(['test', 1, true, {value: 'nested-obj'}, ['nested-array'], [], {}], predicate);
+    anyValueMatches(
+      ['test', 1, true, { value: 'nested-obj' }, ['nested-array'], [], {}],
+      predicate
+    );
     expect(predicate).toHaveBeenNthCalledWith(1, 'test');
     expect(predicate).toHaveBeenNthCalledWith(2, 1);
     expect(predicate).toHaveBeenNthCalledWith(3, true);

@@ -1,28 +1,60 @@
 <template>
   <Popover class="relative">
-    <PopoverButton :as="SbaButton" class="mr-1" :disabled="notificationFiltersLength === 0"
-                   :title="notificationFiltersLength > 0 ? t('applications.actions.notification_filters') : t('applications.notification_filter.none')">
-      <font-awesome-icon :icon="notificationFiltersLength > 0 ? 'bell-slash' : 'bell'"/>
+    <PopoverButton
+      :as="SbaButton"
+      class="mr-1"
+      :disabled="notificationFiltersLength === 0"
+      :title="
+        notificationFiltersLength > 0
+          ? t('applications.actions.notification_filters')
+          : t('applications.notification_filter.none')
+      "
+    >
+      <font-awesome-icon
+        :icon="notificationFiltersLength > 0 ? 'bell-slash' : 'bell'"
+      />
     </PopoverButton>
 
     <PopoverPanel
+      v-slot="{ close }"
       class="absolute left-1/2 z-10 mt-3 w-screen max-w-xl -translate-x-1/2 transform px-4 sm:px-0 shadow-lg text-sm"
-      :as="SbaPanel" v-slot="{ close }">
-      <div class="font-semibold leading-5" v-text="t('applications.actions.notification_filters')"/>
-      <div class="mt-2 leading-5 text-slate-500" v-text="t('notification_filter_center.description')" />
-      <div class="flex items-center border-t border-gray-50"
-           :class="{'mt-4': idx === 0, 'py-3': idx < notificationFiltersLength-1, 'pt-3': idx >= notificationFiltersLength-1}"
-           v-for="(filter, idx) in notificationFilters">
+      :as="SbaPanel"
+    >
+      <div
+        class="font-semibold leading-5"
+        v-text="t('applications.actions.notification_filters')"
+      />
+      <div
+        class="mt-2 leading-5 text-slate-500"
+        v-text="t('notification_filter_center.description')"
+      />
+      <div
+        v-for="(filter, idx) in notificationFilters"
+        :key="filter.id"
+        class="flex items-center border-t border-gray-50"
+        :class="{
+          'mt-4': idx === 0,
+          'py-3': idx < notificationFiltersLength - 1,
+          'pt-3': idx >= notificationFiltersLength - 1,
+        }"
+      >
         <div class="w-1/2">
           {{ filter.instanceId || filter.applicationName }}
         </div>
         <div class="flex-1">
           <strong
-            v-text="filter.expiry ? filter.expiry.locale(momentLocale).fromNow(true) : t('term.ever') "
+            v-text="
+              filter.expiry
+                ? filter.expiry.locale(momentLocale).fromNow(true)
+                : t('term.ever')
+            "
           />
         </div>
         <div class="flex-none text-right text-red-700">
-          <button @click.stop="removeFilter(filter, close)" :disabled="executing[filter.id]">
+          <button
+            :disabled="executing[filter.id]"
+            @click.stop="removeFilter(filter, close)"
+          >
             {{ t('term.delete') }}
           </button>
         </div>
@@ -32,25 +64,23 @@
 </template>
 
 <script setup>
-import {Popover, PopoverButton, PopoverPanel} from '@headlessui/vue'
-import SbaButton from "../../components/sba-button";
-import SbaPanel from "../../components/sba-panel";
-import {useI18n} from "vue-i18n";
-import {computed, ref, watch} from "vue";
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
+import { computed, defineEmits, defineProps, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
   notificationFilters: {
     type: Array,
-    default: () => []
-  }
-})
+    default: () => [],
+  },
+});
 
 const emit = defineEmits(['filter-remove']);
 
 const i18n = useI18n();
 const t = i18n.t;
 const locale = i18n.locale;
-const executing = ref({})
+const executing = ref({});
 
 const notificationFiltersLength = ref(0);
 
@@ -58,12 +88,15 @@ const momentLocale = computed({
   get() {
     console.log(locale.value);
     return locale.value;
-  }
-})
-
-watch(() => props.notificationFilters, (notificationFilters) => {
-  notificationFiltersLength.value = notificationFilters.length;
+  },
 });
+
+watch(
+  () => props.notificationFilters,
+  (notificationFilters) => {
+    notificationFiltersLength.value = notificationFilters.length;
+  }
+);
 
 const removeFilter = async (filter, closePopover) => {
   executing[filter.id] = true;
@@ -72,5 +105,5 @@ const removeFilter = async (filter, closePopover) => {
   if (notificationFiltersLength.value <= 1) {
     closePopover();
   }
-}
+};
 </script>

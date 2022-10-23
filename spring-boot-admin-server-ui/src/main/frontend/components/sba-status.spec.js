@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {mount} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import moment from 'moment';
+
 import sbaStatus from './sba-status';
 
 moment.now = () => +new Date(1318781879406);
 
 describe('application-status', () => {
-
   const testSnapshotForStatus = (status, date) => {
     const wrapper = mount(sbaStatus, {
       propsData: {
         status,
-        date
+        date,
       },
       stubs: {
-        'font-awesome-icon': true
-      }
+        'font-awesome-icon': true,
+      },
     });
     expect(wrapper.vm.$el).toMatchSnapshot();
   };
@@ -62,5 +61,4 @@ describe('application-status', () => {
   it('should match the snapshot with custom status', () => {
     testSnapshotForStatus('?');
   });
-
 });

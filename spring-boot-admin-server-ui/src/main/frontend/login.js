@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createApp } from 'vue';
 
 import './login.css';
-import i18n from './i18n'
-import {createApp} from 'vue'
-import Login from "./login/login.vue";
+
+import i18n from './i18n';
+import Login from './login/login.vue';
 
 let app = createApp(Login, {
   csrf: window.csrf,

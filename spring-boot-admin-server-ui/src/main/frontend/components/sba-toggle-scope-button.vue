@@ -21,7 +21,7 @@
       class="w-full"
       size="sm"
       :class="classNames"
-      :title="$t('term.affects_all_instances', {count: instanceCount})"
+      :title="$t('term.affects_all_instances', { count: instanceCount })"
       @click="toggleScope(ActionScope.INSTANCE)"
     >
       <span v-text="$t('term.application')" />
@@ -37,42 +37,36 @@
       <span v-text="$t('term.instance')" />
     </sba-button>
 
-    <p
-      v-if="showInfo"
-      class="text-center text-xs pt-1 truncate"
-    >
+    <p v-if="showInfo" class="text-center text-xs pt-1 truncate">
       <span
         v-if="modelValue === APPLICATION"
-        v-text="$t('term.affects_all_instances', {count: instanceCount})"
+        v-text="$t('term.affects_all_instances', { count: instanceCount })"
       />
-      <span
-        v-else
-        v-text="$t('term.affects_this_instance_only')"
-      />
+      <span v-else v-text="$t('term.affects_this_instance_only')" />
     </p>
   </div>
 </template>
 
 <script>
-import SbaButton from './sba-button.vue';
-import {ActionScope} from "./ActionScope.js";
+import { ActionScope } from '@/components/ActionScope';
+import SbaButton from '@/components/sba-button';
 
 export default {
-  name: "SbaToggleScopeButton",
-  components: {SbaButton},
+  name: 'SbaToggleScopeButton',
+  components: { SbaButton },
   props: {
     modelValue: {
       type: String,
-      required: true
+      required: true,
     },
     instanceCount: {
       type: Number,
-      required: true
+      required: true,
     },
     showInfo: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   emits: ['update:modelValue'],
   data() {
@@ -80,7 +74,7 @@ export default {
       ActionScope,
       APPLICATION: ActionScope.APPLICATION,
       INSTANCE: ActionScope.INSTANCE,
-      classNames: []
+      classNames: [],
     };
   },
   mounted() {
@@ -88,8 +82,8 @@ export default {
   },
   methods: {
     toggleScope(newScope) {
-      this.$emit('update:modelValue', newScope)
-    }
-  }
-}
+      this.$emit('update:modelValue', newScope);
+    },
+  },
+};
 </script>

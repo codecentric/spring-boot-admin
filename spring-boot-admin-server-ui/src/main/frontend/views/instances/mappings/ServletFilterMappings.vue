@@ -26,7 +26,10 @@
         </tr>
       </thead>
       <tbody>
-        <template v-for="servletFilterMapping in servletFilters" :key="`${servletFilterMapping.name}`">
+        <template
+          v-for="servletFilterMapping in servletFilters"
+          :key="`${servletFilterMapping.name}`"
+        >
           <tr>
             <td>
               <div
@@ -53,12 +56,12 @@
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      servletFilters: {
-        type: Array,
-        default: () => []
-      }
-    }
-  }
+export default {
+  props: {
+    servletFilters: {
+      type: Array,
+      default: () => [],
+    },
+  },
+};
 </script>

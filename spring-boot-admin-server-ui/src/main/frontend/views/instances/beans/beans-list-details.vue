@@ -1,8 +1,8 @@
 <template>
   <table class="w-full table-auto">
     <colgroup>
-      <col class="text-gray-500">
-      <col class="py-3  ">
+      <col class="text-gray-500" />
+      <col class="py-3" />
     </colgroup>
     <tbody>
       <!-- NAME -->
@@ -12,10 +12,7 @@
       </tr>
 
       <!-- ALIAS -->
-      <tr
-        v-for="(alias, idx) in bean.aliases"
-        :key="alias"
-      >
+      <tr v-for="(alias, idx) in bean.aliases" :key="alias">
         <th
           v-if="idx === 0"
           :rowspan="bean.aliases.length"
@@ -43,9 +40,10 @@
         <td class="value px-4">
           <ul>
             <li
-              v-for="(dependency) in bean.dependencies"
+              v-for="dependency in bean.dependencies"
               :key="dependency"
-              class="list-disc break-all" v-text="dependency"
+              class="list-disc break-all"
+              v-text="dependency"
             />
           </ul>
         </td>
@@ -60,10 +58,10 @@ export default {
   props: {
     bean: {
       type: Object,
-      required: true
-    }
-  }
-}
+      required: true,
+    },
+  },
+};
 </script>
 
 <style>
@@ -71,7 +69,6 @@ export default {
   @apply text-gray-500 text-sm text-right px-2 align-top w-40;
 }
 .value {
-  @apply break-all ;
+  @apply break-all;
 }
 </style>
-

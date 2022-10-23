@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import SbaModal from './sba-modal.vue';
+
 import i18n from '@/i18n';
 
 export default {
@@ -23,10 +23,10 @@ export default {
 };
 
 const Template = (args) => ({
-  components: {SbaModal},
+  components: { SbaModal },
   setup() {
     return {
-      args
+      args,
     };
   },
   template: `
@@ -36,13 +36,13 @@ const Template = (args) => ({
       <template v-if="${'footer' in args}" #footer>${args.footer}</template>
     </sba-modal>
   `,
-  i18n
+  i18n,
 });
 
 export const ModalWithBody = Template.bind({});
 ModalWithBody.args = {
   modelValue: true,
-  body: 'I am a body'
+  body: 'I am a body',
 };
 
 export const ModalWithHeaderAndFooter = Template.bind({});
@@ -50,5 +50,5 @@ ModalWithHeaderAndFooter.args = {
   modelValue: true,
   header: 'You are awesome!',
   body: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla accumsan, metus ultrices eleifend gravida, nulla nunc varius lectus, nec rutrum justo nibh eu lectus.</p>',
-  footer: '<sba-button class="button">Close me!</sba-button>'
+  footer: '<sba-button class="button">Close me!</sba-button>',
 };

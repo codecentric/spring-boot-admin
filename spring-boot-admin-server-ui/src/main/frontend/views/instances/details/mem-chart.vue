@@ -15,42 +15,48 @@
   -->
 
 <template>
-  <LineChart label="timestamp" :datasets="datasets" :config="config" :data="data"></LineChart>
+  <LineChart
+    label="timestamp"
+    :datasets="datasets"
+    :config="config"
+    :data="data"
+  />
 </template>
 
 <script>
-import prettyBytes from "pretty-bytes";
-import moment from "moment";
-import {useI18n} from "vue-i18n";
-import LineChart from "./LineChart.vue";
+import moment from 'moment';
+import prettyBytes from 'pretty-bytes';
+import { useI18n } from 'vue-i18n';
+
+import LineChart from '@/views/instances/details/LineChart';
 
 export default {
-  components: {LineChart},
+  components: { LineChart },
   props: {
     data: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
   },
   setup(props) {
-    const {t} = useI18n();
-    return {...props, t};
+    const { t } = useI18n();
+    return { ...props, t };
   },
   data() {
     const vm = this;
     return {
       chart: undefined,
-      label: "timestamp",
+      label: 'timestamp',
       datasets: {
         used: {
-          label: 'instances.details.memory.used'
+          label: 'instances.details.memory.used',
         },
         metaspace: {
-          label: 'instances.details.memory.metaspace'
+          label: 'instances.details.memory.metaspace',
         },
         committed: {
-          label: 'instances.details.memory.committed'
-        }
+          label: 'instances.details.memory.committed',
+        },
       },
       config: {
         options: {
@@ -60,11 +66,11 @@ export default {
                 title(ctx) {
                   return prettyBytes(ctx[0].parsed.y);
                 },
-                label (ctx) {
+                label(ctx) {
                   return vm.t(ctx.dataset.label);
-                }
-              }
-            }
+                },
+              },
+            },
           },
           scales: {
             y: {
@@ -77,14 +83,14 @@ export default {
             x: {
               ticks: {
                 callback: (label) => {
-                  return moment(label).format("HH:mm:ss");
+                  return moment(label).format('HH:mm:ss');
                 },
               },
-            }
-          }
+            },
+          },
         },
-      }
-    }
+      },
+    };
   },
-}
+};
 </script>

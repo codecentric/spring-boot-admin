@@ -33,9 +33,8 @@ export default {
   mounted,
   update(el, binding) {
     if (binding.value === binding.oldValue) {
-      return
+      return;
     }
-    mounted(el, binding)
-  }
-}
-
+    mounted(el, binding);
+  },
+};

@@ -15,18 +15,22 @@
   -->
 
 <template>
-  <span class="w-6 inline-block text-center mr-1 rounded" :class="`thread-tag--${threadState.toLowerCase()}`" :title="threadState" />
+  <span
+    class="w-6 inline-block text-center mr-1 rounded"
+    :class="`thread-tag--${threadState.toLowerCase()}`"
+    :title="threadState"
+  />
 </template>
 
 <script>
-  export default {
-    props: {
-      threadState: {
-        type: String,
-        required: true
-      }
-    }
-  }
+export default {
+  props: {
+    threadState: {
+      type: String,
+      required: true,
+    },
+  },
+};
 </script>
 
 <style lang="css" scoped>
@@ -37,11 +41,13 @@
 .thread-tag--runnable:before {
   content: 'R';
 }
-.thread-tag--timed_waiting, .thread-tag--waiting {
+.thread-tag--timed_waiting,
+.thread-tag--waiting {
   color: black !important;
   background-color: #ffe08a !important;
 }
-.thread-tag--timed_waiting:before, .thread-tag--waiting:before {
+.thread-tag--timed_waiting:before,
+.thread-tag--waiting:before {
   content: 'W';
 }
 .thread-tag--blocked {

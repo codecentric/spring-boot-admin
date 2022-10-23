@@ -17,30 +17,30 @@
 <template>
   <div class="text-white">
     <NavbarLink
-      :view="{label: selectedLanguage.label}"
+      :view="{ label: selectedLanguage.label }"
       :subitems="languages"
-      @menuItemClicked="localeChanged"
+      @menu-item-clicked="localeChanged"
     />
   </div>
 </template>
 
 <script>
-import {directive as onClickaway} from 'vue3-click-away';
-import NavbarMenu from "./NavbarMenu";
-import NavbarLink from "./NavbarLink";
+import { directive as onClickaway } from 'vue3-click-away';
+
+import NavbarLink from '@/shell/NavbarLink';
 
 export default {
-  components: {NavbarLink, NavbarMenu},
-  directives: {onClickaway},
+  components: { NavbarLink },
+  directives: { onClickaway },
   props: {
-    availableLocales: {type: Array, required: true},
-    currentLocale: {type: String, required: true}
+    availableLocales: { type: Array, required: true },
+    currentLocale: { type: String, required: true },
   },
   emits: ['localeChanged'],
   data() {
     return {
-      showLanguages: false
-    }
+      showLanguages: false,
+    };
   },
   computed: {
     selectedLanguage() {
@@ -48,31 +48,34 @@ export default {
     },
     languages() {
       return this.availableLocales.map(this.mapLocale);
-    }
+    },
   },
   methods: {
     localeChanged($event) {
       const selectedLocale = $event.locale;
       if (selectedLocale !== this.currentLocale) {
-        this.$emit('localeChanged', selectedLocale)
+        this.$emit('localeChanged', selectedLocale);
       }
       this.showLanguages = !this.showLanguages;
     },
     mapLocale(locale) {
       try {
         let languageTag = locale.split('-').reverse().pop();
-        let regionTag = locale.split('-').length > 1 ? `-${locale.split('-').pop()}` : ''
+        let regionTag =
+          locale.split('-').length > 1 ? `-${locale.split('-').pop()}` : '';
 
         if (locale.toLowerCase().startsWith('zh')) {
           if (locale.endsWith('CN')) {
-            regionTag = '-Hans'
+            regionTag = '-Hans';
           }
           if (locale.endsWith('TW')) {
-            regionTag = '-Hant'
+            regionTag = '-Hant';
           }
         }
 
-        let translatedLanguageNames = new Intl.DisplayNames([locale], {type: 'language'});
+        let translatedLanguageNames = new Intl.DisplayNames([locale], {
+          type: 'language',
+        });
         let label = translatedLanguageNames.of(`${languageTag}${regionTag}`);
 
         if (label?.toUpperCase() === 'UNKNOWN REGION') {
@@ -81,15 +84,15 @@ export default {
 
         return {
           locale,
-          label
+          label,
         };
       } catch (e) {
         return {
           locale,
-          label: locale
+          label: locale,
         };
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

@@ -20,7 +20,7 @@
       <sba-sticky-subnav>
         <div class="flex gap-2">
           <sba-action-button-scoped
-            :instance-count="this.application.instances.length"
+            :instance-count="application.instances.length"
             :action-fn="clearCaches"
             :show-info="false"
           >
@@ -75,94 +75,100 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance.js';
-  import CachesList from '@/views/instances/caches/caches-list.vue';
-  import {flatMap, isEmpty} from 'lodash-es';
-  import {VIEW_GROUP} from '../../ViewGroup.js';
-  import Application from '@/services/application.js';
-  import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import { flatMap, isEmpty } from 'lodash-es';
 
-  const flattenCaches = cacheData => {
-    if (isEmpty(cacheData.cacheManagers)) {
-      return [];
-    }
-    const mappend = flatMap(Object.entries(cacheData.cacheManagers),
-      ([cacheManagerName, v]) => Object.keys(v.caches)
-        .map(cacheName => ({cacheManager: cacheManagerName, name: cacheName, key: `${cacheManagerName}:${cacheName}`}))
-    );
-    return mappend.sort((c1, c2) => c1.key.localeCompare(c2.key));
-  };
+import Application from '@/services/application';
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import CachesList from '@/views/instances/caches/caches-list';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
-  export default {
-    components: {SbaInstanceSection, CachesList},
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      },
-      application: {
-        type: Application,
-        required: true
-      }
-    },
-    data: () => ({
-      isLoading: false,
-      error: null,
-      caches: [],
-      filter: '',
-    }),
-    computed: {
-      filteredCaches() {
-        let filterFn = this.getFilterFn();
-        return filterFn ? this.caches.filter(filterFn) : this.caches;
-      }
-    },
-    created() {
-      this.fetchCaches();
-    },
-    methods: {
-      clearCaches(scope) {
-        if (scope === 'instance') {
-          return this.instance.clearCaches();
-        } else {
-          return this.application.clearCaches();
-        }
-      },
-      async fetchCaches() {
-        this.error = null;
-        this.isLoading = true;
-        try {
-          const res = await this.instance.fetchCaches();
-          this.caches = flattenCaches(res.data);
-        } catch (error) {
-          console.warn('Fetching caches failed:', error);
-          this.error = error;
-        }
-        this.isLoading = false;
-      },
-      getFilterFn() {
-        let filterFn = null;
-
-        if (this.filter) {
-          const normalizedFilter = this.filter.toLowerCase();
-          filterFn = cache => cache.name.toLowerCase().includes(normalizedFilter);
-        }
-
-        return filterFn;
-      }
-    },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        name: 'instances/caches',
-        parent: 'instances',
-        path: 'caches',
-        label: 'instances.caches.label',
-        group: VIEW_GROUP.DATA,
-        component: this,
-        order: 970,
-        isEnabled: ({instance}) => instance.hasEndpoint('caches')
-      });
-    }
+const flattenCaches = (cacheData) => {
+  if (isEmpty(cacheData.cacheManagers)) {
+    return [];
   }
-</script>
+  const mappend = flatMap(
+    Object.entries(cacheData.cacheManagers),
+    ([cacheManagerName, v]) =>
+      Object.keys(v.caches).map((cacheName) => ({
+        cacheManager: cacheManagerName,
+        name: cacheName,
+        key: `${cacheManagerName}:${cacheName}`,
+      }))
+  );
+  return mappend.sort((c1, c2) => c1.key.localeCompare(c2.key));
+};
 
+export default {
+  components: { SbaInstanceSection, CachesList },
+  props: {
+    instance: {
+      type: Instance,
+      required: true,
+    },
+    application: {
+      type: Application,
+      required: true,
+    },
+  },
+  data: () => ({
+    isLoading: false,
+    error: null,
+    caches: [],
+    filter: '',
+  }),
+  computed: {
+    filteredCaches() {
+      let filterFn = this.getFilterFn();
+      return filterFn ? this.caches.filter(filterFn) : this.caches;
+    },
+  },
+  created() {
+    this.fetchCaches();
+  },
+  methods: {
+    clearCaches(scope) {
+      if (scope === 'instance') {
+        return this.instance.clearCaches();
+      } else {
+        return this.application.clearCaches();
+      }
+    },
+    async fetchCaches() {
+      this.error = null;
+      this.isLoading = true;
+      try {
+        const res = await this.instance.fetchCaches();
+        this.caches = flattenCaches(res.data);
+      } catch (error) {
+        console.warn('Fetching caches failed:', error);
+        this.error = error;
+      }
+      this.isLoading = false;
+    },
+    getFilterFn() {
+      let filterFn = null;
+
+      if (this.filter) {
+        const normalizedFilter = this.filter.toLowerCase();
+        filterFn = (cache) =>
+          cache.name.toLowerCase().includes(normalizedFilter);
+      }
+
+      return filterFn;
+    },
+  },
+  install({ viewRegistry }) {
+    viewRegistry.addView({
+      name: 'instances/caches',
+      parent: 'instances',
+      path: 'caches',
+      label: 'instances.caches.label',
+      group: VIEW_GROUP.DATA,
+      component: this,
+      order: 970,
+      isEnabled: ({ instance }) => instance.hasEndpoint('caches'),
+    });
+  },
+};
+</script>

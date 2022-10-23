@@ -1,11 +1,13 @@
-import { render } from '@/test-utils';
-import Instance from '@/services/instance';
-import { screen } from '@testing-library/vue';
 import userEvent from '@testing-library/user-event';
-import Refresh from '@/views/instances/env/refresh';
-import Application from '@/services/application';
-import { applications } from '../../../mocks/applications/data';
+import { screen } from '@testing-library/vue';
 import _ from 'lodash';
+
+import { applications } from '../../../mocks/applications/data';
+
+import Application from '@/services/application';
+import Instance from '@/services/instance';
+import { render } from '@/test-utils';
+import Refresh from '@/views/instances/env/refresh';
 
 // TODO: FIX ME!!!
 describe('Refresh', () => {
@@ -53,7 +55,9 @@ describe('Refresh', () => {
   });
 
   it('shows the changed configurations for the current instance', async () => {
-    const refreshButton = await screen.findByText('instances.env.context_refresh');
+    const refreshButton = await screen.findByText(
+      'instances.env.context_refresh'
+    );
     userEvent.click(refreshButton);
 
     const confirmButton = await screen.findByText('Confirm');
@@ -70,7 +74,9 @@ describe('Refresh', () => {
     });
     userEvent.click(toggleScopeButton);
 
-    const refreshButton = await screen.findByText('instances.env.context_refresh');
+    const refreshButton = await screen.findByText(
+      'instances.env.context_refresh'
+    );
     userEvent.click(refreshButton);
 
     const confirmButton = await screen.findByText('Confirm');

@@ -16,10 +16,7 @@
 
 <template>
   <section class="wallboard section">
-    <p
-      v-if="!applicationsInitialized"
-      class="is-muted is-loading"
-    >
+    <p v-if="!applicationsInitialized" class="is-muted is-loading">
       Loading applications...
     </p>
     <hex-mesh
@@ -28,23 +25,19 @@
       :class-for-item="classForApplication"
       @click="select"
     >
-      <template #item="{item: application}">
-        <div
-          :key="application.name"
-          class="hex__body application"
-        >
-          <div class="application__status-indicator"></div>
+      <template #item="{ item: application }">
+        <div :key="application.name" class="hex__body application">
+          <div class="application__status-indicator" />
           <div class="application__header application__time-ago is-muted">
             <sba-time-ago :date="application.statusTimestamp" />
           </div>
           <div class="application__body">
-            <h1
-              class="application__name"
-              v-text="application.name"
-            />
+            <h1 class="application__name" v-text="application.name" />
             <p
               class="application__instances is-muted"
-              v-text="$tc('wallboard.instances_count', application.instances.length)"
+              v-text="
+                $tc('wallboard.instances_count', application.instances.length)
+              "
             />
           </div>
           <h2
@@ -58,69 +51,75 @@
 </template>
 
 <script>
-  import hexMesh from './hex-mesh.vue';
-  import {HealthStatus} from '../../HealthStatus.js';
-  import {useApplicationStore} from "../../composables/useApplicationStore.js";
+import { HealthStatus } from '@/HealthStatus';
+import { useApplicationStore } from '@/composables/useApplicationStore';
+import hexMesh from '@/views/wallboard/hex-mesh';
 
-  export default {
-    components: {hexMesh},
-    props: {
-      error: {
-        type: Error,
-        default: null
-      },
-      applicationsInitialized: {
-        type: Boolean,
-        default: false
+export default {
+  components: { hexMesh },
+  props: {
+    error: {
+      type: Error,
+      default: null,
+    },
+    applicationsInitialized: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  setup() {
+    const { applications } = useApplicationStore();
+    return { applications };
+  },
+  methods: {
+    classForApplication(application) {
+      if (!application) {
+        return null;
+      }
+      if (application.status === HealthStatus.UP) {
+        return 'up';
+      }
+      if (application.status === HealthStatus.RESTRICTED) {
+        return 'restricted';
+      }
+      if (application.status === HealthStatus.DOWN) {
+        return 'down';
+      }
+      if (application.status === HealthStatus.OUT_OF_SERVICE) {
+        return 'down';
+      }
+      if (application.status === HealthStatus.OFFLINE) {
+        return 'down';
+      }
+      if (application.status === HealthStatus.UNKNOWN) {
+        return 'unknown';
+      }
+      return '';
+    },
+    select(application) {
+      if (application.instances.length === 1) {
+        this.$router.push({
+          name: 'instances/details',
+          params: { instanceId: application.instances[0].id },
+        });
+      } else {
+        this.$router.push({
+          name: 'applications',
+          params: { selected: application.name },
+        });
       }
     },
-    setup() {
-      const {applications} = useApplicationStore();
-      return {applications}
-    },
-    methods: {
-      classForApplication(application) {
-        if (!application) {
-          return null;
-        }
-        if (application.status === HealthStatus.UP) {
-          return 'up';
-        }
-        if (application.status === HealthStatus.RESTRICTED) {
-          return 'restricted';
-        }
-        if (application.status === HealthStatus.DOWN) {
-          return 'down';
-        }
-        if (application.status === HealthStatus.OUT_OF_SERVICE) {
-          return 'down';
-        }
-        if (application.status === HealthStatus.OFFLINE) {
-          return 'down';
-        }
-        if (application.status === HealthStatus.UNKNOWN) {
-          return 'unknown';
-        }
-        return '';
-      },
-      select(application) {
-        if (application.instances.length === 1) {
-          this.$router.push({name: 'instances/details', params: {instanceId: application.instances[0].id}});
-        } else {
-          this.$router.push({name: 'applications', params: {selected: application.name}});
-        }
-      }
-    },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        path: '/wallboard',
-        name: 'wallboard',
-        label: 'wallboard.label',
-        order: -100,
-        component: this
-      });
-    }
-  };
+  },
+  install({ viewRegistry }) {
+    viewRegistry.addView({
+      path: '/wallboard',
+      name: 'wallboard',
+      label: 'wallboard.label',
+      order: -100,
+      component: this,
+    });
+  },
+};
 </script>
 
 <style lang="postcss">
@@ -163,12 +162,13 @@
 
 .up > polygon {
   stroke: theme('colors.green.400');
-  fill:  theme('colors.green.400');
+  fill: theme('colors.green.400');
 }
 
-.down > polygon, .offline > polygon {
+.down > polygon,
+.offline > polygon {
   stroke: theme('colors.red.400');
-  fill:  theme('colors.red.400');
+  fill: theme('colors.red.400');
   stroke-width: 2;
 }
 
@@ -194,17 +194,17 @@
 }
 
 .hex.down .hex__body::after {
-  content: "!";
+  content: '!';
   color: theme('colors.red.400');
 }
 
 .hex.unknown .hex__body::after {
-  content: "?";
+  content: '?';
   color: theme('colors.gray.500');
 }
 
 .restricted > polygon {
   stroke: theme('colors.yellow.400');
-  fill:  theme('colors.yellow.400');
+  fill: theme('colors.yellow.400');
 }
 </style>

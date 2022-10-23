@@ -15,14 +15,8 @@
   -->
 
 <template>
-  <sba-instance-section
-    :loading="!hasLoaded"
-    :error="error"
-  >
-    <template
-      v-for="(context, ctxName) in contexts"
-      :key="ctxName"
-    >
+  <sba-instance-section :loading="!hasLoaded" :error="error">
+    <template v-for="(context, ctxName) in contexts" :key="ctxName">
       <sba-panel
         v-for="(report, name) in context.flywayBeans"
         :key="`${ctxName}-${name}`"
@@ -75,22 +69,22 @@
 </template>
 
 <script>
-import Instance from '@/services/instance.js';
-import {VIEW_GROUP} from '../../ViewGroup.js';
-import SbaInstanceSection from "../shell/sba-instance-section.vue";
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
-  components: {SbaInstanceSection},
+  components: { SbaInstanceSection },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
     error: null,
-    contexts: null
+    contexts: null,
   }),
   computed: {},
   created() {
@@ -110,11 +104,11 @@ export default {
     },
     stateClass(state) {
       switch (state) {
-        case 'BASELINE' :
-        case  'MISSING_SUCCESS' :
-        case  'SUCCESS' :
-        case  'OUT_OF_ORDER' :
-        case  'FUTURE_SUCCESS' :
+        case 'BASELINE':
+        case 'MISSING_SUCCESS':
+        case 'SUCCESS':
+        case 'OUT_OF_ORDER':
+        case 'FUTURE_SUCCESS':
           return 'is-success';
         case 'PENDING':
         case 'ABOVE_TARGET':
@@ -129,9 +123,9 @@ export default {
         default:
           return 'is-light';
       }
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/flyway',
       parent: 'instances',
@@ -140,8 +134,8 @@ export default {
       label: 'instances.flyway.label',
       group: VIEW_GROUP.DATA,
       order: 900,
-      isEnabled: ({instance}) => instance.hasEndpoint('flyway')
+      isEnabled: ({ instance }) => instance.hasEndpoint('flyway'),
     });
-  }
-}
+  },
+};
 </script>

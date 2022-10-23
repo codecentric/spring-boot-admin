@@ -57,10 +57,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr
-        v-if="newTracesCount > 0"
-        key="new-traces"
-      >
+      <tr v-if="newTracesCount > 0" key="new-traces">
         <td
           colspan="9"
           class="text-center"
@@ -69,35 +66,32 @@
         />
       </tr>
     </tbody>
-    <transition-group
-      tag="tbody"
-      name="fade-in"
-    >
-      <template
-        v-for="trace in traces"
-        :key="trace.key"
-      >
+    <transition-group tag="tbody" name="fade-in">
+      <template v-for="trace in traces" :key="trace.key">
         <tr
           class="is-selectable"
-          :class="{ 'httptraces__trace---is-detailed' : showDetails[trace.key] }"
-          @click="showDetails[trace.key] ? delete showDetails[trace.key] : showDetails[trace.key] = true"
+          :class="{ 'httptraces__trace---is-detailed': showDetails[trace.key] }"
+          @click="
+            showDetails[trace.key]
+              ? delete showDetails[trace.key]
+              : (showDetails[trace.key] = true)
+          "
         >
           <td
             class="httptraces__trace-timestamp"
             v-text="trace.timestamp.format('L HH:mm:ss.SSS')"
           />
-          <td
-            class="httptraces__trace-method"
-            v-text="trace.request.method"
-          />
-          <td
-            class="httptraces__trace-uri"
-            v-text="trace.request.uri"
-          />
+          <td class="httptraces__trace-method" v-text="trace.request.method" />
+          <td class="httptraces__trace-uri" v-text="trace.request.uri" />
           <td class="httptraces__trace-status">
             <span
               class="tag"
-              :class="{ 'is-muted' : trace.isPending(), 'is-success' : trace.isSuccess(), 'is-warning' : trace.isClientError(), 'is-danger' : trace.isServerError() }"
+              :class="{
+                'is-muted': trace.isPending(),
+                'is-success': trace.isSuccess(),
+                'is-warning': trace.isClientError(),
+                'is-danger': trace.isServerError(),
+              }"
               v-text="trace.response ? trace.response.status : 'pending'"
             />
           </td>
@@ -107,7 +101,11 @@
           />
           <td
             class="httptraces__trace-contentLength"
-            v-text="trace.contentLengthRequest ? prettyBytes(trace.contentLengthRequest) : ''"
+            v-text="
+              trace.contentLengthRequest
+                ? prettyBytes(trace.contentLengthRequest)
+                : ''
+            "
           />
           <td
             class="httptraces__trace-contentType"
@@ -115,29 +113,28 @@
           />
           <td
             class="httptraces__trace-contentLength"
-            v-text="trace.contentLengthResponse ? prettyBytes(trace.contentLengthResponse) : ''"
+            v-text="
+              trace.contentLengthResponse
+                ? prettyBytes(trace.contentLengthResponse)
+                : ''
+            "
           />
           <td
             class="httptraces__trace-timeTaken"
-            v-text="trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined' ? `${trace.timeTaken} ms` : ''"
+            v-text="
+              trace.timeTaken !== null && typeof trace.timeTaken !== 'undefined'
+                ? `${trace.timeTaken} ms`
+                : ''
+            "
           />
         </tr>
-        <tr
-          v-if="showDetails[trace.key]"
-          :key="`${trace.key}-detail`"
-        >
+        <tr v-if="showDetails[trace.key]" :key="`${trace.key}-detail`">
           <td colspan="7">
-            <pre
-              class="httptraces__trace-detail"
-              v-text="toJson(trace)"
-            />
+            <pre class="httptraces__trace-detail" v-text="toJson(trace)" />
           </td>
         </tr>
       </template>
-      <tr
-        v-if="traces.length === 0"
-        key="no-traces"
-      >
+      <tr v-if="traces.length === 0" key="no-traces">
         <td
           class="is-muted"
           colspan="7"
@@ -152,26 +149,27 @@
 import prettyBytes from 'pretty-bytes';
 
 export default {
-    props: {
-      newTracesCount: {
-        type: Number,
-        default: 0
-      },
-      traces: {
-        type: Array,
-        default: () => []
-      }
+  props: {
+    newTracesCount: {
+      type: Number,
+      default: 0,
     },
-    data: () => ({
-      showDetails: {}
-    }),
-    methods: {
-      prettyBytes,
-      toJson(obj) {
-        return JSON.stringify(obj, null, 4);
-      }
-    }
-  }
+    traces: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  emits: ['show-new-traces'],
+  data: () => ({
+    showDetails: {},
+  }),
+  methods: {
+    prettyBytes,
+    toJson(obj) {
+      return JSON.stringify(obj, null, 4);
+    },
+  },
+};
 </script>
 
 <style lang="css">
@@ -213,4 +211,3 @@ export default {
   overflow: auto;
 }
 </style>
-

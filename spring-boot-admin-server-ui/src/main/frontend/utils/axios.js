@@ -13,35 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import sbaConfig from '../sba-config.js'
+import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import axios from 'axios';
-import {useNotificationCenter} from "@stekoe/vue-toast-notificationcenter";
-import {useI18n} from "vue-i18n";
 
+import sbaConfig from '../sba-config.js';
 
-const nc = useNotificationCenter({
-
-});
+const nc = useNotificationCenter();
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.xsrfHeaderName = sbaConfig.csrf.headerName;
 
-export const redirectOn401 = (predicate = () => true) => error => {
-  if (error.response && error.response.status === 401 && predicate(error)) {
-    window.location.assign(`login?redirectTo=${encodeURIComponent(window.location.href)}&error=401`);
-  }
-  return Promise.reject(error);
-};
+export const redirectOn401 =
+  (predicate = () => true) =>
+  (error) => {
+    if (error.response && error.response.status === 401 && predicate(error)) {
+      window.location.assign(
+        `login?redirectTo=${encodeURIComponent(window.location.href)}&error=401`
+      );
+    }
+    return Promise.reject(error);
+  };
 
-const instance = axios.create({withCredentials: true, headers: {'Accept': 'application/json'}});
-instance.interceptors.response.use(response => response, redirectOn401());
+const instance = axios.create({
+  withCredentials: true,
+  headers: { Accept: 'application/json' },
+});
+instance.interceptors.response.use((response) => response, redirectOn401());
 instance.create = axios.create;
 
 export default instance;
 
 export const registerErrorToastInterceptor = (axios) => {
   axios.interceptors.response.use(
-    response => response,
+    (response) => response,
     (error) => {
       const data = error.request;
       let message = `
@@ -51,8 +55,8 @@ export const registerErrorToastInterceptor = (axios) => {
       nc.error(message, {
         context: data.status ?? 'axios',
         title: `Error ${data.status}`,
-        duration: 10_000
+        duration: 10_000,
       });
     }
-  )
-}
+  );
+};

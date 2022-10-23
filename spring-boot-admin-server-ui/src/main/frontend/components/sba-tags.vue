@@ -16,31 +16,23 @@
 
 <template>
   <div class="inline-flex gap-1">
-    <template
-      v-for="(value, key) in tags"
-      :key="key"
-    >
-      <sba-tag
-        :small="small"
-        :label="key"
-        :value="value"
-      />
+    <template v-for="(value, key) in tags" :key="key">
+      <sba-tag :small="small" :label="key" :value="value" />
     </template>
   </div>
 </template>
 
 <script>
-
 export default {
-    props: {
-      tags: {
-        type: Object,
-        required: true
-      },
-      small: {
-        type: Boolean,
-        default: false
-      },
-    }
-  }
+  props: {
+    tags: {
+      type: Object,
+      required: true,
+    },
+    small: {
+      type: Boolean,
+      default: false,
+    },
+  },
+};
 </script>
