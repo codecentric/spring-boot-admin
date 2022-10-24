@@ -116,10 +116,9 @@ Some of the actuator endpoints (e.g. `/loggers`) support POST requests. When usi
 
 [source,java]
 ----
-@Override
-protected void configure(HttpSecurity http) throws Exception {
-    http.csrf()
-        .ignoringAntMatchers("/actuator/**");
+@Bean
+protected SecurityFilterChain filterChain(HttpSecurity http) {
+    return http.csrf(c -> c.ignoringRequestMatchers("/actuator/**")).build();
 }
 ----
 

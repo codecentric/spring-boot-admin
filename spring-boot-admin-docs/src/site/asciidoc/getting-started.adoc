@@ -90,11 +90,11 @@ management.info.env.enabled=true #<3>
 [source,java]
 ----
 @Configuration
-public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().permitAll()  //<1>
-            .and().csrf().disable();
+public static class SecurityPermitAllConfig {
+    @Bean
+    protected SecurityFilterChain filterChain(HttpSecurity http) {
+        return http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests.anyRequest().permitAll())
+            .csrf().disable().build();
     }
 }
 ----
@@ -130,19 +130,8 @@ public class SpringBootAdminApplication {
     public static void main(String[] args) {
         SpringApplication.run(SpringBootAdminApplication.class, args);
     }
-
-    @Configuration
-    public static class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            http.authorizeRequests().anyRequest().permitAll()  //<1>
-                .and().csrf().disable();
-        }
-    }
 }
 ----
-<1> For the sake of brevity we're disabling the security for now. Have a look at the <<security#securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
-
 
 . Tell the Eureka client where to find the service registry:
 +
