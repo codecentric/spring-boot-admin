@@ -42,10 +42,7 @@
               :key="menuItem.label"
               @click="$emit('menuItemClicked', menuItem)"
             >
-              <NavbarLink
-                :key="`${menuItem.parent}-${menuItem.name}`"
-                :view="menuItem"
-              />
+              <NavbarLink :view="menuItem" />
             </MenuItem>
           </slot>
         </div>
@@ -56,9 +53,16 @@
 
 <script>
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
+import { defineAsyncComponent } from 'vue';
 
 export default {
-  components: { Menu, MenuButton, MenuItem, MenuItems },
+  components: {
+    NavbarLink: defineAsyncComponent(() => import('@/shell/NavbarLink')),
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuItems,
+  },
   props: {
     buttonType: { type: String, default: 'button' },
     menuItems: { type: Array, default: () => [] },
@@ -71,9 +75,11 @@ export default {
 .submenu {
   @apply inline-block text-left;
 }
+
 .submenu-opener-button {
   @apply pl-2 border-l border-black;
 }
+
 .submenu-items {
   @apply absolute right-0 text-black w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none;
 }

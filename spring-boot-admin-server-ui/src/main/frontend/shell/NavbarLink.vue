@@ -14,7 +14,7 @@
 
     <div
       v-else-if="view.label && !view.handle"
-      :key="view.name"
+      :key="view.label"
       class="link"
       :class="classes"
     >
@@ -39,49 +39,58 @@
   </div>
 </template>
 
-<script setup>
-import { computed, defineEmits, defineProps } from 'vue';
+<script>
+import { computed } from 'vue';
 
 import NavbarMenu from '@/shell/NavbarMenu';
 
-const props = defineProps({
-  error: {
-    type: Error,
-    default: null,
+export default {
+  components: { NavbarMenu },
+  props: {
+    error: {
+      type: Error,
+      default: null,
+    },
+    view: {
+      type: Object,
+      required: true,
+    },
+    subitems: {
+      type: Array,
+      default: () => [],
+    },
   },
-  view: {
-    type: Object,
-    required: true,
-  },
-  subitems: {
-    type: Array,
-    default: () => [],
-  },
-});
+  emits: ['menuItemClicked'],
+  setup(props) {
+    const hasSubitems = computed({
+      get() {
+        return props.subitems.length > 0;
+      },
+    });
 
-defineEmits(['menuItemClicked']);
+    const classes = computed({
+      get() {
+        return props.subitems.length > 0 ? ['link--has-submenu'] : [];
+      },
+    });
 
-const hasSubitems = computed({
-  get() {
-    return props.subitems.length > 0;
+    return {
+      classes,
+      hasSubitems,
+    };
   },
-});
-
-const classes = computed({
-  get() {
-    return props.subitems.length > 0 ? ['link--has-submenu'] : [];
-  },
-});
+};
 </script>
 
 <style>
 .link-wrapper {
-  @apply hover:bg-sba-700 relative flex items-center rounded-md bg-sba-500/10;
+  @apply hover:bg-sba-700 relative flex items-center rounded-md;
 }
 
 .link {
-  @apply flex w-full items-center px-3 py-2 hover:bg-sba-700 rounded-l-md;
+  @apply flex w-full items-center px-3 py-2 hover:bg-sba-700 rounded-l-md cursor-pointer;
 }
+
 .link:not(.link--has-submenu) {
   @apply rounded-r-md;
 }
@@ -103,6 +112,7 @@ const classes = computed({
 .submenu .link {
   @apply hover:bg-sba-700 hover:text-white;
 }
+
 .submenu .link--active {
   @apply bg-sba-200;
 }
