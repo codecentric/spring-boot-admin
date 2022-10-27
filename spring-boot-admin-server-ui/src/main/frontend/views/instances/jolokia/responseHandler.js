@@ -4,7 +4,7 @@ export const STATE_EXECUTING = 'executing';
 export const STATE_FAILED = 'failed';
 export const STATE_COMPLETED = 'completed';
 
-export function resultContainsErrorStatus(result) {
+function resultContainsErrorStatus(result) {
   if (result.status >= 400) {
     return true;
   }
@@ -17,7 +17,7 @@ export function resultContainsErrorStatus(result) {
   }
 }
 
-export function parseValue(data) {
+function parseValue(data) {
   if (Array.isArray(data)) {
     return data.map(elem => {
       const parsedBody = JSON.parse(elem['body']);
