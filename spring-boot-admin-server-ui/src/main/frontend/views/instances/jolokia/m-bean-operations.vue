@@ -24,7 +24,7 @@
                     :name="name" :descriptor="operation" @click="invoke(name, operation)"
     />
     <m-bean-operation-invocation v-if="invocation" :name="invocation.name" :descriptor="invocation.descriptor"
-                                 :on-execute="execute" :on-close="closeInvocation"
+                                 :scope="scope" :on-execute="execute" :on-close="closeInvocation"
     />
   </div>
 </template>
