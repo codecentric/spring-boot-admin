@@ -28,11 +28,24 @@ function responseDataHandler(data) {
   }
 }
 
+function handleInstanceData(data) {
+  if ('body' in data) {
+    return responseDataHandler(JSON.parse(data.body));
+  } else {
+    const error = new Error(`Execution failed with HTTP error: ${data.status}`);
+    console.warn('Invocation failed', error);
+    return {
+      state: STATE_FAILED,
+      error
+    };
+  }
+}
+
 export function responseHandler(result) {
   if (Array.isArray(result.data)) {
     return result.data.map(d => ({
         instanceId: d.instanceId,
-        ...responseDataHandler(JSON.parse(d.body))
+        ...handleInstanceData(d)
     }));
   } else {
     return responseDataHandler(result.data);
