@@ -150,6 +150,7 @@ import {
   STATE_INPUT_ARGS,
   STATE_PREPARED
 } from '@/views/instances/jolokia/responseHandler.js';
+import {sortBy} from 'lodash'
 
 export default {
   props: {
@@ -210,7 +211,10 @@ export default {
           this.state = state;
           this.error = error;
         } else {
-          const handledResponse = responseHandler(response);
+          const handledResponse = sortBy(responseHandler(response), [
+            r => (r.state === STATE_FAILED) ? -1 : 1,
+            r => r.instanceId
+          ]);
           this.instanceIds = handledResponse.map(r => r.instanceId);
           this.result = handledResponse.map(r => r.result);
           this.state = handledResponse.map(r => r.state);
