@@ -54,26 +54,17 @@
         </template>
 
         <template v-else-if="scope === 'instance'">
-          <template v-if="state === 'completed'">
-            <section class="modal-card-body">
+          <section class="modal-card-body">
+            <template v-if="state === 'completed'">
               <div class="message is-success">
                 <div class="message-body">
                   <strong v-text="$t('instances.jolokia.execution_successful')" />
                 </div>
               </div>
               <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrinted(result)" />
-            </section>
-            <footer class="modal-card-foot">
-              <div class="field is-grouped is-grouped-right">
-                <div class="control">
-                  <button class="button is-light" @click="abort" v-text="$t('term.close')" />
-                </div>
-              </div>
-            </footer>
-          </template>
+            </template>
 
-          <template v-else-if="state === 'failed'">
-            <section class="modal-card-body">
+            <template v-else-if="state === 'failed'">
               <div class="message is-danger">
                 <div class="message-body">
                   <strong>
@@ -91,15 +82,15 @@
               <pre v-if="error.response && error.response.data"
                    v-text="error.response.data"
               />
-            </section>
-            <footer class="modal-card-foot">
-              <div class="field is-grouped is-grouped-right">
-                <div class="control">
-                  <button class="button is-light" @click="abort" v-text="$t('instances.jolokia.close')" />
-                </div>
+            </template>
+          </section>
+          <footer class="modal-card-foot">
+            <div class="field is-grouped is-grouped-right">
+              <div class="control">
+                <button class="button is-light" @click="abort" v-text="$t('instances.jolokia.close')" />
               </div>
-            </footer>
-          </template>
+            </div>
+          </footer>
         </template>
 
         <template v-else-if="scope === 'application'">
