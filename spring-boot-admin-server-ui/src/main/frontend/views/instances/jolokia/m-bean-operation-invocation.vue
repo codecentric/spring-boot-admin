@@ -102,7 +102,7 @@
                        class="message-body"
                        @click="select(instanceId)"
                   >
-                    <strong v-text="instanceId" />
+                    <strong v-text="$t('term.instance') + ': ' + instanceId" />
                   </div>
                   <pre v-if="selectedInstance === instanceId && descriptor.ret !== 'void'" v-text="prettyPrinted(result[idx])" />
                 </div>
@@ -115,7 +115,7 @@
                       <font-awesome-icon class="has-text-danger"
                                          icon="exclamation-triangle"
                       />
-                      <span v-text="instanceId" />
+                      <span v-text="$t('term.instance') + ': ' + instanceId" />
                     </strong>
                     <p v-text="error[idx].message" />
                   </div>
