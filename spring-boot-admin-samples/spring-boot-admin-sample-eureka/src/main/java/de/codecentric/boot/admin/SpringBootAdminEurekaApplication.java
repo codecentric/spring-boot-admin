@@ -86,8 +86,8 @@ public class SpringBootAdminEurekaApplication {
 			successHandler.setDefaultTargetUrl(this.adminContextPath + "/");
 
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-					.requestMatchers(this.adminContextPath + "/assets/**").permitAll()
-					.requestMatchers(this.adminContextPath + "/login").permitAll().anyRequest().authenticated())
+					.requestMatchers(new AntPathRequestMatcher(this.adminContextPath + "/assets/**")).permitAll()
+					.requestMatchers(new AntPathRequestMatcher(this.adminContextPath + "/login")).permitAll().anyRequest().authenticated())
 					.formLogin((formLogin) -> formLogin.loginPage(this.adminContextPath + "/login")
 							.successHandler(successHandler))
 					.logout((logout) -> logout.logoutUrl(this.adminContextPath + "/logout"))

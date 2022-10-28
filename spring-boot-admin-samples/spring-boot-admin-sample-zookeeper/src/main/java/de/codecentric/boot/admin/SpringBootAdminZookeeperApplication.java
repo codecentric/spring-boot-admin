@@ -86,8 +86,8 @@ public class SpringBootAdminZookeeperApplication {
 			successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-					.requestMatchers(this.adminServer.path("/assets/**")).permitAll()
-					.requestMatchers(this.adminServer.path("/login")).permitAll().anyRequest().authenticated())
+					.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**"))).permitAll()
+					.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll().anyRequest().authenticated())
 					.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
 							.successHandler(successHandler))
 					.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
