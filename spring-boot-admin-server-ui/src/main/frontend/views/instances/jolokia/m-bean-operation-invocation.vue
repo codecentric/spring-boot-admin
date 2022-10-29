@@ -53,44 +53,83 @@
           </section>
         </template>
 
-        <template v-else-if="state === 'completed'">
+        <template v-else-if="scope === 'instance'">
           <section class="modal-card-body">
-            <div class="message is-success">
-              <div class="message-body">
-                <strong v-text="$t('instances.jolokia.execution_successful')" />
+            <template v-if="state === 'completed'">
+              <div class="message is-success">
+                <div class="message-body">
+                  <strong v-text="$t('instances.jolokia.execution_successful')" />
+                </div>
               </div>
-            </div>
-            <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrintedResult" />
+              <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrinted(result)" />
+            </template>
+
+            <template v-else-if="state === 'failed'">
+              <div class="message is-danger">
+                <div class="message-body">
+                  <strong>
+                    <font-awesome-icon class="has-text-danger"
+                                       icon="exclamation-triangle"
+                    />
+                    <span v-text="$t('instances.jolokia.execution_failed')" />
+                  </strong>
+                  <p v-text="error.message" />
+                </div>
+              </div>
+              <pre v-if="error.stacktrace"
+                   v-text="error.stacktrace"
+              />
+              <pre v-if="error.response && error.response.data"
+                   v-text="error.response.data"
+              />
+            </template>
           </section>
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
-                <button class="button is-light" @click="abort" v-text="$t('term.close')" />
+                <button class="button is-light" @click="abort" v-text="$t('instances.jolokia.close')" />
               </div>
             </div>
           </footer>
         </template>
 
-        <template v-else-if="state === 'failed'">
+        <template v-else-if="scope === 'application'">
           <section class="modal-card-body">
-            <div class="message is-danger">
-              <div class="message-body">
-                <strong>
-                  <font-awesome-icon class="has-text-danger"
-                                     icon="exclamation-triangle"
-                  />
-                  <span v-text="$t('instances.jolokia.execution_failed')" />
-                </strong>
-                <p v-text="error.message" />
-              </div>
+            <div v-for="(instanceId, idx) in instanceIds" :key="instanceId">
+              <template v-if="state[idx] === 'completed'">
+                <div class="message is-success instance">
+                  <div :class="{'is-selectable': descriptor.ret !== 'void'}"
+                       class="message-body"
+                       @click="select(instanceId)"
+                  >
+                    <strong v-text="$t('term.instance') + ': ' + instanceId" />
+                  </div>
+                  <pre v-if="selectedInstance === instanceId && descriptor.ret !== 'void'" v-text="prettyPrinted(result[idx])" />
+                </div>
+              </template>
+
+              <template v-else-if="state[idx] === 'failed'">
+                <div class="message is-danger">
+                  <div class="message-body">
+                    <strong>
+                      <font-awesome-icon class="has-text-danger"
+                                         icon="exclamation-triangle"
+                      />
+                      <span v-text="$t('term.instance') + ': ' + instanceId" />
+                    </strong>
+                    <p v-text="error[idx].message" />
+                  </div>
+                </div>
+                <pre v-if="error[idx].stacktrace"
+                     v-text="error[idx].stacktrace"
+                />
+                <pre v-if="error[idx].response && error[idx].response.data"
+                     v-text="error[idx].response.data"
+                />
+              </template>
             </div>
-            <pre v-if="error.stacktrace"
-                 v-text="error.stacktrace"
-            />
-            <pre v-if="error.response && error.response.data"
-                 v-text="error.response.data"
-            />
           </section>
+
           <footer class="modal-card-foot">
             <div class="field is-grouped is-grouped-right">
               <div class="control">
@@ -111,6 +150,7 @@ import {
   STATE_INPUT_ARGS,
   STATE_PREPARED
 } from '@/views/instances/jolokia/responseHandler.js';
+import {sortBy} from 'lodash'
 
 export default {
   props: {
@@ -133,29 +173,20 @@ export default {
     onExecute: {
       type: Function,
       required: true
+    },
+    scope: {
+      type: String,
+      required: true
     }
   },
   data: () => ({
     state: null,
     error: null,
     args: null,
-    result: null
+    result: null,
+    instanceIds: null,
+    selectedInstance: null
   }),
-  computed: {
-    prettyPrintedResult() {
-      if (this.result && typeof this.result === 'string') {
-        try {
-          const o = JSON.parse(this.result);
-          return JSON.stringify(o, undefined, 4);
-        } catch (e) {
-          return this.result;
-        }
-      } else if (typeof result === 'object') {
-        return JSON.stringify(this.result, undefined, 4);
-      }
-      return this.result;
-    }
-  },
   methods: {
     abort() {
       this.onClose();
@@ -174,10 +205,21 @@ export default {
       this.state = STATE_EXECUTING;
       try {
         const response = await this.onExecute(this.args);
-        const {result, state, error} = responseHandler(response);
-        this.result = result;
-        this.state = state;
-        this.error = error;
+        if (this.scope === 'instance') {
+          const {result, state, error} = responseHandler(response);
+          this.result = result;
+          this.state = state;
+          this.error = error;
+        } else {
+          const handledResponse = sortBy(responseHandler(response), [
+            r => (r.state === STATE_FAILED) ? -1 : 1,
+            r => r.instanceId
+          ]);
+          this.instanceIds = handledResponse.map(r => r.instanceId);
+          this.result = handledResponse.map(r => r.result);
+          this.state = handledResponse.map(r => r.state);
+          this.error = handledResponse.map(r => r.error);
+        }
       } catch (error) {
         this.state = STATE_FAILED;
         this.error = error;
@@ -189,6 +231,22 @@ export default {
         this.abort()
       }
     },
+    prettyPrinted(result) {
+      if (result && typeof result === 'string') {
+        try {
+          const o = JSON.parse(result);
+          return JSON.stringify(o, undefined, 4);
+        } catch (e) {
+          return result;
+        }
+      } else if (typeof result === 'object') {
+        return JSON.stringify(result, undefined, 4);
+      }
+      return result;
+    },
+    select(instanceId) {
+      this.selectedInstance = (this.selectedInstance !== instanceId) ? instanceId : null;
+    }
   },
   created() {
     this.invoke();
@@ -202,8 +260,19 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "~@/assets/css/utilities";
+
 .modal-card-title {
   word-break: break-all;
 }
+
+.is-selectable {
+
+  &:hover {
+    background-color: $white-bis;
+  }
+
+}
+
 </style>

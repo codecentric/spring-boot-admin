@@ -4,42 +4,13 @@ export const STATE_EXECUTING = 'executing';
 export const STATE_FAILED = 'failed';
 export const STATE_COMPLETED = 'completed';
 
-export function resultContainsErrorStatus(result) {
-  if (result.status >= 400) {
-    return true;
-  }
-
-  const parsedResponse = parseValue(result.data);
-  if (Array.isArray(parsedResponse)) {
-    return parsedResponse.some(r => r.status >= 400);
-  } else {
-    return result.data.status >= 400;
-  }
+function resultContainsErrorStatus(data) {
+  return data.status >= 400;
 }
 
-export function parseValue(data) {
-  if (Array.isArray(data)) {
-    return data.map(elem => {
-      const parsedBody = JSON.parse(elem['body']);
-      return {
-        instanceId: elem['instanceId'],
-        ...parsedBody
-      };
-    });
-  } else {
-    return data.value;
-  }
-}
-
-export function responseHandler(result) {
-  if (resultContainsErrorStatus(result)) {
-    const parsedResult = parseValue(result.data);
-    let failedRequest = result.data;
-
-    // Show first failed request
-    if (Array.isArray(result.data)) {
-      failedRequest = parsedResult[0];
-    }
+function responseDataHandler(data) {
+  if (resultContainsErrorStatus(data)) {
+    let failedRequest = data;
 
     const error = new Error(`Execution failed: ${failedRequest.error}`);
     error.stacktrace = failedRequest.stacktrace;
@@ -51,8 +22,32 @@ export function responseHandler(result) {
     }
   } else {
     return {
-      result: parseValue(result.data),
+      result: data.value,
       state: STATE_COMPLETED
     }
+  }
+}
+
+function handleInstanceData(data) {
+  if ('body' in data) {
+    return responseDataHandler(JSON.parse(data.body));
+  } else {
+    const error = new Error(`Execution failed with HTTP error: ${data.status}`);
+    console.warn('Invocation failed', error);
+    return {
+      state: STATE_FAILED,
+      error
+    };
+  }
+}
+
+export function responseHandler(result) {
+  if (Array.isArray(result.data)) {
+    return result.data.map(d => ({
+        instanceId: d.instanceId,
+        ...handleInstanceData(d)
+    }));
+  } else {
+    return responseDataHandler(result.data);
   }
 }
