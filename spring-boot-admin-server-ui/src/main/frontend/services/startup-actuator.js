@@ -23,7 +23,7 @@ function mapDuration(duration) {
   if (typeof duration === 'string') {
     return toMilliseconds(parse(duration));
   } else if (!isNaN(Number.parseFloat(duration))) {
-    return toMilliseconds(duration);
+    return duration;
   } else {
     return -1;
   }
