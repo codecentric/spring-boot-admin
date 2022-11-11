@@ -16,11 +16,6 @@
 
 package de.codecentric.boot.admin;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
-import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -43,10 +38,15 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
+Fixe
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableAdminServer
-@Import({SecurityPermitAllConfig.class, SecuritySecureConfig.class, NotifierConfig.class})
+@Import({ SecurityPermitAllConfig.class, SecuritySecureConfig.class, NotifierConfig.class })
 @Lazy(false)
 @EnableCaching
 public class SpringBootAdminServletApplication {
@@ -109,7 +109,7 @@ public class SpringBootAdminServletApplication {
 	@Bean
 	public EmbeddedDatabase dataSource() {
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL)
-			.addScript("org/springframework/session/jdbc/schema-hsqldb.sql").build();
+				.addScript("org/springframework/session/jdbc/schema-hsqldb.sql").build();
 	}
 
 }
