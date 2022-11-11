@@ -143,7 +143,8 @@ public class SpringBootAdminHazelcastApplication {
 
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
 					.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**"))).permitAll()
-					.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll().anyRequest().authenticated())
+					.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll()
+					.anyRequest().authenticated())
 					.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
 							.successHandler(successHandler))
 					.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))

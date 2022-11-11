@@ -60,7 +60,8 @@ public class SecuritySecureConfig {
 				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/variables.css"))).permitAll()
 				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/actuator/info"))).permitAll()
 				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/actuator/health"))).permitAll()
-				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll().anyRequest().authenticated() // <2>
+				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll().anyRequest()
+				.authenticated() // <2>
 		).formLogin(
 				(formLogin) -> formLogin.loginPage(this.adminServer.path("/login")).successHandler(successHandler).and() // <3>
 		).logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout"))).httpBasic(Customizer.withDefaults()) // <4>
@@ -81,11 +82,8 @@ public class SecuritySecureConfig {
 	@Bean
 	public InMemoryUserDetailsManager userDetailsService() {
 		User.UserBuilder users = User.withDefaultPasswordEncoder();
-		UserDetails user = users
-			.username(security.getUser().getName())
-			.password(security.getUser().getPassword())
-			.roles("USER")
-			.build();
+		UserDetails user = users.username(security.getUser().getName()).password(security.getUser().getPassword())
+				.roles("USER").build();
 		return new InMemoryUserDetailsManager(user);
 	}
 
