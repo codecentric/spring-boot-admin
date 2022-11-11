@@ -16,13 +16,18 @@
 
 package de.codecentric.boot.admin;
 
+import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
+import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
-import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
-import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.cache.CacheManager;
@@ -38,15 +43,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
-import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
-
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableAdminServer
-@Import({ SecurityPermitAllConfig.class, SecuritySecureConfig.class, NotifierConfig.class })
+@Import({SecurityPermitAllConfig.class, SecuritySecureConfig.class, NotifierConfig.class})
 @Lazy(false)
 @EnableCaching
 public class SpringBootAdminServletApplication {
@@ -97,8 +97,8 @@ public class SpringBootAdminServletApplication {
 	// end::customization-http-headers-providers[]
 
 	@Bean
-	public HttpTraceRepository httpTraceRepository() {
-		return new InMemoryHttpTraceRepository();
+	public HttpExchangeRepository httpTraceRepository() {
+		return new InMemoryHttpExchangeRepository();
 	}
 
 	@Bean
@@ -109,7 +109,7 @@ public class SpringBootAdminServletApplication {
 	@Bean
 	public EmbeddedDatabase dataSource() {
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL)
-				.addScript("org/springframework/session/jdbc/schema-hsqldb.sql").build();
+			.addScript("org/springframework/session/jdbc/schema-hsqldb.sql").build();
 	}
 
 }
