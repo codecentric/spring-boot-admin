@@ -15,13 +15,11 @@
   -->
 
 <template>
-  <div class="text-white">
-    <NavbarLink
-      :view="{ label: selectedLanguage.label }"
-      :subitems="languages"
-      @menu-item-clicked="localeChanged"
-    />
-  </div>
+  <NavbarLink
+    :view="{ label: selectedLanguage.label }"
+    :subitems="languages"
+    @menu-item-clicked="localeChanged"
+  />
 </template>
 
 <script>

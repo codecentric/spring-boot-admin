@@ -31,7 +31,7 @@
         </div>
 
         <div class="hidden lg:block">
-          <div class="ml-4 flex items-center md:ml-6 gap-4">
+          <div class="ml-4 flex items-center md:ml-6 gap-4 text-white">
             <NavbarItemLanguageSelector
               v-if="availableLocales.length > 1"
               :current-locale="$i18n.locale"
@@ -40,7 +40,7 @@
             />
 
             <NavbarUserMenu
-              v-show="userName"
+              v-if="userName"
               :csrf-parameter-name="csrfParameterName"
               :csrf-token="csrfToken"
               :user-name="userName"
