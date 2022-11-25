@@ -39,6 +39,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.POST;
+
 @Profile("secure")
 // tag::configuration-spring-security[]
 @Configuration(proxyBeanMethods = false)
@@ -65,20 +68,19 @@ public class SecuritySecureConfig {
 				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/actuator/info"))).permitAll()
 				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/actuator/health"))).permitAll()
 				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll()
-				.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll() //
-				.anyRequest().authenticated() // <2>
-		).formLogin(
-				(formLogin) -> formLogin.loginPage(this.adminServer.path("/login")).successHandler(successHandler).and() // <3>
-		).logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout"))).httpBasic(Customizer.withDefaults()) // <4>
-				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <5>
+				.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll() // https://github.com/spring-projects/spring-security/issues/11027
+				.anyRequest().authenticated()) // <2>
+				.formLogin(formLogin -> formLogin.loginPage(this.adminServer.path("/login"))
+						.successHandler(successHandler)) // <3>
+				.logout(logout -> logout.logoutUrl(this.adminServer.path("/logout")))
+				.httpBasic(Customizer.withDefaults()) // <4>
+				.csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <5>
 						.ignoringRequestMatchers(
-								new AntPathRequestMatcher(this.adminServer.path("/instances"),
-										HttpMethod.POST.toString()), // <6>
-								new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
-										HttpMethod.DELETE.toString()), // <6>
+								new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()), // <6>
+								new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()), // <6>
 								new AntPathRequestMatcher(this.adminServer.path("/actuator/**")) // <7>
 						))
-				.rememberMe((rememberMe) -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600));
+				.rememberMe(rememberMe -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600));
 		return http.build();
 
 	}
