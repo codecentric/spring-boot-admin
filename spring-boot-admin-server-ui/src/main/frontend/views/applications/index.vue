@@ -20,7 +20,7 @@
     <sba-sticky-subnav>
       <div class="container mx-auto flex">
         <application-stats />
-        <application-notification-center
+        <ApplicationNotificationCenter
           v-if="hasNotificationFiltersSupport"
           :notification-filters="notificationFilters"
           @filter-remove="removeFilter"
@@ -28,9 +28,9 @@
         <div class="flex-1">
           <sba-input
             v-model="filter"
+            :placeholder="t('term.filter')"
             name="filter"
             type="search"
-            :placeholder="t('term.filter')"
           >
             <template #prepend>
               <font-awesome-icon icon="filter" />
@@ -45,8 +45,8 @@
         v-if="error"
         :error="error"
         :title="t('applications.server_connection_failed')"
-        severity="WARN"
         class-names="mb-6"
+        severity="WARN"
       />
       <sba-panel v-if="!applicationsInitialized">
         <p
@@ -63,8 +63,8 @@
             v-for="group in statusGroups"
             :key="group.status"
             :seamless="true"
-            class="application-group"
             :title="t('term.applications_tc', group.applications.length)"
+            class="application-group"
           >
             <template #title>
               <sba-status-badge :status="group.statusKey" />
@@ -77,11 +77,11 @@
               :has-notification-filters-support="hasNotificationFiltersSupport"
               :is-expanded="selected === application.name || Boolean(filter)"
               :notification-filters="notificationFilters"
-              @unregister="unregister"
-              @shutdown="shutdown"
-              @restart="restart"
               @deselect="deselect"
+              @restart="restart"
               @select="select"
+              @shutdown="shutdown"
+              @unregister="unregister"
               @toggle-notification-filter-settings="
                 toggleNotificationFilterSettings
               "
@@ -121,6 +121,7 @@ import Application from '@/services/application';
 import NotificationFilter from '@/services/notification-filter';
 import { anyValueMatches } from '@/utils/collections';
 import { Subject, concatMap, mergeWith, timer } from '@/utils/rxjs';
+import ApplicationNotificationCenter from '@/views/applications/application-notification-center';
 import ApplicationStats from '@/views/applications/application-stats';
 import ApplicationStatusHero from '@/views/applications/application-status-hero';
 import ApplicationsListItem from '@/views/applications/applications-list-item';
@@ -140,6 +141,7 @@ const instanceMatchesFilter = (term, instance) => {
 export default {
   directives: { Popper },
   components: {
+    ApplicationNotificationCenter,
     SbaWave,
     ApplicationStatusHero,
     SbaStickySubnav,
@@ -157,17 +159,14 @@ export default {
       type: String,
       default: null,
     },
-    applicationsInitialized: {
-      type: Boolean,
-      default: false,
-    },
   },
   setup: function () {
     const { t } = useI18n();
-    const { applications } = useApplicationStore();
+    const { applications, applicationsInitialized } = useApplicationStore();
 
     return {
       applications,
+      applicationsInitialized,
       t,
       filter: ref(null),
       hasNotificationFiltersSupport: ref(false),

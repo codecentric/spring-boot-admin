@@ -39,6 +39,7 @@ const i18n = createI18n({
     ? browserLanguage
     : 'en',
   fallbackLocale: 'en',
+  legacy: false,
   silentFallbackWarn: process.env.NODE_ENV === 'production',
   silentTranslationWarn: process.env.NODE_ENV === 'production',
   messages,

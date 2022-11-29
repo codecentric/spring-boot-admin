@@ -26,6 +26,9 @@ const DEFAULT_CONFIG = {
       },
       color: '#42d3a5',
     },
+    notifications: {
+      enabled: true,
+    },
     rememberMeEnabled: true,
     externalViews: [],
     favicon: 'assets/img/favicon.png',

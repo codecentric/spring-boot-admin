@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps, watch } from 'vue';
+import { computed, watch } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import sbaConfig from '@/sba-config';

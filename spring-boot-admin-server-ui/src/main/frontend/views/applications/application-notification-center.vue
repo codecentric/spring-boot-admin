@@ -2,13 +2,13 @@
   <Popover class="relative">
     <PopoverButton
       :as="SbaButton"
-      class="mr-1"
       :disabled="notificationFiltersLength === 0"
       :title="
         notificationFiltersLength > 0
           ? t('applications.actions.notification_filters')
           : t('applications.notification_filter.none')
       "
+      class="mr-1"
     >
       <font-awesome-icon
         :icon="notificationFiltersLength > 0 ? 'bell-slash' : 'bell'"
@@ -17,8 +17,8 @@
 
     <PopoverPanel
       v-slot="{ close }"
-      class="absolute left-1/2 z-10 mt-3 w-screen max-w-xl -translate-x-1/2 transform px-4 sm:px-0 shadow-lg text-sm"
       :as="SbaPanel"
+      class="absolute left-1/2 z-10 mt-3 w-screen max-w-xl -translate-x-1/2 transform px-4 sm:px-0 shadow-lg text-sm"
     >
       <div
         class="font-semibold leading-5"
@@ -31,12 +31,12 @@
       <div
         v-for="(filter, idx) in notificationFilters"
         :key="filter.id"
-        class="flex items-center border-t border-gray-50"
         :class="{
           'mt-4': idx === 0,
           'py-3': idx < notificationFiltersLength - 1,
           'pt-3': idx >= notificationFiltersLength - 1,
         }"
+        class="flex items-center border-t border-gray-50"
       >
         <div class="w-1/2">
           {{ filter.instanceId || filter.applicationName }}
@@ -65,8 +65,11 @@
 
 <script setup>
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/vue';
-import { computed, defineEmits, defineProps, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import SbaButton from '@/components/sba-button';
+import SbaPanel from '@/components/sba-panel';
 
 const props = defineProps({
   notificationFilters: {

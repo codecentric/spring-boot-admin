@@ -19,6 +19,7 @@
           <div :class="{ 'has-errors': error }" class="pb-4 form-group">
             <sba-input
               :label="t('login.placeholder.username')"
+              autocomplete="username"
               name="username"
               type="text"
             />
@@ -27,6 +28,12 @@
               autocomplete="current-password"
               name="password"
               type="password"
+            />
+            <sba-checkbox
+              v-if="rememberMeEnabled"
+              :label="t('login.remember_me')"
+              class="justify-end"
+              name="remember-me"
             />
           </div>
         </div>
@@ -44,14 +51,17 @@
 </template>
 
 <script setup>
-import { computed, defineProps } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import SbaAlert, { Severity } from '@/components/sba-alert';
 import SbaButton from '@/components/sba-button';
+import SbaCheckbox from '@/components/sba-checkbox';
 import SbaInput from '@/components/sba-input';
 import SbaPanel from '@/components/sba-panel';
 import SbaWave from '@/components/sba-wave';
+
+import sbaConfig from '@/sba-config';
 
 const i18n = useI18n();
 const t = i18n.t;
@@ -79,6 +89,8 @@ const props = defineProps({
   },
 });
 
+const { rememberMeEnabled } = sbaConfig.uiSettings;
+
 const error = computed(() => {
   let errors = props.param.error;
 
@@ -86,7 +98,7 @@ const error = computed(() => {
     if (errors.includes('401')) {
       return t('login.error.login_required', { code: errors[0] });
     } else {
-      return t('login.invalid_username_or_password');
+      return t('login.error.invalid_username_or_password');
     }
   } else {
     return undefined;

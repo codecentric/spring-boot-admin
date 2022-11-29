@@ -17,13 +17,13 @@
 <template>
   <div
     v-if="hasError"
-    class="rounded-b px-4 py-3 shadow-sm backdrop-filter backdrop-blur-xs bg-opacity-80 my-3"
     :class="classNames(alertClass, borderClassNames)"
+    class="rounded-b px-4 py-3 shadow-sm backdrop-filter backdrop-blur-xs bg-opacity-80 my-3"
     role="alert"
   >
     <div class="flex">
       <div class="py-1">
-        <font-awesome-icon :icon="icon" prefix="fa" size="1x" class="mr-4" />
+        <font-awesome-icon :icon="icon" class="mr-4" prefix="fa" size="1x" />
       </div>
       <div class="grid grid-cols-1 place-content-center">
         <p v-if="title" class="font-bold" v-text="title" />
@@ -54,7 +54,7 @@ export default {
       default: undefined,
     },
     error: {
-      type: [Error, String],
+      type: [Error, String, Event],
       default: null,
     },
     severity: {

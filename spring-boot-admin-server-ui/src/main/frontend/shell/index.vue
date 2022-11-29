@@ -16,17 +16,9 @@
 
 <template>
   <div id="app">
-    <SbaNavbar
-      :applications="applications"
-      :error="error"
-      :applications-initialized="applicationsInitialized"
-    />
+    <SbaNavbar :error="error" />
     <div class="sba-container">
-      <router-view
-        :applications="applications"
-        :error="error"
-        :applications-initialized="applicationsInitialized"
-      />
+      <router-view :error="error" />
     </div>
   </div>
 </template>
@@ -39,10 +31,6 @@ defineProps({
   error: {
     type: Error,
     default: null,
-  },
-  applicationsInitialized: {
-    type: Boolean,
-    default: false,
   },
 });
 
