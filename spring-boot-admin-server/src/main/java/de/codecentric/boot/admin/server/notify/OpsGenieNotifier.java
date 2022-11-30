@@ -26,7 +26,8 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -118,7 +119,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 	protected String buildUrl(InstanceEvent event, Instance instance) {
 		if ((event instanceof InstanceStatusChangedEvent)
 				&& (StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()))) {
-			return String.format("%s/%s/close", url.toString(), generateAlias(instance));
+			return String.format("%s/%s/close", url, generateAlias(instance));
 		}
 		return url.toString();
 	}
@@ -172,8 +173,9 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
+		SimpleEvaluationContext context = SimpleEvaluationContext
+				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+				.withRootObject(root).build();
 		return description.getValue(context, String.class);
 	}
 
@@ -183,13 +185,13 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 				((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
 	}
 
-	public void setApiKey(@Nullable String apiKey) {
-		this.apiKey = apiKey;
-	}
-
 	@Nullable
 	public String getApiKey() {
 		return apiKey;
+	}
+
+	public void setApiKey(@Nullable String apiKey) {
+		this.apiKey = apiKey;
 	}
 
 	public void setDescription(String description) {

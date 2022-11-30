@@ -26,7 +26,8 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -96,7 +97,7 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		if (url == null) {
 			throw new IllegalStateException("'url' must not be null.");
 		}
-		return String.format("%s/room/%s/notification?auth_token=%s", url.toString(), roomId, authToken);
+		return String.format("%s/room/%s/notification?auth_token=%s", url, roomId, authToken);
 	}
 
 	protected HttpEntity<Map<String, Object>> createHipChatNotification(InstanceEvent event, Instance instance) {
@@ -121,8 +122,9 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
+		SimpleEvaluationContext context = SimpleEvaluationContext
+				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+				.withRootObject(root).build();
 		return description.getValue(context, String.class);
 	}
 
@@ -136,17 +138,13 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		}
 	}
 
-	public void setUrl(@Nullable URI url) {
-		this.url = url;
-	}
-
 	@Nullable
 	public URI getUrl() {
 		return url;
 	}
 
-	public void setAuthToken(@Nullable String authToken) {
-		this.authToken = authToken;
+	public void setUrl(@Nullable URI url) {
+		this.url = url;
 	}
 
 	@Nullable
@@ -154,8 +152,8 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		return authToken;
 	}
 
-	public void setRoomId(@Nullable String roomId) {
-		this.roomId = roomId;
+	public void setAuthToken(@Nullable String authToken) {
+		this.authToken = authToken;
 	}
 
 	@Nullable
@@ -163,20 +161,24 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		return roomId;
 	}
 
-	public void setNotify(boolean notify) {
-		this.notify = notify;
+	public void setRoomId(@Nullable String roomId) {
+		this.roomId = roomId;
 	}
 
 	public boolean isNotify() {
 		return notify;
 	}
 
-	public void setDescription(String description) {
-		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
+	public void setNotify(boolean notify) {
+		this.notify = notify;
 	}
 
 	public String getDescription() {
 		return description.getExpressionString();
+	}
+
+	public void setDescription(String description) {
+		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {
