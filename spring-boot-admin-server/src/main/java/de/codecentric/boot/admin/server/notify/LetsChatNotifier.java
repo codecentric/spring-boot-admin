@@ -27,7 +27,8 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -119,8 +120,9 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
+		SimpleEvaluationContext context = SimpleEvaluationContext
+				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+				.withRootObject(root).build();
 		return message.getValue(context, String.class);
 	}
 
@@ -128,25 +130,21 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	public void setUrl(@Nullable URI url) {
-		this.url = url;
-	}
-
 	@Nullable
 	public URI getUrl() {
 		return url;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUrl(@Nullable URI url) {
+		this.url = url;
 	}
 
 	public String getUsername() {
 		return username;
 	}
 
-	public void setRoom(@Nullable String room) {
-		this.room = room;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	@Nullable
@@ -154,8 +152,8 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		return room;
 	}
 
-	public void setToken(@Nullable String token) {
-		this.token = token;
+	public void setRoom(@Nullable String room) {
+		this.room = room;
 	}
 
 	@Nullable
@@ -163,12 +161,16 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		return token;
 	}
 
-	public void setMessage(String message) {
-		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
+	public void setToken(@Nullable String token) {
+		this.token = token;
 	}
 
 	public String getMessage() {
 		return message.getExpressionString();
+	}
+
+	public void setMessage(String message) {
+		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 }

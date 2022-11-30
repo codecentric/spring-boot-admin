@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.notify;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,8 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -101,8 +103,9 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
+		SimpleEvaluationContext context = SimpleEvaluationContext
+				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+				.withRootObject(root).build();
 		return message.getValue(context, String.class);
 	}
 
@@ -110,8 +113,8 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		try {
 			String stringToSign = timestamp + "\n" + secret;
 			Mac mac = Mac.getInstance("HmacSHA256");
-			mac.init(new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA256"));
-			byte[] signData = mac.doFinal(stringToSign.getBytes("UTF-8"));
+			mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+			byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
 			return URLEncoder.encode(new String(Base64.encodeBase64(signData)), "UTF-8");
 		}
 		catch (Exception ex) {

@@ -25,7 +25,8 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -107,8 +108,10 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
+		SimpleEvaluationContext context = SimpleEvaluationContext
+				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+				.withRootObject(root).build();
+
 		return message.getValue(context, String.class);
 	}
 
