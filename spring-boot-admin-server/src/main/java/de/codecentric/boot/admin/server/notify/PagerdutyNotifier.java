@@ -24,7 +24,8 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
@@ -131,9 +132,9 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
-
+		SimpleEvaluationContext context = SimpleEvaluationContext
+				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+				.withRootObject(root).build();
 		return description.getValue(context, String.class);
 	}
 
@@ -146,16 +147,12 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return details;
 	}
 
-	public void setUrl(URI url) {
-		this.url = url;
-	}
-
 	public URI getUrl() {
 		return url;
 	}
 
-	public void setClient(@Nullable String client) {
-		this.client = client;
+	public void setUrl(URI url) {
+		this.url = url;
 	}
 
 	@Nullable
@@ -163,8 +160,8 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return client;
 	}
 
-	public void setClientUrl(@Nullable URI clientUrl) {
-		this.clientUrl = clientUrl;
+	public void setClient(@Nullable String client) {
+		this.client = client;
 	}
 
 	@Nullable
@@ -172,8 +169,8 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return clientUrl;
 	}
 
-	public void setServiceKey(@Nullable String serviceKey) {
-		this.serviceKey = serviceKey;
+	public void setClientUrl(@Nullable URI clientUrl) {
+		this.clientUrl = clientUrl;
 	}
 
 	@Nullable
@@ -181,12 +178,16 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return serviceKey;
 	}
 
-	public void setDescription(String description) {
-		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
+	public void setServiceKey(@Nullable String serviceKey) {
+		this.serviceKey = serviceKey;
 	}
 
 	public String getDescription() {
 		return description.getExpressionString();
+	}
+
+	public void setDescription(String description) {
+		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {
