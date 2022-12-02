@@ -61,8 +61,6 @@ import SbaInput from '@/components/sba-input';
 import SbaPanel from '@/components/sba-panel';
 import SbaWave from '@/components/sba-wave';
 
-import sbaConfig from '@/sba-config';
-
 const i18n = useI18n();
 const t = i18n.t;
 
@@ -89,7 +87,7 @@ const props = defineProps({
   },
 });
 
-const { rememberMeEnabled } = sbaConfig.uiSettings;
+const { rememberMeEnabled } = window.uiSettings;
 
 const error = computed(() => {
   let errors = props.param.error;
