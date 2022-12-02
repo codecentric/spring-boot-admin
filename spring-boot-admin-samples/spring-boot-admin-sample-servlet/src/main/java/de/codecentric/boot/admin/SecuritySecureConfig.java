@@ -33,7 +33,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
@@ -72,14 +74,18 @@ public class SecuritySecureConfig {
 				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
 						.successHandler(successHandler)) // <3>
 				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
-				.httpBasic(Customizer.withDefaults()) // <4>
-				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // <5>
-						.ignoringRequestMatchers(
+				.httpBasic(Customizer.withDefaults()); // <4>
+
+		http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class) // <5>
+				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+						.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()).ignoringRequestMatchers(
 								new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()), // <6>
 								new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()), // <6>
 								new AntPathRequestMatcher(this.adminServer.path("/actuator/**")) // <7>
-						))
-				.rememberMe((rememberMe) -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600));
+						));
+
+		http.rememberMe((rememberMe) -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600));
+
 		return http.build();
 
 	}

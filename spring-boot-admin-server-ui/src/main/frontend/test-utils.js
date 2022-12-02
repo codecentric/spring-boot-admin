@@ -16,6 +16,7 @@ export const render = (testComponent, options) => {
           messages: {
             en: terms,
           },
+          legacy: false,
           silentFallbackWarn: true,
           silentTranslationWarn: true,
         }),
