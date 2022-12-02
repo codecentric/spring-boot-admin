@@ -109,6 +109,19 @@ public class ReactiveApplicationFactoryTest {
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/");
 	}
 
+	@Test
+	public void test_mgmtBasePath_mgmtPortPath() {
+		webflux.setBasePath("/app");
+		management.setBasePath("/mgnt");
+		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		publishApplicationReadyEvent(factory, 8080, 8081);
+
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/mgnt/actuator");
+		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/mgnt/actuator/health");
+		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
+	}
+
 	private String getHostname() {
 		try {
 			return InetAddress.getLocalHost().getCanonicalHostName();
