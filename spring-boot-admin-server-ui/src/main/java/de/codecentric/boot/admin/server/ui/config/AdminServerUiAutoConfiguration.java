@@ -65,7 +65,7 @@ public class AdminServerUiAutoConfiguration {
 			"/journal/**", "/wallboard/**", "/external/**");
 
 	private static final List<String> DEFAULT_UI_ROUTE_EXCLUDES = asList("/extensions/**",
-			"/instances/*/actuator/heapdump", "/instances/*/actuator/logfile");
+			"/instances/*/actuator/**");
 
 	private final AdminServerUiProperties adminUi;
 
