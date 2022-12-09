@@ -90,7 +90,7 @@ public class AdminServerUiAutoConfiguration {
 
 		Settings uiSettings = Settings.builder().brand(this.adminUi.getBrand()).title(this.adminUi.getTitle())
 				.loginIcon(this.adminUi.getLoginIcon()).favicon(this.adminUi.getFavicon())
-				.faviconDanger(this.adminUi.getFaviconDanger())
+				.faviconDanger(this.adminUi.getFaviconDanger()).enableToasts(this.adminUi.getEnableToasts())
 				.notificationFilterEnabled(
 						!this.applicationContext.getBeansOfType(NotificationFilterController.class).isEmpty())
 				.routes(routes).rememberMeEnabled(this.adminUi.isRememberMeEnabled())
