@@ -126,6 +126,11 @@ public class AdminServerUiProperties {
 	 */
 	private List<String> additionalRouteExcludes = new ArrayList<>();
 
+	/**
+	 * Allows to enable toast notifications in SBA.
+	 */
+	private Boolean enableToasts = false;
+
 	@lombok.Data
 	public static class PollTimer {
 

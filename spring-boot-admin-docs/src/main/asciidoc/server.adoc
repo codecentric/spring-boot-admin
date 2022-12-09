@@ -135,6 +135,10 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | Polling duration in ms to fetch new threads data.
 | `2500`
 
+| spring.boot.admin.ui.enable-toasts
+| Allows to enable toast notifications.
+| `false`
+
 |===
 
 include::server-discovery.adoc[]
