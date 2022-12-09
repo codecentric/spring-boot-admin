@@ -44,19 +44,21 @@ instance.create = axios.create;
 export default instance;
 
 export const registerErrorToastInterceptor = (axios) => {
-  axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      const data = error.request;
-      let message = `
-              Request failed: ${data.statusText}<br>
-              <small>${data.responseURL}</small>
-      `;
-      nc.error(message, {
-        context: data.status ?? 'axios',
-        title: `Error ${data.status}`,
-        duration: 10_000,
-      });
-    }
-  );
+  if (sbaConfig.uiSettings.enableToasts === true) {
+    axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        const data = error.request;
+        let message = `
+                Request failed: ${data.statusText}<br>
+                <small>${data.responseURL}</small>
+        `;
+        nc.error(message, {
+          context: data.status ?? 'axios',
+          title: `Error ${data.status}`,
+          duration: 10000,
+        });
+      }
+    );
+  }
 };

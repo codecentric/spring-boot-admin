@@ -145,6 +145,8 @@ public class UiController {
 
 		private final List<ViewSettings> viewSettings;
 
+		private final Boolean enableToasts;
+
 	}
 
 	@lombok.Data

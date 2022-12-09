@@ -127,6 +127,11 @@ public class AdminServerUiProperties {
 	 */
 	private List<String> additionalRouteExcludes = new ArrayList<>();
 
+	/**
+	 * Allows to enable toast notifications in SBA.
+	 */
+	private Boolean enableToasts = false;
+
 	private UiTheme theme = new UiTheme();
 
 	@lombok.Data
