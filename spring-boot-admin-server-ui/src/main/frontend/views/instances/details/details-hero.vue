@@ -8,7 +8,7 @@
       <small><em v-text="instance.id" /></small>
     </div>
     <div class="mt-4 text-center">
-      <sba-tags v-if="instance" :tags="instance.tags" />
+      <sba-tags v-if="instance" :tags="instance.tags" class="justify-center" />
     </div>
   </div>
 </template>

@@ -23,8 +23,8 @@
   >
     <div class="pr-3 md:w-16 text-center">
       <sba-status
-        :status="instance.statusInfo.status"
         :date="instance.statusTimestamp"
+        :status="instance.statusInfo.status"
       />
     </div>
     <div class="flex-1">
@@ -40,14 +40,14 @@
       <span class="text-sm italic" v-text="instance.id" />
     </div>
     <div class="hidden xl:block w-1/4 overflow-x-scroll">
-      <sba-tags :tags="instance.tags" :small="true" />
+      <sba-tags :small="true" :tags="instance.tags" :wrap="false" />
     </div>
     <div
       class="hidden xl:block w-1/4 text-center"
       v-text="instance.buildVersion"
     />
     <div class="instance-list-item__actions text-right">
-      <slot name="actions" :instance="instance" />
+      <slot :instance="instance" name="actions" />
     </div>
   </li>
 </template>
