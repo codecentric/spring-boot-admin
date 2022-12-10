@@ -67,12 +67,24 @@ class Instance {
   }
 
   async fetchMetric(metric, tags) {
-    const params = tags ? {
-      tag: Object.entries(tags)
+    const params = new URLSearchParams();
+    if (tags) {
+      let firstElementDuplicated = false;
+      Object.entries(tags)
         .filter(([, value]) => typeof value !== 'undefined' && value !== null)
-        .map(([name, value]) => `${name}:${value}`)
-        .join(',')
-    } : {};
+        .forEach(([name, value]) => {
+          params.append('tag', `${name}:${value}`);
+
+          if (!firstElementDuplicated) {
+            // workaround for tags that contains comma
+            // take a look at https://github.com/spring-projects/spring-framework/issues/23820#issuecomment-543087878
+            // If there is single tag specified and name or value contains comma then it will be incorrectly split into several parts
+            // To bypass it we duplicate first tag.
+            params.append('tag', `${name}:${value}`);
+            firstElementDuplicated = true;
+          }
+        })
+    }
     return this.axios.get(uri`actuator/metrics/${metric}`, {
       params
     });
