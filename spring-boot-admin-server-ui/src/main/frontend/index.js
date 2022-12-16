@@ -74,11 +74,11 @@ const app = createApp({
 
     onBeforeMount(() => {
       applicationStore.start();
-    })
+    });
 
     onBeforeUnmount(() => {
       applicationStore.stop();
-    })
+    });
 
     return () => h(sbaShell, props);
   },
@@ -98,10 +98,10 @@ installables.forEach((view) => {
   try {
     view.configure
       ? view.configure({
-        vue,
-        i18n: vue.$i18n,
-        axios,
-      })
+          vue,
+          i18n: vue.$i18n,
+          axios,
+        })
       : void 0;
   } catch (e) {
     console.error(`Error configuring view ${view}`, e);
