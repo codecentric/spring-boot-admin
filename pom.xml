@@ -49,6 +49,7 @@
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
+        <versions-maven-plugin.version>2.13.0</versions-maven-plugin.version> <!-- because of https://github.com/mojohaus/versions/issues/855 -->
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
         <maven-site-plugin.version>3.10.0</maven-site-plugin.version>
         <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
@@ -245,6 +246,11 @@
         </plugins>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${versions-maven-plugin.version}</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
