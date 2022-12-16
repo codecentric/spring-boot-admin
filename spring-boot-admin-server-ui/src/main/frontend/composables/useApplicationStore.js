@@ -1,4 +1,4 @@
-import { onBeforeMount, onBeforeUnmount, ref } from 'vue';
+import { ref } from 'vue';
 
 import ApplicationStore from '../store.js';
 
@@ -10,7 +10,7 @@ export function createApplicationStore() {
 }
 
 export function useApplicationStore() {
-  const applications = ref(applicationStore.applications);
+  const applications = ref([]);
   const applicationsInitialized = ref(false);
   const error = ref(null);
 
@@ -20,22 +20,14 @@ export function useApplicationStore() {
   });
 
   applicationStore.addEventListener('changed', (newApplications) => {
-    applications.value = newApplications;
     applicationsInitialized.value = true;
+    applications.value = newApplications;
     error.value = null;
   });
 
   applicationStore.addEventListener('error', (errorResponse) => {
     applicationsInitialized.value = true;
     error.value = errorResponse;
-  });
-
-  onBeforeMount(() => {
-    return applicationStore.start();
-  });
-
-  onBeforeUnmount(() => {
-    return applicationStore.stop();
   });
 
   return { applications, applicationsInitialized, error, applicationStore };

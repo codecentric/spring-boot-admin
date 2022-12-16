@@ -21,8 +21,8 @@
     </p>
     <hex-mesh
       v-if="applicationsInitialized"
-      :items="applications"
       :class-for-item="classForApplication"
+      :items="applications"
       @click="select"
     >
       <template #item="{ item: application }">
@@ -36,7 +36,7 @@
             <p
               class="application__instances is-muted"
               v-text="
-                $tc('wallboard.instances_count', application.instances.length)
+                $t('wallboard.instances_count', application.instances.length)
               "
             />
           </div>
@@ -62,14 +62,10 @@ export default {
       type: Error,
       default: null,
     },
-    applicationsInitialized: {
-      type: Boolean,
-      default: false,
-    },
   },
   setup() {
-    const { applications } = useApplicationStore();
-    return { applications };
+    const { applications, applicationsInitialized } = useApplicationStore();
+    return { applications, applicationsInitialized };
   },
   methods: {
     classForApplication(application) {
@@ -128,6 +124,7 @@ export default {
   height: calc(100vh - 52px);
   width: 100%;
 }
+
 .wallboard .application {
   color: #f5f5f5;
   font-size: 1em;
@@ -138,6 +135,7 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
 .wallboard .application__name {
   width: 100%;
   padding: 2.5%;
@@ -146,15 +144,18 @@ export default {
   font-weight: 600;
   line-height: 1.125;
 }
+
 .wallboard .application__version {
   color: #f5f5f5;
   font-size: 1.25em;
   line-height: 1.25;
 }
+
 .wallboard .application__header {
   width: 90%;
   margin-bottom: 0.5em;
 }
+
 .wallboard .application__footer {
   width: 90%;
   margin-top: 0.5em;

@@ -15,7 +15,7 @@
  */
 import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
 import moment from 'moment';
-import { createApp, h, reactive } from 'vue';
+import { createApp, h, onBeforeMount, onBeforeUnmount, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 
@@ -72,6 +72,14 @@ const app = createApp({
       t,
     });
 
+    onBeforeMount(() => {
+      applicationStore.start();
+    })
+
+    onBeforeUnmount(() => {
+      applicationStore.stop();
+    })
+
     return () => h(sbaShell, props);
   },
 });
@@ -90,10 +98,10 @@ installables.forEach((view) => {
   try {
     view.configure
       ? view.configure({
-          vue,
-          i18n: vue.$i18n,
-          axios,
-        })
+        vue,
+        i18n: vue.$i18n,
+        axios,
+      })
       : void 0;
   } catch (e) {
     console.error(`Error configuring view ${view}`, e);

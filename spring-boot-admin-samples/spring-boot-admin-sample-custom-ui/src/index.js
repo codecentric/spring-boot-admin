@@ -15,9 +15,10 @@
  */
 
 /* global SBA */
-import customEndpoint from "./custom-endpoint.vue";
-import customSubitem from "./custom-subitem.vue";
-import custom from "./custom.vue";
+import customEndpoint from './custom-endpoint.vue';
+import customSubitem from './custom-subitem.vue';
+import custom from './custom.vue';
+
 
 // tag::customization-ui-toplevel[]
 SBA.use({
@@ -78,6 +79,7 @@ SBA.use({
     });
   },
   configure({ i18n }) {
+    console.log(i18n);
     i18n.mergeLocaleMessage("en", {
       // <4>
       sidebar: {
