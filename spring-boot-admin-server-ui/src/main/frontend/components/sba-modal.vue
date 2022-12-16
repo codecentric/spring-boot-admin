@@ -9,7 +9,7 @@
         </p>
         <button class="delete" aria-label="close" @click="close" />
       </header>
-      <section class="modal-card-body">
+      <section class="modal-card-body" v-if="$slots.body">
         <slot name="body" />
       </section>
       <footer class="modal-card-foot" v-if="$slots.footer">
