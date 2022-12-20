@@ -20,12 +20,17 @@ describe('store.js', () => {
   let mockSubject;
   jest.spyOn(Application, 'getStream').mockImplementation(() => mockSubject);
 
-  const changedListener = jest.fn();
-  const addedListener = jest.fn();
-  const updateListener = jest.fn();
-  const removedListener = jest.fn();
+  let changedListener;
+  let addedListener;
+  let updateListener;
+  let removedListener;
 
   beforeEach(() => {
+    changedListener = jest.fn();
+    addedListener = jest.fn();
+    updateListener = jest.fn();
+    removedListener = jest.fn();
+
     mockSubject = new ReplaySubject();
     applicationStore = new ApplicationStore();
     applicationStore.start();
