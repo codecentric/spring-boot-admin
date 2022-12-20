@@ -1,0 +1,93 @@
+.shadow {
+    box-shadow: none !important;
+}
+
+body::before {
+    background-image: url("../images/wave.svg");
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    content: "";
+    display: block;
+    height: 200px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    z-index: -1;
+}
+
+.navbar {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1;
+    border-bottom: 1px solid #333;
+}
+
+.navbar.bg-light {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+#main-section {
+    display: flex;
+    flex-direction: column;
+    margin-top: 60px;
+}
+
+#footer-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 2em;
+    font-size: .8em;
+}
+
+#footer-info a {
+    color: #000;
+}
+
+/* Content */
+.listingblock {
+    position: relative;
+}
+
+.listingblock .title {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 0.25rem;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    padding: 0 0.5rem;
+}
+
+header.border-bottom {
+    border: none !important;
+}
+
+.colist tr td:first-child {
+    text-align: right;
+}
+
+.hero {
+    flex: 1 0 0;
+
+    display: flex;
+    align-items: center;
+    margin: 0 25%;
+}
+
+.hero .title {
+    font-size: 4rem;
+    line-height: 4rem;
+    margin-bottom: 4rem;
+    text-align: center;
+}
+
+.hero .paragraph p {
+    font-size: 1.5rem;
+    font-weight: 400;
+    text-align: center;
+}
