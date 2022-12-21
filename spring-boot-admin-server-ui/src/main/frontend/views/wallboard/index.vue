@@ -16,9 +16,19 @@
 
 <template>
   <section class="wallboard section">
-    <p v-if="!applicationsInitialized" class="is-muted is-loading">
-      Loading applications...
-    </p>
+    <sba-alert
+      v-if="error"
+      :error="error"
+      :title="t('applications.server_connection_failed')"
+      class="my-0 fixed w-full"
+      severity="WARN"
+    />
+
+    <p
+      v-if="!applicationsInitialized"
+      class="is-muted is-loading"
+      v-text="t('applications.loading_applications')"
+    ></p>
     <hex-mesh
       v-if="applicationsInitialized"
       :class-for-item="classForApplication"
@@ -51,21 +61,20 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 import { HealthStatus } from '@/HealthStatus';
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import hexMesh from '@/views/wallboard/hex-mesh';
 
 export default {
   components: { hexMesh },
-  props: {
-    error: {
-      type: Error,
-      default: null,
-    },
-  },
   setup() {
-    const { applications, applicationsInitialized } = useApplicationStore();
-    return { applications, applicationsInitialized };
+    const { t } = useI18n();
+
+    const { applications, applicationsInitialized, error } =
+      useApplicationStore();
+    return { applications, applicationsInitialized, error, t };
   },
   methods: {
     classForApplication(application) {
