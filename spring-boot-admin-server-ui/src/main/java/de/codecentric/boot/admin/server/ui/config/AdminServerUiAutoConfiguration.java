@@ -161,7 +161,9 @@ public class AdminServerUiAutoConfiguration {
 				String webFluxBasePath = webFluxProperties.getBasePath();
 				boolean webfluxBasePathSet = webFluxBasePath != null;
 				String homepage = webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/");
-				homepage = PathUtils.normalizePath(homepage);
+				if (!"/".equals(homepage)) {
+					homepage = PathUtils.normalizePath(homepage);
+				}
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 						.scan(this.adminUi.getExtensionResourceLocations());
