@@ -51,6 +51,7 @@ import de.codecentric.boot.admin.server.ui.extensions.UiRoutesScanner;
 import de.codecentric.boot.admin.server.ui.web.HomepageForwardingFilterConfig;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 import de.codecentric.boot.admin.server.ui.web.UiController.Settings;
+import de.codecentric.boot.admin.server.web.PathUtils;
 
 import static java.util.Arrays.asList;
 
@@ -160,6 +161,7 @@ public class AdminServerUiAutoConfiguration {
 				String webFluxBasePath = webFluxProperties.getBasePath();
 				boolean webfluxBasePathSet = webFluxBasePath != null;
 				String homepage = webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/");
+				homepage = PathUtils.normalizePath(homepage);
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 						.scan(this.adminUi.getExtensionResourceLocations());
