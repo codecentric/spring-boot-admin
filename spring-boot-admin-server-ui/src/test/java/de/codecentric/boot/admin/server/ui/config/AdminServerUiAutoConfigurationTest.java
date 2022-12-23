@@ -55,6 +55,11 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 
+	@Test
+	void testNormalizeHomepageUrl() {
+		assertThat(AdminServerUiAutoConfiguration.normalizeHomepageUrl("/test/")).isEqualTo("/test");
+	}
+
 	@Nested
 	public class ReactiveUiConfigurationTest {
 
@@ -147,11 +152,6 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 					});
 		}
 
-	}
-
-	@Test
-	void testNormalizeHomepageUrl() {
-		assertThat(AdminServerUiAutoConfiguration.normalizeHomepageUrl("/test/")).isEqualTo("/test");
 	}
 
 }
