@@ -230,6 +230,9 @@ public class AdminServerUiAutoConfiguration {
 			@Bean
 			public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
 				String homepage = this.adminServer.path("/");
+				if (!"/".equals(homepage)) {
+					homepage = PathUtils.normalizePath(homepage);
+				}
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 						.scan(this.adminUi.getExtensionResourceLocations());
