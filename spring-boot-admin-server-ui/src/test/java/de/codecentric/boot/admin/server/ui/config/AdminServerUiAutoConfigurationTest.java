@@ -21,6 +21,7 @@ import jakarta.servlet.ServletResponse;
 
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -146,6 +147,11 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 					});
 		}
 
+	}
+
+	@Test
+	void testNormalizeHomepageUrl() {
+		assertThat(AdminServerUiAutoConfiguration.normalizeHomepageUrl("/test/")).isEqualTo("/test");
 	}
 
 }

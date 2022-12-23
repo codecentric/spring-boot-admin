@@ -133,6 +133,13 @@ public class AdminServerUiAutoConfiguration {
 		return resolver;
 	}
 
+	static String normalizeHomepageUrl(String homepage) {
+		if (!"/".equals(homepage)) {
+			homepage = PathUtils.normalizePath(homepage);
+		}
+		return homepage;
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	public static class ReactiveUiConfiguration {
@@ -160,10 +167,7 @@ public class AdminServerUiAutoConfiguration {
 			public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
 				String webFluxBasePath = webFluxProperties.getBasePath();
 				boolean webfluxBasePathSet = webFluxBasePath != null;
-				String homepage = webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/");
-				if (!"/".equals(homepage)) {
-					homepage = PathUtils.normalizePath(homepage);
-				}
+				String homepage = normalizeHomepageUrl(webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/"));
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 						.scan(this.adminUi.getExtensionResourceLocations());
@@ -229,10 +233,7 @@ public class AdminServerUiAutoConfiguration {
 
 			@Bean
 			public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
-				String homepage = this.adminServer.path("/");
-				if (!"/".equals(homepage)) {
-					homepage = PathUtils.normalizePath(homepage);
-				}
+				String homepage = normalizeHomepageUrl(this.adminServer.path("/"));
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 						.scan(this.adminUi.getExtensionResourceLocations());
