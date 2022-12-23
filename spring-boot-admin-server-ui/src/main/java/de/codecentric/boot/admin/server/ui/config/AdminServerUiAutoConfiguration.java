@@ -167,7 +167,8 @@ public class AdminServerUiAutoConfiguration {
 			public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
 				String webFluxBasePath = webFluxProperties.getBasePath();
 				boolean webfluxBasePathSet = webFluxBasePath != null;
-				String homepage = normalizeHomepageUrl(webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/"));
+				String homepage = normalizeHomepageUrl(
+						webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/"));
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 						.scan(this.adminUi.getExtensionResourceLocations());
