@@ -24,7 +24,7 @@
       To monitor applications, they must be registered at this server. This is
       either done by including the
       <a
-        :href="`${documentationBaseUrl}/#register-clients-via-spring-boot-admin`"
+        :href="`${documentationBaseUrl}/getting-started.html#register-clients-via-spring-boot-admin`"
         target="_blank"
         rel="noreferrer"
       >
@@ -32,7 +32,7 @@
       </a>
       or using a
       <a
-        :href="`${documentationBaseUrl}/#discover-clients-via-spring-cloud-discovery`"
+        :href="`${documentationBaseUrl}/getting-started.html#discover-clients-via-spring-cloud-discovery`"
         target="_blank"
         rel="noreferrer"
       >
