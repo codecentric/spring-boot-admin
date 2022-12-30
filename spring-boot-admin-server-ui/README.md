@@ -10,7 +10,7 @@ To develop the ui on an running server the best to do is
 
 1. Running the ui build in watch mode so the resources get updated:
 ```shell
-npm run watch
+npm run build:watch
 ```
 2. Run a Spring Boot Admin Server instances with the template-location and resource-location pointing to the build output and disable caching:
 ```
