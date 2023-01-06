@@ -68,6 +68,10 @@ export const instance = {
   endpoints: [
     { id: 'sessions', url: 'http://localhost:8080/actuator/sessions' },
     {
+      id: 'httptrace',
+      url: 'http://localhost:8080/actuator/httptrace',
+    },
+    {
       id: 'httptexchanges',
       url: 'http://localhost:8080/actuator/httpexchanges',
     },
