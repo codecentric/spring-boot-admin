@@ -21,9 +21,9 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.Set;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
@@ -156,8 +156,8 @@ public class InstancesProxyController {
 	}
 
 	private String getLocalPath(String pathPattern, ServletServerHttpRequest request) {
-		String pathWithinApplication = UriComponentsBuilder.fromPath(request.getServletRequest()
-				.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString()).toUriString();
+		String pathWithinApplication = request.getServletRequest()
+				.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE).toString();
 		return this.pathMatcher.extractPathWithinPattern(pathPattern, pathWithinApplication);
 	}
 

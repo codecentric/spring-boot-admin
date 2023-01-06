@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {defer, tap} from 'rxjs';
+import { defer, tap } from 'rxjs';
 
 export {
   of,
@@ -27,7 +26,7 @@ export {
   timer,
   Observable,
   Subject,
-  animationFrame as animationFrameScheduler,
+  animationFrameScheduler,
   concatMap,
   delay,
   debounceTime,
@@ -39,29 +38,33 @@ export {
   concatAll,
   ignoreElements,
   bufferTime,
-  finalize
+  finalize,
 } from 'rxjs';
 
-export const doOnSubscribe = cb => source =>
+export const doOnSubscribe = (cb) => (source) =>
   defer(() => {
     cb();
-    return source
+    return source;
   });
 
-export const listen = (cb, execDelay = 150) => source => {
-  let handle = null;
-  return source.pipe(
-    doOnSubscribe(() => handle = setTimeout(() => cb('executing'), execDelay)),
-    tap({
-      complete: () => {
-        handle && clearTimeout(handle);
-        cb('completed');
-      },
-      error: (error) => {
-        console.warn('Operation failed:', error);
-        handle && clearTimeout(handle);
-        cb('failed');
-      }
-    })
-  )
-};
+export const listen =
+  (cb, execDelay = 150) =>
+  (source) => {
+    let handle = null;
+    return source.pipe(
+      doOnSubscribe(
+        () => (handle = setTimeout(() => cb('executing'), execDelay))
+      ),
+      tap({
+        complete: () => {
+          handle && clearTimeout(handle);
+          cb('completed');
+        },
+        error: (error) => {
+          console.warn('Operation failed:', error);
+          handle && clearTimeout(handle);
+          cb('failed');
+        },
+      })
+    );
+  };

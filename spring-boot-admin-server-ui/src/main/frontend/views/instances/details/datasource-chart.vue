@@ -21,116 +21,130 @@
 </template>
 
 <script>
-  import d3 from '@/utils/d3';
-  import moment from 'moment';
+import moment from 'moment';
 
-  export default {
-    props: {
-      data: {
-        type: Array,
-        default: () => []
-      }
+import d3 from '@/utils/d3';
+
+export default {
+  props: {
+    data: {
+      type: Array,
+      default: () => [],
     },
-    methods: {
-      drawChart(_data) {
-        const vm = this;
-        const data = _data.length === 1 ? _data.concat([{..._data[0], timestamp: _data[0].timestamp + 1}]) : _data;
+  },
+  watch: {
+    data: 'drawChart',
+  },
+  mounted() {
+    const margin = {
+      top: 5,
+      right: 5,
+      bottom: 30,
+      left: 50,
+    };
 
-        ///setup x and y scale
-        const extent = d3.extent(data, d => d.timestamp);
-        const x = d3.scaleTime()
-          .range([0, vm.width])
-          .domain(extent);
+    this.width =
+      this.$el.getBoundingClientRect().width - margin.left - margin.right;
+    this.height =
+      this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
 
-        const y = d3.scaleLinear()
-          .range([vm.height, 0])
-          .domain([0, d3.max(data, d => d.active) * 1.05]);
+    this.chartLayer = d3
+      .select(this.$el.querySelector('.datasource-chart__svg'))
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
 
-        //draw max
-        const max = vm.areas.selectAll('.datasource-chart__line--max')
-          .data([data]);
-        max.enter().append('path')
-          .merge(max)
-          .attr('class', 'datasource-chart__line--max')
-          .attr('d', d3.line()
-            .x(d => x(d.timestamp))
-            .y(d => y(d.max)));
-        max.exit().remove();
+    this.xAxis = this.chartLayer
+      .append('g')
+      .attr('class', 'datasource-chart__axis-x')
+      .attr('transform', `translate(0,${this.height})`);
 
-        //draw areas
-        const active = vm.areas.selectAll('.datasource-chart__area--active')
-          .data([data]);
-        active.enter().append('path')
-          .merge(active)
-          .attr('class', 'datasource-chart__area--active')
-          .attr('d', d3.area()
-            .x(d => x(d.timestamp))
+    this.yAxis = this.chartLayer
+      .append('g')
+      .attr('class', 'datasource-chart__axis-y')
+      .attr('stroke', null);
+
+    this.areas = this.chartLayer.append('g');
+
+    this.drawChart(this.data);
+  },
+  methods: {
+    drawChart(_data) {
+      const vm = this;
+      const data =
+        _data.length === 1
+          ? _data.concat([{ ..._data[0], timestamp: _data[0].timestamp + 1 }])
+          : _data;
+
+      ///setup x and y scale
+      const extent = d3.extent(data, (d) => d.timestamp);
+      const x = d3.scaleTime().range([0, vm.width]).domain(extent);
+
+      const y = d3
+        .scaleLinear()
+        .range([vm.height, 0])
+        .domain([0, d3.max(data, (d) => d.active) * 1.05]);
+
+      //draw max
+      const max = vm.areas
+        .selectAll('.datasource-chart__line--max')
+        .data([data]);
+      max
+        .enter()
+        .append('path')
+        .merge(max)
+        .attr('class', 'datasource-chart__line--max')
+        .attr(
+          'd',
+          d3
+            .line()
+            .x((d) => x(d.timestamp))
+            .y((d) => y(d.max))
+        );
+      max.exit().remove();
+
+      //draw areas
+      const active = vm.areas
+        .selectAll('.datasource-chart__area--active')
+        .data([data]);
+      active
+        .enter()
+        .append('path')
+        .merge(active)
+        .attr('class', 'datasource-chart__area--active')
+        .attr(
+          'd',
+          d3
+            .area()
+            .x((d) => x(d.timestamp))
             .y0(y(0))
-            .y1(d => y(d.active)));
-        active.exit().remove();
-
-        //draw axis
-        vm.xAxis.call(d3.axisBottom(x)
-          .ticks(5)
-          .tickFormat(d => moment(d).format('HH:mm:ss'))
+            .y1((d) => y(d.active))
         );
+      active.exit().remove();
 
-        vm.yAxis.call(d3.axisLeft(y)
+      //draw axis
+      vm.xAxis.call(
+        d3
+          .axisBottom(x)
           .ticks(5)
-        );
-      },
+          .tickFormat((d) => moment(d).format('HH:mm:ss'))
+      );
+
+      vm.yAxis.call(d3.axisLeft(y).ticks(5));
     },
-    mounted() {
-      const margin = {
-        top: 5,
-        right: 5,
-        bottom: 30,
-        left: 50,
-      };
-
-      this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;
-      this.height = this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
-
-      this.chartLayer = d3.select(this.$el.querySelector('.datasource-chart__svg'))
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      this.xAxis = this.chartLayer.append('g')
-        .attr('class', 'datasource-chart__axis-x')
-        .attr('transform', `translate(0,${this.height})`);
-
-      this.yAxis = this.chartLayer.append('g')
-        .attr('class', 'datasource-chart__axis-y')
-        .attr('stroke', null);
-
-      this.areas = this.chartLayer.append('g');
-
-      this.drawChart(this.data);
-    },
-    watch: {
-      data: 'drawChart'
-    }
-  }
+  },
+};
 </script>
 
-<style lang="scss">
-    @import "~@/assets/css/utilities";
-
-    .datasource-chart {
-        &__svg {
-            height: 159px;
-            width: 100%;
-        }
-
-        &__area {
-            &--active {
-                fill: $info;
-                opacity: 0.8;
-            }
-        }
-
-        &__line--max {
-            stroke: $grey;
-        }
-    }
+<style lang="css">
+.datasource-chart__svg {
+  height: 159px;
+  width: 100%;
+}
+.datasource-chart__area--active {
+  fill: #3e8ed0;
+  opacity: 0.8;
+}
+.datasource-chart__line--max {
+  stroke: #3e8ed0;
+}
 </style>

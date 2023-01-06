@@ -33,16 +33,3 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
-
----
-spring:
-  profiles: insecure
-
----
-spring:
-  profiles: secure
-  security:
-    user:
-      name: "user"
-      password: "password"
-

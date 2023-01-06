@@ -1,42 +1,25 @@
-codecentric's Spring Boot Admin
-===============================
+# Spring Boot Admin by [codecentric](https://codecentric.de)
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 ![Build Status](https://github.com/codecentric/spring-boot-admin/actions/workflows/build-main.yml/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/codecentric/spring-boot-admin/branch/master/graph/badge.svg?token=u5SWsZpj5S)](https://codecov.io/gh/codecentric/spring-boot-admin)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/)
 [![Gitter](https://badges.gitter.im/codecentric/spring-boot-admin.svg)](https://gitter.im/codecentric/spring-boot-admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-![](./images/logo-spring-boot-admin.png)
-
-This community project provides an admin interface for [Spring Boot <sup>®</sup>](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") applications.
+This community project provides an admin interface for [Spring Boot <sup>®</sup>](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") web applications that expose actuator endpoints.
 
 Monitoring Python applications is available using [Pyctuator](https://github.com/SolarEdgeTech/pyctuator).
 
-Spring Boot Admin provides the following features for registered applications:
+## Compatibility Matrix
+Spring Boot Admin's version matches the major and minor versions of Spring Boot.
 
-* Show health status
-* Show details, like
-  * JVM & memory metrics
-  * micrometer.io metrics
-  * Datasource metrics
-  * Cache metrics
-* Show build-info number
-* Follow and download logfile
-* View jvm system- & environment-properties
-* View Spring Boot Configuration Properties
-* Support for Spring Cloud's postable /env- &/refresh-endpoint
-* Easy loglevel management
-* Interact with JMX-beans
-* View thread dump
-* View http-traces
-* View auditevents
-* View http-endpoints
-* View scheduled tasks
-* View and delete active sessions (using spring-session)
-* View Flyway / Liquibase database migrations
-* Download heapdump
-* Notification on status change (via e-mail, Slack, Hipchat, ...)
-* Event journal of status changes (non persistent)
+| Spring Boot Service | Spring Boot Admin  |
+|---------------------|--------------------|
+| 2.6                 | 2.6.Y              |
+| 2.7                 | 2.7.Y              |
+| 3.0                 | 3.0.Y              |
+
+Nevertheless, it is possible to monitor any version of a Spring Boot service independently of the underlying Spring Boot version in the service.
+Hence, it is possible to run Spring Boot Admin Server version 2.6 and monitor a service that is running on Spring Boot 2.3 using Spring Boot Admin Client version 2.3.
 
 ## Getting Started
 
@@ -56,18 +39,6 @@ alt="Monitoring Spring Boot® Applications with Spring Boot Admin @ Spring I/O 2
 alt="Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime" width="240" height="135" border="10" /></a><br>
 **Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime**
 
-## Compatibility Matrix
-Spring Boot Admin's version matches the major and minor versions of Spring Boot:
-            
- * SBA 2.0.X -> Spring Boot 2.0.Y
- * SBA 2.1.X -> Spring Boot 2.1.Y
- * SBA 2.2.X -> Spring Boot 2.2.Y
-
-etc. pp.
-
-Nevertheless, it is possible to monitor any version of a Spring Boot service independently of the underlying Spring Boot version in the service. 
-Hence, it is possible to run Spring Boot Admin Server version 2.6 and monitor a service that is running on Spring Boot 2.3 using Spring Boot Admin Client version 2.3.
-
 ## Getting Help
 
 Having trouble with codecentric's Spring Boot Admin? We’d like to help!
@@ -81,13 +52,7 @@ Having trouble with codecentric's Spring Boot Admin? We’d like to help!
  * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
 
 ## Reference Guide
-[Version 2.6.6](http://codecentric.github.io/spring-boot-admin/2.6.6/)
-
-[Version 2.5.6](http://codecentric.github.io/spring-boot-admin/2.5.6/)
-
-[Version 1.5.7](http://codecentric.github.io/spring-boot-admin/1.5.7/)
-
-**Translated version**
+### Translated versions
 The following reference guides have been translated by users of Spring Boot Admin and are not part of the official bundle.
 The maintainers of Spring Boot Admin will not update and maintain the guides mentioned below.
 
@@ -112,49 +77,6 @@ You can access snapshot builds from the sonatype snapshot repository by adding t
 		<enabled>false</enabled>
 	</releases>
 </repository>
-```
-
-## Screenshots
-
-![Screenshot application list](/images/screenshot.png)
-*Dashboard with desktop notifications*
-
-![Screenshot details](/images/screenshot-details.png)
-*View application health, info and details*
-
-![Screenshot metrics](/images/screenshot-metrics.png)
-*View metric counters and gauges*
-
-![Screenshot logfile](/images/screenshot-logfile.png)
-*View logfile (with follow)*
-
-![Screenshot environment](/images/screenshot-environment.png)
-*View and change Spring environment (via Spring Cloud)*
-
-![Screenshot logging](/images/screenshot-logging.png)
-*Manage Logback logger levels*
-
-![Screenshot jmx](/images/screenshot-jmx.png)
-*View and use JMX beans via jolokia*
-
-![Screenshot threads](/images/screenshot-threads.png)
-*View thread dump*
-
-![Screenshot traces](/images/screenshot-trace.png)
-*View http request traces*
-
-![Screenshot journal](/images/screenshot-journal.png)
-*View history of registered applications*
-
-## Build
-**Requirements:**
-
-* JDK >= 1.8
-
-Please make sure you set `$JAVA_HOME` points to the correct JDK.
-
-```shell
-./mvnw clean package
 ```
 
 ## Contributing

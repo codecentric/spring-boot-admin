@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <table class="sessions table is-fullwidth">
+  <table class="sessions table w-full">
     <thead>
       <tr>
         <th v-html="$t('instances.sessions.session_id')" />
@@ -25,13 +25,25 @@
         <th v-html="$t('instances.sessions.max_inactive_interval')" />
         <th v-html="$t('instances.sessions.attributes')" />
         <th>
-          <sba-confirm-button class="button"
-                              :class="{ 'is-loading' : deletingAll === 'executing', 'is-info' : deletingAll === 'completed', 'is-danger' : deletingAll === 'failed' }"
-                              :disabled="deletingAll !== null"
-                              v-if="sessions.length > 1" @click="deleteAllSessions()"
+          <sba-confirm-button
+            v-if="sessions.length > 1"
+            class="button"
+            :class="{
+              'is-loading': deletingAll === 'executing',
+              'is-info': deletingAll === 'completed',
+              'is-danger': deletingAll === 'failed',
+            }"
+            :disabled="deletingAll !== null"
+            @click="deleteAllSessions()"
           >
-            <span v-if="deletingAll === 'completed'" v-text="$t('term.deleted')" />
-            <span v-else-if="deletingAll === 'failed'" v-text="$t('term.failed')" />
+            <span
+              v-if="deletingAll === 'completed'"
+              v-text="$t('term.deleted')"
+            />
+            <span
+              v-else-if="deletingAll === 'failed'"
+              v-text="$t('term.failed')"
+            />
             <span v-else>
               <font-awesome-icon icon="trash" />&nbsp;
               <span v-text="$t('term.delete')" />
@@ -42,31 +54,58 @@
     </thead>
     <tr v-for="session in sessions" :key="session.id">
       <td>
-        <router-link v-text="session.id"
-                     :to="{ name: 'instances/sessions', params: { 'instanceId' : instance.id}, query: { sessionId : session.id } }"
+        <router-link
+          :to="{
+            name: 'instances/sessions',
+            params: { instanceId: instance.id },
+            query: { sessionId: session.id },
+          }"
+          v-text="session.id"
         />
       </td>
       <td v-text="session.creationTime.format('L HH:mm:ss.SSS')" />
       <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')" />
       <td>
-        <span v-if="session.expired" class="tag is-info" v-text="$t('instances.sessions.expired')" />
-      </td>
-      <td>
-        <span v-if="session.maxInactiveInterval >= 0" v-text="`${session.maxInactiveInterval}s`" />
-        <span v-else v-text="$t('instances.sessions.unlimited')" />
-      </td>
-      <td>
-        <span class="tag" v-for="name in session.attributeNames" :key="`${session.id}-${name}`"
-              v-text="name"
+        <span
+          v-if="session.expired"
+          class="tag is-info"
+          v-text="$t('instances.sessions.expired')"
         />
       </td>
       <td>
-        <button class="button"
-                :class="{ 'is-loading' : deleting[session.id] === 'executing', 'is-info' : deleting[session.id] === 'completed', 'is-danger' : deleting[session.id] === 'failed' }"
-                :disabled="session.id in deleting" @click="deleteSession(session.id)"
+        <span
+          v-if="session.maxInactiveInterval >= 0"
+          v-text="`${session.maxInactiveInterval}s`"
+        />
+        <span v-else v-text="$t('instances.sessions.unlimited')" />
+      </td>
+      <td>
+        <span
+          v-for="name in session.attributeNames"
+          :key="`${session.id}-${name}`"
+          class="tag"
+          v-text="name"
+        />
+      </td>
+      <td>
+        <button
+          class="button"
+          :class="{
+            'is-loading': deleting[session.id] === 'executing',
+            'is-info': deleting[session.id] === 'completed',
+            'is-danger': deleting[session.id] === 'failed',
+          }"
+          :disabled="session.id in deleting"
+          @click="deleteSession(session.id)"
         >
-          <span v-if="deleting[session.id] === 'completed'" v-text="$t('term.deleted')" />
-          <span v-else-if="deleting[session.id] === 'failed'" v-text="$t('term.failed')" />
+          <span
+            v-if="deleting[session.id] === 'completed'"
+            v-text="$t('term.deleted')"
+          />
+          <span
+            v-else-if="deleting[session.id] === 'failed'"
+            v-text="$t('term.failed')"
+          />
           <span v-else>
             <font-awesome-icon icon="trash" />&nbsp;
             <span v-text="$t('term.delete')" />
@@ -76,7 +115,11 @@
     </tr>
     <tr v-if="sessions.length === 0">
       <td class="is-muted" colspan="7">
-        <p v-if="isLoading" class="is-loading" v-text="$t('instances.sessions.loading_sessions')" />
+        <p
+          v-if="isLoading"
+          class="is-loading"
+          v-text="$t('instances.sessions.loading_sessions')"
+        />
         <p v-else v-text="$t('instances.sessions.no_sessions_found')" />
       </td>
     </tr>
@@ -84,75 +127,75 @@
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import {concatMap, from, listen, map, of, tap} from '@/utils/rxjs';
-  import prettyBytes from 'pretty-bytes';
+import prettyBytes from 'pretty-bytes';
 
-  export default {
-    props: {
-      sessions: {
-        type: Array,
-        default: () => []
-      },
-      instance: {
-        type: Instance,
-        required: true
-      },
-      isLoading: {
-        type: Boolean,
-        default: false
-      }
+import Instance from '@/services/instance';
+import { concatMap, from, listen, map, of, tap } from '@/utils/rxjs';
+
+export default {
+  props: {
+    sessions: {
+      type: Array,
+      default: () => [],
     },
-    data: () => ({
-      deletingAll: null,
-      deleting: {},
-    }),
-    methods: {
-      prettyBytes,
-      deleteAllSessions() {
-        const vm = this;
-        vm.subscription = from(vm.sessions)
-          .pipe(
-            map(session => session.id),
-            concatMap(vm._deleteSession),
-            listen(status => vm.deletingAll = status)
-          )
-          .subscribe({
-            complete: () => {
-              vm.$emit('deleted', '*');
-            }
-          });
-      },
-      deleteSession(sessionId) {
-        const vm = this;
-        vm._deleteSession(sessionId)
-          .pipe(listen(status => vm.$set(vm.deleting, sessionId, status)))
-          .subscribe({
-            complete: () => vm.$emit('deleted', sessionId),
-          });
-      },
-      _deleteSession(sessionId) {
-        const vm = this;
-        return of(sessionId)
-          .pipe(
-            concatMap(async sessionId => {
-              await vm.instance.deleteSession(sessionId);
-              return sessionId;
-            }),
-            tap({
-              error: error => {
-                console.warn(`Deleting session ${sessionId} failed:`, error);
-              }
-            })
-          );
-      }
-    }
-  }
+    instance: {
+      type: Instance,
+      required: true,
+    },
+    isLoading: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ['deleted'],
+  data: () => ({
+    deletingAll: null,
+    deleting: {},
+  }),
+  methods: {
+    prettyBytes,
+    deleteAllSessions() {
+      const vm = this;
+      vm.subscription = from(vm.sessions)
+        .pipe(
+          map((session) => session.id),
+          concatMap(vm._deleteSession),
+          listen((status) => (vm.deletingAll = status))
+        )
+        .subscribe({
+          complete: () => {
+            vm.$emit('deleted', '*');
+          },
+        });
+    },
+    deleteSession(sessionId) {
+      const vm = this;
+      vm._deleteSession(sessionId)
+        .pipe(listen((status) => (vm.deleting[sessionId] = status)))
+        .subscribe({
+          complete: () => vm.$emit('deleted', sessionId),
+        });
+    },
+    _deleteSession(sessionId) {
+      const vm = this;
+      return of(sessionId).pipe(
+        concatMap(async (sessionId) => {
+          await vm.instance.deleteSession(sessionId);
+          return sessionId;
+        }),
+        tap({
+          error: (error) => {
+            console.warn(`Deleting session ${sessionId} failed:`, error);
+          },
+        })
+      );
+    },
+  },
+};
 </script>
-<style lang="scss">
-  .sessions {
-    td, th {
-      vertical-align: middle;
-    }
-  }
+<style lang="css">
+.sessions td,
+.sessions th {
+  vertical-align: middle;
+}
 </style>

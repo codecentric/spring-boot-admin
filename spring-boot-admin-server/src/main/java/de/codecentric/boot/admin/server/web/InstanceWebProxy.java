@@ -18,10 +18,9 @@ package de.codecentric.boot.admin.server.web;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-
-import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.netty.handler.timeout.ReadTimeoutException;
@@ -31,6 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ClientHttpRequest;
+import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
@@ -43,6 +43,10 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
+
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 /**
  * Forwards a request to a single instances endpoint and will respond with: - 502 (Bad
@@ -125,14 +129,7 @@ public class InstanceWebProxy {
 	}
 
 	private boolean requiresBody(HttpMethod method) {
-		switch (method) {
-		case PUT:
-		case POST:
-		case PATCH:
-			return true;
-		default:
-			return false;
-		}
+		return List.of(PUT, POST, PATCH).contains(method);
 	}
 
 	@lombok.Data

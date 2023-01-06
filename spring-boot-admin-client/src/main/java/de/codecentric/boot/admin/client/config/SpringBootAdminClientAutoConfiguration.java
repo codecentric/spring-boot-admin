@@ -19,14 +19,13 @@ package de.codecentric.boot.admin.client.config;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,6 +43,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import de.codecentric.boot.admin.client.registration.ApplicationFactory;
@@ -62,10 +62,11 @@ import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadat
 import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
-@AutoConfiguration(after = { WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class,
-		WebClientAutoConfiguration.class })
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
+@AutoConfigureAfter({ WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class,
+		WebClientAutoConfiguration.class })
 @EnableConfigurationProperties({ ClientProperties.class, InstanceProperties.class, ServerProperties.class,
 		ManagementServerProperties.class })
 public class SpringBootAdminClientAutoConfiguration {
@@ -140,12 +141,13 @@ public class SpringBootAdminClientAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public RegistrationClient registrationClient(ClientProperties client) {
-			RestTemplateBuilder builder = new RestTemplateBuilder().setConnectTimeout(client.getConnectTimeout())
-					.setReadTimeout(client.getReadTimeout());
+			RestTemplateBuilder builder = new RestTemplateBuilder().setConnectTimeout(client.getConnectTimeout());
+			builder.setReadTimeout(client.getReadTimeout());
 			if (client.getUsername() != null && client.getPassword() != null) {
 				builder = builder.basicAuthentication(client.getUsername(), client.getPassword());
 			}
-			return new BlockingRegistrationClient(builder.build());
+			RestTemplate build = builder.build();
+			return new BlockingRegistrationClient(build);
 		}
 
 	}

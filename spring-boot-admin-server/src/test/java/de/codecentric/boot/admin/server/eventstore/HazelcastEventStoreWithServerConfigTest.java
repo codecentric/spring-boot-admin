@@ -52,6 +52,11 @@ public class HazelcastEventStoreWithServerConfigTest extends AbstractEventStoreT
 		return new HazelcastEventStore(maxLogSizePerAggregate, eventLogs);
 	}
 
+	@Override
+	protected void shutdownStore() {
+		hazelcast.shutdown();
+	}
+
 	private HazelcastInstance createHazelcastInstance() {
 		Config config = createHazelcastConfig();
 		return Hazelcast.newHazelcastInstance(config);

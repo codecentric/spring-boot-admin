@@ -1,0 +1,91 @@
+/*!
+ * Copyright 2014-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import "./toast-theme.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    font-family: BlinkMacSystemFont, -apple-system, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, Helvetica, Arial,
+    sans-serif;
+}
+
+#app {
+    @apply h-full;
+}
+
+.container {
+    @apply px-2;
+}
+
+th {
+    text-align: left;
+}
+
+.table {
+    @apply text-left text-gray-500 dark:text-gray-400 bg-white border-collapse;
+}
+
+.table thead {
+    @apply border-b bg-gray-100 rounded-md;
+}
+
+.table th,
+.table td {
+    @apply py-3 px-3;
+}
+
+.table.table-full {
+    @apply w-full;
+}
+
+.table.table-sm {
+    @apply text-sm;
+}
+
+.table thead {
+    @apply text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400;
+}
+
+.table tr:not(:last-of-type) {
+    @apply border-b;
+}
+
+.-rotate-90 {
+    --tw-rotate: -90deg;
+    transform: rotate(var(--tw-rotate));
+}
+
+.rotate-90 {
+    --tw-rotate: 90deg;
+    transform: rotate(var(--tw-rotate));
+}
+
+table.table-wide td {
+    @apply px-2 py-1.5;
+}
+
+table.table-striped tr:nth-child(even) {
+    @apply bg-gray-50;
+}
+
+td.label,
+td .label {
+    @apply text-sm font-medium text-gray-500;
+}

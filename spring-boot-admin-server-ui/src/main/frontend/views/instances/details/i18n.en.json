@@ -2,16 +2,13 @@
   "instances": {
     "details": {
       "label": "Details",
-      "fetch_failed": "Fetching metrics failed.",
-      "cache":{
-        "fetch_failed": "Fetching cache metrics failed.",
+      "cache": {
         "hit_ratio": "Hit ratio",
         "hits": "Hits",
         "misses": "Misses",
         "size": "Size"
       },
       "datasource": {
-        "fetch_failed": "Fetching datasource metrics failed.",
         "active_connections": "Active connections",
         "min_connections": "Min connections",
         "max_connections": "Max connections",
@@ -25,21 +22,19 @@
         "title": "Garbage Collection Pauses"
       },
       "health": {
-        "fetch_failed": "Fetching live health status failed. This is the last known information.",
         "title": "Health"
       },
       "info": {
-        "fetch_failed": "Fetching live info failed. This is the last known information.",
         "no_info_provided": "No info provided.",
         "title": "Info"
       },
       "memory": {
-        "fetch_failed": "Fetching memory metrics failed.",
         "max": "Max",
         "metaspace": "Metaspace",
         "size": "Size",
         "title": "Memory",
-        "used": "Used"
+        "used": "Used",
+        "committed": "Committed"
       },
       "metadata": {
         "no_data_provided": "No metadata provided.",
@@ -47,7 +42,6 @@
       },
       "process": {
         "cpus": "CPUs",
-        "fetch_failed": "Fetching process metrics failed.",
         "pid": "PID",
         "process_cpu_usage": "Process CPU Usage",
         "system_cpu_usage": "System CPU Usage",
@@ -56,7 +50,6 @@
       },
       "threads": {
         "daemon": "Daemon",
-        "fetch_failed": "Fetching threads metrics failed.",
         "live": "Live",
         "peak_live": "Peak Live",
         "title": "Threads"

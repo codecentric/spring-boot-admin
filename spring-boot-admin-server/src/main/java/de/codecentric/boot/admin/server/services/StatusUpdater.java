@@ -19,12 +19,14 @@ package de.codecentric.boot.admin.server.services;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import reactor.core.publisher.Mono;
@@ -48,7 +50,7 @@ public class StatusUpdater {
 
 	private static final Logger log = LoggerFactory.getLogger(StatusUpdater.class);
 
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
 	};
 
 	private final InstanceRepository repository;
@@ -99,13 +101,13 @@ public class StatusUpdater {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected StatusInfo getStatusInfoFromStatus(HttpStatus httpStatus, Map<String, ?> body) {
+	protected StatusInfo getStatusInfoFromStatus(HttpStatusCode httpStatus, Map<String, ?> body) {
 		if (httpStatus.is2xxSuccessful()) {
 			return StatusInfo.ofUp();
 		}
 		Map<String, Object> details = new LinkedHashMap<>();
 		details.put("status", httpStatus.value());
-		details.put("error", httpStatus.getReasonPhrase());
+		details.put("error", Objects.requireNonNull(HttpStatus.resolve(httpStatus.value())).getReasonPhrase());
 		if (body.get("details") instanceof Map) {
 			details.putAll((Map<? extends String, ?>) body.get("details"));
 		}

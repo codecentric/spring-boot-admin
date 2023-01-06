@@ -4,7 +4,7 @@
       "label": "Маппинги",
       "class": "Класс",
       "consumes": "Consumes",
-      "fetch_failed": "Ошибка при получении маппингов.",
+
       "filter_name": "Название фильтра",
       "handler": "Обработчик",
       "headers": "Заголовки",

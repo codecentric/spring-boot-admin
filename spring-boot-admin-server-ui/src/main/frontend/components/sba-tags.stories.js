@@ -1,20 +1,37 @@
-import SbaTags from './sba-tags';
+import SbaTags from './sba-tags.vue';
 
 export default {
   component: SbaTags,
-  title: 'SBA Components/Tags',
+  title: 'Components/Tags',
 };
 
-const Template = (args, {argTypes}) => ({
-  components: {SbaTags},
-  props: Object.keys(argTypes),
-  template: '<sba-tags v-bind="$props" />'
+const Template = (args) => ({
+  components: { SbaTags },
+  setup() {
+    return { args };
+  },
+  template: '<sba-tags v-bind="args" />',
 });
 
-export const Tags = Template.bind({});
-Tags.args = {
+export const SingleTag = Template.bind({});
+SingleTag.args = {
+  tags: {
+    'This is a key': 'This a value',
+  },
+};
+
+export const SingleTagSmall = Template.bind({});
+SingleTagSmall.args = {
+  small: true,
+  tags: {
+    'This is a key': 'This a value',
+  },
+};
+
+export const MultipleTags = Template.bind({});
+MultipleTags.args = {
   tags: {
     'This is a key': 'This a value',
     simpleKey: 'value',
-  }
+  },
 };

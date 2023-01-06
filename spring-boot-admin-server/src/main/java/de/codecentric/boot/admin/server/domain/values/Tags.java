@@ -24,8 +24,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
-import javax.annotation.Nullable;
-
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import static java.util.stream.Collectors.toMap;

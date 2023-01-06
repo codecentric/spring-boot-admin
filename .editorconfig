@@ -20,7 +20,7 @@ ij_java_blank_lines_after_class_header = 0
 ij_java_doc_enable_formatting = false
 ij_java_class_count_to_use_import_on_demand = 100
 ij_java_names_count_to_use_import_on_demand = 100
-ij_java_imports_layout = |,java.**,|,javax.**,|,*,|,de.codecentric.boot.admin.**,|,$*
+ij_java_imports_layout = |,java.**,|,jakarta.**,|,*,|,de.codecentric.boot.admin.**,|,$*
 ij_java_layout_static_imports_separately = true
 
 [*.xml]

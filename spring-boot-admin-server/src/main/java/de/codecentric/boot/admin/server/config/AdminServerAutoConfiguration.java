@@ -17,7 +17,7 @@
 package de.codecentric.boot.admin.server.config;
 
 import org.reactivestreams.Publisher;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.web.reactive.function.client.WebCl
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -49,11 +50,12 @@ import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrateg
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
-@AutoConfiguration(after = WebClientAutoConfiguration.class)
+@Configuration(proxyBeanMethods = false)
 @Conditional(SpringBootAdminServerEnabledCondition.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @EnableConfigurationProperties(AdminServerProperties.class)
 @ImportAutoConfiguration({ AdminServerInstanceWebClientConfiguration.class, AdminServerWebConfiguration.class })
+@AutoConfigureAfter({ WebClientAutoConfiguration.class })
 @Lazy(false)
 public class AdminServerAutoConfiguration {
 

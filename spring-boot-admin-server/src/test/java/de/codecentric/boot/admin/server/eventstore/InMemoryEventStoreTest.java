@@ -23,4 +23,9 @@ public class InMemoryEventStoreTest extends AbstractEventStoreTest {
 		return new InMemoryEventStore(maxLogSizePerAggregate);
 	}
 
+	@Override
+	protected void shutdownStore() {
+		// NOOP;
+	}
+
 }

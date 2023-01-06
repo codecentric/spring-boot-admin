@@ -13,7 +13,7 @@
       "context_update": "Actualizar",
       "context_update_failed": "Fallido",
       "context_updated": "Actualizado",
-      "fetch_failed": "Falla recuperando la configuración de ambiente.",
+
       "no_properties": "No hay propiedades configuradas",
       "title": "Administrador de configuración de ambiente",
       "refresh": "Refrescar configuración",

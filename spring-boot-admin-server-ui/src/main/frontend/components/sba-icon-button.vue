@@ -15,64 +15,41 @@
   -->
 
 <template>
-  <button class="button icon-button" v-on="$listeners" :title="title">
+  <sba-button
+    class="border-none sm:m-1 !bg-transparent"
+    :title="title"
+    size="xs"
+    v-on="$attrs"
+  >
     <font-awesome-icon :icon="icon" :size="size" :class="iconClass" />
-  </button>
+  </sba-button>
 </template>
 
 <script>
-  export default {
-    props: {
-      title: {
-        type: String,
-        required: false,
-        default: null
-      },
-      icon: {
-        type: [String, Array],
-        required: true,
-      },
-      size: {
-        type: String,
-        default: null
-      },
-      iconClass: {
-        type: String,
-        default: null
-      }
-    }
-  }
+import SbaButton from '@/components/sba-button';
+
+export default {
+  components: { SbaButton },
+  props: {
+    title: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    icon: {
+      type: [String, Array],
+      required: true,
+    },
+    size: {
+      type: String,
+      default: null,
+    },
+    iconClass: {
+      type: String,
+      default: null,
+    },
+  },
+};
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .icon-button {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 1em;
-    color: inherit;
-
-    &:not([disabled]) {
-      cursor: pointer;
-
-      &:hover {
-        color: $black;
-      }
-
-      & svg {
-        fill: currentcolor;
-      }
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    &:active {
-      outline: none;
-    }
-  }
-</style>
+<style></style>

@@ -13,55 +13,66 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {library} from '@fortawesome/fontawesome-svg-core';
-import {faGithub} from '@fortawesome/free-brands-svg-icons/faGithub';
-import {faGitter} from '@fortawesome/free-brands-svg-icons/faGitter';
-import {faStackOverflow} from '@fortawesome/free-brands-svg-icons/faStackOverflow';
-import {faTimesCircle as farTimesCircle} from '@fortawesome/free-regular-svg-icons/faTimesCircle';
-import {faAngleDoubleRight} from '@fortawesome/free-solid-svg-icons/faAngleDoubleRight';
-import {faBan} from '@fortawesome/free-solid-svg-icons/faBan';
-import {faBell} from '@fortawesome/free-solid-svg-icons/faBell';
-import {faBellSlash} from '@fortawesome/free-solid-svg-icons/faBellSlash';
-import {faBook} from '@fortawesome/free-solid-svg-icons/faBook';
-import {faCheck} from '@fortawesome/free-solid-svg-icons/faCheck';
-import {faCube} from '@fortawesome/free-solid-svg-icons/faCube';
-import {faCubes} from '@fortawesome/free-solid-svg-icons/faCubes';
-import {faDownload} from '@fortawesome/free-solid-svg-icons/faDownload';
-import {faExclamation} from '@fortawesome/free-solid-svg-icons/faExclamation';
-import {faExclamationTriangle} from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
-import {faFilter} from '@fortawesome/free-solid-svg-icons/faFilter';
-import {faHeartbeat} from '@fortawesome/free-solid-svg-icons/faHeartbeat';
-import {faHistory} from '@fortawesome/free-solid-svg-icons/faHistory';
-import {faHome} from '@fortawesome/free-solid-svg-icons/faHome';
-import {faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons/faMapMarkerAlt';
-import {faMinusCircle} from '@fortawesome/free-solid-svg-icons/faMinusCircle';
-import {faPencilAlt} from '@fortawesome/free-solid-svg-icons/faPencilAlt';
-import {faQuestionCircle} from '@fortawesome/free-solid-svg-icons/faQuestionCircle';
-import {faSearch} from '@fortawesome/free-solid-svg-icons/faSearch';
-import {faSignOutAlt} from '@fortawesome/free-solid-svg-icons/faSignOutAlt';
-import {faStepBackward} from '@fortawesome/free-solid-svg-icons/faStepBackward';
-import {faStepForward} from '@fortawesome/free-solid-svg-icons/faStepForward';
-import {faTimesCircle} from '@fortawesome/free-solid-svg-icons/faTimesCircle';
-import {faTrash} from '@fortawesome/free-solid-svg-icons/faTrash';
-import {faRedo} from '@fortawesome/free-solid-svg-icons/faRedo';
-import {faSyncAlt} from '@fortawesome/free-solid-svg-icons/faSyncAlt';
-import {faStopCircle as farStopCircle} from '@fortawesome/free-regular-svg-icons/faStopCircle';
-import {faUserCircle} from '@fortawesome/free-solid-svg-icons/faUserCircle';
-import {faWrench} from '@fortawesome/free-solid-svg-icons/faWrench';
-import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
-import {faAngleDoubleLeft} from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faGithub } from '@fortawesome/free-brands-svg-icons/faGithub';
+import { faGitter } from '@fortawesome/free-brands-svg-icons/faGitter';
+import { faStackOverflow } from '@fortawesome/free-brands-svg-icons/faStackOverflow';
+import { faStopCircle as farStopCircle } from '@fortawesome/free-regular-svg-icons/faStopCircle';
+import { faTimesCircle as farTimesCircle } from '@fortawesome/free-regular-svg-icons/faTimesCircle';
+import {
+  faAngleDoubleLeft,
+  faPowerOff,
+  faUndoAlt,
+} from '@fortawesome/free-solid-svg-icons';
+import { faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons/faAngleDoubleRight';
+import { faBan } from '@fortawesome/free-solid-svg-icons/faBan';
+import { faBars } from '@fortawesome/free-solid-svg-icons/faBars.js';
+import { faBell } from '@fortawesome/free-solid-svg-icons/faBell';
+import { faBellSlash } from '@fortawesome/free-solid-svg-icons/faBellSlash';
+import { faBook } from '@fortawesome/free-solid-svg-icons/faBook';
+import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons/faCheckCircle.js';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown.js';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight.js';
+import { faCube } from '@fortawesome/free-solid-svg-icons/faCube';
+import { faCubes } from '@fortawesome/free-solid-svg-icons/faCubes';
+import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload';
+import { faExclamation } from '@fortawesome/free-solid-svg-icons/faExclamation';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons/faExclamationCircle.js';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons/faExclamationTriangle';
+import { faFilter } from '@fortawesome/free-solid-svg-icons/faFilter';
+import { faFrownOpen } from '@fortawesome/free-solid-svg-icons/faFrownOpen.js';
+import { faHeartbeat } from '@fortawesome/free-solid-svg-icons/faHeartbeat';
+import { faHistory } from '@fortawesome/free-solid-svg-icons/faHistory';
+import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle.js';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons/faMapMarkerAlt';
+import { faMinusCircle } from '@fortawesome/free-solid-svg-icons/faMinusCircle';
+import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt';
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons/faQuestionCircle';
+import { faRedo } from '@fortawesome/free-solid-svg-icons/faRedo';
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons/faSignOutAlt';
+import { faStepBackward } from '@fortawesome/free-solid-svg-icons/faStepBackward';
+import { faStepForward } from '@fortawesome/free-solid-svg-icons/faStepForward';
+import { faSyncAlt } from '@fortawesome/free-solid-svg-icons/faSyncAlt';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons/faTimesCircle';
+import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons/faUserCircle';
+import { faWrench } from '@fortawesome/free-solid-svg-icons/faWrench';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 export default FontAwesomeIcon;
 
 library.add(
-//solid
+  //solid
   faAngleDoubleRight,
   faAngleDoubleLeft,
   faBan,
   faBell,
   faBellSlash,
   faBook,
+  faBars,
   faCheck,
   faCube,
   faCubes,
@@ -69,12 +80,19 @@ library.add(
   faExclamation,
   faExclamationTriangle,
   faFilter,
+  faFrownOpen,
   faHeartbeat,
   faHistory,
+  faInfoCircle,
+  faExclamationCircle,
   faHome,
   faMapMarkerAlt,
+  faCheckCircle,
   faMinusCircle,
+  faChevronRight,
+  faChevronDown,
   faPencilAlt,
+  faPowerOff,
   faQuestionCircle,
   faSearch,
   faSignOutAlt,
@@ -84,14 +102,14 @@ library.add(
   faTrash,
   faRedo,
   faSyncAlt,
+  faUndoAlt,
   faUserCircle,
   faWrench,
-//regular
+  //regular
   farStopCircle,
   farTimesCircle,
-//brands
+  //brands
   faGithub,
   faGitter,
   faStackOverflow
-)
-;
+);

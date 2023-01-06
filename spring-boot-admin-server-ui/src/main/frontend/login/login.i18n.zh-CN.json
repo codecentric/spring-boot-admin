@@ -1,0 +1,14 @@
+{
+  "login": {
+    "button_login": "登录",
+    "logout_successful": "注销成功",
+    "remember_me": "记住用户",
+    "error": {
+      "invalid_username_or_password": "无效的用户名或密码"
+    },
+    "placeholder": {
+      "username": "用户名",
+      "password": "密码"
+    }
+  }
+}

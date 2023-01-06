@@ -15,28 +15,32 @@
   -->
 
 <template>
-  <div class="field is-narrow">
-    <div class="control">
-      <button
-        v-if="scope === 'application'"
-        class="button is-primary is-active"
-        @click="toggleScope('instance')"
-      >
-        <font-awesome-icon icon="cubes" />&nbsp;
-        <span v-text="$t('term.application')" />
-      </button>
-      <button
-        v-else
-        class="button"
-        @click="toggleScope('application')"
-      >
-        <font-awesome-icon icon="cube" />&nbsp;&nbsp;
-        <span v-text="$t('term.instance')" />
-      </button>
-    </div>
-    <p class="help has-text-centered">
-      <span v-if="scope === 'application'"
-            v-text="$t('term.affects_all_instances', {count: instanceCount})"
+  <div>
+    <sba-button
+      v-if="instanceCount <= 1 || modelValue === APPLICATION"
+      class="w-full"
+      size="sm"
+      :class="classNames"
+      :title="$t('term.affects_all_instances', { count: instanceCount })"
+      @click="toggleScope(ActionScope.INSTANCE)"
+    >
+      <span v-text="$t('term.application')" />
+    </sba-button>
+    <sba-button
+      v-else
+      class="w-full"
+      size="sm"
+      :class="classNames"
+      :title="$t('term.affects_this_instance_only')"
+      @click="toggleScope(ActionScope.APPLICATION)"
+    >
+      <span v-text="$t('term.instance')" />
+    </sba-button>
+
+    <p v-if="showInfo" class="text-center text-xs pt-1 truncate">
+      <span
+        v-if="modelValue === APPLICATION"
+        v-text="$t('term.affects_all_instances', { count: instanceCount })"
       />
       <span v-else v-text="$t('term.affects_this_instance_only')" />
     </p>
@@ -44,36 +48,42 @@
 </template>
 
 <script>
+import { ActionScope } from '@/components/ActionScope';
+import SbaButton from '@/components/sba-button';
+
 export default {
-  model: {
-    prop: 'scope',
-    event: 'changeScope'
-  },
+  name: 'SbaToggleScopeButton',
+  components: { SbaButton },
   props: {
-    scope: {
+    modelValue: {
       type: String,
-      required: true
+      required: true,
     },
     instanceCount: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
+    showInfo: {
+      type: Boolean,
+      default: true,
+    },
   },
+  emits: ['update:modelValue'],
   data() {
     return {
-      selectedScope: 'instance'
-    }
+      ActionScope,
+      APPLICATION: ActionScope.APPLICATION,
+      INSTANCE: ActionScope.INSTANCE,
+      classNames: [],
+    };
+  },
+  mounted() {
+    this.classNames = [...this.$el.classList];
   },
   methods: {
     toggleScope(newScope) {
-      this.$emit('changeScope', newScope)
-    }
-  }
-}
+      this.$emit('update:modelValue', newScope);
+    },
+  },
+};
 </script>
-
-<style scoped>
-.button {
-  width: 100%;
-}
-</style>

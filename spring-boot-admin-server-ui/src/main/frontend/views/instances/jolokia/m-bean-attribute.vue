@@ -30,98 +30,122 @@
           </div>
           <div class="control is-expanded has-icons-right">
             <template v-if="!editing">
-              <input v-if="!hasComplexValue" class="input" type="text" readonly :value="value" @dblclick="edit">
-              <textarea v-else class="input m-bean-attribute--text" readonly v-text="jsonValue" />
-              <span class="icon is-right has-text-warning" v-if="error">
+              <input
+                v-if="!hasComplexValue"
+                class="input"
+                type="text"
+                readonly
+                :value="value"
+                @dblclick="edit"
+              />
+              <textarea
+                v-else
+                class="input m-bean-attribute--text"
+                readonly
+                v-text="jsonValue"
+              />
+              <span v-if="error" class="icon is-right has-text-warning">
                 <font-awesome-icon icon="exclamation-triangle" />
               </span>
             </template>
             <template v-else>
-              <input v-if="!hasComplexValue" class="input" type="text" ref="input"
-                     v-model="input" @keyup.esc="cancel" @keyup.enter="save"
-              >
+              <input
+                v-if="!hasComplexValue"
+                ref="input"
+                v-model="input"
+                class="input"
+                type="text"
+                @keyup.esc="cancel"
+                @keyup.enter="save"
+              />
             </template>
           </div>
         </div>
         <div class="help" v-text="descriptor.desc" />
       </div>
     </div>
-    <div class="control" v-if="editing">
-      <button class="button is-light is-small" @click="cancel" v-text="$t('term.cancel')" />
-      <button class="button is-primary is-small" :class="{'is-loading' : saving}" @click="save"
-              :disabled="value === input" v-text="$t('term.save')"
+    <div v-if="editing" class="control">
+      <button
+        class="button is-light is-small"
+        @click="cancel"
+        v-text="$t('term.cancel')"
+      />
+      <button
+        class="button is-primary is-small"
+        :class="{ 'is-loading': saving }"
+        :disabled="value === input"
+        @click="save"
+        v-text="$t('term.save')"
       />
     </div>
   </div>
 </template>
 
 <script>
-  export default {
-    props: {
-      name: {
-        type: String,
-        required: true
-      },
-      descriptor: {
-        type: Object,
-        required: true
-      },
-      value: {
-        type: null,
-        default: null
-      },
-      onSaveValue: {
-        type: Function,
-        required: true
+export default {
+  props: {
+    name: {
+      type: String,
+      required: true,
+    },
+    descriptor: {
+      type: Object,
+      required: true,
+    },
+    value: {
+      type: null,
+      default: null,
+    },
+    onSaveValue: {
+      type: Function,
+      required: true,
+    },
+  },
+  data: () => ({
+    input: null,
+    editing: false,
+    saving: false,
+    error: null,
+  }),
+  computed: {
+    hasComplexValue() {
+      return this.value !== null && typeof this.value === 'object';
+    },
+    jsonValue() {
+      return JSON.stringify(this.value, null, 4);
+    },
+  },
+  methods: {
+    async edit() {
+      if (this.descriptor.rw && !this.hasComplexValue) {
+        this.input = this.value;
+        this.editing = true;
+        await this.$nextTick();
+        this.$refs.input.focus();
       }
     },
-    data: () => ({
-      input: null,
-      editing: false,
-      saving: false,
-      error: null
-    }),
-    computed: {
-      hasComplexValue() {
-        return this.value !== null && typeof this.value === 'object';
-      },
-      jsonValue() {
-        return JSON.stringify(this.value, null, 4);
-      },
+    cancel() {
+      this.editing = false;
     },
-    methods: {
-      async edit() {
-        if (this.descriptor.rw && !this.hasComplexValue) {
-          this.input = this.value;
-          this.editing = true;
-          await this.$nextTick();
-          this.$refs.input.focus();
-        }
-      },
-      cancel() {
+    async save() {
+      this.saving = true;
+      try {
+        await this.onSaveValue(this.input);
+      } catch (error) {
+        console.warn(`Error saving attribute ${this.name}`, error);
+        this.error = error;
+      } finally {
+        this.saving = false;
         this.editing = false;
-      },
-      async save() {
-        this.saving = true;
-        try {
-          await this.onSaveValue(this.input);
-        } catch (error) {
-          console.warn(`Error saving attribute ${this.name}`, error);
-          this.error = error;
-        } finally {
-          this.saving = false;
-          this.editing = false;
-        }
       }
-    }
-  }
+    },
+  },
+};
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .m-bean-attribute--text {
-    resize: vertical;
-    min-height: 120px;
-  }
+<style lang="css">
+.m-bean-attribute--text {
+  resize: vertical;
+  min-height: 120px;
+}
 </style>

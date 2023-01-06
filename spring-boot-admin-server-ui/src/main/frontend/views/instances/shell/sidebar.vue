@@ -15,46 +15,98 @@
   -->
 
 <template>
-  <aside class="sidebar">
-    <router-link
-      :to="{name: 'instances/details', params: {instanceId: instance.id}}"
-      class="instance-summary"
-      :class="`instance-summary--${instance.statusInfo.status}`"
-    >
-      <div
-        class="instance-summary__name"
-        v-text="instance.registration.name"
-      />
-      <div
-        class="instance-summary__id"
-        v-text="instance.id"
-      />
-    </router-link>
-    <ul>
+  <aside
+    class="h-full flex flex-col bg-white border-r backdrop-filter backdrop-blur-lg bg-opacity-80 z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
+    :class="{ 'w-60': sidebarOpen }"
+  >
+    <ul class="relative px-1 py-1 overflow-y-auto">
+      <!-- Instance info block -->
+      <li class="relative mb-1 hidden md:block">
+        <router-link
+          class="instance-info-block"
+          :to="{
+            name: 'instances/details',
+            params: { instanceId: instance.id },
+          }"
+          :class="`instance-summary--${instance.statusInfo.status}`"
+        >
+          <span class="overflow-hidden text-ellipsis">
+            <span class="font-bold" v-text="instance.registration.name" /><br />
+            <small><em v-text="instance.id" /></small>
+          </span>
+        </router-link>
+      </li>
+
+      <!-- sm: button toggle navigation -->
+      <li class="block md:hidden">
+        <a class="navbar-link navbar-link__group" @click.stop="toggleSidebar">
+          <font-awesome-icon :icon="['fas', 'bars']" />
+        </a>
+      </li>
+
+      <!-- The actual nav -->
       <li
         v-for="group in enabledGroupedViews"
         :key="group.name"
-        class="sidebar-group"
-        :class="{'is-active' : isActiveGroup(group)}"
-        @mouseenter="hasMultipleViews(group) && !isActiveGroup(group) && showFlyout($event)"
-        @mouseleave="hasMultipleViews(group) && !isActiveGroup(group) && hideFlyout($event)"
+        :data-sba-group="group.id"
+        class="relative"
       >
         <router-link
-          :to="{ name: group.views[0].name, params: { 'instanceId' : instance.id } }"
-          v-text="hasMultipleViews(group) ? getGroupTitle(group.id) : $t(group.views[0].label)"
+          class="navbar-link navbar-link__group"
+          :to="{
+            name: group.views[0].name,
+            params: { instanceId: instance.id },
+          }"
           active-class=""
           exact-active-class=""
-          :class="{'is-active' : isActiveGroup(group) }"
-        />
+          :class="{ 'navbar-link__active': isActiveGroup(group) }"
+        >
+          <span v-html="group.icon" />
+          <span
+            v-text="
+              hasMultipleViews(group)
+                ? getGroupTitle(group.id)
+                : $t(group.views[0].label)
+            "
+          />
+          <svg
+            v-if="hasMultipleViews(group)"
+            aria-hidden="true"
+            focusable="false"
+            data-prefix="fas"
+            class="h-3 ml-auto hidden md:block"
+            :class="{
+              '-rotate-90': !isActiveGroup(group),
+              '': isActiveGroup(group),
+            }"
+            role="img"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 448 512"
+          >
+            <path
+              fill="currentColor"
+              d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"
+            />
+          </svg>
+        </router-link>
+
+        <!-- Le subnav -->
         <ul
-          v-if="hasMultipleViews(group)"
-          class="sidebar-group-items"
+          v-if="hasMultipleViews(group) && isActiveGroup(group)"
+          class="relative block"
+          :class="{ 'hidden md:block': !sidebarOpen }"
         >
           <li
             v-for="view in group.views"
             :key="view.name"
+            :data-sba-view="view.name"
           >
-            <router-link :to="{ name: view.name, params: { 'instanceId' : instance.id } }">
+            <router-link
+              class="navbar-link navbar-link__group_item"
+              :to="{ name: view.name, params: { instanceId: instance.id } }"
+              active-class="navbar-link__active"
+              exact-active-class=""
+            >
               <component :is="view.handle" />
             </router-link>
           </li>
@@ -65,208 +117,111 @@
 </template>
 
 <script>
-import sticksBelow from '@/directives/sticks-below';
+import { defineComponent } from 'vue';
+
+import SbaButton from '@/components/sba-button';
+
 import Application from '@/services/application';
 import Instance from '@/services/instance';
-import {compareBy} from '@/utils/collections';
+import { compareBy } from '@/utils/collections';
+import { VIEW_GROUP_ICON } from '@/views';
 
-export default {
+export default defineComponent({
+  components: { SbaButton },
   props: {
     views: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     instance: {
       type: Instance,
-      default: null
+      default: null,
     },
     application: {
-        type: Application,
-        default: null
-      }
+      type: Application,
+      default: null,
     },
-    directives: {sticksBelow},
-    data: () => ({
-      isStuck: false
-    }),
-    computed: {
-      enabledViews() {
-        if (!this.instance) {
-          return [];
-        }
+  },
+  data() {
+    return {
+      sidebarOpen: false,
+    };
+  },
+  computed: {
+    enabledViews() {
+      if (!this.instance) {
+        return [];
+      }
 
-        return [...this.views].filter(
-          view => typeof view.isEnabled === 'undefined' || view.isEnabled({instance: this.instance})
-        ).sort(compareBy(v => v.order));
-      },
-      enabledGroupedViews() {
-        const groups = new Map();
-        this.enabledViews.forEach(view => {
-            const groupName = view.group;
-            const group = groups.get(groupName) || {
-              id: groupName,
-              order: Number.MAX_SAFE_INTEGER,
-              views: []
-            };
-            groups.set(groupName, {
-              ...group,
-              order: Math.min(group.order, view.order),
-              views: [...group.views, view]
-            })
-          }
-        );
-        return Array.from(groups.values());
-      }
+      return [...this.views]
+        .filter(
+          (view) =>
+            typeof view.isEnabled === 'undefined' ||
+            view.isEnabled({ instance: this.instance })
+        )
+        .sort(compareBy((v) => v.order));
     },
-    methods: {
-      getGroupTitle(groupId) {
-        const key = 'sidebar.' + groupId + '.title'
-        const translated = this.$t(key);
-        return key === translated ? groupId : translated;
-      },
-      isActiveGroup(group) {
-        return group.views.includes(this.$route.meta.view);
-      },
-      hasMultipleViews(group) {
-        return group.views.length > 1;
-      },
-      onScroll() {
-        this.isStuck = this.$el.getBoundingClientRect().top <= 52;
-      },
-      showFlyout(event) {
-        const groupEl = event.target;
-        groupEl.classList.add('is-showing-flyout');
-        const boundingRect = groupEl.getBoundingClientRect();
-
-        const itemsEl = event.target.querySelector('.sidebar-group-items');
-        itemsEl.style.top = `${boundingRect.top}px`;
-        itemsEl.style.left = `${boundingRect.right + 1}px`;
-      },
-      hideFlyout(event) {
-        const groupEl = event.target;
-        groupEl.classList.remove('is-showing-flyout');
-        const itemsEl = event.target.querySelector('.sidebar-group-items');
-        itemsEl.style = undefined;
-      }
+    enabledGroupedViews() {
+      const groups = new Map();
+      this.enabledViews.forEach((view) => {
+        const groupName = view.group;
+        const group = groups.get(groupName) || {
+          id: groupName,
+          order: Number.MAX_SAFE_INTEGER,
+          views: [],
+        };
+        groups.set(groupName, {
+          ...group,
+          order: Math.min(group.order, view.order),
+          icon: VIEW_GROUP_ICON[groupName],
+          views: [...group.views, view],
+        });
+      });
+      return Array.from(groups.values());
     },
-    mounted() {
-      window.addEventListener('scroll', this.onScroll);
+  },
+  watch: {
+    $route() {
+      this.sidebarOpen = false;
     },
-    beforeDestroy() {
-      window.removeEventListener('scroll', this.onScroll);
+  },
+  methods: {
+    toggleSidebar() {
+      this.sidebarOpen = !this.sidebarOpen;
     },
-  }
+    getGroupTitle(groupId) {
+      const key = 'sidebar.' + groupId + '.title';
+      const translated = this.$t(key);
+      return key === translated ? groupId : translated;
+    },
+    isActiveGroup(group) {
+      return group.views.includes(this.$route.meta.view);
+    },
+    hasMultipleViews(group) {
+      return group.views.length > 1;
+    },
+  },
+});
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
+<style scoped>
+.instance-info-block {
+  @apply bg-sba-50 bg-opacity-40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
+}
+.navbar-link {
+  @apply cursor-pointer bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
+  @apply text-gray-700;
+}
+.navbar-link:hover,
+.navbar-link__active {
+  @apply bg-sba-50 bg-opacity-80 text-sba-900;
+}
 
-  .sidebar {
-    height: 100%;
-    width: 100%;
-    background-color: $white-bis;
-    border-right: 1px solid $grey-lighter;
-    overflow-x: auto;
+.navbar-link__group_item {
+  @apply h-6 mb-1 mt-1 pl-12 pr-6;
+}
 
-    .instance-summary {
-      padding: 1rem 0.5rem;
-      color: $text;
-      background-color: $grey;
-      text-align: center;
-
-      &:hover {
-        background-color: rgba($grey, 0.90);
-      }
-
-      &__name {
-        max-width: 175px;
-        margin: 0 auto;
-        font-weight: $weight-semibold;
-        font-size: $size-5;
-      }
-
-      &__id {
-        font-size: $size-6;
-      }
-
-      &--UP {
-        color: $primary-invert;
-        background-color: $primary;
-        &:hover {
-          background-color: rgba($primary, 0.90);
-        }
-      }
-
-      &--RESTRICTED {
-        color: $warning-invert;
-        background-color: $warning;
-        &:hover {
-          background-color: rgba($warning, 0.90);
-        }
-      }
-
-      &--OUT_OF_SERVICE,
-      &--DOWN {
-        color: $danger-invert;
-        background-color: $danger;
-        &:hover {
-          background-color: rgba($danger, 0.90);
-        }
-      }
-    }
-
-    a {
-      border-radius: $radius-small;
-      color: $text;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: block;
-      padding: 0.5em 0.75em;
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.04);
-      }
-    }
-
-    .sidebar-group {
-      .sidebar-group-items {
-        display: none;
-      }
-
-      &.is-active {
-        box-shadow: inset 4px 0 0 $primary;
-        background-color: rgba(0, 0, 0, 0.04);
-
-        > a {
-          color: $text;
-          font-weight: $weight-semibold;
-        }
-
-        .sidebar-group-items {
-          display: block;
-          padding-bottom: 0.25em;
-
-          a {
-            padding-left: 2em;
-
-            &.is-active {
-              background-color: $primary;
-              color: $link-invert;
-            }
-          }
-        }
-      }
-
-      &.is-showing-flyout {
-        .sidebar-group-items {
-          position: fixed;
-          display: block;
-          z-index: 999;
-          background-color: $white;
-          min-width: 150px;
-          box-shadow: 0 2px 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
-        }
-      }
-    }
-  }
+.navbar-link__group {
+  @apply h-12 px-2 md:px-6;
+}
 </style>

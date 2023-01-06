@@ -16,132 +16,205 @@
 
 <template>
   <section class="wallboard section">
-    <p v-if="!applicationsInitialized" class="is-muted is-loading">
-      Loading applications...
-    </p>
-    <hex-mesh v-if="applicationsInitialized"
-              :items="applications"
-              :class-for-item="classForApplication"
-              @click="select"
+    <sba-alert
+      v-if="error"
+      :error="error"
+      :title="t('applications.server_connection_failed')"
+      class="my-0 fixed w-full"
+      severity="WARN"
+    />
+
+    <p
+      v-if="!applicationsInitialized"
+      class="is-muted is-loading"
+      v-text="t('applications.loading_applications')"
+    ></p>
+    <hex-mesh
+      v-if="applicationsInitialized"
+      :class-for-item="classForApplication"
+      :items="applications"
+      @click="select"
     >
-      <div class="hex__body application" slot="item" slot-scope="{item: application}" :key="application.name">
-        <div class="application__header application__time-ago is-muted">
-          <sba-time-ago :date="application.statusTimestamp" />
+      <template #item="{ item: application }">
+        <div :key="application.name" class="hex__body application">
+          <div class="application__status-indicator" />
+          <div class="application__header application__time-ago is-muted">
+            <sba-time-ago :date="application.statusTimestamp" />
+          </div>
+          <div class="application__body">
+            <h1 class="application__name" v-text="application.name" />
+            <p
+              class="application__instances is-muted"
+              v-text="
+                $t('wallboard.instances_count', application.instances.length)
+              "
+            />
+          </div>
+          <h2
+            class="application__footer application__version"
+            v-text="application.buildVersion"
+          />
         </div>
-        <div class="application__body">
-          <h1 class="application__name" v-text="application.name" />
-          <p class="application__instances is-muted" v-text="$tc('wallboard.instances_count', application.instances.length)" />
-        </div>
-        <h2 class="application__footer application__version" v-text="application.buildVersion" />
-      </div>
+      </template>
     </hex-mesh>
   </section>
 </template>
 
 <script>
-  import hexMesh from './hex-mesh';
+import { useI18n } from 'vue-i18n';
 
-  export default {
-    components: {hexMesh},
-    props: {
-      applications: {
-        type: Array,
-        default: () => []
-      },
-      error: {
-        type: Error,
-        default: null
-      },
-      applicationsInitialized: {
-        type: Boolean,
-        default: false
+import { HealthStatus } from '@/HealthStatus';
+import { useApplicationStore } from '@/composables/useApplicationStore';
+import hexMesh from '@/views/wallboard/hex-mesh';
+
+export default {
+  components: { hexMesh },
+  setup() {
+    const { t } = useI18n();
+
+    const { applications, applicationsInitialized, error } =
+      useApplicationStore();
+    return { applications, applicationsInitialized, error, t };
+  },
+  methods: {
+    classForApplication(application) {
+      if (!application) {
+        return null;
+      }
+      if (application.status === HealthStatus.UP) {
+        return 'up';
+      }
+      if (application.status === HealthStatus.RESTRICTED) {
+        return 'restricted';
+      }
+      if (application.status === HealthStatus.DOWN) {
+        return 'down';
+      }
+      if (application.status === HealthStatus.OUT_OF_SERVICE) {
+        return 'down';
+      }
+      if (application.status === HealthStatus.OFFLINE) {
+        return 'down';
+      }
+      if (application.status === HealthStatus.UNKNOWN) {
+        return 'unknown';
+      }
+      return '';
+    },
+    select(application) {
+      if (application.instances.length === 1) {
+        this.$router.push({
+          name: 'instances/details',
+          params: { instanceId: application.instances[0].id },
+        });
+      } else {
+        this.$router.push({
+          name: 'applications',
+          params: { selected: application.name },
+        });
       }
     },
-    methods: {
-      classForApplication(application) {
-        if (!application) {
-          return null;
-        }
-        if (application.status === 'UP') {
-          return 'is-selectable is-primary';
-        }
-        if (application.status === 'RESTRICTED') {
-          return 'is-selectable is-warning';
-        }
-        if (application.status === 'DOWN') {
-          return 'is-selectable is-danger';
-        }
-        if (application.status === 'OUT_OF_SERVICE') {
-          return 'is-selectable is-danger';
-        }
-        if (application.status === 'OFFLINE') {
-          return 'is-selectable is-light';
-        }
-        return 'is-selectable is-light';
-      },
-      select(application) {
-        if (application.instances.length === 1) {
-          this.$router.push({name: 'instances/details', params: {instanceId: application.instances[0].id}});
-        } else {
-          this.$router.push({name: 'applications', params: {selected: application.name}});
-        }
-      }
-    },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        path: '/wallboard',
-        name: 'wallboard',
-        label: 'wallboard.label',
-        order: -100,
-        component: this
-      });
-    }
-  };
+  },
+  install({ viewRegistry }) {
+    viewRegistry.addView({
+      path: '/wallboard',
+      name: 'wallboard',
+      label: 'wallboard.label',
+      order: -100,
+      component: this,
+    });
+  },
+};
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
+<style lang="postcss">
+.wallboard {
+  background-color: #4a4a4a;
+  height: calc(100vh - 52px);
+  width: 100%;
+}
 
-  .wallboard {
-    background-color: $grey-dark;
-    height: calc(100vh - #{$navbar-height-px});
-    width: 100%;
+.wallboard .application {
+  color: #f5f5f5;
+  font-size: 1em;
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 
-    & .application {
-      color: $white-ter;
-      font-size: 1em;
-      font-weight: $weight-normal;
-      line-height: 1;
-      text-align: center;
+.wallboard .application__name {
+  width: 100%;
+  padding: 2.5%;
+  color: #fff;
+  font-size: 2em;
+  font-weight: 600;
+  line-height: 1.125;
+}
 
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+.wallboard .application__version {
+  color: #f5f5f5;
+  font-size: 1.25em;
+  line-height: 1.25;
+}
 
-      &__name {
-        width: 100%;
-        padding: 2.5%;
-        color: $white;
-        font-size: 2em;
-        font-weight: $weight-semibold;
-        line-height: 1.125;
-      }
+.wallboard .application__header {
+  width: 90%;
+  margin-bottom: 0.5em;
+}
 
-      &__version {
-        color: $white-ter;
-        font-size: 1.25em;
-        line-height: 1.25;
-      }
+.wallboard .application__footer {
+  width: 90%;
+  margin-top: 0.5em;
+}
 
-      &__header {
-        width: 90%;
-        margin-bottom: 0.5em;
-      }
+.up > polygon {
+  stroke: theme('colors.green.400');
+  fill: theme('colors.green.400');
+}
 
-      &__footer {
-        width: 90%;
-        margin-top: 0.5em;
-      }
-    }
-  }
+.down > polygon,
+.offline > polygon {
+  stroke: theme('colors.red.400');
+  fill: theme('colors.red.400');
+  stroke-width: 2;
+}
+
+.hex .hex__body::after {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  font-size: 15em;
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+}
+
+.hex .hex__body {
+  position: fixed;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.hex.down .hex__body::after {
+  content: '!';
+  color: theme('colors.red.400');
+}
+
+.hex.unknown .hex__body::after {
+  content: '?';
+  color: theme('colors.gray.500');
+}
+
+.restricted > polygon {
+  stroke: theme('colors.yellow.400');
+  fill: theme('colors.yellow.400');
+}
 </style>

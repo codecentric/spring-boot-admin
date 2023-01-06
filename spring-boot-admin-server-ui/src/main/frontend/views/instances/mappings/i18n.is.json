@@ -4,7 +4,7 @@
       "label": "Mappings",
       "class": "Klasi",
       "consumes": "Neyta",
-      "fetch_failed": "Mistókst að sækja mappings.",
+
       "filter_name": "Nafn síu",
       "handler": "Handler",
       "headers": "Hausar",

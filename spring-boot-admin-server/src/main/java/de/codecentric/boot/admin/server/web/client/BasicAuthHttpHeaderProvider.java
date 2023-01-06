@@ -20,9 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 

@@ -18,11 +18,10 @@ package de.codecentric.boot.admin.server.services;
 
 import java.util.logging.Level;
 
-import javax.annotation.Nullable;
-
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;

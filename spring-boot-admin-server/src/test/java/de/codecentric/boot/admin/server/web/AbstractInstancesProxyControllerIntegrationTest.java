@@ -60,7 +60,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	private static final String ACTUATOR_CONTENT_TYPE = ApiVersion.LATEST.getProducedMimeType().toString()
 			+ ";charset=UTF-8";
 
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
 	};
 
 	private final WireMockServer wireMock = new WireMockServer(

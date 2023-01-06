@@ -13,42 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-import SbaAlert from './sba-alert.vue';
+import SbaAlert, { Severity } from './sba-alert.vue';
 
 export default {
   component: SbaAlert,
-  title: 'SBA Components/Alert',
+  title: 'Components/Alert',
 };
 
-const Template = (args, {argTypes}) => ({
-  components: {SbaAlert},
-  props: Object.keys(argTypes),
-  template: '<sba-alert v-bind="$props" />',
+const Template = (args) => ({
+  components: { SbaAlert },
+  setup() {
+    return { args };
+  },
+  template: '<sba-alert v-bind="args" />',
 });
 
 export const AlertError = Template.bind({});
 AlertError.args = {
-  title: 'Titel',
-  error: new Error('Message'),
-  severity: 'ERROR'
+  title: 'Server error',
+  error: new Error('Error reading from endpoint /applications'),
+  severity: Severity.ERROR,
+};
+
+export const AlertErrorWithoutTitle = Template.bind({});
+AlertErrorWithoutTitle.args = {
+  error: new Error('Error reading from endpoint /applications'),
+  severity: Severity.ERROR,
 };
 
 export const AlertWarning = Template.bind({});
 AlertWarning.args = {
   ...AlertError.args,
-  severity: 'WARN'
+  title: 'Warning',
+  error: new Error('The response took longer than expected.'),
+  severity: 'WARN',
 };
 
 export const AlertInfo = Template.bind({});
 AlertInfo.args = {
   ...AlertError.args,
-  severity: 'INFO'
+  title: 'Hint',
+  error: new Error('Check GC information as well!'),
+  severity: 'INFO',
 };
 
 export const AlertSuccess = Template.bind({});
 AlertSuccess.args = {
   ...AlertError.args,
-  severity: 'SUCCESS'
+  title: 'Successful',
+  error: new Error('Changes have been applied.'),
+  severity: 'SUCCESS',
 };

@@ -17,28 +17,46 @@
 <template>
   <sba-panel v-if="hasLoaded" :title="`Cache: ${cacheName}`">
     <div>
-      <sba-alert v-if="error" :error="error" :title="$t('instances.details.cache.fetch_failed')" />
+      <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
       <div v-if="current" class="level cache-current">
-        <div v-if="current.hit !== undefined" class="level-item has-text-centered">
+        <div
+          v-if="current.hit !== undefined"
+          class="level-item has-text-centered"
+        >
           <div>
-            <p class="heading has-bullet has-bullet-info" v-text="$t('instances.details.cache.hits')" />
+            <p
+              class="heading has-bullet has-bullet-info"
+              v-text="$t('instances.details.cache.hits')"
+            />
             <p v-text="current.hit" />
           </div>
         </div>
-        <div v-if="current.miss !== undefined" class="level-item has-text-centered">
+        <div
+          v-if="current.miss !== undefined"
+          class="level-item has-text-centered"
+        >
           <div>
-            <p class="heading has-bullet has-bullet-warning" v-text="$t('instances.details.cache.misses')" />
+            <p
+              class="heading has-bullet has-bullet-warning"
+              v-text="$t('instances.details.cache.misses')"
+            />
             <p v-text="current.miss" />
           </div>
         </div>
         <div v-if="ratio !== undefined" class="level-item has-text-centered">
           <div>
-            <p class="heading" v-text="$t('instances.details.cache.hit_ratio')" />
+            <p
+              class="heading"
+              v-text="$t('instances.details.cache.hit_ratio')"
+            />
             <p v-text="ratio" />
           </div>
         </div>
-        <div v-if="current.size !== undefined" class="level-item has-text-centered">
+        <div
+          v-if="current.size !== undefined"
+          class="level-item has-text-centered"
+        >
           <div>
             <p class="heading" v-text="$t('instances.details.cache.size')" />
             <p v-text="current.size" />
@@ -51,27 +69,28 @@
 </template>
 
 <script>
-import sbaConfig from '@/sba-config';
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance';
-import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
 import moment from 'moment';
-import cacheChart from './cache-chart';
-import {take} from 'rxjs/operators';
+import { take } from 'rxjs/operators';
+
+import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
+import Instance from '@/services/instance';
+import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import cacheChart from '@/views/instances/details/cache-chart';
 
 export default {
+  components: { cacheChart },
+  mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
-      required: true
+      required: true,
     },
     cacheName: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
-  mixins: [subscribing],
-  components: { cacheChart},
   data: () => ({
     hasLoaded: false,
     error: null,
@@ -85,29 +104,41 @@ export default {
     ratio() {
       if (Number.isFinite(this.current.hit) && Number.isFinite(this.current)) {
         const total = this.current.hit + this.current.miss;
-        return total > 0 ? (this.current.hit / total * 100).toFixed(2) + '%' : '-';
+        return total > 0
+          ? ((this.current.hit / total) * 100).toFixed(2) + '%'
+          : '-';
       }
       return undefined;
-    }
+    },
   },
   methods: {
     async fetchMetrics() {
-      const [hit, miss, size] = await Promise.all([this.fetchCacheHits(), this.fetchCacheMisses(), this.fetchCacheSize()]);
+      const [hit, miss, size] = await Promise.all([
+        this.fetchCacheHits(),
+        this.fetchCacheMisses(),
+        this.fetchCacheSize(),
+      ]);
       return {
         hit: hit,
         miss: miss,
         total: hit + (miss || 0),
-        size
+        size,
       };
     },
     async fetchCacheHits() {
       if (this.shouldFetchCacheHits) {
         try {
-          const response = await this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'hit'});
+          const response = await this.instance.fetchMetric('cache.gets', {
+            name: this.cacheName,
+            result: 'hit',
+          });
           return response.data.measurements[0].value;
         } catch (error) {
           this.shouldFetchCacheHits = false;
-          console.warn(`Fetching cache ${this.cacheName} hits failed - error is ignored`, error);
+          console.warn(
+            `Fetching cache ${this.cacheName} hits failed - error is ignored`,
+            error
+          );
           return undefined;
         }
       }
@@ -115,11 +146,17 @@ export default {
     async fetchCacheMisses() {
       if (this.shouldFetchCacheMisses) {
         try {
-          const response = await this.instance.fetchMetric('cache.gets', {name: this.cacheName, result: 'miss'});
+          const response = await this.instance.fetchMetric('cache.gets', {
+            name: this.cacheName,
+            result: 'miss',
+          });
           return response.data.measurements[0].value;
         } catch (error) {
           this.shouldFetchCacheMisses = false;
-          console.warn(`Fetching cache ${this.cacheName} misses failed - error is ignored`, error);
+          console.warn(
+            `Fetching cache ${this.cacheName} misses failed - error is ignored`,
+            error
+          );
           return undefined;
         }
       }
@@ -127,11 +164,16 @@ export default {
     async fetchCacheSize() {
       if (this.shouldFetchCacheSize) {
         try {
-          const response = await this.instance.fetchMetric('cache.size', {name: this.cacheName});
+          const response = await this.instance.fetchMetric('cache.size', {
+            name: this.cacheName,
+          });
           return response.data.measurements[0].value;
         } catch (error) {
           this.shouldFetchCacheSize = false;
-          console.warn(`Fetching cache ${this.cacheName} size failed - error is ignored`, error);
+          console.warn(
+            `Fetching cache ${this.cacheName} size failed - error is ignored`,
+            error
+          );
           return undefined;
         }
       }
@@ -139,31 +181,33 @@ export default {
     createSubscription() {
       const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.cache)
-        .pipe(concatMap(vm.fetchMetrics), retryWhen(
-          err => {
-            return err.pipe(
-              delay(1000),
-              take(5)
-            )
-          }))
+        .pipe(
+          concatMap(vm.fetchMetrics),
+          retryWhen((err) => {
+            return err.pipe(delay(1000), take(5));
+          })
+        )
         .subscribe({
-          next: data => {
+          next: (data) => {
             vm.hasLoaded = true;
             vm.current = data;
-            vm.chartData.push({...data, timestamp: moment().valueOf()});
+            vm.chartData.push({ ...data, timestamp: moment().valueOf() });
           },
-          error: error => {
+          error: (error) => {
             vm.hasLoaded = true;
-            console.warn(`Fetching cache ${vm.cacheName} metrics failed:`, error);
+            console.warn(
+              `Fetching cache ${vm.cacheName} metrics failed:`,
+              error
+            );
             vm.error = error;
-          }
+          },
         });
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
-<style lang="scss">
+<style lang="css">
 .datasource-current {
   margin-bottom: 0 !important;
 }

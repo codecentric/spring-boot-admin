@@ -15,145 +15,131 @@
   -->
 
 <template>
-  <div class="section">
-    <div class="container">
-      <h1 class="title" v-text="$t('about.title')" />
-      <h2 class="subtitle" v-if="version" v-text="`Version ${version}`" />
-      <div class="content">
-        <p>
-          This is an administration UI for Spring Boot applications.
-        </p>
-        <p>
-          To monitor applications, they must be registered at this server. This is either done by including the
-          <a
-            :href="`${documentationBaseUrl}/#register-clients-via-spring-boot-admin`"
-          >
-            Spring Boot Admin Client
-          </a>
-          or using a
-          <a
-            :href="`${documentationBaseUrl}/#discover-clients-via-spring-cloud-discovery`"
-          >
-            Spring Cloud Discovery Client
-          </a> implementation.
-        </p>
-        <p>
-          If you have any question please consult the
-          <a :href="`${documentationBaseUrl}`">
-            Reference Guide
-          </a>, ask
-          on <a href="https://stackoverflow.com/questions/tagged/spring-boot-admin">
-            Stack Overflow
-          </a> or
-          have a chat on the <a href="https://gitter.im/codecentric/spring-boot-admin">
-            Gitter
-          </a> channel.
-        </p>
-        <p>
-          If you found a bug, want to propose a feature or submit a pull request please use the
-          <a href="https://github.com/codecentric/spring-boot-admin/issues">
-            issue tracker
-          </a>.
-        </p>
-        <div class="about-links">
-          <a class="button is-primary is-outlined"
-             :href="`${documentationBaseUrl}`"
-          >
-            <font-awesome-icon size="lg" icon="book" />&nbsp;Reference Guide
-          </a>
-          <a class="button is-black is-outlined" href="https://github.com/codecentric/spring-boot-admin">
-            <font-awesome-icon size="lg" :icon="['fab', 'github']" />&nbsp;Sources
-          </a>
-          <a class="button is-stackoverflow is-outlined"
-             href="https://stackoverflow.com/questions/tagged/spring-boot-admin"
-          >
-            <font-awesome-icon size="lg" :icon="['fab', 'stack-overflow']" />&nbsp;Stack Overflow
-          </a>
-          <a class="button is-gitter is-outlined" href="https://gitter.im/codecentric/spring-boot-admin">
-            <font-awesome-icon size="lg" :icon="['fab', 'gitter']" />&nbsp;Gitter
-          </a>
-        </div>
-      </div>
-      <h1 class="title is-5">
-        Trademarks and Licenses
-      </h1>
-      <div class="content">
-        <p>
-          The source code of Spring Boot Admin is licensed under <a
-            href="https://www.apache.org/licenses/LICENSE-2.0"
-          >
-            Apache License 2.0
-          </a>.
-        </p>
-        <p>
-          Spring, Spring Boot and Spring Cloud are trademarks of <a href="https://pivotal.io/">
-            Pivotal
-            Software, Inc.
-          </a> in the U.S. and other countries.
-        </p>
-      </div>
+  <sba-wave />
+  <div class="container prose prose-slate mx-auto pt-10">
+    <h1 class="mb-1" v-text="$t('about.title')" />
+    <h2 v-if="version" v-text="`Version ${version}`" />
+    <p>This is an administration UI for Spring Boot applications.</p>
+    <p>
+      To monitor applications, they must be registered at this server. This is
+      either done by including the
+      <a
+        :href="`${documentationBaseUrl}/getting-started.html#register-clients-via-spring-boot-admin`"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Spring Boot Admin Client
+      </a>
+      or using a
+      <a
+        :href="`${documentationBaseUrl}/getting-started.html#discover-clients-via-spring-cloud-discovery`"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Spring Cloud Discovery Client
+      </a>
+      implementation.
+    </p>
+    <p>
+      If you have any question please consult the
+      <a :href="`${documentationBaseUrl}`"> Reference Guide </a>, ask on
+      <a
+        href="https://stackoverflow.com/questions/tagged/spring-boot-admin"
+        target="_blank"
+        rel="noreferrer"
+        >Stack Overflow</a
+      >
+      or have a chat on the
+      <a
+        href="https://gitter.im/codecentric/spring-boot-admin"
+        target="_blank"
+        rel="noreferrer"
+        >Gitter</a
+      >
+      channel.
+    </p>
+    <p>
+      If you found a bug, want to propose a feature or submit a pull request
+      please use the
+      <a href="https://github.com/codecentric/spring-boot-admin/issues">
+        issue tracker </a
+      >.
+    </p>
+    <div class="flex justify-between">
+      <sba-button @click="openLink(documentationBaseUrl)">
+        <font-awesome-icon size="lg" icon="book" />&nbsp;Reference Guide
+      </sba-button>
+      <sba-button
+        @click="openLink('https://github.com/codecentric/spring-boot-admin')"
+      >
+        <font-awesome-icon size="lg" :icon="['fab', 'github']" />&nbsp;Sources
+      </sba-button>
+      <sba-button
+        @click="
+          openLink(
+            'https://stackoverflow.com/questions/tagged/spring-boot-admin'
+          )
+        "
+      >
+        <font-awesome-icon
+          size="lg"
+          :icon="['fab', 'stack-overflow']"
+        />&nbsp;Stack Overflow
+      </sba-button>
+      <sba-button
+        @click="openLink('https://gitter.im/codecentric/spring-boot-admin')"
+      >
+        <font-awesome-icon size="lg" :icon="['fab', 'gitter']" />&nbsp;Gitter
+      </sba-button>
     </div>
+
+    <h1 class="mt-5">Trademarks and Licenses</h1>
+    <p>
+      The source code of Spring Boot Admin is licensed under
+      <a href="https://www.apache.org/licenses/LICENSE-2.0">
+        Apache License 2.0 </a
+      >.
+    </p>
+    <p>
+      Spring, Spring Boot and Spring Cloud are trademarks of
+      <a href="https://www.vmware.com/" target="_blank" rel="noreferrer"
+        >VMware, Inc.</a
+      >
+      or its affiliates in the U.S. and other countries.
+    </p>
   </div>
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      // eslint-disable-next-line no-undef
-      version: __PROJECT_VERSION__
-    }),
-    computed: {
-      documentationBaseUrl() {
-        return `https://codecentric.github.io/spring-boot-admin/${this.version || 'current'}`;
-      }
+import SbaButton from '@/components/sba-button';
+import SbaWave from '@/components/sba-wave';
+
+export default {
+  components: { SbaWave, SbaButton },
+  data: () => ({
+    // eslint-disable-next-line no-undef
+    version: __PROJECT_VERSION__,
+  }),
+  computed: {
+    documentationBaseUrl() {
+      return `https://codecentric.github.io/spring-boot-admin/${
+        this.version || 'current'
+      }`;
     },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        path: '/about',
-        name: 'about',
-        label: 'about.label',
-        order: 200,
-        component: this
-      });
-    }
-  };
+  },
+  methods: {
+    openLink(url) {
+      window.open(url, '_blank');
+    },
+  },
+  install({ viewRegistry }) {
+    viewRegistry.addView({
+      path: '/about',
+      name: 'about',
+      label: 'about.label',
+      order: 200,
+      component: this,
+    });
+  },
+};
 </script>
-
-<style lang="scss">
-  .about-links {
-    display: flex;
-    align-items: center;
-
-    & > * {
-      margin-right: 0.5rem;
-    }
-  }
-
-  $stackoverflow: #f48024;
-  .button.is-stackoverflow.is-outlined {
-    background-color: transparent;
-    border-color: $stackoverflow;
-    color: $stackoverflow;
-
-    &:hover,
-    &:focus {
-      background-color: $stackoverflow;
-      border-color: $stackoverflow;
-      color: white;
-    }
-  }
-
-  $gitter: #ed1965;
-  .button.is-gitter.is-outlined {
-    background-color: transparent;
-    border-color: $gitter;
-    color: $gitter;
-
-    &:hover,
-    &:focus {
-      background-color: $gitter;
-      border-color: $gitter;
-      color: white;
-    }
-  }
-</style>

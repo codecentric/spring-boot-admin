@@ -15,61 +15,79 @@
  */
 
 /* global SBA */
-import custom from './custom';
-import customSubitem from './custom-subitem';
-import customEndpoint from './custom-endpoint';
+import customEndpoint from './custom-endpoint.vue';
+import customSubitem from './custom-subitem.vue';
+import custom from './custom.vue';
+
 
 // tag::customization-ui-toplevel[]
 SBA.use({
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
-      name: 'custom',  //<1>
-      path: '/custom', //<2>
+      name: "custom", //<1>
+      path: "/custom", //<2>
       component: custom, //<3>
-      label: 'Custom', //<4>
+      label: "Custom", //<4>
       order: 1000, //<5>
     });
-  }
+  },
 });
 // end::customization-ui-toplevel[]
 
 // tag::customization-ui-child[]
 SBA.use({
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
-      name: 'customSub',
-      parent: 'custom', // <1>
-      path: 'custom-sub', // <2>
+      name: "customSub",
+      parent: "custom", // <1>
+      path: "/customSub", // <2>
       isChildRoute: false, // <3>
       component: customSubitem,
-      label: 'Custom Sub',
+      label: "Custom Sub",
       order: 1000,
     });
-  }
+  },
 });
 // end::customization-ui-child[]
 
+SBA.use({
+  install({ viewRegistry }) {
+    viewRegistry.addView({
+      name: "customSubUser",
+      parent: "user", // <1>
+      path: "/customSub", // <2>
+      isChildRoute: false, // <3>
+      component: customSubitem,
+      label: "Custom Sub In Usermenu",
+      order: 1000,
+    });
+  },
+});
+
 // tag::customization-ui-endpoint[]
 SBA.use({
-  install({viewRegistry, vueI18n}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
-      name: 'instances/custom',
-      parent: 'instances', // <1>
-      path: 'custom',
+      name: "instances/custom",
+      parent: "instances", // <1>
+      path: "custom",
       component: customEndpoint,
-      label: 'Custom',
-      group: 'custom', // <2>
+      label: "Custom",
+      group: "custom", // <2>
       order: 1000,
-      isEnabled: ({instance}) => instance.hasEndpoint('custom') // <3>
+      isEnabled: ({ instance }) => instance.hasEndpoint("custom"), // <3>
     });
-
-    vueI18n.mergeLocaleMessage('en', { // <4>
+  },
+  configure({ i18n }) {
+    console.log(i18n);
+    i18n.mergeLocaleMessage("en", {
+      // <4>
       sidebar: {
         custom: {
-          title: "My Custom Extensions"
-        }
-      }
+          title: "My Custom Extensions",
+        },
+      },
     });
-  }
+  },
 });
 // end::customization-ui-endpoint[]

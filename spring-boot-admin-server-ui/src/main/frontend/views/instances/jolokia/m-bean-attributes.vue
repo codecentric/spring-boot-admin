@@ -16,15 +16,25 @@
 
 <template>
   <div>
-    <div class="field is-grouped control" v-if="application.instances.length > 1">
-      <sba-toggle-scope-button :instance-count="application.instances.length" v-model="scope" />
+    <div
+      v-if="application.instances.length > 1"
+      class="field is-grouped control"
+    >
+      <sba-toggle-scope-button
+        v-model="scope"
+        :instance-count="application.instances.length"
+      />
     </div>
 
-    <sba-alert v-if="error" :error="error" :title="$t('instances.jolokia.mbean.fetch_failed')" />
+    <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
-    <m-bean-attribute v-for="(attribute, name) in mBean.attr" :key="`attr-${name}`"
-                      :descriptor="attribute" :name="name" :on-save-value="value => writeAttribute(name, value)"
-                      :value="attributeValues && attributeValues[name]"
+    <m-bean-attribute
+      v-for="(attribute, name) in mBean.attr"
+      :key="`attr-${name}`"
+      :descriptor="attribute"
+      :name="name"
+      :on-save-value="(value) => writeAttribute(name, value)"
+      :value="attributeValues && attributeValues[name]"
     />
   </div>
 </template>
@@ -32,40 +42,45 @@
 <script>
 import Application from '@/services/application';
 import Instance from '@/services/instance';
-import {MBean} from './index';
-import mBeanAttribute from './m-bean-attribute';
-import SbaToggleScopeButton from '@/components/sba-toggle-scope-button';
+import { MBean } from '@/views/instances/jolokia/MBean';
+import mBeanAttribute from '@/views/instances/jolokia/m-bean-attribute';
 
 export default {
+  components: { mBeanAttribute },
   props: {
     domain: {
       type: String,
-      required: true
+      required: true,
     },
     mBean: {
       type: MBean,
-      required: true
+      required: true,
     },
     instance: {
       type: Instance,
-      required: true
+      required: true,
     },
     application: {
       type: Application,
-      required: true
-    }
+      required: true,
+    },
   },
-  components: {mBeanAttribute, SbaToggleScopeButton},
   data: () => ({
     attributeValues: null,
     error: null,
-    scope: 'instance'
+    scope: 'instance',
   }),
   computed: {},
+  created() {
+    this.readAttributes();
+  },
   methods: {
     async readAttributes() {
       try {
-        const response = await this.instance.readMBeanAttributes(this.domain, this.mBean.descriptor.raw);
+        const response = await this.instance.readMBeanAttributes(
+          this.domain,
+          this.mBean.descriptor.raw
+        );
         this.attributeValues = response.data.value;
       } catch (error) {
         console.warn('Fetching MBean attributes failed:', error);
@@ -74,15 +89,18 @@ export default {
     },
     async writeAttribute(attribute, value) {
       try {
-        const target = (this.scope === 'instance') ? this.instance : this.application;
-        await target.writeMBeanAttribute(this.domain, this.mBean.descriptor.raw, attribute, value);
+        const target =
+          this.scope === 'instance' ? this.instance : this.application;
+        await target.writeMBeanAttribute(
+          this.domain,
+          this.mBean.descriptor.raw,
+          attribute,
+          value
+        );
       } finally {
         await this.readAttributes();
       }
-    }
+    },
   },
-  created() {
-    this.readAttributes();
-  },
-}
+};
 </script>

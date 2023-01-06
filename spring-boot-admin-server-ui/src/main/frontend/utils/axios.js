@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import sbaConfig from '@/sba-config';
+import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import axios from 'axios';
-import Vue from 'vue';
+
+import sbaConfig from '../sba-config.js';
+
+const nc = useNotificationCenter();
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.xsrfHeaderName = sbaConfig.csrf.headerName;
 
-export const redirectOn401 = (predicate = () => true) => (error) => {
-  if (error.response && error.response.status === 401 && predicate(error)) {
-    window.location.assign(
-      `login?redirectTo=${encodeURIComponent(window.location.href)}`
-    );
-  }
-  return Promise.reject(error);
-};
+export const redirectOn401 =
+  (predicate = () => true) =>
+  (error) => {
+    if (error.response && error.response.status === 401 && predicate(error)) {
+      window.location.assign(
+        `login?redirectTo=${encodeURIComponent(window.location.href)}&error=401`
+      );
+    }
+    return Promise.reject(error);
+  };
 
 const instance = axios.create({
   withCredentials: true,
@@ -43,8 +48,16 @@ export const registerErrorToastInterceptor = (axios) => {
     axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        let data = error.request;
-        Vue.$toast.error(`Request failed: ${data.status} - ${data.statusText}`);
+        const data = error.request;
+        let message = `
+                Request failed: ${data.statusText}<br>
+                <small>${data.responseURL}</small>
+        `;
+        nc.error(message, {
+          context: data.status ?? 'axios',
+          title: `Error ${data.status}`,
+          duration: 10000,
+        });
       }
     );
   }

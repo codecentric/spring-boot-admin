@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package de.codecentric.boot.admin.server.config;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.HttpHost;
 import org.reactivestreams.Publisher;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,8 +47,8 @@ import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.spring5.SpringTemplateEngine;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -70,8 +70,9 @@ import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 
-@AutoConfiguration(after = MailSenderAutoConfiguration.class)
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(NotifierProxyProperties.class)
+@AutoConfigureAfter({ MailSenderAutoConfiguration.class })
 public class AdminServerNotifierAutoConfiguration {
 
 	private static RestTemplate createNotifierRestTemplate(NotifierProxyProperties proxyProperties) {
@@ -81,9 +82,12 @@ public class AdminServerNotifierAutoConfiguration {
 			builder.setProxy(new HttpHost(proxyProperties.getHost(), proxyProperties.getPort()));
 
 			if (proxyProperties.getUsername() != null && proxyProperties.getPassword() != null) {
-				CredentialsProvider credsProvider = new BasicCredentialsProvider();
-				credsProvider.setCredentials(new AuthScope(proxyProperties.getHost(), proxyProperties.getPort()),
-						new UsernamePasswordCredentials(proxyProperties.getUsername(), proxyProperties.getPassword()));
+				AuthScope authScope = new AuthScope(proxyProperties.getHost(), proxyProperties.getPort());
+				Credentials usernamePasswordCredentials = new UsernamePasswordCredentials(proxyProperties.getUsername(),
+						proxyProperties.getPassword().toCharArray());
+
+				BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
+				credsProvider.setCredentials(authScope, usernamePasswordCredentials);
 				builder.setDefaultCredentialsProvider(credsProvider);
 			}
 

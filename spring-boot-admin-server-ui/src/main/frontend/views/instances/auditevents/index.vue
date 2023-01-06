@@ -15,88 +15,67 @@
   -->
 
 <template>
-  <section class="section">
-    <div class="field is-horizontal">
-      <div class="field-body">
-        <div class="field">
-          <p class="control is-expanded">
-            <input
-              class="input"
-              type="search"
-              :placeholder="$t('instances.auditevents.principal')"
-              v-model.trim="filter.principal"
-            >
-          </p>
+  <sba-instance-section :error="error" :loading="isLoading">
+    <template #before>
+      <sba-sticky-subnav>
+        <div class="flex gap-2">
+          <sba-input
+            v-model.trim="filter.principal"
+            name="filter_principal"
+            type="search"
+            :placeholder="$t('instances.auditevents.principal')"
+          />
+          <sba-input
+            v-model="filter.type"
+            name="filter_type"
+            :list="[
+              'AUTHENTICATION_FAILURE',
+              'AUTHENTICATION_SUCCESS',
+              'AUTHENTICATION_SWITCH',
+              'AUTHORIZATION_FAILURE',
+            ]"
+            type="search"
+            :placeholder="$t('instances.auditevents.type')"
+          />
+
+          <sba-input
+            name="filter_datetime"
+            type="datetime-local"
+            placeholder="Date"
+            :value="formatDate(filter.after)"
+            @input="filter.after = parseDate($event.target.value)"
+          />
         </div>
-        <div class="field">
-          <p class="control is-expanded">
-            <input
-              list="auditevent-type"
-              class="input"
-              type="search"
-              :placeholder="$t('instances.auditevents.type')"
-              v-model="filter.type"
-            >
-            <datalist id="auditevent-type">
-              <option value="AUTHENTICATION_FAILURE" />
-              <option value="AUTHENTICATION_SUCCESS" />
-              <option value="AUTHENTICATION_SWITCH" />
-              <option value="AUTHORIZATION_FAILURE" />
-            </datalist>
-          </p>
-        </div>
-        <div class="field">
-          <p class="control is-expanded">
-            <input
-              class="input"
-              type="datetime-local"
-              placeholder="Date"
-              :value="formatDate(filter.after)"
-              @input="filter.after = parseDate($event.target.value)"
-            >
-          </p>
-        </div>
-      </div>
-    </div>
-    <template>
-      <div v-if="error" class="message is-danger">
-        <div class="message-body">
-          <strong>
-            <font-awesome-icon
-              class="has-text-danger"
-              icon="exclamation-triangle"
-            />
-            <span v-text="$t('instances.auditevents.fetch_failed')" />
-          </strong>
-          <p v-text="error.message" />
-        </div>
-      </div>
-      <div
-        v-if="isOldAuditevents"
-        class="message is-warning"
-      >
-        <div class="message-body" v-html="$t('instances.auditevents.audit_log_not_supported_spring_boot_1')" />
-      </div>
+      </sba-sticky-subnav>
+    </template>
+
+    <sba-panel :seamless="true">
       <auditevents-list
         :instance="instance"
         :events="events"
         :is-loading="isLoading"
       />
-    </template>
-  </section>
+    </sba-panel>
+  </sba-instance-section>
 </template>
 
 <script>
+import { uniqBy } from 'lodash-es';
+import moment from 'moment';
+import { Subject, concatMap, debounceTime, mergeWith, tap, timer } from 'rxjs';
+
+import SbaInput from '@/components/sba-input';
+import SbaPanel from '@/components/sba-panel';
+import SbaStickySubnav from '@/components/sba-sticky-subnav';
+
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
-import {concatMap, debounceTime, mergeWith, Subject, tap, timer} from '@/utils/rxjs';
+import { VIEW_GROUP } from '@/views/ViewGroup';
 import AuditeventsList from '@/views/instances/auditevents/auditevents-list';
-import uniqBy from 'lodash/uniqBy';
-import moment from 'moment';
-import {VIEW_GROUP} from '../../index';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 class Auditevent {
-  constructor({timestamp, ...event}) {
+  constructor({ timestamp, ...event }) {
     Object.assign(this, event);
     this.zonedTimestamp = timestamp;
     this.timestamp = moment(timestamp);
@@ -107,11 +86,16 @@ class Auditevent {
   }
 
   get remoteAddress() {
-    return this.data && this.data.details && this.data.details.remoteAddress || null;
+    return (
+      (this.data && this.data.details && this.data.details.remoteAddress) ||
+      null
+    );
   }
 
   get sessionId() {
-    return this.data && this.data.details && this.data.details.sessionId || null;
+    return (
+      (this.data && this.data.details && this.data.details.sessionId) || null
+    );
   }
 
   isSuccess() {
@@ -124,14 +108,20 @@ class Auditevent {
 }
 
 export default {
+  components: {
+    SbaInput,
+    SbaInstanceSection,
+    SbaStickySubnav,
+    SbaPanel,
+    AuditeventsList,
+  },
+  mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
-  mixins: [subscribing],
-  components: {AuditeventsList},
   data: () => ({
     isLoading: false,
     error: null,
@@ -139,17 +129,16 @@ export default {
     filter: {
       after: moment().startOf('day'),
       type: null,
-      principal: null
+      principal: null,
     },
-    isOldAuditevents: false
   }),
   watch: {
     filter: {
       deep: true,
       handler() {
         this.filterChanged.next();
-      }
-    }
+      },
+    },
   },
   methods: {
     formatDate(value) {
@@ -161,7 +150,9 @@ export default {
     async fetchAuditevents() {
       this.isLoading = true;
       const response = await this.instance.fetchAuditevents(this.filter);
-      const converted = response.data.events.map(event => new Auditevent(event));
+      const converted = response.data.events.map(
+        (event) => new Auditevent(event)
+      );
       converted.reverse();
       this.isLoading = false;
       return converted;
@@ -173,33 +164,34 @@ export default {
 
       return timer(0, 5000)
         .pipe(
-          mergeWith(vm.filterChanged.pipe(
-            debounceTime(250),
-            tap({
-              next: () => vm.events = []
-            })
-          )),
+          mergeWith(
+            vm.filterChanged.pipe(
+              debounceTime(250),
+              tap({
+                next: () => (vm.events = []),
+              })
+            )
+          ),
           concatMap(this.fetchAuditevents)
         )
         .subscribe({
-          next: events => {
+          next: (events) => {
             vm.addEvents(events);
           },
-          error: error => {
+          error: (error) => {
             console.warn('Fetching audit events failed:', error);
-            if (error.response.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
-              vm.error = error;
-            } else {
-              vm.isOldAuditevents = true;
-            }
-          }
+            vm.error = error;
+          },
         });
     },
     addEvents(events) {
-      this.events = uniqBy(this.events ? events.concat(this.events) : events, event => event.key);
-    }
+      this.events = uniqBy(
+        this.events ? events.concat(this.events) : events,
+        (event) => event.key
+      );
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/auditevents',
       parent: 'instances',
@@ -208,8 +200,8 @@ export default {
       label: 'instances.auditevents.label',
       group: VIEW_GROUP.SECURITY,
       order: 600,
-      isEnabled: ({instance}) => instance.hasEndpoint('auditevents')
+      isEnabled: ({ instance }) => instance.hasEndpoint('auditevents'),
     });
-  }
-}
+  },
+};
 </script>

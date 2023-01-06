@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 import de.codecentric.boot.admin.server.services.CloudFoundryInstanceIdGenerator;
@@ -28,8 +29,9 @@ import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
 import de.codecentric.boot.admin.server.web.client.CloudFoundryHttpHeaderProvider;
 
-@AutoConfiguration(before = { AdminServerAutoConfiguration.class })
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
+@AutoConfigureBefore({ AdminServerAutoConfiguration.class })
 @Lazy(false)
 public class AdminServerCloudFoundryAutoConfiguration {
 

@@ -3,7 +3,7 @@
     "threaddump": {
       "label": "Дамп потоков",
       "download": "Загрузить дамп потоков",
-      "fetch_failed": "Ошибка при получении дампа потоков.",
+
       "download_failed": "Ошибка при загрузке дампа потоков.",
       "thread_details_blocked_count": "Количество блокировок",
       "thread_details_blocked_time": "Время блокировки",

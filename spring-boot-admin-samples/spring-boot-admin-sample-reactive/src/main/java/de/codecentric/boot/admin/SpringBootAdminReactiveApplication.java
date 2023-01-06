@@ -30,11 +30,11 @@ import org.springframework.security.web.server.authentication.RedirectServerAuth
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
 import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
 import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
+import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.notify.LoggingNotifier;
+import de.codecentric.boot.admin.server.notify.Notifier;
 
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
@@ -88,8 +88,8 @@ public class SpringBootAdminReactiveApplication {
 	}
 
 	@Bean
-	public LoggingNotifier loggerNotifier(InstanceRepository repository) {
-		return new LoggingNotifier(repository);
+	public Notifier notifier() {
+		return (e) -> Mono.empty();
 	}
 
 }

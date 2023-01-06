@@ -23,9 +23,10 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
@@ -54,12 +55,13 @@ public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTes
 	public static class TestAdminApplication {
 
 		@Configuration(proxyBeanMethods = false)
-		public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+		public static class SecurityConfiguration {
 
-			@Override
-			protected void configure(HttpSecurity http) throws Exception {
-				http.authorizeRequests().anyRequest().permitAll()//
+			@Bean
+			protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+				http.authorizeHttpRequests().anyRequest().permitAll()//
 						.and().csrf().disable().anonymous().principal("anonymousUser");
+				return http.build();
 			}
 
 		}

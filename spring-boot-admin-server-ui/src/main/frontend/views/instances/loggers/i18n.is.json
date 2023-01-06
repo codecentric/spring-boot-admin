@@ -3,7 +3,6 @@
     "loggers": {
       "label": "Annálsritarar",
       "application": "Forrit",
-      "fetch_failed": "Mistókst að sækja annálsritarar.",
       "fetch_failed_some_instances": "Mistókst að sækja annálsritara fyrir {failed} af {count} eintökum. Stillingin þeirra annálsritara mun hugsanlega mistakast.",
       "filter": {
         "class_only": "bara klasar",

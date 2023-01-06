@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/DECORATION/1.8.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd"
+         name="Spring Boot Admin">
+
+    <skin>
+        <groupId>com.bernardomg.maven.skins</groupId>
+        <artifactId>docs-maven-skin</artifactId>
+        <version>2.2.7</version>
+    </skin>
+
+    <custom>
+        <skinConfig>
+            <bootswatchStyle>litera</bootswatchStyle>
+            <customStyle>./css/custom.css</customStyle>
+            <topNav>
+                <menu>Documentation</menu>
+                <menu>Server</menu>
+                <menu>Client</menu>
+            </topNav>
+        </skinConfig>
+    </custom>
+
+    <body>
+        <menu name="Documentation" inherit="bottom">
+            <item name="Getting Started" href="./getting-started.html" />
+            <item name="Server" href="./server.html" />
+            <item name="Client" href="./client.html" />
+            <item name="Security" href="./security.html" />
+            <item name="FAQ" href="./faq.html" />
+        </menu>
+        <menu name="Server" inherit="top">
+            <item name="Usage" href="./server.html" />
+            <item name="Notifications" href="./server-notifications.html" />
+        </menu>
+        <menu name="Client" inherit="top">
+            <item name="Usage" href="./client.html" />
+        </menu>
+    </body>
+</project>

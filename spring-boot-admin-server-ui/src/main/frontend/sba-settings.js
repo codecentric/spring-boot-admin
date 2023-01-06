@@ -22,9 +22,9 @@ var SBA = {
   extensions: [],
   csrf: {
     parameterName: /*[[${_csrf} ? ${_csrf.parameterName} : 'null']]*/ null,
-    headerName: /*[[${_csrf} ? ${_csrf.headerName} : 'null']]*/ null
+    headerName: /*[[${_csrf} ? ${_csrf.headerName} : 'null']]*/ null,
   },
   use: function (ext) {
     this.extensions.push(ext);
-  }
+  },
 };

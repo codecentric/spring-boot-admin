@@ -22,9 +22,9 @@
         <span v-text="$t('instances.gateway.route.predicates')" />
       </div>
       <div
-        class="route-definition-content"
         v-for="predicate in routeDefinition.predicates"
         :key="predicate.name"
+        class="route-definition-content"
       >
         <div class="route-definition-category" v-text="predicate.name" />
         <ul>
@@ -42,15 +42,15 @@
       class="route-definition-spacer"
     />
 
-    <div class="route-definition" v-if="routeDefinition.filters.length > 0">
+    <div v-if="routeDefinition.filters.length > 0" class="route-definition">
       <div class="route-definition-header">
         <font-awesome-icon icon="filter" />&nbsp;
         <span v-text="$t('instances.gateway.route.filters')" />
       </div>
       <div
-        class="route-definition-content"
         v-for="filter in routeDefinition.filters"
         :key="filter.name"
+        class="route-definition-content"
       >
         <div class="route-definition-category" v-text="filter.name" />
         <ul>
@@ -64,9 +64,9 @@
     </div>
 
     <font-awesome-icon
+      v-if="routeDefinition.filters.length > 0"
       icon="angle-double-right"
       class="route-definition-spacer"
-      v-if="routeDefinition.filters.length > 0"
     />
 
     <div class="route-definition">
@@ -74,70 +74,60 @@
         <font-awesome-icon icon="map-marker-alt" />&nbsp;
         <span v-text="$t('instances.gateway.route.uri')" />
       </div>
-      <div
-        class="route-definition-content"
-        v-text="routeDefinition.uri"
-      />
+      <div class="route-definition-content" v-text="routeDefinition.uri" />
     </div>
   </div>
 </template>
 
 <script>
-  export default {
-    props: {
-      routeDefinition: {
-        type: Object,
-        required: true
-      }
+export default {
+  props: {
+    routeDefinition: {
+      type: Object,
+      required: true,
     },
-    methods: {
-      transformArgs(args) {
-        return Object.entries(args).map(([key, value]) => `${key} : ${value}`);
-      }
-    }
-  }
+  },
+  methods: {
+    transformArgs(args) {
+      return Object.entries(args).map(([key, value]) => `${key} : ${value}`);
+    },
+  },
+};
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .route-definition {
-    display: block;
-    min-width: 12em;
-    max-width: 28em;
-    padding: 0.5em;
-    margin: 1.25em;
-    background-color: $white;
-    border-radius: $radius-large;
-    box-shadow: 0 2px 3px rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
-
-    &-container {
-      display: flex;
-      align-items: center;
-    }
-
-    &-spacer {
-      font-size: $size-5;
-      min-width: 1em;
-      max-width: 3.5em;
-    }
-
-    &-header {
-      font-size: $size-5;
-    }
-
-    &-content {
-      background-color: $primary;
-      color: $primary-invert;
-      border-radius: $radius;
-      padding: 0.25em;
-      margin: 0.25em;
-    }
-
-    &-category {
-      font-weight: 700;
-      border-bottom: 1px solid $white-bis;
-      display: block;
-    }
-  }
+<style lang="css">
+.route-definition {
+  display: block;
+  min-width: 12em;
+  max-width: 28em;
+  padding: 0.5em;
+  margin: 1.25em;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+.route-definition-container {
+  display: flex;
+  align-items: center;
+}
+.route-definition-spacer {
+  font-size: 1.25rem;
+  min-width: 1em;
+  max-width: 3.5em;
+}
+.route-definition-header {
+  font-size: 1.25rem;
+}
+.route-definition-content {
+  background-color: #00d1b2;
+  color: #fff;
+  border-radius: 4px;
+  padding: 0.25em;
+  margin: 0.25em;
+}
+.route-definition-category {
+  font-weight: 700;
+  border-bottom: 1px solid #fafafa;
+  display: block;
+}
 </style>

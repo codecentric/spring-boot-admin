@@ -19,12 +19,11 @@ package de.codecentric.boot.admin.client.config;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-import javax.annotation.Nullable;
-
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.env.Environment;
+import org.springframework.lang.Nullable;
 
 @lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client")

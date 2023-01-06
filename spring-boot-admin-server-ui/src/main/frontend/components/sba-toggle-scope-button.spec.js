@@ -13,32 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {render} from '@/test-utils';
-import SbaToggleScopeButton from './sba-toggle-scope-button';
 import userEvent from '@testing-library/user-event';
-import {screen} from '@testing-library/vue';
+import { screen } from '@testing-library/vue';
+
+import { render } from '../test-utils.js';
+import { ActionScope } from './ActionScope.js';
+import SbaToggleScopeButton from './sba-toggle-scope-button';
 
 describe('SbaToggleScopeButton', function () {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = render(SbaToggleScopeButton, {props: {instanceCount: 2, scope: 'instance'}})
-  })
+    wrapper = render(SbaToggleScopeButton, {
+      props: { instanceCount: 2, modelValue: ActionScope.INSTANCE },
+    });
+  });
 
   it('should emit changed scope when clicked', async () => {
-    await userEvent.click(await screen.findByRole('button', {name: 'Instance'}));
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Instance' })
+    );
 
-    expect(wrapper.emitted().changeScope[0]).toEqual(['application']);
+    expect(wrapper.emitted()['update:modelValue'][0]).toEqual(['application']);
   });
 
   it('should toggle the scope when clicked twice', async () => {
-    await userEvent.click(await screen.findByRole('button', {name: 'Instance'}));
-    expect(wrapper.emitted().changeScope[0]).toEqual(['application']);
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Instance' })
+    );
+    expect(wrapper.emitted()['update:modelValue'][0]).toEqual(['application']);
 
-    wrapper.updateProps({scope: 'application'})
+    await wrapper.rerender({ modelValue: ActionScope.APPLICATION });
 
-    await userEvent.click(await screen.findByRole('button', {name: 'Application'}));
-    expect(wrapper.emitted().changeScope[1]).toEqual(['instance']);
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Application' })
+    );
+    expect(wrapper.emitted()['update:modelValue'][1]).toEqual(['instance']);
   });
 });

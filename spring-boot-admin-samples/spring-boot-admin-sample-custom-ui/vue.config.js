@@ -21,13 +21,6 @@ module.exports = {
   chainWebpack: config => {
     config.entryPoints.delete('app');
     config.entry('custom').add('./src/index.js');
-    config.externals({
-      vue: {
-        commonjs: 'vue',
-        commonjs2: 'vue',
-        root: 'Vue'
-      }
-    });
     if (process.env.NODE_ENV === 'development') {
       //Fix different paths for watch-mode
       config.output.filename('js/[name].js');

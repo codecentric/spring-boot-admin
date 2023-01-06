@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -35,8 +35,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
 import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
@@ -50,20 +51,29 @@ import de.codecentric.boot.admin.server.ui.extensions.UiRoutesScanner;
 import de.codecentric.boot.admin.server.ui.web.HomepageForwardingFilterConfig;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 import de.codecentric.boot.admin.server.ui.web.UiController.Settings;
+import de.codecentric.boot.admin.server.web.PathUtils;
 
 import static java.util.Arrays.asList;
 
-@AutoConfiguration(after = AdminServerWebConfiguration.class)
+@Configuration(proxyBeanMethods = false)
 @Conditional(SpringBootAdminServerEnabledCondition.class)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
+@AutoConfigureAfter(AdminServerWebConfiguration.class)
 @EnableConfigurationProperties(AdminServerUiProperties.class)
 public class AdminServerUiAutoConfiguration {
 
 	private static final Logger log = LoggerFactory.getLogger(AdminServerUiAutoConfiguration.class);
 
+	/**
+	 * path patterns that will be forwarded to the homepage (webapp)
+	 */
 	private static final List<String> DEFAULT_UI_ROUTES = asList("/about/**", "/applications/**", "/instances/**",
 			"/journal/**", "/wallboard/**", "/external/**");
 
+	/**
+	 * path patterns that will be excluded from forwarding to the homepage (webapp), can
+	 * be extended via property: spring.boot.admin.ui.additionalRouteExcludes
+	 */
 	private static final List<String> DEFAULT_UI_ROUTE_EXCLUDES = asList("/extensions/**",
 			"/instances/*/actuator/heapdump", "/instances/*/actuator/logfile");
 
@@ -81,6 +91,11 @@ public class AdminServerUiAutoConfiguration {
 	}
 
 	@Bean
+	public CssColorUtils cssColorUtils() {
+		return new CssColorUtils();
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public UiController homeUiController(UiExtensions uiExtensions) throws IOException {
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
@@ -95,7 +110,8 @@ public class AdminServerUiAutoConfiguration {
 						!this.applicationContext.getBeansOfType(NotificationFilterController.class).isEmpty())
 				.routes(routes).rememberMeEnabled(this.adminUi.isRememberMeEnabled())
 				.availableLanguages(this.adminUi.getAvailableLanguages()).externalViews(this.adminUi.getExternalViews())
-				.pollTimer(this.adminUi.getPollTimer()).viewSettings(this.adminUi.getViewSettings()).build();
+				.pollTimer(this.adminUi.getPollTimer()).viewSettings(this.adminUi.getViewSettings())
+				.theme(this.adminUi.getTheme()).build();
 
 		String publicUrl = (this.adminUi.getPublicUrl() != null) ? this.adminUi.getPublicUrl()
 				: this.adminServer.getContextPath();
@@ -122,6 +138,13 @@ public class AdminServerUiAutoConfiguration {
 		resolver.setOrder(10);
 		resolver.setCheckExistence(true);
 		return resolver;
+	}
+
+	static String normalizeHomepageUrl(String homepage) {
+		if (!"/".equals(homepage)) {
+			homepage = PathUtils.normalizePath(homepage);
+		}
+		return homepage;
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -151,7 +174,8 @@ public class AdminServerUiAutoConfiguration {
 			public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
 				String webFluxBasePath = webFluxProperties.getBasePath();
 				boolean webfluxBasePathSet = webFluxBasePath != null;
-				String homepage = webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/");
+				String homepage = normalizeHomepageUrl(
+						webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/"));
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 						.scan(this.adminUi.getExtensionResourceLocations());
@@ -210,9 +234,14 @@ public class AdminServerUiAutoConfiguration {
 				this.applicationContext = applicationContext;
 			}
 
+			@Override
+			public void configurePathMatch(PathMatchConfigurer configurer) {
+				configurer.setUseTrailingSlashMatch(true);
+			}
+
 			@Bean
 			public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
-				String homepage = this.adminServer.path("/");
+				String homepage = normalizeHomepageUrl(this.adminServer.path("/"));
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 						.scan(this.adminUi.getExtensionResourceLocations());

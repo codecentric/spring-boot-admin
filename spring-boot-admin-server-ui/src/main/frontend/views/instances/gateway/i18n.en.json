@@ -2,7 +2,7 @@
   "instances": {
     "gateway": {
       "label": "Gateway",
-      "route":{
+      "route": {
         "add_route": "Add route",
         "adding_failed": "Adding route failed.",
         "cache_refreshed": "Routes Cache refreshed",
@@ -11,7 +11,6 @@
         "deleted": "Deleted",
         "delete": "Delete",
         "delete_failed": "Failed",
-        "fetch_failed": "Fetching gateway routes failed.",
         "filters": "Filters",
         "id": "Id",
         "loading": "Loading Routes...",
@@ -22,7 +21,6 @@
         "uri": "URI"
       },
       "filters": {
-        "fetch_failed": "Fetching Global Filters failed.",
         "filter_name": "Filter name",
         "loading": "Loading Global Filters...",
         "no_filters_found": "No Global Filters found.",

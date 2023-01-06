@@ -23,7 +23,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -32,6 +32,7 @@ import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 import de.codecentric.boot.admin.client.registration.CloudFoundryApplicationFactory;
@@ -39,11 +40,12 @@ import de.codecentric.boot.admin.client.registration.metadata.CloudFoundryMetada
 import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
-@AutoConfiguration(before = SpringBootAdminClientAutoConfiguration.class)
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @EnableConfigurationProperties(CloudFoundryApplicationProperties.class)
+@AutoConfigureBefore({ SpringBootAdminClientAutoConfiguration.class })
 public class SpringBootAdminClientCloudFoundryAutoConfiguration {
 
 	@Bean

@@ -15,103 +15,88 @@
   -->
 
 <template>
-  <div class="instances">
-    <div class="instances__body">
-      <div class="instances__sidebar">
-        <instance-sidebar
-          v-if="instance"
-          :views="views"
-          :instance="instance"
-          :application="application"
-        />
-      </div>
-      <div class="instances__view">
-        <router-view v-if="instance" :instance="instance" :application="application" />
-      </div>
+  <div class="h-full">
+    <sba-wave />
+    <div class="h-full">
+      <Sidebar
+        v-if="instance"
+        :key="instanceId"
+        :views="sidebarViews"
+        :instance="instance"
+        :application="application"
+      />
+      <main class="min-h-full relative z-0 ml-10 md:ml-60 transition-all">
+        <div class="">
+          <router-view
+            v-if="instance"
+            :instance="instance"
+            :application="application"
+          />
+        </div>
+      </main>
     </div>
   </div>
 </template>
 
 <script>
-  import InstanceSidebar from './sidebar';
+import { defineComponent } from 'vue';
 
-  export default {
-    components: {InstanceSidebar},
-    props: {
-      instanceId: {
-        type: String,
-        required: true
-      },
-      views: {
-        type: Array,
-        default: () => []
-      },
-      applications: {
-        type: Array,
-        default: () => [],
-      },
-      error: {
-        type: Error,
-        default: null
-      }
+import { useViewRegistry } from '@/composables/ViewRegistry';
+import { useApplicationStore } from '@/composables/useApplicationStore';
+import { findApplicationForInstance, findInstance } from '@/store';
+import Sidebar from '@/views/instances/shell/sidebar';
+
+export default defineComponent({
+  components: {
+    Sidebar,
+  },
+  setup() {
+    const { applications } = useApplicationStore();
+    const { views } = useViewRegistry();
+    return {
+      views,
+      applications,
+    };
+  },
+  data() {
+    return {
+      instanceId: this.$route.params.instanceId,
+      background: {},
+    };
+  },
+  computed: {
+    sidebarViews() {
+      return this.views.filter((v) => v.parent === this.activeMainViewName);
     },
-    computed: {
-      instance() {
-        return this.applications.findInstance(this.instanceId);
-      },
-      application() {
-        return this.applications.findApplicationForInstance(this.instanceId);
-      }
+    instance() {
+      return findInstance(this.applications, this.instanceId);
     },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        name: 'instances',
-        path: '/instances/:instanceId',
-        component: this,
-        props: true,
-        isEnabled() {
-          return false;
-        }
-      });
-    }
-  }
+    application() {
+      return findApplicationForInstance(this.applications, this.instanceId);
+    },
+    activeMainViewName() {
+      const currentView = this.$route.meta.view;
+      return currentView && (currentView.parent || currentView.name);
+    },
+  },
+  watch: {
+    $route: {
+      immediate: true,
+      handler() {
+        this.instanceId = this.$route.params.instanceId;
+      },
+    },
+  },
+  install({ viewRegistry }) {
+    viewRegistry.addView({
+      name: 'instances',
+      path: '/instances/:instanceId',
+      component: this,
+      props: true,
+      isEnabled() {
+        return false;
+      },
+    });
+  },
+});
 </script>
-
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  $sidebar-width-px: 220px;
-
-  .instances {
-    display: flex;
-    flex-grow: 1;
-    flex-direction: column;
-
-    &__body {
-      display: flex;
-      flex-grow: 1;
-    }
-
-    &__view,
-    &__sidebar {
-      position: relative;
-    }
-
-    &__sidebar {
-      z-index: 20;
-      position: fixed;
-      top: $navbar-height-px;
-      bottom: 0;
-      left: 0;
-      width: $sidebar-width-px;
-    }
-
-    &__view {
-      flex-grow: 1;
-      flex-shrink: 1;
-      z-index: 10;
-      max-width: 100%;
-      padding-left: $sidebar-width-px;
-    }
-  }
-</style>

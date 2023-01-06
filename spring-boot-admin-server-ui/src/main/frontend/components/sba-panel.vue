@@ -15,77 +15,130 @@
   -->
 
 <template>
-  <div class="card panel">
+  <div class="shadow-sm border rounded break-inside-avoid mb-6">
     <header
-      v-if="title"
-      class="card-header"
-      :class="{'panel__header--sticky': headerSticksBelow}"
+      v-if="hasTitle"
+      ref="header"
       v-sticks-below="headerSticksBelow"
+      class="rounded-t flex justify-between px-4 pt-5 pb-5 border-b sm:px-6 items-center bg-white transition-all"
     >
-      <p class="card-header-title">
-        <span v-text="title" />
-      </p>
-      <div class="card-header-icon" v-if="$slots['actions']">
-        <slot name="actions" />
-      </div>
-      <div class="panel__close" v-if="closeable">
-        <sba-icon-button :icon="['far', 'times-circle']" @click.stop="close" />
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        <span v-text="title" />&nbsp;
+        <span v-if="subtitle" class="text-sm text-gray-500" v-text="subtitle" />
+        <slot v-if="'title' in $slots" name="title" />
+      </h3>
+
+      <div>
+        <slot v-if="'actions' in $slots" name="actions" />
+        <sba-icon-button
+          v-if="closeable"
+          :icon="['far', 'times-circle']"
+          @click.stop="$emit('close', $event)"
+        />
       </div>
     </header>
-    <div v-if="$slots['default']" class="card-content">
-      <slot />
+    <div
+      v-if="'default' in $slots"
+      class="border-gray-200 px-4 py-3 bg-white"
+      :class="{
+        'rounded-t': !hasTitle,
+        'rounded-b overflow-hidden': !('footer' in $slots),
+      }"
+    >
+      <div :class="{ '-mx-4 -my-3': seamless }">
+        <sba-loading-spinner
+          v-if="loading"
+          size="sm"
+          class=""
+          :loading="loading"
+        />
+        <slot v-if="!loading" />
+      </div>
     </div>
+    <footer v-if="'footer' in $slots">
+      <div class="px-4 py-3 border-t bg-gray-50">
+        <slot name="footer" />
+      </div>
+    </footer>
   </div>
 </template>
 
 <script>
-  import sticksBelow from '@/directives/sticks-below';
-  import SbaIconButton from './sba-icon-button';
+import { throttle } from 'lodash-es';
 
-  export default {
-    components: {SbaIconButton},
-    directives: {sticksBelow},
-    props: {
-      title: {
-        type: String,
-        required: true
-      },
-      closeable: {
-        type: Boolean,
-        default: false
-      },
-      headerSticksBelow: {
-        type: Array,
-        default: undefined
+import SbaIconButton from '@/components/sba-icon-button';
+import SbaLoadingSpinner from '@/components/sba-loading-spinner';
+
+import sticksBelow from '@/directives/sticks-below';
+
+export default {
+  components: { SbaLoadingSpinner, SbaIconButton },
+  directives: { sticksBelow },
+  props: {
+    title: {
+      type: String,
+      default: undefined,
+    },
+    subtitle: {
+      type: String,
+      default: undefined,
+    },
+    closeable: {
+      type: Boolean,
+      default: false,
+    },
+    headerSticksBelow: {
+      type: String,
+      default: undefined,
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+    seamless: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ['close'],
+  data() {
+    return {
+      headerTopValue: 0,
+      onScrollFn: undefined,
+    };
+  },
+  computed: {
+    hasTitle() {
+      return !!this.title || 'title' in this.$slots || 'actions' in this.$slots;
+    },
+  },
+  mounted() {
+    if (this.headerSticksBelow) {
+      const header = this.$refs.header;
+      this.headerTopValue = +header.style.top.substr(
+        0,
+        header.style.top.length - 2
+      );
+
+      this.onScrollFn = throttle(this.onScroll, 150);
+      document.addEventListener('scroll', this.onScrollFn);
+    }
+  },
+  beforeUnmount() {
+    if (this.headerSticksBelow) {
+      document.removeEventListener('scroll', this.onScrollFn);
+    }
+  },
+  methods: {
+    onScroll() {
+      const header = this.$refs.header;
+      const boundingClientRect = header.getBoundingClientRect();
+      if (boundingClientRect.top <= this.headerTopValue) {
+        header.classList.add('!rounded-none', '!py-2');
+      } else {
+        header.classList.remove('!rounded-none', '!py-2');
       }
     },
-    methods: {
-      close(event) {
-        this.$emit('close', event);
-      }
-    }
-  }
+  },
+};
 </script>
-
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .panel {
-    margin-bottom: 1.5rem;
-    overflow: initial;
-
-    &__close {
-      margin-right: 0.75em;
-      color: $grey-light;
-      display: flex;
-      align-items: center;
-      justify-self: flex-end;
-    }
-
-    &__header--sticky {
-      position: sticky;
-      background-color: $white;
-      z-index: 10;
-    }
-  }
-</style>

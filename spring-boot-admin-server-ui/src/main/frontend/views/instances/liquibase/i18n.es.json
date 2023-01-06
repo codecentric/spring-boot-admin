@@ -12,7 +12,7 @@
       "execution": "Ejecución",
       "execution_date": "Fecha de Ejecución",
       "execution_order": "Órden de Ejecución",
-      "fetch_failed": "Falla recuperando las migraciónes de Liquibase.",
+
       "id": "Id",
       "labels": "Etiquetas",
       "tag": "Tag"

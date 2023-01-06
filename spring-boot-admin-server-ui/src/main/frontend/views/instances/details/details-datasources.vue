@@ -16,56 +16,62 @@
 
 <template>
   <div>
-    <details-datasource v-for="dataSource in dataSources" :key="dataSource"
-                        :instance="instance" :data-source="dataSource"
+    <details-datasource
+      v-for="dataSource in dataSources"
+      :key="dataSource"
+      :instance="instance"
+      :data-source="dataSource"
     />
   </div>
 </template>
 
 <script>
-  import sbaConfig from '@/sba-config';
-  import subscribing from '@/mixins/subscribing';
-  import Instance from '@/services/instance';
-  import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
-  import detailsDatasource from './details-datasource';
-  import {take} from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
+import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
+import Instance from '@/services/instance';
+import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import detailsDatasource from '@/views/instances/details/details-datasource';
+
+export default {
+  components: { detailsDatasource },
+  mixins: [subscribing],
+  props: {
+    instance: {
+      type: Instance,
+      required: true,
     },
-    mixins: [subscribing],
-    components: {detailsDatasource},
-    data: () => ({
-      dataSources: [],
-    }),
-    methods: {
-      async fetchDataSources() {
-        const response = await this.instance.fetchMetric('data.source.active.connections');
-        return response.data.availableTags.filter(tag => tag.tag === 'name')[0].values;
-      },
-      createSubscription() {
-        const vm = this;
-        return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
-          .pipe(concatMap(this.fetchDataSources), retryWhen(
-            err => {
-              return err.pipe(
-                delay(1000),
-                take(5)
-              )
-            }))
-          .subscribe({
-            next: names => {
-              vm.dataSources = names
-            },
-            error: error => {
-              console.warn('Fetching datasources failed:', error);
-            }
-          });
-      }
-    }
-  }
+  },
+  data: () => ({
+    dataSources: [],
+  }),
+  methods: {
+    async fetchDataSources() {
+      const response = await this.instance.fetchMetric(
+        'data.source.active.connections'
+      );
+      return response.data.availableTags.filter((tag) => tag.tag === 'name')[0]
+        .values;
+    },
+    createSubscription() {
+      const vm = this;
+      return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
+        .pipe(
+          concatMap(this.fetchDataSources),
+          retryWhen((err) => {
+            return err.pipe(delay(1000), take(5));
+          })
+        )
+        .subscribe({
+          next: (names) => {
+            vm.dataSources = names;
+          },
+          error: (error) => {
+            console.warn('Fetching datasources failed:', error);
+          },
+        });
+    },
+  },
+};
 </script>

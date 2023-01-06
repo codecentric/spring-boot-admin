@@ -15,85 +15,101 @@
   -->
 
 <template>
-  <table class="table is-hoverable is-fullwidth">
-    <thead>
-      <tr>
-        <th>
-          Logger
-        </th>
-      </tr>
-    </thead>
+  <table class="w-full">
     <tbody>
-      <tr v-for="logger in loggers.slice(0, this.visibleLimit)" :key="logger.name">
-        <td>
-          <span class="is-breakable" v-text="logger.name" />&nbsp;
-          <span class="tag is-primary is-uppercase" v-if="logger.isNew" v-text="$t('instances.loggers.new')" />
-          <sba-logger-control class="is-pulled-right"
-                              :level-options="levels"
-                              :value="logger.level"
-                              :status="loggersStatus[logger.name]"
-                              :allow-reset="logger.name !== 'ROOT'"
-                              @input="level => $emit('configureLogger', {logger, level})"
+      <tr v-for="logger in loggers.slice(0, visibleLimit)" :key="logger.name">
+        <td class="w-9/12">
+          <span class="break-all" v-text="logger.name" />&nbsp;
+          <sba-tag
+            v-if="logger.isNew"
+            class="tag is-primary is-uppercase"
+            :value="$t('instances.loggers.new')"
+          />
+        </td>
+        <td class="w-1/4">
+          <sba-logger-control
+            class="is-pulled-right"
+            :level-options="levels"
+            :value="logger.level"
+            :status="loggersStatus[logger.name]"
+            :allow-reset="logger.name !== 'ROOT'"
+            @input="(level) => $emit('configureLogger', { logger, level })"
           />
 
           <p
+            v-if="
+              loggersStatus[logger.name] &&
+              loggersStatus[logger.name].status === 'failed'
+            "
             class="has-text-danger"
-            v-if="loggersStatus[logger.name] && loggersStatus[logger.name].status === 'failed'"
           >
-            <font-awesome-icon class="has-text-danger" icon="exclamation-triangle" />
-            <span v-text="$t('instances.loggers.setting_loglevel_failed', {logger: logger.name, loglevel: loggersStatus[logger.name].level})" />
+            <font-awesome-icon
+              class="has-text-danger"
+              icon="exclamation-triangle"
+            />
+            <span
+              v-text="
+                $t('instances.loggers.setting_loglevel_failed', {
+                  logger: logger.name,
+                  loglevel: loggersStatus[logger.name].level,
+                })
+              "
+            />
           </p>
         </td>
       </tr>
       <tr v-if="loggers.length === 0">
-        <td class="is-muted" colspan="5" v-text="$t('instances.loggers.no_loggers_found')" />
+        <td
+          class="is-muted"
+          colspan="5"
+          v-text="$t('instances.loggers.no_loggers_found')"
+        />
       </tr>
     </tbody>
-    <infinite-loading ref="infinite" @infinite="increaseScroll">
-      <div slot="no-results" />
-      <div slot="no-more" />
-    </infinite-loading>
+    <InfiniteLoading @infinite="increaseScroll">
+      <template #complete>
+        <span />
+      </template>
+    </InfiniteLoading>
   </table>
 </template>
-<script>
-    import InfiniteLoading from 'vue-infinite-loading'
-    import SbaLoggerControl from './logger-control'
 
-    export default {
-    components: {InfiniteLoading, SbaLoggerControl},
-    props: {
-      levels: {
-        type: Array,
-        required: true
-      },
-      loggers: {
-        type: Array,
-        required: true
-      },
-      loggersStatus: {
-        type: Object,
-        required: true
+<script>
+import InfiniteLoading from 'v3-infinite-loading';
+
+import 'v3-infinite-loading/lib/style.css';
+
+import SbaLoggerControl from '@/views/instances/loggers/logger-control';
+
+export default {
+  components: { InfiniteLoading, SbaLoggerControl },
+  props: {
+    levels: {
+      type: Array,
+      required: true,
+    },
+    loggers: {
+      type: Array,
+      required: true,
+    },
+    loggersStatus: {
+      type: Object,
+      required: true,
+    },
+  },
+  emits: ['configureLogger'],
+  data: () => ({
+    visibleLimit: 25,
+  }),
+  methods: {
+    increaseScroll($state) {
+      if (this.visibleLimit < this.loggers.length) {
+        this.visibleLimit += 50;
+        $state.loaded();
+      } else {
+        $state.complete();
       }
     },
-    data: () => ({
-      visibleLimit: 25
-    }),
-    watch: {
-      loggers: {
-        handler() {
-          this.$refs.infinite.stateChanger.reset();
-        }
-      },
-    },
-    methods: {
-      increaseScroll(state) {
-        if (this.visibleLimit < this.loggers.length) {
-          this.visibleLimit += 25;
-          state.loaded();
-        } else {
-          state.complete();
-        }
-      }
-    }
-  }
+  },
+};
 </script>

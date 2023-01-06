@@ -13,39 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import SbaPaginationNav from './sba-pagination-nav.vue';
 
 import i18n from '@/i18n';
-import SbaPaginationNav from '@/components/sba-pagination-nav';
 
 export default {
   component: SbaPaginationNav,
-  title: 'SBA Components/Pagination',
+  title: 'Components/Pagination',
 };
 
-const Template = (args, {argTypes}) => {
-  return ({
-    components: {SbaPaginationNav},
-    props: Object.keys(argTypes),
+const Template = (args) => {
+  return {
+    components: { SbaPaginationNav },
+    setup() {
+      return { args };
+    },
     methods: {
       change($event) {
         this.current = $event;
-      }
+      },
     },
     data() {
       return {
-        current: 1
-      }
+        current: 1,
+      };
     },
     template: `
-      <sba-pagination-nav v-model="current" v-bind="$props" @change="change"/>
+      <sba-pagination-nav v-bind="args" @update="change"/>
     `,
-    i18n
-  });
+    i18n,
+  };
 };
 
 export const NoPages = Template.bind({});
 NoPages.args = {
   pageCount: 0,
+  modelValue: 1,
 };
 
 export const OnePage = Template.bind({});
@@ -55,5 +58,6 @@ OnePage.args = {
 
 export const ManyPages = Template.bind({});
 ManyPages.args = {
+  modelValue: 1,
   pageCount: 12,
 };

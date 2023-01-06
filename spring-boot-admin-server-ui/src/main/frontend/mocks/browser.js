@@ -1,12 +1,15 @@
-import {rest, setupWorker} from 'msw'
-import {handlers} from '@/handlers';
+import { setupWorker } from 'msw';
 
-export const worker = setupWorker(
-  ...handlers,
-  rest.post(
-    '*/actuator/shutdown',
-    (req, res, ctx) => {
-      return res(ctx.status(403), ctx.json({}));
-    }
-  ),
-)
+import auditEventsEndpoint from './instance/auditevents/index.js';
+import flywayEndpoints from './instance/flyway/index.js';
+import liquibaseEndpoints from './instance/liquibase/index.js';
+import mappingsEndpoint from './instance/mappings/index.js';
+
+const handler = [
+  ...mappingsEndpoint,
+  ...liquibaseEndpoints,
+  ...flywayEndpoints,
+  ...auditEventsEndpoint,
+];
+
+export const worker = setupWorker(...handler);

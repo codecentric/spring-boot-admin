@@ -16,45 +16,30 @@
 
 <template>
   <div id="app">
-    <sba-navbar :views="mainViews" :applications="applications" :error="error" :applications-initialized="applicationsInitialized" />
-    <router-view :views="childViews" :applications="applications" :error="error" :applications-initialized="applicationsInitialized" />
+    <SbaNavbar :error="error" />
+    <div class="sba-container">
+      <router-view :error="error" />
+    </div>
   </div>
 </template>
 
-<script>
-  import sbaNavbar from './navbar';
+<script setup>
+import { useApplicationStore } from '@/composables/useApplicationStore';
+import SbaNavbar from '@/shell/navbar';
 
-  export default {
-    props: {
-      views: {
-        type: Array,
-        default: () => []
-      },
-      applications: {
-        type: Array,
-        default: () => [],
-      },
-      error: {
-        type: Error,
-        default: null
-      },
-      applicationsInitialized: {
-        type: Boolean,
-        default: false
-      }
-    },
-    components: {sbaNavbar},
-    computed: {
-      mainViews() {
-        return this.views.filter(view => !['instances'].includes(view.parent));
-      },
-      activeMainViewName() {
-        const currentView = this.$route.meta.view;
-        return currentView && (currentView.parent || currentView.name);
-      },
-      childViews() {
-        return this.views.filter(view => view.parent === this.activeMainViewName);
-      }
-    }
-  }
+defineProps({
+  error: {
+    type: Error,
+    default: null,
+  },
+});
+
+const { applications } = useApplicationStore();
 </script>
+
+<style scoped>
+.sba-container {
+  @apply pt-14;
+  height: 100%;
+}
+</style>

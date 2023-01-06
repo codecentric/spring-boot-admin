@@ -3,7 +3,7 @@
     "threaddump": {
       "label": "Thread Dump",
       "download": "Descargar Thread Dump",
-      "fetch_failed": "Falla recuperando el thread dump.",
+
       "download_failed": "Falla descargando el thread dump.",
       "thread_details_blocked_count": "Bloqueados count",
       "thread_details_blocked_time": "Tiempo de bloqueo",

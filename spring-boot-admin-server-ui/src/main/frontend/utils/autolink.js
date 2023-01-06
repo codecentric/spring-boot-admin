@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import _Autolinker from 'autolinker';
 
 export const defaults = {
   urls: {
     schemeMatches: true,
     wwwMatches: false,
-    tldMatches: false
+    tldMatches: false,
   },
   email: false,
   phone: false,
@@ -33,15 +32,15 @@ export const defaults = {
 
   truncate: {
     length: 0,
-    location: 'smart'
+    location: 'smart',
   },
 
-  className: ''
+  className: '',
 };
 const autolinker = new _Autolinker(defaults);
 
-export default s => autolinker.link(s);
+export default (s) => autolinker.link(s);
 export function Autolink(cfg) {
-  this.autolinker = new _Autolinker({...defaults, ...cfg});
-  return s => this.autolinker.link(s)
+  this.autolinker = new _Autolinker({ ...defaults, ...cfg });
+  return (s) => this.autolinker.link(s);
 }

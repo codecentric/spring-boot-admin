@@ -50,6 +50,11 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 		return new HazelcastEventStore(maxLogSizePerAggregate, eventLog);
 	}
 
+	@Override
+	protected void shutdownStore() {
+		this.hazelcast.shutdown();
+	}
+
 	private HazelcastInstance createHazelcastInstance() {
 		String address = hazelcastServer.getContainerIpAddress() + ":" + hazelcastServer.getMappedPort(5701);
 

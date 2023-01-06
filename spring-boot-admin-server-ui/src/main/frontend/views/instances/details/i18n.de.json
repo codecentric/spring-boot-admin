@@ -2,16 +2,13 @@
   "instances": {
     "details": {
       "label": "Details",
-      "fetch_failed": "Das Laden der Metriken ist fehlgeschlagen.",
-      "cache":{
-        "fetch_failed": "Das Laden der Cache-Metriken ist fehlgeschlagen.",
+      "cache": {
         "hit_ratio": "Treffer-Rate",
         "hits": "Treffer",
         "misses": "Fehltreffer",
         "size": "Größe"
       },
       "datasource": {
-        "fetch_failed": "Das Laden der Datenquellen-Metriken ist fehlgeschlagen.",
         "active_connections": "Aktive Verbindungen",
         "min_connections": "Min. Verbindungen",
         "max_connections": "Max. Verbindungen",
@@ -25,16 +22,13 @@
         "title": "GC Pausen"
       },
       "health": {
-        "fetch_failed": "Das Laden der Zustands-Informationen ist fehlgeschlagen.",
         "title": "Zustand"
       },
       "info": {
-        "fetch_failed": "Das Laden der Live-Informationen ist fehlgeschlagen. Keine weiteren Informationen verfügbar.",
         "no_info_provided": "Keine Informationen verfügbar.",
         "title": "Info"
       },
       "memory": {
-        "fetch_failed": "Das Laden der Speicher-Metriken ist fehlgeschlagen.",
         "max": "Max",
         "metaspace": "Metaspace",
         "size": "Größe",
@@ -47,7 +41,6 @@
       },
       "process": {
         "cpus": "CPUs",
-        "fetch_failed": "Das Laden der Prozess-Metriken ist fehlgeschlagen.",
         "pid": "PID",
         "process_cpu_usage": "CPU-Auslastung (%)",
         "system_cpu_usage": "System-Auslastung (%)",
@@ -56,7 +49,6 @@
       },
       "threads": {
         "daemon": "Daemon",
-        "fetch_failed": "Fetching threads metrics failed.",
         "live": "Live",
         "peak_live": "Peak Live",
         "title": "Threads"

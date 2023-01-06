@@ -16,57 +16,63 @@
 
 <template>
   <div>
-    <details-cache v-for="cache in caches" :key="cache"
-                   :instance="instance" :cache-name="cache"
+    <details-cache
+      v-for="cache in caches"
+      :key="cache"
+      :instance="instance"
+      :cache-name="cache"
     />
   </div>
 </template>
 
 <script>
-  import sbaConfig from '@/sba-config';
-  import subscribing from '@/mixins/subscribing';
-  import Instance from '@/services/instance';
-  import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
-  import uniq from 'lodash/uniq';
-  import detailsCache from './details-cache';
-  import {take} from 'rxjs/operators';
+import { uniq } from 'lodash-es';
+import { take } from 'rxjs/operators';
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
+import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
+import Instance from '@/services/instance';
+import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import detailsCache from '@/views/instances/details/details-cache';
+
+export default {
+  components: { detailsCache },
+  mixins: [subscribing],
+  props: {
+    instance: {
+      type: Instance,
+      required: true,
     },
-    mixins: [subscribing],
-    components: {detailsCache},
-    data: () => ({
-      caches: [],
-    }),
-    methods: {
-      async fetchCaches() {
-        const response = await this.instance.fetchMetric('cache.gets');
-        return uniq(response.data.availableTags.filter(tag => tag.tag === 'name')[0].values);
-      },
-      createSubscription() {
-        const vm = this;
-        return timer(0, sbaConfig.uiSettings.pollTimer.cache)
-          .pipe(concatMap(this.fetchCaches), retryWhen(
-            err => {
-              return err.pipe(
-                delay(1000),
-                take(5)
-              )
-            }))
-          .subscribe({
-            next: names => {
-              vm.caches = names
-            },
-            error: error => {
-              console.warn('Fetching caches failed:', error);
-            }
-          });
-      }
-    }
-  }
+  },
+  data: () => ({
+    caches: [],
+  }),
+  methods: {
+    async fetchCaches() {
+      const response = await this.instance.fetchMetric('cache.gets');
+      return uniq(
+        response.data.availableTags.filter((tag) => tag.tag === 'name')[0]
+          .values
+      );
+    },
+    createSubscription() {
+      const vm = this;
+      return timer(0, sbaConfig.uiSettings.pollTimer.cache)
+        .pipe(
+          concatMap(this.fetchCaches),
+          retryWhen((err) => {
+            return err.pipe(delay(1000), take(5));
+          })
+        )
+        .subscribe({
+          next: (names) => {
+            vm.caches = names;
+          },
+          error: (error) => {
+            console.warn('Fetching caches failed:', error);
+          },
+        });
+    },
+  },
+};
 </script>

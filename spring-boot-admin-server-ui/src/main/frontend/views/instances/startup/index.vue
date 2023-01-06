@@ -15,32 +15,76 @@
   -->
 
 <template>
-  <div class="section startup-view">
-    <sba-alert v-if="error" :error="error" :title="$t('instances.startup.fetch_failed')" />
+  <sba-instance-section :error="error">
+    <template #before>
+      <sba-sticky-subnav>
+        <div class="inline-flex items-center">
+          <div class="mx-3">
+            <sba-button v-if="!isExpanded" @click="expandTree">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                class="h-4 w-4"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8zM7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10z"
+                />
+              </svg>
+            </sba-button>
+            <sba-button v-if="isExpanded" @click="expandTree">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                class="h-4 w-4"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8zm7-8a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 4.293V.5A.5.5 0 0 1 8 0zm-.5 11.707-1.146 1.147a.5.5 0 0 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 11.707V15.5a.5.5 0 0 1-1 0v-3.793z"
+                />
+              </svg>
+            </sba-button>
+          </div>
+        </div>
+      </sba-sticky-subnav>
+    </template>
 
-    <tree-table v-if="hasLoaded" :expand="expandedNodes" :tree="eventTree" @change="saveTreeState" />
-  </div>
+    <sba-panel>
+      <div class="-mx-4 -my-3">
+        <tree-table
+          v-if="hasLoaded"
+          :expand="expandedNodes"
+          :tree="eventTree"
+          @change="saveTreeState"
+        />
+      </div>
+    </sba-panel>
+  </sba-instance-section>
 </template>
 
 <script>
 import Instance from '@/services/instance';
-import {StartupActuatorService} from '@/services/startup-actuator';
-import {VIEW_GROUP} from '../../index';
+import { StartupActuatorService } from '@/services/startup-actuator';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 import TreeTable from '@/views/instances/startup/tree-table';
 
 export default {
-  components: {TreeTable},
+  components: { SbaInstanceSection, TreeTable },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     error: null,
     hasLoaded: false,
     expandedNodes: null,
     eventTree: null,
+    isExpanded: false,
   }),
   async created() {
     await this.fetchStartup();
@@ -51,6 +95,17 @@ export default {
     this.hasLoaded = true;
   },
   methods: {
+    expandTree() {
+      if (!this.isExpanded) {
+        this.expandedNodes = new Set(
+          this.eventTree.getEvents().map((e) => e.startupStep.id)
+        );
+        this.isExpanded = true;
+      } else {
+        this.expandedNodes = new Set();
+        this.isExpanded = false;
+      }
+    },
     async fetchStartup() {
       this.error = null;
       try {
@@ -69,7 +124,9 @@ export default {
     },
     loadTreeState() {
       if (window.localStorage) {
-        let value = localStorage.getItem(`applications/${this.instance.registration.name}/startup`);
+        let value = localStorage.getItem(
+          `applications/${this.instance.registration.name}/startup`
+        );
         if (value) {
           let parse = JSON.parse(value);
           this.expandedNodes = new Set(parse.expandedNodes);
@@ -78,13 +135,16 @@ export default {
     },
     saveTreeState($event) {
       if (window.localStorage) {
-        localStorage.setItem(`applications/${this.instance.registration.name}/startup`, JSON.stringify({
-          expandedNodes: [...$event.expandedNodes]
-        }));
+        localStorage.setItem(
+          `applications/${this.instance.registration.name}/startup`,
+          JSON.stringify({
+            expandedNodes: [...$event.expandedNodes],
+          })
+        );
       }
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/startup',
       parent: 'instances',
@@ -93,8 +153,8 @@ export default {
       label: 'instances.startup.label',
       group: VIEW_GROUP.LOGGING,
       order: 600,
-      isEnabled: ({instance}) => instance.hasEndpoint('startup')
+      isEnabled: ({ instance }) => instance.hasEndpoint('startup'),
     });
-  }
-}
+  },
+};
 </script>

@@ -1,5 +1,6 @@
 {
   "navbar": {
+    "signedInAs": "Signed in as",
     "logout": "Log out"
   }
 }

@@ -18,7 +18,7 @@ package de.codecentric.boot.admin.server.notify.filter;
 
 import java.time.Instant;
 
-import javax.annotation.Nullable;
+import org.springframework.lang.Nullable;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;

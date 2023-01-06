@@ -1,9 +1,21 @@
 {
   "applications": {
+    "actions": {
+      "journal": "Journal",
+      "notification_filters": "Notification filters",
+      "unregister": "Unregister",
+      "shutdown": "Shutdown",
+      "restart": "Restart"
+    },
     "all_up": "all up",
     "applications": "Applications",
+    "fetching_notification_filters_failed": "Fetching notification filters failed.",
+    "notification_filter": {
+      "none": "No notification filters set.",
+      "removed": "Notification filter removed."
+    },
     "instances": "Instances",
-    "instances_down": "instances down",
+    "instances_down": "Some instances are down",
     "loading_applications": "Loading applications...",
     "no_applications_registered": "No applications registered.",
     "notifications_suppressed_for": "Notifications on <code>{name}</code> are suppressed for",
@@ -13,13 +25,26 @@
     "status": "Status",
     "label": "Applications",
     "up": "up",
+    "down": "down",
+    "offline": "offline",
     "shutdown": "Shutdown application <code>{name}</code>?",
+    "shutdown_successful": "Successfully shutdown application {name}.",
     "restart": "Restart application <code>{name}</code>?",
-    "restarted": "Successfully restarted application <code>{name}</code>"
+    "restarted": "Successfully restarted application <code>{name}</code>.",
+    "unregister": "Deregister application <code>{name}</code>?",
+    "unregister_successful": "Successfully deregistered application <code>{name}</code>.",
+    "unregister_failed": "Deregistration of application <code>{name}</code> failed ({error})."
   },
   "instances": {
     "shutdown": "Shutdown instance <code>{name}</code>?",
+    "shutdown_successful": "Successfully restarted instances {name}.",
     "restart": "Restart instance <code>{name}</code>?",
-    "restarted": "Successfully restarted instance"
+    "restarted": "Successfully restarted instance {name}.",
+    "unregister": "Deregister instance <code>{name}</code>?",
+    "unregister_successful": "Successfully deregistered instance <code>{name}</code>.",
+    "unregister_failed": "Deregistration of instance <code>{name}</code> failed ({error})."
+  },
+  "notification_filter_center": {
+    "description": "Notifications on following applications or instances will be suppressed."
   }
 }

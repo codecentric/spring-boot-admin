@@ -15,129 +15,160 @@
   -->
 
 <template>
-  <section class="section">
-    <div
-      v-if="error"
-      class="message is-danger"
-    >
-      <div class="message-body">
-        <strong>
-          <font-awesome-icon
-            class="has-text-danger"
-            icon="exclamation-triangle"
-          />
-          <span v-text="$t('instances.caches.fetch_failed')" />
-        </strong>
-        <p v-text="error.message" />
-      </div>
-    </div>
-    <div class="field-body">
-      <div class="field has-addons has-icons-left">
-        <p class="control is-expanded has-icons-left">
-          <input
-            class="input"
-            type="search"
-            v-model="filter"
+  <sba-instance-section :error="error">
+    <template #before>
+      <sba-sticky-subnav>
+        <div class="flex gap-2">
+          <sba-action-button-scoped
+            :instance-count="application.instances.length"
+            :action-fn="clearCaches"
+            :show-info="false"
           >
-          <span class="icon is-small is-left">
-            <font-awesome-icon icon="filter" />
-          </span>
-        </p>
-        <p class="control">
-          <span class="button is-static">
-            <span v-text="filteredCaches.length" />
-            /
-            <span v-text="caches.length" />
-          </span>
-        </p>
-      </div>
-    </div>
-    <caches-list :instance="instance" :caches="filteredCaches" :is-loading="isLoading" :application="application" />
-  </section>
+            <template #default="slotProps">
+              <span
+                v-if="slotProps.refreshStatus === 'completed'"
+                v-text="$t('term.execution_successful')"
+              />
+              <span
+                v-else-if="slotProps.refreshStatus === 'failed'"
+                v-text="$t('term.execution_failed')"
+              />
+              <span v-else>
+                <font-awesome-icon icon="trash" />&nbsp;
+                <span v-text="$t('term.clear')" />
+              </span>
+            </template>
+          </sba-action-button-scoped>
+
+          <div class="flex-1">
+            <sba-input
+              v-model="filter"
+              name="filter"
+              type="search"
+              :placeholder="$t('term.filter')"
+            >
+              <template #prepend>
+                <font-awesome-icon icon="filter" />
+              </template>
+              <template #append>
+                <span class="button is-static">
+                  <span v-text="filteredCaches.length" />
+                  /
+                  <span v-text="caches.length" />
+                </span>
+              </template>
+            </sba-input>
+          </div>
+        </div>
+      </sba-sticky-subnav>
+    </template>
+
+    <sba-panel>
+      <caches-list
+        :instance="instance"
+        :caches="filteredCaches"
+        :is-loading="isLoading"
+        :application="application"
+      />
+    </sba-panel>
+  </sba-instance-section>
 </template>
 
 <script>
-  import Instance from '@/services/instance';
-  import CachesList from '@/views/instances/caches/caches-list';
-  import flatMap from 'lodash/flatMap';
-  import isEmpty from 'lodash/isEmpty';
-  import {VIEW_GROUP} from '../../index';
-  import Application from '@/services/application';
+import { flatMap, isEmpty } from 'lodash-es';
 
-  const flattenCaches = cacheData => {
-    if (isEmpty(cacheData.cacheManagers)) {
-      return [];
-    }
-    const mappend = flatMap(Object.entries(cacheData.cacheManagers),
-      ([cacheManagerName, v]) => Object.keys(v.caches)
-        .map(cacheName => ({cacheManager: cacheManagerName, name: cacheName, key: `${cacheManagerName}:${cacheName}`}))
-    );
-    return mappend.sort((c1, c2) => c1.key.localeCompare(c2.key));
-  };
+import Application from '@/services/application';
+import Instance from '@/services/instance';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import CachesList from '@/views/instances/caches/caches-list';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
-  export default {
-    components: {CachesList},
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      },
-      application: {
-        type: Application,
-        required: true
-      }
-    },
-    data: () => ({
-      isLoading: false,
-      error: null,
-      caches: [],
-      filter: '',
-    }),
-    computed: {
-      filteredCaches() {
-        let filterFn = this.getFilterFn();
-        return filterFn ? this.caches.filter(filterFn) : this.caches;
-      }
-    },
-    methods: {
-      async fetchCaches() {
-        this.error = null;
-        this.isLoading = true;
-        try {
-          const res = await this.instance.fetchCaches();
-          this.caches = flattenCaches(res.data);
-        } catch (error) {
-          console.warn('Fetching caches failed:', error);
-          this.error = error;
-        }
-        this.isLoading = false;
-      },
-      getFilterFn() {
-        let filterFn = null;
-
-        if (this.filter) {
-          const normalizedFilter = this.filter.toLowerCase();
-          filterFn = cache => cache.name.toLowerCase().includes(normalizedFilter);
-        }
-
-        return filterFn;
-      }
-    },
-    created() {
-      this.fetchCaches();
-    },
-    install({viewRegistry}) {
-      viewRegistry.addView({
-        name: 'instances/caches',
-        parent: 'instances',
-        path: 'caches',
-        label: 'instances.caches.label',
-        group: VIEW_GROUP.DATA,
-        component: this,
-        order: 970,
-        isEnabled: ({instance}) => instance.hasEndpoint('caches')
-      });
-    }
+const flattenCaches = (cacheData) => {
+  if (isEmpty(cacheData.cacheManagers)) {
+    return [];
   }
-</script>
+  const mappend = flatMap(
+    Object.entries(cacheData.cacheManagers),
+    ([cacheManagerName, v]) =>
+      Object.keys(v.caches).map((cacheName) => ({
+        cacheManager: cacheManagerName,
+        name: cacheName,
+        key: `${cacheManagerName}:${cacheName}`,
+      }))
+  );
+  return mappend.sort((c1, c2) => c1.key.localeCompare(c2.key));
+};
 
+export default {
+  components: { SbaInstanceSection, CachesList },
+  props: {
+    instance: {
+      type: Instance,
+      required: true,
+    },
+    application: {
+      type: Application,
+      required: true,
+    },
+  },
+  data: () => ({
+    isLoading: false,
+    error: null,
+    caches: [],
+    filter: '',
+  }),
+  computed: {
+    filteredCaches() {
+      let filterFn = this.getFilterFn();
+      return filterFn ? this.caches.filter(filterFn) : this.caches;
+    },
+  },
+  created() {
+    this.fetchCaches();
+  },
+  methods: {
+    clearCaches(scope) {
+      if (scope === 'instance') {
+        return this.instance.clearCaches();
+      } else {
+        return this.application.clearCaches();
+      }
+    },
+    async fetchCaches() {
+      this.error = null;
+      this.isLoading = true;
+      try {
+        const res = await this.instance.fetchCaches();
+        this.caches = flattenCaches(res.data);
+      } catch (error) {
+        console.warn('Fetching caches failed:', error);
+        this.error = error;
+      }
+      this.isLoading = false;
+    },
+    getFilterFn() {
+      let filterFn = null;
+
+      if (this.filter) {
+        const normalizedFilter = this.filter.toLowerCase();
+        filterFn = (cache) =>
+          cache.name.toLowerCase().includes(normalizedFilter);
+      }
+
+      return filterFn;
+    },
+  },
+  install({ viewRegistry }) {
+    viewRegistry.addView({
+      name: 'instances/caches',
+      parent: 'instances',
+      path: 'caches',
+      label: 'instances.caches.label',
+      group: VIEW_GROUP.DATA,
+      component: this,
+      order: 970,
+      isEnabled: ({ instance }) => instance.hasEndpoint('caches'),
+    });
+  },
+};
+</script>

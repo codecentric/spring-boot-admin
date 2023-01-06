@@ -19,7 +19,6 @@ package de.codecentric.boot.admin.server.web.client;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableMap;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,15 +46,15 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	public static Stream<Arguments> methodSignatureToExpectedMap() {
 		return Stream.of(
 				Arguments.of("public java.lang.Object bar.Handler.handle(java.util.List<java.lang.String>)",
-						ImmutableMap.of("className", "bar.Handler", "descriptor",
-								"(Ljava/util/List;)Ljava/lang/Object;", "name", "handle")),
+						Map.of("className", "bar.Handler", "descriptor", "(Ljava/util/List;)Ljava/lang/Object;", "name",
+								"handle")),
 
 				Arguments.of("public SomeBean bar.Handler.handle(java.util.List)",
-						ImmutableMap.of("className", "bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;",
-								"name", "handle")),
+						Map.of("className", "bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;", "name",
+								"handle")),
 
-				Arguments.of("public synchronized SomeBean bar.Handler.handle(java.util.List)", ImmutableMap.of(
-						"className", "bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;", "name", "handle")));
+				Arguments.of("public synchronized SomeBean bar.Handler.handle(java.util.List)", Map.of("className",
+						"bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;", "name", "handle")));
 	}
 
 	@Test

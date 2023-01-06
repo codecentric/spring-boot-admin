@@ -1,0 +1,15 @@
+{
+  "login": {
+    "button_login": "Login",
+    "logout_successful": "Logout successful",
+    "remember_me": "Remember me",
+    "error": {
+      "login_required": "Login required to access the resource <em>(Error: {code})</em>.",
+      "invalid_username_or_password": "Invalid username or password"
+    },
+    "placeholder": {
+      "username": "Username",
+      "password": "Password"
+    }
+  }
+}

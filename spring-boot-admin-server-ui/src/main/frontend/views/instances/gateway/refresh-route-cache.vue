@@ -17,44 +17,56 @@
 <template>
   <div class="field">
     <div class="control">
-      <button class="button is-light"
-              :class="{'is-loading' : refreshingRouteCache === 'executing', 'is-danger' : refreshingRouteCache === 'failed', 'is-info' : refreshingRouteCache === 'completed'}"
-              :disabled="refreshingRouteCache === 'executing'"
-              @click="refreshRoutesCache"
+      <button
+        class="button is-light"
+        :class="{
+          'is-loading': refreshingRouteCache === 'executing',
+          'is-danger': refreshingRouteCache === 'failed',
+          'is-info': refreshingRouteCache === 'completed',
+        }"
+        :disabled="refreshingRouteCache === 'executing'"
+        @click="refreshRoutesCache"
       >
-        <span v-if="refreshingRouteCache === 'completed'" v-text="$t('instances.gateway.route.cache_refreshed')" />
-        <span v-else-if="refreshingRouteCache === 'failed'" v-text="$t('instances.gateway.route.cache_refresh_failed')" />
+        <span
+          v-if="refreshingRouteCache === 'completed'"
+          v-text="$t('instances.gateway.route.cache_refreshed')"
+        />
+        <span
+          v-else-if="refreshingRouteCache === 'failed'"
+          v-text="$t('instances.gateway.route.cache_refresh_failed')"
+        />
         <span v-else v-text="$t('instances.gateway.route.cache_refresh')" />
       </button>
     </div>
   </div>
 </template>
 <script>
-  import Instance from '@/services/instance';
-  import {from, listen} from '@/utils/rxjs';
+import Instance from '@/services/instance';
+import { from, listen } from '@/utils/rxjs';
 
-  export default {
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      }
+export default {
+  props: {
+    instance: {
+      type: Instance,
+      required: true,
     },
-    data: () => ({
-      refreshingRouteCache: null
-    }),
-    methods: {
-      refreshRoutesCache() {
-        const vm = this;
-        from(vm.instance.refreshGatewayRoutesCache())
-          .pipe(listen(status => vm.refreshingRouteCache = status))
-          .subscribe({
-            complete: () => {
-              vm.$emit('routes-refreshed');
-              return setTimeout(() => vm.refreshingRouteCache = null, 2500);
-            }
-          });
-      }
-    }
-  }
+  },
+  emits: ['routes-refreshed'],
+  data: () => ({
+    refreshingRouteCache: null,
+  }),
+  methods: {
+    refreshRoutesCache() {
+      const vm = this;
+      from(vm.instance.refreshGatewayRoutesCache())
+        .pipe(listen((status) => (vm.refreshingRouteCache = status)))
+        .subscribe({
+          complete: () => {
+            vm.$emit('routes-refreshed');
+            return setTimeout(() => (vm.refreshingRouteCache = null), 2500);
+          },
+        });
+    },
+  },
+};
 </script>

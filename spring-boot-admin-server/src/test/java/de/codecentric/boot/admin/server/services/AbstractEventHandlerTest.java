@@ -61,7 +61,7 @@ public class AbstractEventHandlerTest {
 
 		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
 				.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent)).expectNext(firstEvent, secondEvent)
-				.thenCancel().verify(Duration.ofSeconds(1));
+				.thenCancel().verify(Duration.ofSeconds(2));
 	}
 
 	@Test

@@ -1,0 +1,14 @@
+{
+  "login": {
+    "button_login": "登入",
+    "logout_successful": "登出成功",
+    "remember_me": "記住我",
+    "error": {
+      "invalid_username_or_password": "無效的使用者名稱或密碼"
+    },
+    "placeholder": {
+      "username": "使用者名稱",
+      "password": "密碼"
+    }
+  }
+}

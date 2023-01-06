@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import Popper from 'popper.js';
 
 const poppers = new WeakMap();
 
-const bind = (el, binding) => {
-  const reference = typeof binding.value === 'string' ? document.getElementById(binding.value) : binding.value;
+const mounted = (el, binding) => {
+  const reference =
+    typeof binding.value === 'string'
+      ? document.getElementById(binding.value)
+      : binding.value;
   if (reference) {
     const popper = new Popper(reference, el);
     poppers.set(el, popper);
   }
 };
 
-const unbind = (el) => {
+const beforeUnmount = (el) => {
   const popper = poppers.get(el);
   if (popper) {
     popper.destroy(el);
@@ -34,14 +36,12 @@ const unbind = (el) => {
 };
 
 export default {
-  bind,
+  mounted,
   update(el, binding) {
     if (binding.value === binding.oldValue) {
-      return
+      return;
     }
-    bind(el, binding)
+    mounted(el, binding);
   },
-  unbind
-}
-
-
+  beforeUnmount,
+};

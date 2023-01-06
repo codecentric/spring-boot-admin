@@ -18,11 +18,10 @@ package de.codecentric.boot.admin.server.utils.jackson;
 
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.lang.Nullable;
 
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 

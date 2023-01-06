@@ -1,0 +1,5 @@
+@import '@stekoe/vue-toast-notificationcenter/dist/style.css';
+
+.v-toast-container {
+  padding: 4em 1em;
+}

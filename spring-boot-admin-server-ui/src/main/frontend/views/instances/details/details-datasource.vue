@@ -15,28 +15,40 @@
   -->
 
 <template>
-  <sba-panel v-if="hasLoaded" :title="$t('instances.details.datasource.title', {dataSource: dataSource})">
+  <sba-panel
+    v-if="hasLoaded"
+    :title="
+      $t('instances.details.datasource.title', { dataSource: dataSource })
+    "
+  >
     <div>
-      <sba-alert v-if="error" :error="error" :title="$t('instances.details.datasource.fetch_failed')" />
+      <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
       <div v-if="current" class="level datasource-current">
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading has-bullet has-bullet-info"
-               v-text="$t('instances.details.datasource.active_connections')"
+            <p
+              class="heading has-bullet has-bullet-info"
+              v-text="$t('instances.details.datasource.active_connections')"
             />
             <p v-text="current.active" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading" v-text="$t('instances.details.datasource.min_connections')" />
+            <p
+              class="heading"
+              v-text="$t('instances.details.datasource.min_connections')"
+            />
             <p v-text="current.min" />
           </div>
         </div>
         <div class="level-item has-text-centered">
           <div>
-            <p class="heading" v-text="$t('instances.details.datasource.max_connections')" />
+            <p
+              class="heading"
+              v-text="$t('instances.details.datasource.max_connections')"
+            />
             <p v-if="current.max >= 0" v-text="current.max" />
             <p v-else v-text="$t('instances.details.datasource.unlimited')" />
           </div>
@@ -48,27 +60,28 @@
 </template>
 
 <script>
-import sbaConfig from '@/sba-config';
-import subscribing from '@/mixins/subscribing';
-import Instance from '@/services/instance';
-import {concatMap, delay, retryWhen, timer} from '@/utils/rxjs';
 import moment from 'moment';
-import datasourceChart from './datasource-chart';
-import {take} from 'rxjs/operators';
+import { concatMap, delay, retryWhen, timer } from 'rxjs';
+import { take } from 'rxjs/operators';
+
+import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
+import Instance from '@/services/instance';
+import datasourceChart from '@/views/instances/details/datasource-chart';
 
 export default {
+  components: { datasourceChart },
+  mixins: [subscribing],
   props: {
     instance: {
       type: Instance,
-      required: true
+      required: true,
     },
     dataSource: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
-  mixins: [subscribing],
-  components: {datasourceChart},
   data: () => ({
     hasLoaded: false,
     error: null,
@@ -77,44 +90,55 @@ export default {
   }),
   methods: {
     async fetchMetrics() {
-      const responseActive = this.instance.fetchMetric('data.source.active.connections', {name: this.dataSource});
-      const responseMin = this.instance.fetchMetric('data.source.min.connections', {name: this.dataSource});
-      const responseMax = this.instance.fetchMetric('data.source.max.connections', {name: this.dataSource});
+      const responseActive = this.instance.fetchMetric(
+        'data.source.active.connections',
+        { name: this.dataSource }
+      );
+      const responseMin = this.instance.fetchMetric(
+        'data.source.min.connections',
+        { name: this.dataSource }
+      );
+      const responseMax = this.instance.fetchMetric(
+        'data.source.max.connections',
+        { name: this.dataSource }
+      );
 
       return {
         active: (await responseActive).data.measurements[0].value,
         min: (await responseMin).data.measurements[0].value,
-        max: (await responseMax).data.measurements[0].value
+        max: (await responseMax).data.measurements[0].value,
       };
     },
     createSubscription() {
       const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
-        .pipe(concatMap(vm.fetchMetrics), retryWhen(
-          err => {
-            return err.pipe(
-              delay(1000),
-              take(5)
-            )
-          }))
+        .pipe(
+          concatMap(vm.fetchMetrics),
+          retryWhen((err) => {
+            return err.pipe(delay(1000), take(5));
+          })
+        )
         .subscribe({
-          next: data => {
+          next: (data) => {
             vm.hasLoaded = true;
             vm.current = data;
-            vm.chartData.push({...data, timestamp: moment().valueOf()});
+            vm.chartData.push({ ...data, timestamp: moment().valueOf() });
           },
-          error: error => {
+          error: (error) => {
             vm.hasLoaded = true;
-            console.warn(`Fetching datasource ${vm.dataSource} metrics failed:`, error);
+            console.warn(
+              `Fetching datasource ${vm.dataSource} metrics failed:`,
+              error
+            );
             vm.error = error;
-          }
+          },
         });
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
-<style lang="scss">
+<style lang="css">
 .datasource-current {
   margin-bottom: 0 !important;
 }

@@ -30,13 +30,16 @@ management:
 
 ---
 spring:
-  profiles: insecure
-
+  config:
+    activate:
+      on-profile: insecure
 ---
 spring:
-  profiles: secure
   security:
     user:
       name: "user"
       password: "password"
+  config:
+    activate:
+      on-profile: secure
 

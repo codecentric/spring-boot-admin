@@ -4,6 +4,10 @@ info:
   build-url: "https://travis-ci.org/codecentric/spring-boot-admin"
 
 logging:
+  level:
+    ROOT: info
+    de.codecentric: trace
+    org.springframework.web: debug
   file:
     name: "target/boot-admin-sample-servlet.log"
   pattern:
@@ -15,6 +19,12 @@ management:
       exposure:
         include: "*"
   endpoint:
+    refresh:
+      enabled: true
+    restart:
+      enabled: true
+    shutdown:
+      enabled: true
     env:
       post:
         enabled: true
@@ -24,24 +34,29 @@ management:
 spring:
   application:
     name: spring-boot-admin-sample-servlet
-  profiles:
-    active:
-      - secure
   boot:
     admin:
       client:
         url: http://localhost:8080
         instance:
-          service-host-type: IP
+          service-host-type: HOST_NAME
           metadata:
             tags:
               environment: test
+              de-service-test-1: A large content
+              de-service-test-2: A large content
+              de-service-test-3: A large content
+              de-service-test-4: A large content
+              de-service-test-5: A large content
+              de-service-test-6: A large content
+            kubectl.kubernetes.io/last-applied-configuration: '{"name":"jvm.threads.peak","description":"The peak live thread count since the Java virtual machine started or peak was reset","baseUnit":"threads","measurements":[{"statistic":"VALUE","value":64.0}],"availableTags":[]}'
+  config:
+    import: optional:configserver:http://localhost:8888/
   jmx:
     enabled: true
   main:
     lazy-initialization: true
 ---
-
 # tag::customization-external-views[]
 spring:
   boot:
@@ -49,28 +64,10 @@ spring:
       ui:
         external-views:
           - label: "🚀"
-            url: http://codecentric.de
+            url: https://codecentric.de
             order: 2000
 # end::customization-external-views[]
-
 ---
-# see readme of spring-boot-admin-server-ui
-spring:
-  boot:
-    admin:
-      ui:
-        cache:
-          no-cache: true
-        template-location: file:../../spring-boot-admin-server-ui/target/dist/
-        resource-locations: file:../../spring-boot-admin-server-ui/target/dist/
-        cache-templates: false
-        extension-resource-locations: file:../spring-boot-admin-sample-custom-ui/target/dist/
-  config:
-    activate:
-      on-profile: dev
-
----
-
 # tag::customization-view-settings[]
 spring:
   boot:
@@ -80,33 +77,4 @@ spring:
           - name: "journal"
             enabled: false
 # end::customization-view-settings[]
-
----
-spring:
-  config:
-    activate:
-      on-profile: insecure
-
-info.tags.security: insecure
-
----
-spring:
-  config:
-    activate:
-      on-profile: secure
-  security:
-    user:
-      name: "user"
-      password: "password"
-  boot:
-    admin:
-      client:
-        username: "user"       #These two are needed so that the client
-        password: "password"   #can register at the protected server api
-        instance:
-          metadata:
-            user.name: "user"         #These two are needed so that the server
-            user.password: "password" #can access the protected client endpoints
-
-info.tags.security: secured
 

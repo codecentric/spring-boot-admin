@@ -13,38 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import SbaModal from './sba-modal.vue';
 
-import SbaModal from './sba-modal';
 import i18n from '@/i18n';
 
 export default {
   component: SbaModal,
-  title: 'SBA Components/Modal',
+  title: 'Components/Modal',
 };
 
-const Template = (args, {argTypes}) => ({
-  components: {SbaModal},
-  props: Object.keys(argTypes),
+const Template = (args) => ({
+  components: { SbaModal },
+  setup() {
+    return {
+      args,
+    };
+  },
   template: `
-    <sba-modal v-model="$props.open" v-bind="$props">
-      <template v-if="${'header' in args}" v-slot:header>${args.header}</template>
-      <template v-if="${'body' in args}" v-slot:default>${args.body}</template>
-      <template v-if="${'footer' in args}" v-slot:footer>${args.footer}</template>
+    <sba-modal v-bind="args">
+      <template v-if="${'header' in args}" #header>${args.header}</template>
+      <template v-if="${'body' in args}" #body>${args.body}</template>
+      <template v-if="${'footer' in args}" #footer>${args.footer}</template>
     </sba-modal>
   `,
-  i18n
+  i18n,
 });
 
 export const ModalWithBody = Template.bind({});
 ModalWithBody.args = {
-  open: true,
-  body: 'I am a body'
+  modelValue: true,
+  body: 'I am a body',
 };
 
 export const ModalWithHeaderAndFooter = Template.bind({});
 ModalWithHeaderAndFooter.args = {
-  open: true,
+  modelValue: true,
   header: 'You are awesome!',
   body: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla accumsan, metus ultrices eleifend gravida, nulla nunc varius lectus, nec rutrum justo nibh eu lectus.</p>',
-  footer: '<button class="button" @click="$props.open = false">Close me!</button>'
+  footer: '<sba-button class="button">Close me!</sba-button>',
 };

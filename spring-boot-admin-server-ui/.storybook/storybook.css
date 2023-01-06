@@ -1,0 +1,57 @@
+/*!
+ * Copyright 2014-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+:root {
+    --main-50: 238, 252, 250;
+    --main-100: 217, 247, 244;
+    --main-200: 183, 240, 234;
+    --main-300: 145, 232, 224;
+    --main-400: 107, 224, 213;
+    --main-500: 71, 217, 203;
+    --main-600: 39, 190, 175;
+    --main-700: 30, 144, 132;
+    --main-800: 20, 97, 90;
+    --main-900: 10, 47, 43;
+
+    --bg-color-start: #91E8E0;
+    --bg-color-stop: #1E9084;
+}
+
+.bg-color-start {
+    transition: .4s ease;
+    stop-color: var(--bg-color-start);
+}
+
+.bg-color-stop {
+    transition: .4s ease;
+    stop-color: var(--bg-color-stop);
+}
+
+html, body {
+    @apply h-full !p-0;
+}
+
+#root {
+    padding: 1rem;
+    position: relative;
+    z-index: 10;
+    @apply h-full;
+}
+
+.bg-wave {
+    @apply w-full h-40 fixed;
+    z-index: -10;
+}

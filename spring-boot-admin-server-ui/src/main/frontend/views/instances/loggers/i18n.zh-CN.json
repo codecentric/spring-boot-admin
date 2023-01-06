@@ -3,7 +3,6 @@
     "loggers": {
       "label": "日志配置",
       "application": "应用",
-      "fetch_failed": "获取日志配置失败。",
       "filter": {
         "class_only": "只显示类",
         "configured": "已配置"
@@ -13,5 +12,6 @@
       "no_loggers_found": "未找到日志配置。",
       "reset": "重置",
       "setting_loglevel_failed": "设置 {logger} {loglevel} 失败。"
-    }    }
+    }
+  }
 }

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import * as array from 'd3-array';
 import * as axis from 'd3-axis';
 import * as brush from 'd3-brush';
@@ -29,5 +28,5 @@ export default {
   ...scale,
   ...selection,
   ...shape,
-  ...time
-}
+  ...time,
+};

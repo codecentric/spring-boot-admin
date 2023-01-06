@@ -15,72 +15,76 @@
   -->
 
 <template>
-  <section :class="{ 'is-loading' : !hasLoaded }" class="section">
-    <template v-if="hasLoaded">
-      <sba-alert v-if="error" :error="error" :title="$t('instances.flyway.fetch_failed')" />
-
-      <template v-for="(context, ctxName) in contexts">
-        <h3 :key="ctxName" class="title" v-text="ctxName" />
-        <sba-panel v-for="(report, name) in context.flywayBeans" :key="`${ctxName}-${name}`"
-                   :header-sticks-below="['#navigation']"
-                   :title="name"
-                   class="migration"
-        >
-          <table class="table is-fullwidth">
-            <thead>
-              <tr>
-                <th v-text="$t('instances.flyway.type')" />
-                <th v-text="$t('instances.flyway.checksum')" />
-                <th v-text="$t('instances.flyway.version')" />
-                <th v-text="$t('instances.flyway.description')" />
-                <th v-text="$t('instances.flyway.script')" />
-                <th v-text="$t('instances.flyway.state')" />
-                <th v-text="$t('instances.flyway.installed_by')" />
-                <th v-text="$t('instances.flyway.installed_on')" />
-                <th v-text="$t('instances.flyway.installed_rank')" />
-                <th v-text="$t('instances.flyway.execution_time')" />
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="migration in report.migrations" :key="migration.checksum">
-                <td v-text="migration.type" />
-                <td v-text="migration.checksum" />
-                <td v-text="migration.version" />
-                <td class="is-breakable" v-text="migration.description" />
-                <td class="is-breakable" v-text="migration.script" />
-                <td>
-                  <span :class="stateClass(migration.state)" class="tag"
-                        v-text="migration.state"
-                  />
-                </td>
-                <td v-text="migration.installedBy" />
-                <td v-text="migration.installedOn" />
-                <td v-text="migration.installedRank" />
-                <td v-text="`${migration.executionTime}ms`" />
-              </tr>
-            </tbody>
-          </table>
-        </sba-panel>
-      </template>
+  <sba-instance-section :loading="!hasLoaded" :error="error">
+    <template v-for="(context, ctxName) in contexts" :key="ctxName">
+      <sba-panel
+        v-for="(report, name) in context.flywayBeans"
+        :key="`${ctxName}-${name}`"
+        :header-sticks-below="'#subnavigation'"
+        :title="`${ctxName}: ${name}`"
+        class="migration"
+      >
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th v-text="$t('instances.flyway.type')" />
+              <th v-text="$t('instances.flyway.checksum')" />
+              <th v-text="$t('instances.flyway.version')" />
+              <th v-text="$t('instances.flyway.description')" />
+              <th v-text="$t('instances.flyway.script')" />
+              <th v-text="$t('instances.flyway.state')" />
+              <th v-text="$t('instances.flyway.installed_by')" />
+              <th v-text="$t('instances.flyway.installed_on')" />
+              <th v-text="$t('instances.flyway.installed_rank')" />
+              <th v-text="$t('instances.flyway.execution_time')" />
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="migration in report.migrations"
+              :key="migration.checksum"
+            >
+              <td v-text="migration.type" />
+              <td v-text="migration.checksum" />
+              <td v-text="migration.version" />
+              <td v-text="migration.description" />
+              <td v-text="migration.script" />
+              <td>
+                <span
+                  :class="stateClass(migration.state)"
+                  class="tag"
+                  v-text="migration.state"
+                />
+              </td>
+              <td v-text="migration.installedBy" />
+              <td v-text="migration.installedOn" />
+              <td v-text="migration.installedRank" />
+              <td v-text="`${migration.executionTime}ms`" />
+            </tr>
+          </tbody>
+        </table>
+      </sba-panel>
     </template>
-  </section>
+  </sba-instance-section>
 </template>
 
 <script>
 import Instance from '@/services/instance';
-import {VIEW_GROUP} from '../../index';
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
+  components: { SbaInstanceSection },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     hasLoaded: false,
     error: null,
-    contexts: null
+    contexts: null,
   }),
   computed: {},
   created() {
@@ -100,11 +104,11 @@ export default {
     },
     stateClass(state) {
       switch (state) {
-        case 'BASELINE' :
-        case  'MISSING_SUCCESS' :
-        case  'SUCCESS' :
-        case  'OUT_OF_ORDER' :
-        case  'FUTURE_SUCCESS' :
+        case 'BASELINE':
+        case 'MISSING_SUCCESS':
+        case 'SUCCESS':
+        case 'OUT_OF_ORDER':
+        case 'FUTURE_SUCCESS':
           return 'is-success';
         case 'PENDING':
         case 'ABOVE_TARGET':
@@ -119,9 +123,9 @@ export default {
         default:
           return 'is-light';
       }
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/flyway',
       parent: 'instances',
@@ -130,8 +134,8 @@ export default {
       label: 'instances.flyway.label',
       group: VIEW_GROUP.DATA,
       order: 900,
-      isEnabled: ({instance}) => instance.hasEndpoint('flyway')
+      isEnabled: ({ instance }) => instance.hasEndpoint('flyway'),
     });
-  }
-}
+  },
+};
 </script>

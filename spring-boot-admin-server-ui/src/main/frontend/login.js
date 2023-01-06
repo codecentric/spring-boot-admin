@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createApp } from 'vue';
 
-import '@/assets/css/base.scss';
-import i18n from './i18n'
+import './login.css';
 
-document.querySelectorAll('[data-i18n]')
-  .forEach(t => {
-    let [attribute, key] = t.getAttribute('data-i18n').split(':');
-    if (!key) {
-      key = attribute;
-      attribute = undefined;
-    }
+import i18n from './i18n';
+import Login from './login/login.vue';
 
-    if (attribute) {
-      t.setAttribute(attribute, i18n.t(key));
-    } else {
-      t.innerHTML = i18n.t(key);
-    }
-  });
+let app = createApp(Login, {
+  csrf: window.csrf,
+  icon: window.uiSettings.loginIcon,
+  title: window.uiSettings.title,
+  theme: window.uiSettings.theme,
+  param: window.param,
+});
+app.use(i18n);
+app.mount('#login');

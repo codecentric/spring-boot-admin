@@ -1,42 +1,114 @@
-/*
- * Copyright 2014-2019 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+import { waitFor } from '@testing-library/vue';
+import { rest } from 'msw';
+import { ReplaySubject } from 'rxjs';
 
+import { registerWithOneInstance } from '@/mocks/fixtures/eventStream/registerWithOneInstance';
+import { registerWithTwoInstances } from '@/mocks/fixtures/eventStream/registerWithTwoInstances';
+import { server } from '@/mocks/server';
 import Application from '@/services/application';
-import {EMPTY} from '@/utils/rxjs';
-import Store from './store';
+import ApplicationStore from '@/store';
 
-jest.mock('@/services/application');
-jest.setTimeout(500);
+server.use(
+  rest.get('/applications', (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json([]));
+  })
+);
 
-describe('store', () => {
-  describe('given no registered applications', function () {
-    Application.list = jest.fn(() => EMPTY);
-    Application.getStream = jest.fn(() => EMPTY);
+describe('store.js', () => {
+  let applicationStore;
 
-    it('it should emit a connected event after start', async () => {
-      const store = new Store();
+  let mockSubject;
+  jest.spyOn(Application, 'getStream').mockImplementation(() => mockSubject);
 
-      const connectedEvent = new Promise(resolve => {
-        store.addEventListener('connected', resolve)
-      });
+  let changedListener;
+  let addedListener;
+  let updateListener;
+  let removedListener;
 
-      store.start();
-      await connectedEvent;
-      store.stop();
+  beforeEach(() => {
+    changedListener = jest.fn();
+    addedListener = jest.fn();
+    updateListener = jest.fn();
+    removedListener = jest.fn();
+
+    mockSubject = new ReplaySubject();
+    applicationStore = new ApplicationStore();
+    applicationStore.start();
+    applicationStore.addEventListener('changed', changedListener);
+    applicationStore.addEventListener('added', addedListener);
+    applicationStore.addEventListener('updated', updateListener);
+    applicationStore.addEventListener('removed', removedListener);
+    applicationStore.addEventListener('error', (error) => console.log(error));
+  });
+
+  afterEach(() => {
+    applicationStore.stop();
+  });
+
+  it('registers a new instance', async () => {
+    mockSubject.next({ data: registerWithOneInstance });
+
+    await waitFor(() => {
+      let applications = applicationStore.applications;
+      expect(applications).toHaveLength(1);
+      expect(applications[0].instances).toHaveLength(1);
     });
 
+    expect(changedListener).toHaveBeenCalled();
+    expect(addedListener).toHaveBeenCalled();
+    expect(updateListener).not.toHaveBeenCalled();
+    expect(removedListener).not.toHaveBeenCalled();
+  });
+
+  it('registers one instance and then another one', async () => {
+    mockSubject.next({ data: registerWithOneInstance });
+    mockSubject.next({ data: registerWithTwoInstances });
+
+    await waitFor(() => {
+      let applications = applicationStore.applications;
+      expect(applications).toHaveLength(1);
+      expect(applications[0].instances).toHaveLength(2);
+    });
+
+    expect(changedListener).toHaveBeenCalled();
+    expect(addedListener).toHaveBeenCalled();
+    expect(updateListener).toHaveBeenCalled();
+    expect(removedListener).not.toHaveBeenCalled();
+  });
+
+  it('deregisters an instance', async () => {
+    mockSubject.next({ data: registerWithTwoInstances });
+    mockSubject.next({ data: registerWithOneInstance });
+
+    await waitFor(() => {
+      let applications = applicationStore.applications;
+      expect(applications).toHaveLength(1);
+      expect(applications[0].instances).toHaveLength(1);
+    });
+
+    expect(changedListener).toHaveBeenCalled();
+    expect(addedListener).toHaveBeenCalled();
+    expect(updateListener).toHaveBeenCalled();
+    expect(removedListener).not.toHaveBeenCalled();
+  });
+
+  it('removes an application', async () => {
+    mockSubject.next({ data: registerWithOneInstance });
+
+    await waitFor(() => {
+      expect(applicationStore.applications).toHaveLength(1);
+    });
+
+    let data = { ...registerWithOneInstance, instances: [] };
+    mockSubject.next({ data: data });
+
+    await waitFor(() => {
+      expect(applicationStore.applications).toHaveLength(0);
+    });
+
+    expect(changedListener).toHaveBeenCalled();
+    expect(addedListener).toHaveBeenCalled();
+    expect(updateListener).not.toHaveBeenCalled();
+    expect(removedListener).toHaveBeenCalled();
   });
 });

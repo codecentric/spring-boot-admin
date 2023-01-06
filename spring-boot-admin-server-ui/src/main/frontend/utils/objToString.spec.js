@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import objToString from './objToString'
+import objToString from './objToString';
 
 describe('objToString should', () => {
-
   it('return the input string for normal text', () => {
     const obj = {
       a: 'start',
@@ -31,8 +29,8 @@ describe('objToString should', () => {
         i: undefined,
         j: {},
         k: [1],
-        l: [{a:1, b:'foo'}, {b:2}]
-      }
+        l: [{ a: 1, b: 'foo' }, { b: 2 }],
+      },
     };
     const str = `a: start
 b: 1
@@ -59,5 +57,4 @@ e:
       b: 2`;
     expect(objToString(obj)).toBe(str);
   });
-
 });

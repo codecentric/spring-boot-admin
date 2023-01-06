@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { cloneDeep } from 'lodash-es';
 
-import {StartupActuatorService} from './startup-actuator'
-import {cloneDeep} from 'lodash';
+import { StartupActuatorService } from './startup-actuator';
 
 describe('StartupActuatorService', () => {
   let data = {};
@@ -31,20 +31,21 @@ describe('StartupActuatorService', () => {
 
     expect.assertions(1);
     expect(item8).toEqual({
-      'startupStep': {
-        'name': 'spring.beans.instantiate',
-        'id': 8,
-        'parentId': 7,
-        'tags': [
+      startupStep: {
+        name: 'spring.beans.instantiate',
+        id: 8,
+        parentId: 7,
+        tags: [
           {
-            'key': 'beanName',
-            'value': 'org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory'
-          }
-        ]
+            key: 'beanName',
+            value:
+              'org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory',
+          },
+        ],
       },
-      'startTime': '2020-12-10T21:53:42.958550077Z',
-      'endTime': '2020-12-10T21:53:42.960040652Z',
-      'duration': 'PT0.001490575S'
+      startTime: '2020-12-10T21:53:42.958550077Z',
+      endTime: '2020-12-10T21:53:42.960040652Z',
+      duration: 'PT0.001490575S',
     });
   });
 
@@ -69,8 +70,9 @@ describe('StartupActuatorService', () => {
 
   it('should extract map from event tags', () => {
     let tag = {
-      'key': 'event',
-      'value': 'ServletRequestHandledEvent: url=[/applications]; client=[0:0:0:0:0:0:0:1]; method=[GET, POST]; servlet=[dispatcherServlet]; session=[null]; user=[null]; time=[13ms]; status=[OK]'
+      key: 'event',
+      value:
+        'ServletRequestHandledEvent: url=[/applications]; client=[0:0:0:0:0:0:0:1]; method=[GET, POST]; servlet=[dispatcherServlet]; session=[null]; user=[null]; time=[13ms]; status=[OK]',
     };
 
     let parsedTag = StartupActuatorService.parseTag(tag);
@@ -88,7 +90,7 @@ describe('StartupActuatorService', () => {
         status: ['OK'],
         session: ['null'],
         user: ['null'],
-      }
+      },
     });
   });
 
@@ -97,10 +99,11 @@ describe('StartupActuatorService', () => {
     let children = tree.getByParentId(6);
 
     expect.assertions(2);
-    expect(children.length)
-      .toBe(25);
-    expect(children.map((event) => event.startupStep.id))
-      .toStrictEqual([7, 9, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28, 31, 32, 34, 35, 36, 37, 38, 43]);
+    expect(children.length).toBe(25);
+    expect(children.map((event) => event.startupStep.id)).toStrictEqual([
+      7, 9, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28, 31, 32,
+      34, 35, 36, 37, 38, 43,
+    ]);
   });
 
   it('should find start and end time', () => {
@@ -109,8 +112,8 @@ describe('StartupActuatorService', () => {
     let endTime = tree.getEndTime();
 
     expect.assertions(2);
-    expect(startTime).toBe(Date.parse('2020-12-10T21:53:41.836728041Z'))
-    expect(endTime).toBe(Date.parse('2020-12-10T22:13:47.495769441Z'))
+    expect(startTime).toBe(Date.parse('2020-12-10T21:53:41.836728041Z'));
+    expect(endTime).toBe(Date.parse('2020-12-10T22:13:47.495769441Z'));
   });
 
   it('should return progress of event in context of whole tree', () => {
@@ -127,7 +130,7 @@ describe('StartupActuatorService', () => {
 
     let path = tree.getPath(10);
     expect.assertions(1);
-    expect(path).toEqual([10, 9, 6, 5])
+    expect(path).toEqual([10, 9, 6, 5]);
   });
 
   it('should parse duration to seconds', () => {

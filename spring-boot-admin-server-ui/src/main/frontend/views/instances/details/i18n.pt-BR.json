@@ -2,15 +2,12 @@
   "instances": {
     "details": {
       "label": "Detalhes",
-      "fetch_failed": "Falha na busca de métricas.",
       "cache": {
-        "fetch_failed": "Falha ao buscar métricas de cache.",
         "hit_ratio": "Hit ratio",
         "hits": "Hits",
         "size": "Tamanho"
       },
       "datasource": {
-        "fetch_failed": "Falha na busca de métricas do datasource.",
         "active_connections": "Conexões ativas",
         "min_connections": "Conexões mínimas",
         "max_connections": "Conexões máximas",
@@ -24,16 +21,13 @@
         "title": "Pausas do Garbage Collection"
       },
       "health": {
-        "fetch_failed": "A obtenção do status de integridade em tempo real falhou. Esta é a última informação conhecida.",
         "title": "Integridade"
       },
       "info": {
-        "fetch_failed": "A busca de informações em tempo real falhou. Esta é a última informação conhecida.",
         "no_info_provided": "Nenhuma informação fornecida.",
         "title": "Info"
       },
       "memory": {
-        "fetch_failed": "A busca das métricas de memória falhou.",
         "max": "Máximo",
         "metaspace": "Metaspace",
         "size": "Tamanho",
@@ -46,7 +40,6 @@
       },
       "process": {
         "cpus": "CPUs",
-        "fetch_failed": "Falha na busca das métricas de processo.",
         "pid": "PID",
         "process_cpu_usage": "Uso de Process CPU",
         "system_cpu_usage": "Uso de System CPU",
@@ -55,7 +48,6 @@
       },
       "threads": {
         "daemon": "Daemon",
-        "fetch_failed": "Falha na busca das métricas de threads.",
         "live": "Ativos",
         "peak_live": "Peak Live",
         "title": "Threads"

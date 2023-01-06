@@ -24,21 +24,36 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="route in routes">
-        <tr class="is-selectable"
-            :key="route.route_id"
-            @click="showDetails[route.route_id] ? $delete(showDetails, route.route_id) : $set(showDetails, route.route_id, true)"
+      <template v-for="route in routes" :key="route.route_id">
+        <tr
+          class="is-selectable"
+          @click="
+            showDetails[route.route_id]
+              ? delete showDetails[route.route_id]
+              : (showDetails[route.route_id] = true)
+          "
         >
           <td class="is-breakable" v-text="route.route_id" />
           <td v-text="route.order" />
           <td class="routes__delete-action">
-            <sba-confirm-button class="button refresh-button is-light"
-                                :class="{'is-loading' : deleting[route.route_id] === 'executing', 'is-danger' : deleting[route.route_id] === 'failed', 'is-info' : deleting[route.route_id] === 'completed'}"
-                                :disabled="deleting[route.route_id] === 'executing'"
-                                @click.stop="deleteRoute(route.route_id)"
+            <sba-confirm-button
+              class="button refresh-button is-light"
+              :class="{
+                'is-loading': deleting[route.route_id] === 'executing',
+                'is-danger': deleting[route.route_id] === 'failed',
+                'is-info': deleting[route.route_id] === 'completed',
+              }"
+              :disabled="deleting[route.route_id] === 'executing'"
+              @click.stop="deleteRoute(route.route_id)"
             >
-              <span v-if="deleting[route.route_id] === 'completed'" v-text="$t('instances.gateway.route.deleted')" />
-              <span v-else-if="deleting[route.route_id] === 'failed'" v-text="$t('instances.gateway.route.delete_failed')" />
+              <span
+                v-if="deleting[route.route_id] === 'completed'"
+                v-text="$t('instances.gateway.route.deleted')"
+              />
+              <span
+                v-else-if="deleting[route.route_id] === 'failed'"
+                v-text="$t('instances.gateway.route.delete_failed')"
+              />
               <span v-else>
                 <font-awesome-icon icon="trash" />
                 <span v-text="$t('instances.gateway.route.delete')" />
@@ -46,20 +61,20 @@
             </sba-confirm-button>
           </td>
         </tr>
-        <tr v-if="showDetails[route.route_id]" :key="`${route.route_id}-detail`">
+        <tr
+          v-if="showDetails[route.route_id]"
+          :key="`${route.route_id}-detail`"
+        >
           <td colspan="3" class="has-background-white-bis">
             <route-definition
               v-if="route.route_definition"
               :route-definition="route.route_definition"
             />
-            <route
-              v-if="route.uri"
-              :route="route"
-            />
+            <route v-if="route.uri" :route="route" />
             <pre
               v-else-if="route.route_object"
-              v-text="toJson(route.route_object)"
               class="is-breakable"
+              v-text="toJson(route.route_object)"
             />
             <span
               v-else
@@ -71,7 +86,11 @@
       </template>
       <tr v-if="routes.length === 0">
         <td class="is-muted" colspan="3">
-          <p v-if="isLoading" class="is-loading" v-text="$t('instances.gateway.route.loading')" />
+          <p
+            v-if="isLoading"
+            class="is-loading"
+            v-text="$t('instances.gateway.route.loading')"
+          />
           <p v-else v-text="$t('instances.gateway.route.no_routes_found')" />
         </td>
       </tr>
@@ -79,54 +98,54 @@
   </table>
 </template>
 <script>
-  import Instance from '@/services/instance';
-  import {from, listen} from '@/utils/rxjs';
-  import Route from './route'
-  import RouteDefinition from './route-definition'
+import Instance from '@/services/instance';
+import { from, listen } from '@/utils/rxjs';
+import Route from '@/views/instances/gateway/route';
+import RouteDefinition from '@/views/instances/gateway/route-definition';
 
-  export default {
-    components: {RouteDefinition, Route},
-    props: {
-      instance: {
-        type: Instance,
-        required: true
-      },
-      routes: {
-        type: Array,
-        required: true
-      },
-      isLoading: {
-        type: Boolean,
-        default: false
-      }
+export default {
+  components: { RouteDefinition, Route },
+  props: {
+    instance: {
+      type: Instance,
+      required: true,
     },
-    data: () => ({
-      showDetails: {},
-      deleting: {}
-    }),
-    methods: {
-      toJson(obj) {
-        return JSON.stringify(obj, null, 4);
-      },
-      deleteRoute(routeId) {
-        const vm = this;
-        from(vm.instance.deleteGatewayRoute(routeId))
-          .pipe(listen(status => vm.$set(vm.deleting, routeId, status)))
-          .subscribe({
-            complete: () => vm.$emit('route-deleted')
-          });
-      },
-    }
-  }
+    routes: {
+      type: Array,
+      required: true,
+    },
+    isLoading: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ['route-deleted'],
+  data: () => ({
+    showDetails: {},
+    deleting: {},
+  }),
+  methods: {
+    toJson(obj) {
+      return JSON.stringify(obj, null, 4);
+    },
+    deleteRoute(routeId) {
+      const vm = this;
+      from(vm.instance.deleteGatewayRoute(routeId))
+        .pipe(listen((status) => (vm.deleting[routeId] = status)))
+        .subscribe({
+          complete: () => vm.$emit('route-deleted'),
+        });
+    },
+  },
+};
 </script>
-<style lang="scss">
-  .routes {
-    td, th {
-      vertical-align: middle;
-    }
+<style lang="css">
+.routes td,
+.routes th {
+  vertical-align: middle;
+}
 
-    &__delete-action {
-      text-align: right;
-    }
-  }
+.routes__delete-action {
+  text-align: right;
+}
 </style>

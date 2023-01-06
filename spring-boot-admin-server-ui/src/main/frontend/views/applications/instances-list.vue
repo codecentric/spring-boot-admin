@@ -15,82 +15,74 @@
   -->
 
 <template>
-  <table class="table is-hoverable is-selectable is-fullwidth instances-list">
-    <tbody>
-      <tr v-for="instance in instances" :key="instance.id" @click.stop="showDetails(instance)">
-        <td class="instance-list-item__status">
-          <sba-status :status="instance.statusInfo.status" :date="instance.statusTimestamp" />
-        </td>
-        <td class="is-narrow">
-          <a v-text="instance.registration.serviceUrl || instance.registration.healthUrl"
-             :href="instance.registration.serviceUrl || instance.registration.healthUrl"
-             @click.stop
-          /><br>
-          <span class="is-muted" v-text="instance.id" />
-        </td>
-        <td>
-          <sba-tags :tags="instance.tags" />
-        </td>
-        <td>
-          <span v-text="instance.buildVersion" />
-        </td>
-        <td class="instance-list-item__actions">
-          <slot name="actions" :instance="instance" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <li
+    v-for="instance in instances"
+    :key="instance.id"
+    class="flex items-center hover:bg-gray-100 p-2"
+    @click.stop="showDetails(instance)"
+  >
+    <div class="pr-3 md:w-16 text-center">
+      <sba-status
+        :date="instance.statusTimestamp"
+        :status="instance.statusInfo.status"
+      />
+    </div>
+    <div class="flex-1">
+      <a
+        :href="
+          instance.registration.serviceUrl || instance.registration.healthUrl
+        "
+        @click.stop
+        v-text="
+          instance.registration.serviceUrl || instance.registration.healthUrl
+        "
+      /><br />
+      <span class="text-sm italic" v-text="instance.id" />
+    </div>
+    <div class="hidden xl:block w-1/4 overflow-x-scroll">
+      <sba-tags :small="true" :tags="instance.tags" :wrap="false" />
+    </div>
+    <div
+      class="hidden xl:block w-1/4 text-center"
+      v-text="instance.buildVersion"
+    />
+    <div class="instance-list-item__actions text-right">
+      <slot :instance="instance" name="actions" />
+    </div>
+  </li>
 </template>
 <script>
-  export default {
-    props: {
-      instances: {
-        type: Array,
-        default: () => [],
-      },
-      showNotificationSettings: {
-        type: Boolean,
-        default: false
-      },
-      hasActiveNotificationFilter: {
-        type: Function,
-        default: () => false
-      }
+export default {
+  props: {
+    instances: {
+      type: Array,
+      default: () => [],
     },
-    methods: {
-      showDetails(instance) {
-        this.$router.push({name: 'instances/details', params: {instanceId: instance.id}});
-      }
-    }
-  }
+    showNotificationSettings: {
+      type: Boolean,
+      default: false,
+    },
+    hasActiveNotificationFilter: {
+      type: Function,
+      default: () => false,
+    },
+  },
+  methods: {
+    showDetails(instance) {
+      this.$router.push({
+        name: 'instances/details',
+        params: { instanceId: instance.id },
+      });
+    },
+  },
+};
 </script>
-<style lang="scss">
-  @import "~@/assets/css/utilities";
 
-  .instances-list td {
-    vertical-align: middle;
-  }
+<style lang="css">
+.instances-list td {
+  vertical-align: middle;
+}
 
-  .instance-list-item {
-    &__status {
-      width: $gap;
-    }
-
-    &__actions {
-      text-align: right;
-      opacity: 0;
-      transition: all $easing $speed;
-      will-change: opacity;
-      margin-right: $gap;
-
-      *:hover > & {
-        opacity: 1;
-      }
-
-      & > * {
-        width: calc(#{$gap} / 2);
-        height: calc(#{$gap} / 2);
-      }
-    }
-  }
+.instance-list-item__actions {
+}
 </style>

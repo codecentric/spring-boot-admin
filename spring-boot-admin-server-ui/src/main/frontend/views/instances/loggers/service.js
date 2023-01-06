@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import flatMap from 'lodash/flatMap';
-import groupBy from 'lodash/groupBy';
-import union from 'lodash/union';
+import { flatMap, groupBy, union } from 'lodash-es';
 
 const convertLoggers = function (loggers, instanceId) {
-  return Object.entries(loggers)
-    .map(([name, config]) => ({name, level: [{...config, instanceId}]}));
+  return Object.entries(loggers).map(([name, config]) => ({
+    name,
+    level: [{ ...config, instanceId }],
+  }));
 };
 
 export class InstanceLoggers {
@@ -33,8 +32,8 @@ export class InstanceLoggers {
     return {
       errors: [],
       levels: loggerConfig.levels,
-      loggers: convertLoggers(loggerConfig.loggers, this.instance.id)
-    }
+      loggers: convertLoggers(loggerConfig.loggers, this.instance.id),
+    };
   }
 
   async configureLogger(name, level) {
@@ -54,18 +53,30 @@ export class ApplicationLoggers {
 
     try {
       const responses = (await this.application.fetchLoggers()).responses;
-      const successful = responses.filter(r => r.body && r.status >= 200 && r.status < 299);
+      const successful = responses.filter(
+        (r) => r.body && r.status >= 200 && r.status < 299
+      );
 
-      errors = responses.filter(r => r.status >= 400).map(r => ({instanceId: r.instanceId, error: 'HTTP Status ' + r.status}));
+      errors = responses
+        .filter((r) => r.status >= 400)
+        .map((r) => ({
+          instanceId: r.instanceId,
+          error: 'HTTP Status ' + r.status,
+        }));
       loggers = Object.entries(
         groupBy(
-          flatMap(successful, r => convertLoggers(r.body.loggers, r.instanceId)),
-          l => l.name
+          flatMap(successful, (r) =>
+            convertLoggers(r.body.loggers, r.instanceId)
+          ),
+          (l) => l.name
         )
-      ).map(([name, configs]) => ({name, level: flatMap(configs, c => c.level)}));
-      levels = union(...successful.map(r => r.body.levels));
+      ).map(([name, configs]) => ({
+        name,
+        level: flatMap(configs, (c) => c.level),
+      }));
+      levels = union(...successful.map((r) => r.body.levels));
     } catch {
-      console.warn('Failed to fetch loggers for some instances')
+      console.warn('Failed to fetch loggers for some instances');
 
       errors = [];
       levels = [];
@@ -75,22 +86,28 @@ export class ApplicationLoggers {
     return {
       errors,
       levels,
-      loggers
-    }
+      loggers,
+    };
   }
 
   async configureLogger(name, level) {
     let responses;
 
     try {
-      responses = (await this.application.configureLogger(name, level)).responses;
+      responses = (await this.application.configureLogger(name, level))
+        .responses;
     } catch {
       responses = [];
     }
 
-    const errors = responses.filter(r => r.status >= 400).map(r => ({instanceId: r.instanceId, error: 'HTTP Status ' + r.status}));
+    const errors = responses
+      .filter((r) => r.status >= 400)
+      .map((r) => ({
+        instanceId: r.instanceId,
+        error: 'HTTP Status ' + r.status,
+      }));
     if (errors.length > 0) {
-      console.warn('Failed to set loglevel for some instances', errors)
+      console.warn('Failed to set loglevel for some instances', errors);
     }
   }
 }

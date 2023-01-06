@@ -13,7 +13,6 @@
       "context_update": "갱신",
       "context_update_failed": "갱신실패",
       "context_updated": "갱신됨",
-      "fetch_failed": "환경 정보를 가져오는데 실패했습니다.",
       "no_properties": "프로퍼티 없음",
       "title": "환경 관리자",
       "refresh": "Refresh environment",

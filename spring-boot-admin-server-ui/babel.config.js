@@ -16,15 +16,11 @@
 
 module.exports = {
   presets: [
-    '@vue/cli-plugin-babel/preset'
-  ],
-  plugins: [
-    ['@babel/plugin-proposal-optional-catch-binding'],
-    ['@babel/plugin-proposal-optional-chaining']
+    ['@babel/preset-env', {modules: 'commonjs'}]
   ],
   env: {
     test: {
-      plugins: ['babel-plugin-transform-require-context', 'require-context-hook']
+      plugins: ["@babel/plugin-transform-runtime"]
     }
   }
 };

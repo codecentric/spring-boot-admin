@@ -2,7 +2,7 @@
   "instances": {
     "configprops": {
       "label": "Configuración",
-      "fetch_failed": "Fallo al recuperar propiedades de configuración.",
+
       "no_properties_set": "No hay propiedades configuradas"
     }
   }

@@ -21,9 +21,9 @@ import java.util.Set;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
 
 import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.PathUtils;
@@ -50,16 +50,15 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 		if (!StringUtils.hasText(this.adminContextPath)) {
 			return mapping;
 		}
-		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
-				withNewPatterns(mapping.getPatternsCondition().getPatterns()));
 
-		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
-				mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
-				mapping.getCustomCondition());
+		RequestMappingInfo.Builder mutate = mapping.mutate();
+
+		return mutate.paths(withNewPatterns(mapping.getPathPatternsCondition().getPatterns())).build();
 	}
 
-	private String[] withNewPatterns(Set<String> patterns) {
-		return patterns.stream().map((pattern) -> PathUtils.normalizePath(this.adminContextPath + pattern))
+	private String[] withNewPatterns(Set<PathPattern> patterns) {
+		return patterns.stream()
+				.map((pattern) -> PathUtils.normalizePath(this.adminContextPath + pattern.getPatternString()))
 				.toArray(String[]::new);
 	}
 

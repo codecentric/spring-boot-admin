@@ -15,156 +15,82 @@
   -->
 
 <template>
-  <div class="mem-chart">
-    <svg class="mem-chart__svg" />
-  </div>
+  <LineChart
+    label="timestamp"
+    :datasets="datasets"
+    :config="config"
+    :data="data"
+  />
 </template>
 
 <script>
-  import d3 from '@/utils/d3';
-  import moment from 'moment';
-  import prettyBytes from 'pretty-bytes';
+import moment from 'moment';
+import prettyBytes from 'pretty-bytes';
+import { useI18n } from 'vue-i18n';
 
-  export default {
-    props: {
-      data: {
-        type: Array,
-        default: () => []
-      }
+import LineChart from '@/views/instances/details/LineChart';
+
+export default {
+  components: { LineChart },
+  props: {
+    data: {
+      type: Array,
+      default: () => [],
     },
-    data: () => ({}),
-    methods: {
-      drawChart(_data) {
-        const vm = this;
-        const data = _data.length === 1 ? _data.concat([{..._data[0], timestamp: _data[0].timestamp + 1}]) : _data;
-
-        ///setup x and y scale
-        const extent = d3.extent(data, d => d.timestamp);
-        const x = d3.scaleTime()
-          .range([0, vm.width])
-          .domain(extent);
-
-        const y = d3.scaleLinear()
-          .range([vm.height, 0])
-          .domain([0, d3.max(data, d => d.committed) * 1.05]);
-
-        //draw max
-        const max = vm.areas.selectAll('.mem-chart__line--max')
-          .data([data]);
-        max.enter().append('path')
-          .merge(max)
-          .attr('class', 'mem-chart__line--max')
-          .attr('d', d3.line()
-            .x(d => x(d.timestamp))
-            .y(d => y(d.max)));
-        max.exit().remove();
-
-        //draw areas
-        const committed = vm.areas.selectAll('.mem-chart__area--committed')
-          .data([data]);
-        committed.enter().append('path')
-          .merge(committed)
-          .attr('class', 'mem-chart__area--committed')
-          .attr('d', d3.area()
-            .x(d => x(d.timestamp))
-            .y0(d => y(d.used))
-            .y1(d => y(d.committed)));
-        committed.exit().remove();
-
-        const used = vm.areas.selectAll('.mem-chart__area--used')
-          .data([data]);
-        used.enter().append('path')
-          .merge(used)
-          .attr('class', 'mem-chart__area--used')
-          .attr('d', d3.area()
-            .x(d => x(d.timestamp))
-            .y0(d => y(d.metaspace || 0))
-            .y1(d => y(d.used)));
-        used.exit().remove();
-
-        const metaspace = vm.areas.selectAll('.mem-chart__area--metaspace')
-          .data([data]);
-        metaspace.enter().append('path')
-          .merge(metaspace)
-          .attr('class', 'mem-chart__area--metaspace')
-          .attr('d', d3.area()
-            .x(d => x(d.timestamp))
-            .y0(y(0))
-            .y1(d => y(d.metaspace || 0)));
-        metaspace.exit().remove();
-
-        //draw axis
-        vm.xAxis.call(d3.axisBottom(x)
-          .ticks(5)
-          .tickFormat(d => moment(d).format('HH:mm:ss'))
-        );
-
-        vm.yAxis.call(d3.axisLeft(y)
-          .ticks(5)
-          .tickFormat(prettyBytes)
-        );
-
+  },
+  setup(props) {
+    const { t } = useI18n();
+    return { ...props, t };
+  },
+  data() {
+    const vm = this;
+    return {
+      chart: undefined,
+      label: 'timestamp',
+      datasets: {
+        used: {
+          label: 'instances.details.memory.used',
+        },
+        metaspace: {
+          label: 'instances.details.memory.metaspace',
+        },
+        committed: {
+          label: 'instances.details.memory.committed',
+        },
       },
-    },
-    mounted() {
-      const margin = {
-        top: 5,
-        right: 5,
-        bottom: 30,
-        left: 50,
-      };
-
-      this.width = this.$el.getBoundingClientRect().width - margin.left - margin.right;
-      this.height = this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
-
-      this.chartLayer = d3.select(this.$el.querySelector('.mem-chart__svg'))
-        .append('g')
-        .attr('transform', `translate(${margin.left},${margin.top})`);
-
-      this.xAxis = this.chartLayer.append('g')
-        .attr('class', 'mem-chart__axis-x')
-        .attr('transform', `translate(0,${this.height})`);
-
-      this.yAxis = this.chartLayer.append('g')
-        .attr('class', 'mem-chart__axis-y')
-        .attr('stroke', null);
-
-      this.areas = this.chartLayer.append('g');
-
-      this.drawChart(this.data);
-    },
-    watch: {
-      data: 'drawChart'
-    }
-  }
+      config: {
+        options: {
+          plugins: {
+            tooltip: {
+              callbacks: {
+                title(ctx) {
+                  return prettyBytes(ctx[0].parsed.y);
+                },
+                label(ctx) {
+                  return vm.t(ctx.dataset.label);
+                },
+              },
+            },
+          },
+          scales: {
+            y: {
+              ticks: {
+                callback: (label) => {
+                  return prettyBytes(label);
+                },
+              },
+            },
+            x: {
+              ticks: {
+                callback: (label) => {
+                  return moment(label).format('HH:mm:ss');
+                },
+              },
+            },
+          },
+        },
+      },
+    };
+  },
+};
 </script>
-
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .mem-chart {
-    &__svg {
-      height: 159px;
-      width: 100%;
-    }
-
-    &__area {
-      &--committed {
-        fill: $warning;
-        opacity: 0.8;
-      }
-      &--used {
-        fill: $info;
-        opacity: 0.8;
-      }
-      &--metaspace {
-        fill: $primary;
-        opacity: 0.8;
-      }
-    }
-
-    &__line--max {
-      stroke: $grey;
-    }
-  }
-</style>

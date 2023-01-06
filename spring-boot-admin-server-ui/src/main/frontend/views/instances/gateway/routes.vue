@@ -15,28 +15,36 @@
   -->
 
 <template>
-  <div :class="{ 'is-loading' : isLoading }">
-    <sba-panel v-if="routes" :header-sticks-below="['#navigation']" title="Routes">
-      <refresh-route-cache :instance="instance" @routes-refreshed="fetchRoutes" />
+  <div :class="{ 'is-loading': isLoading }">
+    <sba-panel
+      v-if="routes"
+      :header-sticks-below="'#subnavigation'"
+      title="Routes"
+    >
+      <refresh-route-cache
+        :instance="instance"
+        @routes-refreshed="fetchRoutes"
+      />
 
-      <sba-alert v-if="error" :error="error" :title="$t('instances.gateway.route.fetch_failed')" />
+      <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
       <div class="field">
         <p class="control is-expanded has-icons-left">
-          <input
-            v-model="routesFilterCriteria"
-            class="input"
-            type="search"
-          >
+          <input v-model="routesFilterCriteria" class="input" type="search" />
           <span class="icon is-small is-left">
             <font-awesome-icon icon="filter" />
           </span>
         </p>
       </div>
 
-      <routes-list :instance="instance" :is-loading="isLoading" :routes="routes" @route-deleted="fetchRoutes" />
+      <routes-list
+        :instance="instance"
+        :is-loading="isLoading"
+        :routes="routes"
+        @route-deleted="fetchRoutes"
+      />
     </sba-panel>
-    <sba-panel :header-sticks-below="['#navigation']" title="Add Route">
+    <sba-panel title="Add Route">
       <add-route :instance="instance" @route-added="fetchRoutes" />
     </sba-panel>
   </div>
@@ -44,55 +52,62 @@
 
 <script>
 import Instance from '@/services/instance';
-import {anyValueMatches, compareBy} from '@/utils/collections';
-import addRoute from './add-route';
-import refreshRouteCache from './refresh-route-cache';
-import routesList from './routes-list';
+import { anyValueMatches, compareBy } from '@/utils/collections';
+import addRoute from '@/views/instances/gateway/add-route';
+import refreshRouteCache from '@/views/instances/gateway/refresh-route-cache';
+import routesList from '@/views/instances/gateway/routes-list';
 
 const routeDefinitionMatches = (routeDef, keyword) => {
   if (!routeDef) {
     return false;
   }
-  const predicate = value => String(value).toLowerCase().includes(keyword);
-  return (routeDef.uri && anyValueMatches(routeDef.uri.toString(), predicate)) ||
+  const predicate = (value) => String(value).toLowerCase().includes(keyword);
+  return (
+    (routeDef.uri && anyValueMatches(routeDef.uri.toString(), predicate)) ||
     anyValueMatches(routeDef.predicates, predicate) ||
-    anyValueMatches(routeDef.filters, predicate);
+    anyValueMatches(routeDef.filters, predicate)
+  );
 };
 
 const routeMatches = (route, keyword) => {
-  return route.route_id.toString().toLowerCase().includes(keyword) || routeDefinitionMatches(route.route_definition, keyword);
+  return (
+    route.route_id.toString().toLowerCase().includes(keyword) ||
+    routeDefinitionMatches(route.route_definition, keyword)
+  );
 };
 
-const sortRoutes = routes => {
-  return [...routes].sort(compareBy(r => r.order))
+const sortRoutes = (routes) => {
+  return [...routes].sort(compareBy((r) => r.order));
 };
 
 export default {
   components: {
     refreshRouteCache,
     routesList,
-    addRoute
+    addRoute,
   },
   props: {
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     isLoading: false,
     error: null,
-    _routes: [],
-    routesFilterCriteria: null
+    $routes: [],
+    routesFilterCriteria: null,
   }),
   computed: {
     routes() {
       if (!this.routesFilterCriteria) {
-        return sortRoutes(this.$data._routes);
+        return sortRoutes(this.$data.$routes);
       }
-      const filtered = this.$data._routes.filter(route => routeMatches(route, this.routesFilterCriteria.toLowerCase()));
+      const filtered = this.$data.$routes.filter((route) =>
+        routeMatches(route, this.routesFilterCriteria.toLowerCase())
+      );
       return sortRoutes(filtered);
-    }
+    },
   },
   created() {
     this.fetchRoutes();
@@ -103,14 +118,13 @@ export default {
       this.isLoading = true;
       try {
         const response = await this.instance.fetchGatewayRoutes();
-        this.$data._routes = response.data
+        this.$data.$routes = response.data;
       } catch (error) {
         console.warn('Fetching routes failed:', error);
         this.error = error;
       }
       this.isLoading = false;
-    }
-  }
-}
+    },
+  },
+};
 </script>
-

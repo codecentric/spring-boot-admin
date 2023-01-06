@@ -16,78 +16,70 @@
 
 <template>
   <div class="application-status">
-    <font-awesome-icon :icon="icon" class="application-status__icon"
-                       :class="`application-status__icon--${status}`"
+    <font-awesome-icon
+      :icon="icon"
+      class="application-status__icon"
+      :class="`application-status__icon--${status}`"
     />
-    <small v-if="date">
+    <small v-if="date" class="hidden md:block">
       <sba-time-ago :date="date" />
     </small>
   </div>
 </template>
 
 <script>
-  import moment from 'moment';
-  import sbaTimeAgo from './sba-time-ago';
+import moment from 'moment';
 
-  const icons = {
-    'UP': 'check',
-    'RESTRICTED': 'exclamation',
-    'OUT_OF_SERVICE': 'ban',
-    'DOWN': 'times-circle',
-    'OFFLINE': 'minus-circle',
-    'UNKNOWN': 'question-circle'
-  };
+import sbaTimeAgo from '@/components/sba-time-ago';
 
-  export default {
-    components: {sbaTimeAgo},
-    props: {
-      status: {
-        type: String,
-        default: 'UNKNOWN'
-      },
-      date: {
-        type: [String, Date, Number, moment],
-        default: null
-      },
+const icons = {
+  UP: 'check-circle',
+  RESTRICTED: 'exclamation',
+  OUT_OF_SERVICE: 'ban',
+  DOWN: 'times-circle',
+  OFFLINE: 'minus-circle',
+  UNKNOWN: 'question-circle',
+};
+
+export default {
+  components: { sbaTimeAgo },
+  props: {
+    status: {
+      type: String,
+      default: 'UNKNOWN',
     },
-    computed: {
-      icon() {
-        return icons[this.status];
-      }
-    }
-  }
+    date: {
+      type: [String, Date, Number, moment],
+      default: null,
+    },
+  },
+  computed: {
+    icon() {
+      return icons[this.status];
+    },
+  },
+};
 </script>
 
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .application-status {
-    text-align: center;
-    line-height: 1rem;
-    display: inline-flex;
-    flex-direction: column;
-
-    &__icon {
-      color: gray;
-      margin: 0 auto;
-
-      &--UP {
-        color: $success;
-      }
-
-      &--RESTRICTED {
-        color: $warning;
-      }
-
-      &--OUT_OF_SERVICE,
-      &--DOWN {
-        color: $danger;
-      }
-
-      &--UNKNOWN,
-      &--OFFLINE {
-        color: $grey;
-      }
-    }
-  }
+<style>
+.application-status {
+  @apply text-center inline-flex flex-col;
+}
+.application-status__icon {
+  @apply text-gray-500 mx-auto;
+}
+.application-status__icon--UP {
+  color: #48c78e;
+}
+.application-status__icon--RESTRICTED {
+  color: #ffe08a;
+}
+.application-status__icon--OUT_OF_SERVICE,
+.application-status__icon--DOWN {
+  color: #f14668;
+}
+.application-status__icon--UNKNOWN,
+.application-status__icon--OFFLINE {
+  color: #7a7a7a;
+}
 </style>

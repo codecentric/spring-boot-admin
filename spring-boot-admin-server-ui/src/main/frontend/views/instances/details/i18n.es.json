@@ -2,16 +2,14 @@
   "instances": {
     "details": {
       "label": "Detalles",
-      "fetch_failed": "Fallo recuperando las métricas.",
-      "cache":{
-        "fetch_failed": "Fallo recuperando las métricas de cache.",
+
+      "cache": {
         "hit_ratio": "Índice de aciertos",
         "hits": "Aciertos",
         "misses": "Fallas",
         "size": "Tamaño"
       },
       "datasource": {
-        "fetch_failed": "Fallo recuperando las métricas de fuentes de dato.",
         "active_connections": "Conexiones activas",
         "min_connections": "Conexiones Min",
         "max_connections": "Conexiones Max ",
@@ -25,16 +23,13 @@
         "title": "Pausas en la recolección de basura"
       },
       "health": {
-        "fetch_failed": "Fallo obteniendo el estado de salud actual. Esta es la última información conocida.",
         "title": "Salud"
       },
       "info": {
-        "fetch_failed": "Fallo obteniendo información actual. Esta es la última información conocida.",
         "no_info_provided": "No hay información provista.",
         "title": "Info"
       },
       "memory": {
-        "fetch_failed": "Falla obteniendo métricas de memoria.",
         "max": "Max",
         "metaspace": "Metaspace",
         "size": "Tamaño",
@@ -47,7 +42,7 @@
       },
       "process": {
         "cpus": "CPUs",
-        "fetch_failed": "Falla al obtener métricas de proceso.",
+
         "pid": "PID",
         "process_cpu_usage": "Uso CPU proceso",
         "system_cpu_usage": "Uso CPU sistema",
@@ -56,7 +51,7 @@
       },
       "threads": {
         "daemon": "Daemon",
-        "fetch_failed": "Falla obteniendo métricas de los hilos.",
+
         "live": "En vivo",
         "peak_live": "Pico en vivo",
         "title": "Hilos"

@@ -110,8 +110,9 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
+                        <phase>test</phase>
                         <configuration>
-                            <arguments>run test:unit</arguments>
+                            <arguments>run test</arguments>
                         </configuration>
                     </execution>
                 </executions>

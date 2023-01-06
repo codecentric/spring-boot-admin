@@ -9,10 +9,6 @@
       "execute_modal_header": "Execute <code>{name}</code>?",
       "execution_failed": "Execution failed.",
       "execution_successful": "Execution successful.",
-      "fetch_failed": "Fetching JMX Beans failed.",
-      "mbean": {
-        "fetch_failed": "Fetching attributes failed."
-      },
       "mbeans": "MBeans"
     }
   }

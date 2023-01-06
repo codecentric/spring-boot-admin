@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { isEmpty, isObject } from 'lodash-es';
 
-import isEmpty from 'lodash/isEmpty';
-import isObject from 'lodash/isObject';
-
-const nonEmptyComplexValue = value => (Array.isArray(value) || isObject(value)) && !isEmpty(value);
+const nonEmptyComplexValue = (value) =>
+  (Array.isArray(value) || isObject(value)) && !isEmpty(value);
 
 const objToString = (obj, indent = '') => {
   if (Array.isArray(obj)) {
@@ -25,12 +24,14 @@ const objToString = (obj, indent = '') => {
       return indent + '[]';
     }
 
-    return obj.map(value => {
-      if (nonEmptyComplexValue(value)) {
-        return `${indent}-\n${objToString(value, indent + '  ')}`;
-      }
-      return `${indent}- ${objToString(value, '')}`;
-    }).join('\n');
+    return obj
+      .map((value) => {
+        if (nonEmptyComplexValue(value)) {
+          return `${indent}-\n${objToString(value, indent + '  ')}`;
+        }
+        return `${indent}- ${objToString(value, '')}`;
+      })
+      .join('\n');
   }
 
   if (isObject(obj)) {

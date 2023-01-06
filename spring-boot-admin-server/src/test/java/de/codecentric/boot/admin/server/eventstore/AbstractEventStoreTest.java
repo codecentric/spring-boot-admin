@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.LongStream;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,13 @@ public abstract class AbstractEventStoreTest {
 			.build();
 
 	protected abstract InstanceEventStore createStore(int maxLogSizePerAggregate);
+
+	protected abstract void shutdownStore();
+
+	@AfterEach
+	void tearDown() {
+		this.shutdownStore();
+	}
 
 	@Test
 	public void should_store_events() {

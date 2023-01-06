@@ -12,7 +12,7 @@
       "execution": "執行",
       "execution_date": "執行日期",
       "execution_order": "執行順序",
-      "fetch_failed": "抓取Liquibase遷移失敗。",
+
       "id": "ID",
       "labels": "標籤",
       "tag": "標記"

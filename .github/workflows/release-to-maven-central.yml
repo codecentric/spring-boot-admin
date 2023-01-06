@@ -19,8 +19,8 @@ jobs:
       - name: Set up settings.xml for Maven Central Repository
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '8'
+          distribution: 'adopt'
+          java-version: '17'
           server-id: oss.sonatype.org
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
@@ -55,6 +55,8 @@ jobs:
       - name: Publish package
         run: mvn --batch-mode clean deploy --no-transfer-progress -P central-deploy -DskipTests=true
         env:
+          #TODO: This is a workaround for NEXUS-27902 which uses XStream that fails on JVM >16
+          JDK_JAVA_OPTIONS: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED"
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}

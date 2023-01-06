@@ -30,7 +30,8 @@ public class PathUtilsTest {
 		assertThat(PathUtils.normalizePath("admin")).isEqualTo("/admin");
 		assertThat(PathUtils.normalizePath("/admin")).isEqualTo("/admin");
 		assertThat(PathUtils.normalizePath("/admin/")).isEqualTo("/admin");
-		assertThat(PathUtils.normalizePath("admin/")).isEqualTo("/admin");
+		assertThat(PathUtils.normalizePath("/admin/")).isEqualTo("/admin");
+		assertThat(PathUtils.normalizePath("//admin/")).isEqualTo("/admin");
 	}
 
 }

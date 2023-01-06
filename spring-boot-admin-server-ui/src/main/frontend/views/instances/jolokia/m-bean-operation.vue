@@ -17,76 +17,50 @@
 <template>
   <div class="field">
     <div class="control">
-      <button class="button is-light is-fullwidth columns has-text-left" @click="execute($event)">
-        <small class="is-light is-muted column is-flex-grow-0 is-flex-shrink-0 p-1" v-text="shortenedRet"
-               :title="descriptor.ret"/>
-        <span class="column is-flex-grow-1 is-flex-shrink-0 p-1 is-truncated" v-text="shortenedName" :title="name"/>
+      <button
+        class="button is-light is-fullwidth columns has-text-left"
+        @click="$emit('click', $event)"
+      >
+        <small
+          class="is-light is-muted column is-flex-grow-0 is-flex-shrink-0 p-1"
+          :title="descriptor.ret"
+          v-text="shortenedRet"
+        />
+        <span
+          class="column is-flex-grow-1 is-flex-shrink-0 p-1 is-truncated"
+          :title="name"
+          v-text="shortenedName"
+        />
       </button>
-      <p class="help" v-text="descriptor.desc"/>
+      <p class="help" v-text="descriptor.desc" />
     </div>
-    <sba-modal v-model="isModalOpen" data-testid="mBeanOperationModal">
-      <template v-slot:header>
-        <span v-html="$t('instances.jolokia.execute_modal_header', {name: shortenedName})"/>
-      </template>
-      <template v-slot:footer>
-        <button class="button is-light" @click="closeModal">
-          Cancel
-        </button>
-        <button class="button is-success" @click="executeOperation($event)">
-          OK
-        </button>
-      </template>
-    </sba-modal>
   </div>
-
 </template>
 
 <script>
-import {truncateJavaType} from '@/views/instances/jolokia/utils';
-import SbaModal from '@/components/sba-modal';
+import { truncateJavaType } from '@/views/instances/jolokia/utils';
 
 export default {
-  components: {SbaModal},
   props: {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     descriptor: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  data() {
-    return {
-      isModalOpen: false,
-    }
-  },
+  emits: ['click'],
   computed: {
     shortenedName() {
       return truncateJavaType(this.name);
     },
     shortenedRet() {
       return truncateJavaType(this.descriptor.ret);
-    }
+    },
   },
-  methods: {
-    closeModal() {
-      this.isModalOpen = false;
-    },
-    executeOperation(event) {
-      this.$emit('click', event);
-      this.isModalOpen = false;
-    },
-    execute(event) {
-      if (this.descriptor.args.length === 0) {
-        this.isModalOpen = true;
-      } else {
-        this.executeOperation(event);
-      }
-    }
-  }
-}
+};
 </script>
 
 <style>

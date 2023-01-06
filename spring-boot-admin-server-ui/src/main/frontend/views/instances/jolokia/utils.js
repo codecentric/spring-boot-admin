@@ -35,9 +35,9 @@ export function truncatePackageName(javaType, length) {
     let shortened;
     for (let i = 0; i <= split.length; i++) {
       shortened = [
-        ...[...split].splice(0, i).map(p => p.charAt(0)),
+        ...[...split].splice(0, i).map((p) => p.charAt(0)),
         ...[...split].splice(i),
-        clazzName
+        clazzName,
       ].join('.');
 
       if (shortened.length <= length) {

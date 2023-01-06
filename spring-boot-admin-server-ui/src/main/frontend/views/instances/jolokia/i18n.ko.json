@@ -8,10 +8,6 @@
       "executing": "실행 중...",
       "execution_failed": "실행 실패.",
       "execution_successful": "실행 성공.",
-      "fetch_failed": "JMX Beans 정보를 가져오는데 실패했습니다.",
-      "mbean": {
-        "fetch_failed": "속성 정보를 가져오는데 실패했습니다."
-      },
       "mbeans": "MBeans"
     }
   }
