@@ -19,8 +19,6 @@ management:
       exposure:
         include: "*"
   endpoint:
-    jolokia:
-      enabled: true
     refresh:
       enabled: true
     restart:

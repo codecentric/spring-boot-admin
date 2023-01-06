@@ -48,7 +48,6 @@
         <!--<jetty.version>11.0.6</jetty.version>-->
         <jetty.version>9.4.49.v20220914</jetty.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
-        <jolokia.version>1.7.1</jolokia.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>

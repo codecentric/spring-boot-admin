@@ -41,6 +41,9 @@ springBoot {
 [[jmx-bean-management]]
 == JMX-Bean Management ==
 
+ATTENTION: Spring Boot 3 does currently not support Jolokia, so this will not work with Spring Boot 3 based applications.
+You can still monitor Spring Boot 2 applications with Jolokia endpoint using a Spring Boot Admin 3 server.
+
 To interact with JMX-beans in the admin UI you have to include https://jolokia.org/[Jolokia] in your application.
 As Jolokia is servlet based there is no support for reactive applications.
 In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies.
