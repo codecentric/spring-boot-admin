@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "httptrace": {
+      "label": "HTTP 트레이스",
+      "chart": {
+        "avg_time": "ø 기간",
+        "max_time": "최대 기간",
+        "status_4xx": "4xx 상태",
+        "status_5xx": "5xx 상태",
+        "successful_requests": "성공적인 요청",
+        "total_requests": "전체 요청"
+      },
+      "content_type_response": "Response Content-Type",
+      "content_type_request": "Request Content-Type",
+      "length_request": "Request 길이",
+      "fetching_failed": "트레이스 정보를 가져오는데 실패했습니다.",
+      "limit": "제한",
+      "filter": {
+        "client_errors": "클라이언트 에러",
+        "exclude_actuator": "제외 {actuator}/**",
+        "server_errors": "서버 에러",
+        "success": "성공"
+      },
+      "length_response": "Response 길이",
+      "method": "Method",
+      "no_traces_found": "트레이스 정보가 없습니다.",
+      "status": "상태",
+      "time": "시간",
+      "timestamp": "타임스탬프",
+      "uri": "경로"
+    }
+  }
+}

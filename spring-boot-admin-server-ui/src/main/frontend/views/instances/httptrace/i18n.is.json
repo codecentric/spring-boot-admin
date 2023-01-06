@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "httptrace": {
+      "label": "HTTP-Traces",
+      "chart": {
+        "avg_time": "ø tímalengd",
+        "max_time": "Hámarkstímalengd",
+        "status_4xx": "Staða 4xx",
+        "status_5xx": "Staða 5xx",
+        "successful_requests": "Farsælar fyrirspurnir",
+        "total_requests": "Samtals fyrirspurnir"
+      },
+      "content_type_response": "Innihaldstegund svarsins",
+      "content_type_request": "Innihaldstegund beiðninnar",
+      "length_request": "Lengd beiðninnar",
+      "fetching_failed": "Mistókst að sækja upplýsingar um HTTP spor.",
+      "limit": "Takmörkun",
+      "filter": {
+        "client_errors": "Vandamál biðlara",
+        "exclude_actuator": "hunsa {actuator}/**",
+        "server_errors": "Vandamál þjóns",
+        "success": "farsælt"
+      },
+      "length_response": "Stærð svarsins",
+      "method": "Aðferð",
+      "no_traces_found": "Fundið engin spor.",
+      "status": "Staða",
+      "time": "Tímalengd",
+      "timestamp": "Tímapunktur",
+      "uri": "URI"
+    }
+  }
+}
