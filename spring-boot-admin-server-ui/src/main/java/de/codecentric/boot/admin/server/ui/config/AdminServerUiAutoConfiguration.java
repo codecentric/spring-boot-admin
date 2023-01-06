@@ -64,9 +64,15 @@ public class AdminServerUiAutoConfiguration {
 
 	private static final Logger log = LoggerFactory.getLogger(AdminServerUiAutoConfiguration.class);
 
+	/**
+	 * path patterns that will be forwarded to the homepage (webapp)
+	 */
 	private static final List<String> DEFAULT_UI_ROUTES = asList("/about/**", "/applications/**", "/instances/**",
 			"/journal/**", "/wallboard/**", "/external/**");
 
+	/**
+	 * path patterns that will be excluded from forwarding to the homepage (webapp), can be extended via property: spring.boot.admin.ui.additionalRouteExcludes
+	 */
 	private static final List<String> DEFAULT_UI_ROUTE_EXCLUDES = asList("/extensions/**",
 			"/instances/*/actuator/heapdump", "/instances/*/actuator/logfile");
 
