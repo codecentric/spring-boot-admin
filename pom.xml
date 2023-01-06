@@ -43,12 +43,10 @@
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.2.0</awaitility.version>
         <testcontainers.version>1.17.5</testcontainers.version>
-        <jetty.version>9.4.49.v20220914</jetty.version>
         <eureka-client.version>3.1.1</eureka-client.version>
-        <!-- Wiremock does not yet support jetty 11 (see also https://github.com/wiremock/wiremock/issues/1760).
-        Spring Boot 3 only supports jetty 11. -.- -->
+        <!-- Wiremock does not yet support jetty 11 (see also https://github.com/wiremock/wiremock/issues/1760). -->
         <!--<jetty.version>11.0.6</jetty.version>-->
-        <!-- <jetty.version>9.4.48.v20220622</jetty.version> -->
+        <jetty.version>9.4.49.v20220914</jetty.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
         <jolokia.version>1.7.1</jolokia.version>
 
