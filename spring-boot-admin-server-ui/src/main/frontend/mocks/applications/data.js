@@ -71,6 +71,10 @@ export const instance = {
       id: 'httptrace',
       url: 'http://localhost:8080/actuator/httptrace',
     },
+    {
+      id: 'httptexchanges',
+      url: 'http://localhost:8080/actuator/httpexchanges',
+    },
     { id: 'caches', url: 'http://localhost:8080/actuator/caches' },
     {
       id: 'loggers',

@@ -33,6 +33,8 @@ public final class Endpoint implements Serializable {
 
 	public static final String HTTPTRACE = "httptrace";
 
+	public static final String HTTPEXCHANGES = "httpexchanges";
+
 	public static final String THREADDUMP = "threaddump";
 
 	public static final String LIQUIBASE = "liquibase";

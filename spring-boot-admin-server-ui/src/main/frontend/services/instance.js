@@ -193,6 +193,10 @@ class Instance {
     return this.axios.get(uri`actuator/httptrace`);
   }
 
+  async fetchHttpExchanges() {
+    return this.axios.get(uri`actuator/httpexchanges`);
+  }
+
   async fetchBeans() {
     return this.axios.get(uri`actuator/beans`);
   }

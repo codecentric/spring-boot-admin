@@ -1,0 +1,31 @@
+{
+  "instances": {
+    "httpexchanges": {
+      "chart": {
+        "avg_time": "平均時長",
+        "max_time": "最大時長",
+        "status_4xx": "4xx失敗總數",
+        "status_5xx": "5xx失敗總數",
+        "successful_requests": "請求成功",
+        "total_requests": "請求總數"
+      },
+      "content_type_response": "Response 內容類型",
+      "content_type_request": "Request 內容類型",
+      "length_request": "Request 長度",
+      "limit": "limit",
+      "filter": {
+        "client_errors": "客戶端錯誤",
+        "exclude_actuator": "排除 {actuator}/**",
+        "server_errors": "伺服器錯誤",
+        "success": "請求成功"
+      },
+      "length_response": "Response 長度",
+      "method": "方法",
+      "no_exchanges_found": "沒有追蹤信息。",
+      "status": "狀態",
+      "time": "時長",
+      "timestamp": "時間戳記",
+      "uri": "路徑"
+    }
+  }
+}
