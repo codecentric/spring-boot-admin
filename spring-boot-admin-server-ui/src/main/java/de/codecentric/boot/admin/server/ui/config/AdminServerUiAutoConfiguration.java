@@ -71,7 +71,8 @@ public class AdminServerUiAutoConfiguration {
 			"/journal/**", "/wallboard/**", "/external/**");
 
 	/**
-	 * path patterns that will be excluded from forwarding to the homepage (webapp), can be extended via property: spring.boot.admin.ui.additionalRouteExcludes
+	 * path patterns that will be excluded from forwarding to the homepage (webapp), can
+	 * be extended via property: spring.boot.admin.ui.additionalRouteExcludes
 	 */
 	private static final List<String> DEFAULT_UI_ROUTE_EXCLUDES = asList("/extensions/**",
 			"/instances/*/actuator/heapdump", "/instances/*/actuator/logfile");
