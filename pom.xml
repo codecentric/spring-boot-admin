@@ -42,7 +42,7 @@
         <hazelcast-tests.version>5.1.3</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.2.0</awaitility.version>
-        <testcontainers.version>1.17.5</testcontainers.version>
+        <testcontainers.version>1.17.6</testcontainers.version>
         <eureka-client.version>3.1.1</eureka-client.version>
         <!-- Wiremock does not yet support jetty 11 (see also https://github.com/wiremock/wiremock/issues/1760). -->
         <!--<jetty.version>11.0.6</jetty.version>-->
