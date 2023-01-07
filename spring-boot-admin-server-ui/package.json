@@ -21,7 +21,7 @@
     "@fortawesome/free-regular-svg-icons": "5.15.4",
     "@fortawesome/free-solid-svg-icons": "5.15.4",
     "@fortawesome/vue-fontawesome": "3.0.2",
-    "@headlessui/vue": "1.7.4",
+    "@headlessui/vue": "1.7.7",
     "@stekoe/vue-toast-notificationcenter": "https://github.com/SteKoe/vue-toast-notificationcenter/archive/refs/tags/1.0.0-RC3.tar.gz",
     "@tailwindcss/forms": "0.5.3",
     "@tailwindcss/typography": "0.5.8",
