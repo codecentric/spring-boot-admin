@@ -73,7 +73,7 @@
     "@vitejs/plugin-vue": "3.1.2",
     "@vue/test-utils": "2.0.0-rc.21",
     "@vue/vue3-jest": "26.0.1",
-    "autoprefixer": "10.4.4",
+    "autoprefixer": "10.4.13",
     "babel-jest": "26.6.3",
     "babel-loader": "8.2.4",
     "eslint": "7.32.0",
