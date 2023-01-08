@@ -55,11 +55,11 @@
     "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
-    "@babel/core": "7.19.6",
+    "@babel/core": "7.20.12",
     "@babel/eslint-parser": "7.19.1",
     "@babel/plugin-transform-runtime": "7.19.6",
-    "@babel/preset-env": "7.19.4",
-    "@babel/runtime": "7.19.4",
+    "@babel/preset-env": "7.20.2",
+    "@babel/runtime": "7.20.7",
     "@storybook/addon-actions": "6.5.15",
     "@storybook/addon-essentials": "6.5.15",
     "@storybook/addon-links": "6.5.15",
