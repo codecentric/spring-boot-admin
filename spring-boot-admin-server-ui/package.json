@@ -64,7 +64,7 @@
     "@storybook/addon-essentials": "6.5.15",
     "@storybook/addon-links": "6.5.15",
     "@storybook/addon-postcss": "2.0.0",
-    "@storybook/builder-vite": "0.2.6",
+    "@storybook/builder-vite": "0.2.7",
     "@storybook/vue3": "6.5.15",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/user-event": "14.4.3",
