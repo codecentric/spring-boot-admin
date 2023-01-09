@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ ubuntu-latest ]
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -64,11 +64,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up settings.xml for GitHub Packages
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '8'
+          distribution: 'adopt'
+          java-version: '17'
 
       - name: Cache local Maven repository
         uses: actions/cache@v3.2.3
