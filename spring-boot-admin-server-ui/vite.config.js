@@ -42,6 +42,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       target: 'es2015',
+      sourcemap: true,
       outDir,
       rollupOptions: {
         input: {
