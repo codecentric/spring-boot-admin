@@ -65,7 +65,6 @@ public class SecuritySecureConfig {
 
 		http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests //
 				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**"))).permitAll() // <1>
-				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/variables.css"))).permitAll()
 				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/actuator/info"))).permitAll()
 				.requestMatchers(new AntPathRequestMatcher(adminServer.path("/actuator/health"))).permitAll()
 				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll()

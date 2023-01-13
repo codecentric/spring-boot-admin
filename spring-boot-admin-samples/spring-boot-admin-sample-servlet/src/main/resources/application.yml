@@ -50,6 +50,7 @@ spring:
               de-service-test-5: A large content
               de-service-test-6: A large content
             kubectl.kubernetes.io/last-applied-configuration: '{"name":"jvm.threads.peak","description":"The peak live thread count since the Java virtual machine started or peak was reset","baseUnit":"threads","measurements":[{"statistic":"VALUE","value":64.0}],"availableTags":[]}'
+          prefer-ip: true
   config:
     import: optional:configserver:http://localhost:8888/
   jmx:
