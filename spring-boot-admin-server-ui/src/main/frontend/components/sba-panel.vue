@@ -39,19 +39,14 @@
     </header>
     <div
       v-if="'default' in $slots"
-      class="border-gray-200 px-4 py-3 bg-white"
       :class="{
         'rounded-t': !hasTitle,
         'rounded-b overflow-hidden': !('footer' in $slots),
       }"
+      class="border-gray-200 px-4 py-3 bg-white"
     >
       <div :class="{ '-mx-4 -my-3': seamless }">
-        <sba-loading-spinner
-          v-if="loading"
-          size="sm"
-          class=""
-          :loading="loading"
-        />
+        <sba-loading-spinner v-if="loading" class="" size="sm" />
         <slot v-if="!loading" />
       </div>
     </div>

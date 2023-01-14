@@ -23,7 +23,7 @@
         class="block text-sm font-medium text-gray-700"
         v-text="label"
       />
-      <div class="flex rounded shadow-sm" :class="{ 'mt-1': hasLabel }">
+      <div :class="{ 'mt-1': hasLabel }" class="flex rounded shadow-sm">
         <!-- PREPEND -->
         <span
           v-if="$slots.prepend"
@@ -42,15 +42,17 @@
         </datalist>
         <input
           :id="id"
-          :name="name"
-          :value="modelValue"
-          :type="type"
-          :placeholder="placeholder"
-          :min="min"
-          :list="datalistId"
           :autocomplete="autocomplete"
-          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none sm:text-sm bg-opacity-40 backdrop-blur-sm"
           :class="classNames(inputFieldClassNames, inputClass)"
+          :disabled="disabled"
+          :list="datalistId"
+          :min="min"
+          :name="name"
+          :placeholder="placeholder"
+          :readonly="readonly"
+          :type="type"
+          :value="modelValue"
+          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none sm:text-sm bg-opacity-40 backdrop-blur-sm"
           @input="handleInput"
         />
         <!-- APPEND -->
@@ -101,6 +103,14 @@ export default {
       type: Number,
       default: undefined,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
     list: {
       type: Array,
       default: undefined,
@@ -139,7 +149,7 @@ export default {
 
       const classNames = [];
 
-      if (this.error !== undefined) {
+      if (!!this.error) {
         classNames.push(
           'focus:ring-red-500 focus:border-red-500 border-red-400'
         );
@@ -154,6 +164,10 @@ export default {
       }
       if (!hasPrepend) {
         classNames.push('rounded-l');
+      }
+
+      if (this.disabled === true) {
+        classNames.push('cursor-not-allowed');
       }
 
       return classNames;

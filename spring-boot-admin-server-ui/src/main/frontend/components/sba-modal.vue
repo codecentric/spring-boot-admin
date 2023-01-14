@@ -1,5 +1,5 @@
 <template>
-  <TransitionRoot appear :show="modelValue" as="template">
+  <TransitionRoot :show="modelValue" appear as="template">
     <Dialog as="div" class="relative z-10 modal" @close="close">
       <TransitionChild
         as="template"
@@ -27,7 +27,7 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-md transform overflow-hidden rounded bg-white p-6 text-left align-middle shadow-xl transition-all"
+              class="w-full max-w-xl transform overflow-hidden rounded bg-white p-6 text-left align-middle shadow-xl transition-all"
             >
               <DialogTitle
                 as="h3"
@@ -44,16 +44,15 @@
                 <slot name="body" />
               </div>
 
-              <div class="mt-4">
+              <div v-if="'footer' in slots" class="mt-4">
                 <slot name="footer" />
-                <button
+                <sba-button
                   v-if="!('footer' in slots)"
-                  class="modal-close is-large"
                   aria-label="close"
                   @click="close"
                 >
                   {{ $t('term.close') }}
-                </button>
+                </sba-button>
               </div>
             </DialogPanel>
           </TransitionChild>

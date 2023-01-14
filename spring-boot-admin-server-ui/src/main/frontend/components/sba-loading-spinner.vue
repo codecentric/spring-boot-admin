@@ -1,11 +1,11 @@
 <template>
-  <div v-if="loading" class="flex text-center h-full">
+  <div class="flex text-center h-full">
     <svg
-      role="status"
-      class="inline text-gray-900 animate-spin"
       :class="classNames(sizeClassNames)"
-      viewBox="0 0 100 101"
+      class="inline text-gray-900 animate-spin"
       fill="none"
+      role="status"
+      viewBox="0 0 100 101"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -24,10 +24,6 @@ import classNames from 'classnames';
 
 export default {
   props: {
-    loading: {
-      type: Boolean,
-      required: true,
-    },
     size: {
       type: String,
       default: 'md',

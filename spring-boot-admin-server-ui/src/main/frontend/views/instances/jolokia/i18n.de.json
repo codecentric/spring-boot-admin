@@ -4,7 +4,7 @@
       "label": "JMX",
       "close": "Schließen",
       "domains": "Domains",
-      "execute": "Execute",
+      "execute": "Ausführen",
       "executing": "Führe aus...",
       "execute_modal_header": "<code>{name}</code> ausführen?",
       "execution_failed": "Ausführung fehlgeschlagen.",
