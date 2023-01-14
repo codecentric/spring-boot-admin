@@ -15,32 +15,27 @@
   -->
 
 <template>
-  <div>
-    <div
-      v-if="application.instances.length > 1"
-      class="field is-grouped control"
-    >
-      <sba-toggle-scope-button
-        v-model="scope"
-        :instance-count="application.instances.length"
-      />
-    </div>
-
-    <m-bean-operation
-      v-for="(operation, name) in mBean.op"
-      :key="`op-${name}`"
-      :descriptor="operation"
-      :name="name"
-      @click="invoke(name, operation)"
-    />
-    <m-bean-operation-invocation
-      v-if="invocation"
-      :descriptor="invocation.descriptor"
-      :name="invocation.name"
-      :on-close="closeInvocation"
-      :on-execute="execute"
+  <div v-if="application.instances.length > 1" class="field is-grouped control">
+    <sba-toggle-scope-button
+      v-model="scope"
+      :instance-count="application.instances.length"
     />
   </div>
+
+  <m-bean-operation
+    v-for="(operation, name) in mBean.op"
+    :key="`op-${name}`"
+    :descriptor="operation"
+    :name="name"
+    @click="invoke(name, operation)"
+  />
+  <m-bean-operation-invocation
+    v-if="invocation"
+    :descriptor="invocation.descriptor"
+    :name="invocation.name"
+    :on-close="closeInvocation"
+    :on-execute="execute"
+  />
 </template>
 
 <script>

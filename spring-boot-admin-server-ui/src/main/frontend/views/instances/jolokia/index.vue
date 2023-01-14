@@ -19,6 +19,7 @@
     :error="error"
     :layout-options="{ noMargin: true, isFlex: true }"
     :loading="!hasLoaded"
+    class="bg-white h-full"
   >
     <nav class="w-1/4 p-2">
       <div class="nav">
@@ -33,11 +34,11 @@
       </div>
     </nav>
     <div class="flex-1 overflow-scroll bg-white p-2">
-      <div class="flex h-full">
+      <div class="flex h-full items-start">
         <div
           v-if="selectedDomain"
           :title="selectedDomain.domain"
-          class="flex-1 gap-1 grid grid-cols-1 items-start"
+          class="flex-1 gap-1 grid grid-cols-1"
         >
           <div
             v-for="mBean in selectedDomain.mBeans"
