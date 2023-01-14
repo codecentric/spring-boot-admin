@@ -56,6 +56,7 @@
             <sba-input
               v-model="args[idx]"
               :hint="arg.desc !== arg.name ? arg.desc : undefined"
+              class="mb-1"
             >
               <template #prepend>
                 <span v-text="arg.name" />:&nbsp;

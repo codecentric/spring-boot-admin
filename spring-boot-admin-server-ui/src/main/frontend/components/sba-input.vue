@@ -25,12 +25,13 @@
       />
       <div :class="{ 'mt-1': hasLabel }" class="flex rounded shadow-sm">
         <!-- PREPEND -->
-        <span
+        <label
           v-if="$slots.prepend"
+          :for="id"
           class="inline-flex items-center px-3 rounded-l border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm"
         >
           <slot name="prepend" />
-        </span>
+        </label>
 
         <!-- INPUT -->
         <datalist :id="datalistId">
@@ -138,7 +139,8 @@ export default {
       return this.label !== null && this.label.trim() !== '';
     },
     id() {
-      return (this.name || '').replace(/[^\w]/gi, '');
+      let number = 'input-' + Math.floor(Math.random() * Date.now());
+      return (this.name || number).replace(/[^\w]/gi, '');
     },
     datalistId() {
       return 'listId-' + this._.uid;

@@ -14,20 +14,20 @@ import ViewRegistry from '@/viewRegistry';
 export let router;
 
 export const render = (testComponent, options) => {
-  let viewRegistry = new ViewRegistry();
-  testComponent.install({ viewRegistry });
-  let routeForComponent = viewRegistry._toRoutes(
-    viewRegistry._views,
-    () => true
-  )[0];
+  let routes = [{ path: '/', component: testComponent }];
+  if (testComponent.install) {
+    let viewRegistry = new ViewRegistry();
+    testComponent.install({ viewRegistry });
+    let routeForComponent = viewRegistry._toRoutes(
+      viewRegistry._views,
+      () => true
+    )[0];
 
-  let routes = [
-    { path: '/', component: testComponent },
-    {
+    routes.push({
       ...routeForComponent,
       path: '/' + routeForComponent.path,
-    },
-  ];
+    });
+  }
   router = createRouter({
     history: createWebHashHistory(),
     routes: routes,
