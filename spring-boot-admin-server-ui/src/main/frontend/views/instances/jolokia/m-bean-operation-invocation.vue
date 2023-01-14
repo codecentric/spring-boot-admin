@@ -16,36 +16,14 @@
 
 <template>
   <sba-modal :model-value="true" @close="abort">
-    <template v-if="state === STATE_COMPLETED" #header>
-      {{ name }} -
-      {{ $t('instances.jolokia.execution_successful') }}
-    </template>
-    <template v-else #header>
-      {{ name }}
-    </template>
-
-    <template #footer>
-      <template v-if="state === STATE_INPUT_ARGS">
-        <div class="flex flex-row gap-1">
-          <sba-button primary @click="invoke(args)">
-            {{ $t('instances.jolokia.execute') }}
-          </sba-button>
-          <sba-button @click="abort">
-            {{ $t('term.cancel') }}
-          </sba-button>
-        </div>
+    <template #header>
+      {{ state }}
+      <template v-if="state === STATE_COMPLETED">
+        {{ name }} -
+        {{ $t('instances.jolokia.execution_successful') }}
       </template>
-
-      <template v-else-if="state === STATE_COMPLETED">
-        <sba-button primary @click="abort">
-          {{ $t('term.close') }}
-        </sba-button>
-      </template>
-
-      <template v-else-if="state === STATE_FAILED">
-        <sba-button primary @click="abort">
-          {{ $t('instances.jolokia.close') }}
-        </sba-button>
+      <template v-else>
+        {{ name }}
       </template>
     </template>
 
@@ -90,6 +68,31 @@
             v-text="error.response.data"
           />
         </code>
+      </template>
+    </template>
+
+    <template #footer>
+      <template v-if="state === STATE_INPUT_ARGS">
+        <div class="flex flex-row gap-1">
+          <sba-button primary @click="invoke(args)">
+            {{ $t('instances.jolokia.execute') }}
+          </sba-button>
+          <sba-button @click="abort">
+            {{ $t('term.cancel') }}
+          </sba-button>
+        </div>
+      </template>
+
+      <template v-else-if="state === STATE_COMPLETED">
+        <sba-button primary @click="abort">
+          {{ $t('term.close') }}
+        </sba-button>
+      </template>
+
+      <template v-else-if="state === STATE_FAILED">
+        <sba-button primary @click="abort">
+          {{ $t('instances.jolokia.close') }}
+        </sba-button>
       </template>
     </template>
   </sba-modal>

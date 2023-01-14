@@ -40,11 +40,11 @@ public class SecurityPermitAllConfig {
 	@Bean
 	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((authorizeRequest) -> authorizeRequest.anyRequest().permitAll()).csrf((csrf) -> csrf
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers(
-						new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
-						new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
-						new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
-
+			.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers(
+				new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+				new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
+				new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
+		http.csrf().disable();
 		return http.build();
 	}
 

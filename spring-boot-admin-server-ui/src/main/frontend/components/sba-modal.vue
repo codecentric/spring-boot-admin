@@ -44,7 +44,7 @@
                 <slot name="body" />
               </div>
 
-              <div v-if="'footer' in slots" class="mt-4">
+              <div v-if="'footer' in slots" class="mt-4 gap-1 flex justify-end">
                 <slot name="footer" />
                 <sba-button
                   v-if="!('footer' in slots)"

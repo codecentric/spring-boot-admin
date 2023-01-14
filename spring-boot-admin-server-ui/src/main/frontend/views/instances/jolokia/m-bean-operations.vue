@@ -26,19 +26,19 @@
       />
     </div>
 
-    <mBeanOperation
+    <m-bean-operation
       v-for="(operation, name) in mBean.op"
       :key="`op-${name}`"
-      :name="name"
       :descriptor="operation"
+      :name="name"
       @click="invoke(name, operation)"
     />
     <m-bean-operation-invocation
       v-if="invocation"
-      :name="invocation.name"
       :descriptor="invocation.descriptor"
-      :on-execute="execute"
+      :name="invocation.name"
       :on-close="closeInvocation"
+      :on-execute="execute"
     />
   </div>
 </template>

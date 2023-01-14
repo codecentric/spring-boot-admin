@@ -18,7 +18,7 @@
   <button
     :title="$t('instances.jolokia.execute')"
     class="text-left mb-3 block flex items-center"
-    @click="$emit('click', $event)"
+    @click="execute($event)"
   >
     <font-awesome-icon class="mr-2 hidden md:block" icon="cogs" />
     <div>
@@ -35,6 +35,22 @@
       />
     </div>
   </button>
+
+  <sba-modal v-model="isModalOpen" data-testid="mBeanOperationModal">
+    <template #header>
+      <span
+        v-html="
+          $t('instances.jolokia.execute_modal_header', { name: shortenedName })
+        "
+      />
+    </template>
+    <template #footer>
+      <sba-button @click="closeModal">{{ $t('term.close') }}</sba-button>
+      <sba-button primary @click="executeOperation($event)"
+        >{{ $t('term.ok') }}
+      </sba-button>
+    </template>
+  </sba-modal>
 </template>
 
 <script>
@@ -52,6 +68,11 @@ export default {
     },
   },
   emits: ['click'],
+  data() {
+    return {
+      isModalOpen: false,
+    };
+  },
   computed: {
     shortenedName() {
       return truncateJavaType(this.name);
@@ -62,6 +83,22 @@ export default {
     showDescription() {
       let name = this.name.split('(').shift();
       return name !== this.descriptor.desc;
+    },
+  },
+  methods: {
+    closeModal() {
+      this.isModalOpen = false;
+    },
+    executeOperation(event) {
+      this.$emit('click', event);
+      this.isModalOpen = false;
+    },
+    execute(event) {
+      if (this.descriptor.args.length === 0) {
+        this.isModalOpen = true;
+      } else {
+        this.executeOperation(event);
+      }
     },
   },
 };
