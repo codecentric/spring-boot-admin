@@ -20,10 +20,14 @@
       <sba-loading-spinner />
     </div>
     <template v-else>
-      <div v-if="application.instances.length > 1">
+      <div
+        v-if="application.instances.length > 1"
+        class="absolute right-0 top-0"
+      >
         <sba-toggle-scope-button
           v-model="scope"
           :instance-count="application.instances.length"
+          class="bg-white px-4 py-2 pt-3"
         />
       </div>
 
@@ -93,12 +97,10 @@ export default {
       }
     },
     writeAttribute: async function (attribute, value) {
-      let response;
-
       try {
         const target =
           this.scope === 'instance' ? this.instance : this.application;
-        response = await target.writeMBeanAttribute(
+        return await target.writeMBeanAttribute(
           this.domain,
           this.mBean.descriptor.raw,
           attribute,
@@ -107,12 +109,6 @@ export default {
       } catch (error) {
         console.warn(`Error saving attribute ${attribute}`, error);
       }
-
-      if (response.data.error) {
-        throw response.data.error;
-      }
-
-      await this.readAttributes();
     },
   },
 };

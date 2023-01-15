@@ -57,6 +57,8 @@
 </template>
 
 <script>
+import { responseHandler } from '@/views/instances/jolokia/responseHandler';
+
 export default {
   props: {
     name: {
@@ -111,9 +113,11 @@ export default {
     async save() {
       this.saving = true;
       try {
-        await this.onSaveValue(this.input);
+        let response = await this.onSaveValue(this.input);
+        const { result, error } = responseHandler(response);
+        this.result = result;
+        this.error = error;
         this.editing = false;
-        this.error = null;
       } catch (error) {
         console.warn(`Error saving attribute ${this.name}`, error);
         this.error = error;

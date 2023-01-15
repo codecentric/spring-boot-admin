@@ -69,6 +69,8 @@
                   <dd v-text="attribute.value"></dd>
                 </div>
               </dl>
+            </header>
+            <div class="relative">
               <div v-if="mBean === selectedMBean" class="tabs">
                 <ul class="nav-tabs">
                   <li v-if="mBean.attr">
@@ -93,23 +95,23 @@
                   </li>
                 </ul>
               </div>
-            </header>
 
-            <div v-if="mBean === selectedMBean" class="mt-3 mx-1">
-              <m-bean-attributes
-                v-if="selected.view === 'attributes'"
-                :application="application"
-                :domain="selectedDomain.domain"
-                :instance="instance"
-                :m-bean="mBean"
-              />
-              <m-bean-operations
-                v-if="selected.view === 'operations'"
-                :application="application"
-                :domain="selectedDomain.domain"
-                :instance="instance"
-                :m-bean="mBean"
-              />
+              <div v-if="mBean === selectedMBean" class="mt-3 mx-1">
+                <m-bean-attributes
+                  v-if="selected.view === 'attributes'"
+                  :application="application"
+                  :domain="selectedDomain.domain"
+                  :instance="instance"
+                  :m-bean="mBean"
+                />
+                <m-bean-operations
+                  v-if="selected.view === 'operations'"
+                  :application="application"
+                  :domain="selectedDomain.domain"
+                  :instance="instance"
+                  :m-bean="mBean"
+                />
+              </div>
             </div>
           </div>
         </div>

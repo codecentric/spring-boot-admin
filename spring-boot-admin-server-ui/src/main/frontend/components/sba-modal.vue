@@ -40,7 +40,7 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </DialogTitle>
-              <div class="mt-2 mb-2">
+              <div class="mt-2 mb-2 max-h-96 overflow-auto">
                 <slot name="body" />
               </div>
 

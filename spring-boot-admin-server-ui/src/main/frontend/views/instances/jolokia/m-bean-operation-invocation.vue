@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-modal :model-value="true" @close="abort">
+  <sba-modal :model-value="showModal" @close="abort">
     <template #header>
       {{ state }}
       <template v-if="state === STATE_COMPLETED">
@@ -29,7 +29,7 @@
 
     <template #body>
       <template v-if="state === STATE_INPUT_ARGS">
-        <section class="modal-card-body" @keyup.ctrl.enter="invoke(args)">
+        <section @keyup.ctrl.enter="invoke(args)">
           <template v-for="(arg, idx) in descriptor.args" :key="arg.name">
             <sba-input
               v-model="args[idx]"
@@ -50,7 +50,11 @@
       </template>
 
       <template v-else-if="state === STATE_COMPLETED">
-        <pre v-if="descriptor.ret !== 'void'" v-text="prettyPrintedResult" />
+        <pre
+          v-if="descriptor.ret !== 'void'"
+          class="overflow-auto text-xs"
+          v-text="prettyPrintedResult"
+        />
       </template>
 
       <template v-else-if="state === STATE_FAILED">
@@ -136,6 +140,7 @@ export default {
     error: null,
     args: null,
     result: null,
+    showModal: true,
     STATE_EXECUTING,
     STATE_FAILED,
     STATE_INPUT_ARGS,
@@ -168,6 +173,7 @@ export default {
   },
   methods: {
     abort() {
+      this.showModal = false;
       this.onClose();
     },
     invoke(args) {
