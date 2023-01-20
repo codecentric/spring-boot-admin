@@ -47,12 +47,11 @@ public class SecurityPermitAllConfig {
 		http.authorizeHttpRequests((authorizeRequest) -> authorizeRequest.anyRequest().permitAll());
 
 		http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class)
-			.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()).ignoringRequestMatchers(
-					new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()),
-					new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()),
-					new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))
-				));
+				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+						.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()).ignoringRequestMatchers(
+								new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()),
+								new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()),
+								new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
 
 		return http.build();
 
