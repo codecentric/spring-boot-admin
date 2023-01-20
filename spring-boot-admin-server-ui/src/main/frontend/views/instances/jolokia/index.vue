@@ -288,6 +288,10 @@ export default {
   padding-bottom: 0;
 }
 
+.m-bean--header {
+  cursor: pointer;
+}
+
 .m-bean--header .level .level-left {
   width: 100%;
 }

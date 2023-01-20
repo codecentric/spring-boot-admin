@@ -151,7 +151,7 @@ export default {
 
       const classNames = [];
 
-      if (!!this.error) {
+      if (this.error !== null && this.error !== undefined) {
         classNames.push(
           'focus:ring-red-500 focus:border-red-500 border-red-400'
         );
