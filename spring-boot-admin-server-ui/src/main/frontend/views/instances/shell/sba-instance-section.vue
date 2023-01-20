@@ -2,17 +2,30 @@
   <section :class="{ loading: showLoadingSpinner }">
     <slot name="before" />
 
-    <div class="px-2 md:px-6 py-6">
+    <div
+      :class="
+        classNames({
+          'flex-1': true,
+          flex: layoutOptions.isFlex,
+          'px-2 md:px-6 py-6': !layoutOptions.noMargin,
+        })
+      "
+    >
       <sba-alert
         v-if="error"
-        class="mb-6"
+        :class="
+          classNames({
+            'p-4': layoutOptions.noMargin,
+          })
+        "
         :error="error"
         :title="$t('term.fetch_failed')"
+        class="mb-6 w-full"
       />
 
       <div v-if="showLoadingSpinner" class="loading-spinner-wrapper">
         <div class="loading-spinner-wrapper-container">
-          <sba-loading-spinner :loading="showLoadingSpinner" size="sm" />
+          <sba-loading-spinner size="sm" />
           {{ $t('term.fetching_data') }}
         </div>
       </div>
@@ -23,6 +36,8 @@
 </template>
 
 <script>
+import classNames from 'classnames';
+
 import SbaLoadingSpinner from '@/components/sba-loading-spinner';
 
 export default {
@@ -36,6 +51,13 @@ export default {
     error: {
       type: Error,
       default: null,
+    },
+    layoutOptions: {
+      type: Object,
+      default: () => ({
+        flex: false,
+        noMargin: false,
+      }),
     },
   },
   data() {
@@ -51,6 +73,9 @@ export default {
         this.showLoadingSpinner = newVal;
       }, 250);
     },
+  },
+  methods: {
+    classNames: classNames,
   },
 };
 </script>

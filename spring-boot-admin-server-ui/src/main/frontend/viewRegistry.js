@@ -39,13 +39,11 @@ export default class ViewRegistry {
   }
 
   get routes() {
-    return [
-      ...this._toRoutes(
-        this._views,
-        (v) => v.path && (!v.parent || !v.isChildRoute)
-      ),
-      ...this._redirects,
-    ];
+    let routes = this._toRoutes(
+      this._views,
+      (v) => v.path && (!v.parent || !v.isChildRoute)
+    );
+    return [...routes, ...this._redirects];
   }
 
   getViewByName(name) {
