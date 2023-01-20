@@ -98,6 +98,7 @@ installables.forEach((view) => {
   try {
     view.configure
       ? view.configure({
+          app,
           vue,
           i18n: vue.$i18n,
           axios,
