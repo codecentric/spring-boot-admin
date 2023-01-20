@@ -72,9 +72,9 @@
     "@trivago/prettier-plugin-sort-imports": "^3.4.0",
     "@vitejs/plugin-vue": "3.2.0",
     "@vue/test-utils": "2.2.7",
-    "@vue/vue3-jest": "29.2.2",
+    "@vue/vue3-jest": "26.0.1",
     "autoprefixer": "10.4.13",
-    "babel-jest": "29.3.1",
+    "babel-jest": "26.6.3",
     "babel-loader": "8.3.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "^8.5.0",
@@ -107,7 +107,7 @@
     "setupFilesAfterEnv": [
       "<rootDir>/.jest/jest.setup.js"
     ],
-    "testEnvironment": "jsdom",
+    "testEnvironment": "jest-environment-jsdom",
     "moduleFileExtensions": [
       "js",
       "json",
@@ -127,13 +127,7 @@
     "testMatch": [
       "**/*.spec.js"
     ],
-    "testEnvironmentOptions": {
-      "customExportConditions": [
-        "node",
-        "node-addons"
-      ],
-      "url": "https://example.com"
-    }
+    "testURL": "https://example.com"
   },
   "engines": {
     "node": ">=16",
