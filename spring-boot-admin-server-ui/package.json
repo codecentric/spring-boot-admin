@@ -69,7 +69,7 @@
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/user-event": "14.4.3",
     "@testing-library/vue": "6.6.1",
-    "@trivago/prettier-plugin-sort-imports": "^3.4.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "@vitejs/plugin-vue": "4.0.0",
     "@vue/test-utils": "2.2.7",
     "@vue/vue3-jest": "26.0.1",
