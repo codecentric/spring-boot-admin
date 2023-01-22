@@ -473,17 +473,17 @@ public final class LegacyEndpointConverters {
 			// Based on conditionKey we may need to apply some transformations,
 			// mostly wrapping, of the input values
 			switch (conditionKey) {
-			case "consumes":
-			case "produces":
-				conditionValue = conditionValue.stream().map((v) -> singletonMap("mediaType", v))
-						.collect(Collectors.toList());
-				break;
-			case "headers":
-			case "params":
-			case "method":
-			case "patterns":
-			default:
-				break;
+				case "consumes":
+				case "produces":
+					conditionValue = conditionValue.stream().map((v) -> singletonMap("mediaType", v))
+							.collect(Collectors.toList());
+					break;
+				case "headers":
+				case "params":
+				case "method":
+				case "patterns":
+				default:
+					break;
 			}
 
 			conditionsMap.put(conditionKey, conditionValue);

@@ -29,7 +29,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -189,7 +188,7 @@ public class MailNotifierTest {
 	private String extractBody(DataHandler dataHandler) throws IOException {
 		ByteArrayOutputStream os = new ByteArrayOutputStream(4096);
 		dataHandler.writeTo(os);
-		return os.toString(StandardCharsets.UTF_8.name()).replaceAll("\\r?\\n", "\n");
+		return os.toString(StandardCharsets.UTF_8).replaceAll("\\r?\\n", "\n");
 	}
 
 }

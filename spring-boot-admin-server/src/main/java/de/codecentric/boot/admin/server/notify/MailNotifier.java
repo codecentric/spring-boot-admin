@@ -23,7 +23,6 @@ import java.util.Map;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-
 import org.springframework.lang.Nullable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -119,28 +118,28 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
 		return templateEngine.process(this.template, singleton("subject"), ctx).trim();
 	}
 
-	public void setTo(String[] to) {
-		this.to = Arrays.copyOf(to, to.length);
-	}
-
 	public String[] getTo() {
 		return Arrays.copyOf(to, to.length);
 	}
 
-	public void setCc(String[] cc) {
-		this.cc = Arrays.copyOf(cc, cc.length);
+	public void setTo(String[] to) {
+		this.to = Arrays.copyOf(to, to.length);
 	}
 
 	public String[] getCc() {
 		return Arrays.copyOf(cc, cc.length);
 	}
 
-	public void setFrom(String from) {
-		this.from = from;
+	public void setCc(String[] cc) {
+		this.cc = Arrays.copyOf(cc, cc.length);
 	}
 
 	public String getFrom() {
 		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
 	}
 
 	public String getTemplate() {
