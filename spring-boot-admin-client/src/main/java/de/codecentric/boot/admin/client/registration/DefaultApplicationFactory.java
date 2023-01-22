@@ -223,13 +223,13 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		}
 
 		switch (this.instance.getServiceHostType()) {
-		case IP:
-			return address.getHostAddress();
-		case HOST_NAME:
-			return address.getHostName();
-		case CANONICAL_HOST_NAME:
-		default:
-			return address.getCanonicalHostName();
+			case IP:
+				return address.getHostAddress();
+			case HOST_NAME:
+				return address.getHostName();
+			case CANONICAL_HOST_NAME:
+			default:
+				return address.getCanonicalHostName();
 		}
 	}
 

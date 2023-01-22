@@ -19,7 +19,6 @@ package de.codecentric.boot.admin;
 import java.util.UUID;
 
 import jakarta.servlet.DispatcherType;
-
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

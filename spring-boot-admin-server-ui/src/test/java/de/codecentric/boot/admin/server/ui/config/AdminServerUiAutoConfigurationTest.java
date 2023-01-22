@@ -18,7 +18,6 @@ package de.codecentric.boot.admin.server.ui.config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletResponse;
-
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
