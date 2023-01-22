@@ -59,7 +59,7 @@
     "@babel/eslint-parser": "7.19.1",
     "@babel/plugin-transform-runtime": "7.19.6",
     "@babel/preset-env": "7.20.2",
-    "@babel/runtime": "7.20.7",
+    "@babel/runtime": "7.20.13",
     "@storybook/addon-actions": "6.5.15",
     "@storybook/addon-essentials": "6.5.15",
     "@storybook/addon-links": "6.5.15",
