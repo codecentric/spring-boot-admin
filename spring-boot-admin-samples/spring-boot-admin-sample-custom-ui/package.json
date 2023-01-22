@@ -9,7 +9,7 @@
     "@vue/cli-service": "4.5.19",
     "copy-webpack-plugin": "5.1.2",
     "vue": "3.2.45",
-    "vue-loader": "17.0.0"
+    "vue-loader": "17.0.1"
   },
   "peerDependencies": {
     "vue": "3.2.45"
