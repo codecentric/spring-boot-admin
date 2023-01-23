@@ -65,6 +65,7 @@ import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.NotifierProxyProperties;
 import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.server.notify.RocketChatNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
@@ -326,6 +327,22 @@ public class AdminServerNotifierAutoConfiguration {
 		public DingTalkNotifier dingTalkNotifier(InstanceRepository repository,
 				NotifierProxyProperties proxyProperties) {
 			return new DingTalkNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.rocketchat", name = "url")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	@Lazy(false)
+	public static class RocketChatNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.rocketchat")
+		public RocketChatNotifier rocketChatNotifier(InstanceRepository repository,
+				NotifierProxyProperties proxyProperties) {
+			return new RocketChatNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
 	}
