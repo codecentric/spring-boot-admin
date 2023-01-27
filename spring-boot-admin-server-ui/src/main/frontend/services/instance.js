@@ -190,7 +190,7 @@ class Instance {
   async configureLogger(name, level) {
     await this.axios.post(
       uri`actuator/loggers/${name}`,
-      { configuredLevel: level },
+      level === null ? {} : { configuredLevel: level },
       {
         headers: { 'Content-Type': 'application/json' },
       }
