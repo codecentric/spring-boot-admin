@@ -6,8 +6,8 @@ info:
 logging:
   level:
     ROOT: info
-    de.codecentric: trace
-    org.springframework.web: debug
+    de.codecentric: info
+    org.springframework.web: info
   file:
     name: "target/boot-admin-sample-servlet.log"
   pattern:
