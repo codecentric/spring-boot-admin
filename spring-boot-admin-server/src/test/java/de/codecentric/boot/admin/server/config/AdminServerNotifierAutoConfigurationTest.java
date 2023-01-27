@@ -40,6 +40,7 @@ import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.NotifierProxyProperties;
 import de.codecentric.boot.admin.server.notify.OpsGenieNotifier;
 import de.codecentric.boot.admin.server.notify.PagerdutyNotifier;
+import de.codecentric.boot.admin.server.notify.RocketChatNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
@@ -122,6 +123,12 @@ public class AdminServerNotifierAutoConfigurationTest {
 	public void test_discord() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.notify.discord.webhook-url:http://example.com")
 				.run((context) -> assertThat(context).hasSingleBean(DiscordNotifier.class));
+	}
+
+	@Test
+	public void test_rocketchat() {
+		this.contextRunner.withPropertyValues("spring.boot.admin.notify.rocketchat.url:http://example.com")
+				.run((context) -> assertThat(context).hasSingleBean(RocketChatNotifier.class));
 	}
 
 	@Test
