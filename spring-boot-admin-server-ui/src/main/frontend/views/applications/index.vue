@@ -15,95 +15,99 @@
   -->
 
 <template>
-  <sba-wave />
-  <section>
-    <sba-sticky-subnav>
-      <div class="container mx-auto flex">
-        <application-stats />
-        <ApplicationNotificationCenter
-          v-if="hasNotificationFiltersSupport"
-          :notification-filters="notificationFilters"
-          @filter-remove="removeFilter"
-        />
-        <div class="flex-1">
-          <sba-input
-            v-model="filter"
-            :placeholder="t('term.filter')"
-            name="filter"
-            type="search"
-          >
-            <template #prepend>
-              <font-awesome-icon icon="filter" />
-            </template>
-          </sba-input>
+  <div>
+    <sba-wave />
+    <section>
+      <sba-sticky-subnav>
+        <div class="container mx-auto flex">
+          <application-stats />
+          <ApplicationNotificationCenter
+            v-if="hasNotificationFiltersSupport"
+            :notification-filters="notificationFilters"
+            @filter-remove="removeFilter"
+          />
+          <div class="flex-1">
+            <sba-input
+              v-model="filter"
+              :placeholder="t('term.filter')"
+              name="filter"
+              type="search"
+            >
+              <template #prepend>
+                <font-awesome-icon icon="filter" />
+              </template>
+            </sba-input>
+          </div>
         </div>
+      </sba-sticky-subnav>
+
+      <div class="container mx-auto py-6">
+        <sba-alert
+          v-if="error"
+          :error="error"
+          :title="t('applications.server_connection_failed')"
+          class-names="mb-6"
+          severity="WARN"
+        />
+        <sba-panel v-if="!applicationsInitialized">
+          <p
+            class="is-muted is-loading"
+            v-text="t('applications.loading_applications')"
+          />
+        </sba-panel>
+
+        <application-status-hero v-if="applicationsInitialized" />
+
+        <template v-if="applicationsInitialized">
+          <TransitionGroup>
+            <sba-panel
+              v-for="group in statusGroups"
+              :key="group.status"
+              :seamless="true"
+              :title="t('term.applications_tc', group.applications.length)"
+              class="application-group"
+            >
+              <template #title>
+                <sba-status-badge :status="group.statusKey" />
+              </template>
+
+              <applications-list-item
+                v-for="application in group.applications"
+                :key="application.name"
+                :application="application"
+                :has-notification-filters-support="
+                  hasNotificationFiltersSupport
+                "
+                :is-expanded="selected === application.name || Boolean(filter)"
+                :notification-filters="notificationFilters"
+                @deselect="deselect"
+                @restart="restart"
+                @select="select"
+                @shutdown="shutdown"
+                @unregister="unregister"
+                @toggle-notification-filter-settings="
+                  toggleNotificationFilterSettings
+                "
+              />
+            </sba-panel>
+          </TransitionGroup>
+          <notification-filter-settings
+            v-if="showNotificationFilterSettingsObject"
+            v-popper="
+              `nf-settings-${
+                showNotificationFilterSettingsObject.id ||
+                showNotificationFilterSettingsObject.name
+              }`
+            "
+            :notification-filters="notificationFilters"
+            :object="showNotificationFilterSettingsObject"
+            @filter-add="addFilter"
+            @filter-remove="removeFilter"
+          />
+        </template>
       </div>
-    </sba-sticky-subnav>
-
-    <div class="container mx-auto py-6">
-      <sba-alert
-        v-if="error"
-        :error="error"
-        :title="t('applications.server_connection_failed')"
-        class-names="mb-6"
-        severity="WARN"
-      />
-      <sba-panel v-if="!applicationsInitialized">
-        <p
-          class="is-muted is-loading"
-          v-text="t('applications.loading_applications')"
-        />
-      </sba-panel>
-
-      <application-status-hero v-if="applicationsInitialized" />
-
-      <template v-if="applicationsInitialized">
-        <TransitionGroup>
-          <sba-panel
-            v-for="group in statusGroups"
-            :key="group.status"
-            :seamless="true"
-            :title="t('term.applications_tc', group.applications.length)"
-            class="application-group"
-          >
-            <template #title>
-              <sba-status-badge :status="group.statusKey" />
-            </template>
-
-            <applications-list-item
-              v-for="application in group.applications"
-              :key="application.name"
-              :application="application"
-              :has-notification-filters-support="hasNotificationFiltersSupport"
-              :is-expanded="selected === application.name || Boolean(filter)"
-              :notification-filters="notificationFilters"
-              @deselect="deselect"
-              @restart="restart"
-              @select="select"
-              @shutdown="shutdown"
-              @unregister="unregister"
-              @toggle-notification-filter-settings="
-                toggleNotificationFilterSettings
-              "
-            />
-          </sba-panel>
-        </TransitionGroup>
-        <notification-filter-settings
-          v-if="showNotificationFilterSettingsObject"
-          v-popper="
-            `nf-settings-${
-              showNotificationFilterSettingsObject.id ||
-              showNotificationFilterSettingsObject.name
-            }`
-          "
-          :notification-filters="notificationFilters"
-          :object="showNotificationFilterSettingsObject"
-          @filter-add="addFilter"
-          @filter-remove="removeFilter"
-        />
-      </template>
-    </div>
-  </section>
+    </section>
+  </div>
 </template>
 
 <script>

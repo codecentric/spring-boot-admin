@@ -78,16 +78,5 @@ SBA.use({
       isEnabled: ({ instance }) => instance.hasEndpoint("custom"), // <3>
     });
   },
-  configure({ i18n }) {
-    console.log(i18n);
-    i18n.mergeLocaleMessage("en", {
-      // <4>
-      sidebar: {
-        custom: {
-          title: "My Custom Extensions",
-        },
-      },
-    });
-  },
 });
 // end::customization-ui-endpoint[]

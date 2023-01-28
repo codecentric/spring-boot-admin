@@ -3,16 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build --mode development"
   },
   "devDependencies": {
     "@vue/cli-service": "5.0.8",
     "copy-webpack-plugin": "5.1.2",
     "vue": "3.2.45",
     "vue-loader": "17.0.1"
-  },
-  "peerDependencies": {
-    "vue": "3.2.45"
   },
   "browserslist": [
     "> 1%",

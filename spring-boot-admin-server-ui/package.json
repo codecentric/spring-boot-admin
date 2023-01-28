@@ -4,8 +4,8 @@
   "description": "Spring Boot Admin UI",
   "scripts": {
     "build": "vite build --emptyOutDir",
-    "build:dev": "vite build --emptyOutDir --sourcemap --mode development",
-    "build:watch": "vite build --emptyOutDir --watch --sourcemap --mode development",
+    "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
+    "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --sourcemap --mode development",
     "dev": "vite",
     "test": "jest",
     "storybook": "start-storybook -p 6006",

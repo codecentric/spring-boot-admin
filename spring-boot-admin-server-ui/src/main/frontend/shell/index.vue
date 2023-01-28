@@ -18,7 +18,7 @@
   <div id="app">
     <SbaNavbar :error="error" />
     <div class="sba-container">
-      <router-view :error="error" />
+      <router-view :applications="applications" :error="error" />
     </div>
   </div>
 </template>
@@ -27,7 +27,7 @@
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import SbaNavbar from '@/shell/navbar';
 
-defineProps({
+const props = defineProps({
   error: {
     type: Error,
     default: null,
