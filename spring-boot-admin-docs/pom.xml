@@ -30,7 +30,7 @@
     </parent>
 
     <properties>
-        <site.skin.version>2.3.0</site.skin.version>
+        <site.skin.version>2.3.1</site.skin.version>
     </properties>
 
     <build>
