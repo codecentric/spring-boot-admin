@@ -32,20 +32,10 @@ management:
 spring:
   application:
     name: spring-boot-admin-3-graalvm
-  config:
-    import: optional:configserver:http://localhost:8888/
   jmx:
     enabled: true
   main:
     lazy-initialization: true
-  boot:
-    admin:
-      ui:
-        cache:
-          no-cache: true
-        resource-locations: file:/Users/ulrichschulte/Development/spring-boot-admin-dev/spring-boot-admin/spring-boot-admin-server-ui/target/dist/
-        template-location: file:/Users/ulrichschulte/Development/spring-boot-admin-dev/spring-boot-admin/spring-boot-admin-server-ui/target/dist/
-        cache-templates: false
 
 ---
 # tag::customization-external-views[]
@@ -60,14 +50,6 @@ spring:
       # context-path: test/
       client:
         url: http://localhost:8080
+        instance:
+          service-base-url: http://localhost:8080
 # end::customization-external-views[]
----
-# tag::customization-view-settings[]
-spring:
-  boot:
-    admin:
-      ui:
-        view-settings:
-          - name: "journal"
-            enabled: false
-# end::customization-view-settings[]
