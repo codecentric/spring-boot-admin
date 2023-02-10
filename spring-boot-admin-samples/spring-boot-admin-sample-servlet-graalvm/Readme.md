@@ -1,6 +1,10 @@
 # Spring Boot Admin GraalVM sample application
 
-## Build Project
+This is a sample project running a Spring Boot Admin server which works with GraalVM and Native Image Builder.
+
+In order to show basic functionalities, the server itself is registered as a client.
+
+## Build project
 
 ```
 $ mvn clean package -Pnative
