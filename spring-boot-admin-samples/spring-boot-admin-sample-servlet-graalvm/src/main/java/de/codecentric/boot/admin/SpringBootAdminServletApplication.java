@@ -16,8 +16,6 @@
 
 package de.codecentric.boot.admin;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
@@ -31,8 +29,6 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 @EnableAdminServer
 @Lazy(false)
 public class SpringBootAdminServletApplication {
-
-	private static final Logger log = LoggerFactory.getLogger(SpringBootAdminServletApplication.class);
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(SpringBootAdminServletApplication.class);

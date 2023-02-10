@@ -5,7 +5,7 @@ logging:
     de.codecentric: trace
     org.springframework.web: debug
   file:
-    name: "target/spring-boot-admin-3.log"
+    name: "target/spring-boot-admin-3-graalvm.log"
   pattern:
     file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
 
@@ -15,17 +15,8 @@ management:
       exposure:
         include: "*"
   endpoint:
-    jolokia:
-      enabled: true
-    refresh:
-      enabled: true
-    restart:
-      enabled: true
     shutdown:
       enabled: true
-    env:
-      post:
-        enabled: true
     health:
       show-details: ALWAYS
 
@@ -36,10 +27,6 @@ spring:
     enabled: true
   main:
     lazy-initialization: true
-
----
-# tag::customization-external-views[]
-spring:
   boot:
     admin:
       ui:
@@ -47,9 +34,7 @@ spring:
           - label: "🚀"
             url: https://codecentric.de
             order: 2000
-      # context-path: test/
       client:
         url: http://localhost:8080
         instance:
           service-base-url: http://localhost:8080
-# end::customization-external-views[]
