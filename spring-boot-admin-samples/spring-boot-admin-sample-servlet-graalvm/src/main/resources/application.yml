@@ -1,0 +1,73 @@
+---
+logging:
+  level:
+    ROOT: info
+    de.codecentric: trace
+    org.springframework.web: debug
+  file:
+    name: "target/spring-boot-admin-3.log"
+  pattern:
+    file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    jolokia:
+      enabled: true
+    refresh:
+      enabled: true
+    restart:
+      enabled: true
+    shutdown:
+      enabled: true
+    env:
+      post:
+        enabled: true
+    health:
+      show-details: ALWAYS
+
+spring:
+  application:
+    name: spring-boot-admin-3-graalvm
+  config:
+    import: optional:configserver:http://localhost:8888/
+  jmx:
+    enabled: true
+  main:
+    lazy-initialization: true
+  boot:
+    admin:
+      ui:
+        cache:
+          no-cache: true
+        resource-locations: file:/Users/ulrichschulte/Development/spring-boot-admin-dev/spring-boot-admin/spring-boot-admin-server-ui/target/dist/
+        template-location: file:/Users/ulrichschulte/Development/spring-boot-admin-dev/spring-boot-admin/spring-boot-admin-server-ui/target/dist/
+        cache-templates: false
+
+---
+# tag::customization-external-views[]
+spring:
+  boot:
+    admin:
+      ui:
+        external-views:
+          - label: "🚀"
+            url: https://codecentric.de
+            order: 2000
+      # context-path: test/
+      client:
+        url: http://localhost:8080
+# end::customization-external-views[]
+---
+# tag::customization-view-settings[]
+spring:
+  boot:
+    admin:
+      ui:
+        view-settings:
+          - name: "journal"
+            enabled: false
+# end::customization-view-settings[]
