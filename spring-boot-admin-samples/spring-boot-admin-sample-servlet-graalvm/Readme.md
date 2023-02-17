@@ -9,13 +9,13 @@ In order to show basic functionalities, the server itself is registered as a cli
 Make sure to use a GraalVM with a v17-BaseJDK to build the project (e.g. 22.3.r17-grl).
 
 ```
-$ mvn clean package -Pnative
+$ mvn -Pnative native:compile
 ```
 
 ## Build an OCI image that can be run with Docker
 
 ```
-$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=spring-boot-admin-sample-servlet-graalvm:latest
+$ mvn spring-boot:build-image -Pnative -Dspring-boot.build-image.imageName=spring-boot-admin-sample-servlet-graalvm:latest
 ```
 
 ## Running the example
