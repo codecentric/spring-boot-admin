@@ -6,6 +6,8 @@ In order to show basic functionalities, the server itself is registered as a cli
 
 ## Build project
 
+Make sure to use a GraalVM with a v17-BaseJDK to build the project (e.g. 22.3.r17-grl).
+
 ```
 $ mvn clean package -Pnative
 ```
