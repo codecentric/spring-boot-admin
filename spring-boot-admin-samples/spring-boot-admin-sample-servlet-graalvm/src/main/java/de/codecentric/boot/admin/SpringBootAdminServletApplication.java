@@ -18,22 +18,19 @@ package de.codecentric.boot.admin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableAdminServer
-@Lazy(false)
+@ImportRuntimeHints({ MyRuntimeHints.class })
 public class SpringBootAdminServletApplication {
 
 	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(SpringBootAdminServletApplication.class);
-		app.setApplicationStartup(new BufferingApplicationStartup(1500));
-		app.run(args);
+		SpringApplication.run(SpringBootAdminServletApplication.class, args);
 	}
 
 }

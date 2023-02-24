@@ -23,10 +23,10 @@ management:
 spring:
   application:
     name: spring-boot-admin-3-graalvm
-  jmx:
-    enabled: true
   main:
     lazy-initialization: true
+  jackson:
+    property-naming-strategy: SNAKE_CASE
   boot:
     admin:
       ui:
