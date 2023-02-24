@@ -94,7 +94,7 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		// Let's Chat requiers the token as basic username, the password can be an
 		// arbitrary string.
 		String auth = Base64Utils
-				.encodeToString(String.format("%s:%s", token, username).getBytes(StandardCharsets.UTF_8));
+			.encodeToString(String.format("%s:%s", token, username).getBytes(StandardCharsets.UTF_8));
 		headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
 		return Mono.fromRunnable(() -> restTemplate.exchange(createUrl(), HttpMethod.POST,
 				new HttpEntity<>(createMessage(event, instance), headers), Void.class));
@@ -120,8 +120,9 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
 		SimpleEvaluationContext context = SimpleEvaluationContext
-				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-				.withRootObject(root).build();
+			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+			.withRootObject(root)
+			.build();
 		return message.getValue(context, String.class);
 	}
 

@@ -51,7 +51,7 @@ public class PagerdutyNotifierTest {
 	private static final String appName = "App";
 
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-			.register(Registration.create(appName, "http://health").build());
+		.register(Registration.create(appName, "http://health").build());
 
 	@BeforeEach
 	public void setUp() {
@@ -67,17 +67,17 @@ public class PagerdutyNotifierTest {
 
 	@Test
 	public void test_onApplicationEvent_resolve() {
-		StepVerifier.create(notifier.notify(
-				new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
-				.verifyComplete();
+		StepVerifier
+			.create(notifier.notify(
+					new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
+			.verifyComplete();
 		reset(restTemplate);
 
 		StatusInfo up = StatusInfo.ofUp();
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(up)));
 		StepVerifier
-				.create(notifier
-						.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, up)))
-				.verifyComplete();
+			.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, up)))
+			.verifyComplete();
 
 		Map<String, Object> expected = new HashMap<>();
 		expected.put("service_key", "--service--");
@@ -95,17 +95,16 @@ public class PagerdutyNotifierTest {
 	@Test
 	public void test_onApplicationEvent_trigger() {
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
+			.verifyComplete();
 		reset(restTemplate);
 
 		StatusInfo down = StatusInfo.ofDown();
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(down)));
 		StepVerifier
-				.create(notifier
-						.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, down)))
-				.verifyComplete();
+			.create(notifier.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, down)))
+			.verifyComplete();
 
 		Map<String, Object> expected = new HashMap<>();
 		expected.put("service_key", "--service--");

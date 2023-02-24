@@ -59,14 +59,18 @@ public class InstanceRegisteredEventMixinTest {
 
 	@Test
 	public void verifyDeserialize() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "REGISTERED")
-				.put("registration",
-						new JSONObject().put("name", "test").put("managementUrl", "http://localhost:9080/")
-								.put("healthUrl", "http://localhost:9080/heath")
-								.put("serviceUrl", "http://localhost:8080/").put("source", "http-api").put("metadata",
-										new JSONObject().put("PASSWORD", "******").put("user", "humptydumpty")))
-				.toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "REGISTERED")
+			.put("registration",
+					new JSONObject().put("name", "test")
+						.put("managementUrl", "http://localhost:9080/")
+						.put("healthUrl", "http://localhost:9080/heath")
+						.put("serviceUrl", "http://localhost:8080/")
+						.put("source", "http-api")
+						.put("metadata", new JSONObject().put("PASSWORD", "******").put("user", "humptydumpty")))
+			.toString();
 
 		InstanceRegisteredEvent event = objectMapper.readValue(json, InstanceRegisteredEvent.class);
 		assertThat(event).isNotNull();
@@ -86,11 +90,11 @@ public class InstanceRegisteredEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("timestamp", 1587751031.000000000)
-				.put("type", "REGISTERED")
-				.put("registration",
-						new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
-				.toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "REGISTERED")
+			.put("registration", new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
+			.toString();
 
 		InstanceRegisteredEvent event = objectMapper.readValue(json, InstanceRegisteredEvent.class);
 		assertThat(event).isNotNull();
@@ -110,8 +114,11 @@ public class InstanceRegisteredEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithoutRegistration() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "REGISTERED").toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "REGISTERED")
+			.toString();
 
 		InstanceRegisteredEvent event = objectMapper.readValue(json, InstanceRegisteredEvent.class);
 		assertThat(event).isNotNull();
@@ -124,13 +131,17 @@ public class InstanceRegisteredEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithEmptyRegistration() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "REGISTERED").put("registration", new JSONObject())
-				.toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "REGISTERED")
+			.put("registration", new JSONObject())
+			.toString();
 
 		assertThatThrownBy(() -> objectMapper.readValue(json, InstanceRegisteredEvent.class))
-				.isInstanceOf(JsonMappingException.class).hasCauseInstanceOf(IllegalArgumentException.class)
-				.hasMessageContaining("must not be empty");
+			.isInstanceOf(JsonMappingException.class)
+			.hasCauseInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("must not be empty");
 	}
 
 	@Test
@@ -138,8 +149,12 @@ public class InstanceRegisteredEventMixinTest {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		Registration registration = Registration.create("test", "http://localhost:9080/heath")
-				.managementUrl("http://localhost:9080/").serviceUrl("http://localhost:8080/").source("http-api")
-				.metadata("PASSWORD", "qwertz123").metadata("user", "humptydumpty").build();
+			.managementUrl("http://localhost:9080/")
+			.serviceUrl("http://localhost:8080/")
+			.source("http-api")
+			.metadata("PASSWORD", "qwertz123")
+			.metadata("user", "humptydumpty")
+			.build();
 
 		InstanceRegisteredEvent event = new InstanceRegisteredEvent(id, 12345678L, timestamp, registration);
 
@@ -152,14 +167,14 @@ public class InstanceRegisteredEventMixinTest {
 
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.name").isEqualTo("test");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.managementUrl")
-				.isEqualTo("http://localhost:9080/");
+			.isEqualTo("http://localhost:9080/");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.healthUrl")
-				.isEqualTo("http://localhost:9080/heath");
+			.isEqualTo("http://localhost:9080/heath");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.serviceUrl")
-				.isEqualTo("http://localhost:8080/");
+			.isEqualTo("http://localhost:8080/");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.source").isEqualTo("http-api");
 		assertThat(jsonContent).extractingJsonPathMapValue("$.registration.metadata")
-				.containsOnly(entry("PASSWORD", "******"), entry("user", "humptydumpty"));
+			.containsOnly(entry("PASSWORD", "******"), entry("user", "humptydumpty"));
 	}
 
 	@Test
@@ -180,7 +195,7 @@ public class InstanceRegisteredEventMixinTest {
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.name").isEqualTo("test");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.managementUrl").isNull();
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.healthUrl")
-				.isEqualTo("http://localhost:9080/heath");
+			.isEqualTo("http://localhost:9080/heath");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.serviceUrl").isNull();
 		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.source").isNull();
 		assertThat(jsonContent).extractingJsonPathMapValue("$.registration.metadata").isEmpty();

@@ -24,8 +24,9 @@ import org.springframework.http.MediaType;
 public class ApiMediaTypeHandler {
 
 	public boolean isApiMediaType(MediaType mediaType) {
-		return Stream.of(ApiVersion.values()).map(ApiVersion::getProducedMimeType)
-				.anyMatch((mimeType) -> mimeType.isCompatibleWith(mediaType));
+		return Stream.of(ApiVersion.values())
+			.map(ApiVersion::getProducedMimeType)
+			.anyMatch((mimeType) -> mimeType.isCompatibleWith(mediaType));
 	}
 
 }

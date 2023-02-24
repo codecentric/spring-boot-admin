@@ -30,8 +30,11 @@ import static org.mockito.Mockito.when;
 
 public class DefaultApplicationRegistratorTest {
 
-	private final Application application = Application.create("AppName").managementUrl("http://localhost:8080/mgmt")
-			.healthUrl("http://localhost:8080/health").serviceUrl("http://localhost:8080").build();
+	private final Application application = Application.create("AppName")
+		.managementUrl("http://localhost:8080/mgmt")
+		.healthUrl("http://localhost:8080/health")
+		.serviceUrl("http://localhost:8080")
+		.build();
 
 	private final RegistrationClient registrationClient = mock(RegistrationClient.class);
 
@@ -66,7 +69,7 @@ public class DefaultApplicationRegistratorTest {
 				true);
 
 		when(this.registrationClient.register("http://sba:8080/instances", this.application))
-				.thenThrow(new RestClientException("Error"));
+			.thenThrow(new RestClientException("Error"));
 		when(this.registrationClient.register("http://sba2:8080/instances", this.application)).thenReturn("-id-");
 
 		assertThat(registrator.register()).isTrue();
@@ -106,8 +109,8 @@ public class DefaultApplicationRegistratorTest {
 				true);
 
 		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
-		doThrow(new RestClientException("Error")).when(this.registrationClient).deregister("http://sba:8080/instances",
-				"-id-");
+		doThrow(new RestClientException("Error")).when(this.registrationClient)
+			.deregister("http://sba:8080/instances", "-id-");
 
 		registrator.register();
 		registrator.deregister();

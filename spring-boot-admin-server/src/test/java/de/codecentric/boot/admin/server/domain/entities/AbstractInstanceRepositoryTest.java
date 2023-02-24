@@ -32,13 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class AbstractInstanceRepositoryTest {
 
 	private final Instance instance1 = Instance.create(InstanceId.of("app-1"))
-			.register(Registration.create("app", "http://health").build());
+		.register(Registration.create("app", "http://health").build());
 
 	private final Instance instance2 = Instance.create(InstanceId.of("app-2"))
-			.register(Registration.create("app", "http://health").build());
+		.register(Registration.create("app", "http://health").build());
 
 	private final Instance instance3 = Instance.create(InstanceId.of("other-1"))
-			.register(Registration.create("other", "http://health").build());
+		.register(Registration.create("other", "http://health").build());
 
 	private InstanceRepository repository;
 
@@ -65,13 +65,12 @@ public abstract class AbstractInstanceRepositoryTest {
 		StepVerifier.create(this.repository.find(this.instance2.getId())).expectNext(this.instance2).verifyComplete();
 
 		StepVerifier.create(this.repository.findByName("app").collectList())
-				.assertNext((v) -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2))
-				.verifyComplete();
+			.assertNext((v) -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2))
+			.verifyComplete();
 
 		StepVerifier.create(this.repository.findAll().collectList())
-				.assertNext(
-						(v) -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2, this.instance3))
-				.verifyComplete();
+			.assertNext((v) -> assertThat(v).containsExactlyInAnyOrder(this.instance1, this.instance2, this.instance3))
+			.verifyComplete();
 	}
 
 	@Test
@@ -94,7 +93,8 @@ public abstract class AbstractInstanceRepositoryTest {
 
 		// then
 		StepVerifier.create(this.repository.find(this.instance1.getId()))
-				.expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
+			.expectNext(this.instance1.withEndpoints(infoEndpoint))
+			.verifyComplete();
 	}
 
 	@Test
@@ -104,9 +104,9 @@ public abstract class AbstractInstanceRepositoryTest {
 
 		// when
 		StepVerifier
-				.create(this.repository.computeIfPresent(instanceId,
-						(key, application) -> Mono.error(new AssertionFailedError("Should not call any computation"))))
-				.verifyComplete();
+			.create(this.repository.computeIfPresent(instanceId,
+					(key, application) -> Mono.error(new AssertionFailedError("Should not call any computation"))))
+			.verifyComplete();
 
 		// then
 		StepVerifier.create(this.repository.find(instanceId)).verifyComplete();
@@ -153,7 +153,8 @@ public abstract class AbstractInstanceRepositoryTest {
 
 		// then
 		StepVerifier.create(this.repository.find(this.instance1.getId()))
-				.expectNext(this.instance1.withEndpoints(infoEndpoint)).verifyComplete();
+			.expectNext(this.instance1.withEndpoints(infoEndpoint))
+			.verifyComplete();
 	}
 
 }

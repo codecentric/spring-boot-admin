@@ -55,7 +55,7 @@ public class SlackNotifierTest {
 	private static final String appName = "App";
 
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-			.register(Registration.create(appName, "http://health").build());
+		.register(Registration.create(appName, "http://health").build());
 
 	private static final String message = "test";
 
@@ -81,14 +81,14 @@ public class SlackNotifierTest {
 		notifier.setChannel(channel);
 		notifier.setIcon(icon);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		Object expected = expectedMessage("good", user, icon, channel, standardMessage("UP"));
 
@@ -98,14 +98,14 @@ public class SlackNotifierTest {
 	@Test
 	public void test_onApplicationEvent_resolve_without_channel_and_icon() {
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		Object expected = expectedMessage("good", user, null, null, standardMessage("UP"));
 
@@ -120,14 +120,14 @@ public class SlackNotifierTest {
 		notifier.setIcon(icon);
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		Object expected = expectedMessage("good", anotherUser, icon, channel, standardMessage("UP"));
 
@@ -141,14 +141,14 @@ public class SlackNotifierTest {
 		notifier.setIcon(icon);
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		Object expected = expectedMessage("good", user, icon, channel, message);
 
@@ -160,14 +160,14 @@ public class SlackNotifierTest {
 		notifier.setChannel(channel);
 		notifier.setIcon(icon);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 
 		Object expected = expectedMessage("danger", user, icon, channel, standardMessage("DOWN"));
 

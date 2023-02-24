@@ -46,9 +46,10 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	@Override
 	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-		return publisher.filter((event) -> event instanceof InstanceEndpointsDetectedEvent
-				|| event instanceof InstanceStatusChangedEvent || event instanceof InstanceRegistrationUpdatedEvent)
-				.flatMap((event) -> this.updateInfo(event.getInstance()));
+		return publisher
+			.filter((event) -> event instanceof InstanceEndpointsDetectedEvent
+					|| event instanceof InstanceStatusChangedEvent || event instanceof InstanceRegistrationUpdatedEvent)
+			.flatMap((event) -> this.updateInfo(event.getInstance()));
 	}
 
 	protected Mono<Void> updateInfo(InstanceId instanceId) {

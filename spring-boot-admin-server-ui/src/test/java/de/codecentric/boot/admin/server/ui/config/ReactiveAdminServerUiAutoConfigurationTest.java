@@ -50,17 +50,20 @@ public abstract class ReactiveAdminServerUiAutoConfigurationTest {
 			"/test/instances/1/actuator/logfile", "/test/instances/1/actuator/some-extension/file.html" })
 	public void contextPathIsRespectedInExcludedRoutes(String routeExcludes) {
 		MockServerHttpRequest serverHttpRequest = MockServerHttpRequest.get(routeExcludes)
-				.header(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE).build();
+			.header(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE)
+			.build();
 
 		ServerWebExchange serverWebExchange = spy(MockServerWebExchange.from(serverHttpRequest));
 
-		this.getContextRunner().withUserConfiguration(SpringBootAdminServerEnabledCondition.class,
-				AdminServerMarkerConfiguration.Marker.class).run((context) -> {
-					HomepageForwardingFilter bean = context.getBean(HomepageForwardingFilter.class);
-					bean.filter(serverWebExchange, webFilterChain);
+		this.getContextRunner()
+			.withUserConfiguration(SpringBootAdminServerEnabledCondition.class,
+					AdminServerMarkerConfiguration.Marker.class)
+			.run((context) -> {
+				HomepageForwardingFilter bean = context.getBean(HomepageForwardingFilter.class);
+				bean.filter(serverWebExchange, webFilterChain);
 
-					verify(serverWebExchange, never()).mutate();
-				});
+				verify(serverWebExchange, never()).mutate();
+			});
 	}
 
 	@ParameterizedTest
@@ -68,17 +71,20 @@ public abstract class ReactiveAdminServerUiAutoConfigurationTest {
 			"/test/external" })
 	public void contextPathIsRespectedInIncludedRoutes(String routeIncludes) {
 		MockServerHttpRequest serverHttpRequest = MockServerHttpRequest.get(routeIncludes)
-				.header(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE).build();
+			.header(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE)
+			.build();
 
 		ServerWebExchange serverWebExchange = spy(MockServerWebExchange.from(serverHttpRequest));
 
-		this.getContextRunner().withUserConfiguration(SpringBootAdminServerEnabledCondition.class,
-				AdminServerMarkerConfiguration.Marker.class).run((context) -> {
-					HomepageForwardingFilter bean = context.getBean(HomepageForwardingFilter.class);
-					bean.filter(serverWebExchange, webFilterChain);
+		this.getContextRunner()
+			.withUserConfiguration(SpringBootAdminServerEnabledCondition.class,
+					AdminServerMarkerConfiguration.Marker.class)
+			.run((context) -> {
+				HomepageForwardingFilter bean = context.getBean(HomepageForwardingFilter.class);
+				bean.filter(serverWebExchange, webFilterChain);
 
-					verify(serverWebExchange).mutate();
-				});
+				verify(serverWebExchange).mutate();
+			});
 	}
 
 }

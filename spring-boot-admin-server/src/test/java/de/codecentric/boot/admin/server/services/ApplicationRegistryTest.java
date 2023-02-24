@@ -70,7 +70,8 @@ public class ApplicationRegistryTest {
 		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
 
 		StepVerifier.create(this.applicationRegistry.getApplications())
-				.assertNext((app) -> assertThat(app.getName()).isEqualTo("App1")).verifyComplete();
+			.assertNext((app) -> assertThat(app.getName()).isEqualTo("App1"))
+			.verifyComplete();
 	}
 
 	@Test
@@ -80,11 +81,12 @@ public class ApplicationRegistryTest {
 
 		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
 
-		StepVerifier.create(this.applicationRegistry.getApplications()).recordWith(ArrayList::new)
-				.thenConsumeWhile((a) -> true)
-				.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Application::getName))
-						.containsExactlyInAnyOrder("App1", "App2"))
-				.verifyComplete();
+		StepVerifier.create(this.applicationRegistry.getApplications())
+			.recordWith(ArrayList::new)
+			.thenConsumeWhile((a) -> true)
+			.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Application::getName))
+				.containsExactlyInAnyOrder("App1", "App2"))
+			.verifyComplete();
 	}
 
 	@Test
@@ -116,7 +118,8 @@ public class ApplicationRegistryTest {
 		when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance));
 
 		StepVerifier.create(this.applicationRegistry.getApplication("App1"))
-				.assertNext((app) -> assertThat(app.getName()).isEqualTo("App1")).verifyComplete();
+			.assertNext((app) -> assertThat(app.getName()).isEqualTo("App1"))
+			.verifyComplete();
 	}
 
 	@Test
@@ -128,7 +131,8 @@ public class ApplicationRegistryTest {
 		when(this.instanceRegistry.deregister(instance1Id)).thenReturn(Mono.just(instance1Id));
 
 		StepVerifier.create(this.applicationRegistry.deregister("App1"))
-				.assertNext((instanceId) -> assertThat(instanceId).isEqualTo(instance1Id)).verifyComplete();
+			.assertNext((instanceId) -> assertThat(instanceId).isEqualTo(instance1Id))
+			.verifyComplete();
 
 		verify(this.instanceRegistry).deregister(instance1Id);
 	}
@@ -143,11 +147,11 @@ public class ApplicationRegistryTest {
 
 		// Single instance should return the version number:
 		assertThat(this.applicationRegistry.getBuildVersion(Collections.singletonList(instance1)))
-				.isEqualTo(BuildVersion.valueOf("0.1"));
+			.isEqualTo(BuildVersion.valueOf("0.1"));
 
 		// Multiple instances should return the version number range:
 		assertThat(this.applicationRegistry.getBuildVersion(Arrays.asList(instance1, instance2)))
-				.isEqualTo(BuildVersion.valueOf("0.1 ... 0.2"));
+			.isEqualTo(BuildVersion.valueOf("0.1 ... 0.2"));
 	}
 
 	@ParameterizedTest
@@ -160,16 +164,18 @@ public class ApplicationRegistryTest {
 
 		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just(instance1, instance2));
 
-		StepVerifier.create(this.applicationRegistry.getApplications()).recordWith(ArrayList::new)
-				.thenConsumeWhile((a) -> true)
-				.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Application::getStatus))
-						.containsExactly(expectedApplicationStatus))
-				.verifyComplete();
+		StepVerifier.create(this.applicationRegistry.getApplications())
+			.recordWith(ArrayList::new)
+			.thenConsumeWhile((a) -> true)
+			.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Application::getStatus))
+				.containsExactly(expectedApplicationStatus))
+			.verifyComplete();
 	}
 
 	private Instance getInstance(String applicationName, String version) {
 		Registration registration = Registration.create(applicationName, "http://localhost:8080/health")
-				.metadata("version", version).build();
+			.metadata("version", version)
+			.build();
 		InstanceId id = InstanceId.of("TEST" + applicationName);
 		return Instance.create(id).register(registration);
 	}

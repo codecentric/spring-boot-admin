@@ -44,7 +44,8 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 	private static final Logger log = LoggerFactory.getLogger(ConcurrentMapEventStore.class);
 
 	private static final Comparator<InstanceEvent> byTimestampAndIdAndVersion = comparing(InstanceEvent::getTimestamp)
-			.thenComparing(InstanceEvent::getInstance).thenComparing(InstanceEvent::getVersion);
+		.thenComparing(InstanceEvent::getInstance)
+		.thenComparing(InstanceEvent::getVersion);
 
 	private final int maxLogSizePerAggregate;
 
@@ -58,8 +59,9 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 
 	@Override
 	public Flux<InstanceEvent> findAll() {
-		return Flux.defer(() -> Flux.fromIterable(eventLog.values()).flatMapIterable(Function.identity())
-				.sort(byTimestampAndIdAndVersion));
+		return Flux.defer(() -> Flux.fromIterable(eventLog.values())
+			.flatMapIterable(Function.identity())
+			.sort(byTimestampAndIdAndVersion));
 	}
 
 	@Override
@@ -116,7 +118,7 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 	private void compact(List<InstanceEvent> events) {
 		BinaryOperator<InstanceEvent> latestEvent = (e1, e2) -> (e1.getVersion() > e2.getVersion()) ? e1 : e2;
 		Map<Class<?>, Optional<InstanceEvent>> latestPerType = events.stream()
-				.collect(groupingBy(InstanceEvent::getClass, reducing(latestEvent)));
+			.collect(groupingBy(InstanceEvent::getClass, reducing(latestEvent)));
 		events.removeIf((e) -> !Objects.equals(e, latestPerType.get(e.getClass()).orElse(null)));
 	}
 

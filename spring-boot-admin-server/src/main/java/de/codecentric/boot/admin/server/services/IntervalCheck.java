@@ -77,11 +77,13 @@ public class IntervalCheck {
 	public void start() {
 		this.scheduler = Schedulers.newSingle(this.name + "-check");
 		this.subscription = Flux.interval(this.interval)
-				.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
-				.log(log.getName(), Level.FINEST).subscribeOn(this.scheduler).concatMap((i) -> this.checkAllInstances())
-				.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
-						.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
-				.subscribe();
+			.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
+			.log(log.getName(), Level.FINEST)
+			.subscribeOn(this.scheduler)
+			.concatMap((i) -> this.checkAllInstances())
+			.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
+				.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
+			.subscribe();
 	}
 
 	public void markAsChecked(InstanceId instanceId) {
@@ -91,8 +93,11 @@ public class IntervalCheck {
 	protected Mono<Void> checkAllInstances() {
 		log.debug("check {} for all instances", this.name);
 		Instant expiration = Instant.now().minus(this.minRetention);
-		return Flux.fromIterable(this.lastChecked.entrySet()).filter((e) -> e.getValue().isBefore(expiration))
-				.map(Map.Entry::getKey).flatMap(this.checkFn).then();
+		return Flux.fromIterable(this.lastChecked.entrySet())
+			.filter((e) -> e.getValue().isBefore(expiration))
+			.map(Map.Entry::getKey)
+			.flatMap(this.checkFn)
+			.then();
 	}
 
 	public void stop() {

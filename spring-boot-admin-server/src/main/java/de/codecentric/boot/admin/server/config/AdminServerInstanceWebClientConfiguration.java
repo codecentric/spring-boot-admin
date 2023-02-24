@@ -95,7 +95,7 @@ public class AdminServerInstanceWebClientConfiguration {
 			public InstanceExchangeFilterFunction addReactiveHeadersInstanceExchangeFilter(
 					List<ReactiveHttpHeadersProvider> reactiveHeadersProviders) {
 				return InstanceExchangeFilterFunctions
-						.addHeadersReactive(new CompositeReactiveHttpHeadersProvider(reactiveHeadersProviders));
+					.addHeadersReactive(new CompositeReactiveHttpHeadersProvider(reactiveHeadersProviders));
 			}
 
 			@Bean

@@ -41,8 +41,14 @@ public class ReactiveRegistrationClient implements RegistrationClient {
 
 	@Override
 	public String register(String adminUrl, Application application) {
-		Map<String, Object> response = this.webclient.post().uri(adminUrl).headers(this::setRequestHeaders)
-				.bodyValue(application).retrieve().bodyToMono(RESPONSE_TYPE).timeout(this.timeout).block();
+		Map<String, Object> response = this.webclient.post()
+			.uri(adminUrl)
+			.headers(this::setRequestHeaders)
+			.bodyValue(application)
+			.retrieve()
+			.bodyToMono(RESPONSE_TYPE)
+			.timeout(this.timeout)
+			.block();
 		return response.get("id").toString();
 	}
 

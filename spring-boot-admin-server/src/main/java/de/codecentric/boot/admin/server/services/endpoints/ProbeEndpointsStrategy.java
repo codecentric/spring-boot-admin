@@ -63,20 +63,28 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
 			return Mono.empty();
 		}
 
-		return Flux.fromIterable(this.endpoints).flatMap((endpoint) -> detectEndpoint(instance, endpoint)).collectList()
-				.flatMap(this::convert);
+		return Flux.fromIterable(this.endpoints)
+			.flatMap((endpoint) -> detectEndpoint(instance, endpoint))
+			.collectList()
+			.flatMap(this::convert);
 	}
 
 	protected Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
-		URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl()).path("/")
-				.path(endpoint.getPath()).build().toUri();
-		return this.instanceWebClient.instance(instance).options().uri(uri)
-				.exchangeToMono(this.convert(instance.getId(), endpoint, uri)).onErrorResume((e) -> {
-					log.warn("Endpoint probe for instance {} on endpoint '{}' failed: {}", instance.getId(), uri,
-							e.getMessage());
-					log.debug("Endpoint probe for instance {} on endpoint '{}' failed.", instance.getId(), uri, e);
-					return Mono.empty();
-				});
+		URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl())
+			.path("/")
+			.path(endpoint.getPath())
+			.build()
+			.toUri();
+		return this.instanceWebClient.instance(instance)
+			.options()
+			.uri(uri)
+			.exchangeToMono(this.convert(instance.getId(), endpoint, uri))
+			.onErrorResume((e) -> {
+				log.warn("Endpoint probe for instance {} on endpoint '{}' failed: {}", instance.getId(), uri,
+						e.getMessage());
+				log.debug("Endpoint probe for instance {} on endpoint '{}' failed.", instance.getId(), uri, e);
+				return Mono.empty();
+			});
 	}
 
 	protected Function<ClientResponse, Mono<DetectedEndpoint>> convert(InstanceId instanceId,
@@ -101,7 +109,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
 		}
 
 		Map<String, List<DetectedEndpoint>> endpointsById = endpoints.stream()
-				.collect(groupingBy((e) -> e.getDefinition().getId()));
+			.collect(groupingBy((e) -> e.getDefinition().getId()));
 		List<Endpoint> result = endpointsById.values().stream().map((endpointList) -> {
 			endpointList.sort(comparingInt((e) -> this.endpoints.indexOf(e.getDefinition())));
 			if (endpointList.size() > 1) {

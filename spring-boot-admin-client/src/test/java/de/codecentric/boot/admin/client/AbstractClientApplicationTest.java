@@ -52,8 +52,9 @@ public abstract class AbstractClientApplicationTest {
 	public void setUp() throws Exception {
 		wireMock.start();
 		ResponseDefinitionBuilder response = created().withHeader("Content-Type", "application/json")
-				.withHeader("Connection", "close").withHeader("Location", wireMock.url("/instances/abcdef"))
-				.withBody("{ \"id\" : \"abcdef\" }");
+			.withHeader("Connection", "close")
+			.withHeader("Location", wireMock.url("/instances/abcdef"))
+			.withBody("{ \"id\" : \"abcdef\" }");
 		wireMock.stubFor(post(urlEqualTo("/instances")).willReturn(response));
 	}
 
@@ -71,11 +72,11 @@ public abstract class AbstractClientApplicationTest {
 		String managementHost = "http://" + hostName + ":" + getManagementPort();
 		RequestPatternBuilder request = postRequestedFor(urlEqualTo("/instances"));
 		request.withHeader("Content-Type", equalTo("application/json"))
-				.withRequestBody(matchingJsonPath("$.name", equalTo("Test-Client")))
-				.withRequestBody(matchingJsonPath("$.healthUrl", equalTo(managementHost + "/mgmt/health")))
-				.withRequestBody(matchingJsonPath("$.managementUrl", equalTo(managementHost + "/mgmt")))
-				.withRequestBody(matchingJsonPath("$.serviceUrl", equalTo(serviceHost + "/")))
-				.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
+			.withRequestBody(matchingJsonPath("$.name", equalTo("Test-Client")))
+			.withRequestBody(matchingJsonPath("$.healthUrl", equalTo(managementHost + "/mgmt/health")))
+			.withRequestBody(matchingJsonPath("$.managementUrl", equalTo(managementHost + "/mgmt")))
+			.withRequestBody(matchingJsonPath("$.serviceUrl", equalTo(serviceHost + "/")))
+			.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
 
 		wireMock.verify(request);
 	}

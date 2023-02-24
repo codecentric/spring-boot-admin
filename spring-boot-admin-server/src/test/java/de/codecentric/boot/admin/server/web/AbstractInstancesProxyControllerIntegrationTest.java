@@ -92,8 +92,10 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 	protected void setUpClient(ConfigurableApplicationContext context) {
 		int localPort = context.getEnvironment().getProperty("local.server.port", Integer.class, 0);
-		this.client = WebTestClient.bindToServer().baseUrl("http://localhost:" + localPort)
-				.responseTimeout(Duration.ofSeconds(10)).build();
+		this.client = WebTestClient.bindToServer()
+			.baseUrl("http://localhost:" + localPort)
+			.responseTimeout(Duration.ofSeconds(10))
+			.build();
 
 		this.instanceId = registerInstance("/instance1");
 	}
@@ -101,63 +103,97 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	@Test
 	public void should_return_status_503() {
 		// 503 on invalid instance
-		this.client.get().uri("/instances/{instanceId}/actuator/info", "UNKNOWN")
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
+		this.client.get()
+			.uri("/instances/{instanceId}/actuator/info", "UNKNOWN")
+			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 
 	@Test
 	public void should_return_status_404() {
 		// 404 on non-existent endpoint
-		this.client.get().uri("/instances/{instanceId}/actuator/not-exist", this.instanceId)
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.NOT_FOUND);
+		this.client.get()
+			.uri("/instances/{instanceId}/actuator/not-exist", this.instanceId)
+			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
 	public void should_return_status_502() {
 		// 502 on invalid response
-		this.client.get().uri("/instances/{instanceId}/actuator/invalid", this.instanceId)
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.BAD_GATEWAY);
+		this.client.get()
+			.uri("/instances/{instanceId}/actuator/invalid", this.instanceId)
+			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.BAD_GATEWAY);
 	}
 
 	@Test
 	public void should_return_status_504() {
 		// 504 on read timeout
-		this.client.get().uri("/instances/{instanceId}/actuator/timeout", this.instanceId)
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
+		this.client.get()
+			.uri("/instances/{instanceId}/actuator/timeout", this.instanceId)
+			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
 	}
 
 	@Test
 	public void should_forward_requests() {
-		this.client.options().uri("/instances/{instanceId}/actuator/env", this.instanceId)
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.OK).expectHeader()
-				.valueEquals(ALLOW, HttpMethod.HEAD.name(), HttpMethod.GET.name(), HttpMethod.OPTIONS.name());
+		this.client.options()
+			.uri("/instances/{instanceId}/actuator/env", this.instanceId)
+			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.OK)
+			.expectHeader()
+			.valueEquals(ALLOW, HttpMethod.HEAD.name(), HttpMethod.GET.name(), HttpMethod.OPTIONS.name());
 
-		this.client.get().uri("/instances/{instanceId}/actuator/test", this.instanceId)
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.OK).expectBody().json("{ \"foo\" : \"bar\" }");
+		this.client.get()
+			.uri("/instances/{instanceId}/actuator/test", this.instanceId)
+			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.OK)
+			.expectBody()
+			.json("{ \"foo\" : \"bar\" }");
 
-		this.client.post().uri("/instances/{instanceId}/actuator/post", this.instanceId).bodyValue("PAYLOAD").exchange()
-				.expectStatus().isEqualTo(HttpStatus.OK);
+		this.client.post()
+			.uri("/instances/{instanceId}/actuator/post", this.instanceId)
+			.bodyValue("PAYLOAD")
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.OK);
 
 		this.wireMock.verify(postRequestedFor(urlEqualTo("/instance1/post")).withRequestBody(equalTo("PAYLOAD")));
 
-		this.client.delete().uri("/instances/{instanceId}/actuator/delete", this.instanceId).exchange().expectStatus()
-				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
-				.json("{\"error\": \"You're doing it wrong!\"}");
+		this.client.delete()
+			.uri("/instances/{instanceId}/actuator/delete", this.instanceId)
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+			.expectBody()
+			.json("{\"error\": \"You're doing it wrong!\"}");
 
 		this.wireMock.verify(deleteRequestedFor(urlEqualTo("/instance1/delete")));
 	}
 
 	@Test
 	public void should_forward_requests_with_spaces_in_path() {
-		this.client.get().uri("/instances/{instanceId}/actuator/test/has spaces", this.instanceId)
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.OK).expectBody().json("{ \"foo\" : \"bar-with-spaces\" }");
+		this.client.get()
+			.uri("/instances/{instanceId}/actuator/test/has spaces", this.instanceId)
+			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.OK)
+			.expectBody()
+			.json("{ \"foo\" : \"bar-with-spaces\" }");
 
 		this.wireMock.verify(getRequestedFor(urlEqualTo("/instance1/test/has%20spaces")));
 	}
@@ -166,27 +202,46 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	public void should_forward_requests_to_mutliple_instances() {
 		String instance2Id = registerInstance("/instance2");
 
-		this.client.get().uri("applications/test/actuator/test")
-				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.OK).expectBody()
-				.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].status").isEqualTo(200)
-				.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].body").isEqualTo("{ \"foo\" : \"bar\" }")
-				.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].status").isEqualTo(200)
-				.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].body").isEqualTo("{ \"foo\" : \"bar\" }");
+		this.client.get()
+			.uri("applications/test/actuator/test")
+			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.OK)
+			.expectBody()
+			.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].status")
+			.isEqualTo(200)
+			.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].body")
+			.isEqualTo("{ \"foo\" : \"bar\" }")
+			.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].status")
+			.isEqualTo(200)
+			.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].body")
+			.isEqualTo("{ \"foo\" : \"bar\" }");
 
-		this.client.post().uri("applications/test/actuator/post").bodyValue("PAYLOAD").exchange().expectStatus()
-				.isEqualTo(HttpStatus.OK);
+		this.client.post()
+			.uri("applications/test/actuator/post")
+			.bodyValue("PAYLOAD")
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.OK);
 
 		this.wireMock.verify(postRequestedFor(urlEqualTo("/instance1/post")).withRequestBody(equalTo("PAYLOAD")));
 		this.wireMock.verify(postRequestedFor(urlEqualTo("/instance2/post")).withRequestBody(equalTo("PAYLOAD")));
 
-		this.client.delete().uri("applications/test/actuator/delete").exchange().expectStatus().isEqualTo(HttpStatus.OK)
-				.expectBody().jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].status").isEqualTo(500)
-				.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].body")
-				.isEqualTo("{\"error\": \"You're doing it wrong!\"}")
-				.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].status").isEqualTo(500)
-				.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].body")
-				.isEqualTo("{\"error\": \"You're doing it wrong!\"}");
+		this.client.delete()
+			.uri("applications/test/actuator/delete")
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.OK)
+			.expectBody()
+			.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].status")
+			.isEqualTo(500)
+			.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].body")
+			.isEqualTo("{\"error\": \"You're doing it wrong!\"}")
+			.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].status")
+			.isEqualTo(500)
+			.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].body")
+			.isEqualTo("{\"error\": \"You're doing it wrong!\"}");
 
 		this.wireMock.verify(deleteRequestedFor(urlEqualTo("/instance1/delete")));
 		this.wireMock.verify(deleteRequestedFor(urlEqualTo("/instance2/delete")));
@@ -206,34 +261,37 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 			" } }";
 		//@formatter:on
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/health")).willReturn(ok("{ \"status\" : \"UP\" }")
-				.withHeader(CONTENT_TYPE, ApiVersion.LATEST.getProducedMimeType().toString())));
+			.withHeader(CONTENT_TYPE, ApiVersion.LATEST.getProducedMimeType().toString())));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/info"))
-				.willReturn(ok("{ }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+			.willReturn(ok("{ }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 		this.wireMock.stubFor(options(urlEqualTo(managementPath + "/env")).willReturn(
 				ok().withHeader(ALLOW, HttpMethod.HEAD.name(), HttpMethod.GET.name(), HttpMethod.OPTIONS.name())));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + ""))
-				.willReturn(ok(actuatorIndex).withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+			.willReturn(ok(actuatorIndex).withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/invalid"))
-				.willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
+			.willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/timeout")).willReturn(ok().withFixedDelay(10000)));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/test"))
-				.willReturn(ok("{ \"foo\" : \"bar\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+			.willReturn(ok("{ \"foo\" : \"bar\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/test/has%20spaces"))
-				.willReturn(ok("{ \"foo\" : \"bar-with-spaces\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+			.willReturn(ok("{ \"foo\" : \"bar-with-spaces\" }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 		this.wireMock.stubFor(post(urlEqualTo(managementPath + "/post")).willReturn(ok()));
-		this.wireMock.stubFor(delete(urlEqualTo(managementPath + "/delete")).willReturn(serverError()
-				.withBody("{\"error\": \"You're doing it wrong!\"}").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
+		this.wireMock.stubFor(delete(urlEqualTo(managementPath + "/delete"))
+			.willReturn(serverError().withBody("{\"error\": \"You're doing it wrong!\"}")
+				.withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 	}
 
 	private String registerInstance(String managementPath) {
 		stubForInstance(managementPath);
 
 		AtomicReference<String> instanceId = new AtomicReference<>();
-		StepVerifier.create(getEventStream()).expectSubscription()
-				.then(() -> instanceId.set(sendRegistration(managementPath)))
-				.thenConsumeWhile((event) -> !event.get("type").equals("ENDPOINTS_DETECTED"))
-				.assertNext((event) -> assertThat(event).containsEntry("type", "ENDPOINTS_DETECTED")).thenCancel()
-				.verify();
+		StepVerifier.create(getEventStream())
+			.expectSubscription()
+			.then(() -> instanceId.set(sendRegistration(managementPath)))
+			.thenConsumeWhile((event) -> !event.get("type").equals("ENDPOINTS_DETECTED"))
+			.assertNext((event) -> assertThat(event).containsEntry("type", "ENDPOINTS_DETECTED"))
+			.thenCancel()
+			.verify();
 		return instanceId.get();
 	}
 

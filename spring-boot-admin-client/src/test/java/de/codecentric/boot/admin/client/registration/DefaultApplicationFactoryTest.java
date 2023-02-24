@@ -186,7 +186,7 @@ public class DefaultApplicationFactoryTest {
 	@Test
 	public void test_missingports() {
 		assertThatThrownBy(() -> factory.createApplication()).isInstanceOf(IllegalStateException.class)
-				.hasMessageContaining("service-base-url");
+			.hasMessageContaining("service-base-url");
 	}
 
 	@Test

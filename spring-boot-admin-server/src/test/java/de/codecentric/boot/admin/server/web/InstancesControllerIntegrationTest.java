@@ -61,7 +61,8 @@ public class InstancesControllerIntegrationTest {
 	@BeforeEach
 	public void setUp() {
 		instance = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
-				.web(WebApplicationType.REACTIVE).run("--server.port=0", "--eureka.client.enabled=false");
+			.web(WebApplicationType.REACTIVE)
+			.run("--server.port=0", "--eureka.client.enabled=false");
 
 		localPort = instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
 
@@ -84,8 +85,13 @@ public class InstancesControllerIntegrationTest {
 
 	@Test
 	public void should_return_empty_list() {
-		this.client.get().uri("/instances?name=unknown").exchange().expectStatus().isOk().expectBody(List.class)
-				.isEqualTo(emptyList());
+		this.client.get()
+			.uri("/instances?name=unknown")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(List.class)
+			.isEqualTo(emptyList());
 	}
 
 	@Test
@@ -108,44 +114,59 @@ public class InstancesControllerIntegrationTest {
 			catch (InterruptedException ex) {
 				Thread.interrupted();
 			}
-			assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 0).containsEntry("type",
-					"REGISTERED");
+			assertThat(body).containsEntry("instance", id.get())
+				.containsEntry("version", 0)
+				.containsEntry("type", "REGISTERED");
 		}).then(() -> {
 			assertInstances(id.get());
 			assertInstancesByName(id.get());
 			assertInstanceById(id.get());
-		}).assertNext((body) -> assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 1)
-				.containsEntry("type", "STATUS_CHANGED")).then(() -> registerSecondTime(id.get()))
-				.assertNext((body) -> assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 2)
-						.containsEntry("type", "REGISTRATION_UPDATED"))
-				.then(() -> deregister(id.get()))
+		})
+			.assertNext((body) -> assertThat(body).containsEntry("instance", id.get())
+				.containsEntry("version", 1)
+				.containsEntry("type", "STATUS_CHANGED"))
+			.then(() -> registerSecondTime(id.get()))
+			.assertNext((body) -> assertThat(body).containsEntry("instance", id.get())
+				.containsEntry("version", 2)
+				.containsEntry("type", "REGISTRATION_UPDATED"))
+			.then(() -> deregister(id.get()))
 
-				.assertNext((body) -> assertThat(body).containsEntry("instance", id.get()).containsEntry("version", 3)
-						.containsEntry("type", "DEREGISTERED"))
-				.then(() -> {
-					assertInstanceNotFound(id.get());
-					assertEvents(id.get());
-				}).thenCancel().verify(Duration.ofSeconds(60));
+			.assertNext((body) -> assertThat(body).containsEntry("instance", id.get())
+				.containsEntry("version", 3)
+				.containsEntry("type", "DEREGISTERED"))
+			.then(() -> {
+				assertInstanceNotFound(id.get());
+				assertEvents(id.get());
+			})
+			.thenCancel()
+			.verify(Duration.ofSeconds(60));
 	}
 
 	private void assertEvents(String id) {
-		this.client.get().uri("/instances/events").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody(String.class)
-				.consumeWith((response) -> {
-					DocumentContext json = JsonPath.parse(response.getResponseBody());
-					assertThat(json.read("$[0].instance", String.class)).isEqualTo(id);
-					assertThat(json.read("$[0].version", Long.class)).isEqualTo(0L);
-					assertThat(json.read("$[0].type", String.class)).isEqualTo("REGISTERED");
-					assertThat(json.read("$[1].instance", String.class)).isEqualTo(id);
-					assertThat(json.read("$[1].version", Long.class)).isEqualTo(1L);
-					assertThat(json.read("$[1].type", String.class)).isEqualTo("STATUS_CHANGED");
-					assertThat(json.read("$[2].instance", String.class)).isEqualTo(id);
-					assertThat(json.read("$[2].version", Long.class)).isEqualTo(2L);
-					assertThat(json.read("$[2].type", String.class)).isEqualTo("REGISTRATION_UPDATED");
-					assertThat(json.read("$[3].instance", String.class)).isEqualTo(id);
-					assertThat(json.read("$[3].version", Long.class)).isEqualTo(3L);
-					assertThat(json.read("$[3].type", String.class)).isEqualTo("DEREGISTERED");
-				});
+		this.client.get()
+			.uri("/instances/events")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.APPLICATION_JSON)
+			.expectBody(String.class)
+			.consumeWith((response) -> {
+				DocumentContext json = JsonPath.parse(response.getResponseBody());
+				assertThat(json.read("$[0].instance", String.class)).isEqualTo(id);
+				assertThat(json.read("$[0].version", Long.class)).isEqualTo(0L);
+				assertThat(json.read("$[0].type", String.class)).isEqualTo("REGISTERED");
+				assertThat(json.read("$[1].instance", String.class)).isEqualTo(id);
+				assertThat(json.read("$[1].version", Long.class)).isEqualTo(1L);
+				assertThat(json.read("$[1].type", String.class)).isEqualTo("STATUS_CHANGED");
+				assertThat(json.read("$[2].instance", String.class)).isEqualTo(id);
+				assertThat(json.read("$[2].version", Long.class)).isEqualTo(2L);
+				assertThat(json.read("$[2].type", String.class)).isEqualTo("REGISTRATION_UPDATED");
+				assertThat(json.read("$[3].instance", String.class)).isEqualTo(id);
+				assertThat(json.read("$[3].version", Long.class)).isEqualTo(3L);
+				assertThat(json.read("$[3].type", String.class)).isEqualTo("DEREGISTERED");
+			});
 	}
 
 	private void assertInstanceNotFound(String id) {
@@ -157,25 +178,56 @@ public class InstancesControllerIntegrationTest {
 	}
 
 	private void assertInstanceById(String id) {
-		this.client.get().uri(getLocation(id)).exchange().expectStatus().isOk().expectHeader()
-				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$[0].id", id);
+		this.client.get()
+			.uri(getLocation(id))
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.APPLICATION_JSON)
+			.expectBody()
+			.jsonPath("$[0].id", id);
 	}
 
 	private void assertInstancesByName(String id) {
-		this.client.get().uri("/instances?name=twice").exchange().expectStatus().isOk().expectHeader()
-				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$[0].id", id);
+		this.client.get()
+			.uri("/instances?name=twice")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.APPLICATION_JSON)
+			.expectBody()
+			.jsonPath("$[0].id", id);
 	}
 
 	private void assertInstances(String id) {
-		this.client.get().uri("/instances").exchange().expectStatus().isOk().expectHeader()
-				.contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$[0].id", id);
+		this.client.get()
+			.uri("/instances")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.APPLICATION_JSON)
+			.expectBody()
+			.jsonPath("$[0].id", id);
 	}
 
 	private void registerSecondTime(String id) {
-		this.client.post().uri("/instances").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-				.bodyValue(register_as_twice).exchange().expectStatus().isCreated().expectHeader()
-				.contentType(MediaType.APPLICATION_JSON).expectHeader().valueEquals("location", getLocation(id))
-				.expectBody(Map.class).isEqualTo(singletonMap("id", id));
+		this.client.post()
+			.uri("/instances")
+			.accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
+			.bodyValue(register_as_twice)
+			.exchange()
+			.expectStatus()
+			.isCreated()
+			.expectHeader()
+			.contentType(MediaType.APPLICATION_JSON)
+			.expectHeader()
+			.valueEquals("location", getLocation(id))
+			.expectBody(Map.class)
+			.isEqualTo(singletonMap("id", id));
 	}
 
 	private String register() {

@@ -28,10 +28,11 @@ public class ReactiveAdminServerUiAutoConfigurationWebfluxBasePathTest
 	@Override
 	protected ReactiveWebApplicationContextRunner getContextRunner() {
 		return new ReactiveWebApplicationContextRunner()
-				.withPropertyValues("--spring.boot.admin.ui.available-languages=de", "--spring.webflux.base-path=test",
-						"--spring.boot.admin.ui.additional-route-excludes[0]=/instances/*/actuator/some-extension/**")
-				.withBean(AdminServerProperties.class).withBean(WebFluxProperties.class)
-				.withConfiguration(AutoConfigurations.of(AdminServerUiAutoConfiguration.class));
+			.withPropertyValues("--spring.boot.admin.ui.available-languages=de", "--spring.webflux.base-path=test",
+					"--spring.boot.admin.ui.additional-route-excludes[0]=/instances/*/actuator/some-extension/**")
+			.withBean(AdminServerProperties.class)
+			.withBean(WebFluxProperties.class)
+			.withConfiguration(AutoConfigurations.of(AdminServerUiAutoConfiguration.class));
 	}
 
 }

@@ -60,11 +60,13 @@ public class InstanceStatusChangedEventMixinTest {
 
 	@Test
 	public void verifyDeserialize() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "STATUS_CHANGED")
-				.put("statusInfo",
-						new JSONObject().put("status", "OFFLINE").put("details", new JSONObject().put("foo", "bar")))
-				.toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "STATUS_CHANGED")
+			.put("statusInfo",
+					new JSONObject().put("status", "OFFLINE").put("details", new JSONObject().put("foo", "bar")))
+			.toString();
 
 		InstanceStatusChangedEvent event = objectMapper.readValue(json, InstanceStatusChangedEvent.class);
 		assertThat(event).isNotNull();
@@ -80,8 +82,11 @@ public class InstanceStatusChangedEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("timestamp", 1587751031.000000000)
-				.put("type", "STATUS_CHANGED").put("statusInfo", new JSONObject().put("status", "OFFLINE")).toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "STATUS_CHANGED")
+			.put("statusInfo", new JSONObject().put("status", "OFFLINE"))
+			.toString();
 
 		InstanceStatusChangedEvent event = objectMapper.readValue(json, InstanceStatusChangedEvent.class);
 		assertThat(event).isNotNull();
@@ -97,8 +102,11 @@ public class InstanceStatusChangedEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithoutStatusInfo() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "STATUS_CHANGED").toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "STATUS_CHANGED")
+			.toString();
 
 		InstanceStatusChangedEvent event = objectMapper.readValue(json, InstanceStatusChangedEvent.class);
 		assertThat(event).isNotNull();
@@ -110,13 +118,17 @@ public class InstanceStatusChangedEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithEmptyStatusInfo() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "STATUS_CHANGED")
-				.put("statusInfo", new JSONObject()).toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "STATUS_CHANGED")
+			.put("statusInfo", new JSONObject())
+			.toString();
 
 		assertThatThrownBy(() -> objectMapper.readValue(json, InstanceStatusChangedEvent.class))
-				.isInstanceOf(JsonMappingException.class).hasCauseInstanceOf(IllegalArgumentException.class)
-				.hasMessageContaining("must not be empty");
+			.isInstanceOf(JsonMappingException.class)
+			.hasCauseInstanceOf(IllegalArgumentException.class)
+			.hasMessageContaining("must not be empty");
 	}
 
 	@Test

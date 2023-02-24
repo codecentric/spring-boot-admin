@@ -43,12 +43,12 @@ public class SpringBootAdminClientEnabledCondition extends SpringBootCondition {
 
 		if (!clientProperties.isEnabled()) {
 			return ConditionOutcome
-					.noMatch("Spring Boot Client is disabled, because 'spring.boot.admin.client.enabled' is false.");
+				.noMatch("Spring Boot Client is disabled, because 'spring.boot.admin.client.enabled' is false.");
 		}
 
 		if (clientProperties.getUrl().length == 0) {
 			return ConditionOutcome
-					.noMatch("Spring Boot Client is disabled, because 'spring.boot.admin.client.url' is empty.");
+				.noMatch("Spring Boot Client is disabled, because 'spring.boot.admin.client.url' is empty.");
 		}
 
 		return ConditionOutcome.match();

@@ -71,8 +71,11 @@ class MicrosoftTeamsNotifierTest {
 
 	@BeforeEach
 	void setUp() {
-		instance = Instance.create(InstanceId.of(appId)).register(
-				Registration.create(appName, healthUrl).managementUrl(managementUrl).serviceUrl(serviceUrl).build());
+		instance = Instance.create(InstanceId.of(appId))
+			.register(Registration.create(appName, healthUrl)
+				.managementUrl(managementUrl)
+				.serviceUrl(serviceUrl)
+				.build());
 
 		repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
@@ -193,7 +196,7 @@ class MicrosoftTeamsNotifierTest {
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
-				.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + appName);
+			.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + appName);
 	}
 
 	@Test
@@ -203,7 +206,7 @@ class MicrosoftTeamsNotifierTest {
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
-				.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + appName);
+			.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + appName);
 	}
 
 	@Test

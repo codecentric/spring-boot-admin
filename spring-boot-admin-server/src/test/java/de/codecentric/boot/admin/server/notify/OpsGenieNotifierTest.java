@@ -51,7 +51,7 @@ public class OpsGenieNotifierTest {
 	private InstanceRepository repository;
 
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-			.register(Registration.create("App", "http://health").build());
+		.register(Registration.create("App", "http://health").build());
 
 	@BeforeEach
 	public void setUp() {
@@ -70,16 +70,17 @@ public class OpsGenieNotifierTest {
 
 	@Test
 	public void test_onApplicationEvent_resolve() {
-		StepVerifier.create(notifier.notify(
-				new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
-				.verifyComplete();
+		StepVerifier
+			.create(notifier.notify(
+					new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
+			.verifyComplete();
 		reset(restTemplate);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(StatusInfo.ofUp())));
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofUp())))
+			.verifyComplete();
 
 		verify(restTemplate).exchange(eq("https://api.opsgenie.com/v2/alerts/App_-id-/close"), eq(HttpMethod.POST),
 				eq(expectedRequest("DOWN", "UP")), eq(Void.class));
@@ -88,15 +89,16 @@ public class OpsGenieNotifierTest {
 	@Test
 	public void test_onApplicationEvent_trigger() {
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
+			.verifyComplete();
 		reset(restTemplate);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE.withStatusInfo(StatusInfo.ofDown())));
 
-		StepVerifier.create(notifier.notify(
-				new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofDown())))
-				.verifyComplete();
+		StepVerifier
+			.create(notifier.notify(
+					new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofDown())))
+			.verifyComplete();
 
 		verify(restTemplate).exchange(eq("https://api.opsgenie.com/v2/alerts"), eq(HttpMethod.POST),
 				eq(expectedRequest("UP", "DOWN")), eq(Void.class));

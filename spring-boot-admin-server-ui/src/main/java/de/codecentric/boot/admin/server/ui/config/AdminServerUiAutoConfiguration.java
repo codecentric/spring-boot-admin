@@ -98,19 +98,27 @@ public class AdminServerUiAutoConfiguration {
 	@ConditionalOnMissingBean
 	public UiController homeUiController(UiExtensions uiExtensions) throws IOException {
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
-				.scan(this.adminUi.getExtensionResourceLocations());
+			.scan(this.adminUi.getExtensionResourceLocations());
 		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-				.collect(Collectors.toList());
+			.collect(Collectors.toList());
 
-		Settings uiSettings = Settings.builder().brand(this.adminUi.getBrand()).title(this.adminUi.getTitle())
-				.loginIcon(this.adminUi.getLoginIcon()).favicon(this.adminUi.getFavicon())
-				.faviconDanger(this.adminUi.getFaviconDanger()).enableToasts(this.adminUi.getEnableToasts())
-				.notificationFilterEnabled(
-						!this.applicationContext.getBeansOfType(NotificationFilterController.class).isEmpty())
-				.routes(routes).rememberMeEnabled(this.adminUi.isRememberMeEnabled())
-				.availableLanguages(this.adminUi.getAvailableLanguages()).externalViews(this.adminUi.getExternalViews())
-				.pollTimer(this.adminUi.getPollTimer()).viewSettings(this.adminUi.getViewSettings())
-				.theme(this.adminUi.getTheme()).build();
+		Settings uiSettings = Settings.builder()
+			.brand(this.adminUi.getBrand())
+			.title(this.adminUi.getTitle())
+			.loginIcon(this.adminUi.getLoginIcon())
+			.favicon(this.adminUi.getFavicon())
+			.faviconDanger(this.adminUi.getFaviconDanger())
+			.enableToasts(this.adminUi.getEnableToasts())
+			.notificationFilterEnabled(
+					!this.applicationContext.getBeansOfType(NotificationFilterController.class).isEmpty())
+			.routes(routes)
+			.rememberMeEnabled(this.adminUi.isRememberMeEnabled())
+			.availableLanguages(this.adminUi.getAvailableLanguages())
+			.externalViews(this.adminUi.getExternalViews())
+			.pollTimer(this.adminUi.getPollTimer())
+			.viewSettings(this.adminUi.getViewSettings())
+			.theme(this.adminUi.getTheme())
+			.build();
 
 		String publicUrl = (this.adminUi.getPublicUrl() != null) ? this.adminUi.getPublicUrl()
 				: this.adminServer.getContextPath();
@@ -177,16 +185,16 @@ public class AdminServerUiAutoConfiguration {
 						webfluxBasePathSet ? webFluxBasePath + "/" : this.adminServer.path("/"));
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
-						.scan(this.adminUi.getExtensionResourceLocations());
+					.scan(this.adminUi.getExtensionResourceLocations());
 				List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-						.map((path) -> webfluxBasePathSet ? webFluxBasePath + path : this.adminServer.path(path))
-						.collect(Collectors.toList());
+					.map((path) -> webfluxBasePathSet ? webFluxBasePath + path : this.adminServer.path(path))
+					.collect(Collectors.toList());
 				routesIncludes.add("");
 
 				List<String> routesExcludes = Stream
-						.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
-						.map((path) -> webfluxBasePathSet ? webFluxBasePath + path : this.adminServer.path(path))
-						.collect(Collectors.toList());
+					.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
+					.map((path) -> webfluxBasePathSet ? webFluxBasePath + path : this.adminServer.path(path))
+					.collect(Collectors.toList());
 
 				return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
 			}
@@ -194,11 +202,11 @@ public class AdminServerUiAutoConfiguration {
 			@Override
 			public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
 				registry.addResourceHandler(this.adminServer.path("/**"))
-						.addResourceLocations(this.adminUi.getResourceLocations())
-						.setCacheControl(this.adminUi.getCache().toCacheControl());
+					.addResourceLocations(this.adminUi.getResourceLocations())
+					.setCacheControl(this.adminUi.getCache().toCacheControl());
 				registry.addResourceHandler(this.adminServer.path("/extensions/**"))
-						.addResourceLocations(this.adminUi.getExtensionResourceLocations())
-						.setCacheControl(this.adminUi.getCache().toCacheControl());
+					.addResourceLocations(this.adminUi.getExtensionResourceLocations())
+					.setCacheControl(this.adminUi.getCache().toCacheControl());
 			}
 
 			@Bean
@@ -243,12 +251,14 @@ public class AdminServerUiAutoConfiguration {
 				String homepage = normalizeHomepageUrl(this.adminServer.path("/"));
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
-						.scan(this.adminUi.getExtensionResourceLocations());
+					.scan(this.adminUi.getExtensionResourceLocations());
 				List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-						.map(this.adminServer::path).collect(Collectors.toList());
+					.map(this.adminServer::path)
+					.collect(Collectors.toList());
 				List<String> routesExcludes = Stream
-						.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
-						.map(this.adminServer::path).collect(Collectors.toList());
+					.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
+					.map(this.adminServer::path)
+					.collect(Collectors.toList());
 
 				return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
 			}
@@ -257,11 +267,11 @@ public class AdminServerUiAutoConfiguration {
 			public void addResourceHandlers(
 					org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
 				registry.addResourceHandler(this.adminServer.path("/**"))
-						.addResourceLocations(this.adminUi.getResourceLocations())
-						.setCacheControl(this.adminUi.getCache().toCacheControl());
+					.addResourceLocations(this.adminUi.getResourceLocations())
+					.setCacheControl(this.adminUi.getCache().toCacheControl());
 				registry.addResourceHandler(this.adminServer.path("/extensions/**"))
-						.addResourceLocations(this.adminUi.getExtensionResourceLocations())
-						.setCacheControl(this.adminUi.getCache().toCacheControl());
+					.addResourceLocations(this.adminUi.getExtensionResourceLocations())
+					.setCacheControl(this.adminUi.getCache().toCacheControl());
 			}
 
 			@Bean

@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 public class HipchatNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("-id-"))
-			.register(Registration.create("App", "http://health").build());
+		.register(Registration.create("App", "http://health").build());
 
 	private HipchatNotifier notifier;
 
@@ -73,19 +73,19 @@ public class HipchatNotifierTest {
 	public void test_onApplicationEvent_resolve() {
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
-				.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
+			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
 		when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
-				.thenReturn(ResponseEntity.ok().build());
+			.thenReturn(ResponseEntity.ok().build());
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
 				Collections.singletonList("application/json"));
@@ -104,19 +104,18 @@ public class HipchatNotifierTest {
 
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
-				.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
+			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
 		when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
-				.thenReturn(ResponseEntity.ok().build());
+			.thenReturn(ResponseEntity.ok().build());
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 		StepVerifier
-				.create(notifier
-						.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
-				.verifyComplete();
+			.create(notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
+			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
 				Collections.singletonList("application/json"));

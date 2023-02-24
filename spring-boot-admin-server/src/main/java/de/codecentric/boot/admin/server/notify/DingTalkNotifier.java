@@ -77,7 +77,7 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 	@Override
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
 		return Mono
-				.fromRunnable(() -> restTemplate.postForEntity(buildUrl(), createMessage(event, instance), Void.class));
+			.fromRunnable(() -> restTemplate.postForEntity(buildUrl(), createMessage(event, instance), Void.class));
 	}
 
 	private String buildUrl() {
@@ -104,8 +104,9 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
 		SimpleEvaluationContext context = SimpleEvaluationContext
-				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-				.withRootObject(root).build();
+			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+			.withRootObject(root)
+			.build();
 		return message.getValue(context, String.class);
 	}
 

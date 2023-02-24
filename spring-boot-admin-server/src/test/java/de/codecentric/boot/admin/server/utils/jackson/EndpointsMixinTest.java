@@ -55,7 +55,8 @@ public class EndpointsMixinTest {
 	@Test
 	public void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONArray().put(new JSONObject().put("id", "info").put("url", "http://localhost:8080/info"))
-				.put(new JSONObject().put("id", "health").put("url", "http://localhost:8080/health")).toString();
+			.put(new JSONObject().put("id", "health").put("url", "http://localhost:8080/health"))
+			.toString();
 
 		Endpoints endpoints = objectMapper.readValue(json, Endpoints.class);
 		assertThat(endpoints).isNotNull();
@@ -65,19 +66,19 @@ public class EndpointsMixinTest {
 
 	@Test
 	public void verifySerialize() throws IOException {
-		Endpoints endpoints = Endpoints.single("info", "http://localhost:8080/info").withEndpoint("health",
-				"http://localhost:8080/health");
+		Endpoints endpoints = Endpoints.single("info", "http://localhost:8080/info")
+			.withEndpoint("health", "http://localhost:8080/health");
 
 		JsonContent<Endpoints> jsonContent = jsonTester.write(endpoints);
 		assertThat(jsonContent).extractingJsonPathArrayValue("$").hasSize(2);
 
 		assertThat(jsonContent).extractingJsonPathStringValue("$[0].id").isIn("info", "health");
-		assertThat(jsonContent).extractingJsonPathStringValue("$[0].url").isIn("http://localhost:8080/info",
-				"http://localhost:8080/health");
+		assertThat(jsonContent).extractingJsonPathStringValue("$[0].url")
+			.isIn("http://localhost:8080/info", "http://localhost:8080/health");
 
 		assertThat(jsonContent).extractingJsonPathStringValue("$[1].id").isIn("info", "health");
-		assertThat(jsonContent).extractingJsonPathStringValue("$[1].url").isIn("http://localhost:8080/info",
-				"http://localhost:8080/health");
+		assertThat(jsonContent).extractingJsonPathStringValue("$[1].url")
+			.isIn("http://localhost:8080/info", "http://localhost:8080/health");
 	}
 
 }
