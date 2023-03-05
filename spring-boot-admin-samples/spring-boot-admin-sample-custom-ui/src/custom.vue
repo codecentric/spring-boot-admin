@@ -23,8 +23,7 @@
 
 export default {
   setup() {
-    const { applications } = SBA.useApplicationStore();
-
+    const { applications } = SBA.useApplicationStore(); //<1>
     return {
       applications,
     };

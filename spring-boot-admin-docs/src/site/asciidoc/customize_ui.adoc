@@ -25,20 +25,13 @@ include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=cust
 ----
 
 <1> Name of the view and the route.
-<2> Path where the view will be accessible.
+<2> Path in Vue router.
 <3> The imported custom component, which will be rendered on the route.
-<4> The label for the custom view to be shown in the top navigation bar.
+<4> The handle for the custom view to be shown in the top navigation bar.
 <5> Order for the view.
+<6> Using `i18n.mergeLocaleMessage` allows to add custom translations.
 
 Views in the top navigation bar are sorted by ascending order.
-
-* Object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/viewRegistry.js[viewRegistry]
-
-* Object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/store.js[applicationStore]
-
-* Object referencing the the global Vue[Vue]
-
-* Object referencing the {github-src}/spring-boot-admin-server-ui/src/main/frontend/utils/axios.js[axios]
 
 If new top level routes are added to the frontend, they also must be known to the backend.
 Add a `/META-INF/spring-boot-admin-server-ui/extensions/{name}/routes.txt` with all your new toplevel routes (one route per line).
@@ -53,7 +46,7 @@ Here is a simple top level view just listing all registered applications:
 include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/custom.vue[lines=17..-1]
 ----
 
-<1> If you define a `applications` prop the component will receive all registered applications.
+<1> By destructuring `applications` of `SBA.useApplicationStore()`, you have reactive access to registered applications.
 
 TIP: There are some helpful methods on the application and instances object available.
 Have a look at {github-src}/spring-boot-admin-server-ui/src/main/frontend/services/application.js[application.js] and {github-src}/spring-boot-admin-server-ui/src/main/frontend/services/instance.js[instance.js]
@@ -102,7 +95,6 @@ include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=cust
 <1> The parent must be 'instances' in order to render the new custom view for a single instance.
 <2> You can group views by assigning them to a group.
 <3> If you add a `isEnabled` callback you can figure out dynamically if the view should be show for the particular instance.
-<4> Register custom i18n translations
 
 NOTE: You can override default views by putting the same group and name as the one you want to override.
 

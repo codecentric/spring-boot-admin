@@ -19,7 +19,11 @@ import * as Vue from 'vue';
 import { createApp, h, onBeforeMount, onBeforeUnmount, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+
+
 import './index.css';
+
+
 
 import components from './components';
 import { createViewRegistry, useViewRegistry } from './composables/ViewRegistry.js';
@@ -30,7 +34,6 @@ import Notifications from './notifications.js';
 import SbaModalPlugin from './plugins/modal';
 import sbaConfig from './sba-config.js';
 import sbaShell from './shell/index.vue';
-import axios from './utils/axios.js';
 import views from './views';
 
 
@@ -107,18 +110,3 @@ app.use(SbaModalPlugin, { i18n });
 app.use(viewRegistry.createRouter());
 
 const vue = app.mount('#app');
-
-installables.forEach((view) => {
-  try {
-    view.configure
-      ? view.configure({
-          app,
-          vue,
-          i18n: vue.$i18n,
-          axios,
-        })
-      : void 0;
-  } catch (e) {
-    console.error(`Error configuring view ${view}`, e);
-  }
-});

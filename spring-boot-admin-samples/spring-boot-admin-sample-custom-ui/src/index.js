@@ -21,27 +21,25 @@ import custom from './custom.vue';
 import handle from './handle.vue';
 
 
-// tag::customization-ui-toplevel
+// tag::customization-ui-toplevel[]
 SBA.use({
   install({ viewRegistry, i18n }) {
-    i18n.mergeLocaleMessage("en", {
-      custom: {
-        label: "My Extensions",
-      },
-    });
-    i18n.mergeLocaleMessage("de", {
-      custom: {
-        label: "Meine Erweiterung",
-      },
-    });
-    console.log(i18n.t("term.application"));
-    console.log(i18n.t("sidebar.custom.title"));
     viewRegistry.addView({
       name: "custom", //<1>
       path: "/custom", //<2>
       component: custom, //<3>
       handle, //<4>
       order: 1000, //<5>
+    });
+    i18n.mergeLocaleMessage("en", {
+      custom: {
+        label: "My Extensions", //<6>
+      },
+    });
+    i18n.mergeLocaleMessage("de", {
+      custom: {
+        label: "Meine Erweiterung",
+      },
     });
   },
 });
