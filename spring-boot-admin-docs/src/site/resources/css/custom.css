@@ -11,7 +11,7 @@ body::before {
     display: block;
     height: 200px;
     left: 0;
-    position: absolute;
+    position: fixed;
     width: 100%;
     z-index: -1;
 }
@@ -33,7 +33,7 @@ body::before {
 #main-section {
     display: flex;
     flex-direction: column;
-    margin-top: 60px;
+    margin-top: 80px;
 }
 
 #footer-info {
@@ -42,6 +42,11 @@ body::before {
     align-items: center;
     line-height: 2em;
     font-size: .8em;
+}
+
+.hljs {
+    background-color: rgba(240, 240, 240, .75);
+    backdrop-filter: blur(10px);
 }
 
 #footer-info a {

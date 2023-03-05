@@ -10,7 +10,8 @@ export function removeElement(el) {
 
 export function createComponent(component, props, parentContainer, slots = {}) {
   const vNode = h(component, props, slots);
-  const container = document.createElement('div');
+  let container = parentContainer.querySelector('.sba-modal--wrapper');
+  container = container || document.createElement('div');
   container.classList.add('sba-modal--wrapper');
   parentContainer.appendChild(container);
   render(vNode, container);

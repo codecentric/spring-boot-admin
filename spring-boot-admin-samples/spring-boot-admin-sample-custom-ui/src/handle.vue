@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2019 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -15,22 +15,27 @@
   -->
 
 <template>
-  <pre v-text="stringify(applications, null, 4)" />
+  <span>
+    <span v-text="t('custom.label')" />
+    <span>&nbsp;(UP: {{ upCount }})</span>
+  </span>
 </template>
 
-<script>
+<script setup>
 /* global SBA */
+import { computed } from "vue";
 
-export default {
-  setup() {
-    const { applications } = SBA.useApplicationStore();
-
-    return {
-      applications,
-    };
+const { applications } = SBA.useApplicationStore();
+const { t } = SBA.useI18n();
+const upCount = computed({
+  get() {
+    return applications.value.reduce((current, next) => {
+      return (
+        current +
+        next.instances.filter((instance) => instance.statusInfo.status === "UP")
+          .length
+      );
+    }, 0);
   },
-  methods: {
-    stringify: JSON.stringify,
-  },
-};
+});
 </script>
