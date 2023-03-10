@@ -23,7 +23,6 @@
 <script setup>
 /* global:SBA */
 const { t, mergeLocaleMessage } = SBA.useI18n();
-console.log(t, mergeLocaleMessage);
 
 mergeLocaleMessage("en", {
   custom_sub: {
