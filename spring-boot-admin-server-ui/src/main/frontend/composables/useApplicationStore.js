@@ -8,6 +8,8 @@ const applicationsInitialized = ref(false);
 const error = ref(null);
 
 export function createApplicationStore() {
+  if (applicationStore) throw new Error('ApplicationStore already created!');
+
   applicationStore = new ApplicationStore();
   return applicationStore;
 }

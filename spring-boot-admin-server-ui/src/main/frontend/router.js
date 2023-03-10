@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
 
-const router = (routes, sbaConfigRoutes = sbaConfig.uiSettings.routes) => {
-  const routesKnownToBackend = sbaConfigRoutes.map(
+const router = (routes) => {
+  const routesKnownToBackend = sbaConfig.uiSettings.routes.map(
     (r) => new RegExp(`^${r.replace('/**', '(/.*)?')}$`)
   );
   const unknownRoutes = routes.filter(
@@ -21,7 +21,7 @@ const router = (routes, sbaConfigRoutes = sbaConfig.uiSettings.routes) => {
   return createRouter({
     history: createWebHistory(),
     linkActiveClass: 'is-active',
-    routes,
+    routes: [],
   });
 };
 

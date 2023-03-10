@@ -2,14 +2,20 @@
   "name": "spring-boot-admin-sample-custom-ui",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "vue-cli-service build --mode development"
+    "build": "vite build",
+    "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "3.2.47"
   },
   "devDependencies": {
-    "@vue/cli-service": "5.0.8",
-    "copy-webpack-plugin": "5.1.2",
-    "vue": "3.2.47",
-    "vue-loader": "17.0.1"
+    "@vitejs/plugin-vue": "4.0.0",
+    "@vue-macros/reactivity-transform": "^0.2.4",
+    "vite": "4.1.1",
+    "vite-plugin-static-copy": "^0.13.1"
   },
   "browserslist": [
     "> 1%",
