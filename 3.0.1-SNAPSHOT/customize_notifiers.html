@@ -245,98 +245,38 @@
 </header>
 <section id="main-section" class="container flex-grow-1">
 <div class="sect1">
- <h2 id="clustering-support">Clustering</h2>
+ <h2 id="customizing-notifiers">Custom Notifiers</h2>
  <div class="sectionbody">
   <div class="paragraph">
-   <p>Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a <code>HazelcastConfig</code>- or <code>HazelcastInstance</code>-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts. Also have a look at the <a href="http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/">Spring Boot support for Hazelcast</a>.</p>
+   <p>You can add your own Notifiers by adding Spring Beans which implement the <code>Notifier</code> interface, at best by extending <code>AbstractEventNotifier</code> or <code>AbstractStatusChangeNotifier</code>.</p>
   </div>
-  <div class="olist arabic">
-   <ol class="arabic">
-    <li><p>Add Hazelcast to your dependencies:</p>
-     <div class="listingblock">
-      <div class="title">
-       pom.xml
-      </div>
-      <div class="content">
-       <pre class="CodeRay highlight border shadow rounded"><code data-lang="xml"><span class="tag">&lt;dependency&gt;</span>
-    <span class="tag">&lt;groupId&gt;</span>com.hazelcast<span class="tag">&lt;/groupId&gt;</span>
-    <span class="tag">&lt;artifactId&gt;</span>hazelcast<span class="tag">&lt;/artifactId&gt;</span>
-<span class="tag">&lt;/dependency&gt;</span></code></pre>
-      </div>
-     </div></li>
-    <li><p>Instantiate a HazelcastConfig:</p>
-     <div class="listingblock">
-      <div class="content">
-       <pre class="CodeRay highlight border shadow rounded"><code data-lang="java"><span class="annotation">@Bean</span>
-<span class="directive">public</span> Config hazelcastConfig() {
-        <span class="comment">// This map is used to store the events.</span>
-        <span class="comment">// It should be configured to reliably hold all the data,</span>
-        <span class="comment">// Spring Boot Admin will compact the events, if there are too many</span>
-        MapConfig eventStoreMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
-                .setBackupCount(<span class="integer">1</span>)
-                .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), <span class="integer">100</span>));
+  <div class="listingblock">
+   <div class="content">
+    <pre class="CodeRay highlight border shadow rounded"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">CustomNotifier</span> <span class="directive">extends</span> AbstractEventNotifier {
 
-        <span class="comment">// This map is used to deduplicate the notifications.</span>
-        <span class="comment">// If data in this map gets lost it should not be a big issue as it will atmost</span>
-        <span class="comment">// lead to</span>
-        <span class="comment">// the same notification to be sent by multiple instances</span>
-        MapConfig sentNotificationsMap = <span class="keyword">new</span> MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-                .setInMemoryFormat(InMemoryFormat.OBJECT)
-                .setBackupCount(<span class="integer">1</span>)
-                .setEvictionConfig(
-                                <span class="keyword">new</span> EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setMaxSizePolicy(MaxSizePolicy.PER_NODE))
-                .setMergePolicyConfig(<span class="keyword">new</span> MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), <span class="integer">100</span>));
+        <span class="directive">private</span> <span class="directive">static</span> <span class="directive">final</span> <span class="predefined-type">Logger</span> LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
 
-        Config config = <span class="keyword">new</span> Config();
-        config.addMapConfig(eventStoreMap);
-        config.addMapConfig(sentNotificationsMap);
-        config.setProperty(<span class="string"><span class="delimiter">"</span><span class="content">hazelcast.jmx</span><span class="delimiter">"</span></span>, <span class="string"><span class="delimiter">"</span><span class="content">true</span><span class="delimiter">"</span></span>);
+        <span class="directive">public</span> CustomNotifier(InstanceRepository repository) {
+                <span class="local-variable">super</span>(repository);
+        }
 
-        <span class="comment">// WARNING: This setups a local cluster, you change it to fit your needs.</span>
-        config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(<span class="predefined-constant">false</span>);
-        TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
-        tcpIpConfig.setEnabled(<span class="predefined-constant">true</span>);
-        tcpIpConfig.setMembers(singletonList(<span class="string"><span class="delimiter">"</span><span class="content">127.0.0.1</span><span class="delimiter">"</span></span>));
-        <span class="keyword">return</span> config;
+        <span class="annotation">@Override</span>
+        <span class="directive">protected</span> Mono&lt;<span class="predefined-type">Void</span>&gt; doNotify(InstanceEvent event, Instance instance) {
+                <span class="keyword">return</span> Mono.fromRunnable(() -&gt; {
+                        <span class="keyword">if</span> (event <span class="keyword">instanceof</span> InstanceStatusChangedEvent) {
+                                LOGGER.info(<span class="string"><span class="delimiter">"</span><span class="content">Instance {} ({}) is {}</span><span class="delimiter">"</span></span>, instance.getRegistration().getName(), event.getInstance(),
+                                                ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
+                        }
+                        <span class="keyword">else</span> {
+                                LOGGER.info(<span class="string"><span class="delimiter">"</span><span class="content">Instance {} ({}) {}</span><span class="delimiter">"</span></span>, instance.getRegistration().getName(), event.getInstance(),
+                                                event.getType());
+                        }
+                });
+        }
+
 }</code></pre>
-      </div>
-     </div></li>
-   </ol>
+   </div>
   </div>
-  <table class="tableblock frame-all grid-all stretch table table-striped table-bordered">
-   <caption class="title">
-    Table 1. Hazelcast configuration options
-   </caption>
-   <colgroup>
-    <col style="width: 33.3333%;">
-    <col style="width: 33.3333%;">
-    <col style="width: 33.3334%;">
-   </colgroup>
-   <thead>
-    <tr>
-     <th class="tableblock halign-left valign-top">Property name</th>
-     <th class="tableblock halign-left valign-top">Description</th>
-     <th class="tableblock halign-left valign-top">Default value</th>
-    </tr>
-   </thead>
-   <tbody>
-    <tr>
-     <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.hazelcast.enabled</p></td>
-     <td class="tableblock halign-left valign-top"><p class="tableblock">Enables the Hazelcast support</p></td>
-     <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
-    </tr>
-    <tr>
-     <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.hazelcast.event-store</p></td>
-     <td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Hazelcast-map to store the events</p></td>
-     <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"spring-boot-admin-event-store"</code></p></td>
-    </tr>
-    <tr>
-     <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.hazelcast.sent-notifications</p></td>
-     <td class="tableblock halign-left valign-top"><p class="tableblock">Name of the Hazelcast-map used to deduplicate the notifications.</p></td>
-     <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"spring-boot-admin-sent-notifications"</code></p></td>
-    </tr>
-   </tbody>
-  </table>
  </div>
 </div>
 </section>
