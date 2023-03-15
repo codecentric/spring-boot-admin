@@ -18,6 +18,7 @@
   <li
     v-for="instance in instances"
     :key="instance.id"
+    :data-testid="instance.id"
     class="flex items-center hover:bg-gray-100 p-2"
     @click.stop="showDetails(instance)"
   >

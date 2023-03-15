@@ -14,76 +14,123 @@
  * limitations under the License.
  */
 import userEvent from '@testing-library/user-event';
-import { screen, waitFor } from '@testing-library/vue';
+import { screen, waitFor, within } from '@testing-library/vue';
 import { cloneDeep } from 'lodash-es';
 
-import { applications } from '../../mocks/applications/data';
 import Application from '../../services/application';
-import { render } from '../../test-utils';
 import ApplicationListItem from './applications-list-item';
 
+import { applications } from '@/mocks/applications/data';
+import { render } from '@/test-utils';
+
+async function clickConfirmModal() {
+  await waitFor(() => {
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  const buttonOK = screen.queryByRole('button', { name: 'term.ok' });
+  await userEvent.click(buttonOK);
+}
+
 describe('application-list-item.vue', () => {
-  let application;
+  describe('unregister', () => {
+    it('on instance', async () => {
+      let application = new Application(cloneDeep(applications[0]));
+      const { emitted } = render(ApplicationListItem, {
+        props: { application, isExpanded: true },
+      });
 
-  beforeEach(() => {
-    application = cloneDeep(applications[0]);
+      const htmlElement = await screen.findByTestId(
+        application.instances[0].id
+      );
+      const element = within(htmlElement).queryByTitle(
+        'applications.actions.unregister'
+      );
+      await userEvent.click(element);
+
+      await clickConfirmModal();
+
+      await waitFor(() => expect(emitted('unregister')).toBeDefined());
+    });
+
+    it('on application', async () => {
+      const { emitted } = render(ApplicationListItem, {
+        props: { application: new Application(cloneDeep(applications[0])) },
+      });
+
+      const element = screen.queryByTitle('applications.actions.unregister');
+      await userEvent.click(element);
+
+      await clickConfirmModal();
+
+      await waitFor(() => expect(emitted('unregister')).toBeDefined());
+    });
   });
 
-  it('does not show shutdown button when shutdown endpoint is missing', () => {
-    application.instances[0].endpoints = [];
+  describe('restart', () => {
+    it('on instance', async () => {
+      let application = new Application(cloneDeep(applications[0]));
+      const { emitted } = render(ApplicationListItem, {
+        props: { application, isExpanded: true },
+      });
 
-    render(ApplicationListItem, {
-      props: { application: new Application(application) },
+      const htmlElement = await screen.findByTestId(
+        application.instances[0].id
+      );
+      const element = within(htmlElement).queryByTitle(
+        'applications.actions.restart'
+      );
+      await userEvent.click(element);
+
+      await clickConfirmModal();
+
+      await waitFor(() => expect(emitted('restart')).toBeDefined());
     });
 
-    const shutdownButton = screen.queryByTitle('shutdown');
-    expect(shutdownButton).toBeNull();
+    it('on application', async () => {
+      const { emitted } = render(ApplicationListItem, {
+        props: { application: new Application(cloneDeep(applications[0])) },
+      });
+
+      const element = screen.queryByTitle('applications.actions.restart');
+      await userEvent.click(element);
+
+      await clickConfirmModal();
+
+      await waitFor(() => expect(emitted('restart')).toBeDefined());
+    });
   });
 
-  it('should call shutdown endpoint when modal is confirmed', async () => {
-    const { emitted } = render(ApplicationListItem, {
-      props: { application: new Application(application) },
+  describe('shutdown', () => {
+    it('on application', async () => {
+      const { emitted } = render(ApplicationListItem, {
+        props: { application: new Application(cloneDeep(applications[0])) },
+      });
+
+      const element = await screen.findByTitle('applications.actions.shutdown');
+      await userEvent.click(element);
+
+      await clickConfirmModal();
+
+      expect(emitted('shutdown')).toBeDefined();
     });
 
-    const element = screen.queryByTitle('shutdown');
-    await userEvent.click(element);
+    it('on instance', async () => {
+      let application = new Application(cloneDeep(applications[0]));
+      const { emitted } = render(ApplicationListItem, {
+        props: { application, isExpanded: true },
+      });
 
-    await waitFor(() => {
-      screen.findByRole('dialog');
+      let htmlElement = await screen.findByTestId(application.instances[0].id);
+
+      const element = await within(htmlElement).findByTitle(
+        'applications.actions.shutdown'
+      );
+      await userEvent.click(element);
+
+      await clickConfirmModal();
+
+      expect(emitted('shutdown')).toBeDefined();
     });
-
-    const buttonOK = screen.queryByRole('button', { name: 'OK' });
-    await userEvent.click(buttonOK);
-
-    expect(emitted()).toBeDefined();
-  });
-
-  it('does not show restart button when restart endpoint is missing', () => {
-    application.instances[0].endpoints = [];
-
-    render(ApplicationListItem, {
-      props: { application: new Application(application) },
-    });
-
-    const shutdownButton = screen.queryByTitle('applications.actions.restart');
-    expect(shutdownButton).toBeNull();
-  });
-
-  it('should call restart endpoint when modal is confirmed', async () => {
-    const { emitted } = render(ApplicationListItem, {
-      props: { application: new Application(application) },
-    });
-
-    const element = screen.queryByTitle('applications.actions.restart');
-    await userEvent.click(element);
-    await waitFor(() => {
-      screen.findByRole('dialog');
-    });
-
-    const buttonOK = screen.queryByRole('button', { name: 'term.ok' });
-    await userEvent.click(buttonOK);
-
-    let emitted1 = emitted();
-    expect(emitted1.restart).toBeDefined();
   });
 });
