@@ -37,7 +37,8 @@
   },
   "instances": {
     "shutdown": "Shutdown instance <code>{name}</code>?",
-    "shutdown_successful": "Successfully restarted instances {name}.",
+    "shutdown_successful": "Successfully shutdown instances {name}.",
+    "shutdown_failed": "Failed to shutdown instances {name}.",
     "restart": "Restart instance <code>{name}</code>?",
     "restarted": "Successfully restarted instance {name}.",
     "unregister": "Deregister instance <code>{name}</code>?",

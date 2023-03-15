@@ -22,10 +22,19 @@ export const useModal = (globalProps = {}) => {
       };
 
       const propsData = Object.assign({}, defaultProps, globalProps, options);
-      createComponent(Modal, propsData, document.body, slots);
+      return createComponent(Modal, propsData, document.body, slots);
     },
     async confirm(title, body) {
-      this.open(
+      let bodyFn = () =>
+        h(
+          'span',
+          {
+            innerHTML: body,
+          },
+          []
+        );
+
+      const { vNode, destroy } = this.open(
         { title },
         {
           buttons: () =>
@@ -33,12 +42,15 @@ export const useModal = (globalProps = {}) => {
               labelOk: t('term.ok'),
               labelCancel: t('term.cancel'),
             }),
-          body: () => h('span', { innerHTML: body }),
+          body: bodyFn,
         }
       );
 
       return new Promise((resolve) => {
-        eventBus.on('sba-modal-close', resolve);
+        eventBus.on('sba-modal-close', (result) => {
+          destroy();
+          resolve(result);
+        });
       });
     },
   };

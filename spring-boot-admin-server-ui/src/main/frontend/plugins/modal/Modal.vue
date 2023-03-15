@@ -1,8 +1,8 @@
 <template>
   <TransitionRoot
     ref="root"
-    appear
     :show="isOpen"
+    appear
     as="template"
     @close="closeModal"
   >
@@ -63,10 +63,9 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue';
-import { defineComponent, ref, render } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 import eventBus from '@/plugins/modal/bus';
-import { removeElement } from '@/plugins/modal/helpers';
 
 export default defineComponent({
   components: {
@@ -97,12 +96,6 @@ export default defineComponent({
   methods: {
     closeModal() {
       this.isOpen = false;
-
-      setTimeout(() => {
-        const wrapper = this.$refs.root;
-        render(null, wrapper);
-        removeElement(wrapper);
-      }, 150);
     },
   },
 });

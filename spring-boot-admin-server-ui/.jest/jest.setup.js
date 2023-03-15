@@ -2,6 +2,10 @@ import '@testing-library/jest-dom';
 
 import { server } from '@/mocks/server';
 
+afterEach(() => {
+  document.body.innerHTML = '';
+});
+
 beforeAll(async () => {
   server.listen();
 
