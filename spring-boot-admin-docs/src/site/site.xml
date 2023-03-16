@@ -13,7 +13,7 @@
     <custom>
         <skinConfig>
             <bootswatchStyle>litera</bootswatchStyle>
-            <customStyle>/css/custom.css</customStyle>
+            <customStyle>./css/custom.css</customStyle>
             <topNav>
                 <menu>Documentation</menu>
                 <menu>Server</menu>
