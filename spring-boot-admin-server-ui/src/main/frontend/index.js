@@ -20,13 +20,11 @@ import { createApp, h, onBeforeMount, onBeforeUnmount, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 
-
 import './index.css';
 
 
-
 import components from './components';
-import { createViewRegistry, useViewRegistry } from './composables/ViewRegistry.js';
+import { createViewRegistry, CUSTOM_ROUTES_ADDED_EVENT, useViewRegistry } from './composables/ViewRegistry.js';
 import { createApplicationStore, useApplicationStore } from './composables/useApplicationStore.js';
 import i18n from './i18n';
 import { worker } from './mocks/browser';
@@ -35,6 +33,8 @@ import SbaModalPlugin from './plugins/modal';
 import sbaConfig from './sba-config.js';
 import sbaShell from './shell/index.vue';
 import views from './views';
+import eventBus from '@/services/bus';
+import { useRoute, useRouter } from 'vue-router';
 
 
 const applicationStore = createApplicationStore();
@@ -48,7 +48,7 @@ globalThis.SBA.use = ({ install }) => {
   install({
     viewRegistry: globalThis.SBA.viewRegistry,
     applicationStore: globalThis.SBA.useApplicationStore,
-    i18n: i18n.global,
+    i18n: i18n.global
   });
 };
 
@@ -65,29 +65,24 @@ const installables = [Notifications, ...views];
 if (process.env.NODE_ENV === 'development') {
   worker.start({
     serviceWorker: {
-      url: './mockServiceWorker.js',
-    },
+      url: './mockServiceWorker.js'
+    }
   });
 }
 
 installables.forEach((installable) => {
   installable.install({
     viewRegistry,
-    applicationStore,
+    applicationStore
   });
 });
 
 const app = createApp({
   setup() {
-    const { applications, applicationsInitialized, error } =
-      useApplicationStore();
+    const router = useRouter();
+    const route = useRoute();
+    const { applications, applicationsInitialized, error } = useApplicationStore();
     const { t } = useI18n();
-    let props = reactive({
-      applications,
-      applicationsInitialized,
-      error,
-      t,
-    });
 
     onBeforeMount(() => {
       applicationStore.start();
@@ -97,14 +92,25 @@ const app = createApp({
       applicationStore.stop();
     });
 
-    return () => h(sbaShell, props);
-  },
+    let routesAddedEventHandler = async () => {
+      eventBus.off(CUSTOM_ROUTES_ADDED_EVENT, routesAddedEventHandler);
+      await router.replace(route);
+    };
+    eventBus.on(CUSTOM_ROUTES_ADDED_EVENT, routesAddedEventHandler);
+
+    return () => h(sbaShell, reactive({
+      applications,
+      applicationsInitialized,
+      error,
+      t
+    }));
+  }
 });
 
 app.use(i18n);
 app.use(components);
 app.use(NotificationcenterPlugin, {
-  duration: 10_000,
+  duration: 10_000
 });
 app.use(SbaModalPlugin, { i18n });
 app.use(viewRegistry.createRouter());
