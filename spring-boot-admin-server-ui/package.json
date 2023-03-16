@@ -70,7 +70,7 @@
     "@testing-library/user-event": "14.4.3",
     "@testing-library/vue": "7.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
-    "@vitejs/plugin-vue": "4.0.0",
+    "@vitejs/plugin-vue": "4.1.0",
     "@vue/test-utils": "2.3.1",
     "@vue/vue3-jest": "29.2.3",
     "autoprefixer": "10.4.14",
