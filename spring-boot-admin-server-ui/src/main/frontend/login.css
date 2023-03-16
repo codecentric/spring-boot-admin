@@ -17,8 +17,24 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    --bg-color-start: #71e69c;
+    --bg-color-stop: #09351a;
+}
+
+.bg-color-start {
+    transition: 0.4s ease;
+    stop-color: var(--bg-color-start);
+}
+
+.bg-color-stop {
+    transition: 0.4s ease;
+    stop-color: var(--bg-color-stop);
+}
+
+
 body {
-  font-family: BlinkMacSystemFont, -apple-system, Segoe UI, Roboto, Oxygen,
+    font-family: BlinkMacSystemFont, -apple-system, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, Helvetica, Arial,
     sans-serif;
 }

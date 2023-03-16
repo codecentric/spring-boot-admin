@@ -26,7 +26,7 @@
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
-        <revision>3.0.0-SNAPSHOT</revision>
+        <revision>3.0.1</revision>
         <java.version>17</java.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -36,32 +36,32 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.0.1</spring-boot.version>
-        <spring-cloud.version>2022.0.0</spring-cloud.version>
+        <spring-boot.version>3.0.4</spring-boot.version>
+        <spring-cloud.version>2022.0.1</spring-cloud.version>
         <wiremock.version>2.35.0</wiremock.version>
-        <hazelcast-tests.version>5.1.3</hazelcast-tests.version>
+        <hazelcast-tests.version>5.2.2</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.2.0</awaitility.version>
         <testcontainers.version>1.17.6</testcontainers.version>
         <eureka-client.version>3.1.1</eureka-client.version>
         <!-- Wiremock does not yet support jetty 11 (see also https://github.com/wiremock/wiremock/issues/1760). -->
         <!--<jetty.version>11.0.6</jetty.version>-->
-        <jetty.version>9.4.50.v20221201</jetty.version>
+        <jetty.version>9.4.51.v20230217</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
-        <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <versions-maven-plugin.version>2.13.0</versions-maven-plugin.version> <!-- because of https://github.com/mojohaus/versions/issues/855 -->
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version> <!-- because of https://github.com/mojohaus/versions/issues/855 -->
         <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
         <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
-        <maven-dependency-plugin.version>3.4.0</maven-dependency-plugin.version>
-        <maven-deploy-plugin.version>3.0.0</maven-deploy-plugin.version>
-        <maven-enforcer-plugin.version>3.1.0</maven-enforcer-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
+        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
+        <maven-deploy-plugin.version>3.1.0</maven-deploy-plugin.version>
+        <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+        <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
         <maven-install-plugin.version>3.1.0</maven-install-plugin.version>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
         <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
@@ -71,9 +71,9 @@
         <asciidoctor-maven-plugin.version>2.2.2</asciidoctor-maven-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <flatten-maven-plugin.version>1.3.0</flatten-maven-plugin.version>
-        <maven-checkstyle-plugin.version>3.2.0</maven-checkstyle-plugin.version>
+        <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
         <checkstyle.version>9.3</checkstyle.version>
-        <spring-javaformat-checkstyle.version>0.0.29</spring-javaformat-checkstyle.version>
+        <spring-javaformat-checkstyle.version>0.0.38</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
         <node.version>v16.13.2</node.version>
         <npm.version>8.3.2</npm.version>

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public class SnapshottingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("app-1"))
-			.register(Registration.create("app", "http://health").build());
+		.register(Registration.create("app", "http://health").build());
 
 	private InMemoryEventStore eventStore = spy(new InMemoryEventStore());
 
@@ -96,7 +96,8 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
 		reset(this.eventStore);
 		StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
 		StepVerifier.create(this.repository.find(InstanceId.of("broken")))
-				.assertNext((i) -> assertThat(i.getVersion()).isEqualTo(1L)).verifyComplete();
+			.assertNext((i) -> assertThat(i.getVersion()).isEqualTo(1L))
+			.verifyComplete();
 	}
 
 	@Test
@@ -115,13 +116,15 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
 		StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1L).verifyComplete();
 		this.repository.stop();
 		StepVerifier
-				.create(this.repository.save(this.instance.clearUnsavedEvents().withStatusInfo(StatusInfo.ofDown())))
-				.expectNextCount(1L).verifyComplete();
+			.create(this.repository.save(this.instance.clearUnsavedEvents().withStatusInfo(StatusInfo.ofDown())))
+			.expectNextCount(1L)
+			.verifyComplete();
 		// when
 		StepVerifier
-				.create(this.repository.computeIfPresent(this.instance.getId(),
-						(id, i) -> Mono.just(i.withStatusInfo(StatusInfo.ofUp()))))
-				.expectNextCount(1L).verifyComplete();
+			.create(this.repository.computeIfPresent(this.instance.getId(),
+					(id, i) -> Mono.just(i.withStatusInfo(StatusInfo.ofUp()))))
+			.expectNextCount(1L)
+			.verifyComplete();
 	}
 
 }

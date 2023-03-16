@@ -50,8 +50,9 @@ public abstract class AbstractEventStoreTest {
 
 	private final InstanceId id = InstanceId.of("id");
 
-	private final Registration registration = Registration.create("foo", "http://health").metadata("test", "dummy")
-			.build();
+	private final Registration registration = Registration.create("foo", "http://health")
+		.metadata("test", "dummy")
+		.build();
 
 	protected abstract InstanceEventStore createStore(int maxLogSizePerAggregate);
 
@@ -73,13 +74,16 @@ public abstract class AbstractEventStoreTest {
 				registration);
 		InstanceEvent event2 = new InstanceDeregisteredEvent(id, 1L, now.plusMillis(20));
 
-		StepVerifier.create(store).expectSubscription()
-				.then(() -> StepVerifier.create(store.append(singletonList(event1))).verifyComplete())
-				.expectNext(event1)
-				.then(() -> StepVerifier.create(store.append(singletonList(eventOther))).verifyComplete())
-				.expectNext(eventOther)
-				.then(() -> StepVerifier.create(store.append(singletonList(event2))).verifyComplete())
-				.expectNext(event2).thenCancel().verify();
+		StepVerifier.create(store)
+			.expectSubscription()
+			.then(() -> StepVerifier.create(store.append(singletonList(event1))).verifyComplete())
+			.expectNext(event1)
+			.then(() -> StepVerifier.create(store.append(singletonList(eventOther))).verifyComplete())
+			.expectNext(eventOther)
+			.then(() -> StepVerifier.create(store.append(singletonList(event2))).verifyComplete())
+			.expectNext(event2)
+			.thenCancel()
+			.verify();
 
 		StepVerifier.create(store.find(id)).expectNext(event1, event2).verifyComplete();
 		StepVerifier.create(store.find(InstanceId.of("-"))).verifyComplete();
@@ -117,16 +121,21 @@ public abstract class AbstractEventStoreTest {
 		InstanceEventStore store = createStore(500);
 
 		Function<Integer, InstanceEvent> eventFactory = (i) -> new InstanceDeregisteredEvent(id, i);
-		Flux<Void> eventgenerator = Flux.range(0, 500).map(eventFactory).buffer(2)
-				.flatMap((events) -> store.append(events).onErrorResume(OptimisticLockingException.class, (ex) -> {
-					log.info("skipped {}", ex.getMessage());
-					return Mono.empty();
-				}).delayElement(Duration.ofMillis(5L)));
+		Flux<Void> eventgenerator = Flux.range(0, 500)
+			.map(eventFactory)
+			.buffer(2)
+			.flatMap((events) -> store.append(events).onErrorResume(OptimisticLockingException.class, (ex) -> {
+				log.info("skipped {}", ex.getMessage());
+				return Mono.empty();
+			}).delayElement(Duration.ofMillis(5L)));
 
-		StepVerifier.create(eventgenerator.subscribeOn(Schedulers.newSingle("a"))
+		StepVerifier
+			.create(eventgenerator.subscribeOn(Schedulers.newSingle("a"))
 				.mergeWith(eventgenerator.subscribeOn(Schedulers.newSingle("a")))
 				.mergeWith(eventgenerator.subscribeOn(Schedulers.newSingle("a")))
-				.mergeWith(eventgenerator.subscribeOn(Schedulers.newSingle("a"))).then()).verifyComplete();
+				.mergeWith(eventgenerator.subscribeOn(Schedulers.newSingle("a")))
+				.then())
+			.verifyComplete();
 
 		List<Long> versions = store.find(id).map(InstanceEvent::getVersion).collectList().block();
 		List<Long> expected = LongStream.range(0, 500).boxed().collect(toList());

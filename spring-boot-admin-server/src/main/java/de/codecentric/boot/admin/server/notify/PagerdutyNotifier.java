@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.annotation.Nullable;
-
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -46,7 +45,7 @@ import static java.util.Collections.singletonList;
 public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 
 	public static final URI DEFAULT_URI = URI
-			.create("https://events.pagerduty.com/generic/2010-04-15/create_event.json");
+		.create("https://events.pagerduty.com/generic/2010-04-15/create_event.json");
 
 	private static final String DEFAULT_DESCRIPTION = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
 
@@ -91,7 +90,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 	@Override
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
 		return Mono
-				.fromRunnable(() -> restTemplate.postForEntity(url, createPagerdutyEvent(event, instance), Void.class));
+			.fromRunnable(() -> restTemplate.postForEntity(url, createPagerdutyEvent(event, instance), Void.class));
 	}
 
 	protected Map<String, Object> createPagerdutyEvent(InstanceEvent event, Instance instance) {
@@ -134,8 +133,9 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
 		SimpleEvaluationContext context = SimpleEvaluationContext
-				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-				.withRootObject(root).build();
+			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+			.withRootObject(root)
+			.build();
 		return description.getValue(context, String.class);
 	}
 

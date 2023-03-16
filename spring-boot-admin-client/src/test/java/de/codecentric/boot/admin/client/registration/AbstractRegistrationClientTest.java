@@ -42,8 +42,11 @@ public abstract class AbstractRegistrationClientTest {
 	private final WireMockServer wireMock = new WireMockServer(
 			options().dynamicPort().notifier(new ConsoleNotifier(true)));
 
-	private final Application application = Application.create("AppName").managementUrl("http://localhost:8080/mgmt")
-			.healthUrl("http://localhost:8080/health").serviceUrl("http://localhost:8080").build();
+	private final Application application = Application.create("AppName")
+		.managementUrl("http://localhost:8080/mgmt")
+		.healthUrl("http://localhost:8080/health")
+		.serviceUrl("http://localhost:8080")
+		.build();
 
 	private RegistrationClient registrationClient;
 
@@ -64,15 +67,16 @@ public abstract class AbstractRegistrationClientTest {
 	@Test
 	public void register_should_return_id_when_successful() {
 		ResponseDefinitionBuilder response = created().withHeader("Content-Type", "application/json")
-				.withHeader("Location", this.wireMock.url("/instances/abcdef")).withBody("{ \"id\" : \"-id-\" }");
+			.withHeader("Location", this.wireMock.url("/instances/abcdef"))
+			.withBody("{ \"id\" : \"-id-\" }");
 		this.wireMock.stubFor(post(urlEqualTo("/instances")).willReturn(response));
 
 		assertThat(this.registrationClient.register(this.wireMock.url("/instances"), this.application))
-				.isEqualTo("-id-");
+			.isEqualTo("-id-");
 
 		RequestPatternBuilder expectedRequest = postRequestedFor(urlEqualTo("/instances"))
-				.withHeader("Accept", equalTo("application/json"))
-				.withHeader("Content-Type", equalTo("application/json"));
+			.withHeader("Accept", equalTo("application/json"))
+			.withHeader("Content-Type", equalTo("application/json"));
 		this.wireMock.verify(expectedRequest);
 	}
 
@@ -81,7 +85,7 @@ public abstract class AbstractRegistrationClientTest {
 		this.wireMock.stubFor(post(urlEqualTo("/instances")).willReturn(serverError()));
 
 		assertThatThrownBy(() -> this.registrationClient.register(this.wireMock.url("/instances"), this.application))
-				.isInstanceOf(Exception.class);
+			.isInstanceOf(Exception.class);
 	}
 
 	@Test
@@ -95,7 +99,7 @@ public abstract class AbstractRegistrationClientTest {
 	public void deregister_should_trow() {
 		this.wireMock.stubFor(delete(urlEqualTo("/instances/-id-")).willReturn(serverError()));
 		assertThatThrownBy(() -> this.registrationClient.deregister(this.wireMock.url("/instances"), "-id-"))
-				.isInstanceOf(Exception.class);
+			.isInstanceOf(Exception.class);
 	}
 
 }

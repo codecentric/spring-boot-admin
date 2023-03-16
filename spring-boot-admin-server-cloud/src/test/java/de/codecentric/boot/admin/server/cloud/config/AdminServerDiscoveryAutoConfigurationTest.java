@@ -43,45 +43,47 @@ import static org.mockito.Mockito.mock;
 public class AdminServerDiscoveryAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(UtilAutoConfiguration.class,
-					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
-					AdminServerAutoConfiguration.class, AdminServerDiscoveryAutoConfiguration.class))
-			.withUserConfiguration(AdminServerMarkerConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(UtilAutoConfiguration.class,
+				ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
+				AdminServerAutoConfiguration.class, AdminServerDiscoveryAutoConfiguration.class))
+		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
 	public void defaultServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
-				.run((context) -> assertThat(context.getBean(ServiceInstanceConverter.class))
-						.isInstanceOf(DefaultServiceInstanceConverter.class));
+			.run((context) -> assertThat(context.getBean(ServiceInstanceConverter.class))
+				.isInstanceOf(DefaultServiceInstanceConverter.class));
 	}
 
 	@Test
 	public void eurekaServiceInstanceConverter() {
 		this.contextRunner.withBean(EurekaClient.class, () -> mock(EurekaClient.class))
-				.withBean(DiscoveryClient.class, () -> mock(DiscoveryClient.class)).run((context) -> assertThat(context)
-						.getBean(ServiceInstanceConverter.class).isInstanceOf(EurekaServiceInstanceConverter.class));
+			.withBean(DiscoveryClient.class, () -> mock(DiscoveryClient.class))
+			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
+				.isInstanceOf(EurekaServiceInstanceConverter.class));
 	}
 
 	@Test
 	public void officialKubernetesServiceInstanceConverter() {
 		this.contextRunner
-				.withBean(KubernetesInformerDiscoveryClient.class, () -> mock(KubernetesInformerDiscoveryClient.class))
-				.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
-						.isInstanceOf(KubernetesServiceInstanceConverter.class));
+			.withBean(KubernetesInformerDiscoveryClient.class, () -> mock(KubernetesInformerDiscoveryClient.class))
+			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
+				.isInstanceOf(KubernetesServiceInstanceConverter.class));
 	}
 
 	@Test
 	public void fabric8KubernetesServiceInstanceConverter() {
 		this.contextRunner.withBean(KubernetesDiscoveryClient.class, () -> mock(KubernetesDiscoveryClient.class))
-				.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
-						.isInstanceOf(KubernetesServiceInstanceConverter.class));
+			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
+				.isInstanceOf(KubernetesServiceInstanceConverter.class));
 	}
 
 	@Test
 	public void customServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
-				.withBean(CustomServiceInstanceConverter.class).run((context) -> assertThat(context)
-						.getBean(ServiceInstanceConverter.class).isInstanceOf(CustomServiceInstanceConverter.class));
+			.withBean(CustomServiceInstanceConverter.class)
+			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
+				.isInstanceOf(CustomServiceInstanceConverter.class));
 	}
 
 	public static class CustomServiceInstanceConverter implements ServiceInstanceConverter {

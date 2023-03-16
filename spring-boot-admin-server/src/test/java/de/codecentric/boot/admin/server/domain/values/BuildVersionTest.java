@@ -31,7 +31,7 @@ public class BuildVersionTest {
 		assertThat(BuildVersion.from(singletonMap("version", "1.0.0"))).isEqualTo(BuildVersion.valueOf("1.0.0"));
 		assertThat(BuildVersion.from(singletonMap("build.version", "1.0.0"))).isEqualTo(BuildVersion.valueOf("1.0.0"));
 		assertThat(BuildVersion.from(singletonMap("build", singletonMap("version", "1.0.0"))))
-				.isEqualTo(BuildVersion.valueOf("1.0.0"));
+			.isEqualTo(BuildVersion.valueOf("1.0.0"));
 	}
 
 	@Test

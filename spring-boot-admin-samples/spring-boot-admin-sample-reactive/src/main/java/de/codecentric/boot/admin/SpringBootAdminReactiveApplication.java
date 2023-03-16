@@ -55,22 +55,30 @@ public class SpringBootAdminReactiveApplication {
 	@Profile("insecure")
 	public SecurityWebFilterChain securityWebFilterChainPermitAll(ServerHttpSecurity http) {
 		return http.authorizeExchange((authorizeExchange) -> authorizeExchange.anyExchange().permitAll())
-				.csrf(ServerHttpSecurity.CsrfSpec::disable).build();
+			.csrf(ServerHttpSecurity.CsrfSpec::disable)
+			.build();
 	}
 
 	@Bean
 	@Profile("secure")
 	public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
 		return http
-				.authorizeExchange((authorizeExchange) -> authorizeExchange
-						.pathMatchers(this.adminServer.path("/assets/**")).permitAll()
-						.pathMatchers("/actuator/health/**").permitAll().pathMatchers(this.adminServer.path("/login"))
-						.permitAll().anyExchange().authenticated())
-				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
-						.authenticationSuccessHandler(loginSuccessHandler(this.adminServer.path("/"))))
-				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout"))
-						.logoutSuccessHandler(logoutSuccessHandler(this.adminServer.path("/login?logout"))))
-				.httpBasic(Customizer.withDefaults()).csrf(ServerHttpSecurity.CsrfSpec::disable).build();
+			.authorizeExchange(
+					(authorizeExchange) -> authorizeExchange.pathMatchers(this.adminServer.path("/assets/**"))
+						.permitAll()
+						.pathMatchers("/actuator/health/**")
+						.permitAll()
+						.pathMatchers(this.adminServer.path("/login"))
+						.permitAll()
+						.anyExchange()
+						.authenticated())
+			.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
+				.authenticationSuccessHandler(loginSuccessHandler(this.adminServer.path("/"))))
+			.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout"))
+				.logoutSuccessHandler(logoutSuccessHandler(this.adminServer.path("/login?logout"))))
+			.httpBasic(Customizer.withDefaults())
+			.csrf(ServerHttpSecurity.CsrfSpec::disable)
+			.build();
 	}
 
 	// The following two methods are only required when setting a custom base-path (see

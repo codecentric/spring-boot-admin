@@ -8,12 +8,6 @@ import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import ApplicationStore from '@/store';
 
-server.use(
-  rest.get('/applications', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json([]));
-  })
-);
-
 describe('store.js', () => {
   let applicationStore;
 
@@ -26,6 +20,12 @@ describe('store.js', () => {
   let removedListener;
 
   beforeEach(() => {
+    server.use(
+      rest.get('/applications', (req, res, ctx) => {
+        return res(ctx.status(200), ctx.json([]));
+      })
+    );
+
     changedListener = jest.fn();
     addedListener = jest.fn();
     updateListener = jest.fn();

@@ -15,6 +15,7 @@
  */
 import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
 import moment from 'moment';
+import * as Vue from 'vue';
 import { createApp, h, onBeforeMount, onBeforeUnmount, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -25,25 +26,41 @@ import './index.css';
 
 
 import components from './components';
-import { createViewRegistry } from './composables/ViewRegistry.js';
+import { createViewRegistry, useViewRegistry } from './composables/ViewRegistry.js';
 import { createApplicationStore, useApplicationStore } from './composables/useApplicationStore.js';
 import i18n from './i18n';
 import { worker } from './mocks/browser';
 import Notifications from './notifications.js';
 import SbaModalPlugin from './plugins/modal';
-import router from './router.js';
 import sbaConfig from './sba-config.js';
 import sbaShell from './shell/index.vue';
-import axios from './utils/axios.js';
 import views from './views';
 
-
-moment.locale(navigator.language.split('-')[0]);
 
 const applicationStore = createApplicationStore();
 const viewRegistry = createViewRegistry();
 
-const installables = [Notifications, ...views, ...sbaConfig.extensions];
+globalThis.Vue = Vue;
+globalThis.SBA.viewRegistry = useViewRegistry();
+globalThis.SBA.useApplicationStore = useApplicationStore;
+globalThis.SBA.useI18n = () => i18n.global;
+globalThis.SBA.use = ({ install }) => {
+  install({
+    viewRegistry: globalThis.SBA.viewRegistry,
+    applicationStore: globalThis.SBA.useApplicationStore,
+    i18n: i18n.global,
+  });
+};
+
+sbaConfig.extensions.forEach((extension) => {
+  const script = document.createElement('script');
+  script.src = `extensions/${extension.resourcePath}`;
+  document.head.appendChild(script);
+});
+
+moment.locale(navigator.language.split('-')[0]);
+
+const installables = [Notifications, ...views];
 
 if (process.env.NODE_ENV === 'development') {
   worker.start({
@@ -90,20 +107,6 @@ app.use(NotificationcenterPlugin, {
   duration: 10_000,
 });
 app.use(SbaModalPlugin, { i18n });
-app.use(router(viewRegistry.routes));
+app.use(viewRegistry.createRouter());
 
 const vue = app.mount('#app');
-
-installables.forEach((view) => {
-  try {
-    view.configure
-      ? view.configure({
-          vue,
-          i18n: vue.$i18n,
-          axios,
-        })
-      : void 0;
-  } catch (e) {
-    console.error(`Error configuring view ${view}`, e);
-  }
-});

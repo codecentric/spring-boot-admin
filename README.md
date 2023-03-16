@@ -10,9 +10,9 @@ This community project provides an admin interface for [Spring Boot <sup>®</sup
 Monitoring Python applications is available using [Pyctuator](https://github.com/SolarEdgeTech/pyctuator).
 
 ## Compatibility Matrix
-Spring Boot Admin's version matches the major and minor versions of Spring Boot.
+In the Spring Boot Admin Server App, the Spring Boot Admin's version matches the major and minor versions of Spring Boot.
 
-| Spring Boot Service | Spring Boot Admin  |
+| Spring Boot Version | Spring Boot Admin  |
 |---------------------|--------------------|
 | 2.6                 | 2.6.Y              |
 | 2.7                 | 2.7.Y              |
@@ -64,7 +64,7 @@ The source code of codecentric's Spring Boot Admin is licensed under [Apache Lic
 Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](https://pivotal.io/) in the U.S. and other countries.
 
 ## Snapshot builds
-You can access snapshot builds from the sonatype snapshot repository by adding the following to your `repositories`:
+You can access snapshot builds from the github snapshot repository by adding the following to your `repositories`:
 ```xml
 <repository>
 	<id>sba-snapshot</id>

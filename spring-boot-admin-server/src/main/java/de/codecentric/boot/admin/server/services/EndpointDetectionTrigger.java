@@ -39,8 +39,10 @@ public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent
 
 	@Override
 	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-		return publisher.filter((event) -> event instanceof InstanceStatusChangedEvent
-				|| event instanceof InstanceRegistrationUpdatedEvent).flatMap(this::detectEndpoints);
+		return publisher
+			.filter((event) -> event instanceof InstanceStatusChangedEvent
+					|| event instanceof InstanceRegistrationUpdatedEvent)
+			.flatMap(this::detectEndpoints);
 	}
 
 	protected Mono<Void> detectEndpoints(InstanceEvent event) {

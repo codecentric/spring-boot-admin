@@ -59,7 +59,7 @@ public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> 
 		}
 
 		boolean matchesAnyPattern = Arrays.stream(this.keysToSanitize)
-				.anyMatch((pattern) -> pattern.matcher(key).matches());
+			.anyMatch((pattern) -> pattern.matcher(key).matches());
 		return matchesAnyPattern ? "******" : value;
 	}
 

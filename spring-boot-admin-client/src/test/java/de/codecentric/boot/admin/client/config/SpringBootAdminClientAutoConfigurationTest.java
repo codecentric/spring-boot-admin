@@ -41,9 +41,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SpringBootAdminClientAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-					RestTemplateAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class, RestTemplateAutoConfiguration.class,
+				SpringBootAdminClientAutoConfiguration.class));
 
 	@Test
 	public void not_active() {
@@ -53,68 +53,68 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	@Test
 	public void active() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
+			.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
 	}
 
 	@Test
 	public void disabled() {
 		this.contextRunner
-				.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
-						"spring.boot.admin.client.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
+			.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
+					"spring.boot.admin.client.enabled:false")
+			.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
 	}
 
 	@Test
 	public void nonWebEnvironment() {
 		ApplicationContextRunner nonWebcontextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(SpringBootAdminClientAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(SpringBootAdminClientAutoConfiguration.class));
 
 		nonWebcontextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
 	}
 
 	@Test
 	public void reactiveEnvironment() {
 		ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
-				.withConfiguration(
-						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class))
-				.withBean(WebFluxProperties.class);
+			.withConfiguration(
+					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+							WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class))
+			.withBean(WebFluxProperties.class);
 		reactiveContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
+			.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
 	}
 
 	@Test
 	public void customBlockingClientInReactiveEnvironment() {
 		ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class))
-				.withConfiguration(
-						AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class))
-				.withBean(WebFluxProperties.class);
+			.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class))
+			.withConfiguration(
+					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+							WebClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class))
+			.withBean(WebFluxProperties.class);
 
 		reactiveContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ApplicationRegistrator.class);
-					assertThat(context).getBean("registrationClient")
-							.isEqualTo(context.getBean(CustomBlockingConfiguration.class).registrationClient);
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ApplicationRegistrator.class);
+				assertThat(context).getBean("registrationClient")
+					.isEqualTo(context.getBean(CustomBlockingConfiguration.class).registrationClient);
+			});
 	}
 
 	@Test
 	public void customBlockingClientInBlockingEnvironment() {
 		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class))
-				.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
-						WebEndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-						RestTemplateAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
+			.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+					RestTemplateAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
 
 		webApplicationContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ApplicationRegistrator.class);
-					assertThat(context).getBean("registrationClient")
-							.isEqualTo(context.getBean(CustomBlockingConfiguration.class).registrationClient);
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ApplicationRegistrator.class);
+				assertThat(context).getBean("registrationClient")
+					.isEqualTo(context.getBean(CustomBlockingConfiguration.class).registrationClient);
+			});
 	}
 
 	@Configuration

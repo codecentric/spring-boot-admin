@@ -39,9 +39,9 @@
   };
 </script>
 
-<style scoped lang="css">
-  .custom {
-    font-size: 20px;
-    width: 80%;
-  }
+<style lang="css" scoped>
+.custom {
+  font-size: 20px;
+  width: 80%;
+}
 </style>

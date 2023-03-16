@@ -59,9 +59,9 @@ public class UiExtensionsScanner {
 	private List<Resource> resolveAssets(String location) throws IOException {
 		String widerLocation = toPattern(location);
 		return Stream
-				.concat(Arrays.stream(this.resolver.getResources(widerLocation + "**/*.js")),
-						Arrays.stream(this.resolver.getResources(widerLocation + "**/*.css")))
-				.collect(Collectors.toList());
+			.concat(Arrays.stream(this.resolver.getResources(widerLocation + "**/*.js")),
+					Arrays.stream(this.resolver.getResources(widerLocation + "**/*.css")))
+			.collect(Collectors.toList());
 	}
 
 	private String toPattern(String location) {
@@ -73,7 +73,7 @@ public class UiExtensionsScanner {
 	private String getResourcePath(String location, Resource resource) throws IOException {
 		String locationWithoutPrefix = location.replaceFirst("^[^:]+:", "");
 		Matcher m = Pattern.compile(Pattern.quote(locationWithoutPrefix) + "(.+)$")
-				.matcher(resource.getURI().toString());
+			.matcher(resource.getURI().toString());
 		if (m.find()) {
 			return m.group(1);
 		}

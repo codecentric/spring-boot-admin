@@ -1,0 +1,9 @@
+[[customizing-headers]]
+== Injecting Custom HTTP Headers ==
+
+In case you need to inject custom HTTP headers into the requests made to the monitored application's actuator endpoints you can easily add a `HttpHeadersProvider`:
+
+[source,java,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SpringBootAdminServletApplication.java[tags=customization-http-headers-providers]
+----

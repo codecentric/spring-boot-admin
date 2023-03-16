@@ -15,119 +15,96 @@
   -->
 
 <template>
-  <div class="modal is-active">
-    <div class="modal-background" @click="abort" />
-    <div class="modal-content">
-      <div class="modal-card">
-        <header class="modal-card-head is-block">
-          <p class="modal-card-title" v-text="name" />
-        </header>
+  <sba-modal :model-value="showModal" @close="abort">
+    <template #header>
+      {{ state }}
+      <template v-if="state === STATE_COMPLETED">
+        {{ name }} -
+        {{ $t('instances.jolokia.execution_successful') }}
+      </template>
+      <template v-else>
+        {{ name }}
+      </template>
+    </template>
 
-        <template v-if="state === 'input-args'">
-          <section class="modal-card-body" @keyup.ctrl.enter="invoke(args)">
-            <div
-              v-for="(arg, idx) in descriptor.args"
-              :key="arg.name"
-              class="field"
+    <template #body>
+      <template v-if="state === STATE_INPUT_ARGS">
+        <section @keyup.ctrl.enter="invoke(args)">
+          <template v-for="(arg, idx) in descriptor.args" :key="arg.name">
+            <sba-input
+              v-model="args[idx]"
+              :hint="arg.desc !== arg.name ? arg.desc : undefined"
+              class="mb-1"
             >
-              <label class="label">
-                <span v-text="arg.name" />
-                <small
-                  class="is-muted has-text-weight-normal pl-1"
-                  v-text="arg.type"
-                />
-              </label>
-              <div class="control">
-                <input v-model="args[idx]" type="text" class="input" />
-              </div>
-              <p class="help" v-text="arg.desc" />
-            </div>
-          </section>
-          <footer class="modal-card-foot">
-            <div class="field is-grouped is-grouped-right">
-              <div class="control">
-                <button
-                  class="button is-primary"
-                  @click="invoke(args)"
-                  v-text="$t('instances.jolokia.execute')"
-                />
-              </div>
-            </div>
-          </footer>
-        </template>
+              <template #prepend>
+                <span v-text="arg.name" />:&nbsp;
+                <small v-text="arg.type" />
+              </template>
+            </sba-input>
+          </template>
+        </section>
+      </template>
 
-        <template v-else-if="state === 'executing'">
-          <section class="modal-card-body">
-            <section class="section is-loading">
-              <p v-text="$t('instances.jolokia.executing')" />
-            </section>
-          </section>
-        </template>
+      <template v-else-if="state === STATE_EXECUTING">
+        <sba-loading-spinner />
+      </template>
 
-        <template v-else-if="state === 'completed'">
-          <section class="modal-card-body">
-            <div class="message is-success">
-              <div class="message-body">
-                <strong v-text="$t('instances.jolokia.execution_successful')" />
-              </div>
-            </div>
-            <pre
-              v-if="descriptor.ret !== 'void'"
-              v-text="prettyPrintedResult"
-            />
-          </section>
-          <footer class="modal-card-foot">
-            <div class="field is-grouped is-grouped-right">
-              <div class="control">
-                <button
-                  class="button is-light"
-                  @click="abort"
-                  v-text="$t('term.close')"
-                />
-              </div>
-            </div>
-          </footer>
-        </template>
+      <template v-else-if="state === STATE_COMPLETED">
+        <pre
+          v-if="descriptor.ret !== 'void'"
+          class="overflow-auto text-xs"
+          v-text="prettyPrintedResult"
+        />
+      </template>
 
-        <template v-else-if="state === 'failed'">
-          <section class="modal-card-body">
-            <div class="message is-danger">
-              <div class="message-body">
-                <strong>
-                  <font-awesome-icon
-                    class="has-text-danger"
-                    icon="exclamation-triangle"
-                  />
-                  <span v-text="$t('instances.jolokia.execution_failed')" />
-                </strong>
-                <p v-text="error.message" />
-              </div>
-            </div>
-            <pre v-if="error.stacktrace" v-text="error.stacktrace" />
-            <pre
-              v-if="error.response && error.response.data"
-              v-text="error.response.data"
-            />
-          </section>
-          <footer class="modal-card-foot">
-            <div class="field is-grouped is-grouped-right">
-              <div class="control">
-                <button
-                  class="button is-light"
-                  @click="abort"
-                  v-text="$t('instances.jolokia.close')"
-                />
-              </div>
-            </div>
-          </footer>
-        </template>
-      </div>
-    </div>
-  </div>
+      <template v-else-if="state === STATE_FAILED">
+        <div class="p-2 mb-2 rounded bg-sba-100">
+          <strong>
+            <font-awesome-icon class="pr-1" icon="exclamation-triangle" />
+            <span v-text="$t('instances.jolokia.execution_failed')" />
+          </strong>
+          <p v-text="error.message" />
+        </div>
+        <code class="text-xs">
+          <pre v-if="error.stacktrace" v-text="error.stacktrace" />
+          <pre
+            v-if="error.response && error.response.data"
+            v-text="error.response.data"
+          />
+        </code>
+      </template>
+    </template>
+
+    <template #footer>
+      <template v-if="state === STATE_INPUT_ARGS">
+        <div class="flex flex-row gap-1">
+          <sba-button primary @click="invoke(args)">
+            {{ $t('instances.jolokia.execute') }}
+          </sba-button>
+          <sba-button @click="abort">
+            {{ $t('term.cancel') }}
+          </sba-button>
+        </div>
+      </template>
+
+      <template v-else-if="state === STATE_COMPLETED">
+        <sba-button primary @click="abort">
+          {{ $t('term.close') }}
+        </sba-button>
+      </template>
+
+      <template v-else-if="state === STATE_FAILED">
+        <sba-button primary @click="abort">
+          {{ $t('instances.jolokia.close') }}
+        </sba-button>
+      </template>
+    </template>
+  </sba-modal>
 </template>
 
 <script>
 import {
+  STATE_COMPLETED,
   STATE_EXECUTING,
   STATE_FAILED,
   STATE_INPUT_ARGS,
@@ -163,6 +140,12 @@ export default {
     error: null,
     args: null,
     result: null,
+    showModal: true,
+    STATE_EXECUTING,
+    STATE_FAILED,
+    STATE_INPUT_ARGS,
+    STATE_PREPARED,
+    STATE_COMPLETED,
   }),
   computed: {
     prettyPrintedResult() {
@@ -190,6 +173,7 @@ export default {
   },
   methods: {
     abort() {
+      this.showModal = false;
       this.onClose();
     },
     invoke(args) {

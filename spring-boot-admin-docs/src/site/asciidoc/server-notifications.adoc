@@ -490,3 +490,36 @@ To enable https://www.dingtalk.com/[DingTalk] notifications you need to create a
 | Text to send. SpEL-expressions are supported.
 | `+++"#{instance.registration.name} #{instance.id} is #{event.statusInfo.status} "+++`
 |===
+
+[[RocketChat-notifications]]
+=== RocketChat Notifications ===
+To enable https://www.rocket.chat/[Rocket.Chat] notifications you need a personal token access and create a room to send message with this token
+
+.RocketChat notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.rocketchat.enabled
+| Enable RocketChat notifications.
+| `true`
+
+| spring.boot.admin.notify.rocketchat.url
+| The RocketChat server url to send the notifications to.
+|
+
+| spring.boot.admin.notify.rocketchat.userId
+| User id user
+|
+
+| spring.boot.admin.notify.rocketchat.token
+| Generated token user
+|
+
+| spring.boot.admin.notify.rocketchat.roomId
+| The room id to send the message
+|
+
+| spring.boot.admin.notify.rocketchat.message
+| Text to send. SpEL-expressions are supported.
+| `+++"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"+++`
+|===

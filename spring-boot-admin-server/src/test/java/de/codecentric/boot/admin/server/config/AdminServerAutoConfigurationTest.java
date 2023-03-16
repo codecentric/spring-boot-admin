@@ -43,11 +43,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AdminServerAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
-					HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
-					AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class))
-			.withUserConfiguration(AdminServerMarkerConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
+				ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
+				HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class))
+		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
 	public void simpleConfig() {

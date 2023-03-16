@@ -67,18 +67,19 @@ public class SpringBootAdminHazelcastApplication {
 		// It should be configured to reliably hold all the data,
 		// Spring Boot Admin will compact the events, if there are too many
 		MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
-				.setBackupCount(1)
-				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+			.setBackupCount(1)
+			.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		// This map is used to deduplicate the notifications.
 		// If data in this map gets lost it should not be a big issue as it will atmost
 		// lead to
 		// the same notification to be sent by multiple instances
 		MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-				.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1)
-				.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU)
-						.setMaxSizePolicy(MaxSizePolicy.PER_NODE))
-				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+			.setInMemoryFormat(InMemoryFormat.OBJECT)
+			.setBackupCount(1)
+			.setEvictionConfig(
+					new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setMaxSizePolicy(MaxSizePolicy.PER_NODE))
+			.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		Config config = new Config();
 		config.addMapConfig(eventStoreMap);
@@ -112,13 +113,13 @@ public class SpringBootAdminHazelcastApplication {
 		@Bean
 		protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests.anyRequest().permitAll())
-					.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-							.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers(
-									new AntPathRequestMatcher(this.adminServer.path("/instances"),
-											HttpMethod.POST.toString()),
-									new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
-											HttpMethod.DELETE.toString()),
-									new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
+				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+					.ignoringRequestMatchers(
+							new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
+									HttpMethod.DELETE.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
 
 			return http.build();
 		}
@@ -142,20 +143,23 @@ public class SpringBootAdminHazelcastApplication {
 			successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-					.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**"))).permitAll()
-					.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll()
-					.anyRequest().authenticated())
-					.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
-							.successHandler(successHandler))
-					.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
-					.httpBasic(Customizer.withDefaults())
-					.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-							.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers(
-									new AntPathRequestMatcher(this.adminServer.path("/instances"),
-											HttpMethod.POST.toString()),
-									new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
-											HttpMethod.DELETE.toString()),
-									new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
+				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**")))
+				.permitAll()
+				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login")))
+				.permitAll()
+				.anyRequest()
+				.authenticated())
+				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
+					.successHandler(successHandler))
+				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
+				.httpBasic(Customizer.withDefaults())
+				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+					.ignoringRequestMatchers(
+							new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
+									HttpMethod.DELETE.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
 
 			return http.build();
 		}

@@ -32,8 +32,11 @@ public class ApplicationTest {
 	public void test_json_format() throws IOException {
 		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
-		Application app = Application.create("test").healthUrl("http://health").serviceUrl("http://service")
-				.managementUrl("http://management").build();
+		Application app = Application.create("test")
+			.healthUrl("http://health")
+			.serviceUrl("http://service")
+			.managementUrl("http://management")
+			.build();
 
 		DocumentContext json = JsonPath.parse(objectMapper.writeValueAsString(app));
 
@@ -45,16 +48,25 @@ public class ApplicationTest {
 
 	@Test
 	public void test_equals_hashCode() {
-		Application a1 = Application.create("foo").healthUrl("healthUrl").managementUrl("mgmt").serviceUrl("svc")
-				.build();
-		Application a2 = Application.create("foo").healthUrl("healthUrl").managementUrl("mgmt").serviceUrl("svc")
-				.build();
+		Application a1 = Application.create("foo")
+			.healthUrl("healthUrl")
+			.managementUrl("mgmt")
+			.serviceUrl("svc")
+			.build();
+		Application a2 = Application.create("foo")
+			.healthUrl("healthUrl")
+			.managementUrl("mgmt")
+			.serviceUrl("svc")
+			.build();
 
 		assertThat(a1).isEqualTo(a2);
 		assertThat(a1.hashCode()).isEqualTo(a2.hashCode());
 
-		Application a3 = Application.create("foo").healthUrl("healthUrl2").managementUrl("mgmt").serviceUrl("svc")
-				.build();
+		Application a3 = Application.create("foo")
+			.healthUrl("healthUrl2")
+			.managementUrl("mgmt")
+			.serviceUrl("svc")
+			.build();
 
 		assertThat(a1).isNotEqualTo(a3);
 		assertThat(a2).isNotEqualTo(a3);

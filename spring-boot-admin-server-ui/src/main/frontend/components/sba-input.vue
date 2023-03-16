@@ -23,14 +23,15 @@
         class="block text-sm font-medium text-gray-700"
         v-text="label"
       />
-      <div class="flex rounded shadow-sm" :class="{ 'mt-1': hasLabel }">
+      <div :class="{ 'mt-1': hasLabel }" class="flex rounded shadow-sm">
         <!-- PREPEND -->
-        <span
+        <label
           v-if="$slots.prepend"
+          :for="id"
           class="inline-flex items-center px-3 rounded-l border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm"
         >
           <slot name="prepend" />
-        </span>
+        </label>
 
         <!-- INPUT -->
         <datalist :id="datalistId">
@@ -42,15 +43,17 @@
         </datalist>
         <input
           :id="id"
-          :name="name"
-          :value="modelValue"
-          :type="type"
-          :placeholder="placeholder"
-          :min="min"
-          :list="datalistId"
           :autocomplete="autocomplete"
-          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none sm:text-sm bg-opacity-40 backdrop-blur-sm"
           :class="classNames(inputFieldClassNames, inputClass)"
+          :disabled="disabled"
+          :list="datalistId"
+          :min="min"
+          :name="name"
+          :placeholder="placeholder"
+          :readonly="readonly"
+          :type="type"
+          :value="modelValue"
+          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none sm:text-sm bg-opacity-40 backdrop-blur-sm"
           @input="handleInput"
         />
         <!-- APPEND -->
@@ -101,6 +104,14 @@ export default {
       type: Number,
       default: undefined,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
     list: {
       type: Array,
       default: undefined,
@@ -128,7 +139,8 @@ export default {
       return this.label !== null && this.label.trim() !== '';
     },
     id() {
-      return (this.name || '').replace(/[^\w]/gi, '');
+      let number = 'input-' + Math.floor(Math.random() * Date.now());
+      return (this.name || number).replace(/[^\w]/gi, '');
     },
     datalistId() {
       return 'listId-' + this._.uid;
@@ -139,7 +151,7 @@ export default {
 
       const classNames = [];
 
-      if (this.error !== undefined) {
+      if (this.error !== null && this.error !== undefined) {
         classNames.push(
           'focus:ring-red-500 focus:border-red-500 border-red-400'
         );
@@ -154,6 +166,10 @@ export default {
       }
       if (!hasPrepend) {
         classNames.push('rounded-l');
+      }
+
+      if (this.disabled === true) {
+        classNames.push('cursor-not-allowed');
       }
 
       return classNames;

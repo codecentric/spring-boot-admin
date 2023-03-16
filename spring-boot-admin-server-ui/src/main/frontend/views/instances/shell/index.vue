@@ -21,18 +21,16 @@
       <Sidebar
         v-if="instance"
         :key="instanceId"
-        :views="sidebarViews"
-        :instance="instance"
         :application="application"
+        :instance="instance"
+        :views="sidebarViews"
       />
       <main class="min-h-full relative z-0 ml-10 md:ml-60 transition-all">
-        <div class="">
-          <router-view
-            v-if="instance"
-            :instance="instance"
-            :application="application"
-          />
-        </div>
+        <router-view
+          v-if="instance"
+          :application="application"
+          :instance="instance"
+        />
       </main>
     </div>
   </div>

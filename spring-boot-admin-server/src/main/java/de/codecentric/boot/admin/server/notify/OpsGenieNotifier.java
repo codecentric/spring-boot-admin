@@ -173,8 +173,9 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
 		SimpleEvaluationContext context = SimpleEvaluationContext
-				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-				.withRootObject(root).build();
+			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+			.withRootObject(root)
+			.build();
 		return description.getValue(context, String.class);
 	}
 

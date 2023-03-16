@@ -29,7 +29,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -59,8 +58,10 @@ import static org.mockito.Mockito.when;
 public class MailNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("cafebabe"))
-			.register(Registration.create("application-name", "http://localhost:8081/actuator/health")
-					.managementUrl("http://localhost:8081/actuator").serviceUrl("http://localhost:8081/").build());
+		.register(Registration.create("application-name", "http://localhost:8081/actuator/health")
+			.managementUrl("http://localhost:8081/actuator")
+			.serviceUrl("http://localhost:8081/")
+			.build());
 
 	private JavaMailSender sender;
 
@@ -98,7 +99,7 @@ public class MailNotifierTest {
 
 		StepVerifier.create(notifier.notify(
 				new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown(details))))
-				.verifyComplete();
+			.verifyComplete();
 
 		ArgumentCaptor<MimeMessage> mailCaptor = ArgumentCaptor.forClass(MimeMessage.class);
 		verify(sender).send(mailCaptor.capture());
@@ -122,9 +123,9 @@ public class MailNotifierTest {
 		notifier.getAdditionalProperties().put("customProperty", "HELLO WORLD!");
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 
 		ArgumentCaptor<MimeMessage> mailCaptor = ArgumentCaptor.forClass(MimeMessage.class);
 		verify(sender).send(mailCaptor.capture());
@@ -140,9 +141,9 @@ public class MailNotifierTest {
 	public void should_not_send_mail_when_disabled() {
 		notifier.setEnabled(false);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		verifyNoMoreInteractions(sender);
 	}
@@ -150,9 +151,9 @@ public class MailNotifierTest {
 	@Test
 	public void should_not_send_when_unknown_to_up() {
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		verifyNoMoreInteractions(sender);
 	}
@@ -161,9 +162,9 @@ public class MailNotifierTest {
 	public void should_not_send_on_wildcard_ignore() {
 		notifier.setIgnoreChanges(new String[] { "*:UP" });
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		verifyNoMoreInteractions(sender);
 	}
@@ -177,9 +178,9 @@ public class MailNotifierTest {
 			}
 		};
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 	}
 
 	private String loadExpectedBody(String resource) throws IOException {
@@ -189,7 +190,7 @@ public class MailNotifierTest {
 	private String extractBody(DataHandler dataHandler) throws IOException {
 		ByteArrayOutputStream os = new ByteArrayOutputStream(4096);
 		dataHandler.writeTo(os);
-		return os.toString(StandardCharsets.UTF_8.name()).replaceAll("\\r?\\n", "\n");
+		return os.toString(StandardCharsets.UTF_8).replaceAll("\\r?\\n", "\n");
 	}
 
 }

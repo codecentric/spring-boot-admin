@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom';
-import {server} from '@/mocks/server';
+
+import { server } from '@/mocks/server';
+
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
 beforeAll(async () => {
   server.listen();
@@ -9,14 +14,16 @@ beforeAll(async () => {
   mockIntersectionObserver.mockReturnValue({
     observe: () => null,
     unobserve: () => null,
-    disconnect: () => null
+    disconnect: () => null,
   });
   window.IntersectionObserver = mockIntersectionObserver;
-})
+});
 
-afterAll(done => {
+afterAll((done) => {
   setTimeout(() => {
     server.close();
     done();
   }, 500);
-})
+});
+
+afterEach(() => server.resetHandlers());

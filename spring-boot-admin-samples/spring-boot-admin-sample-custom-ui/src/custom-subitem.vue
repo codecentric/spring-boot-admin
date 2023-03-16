@@ -16,17 +16,29 @@
 
 <template>
   <div class="custom">
-    <h1>Hello from the submenu item</h1>
+    <h1 v-text="t('custom_sub.hello')"></h1>
   </div>
 </template>
 
-<script>
-export default {};
+<script setup>
+/* global:SBA */
+const { t, mergeLocaleMessage } = SBA.useI18n();
+
+mergeLocaleMessage("en", {
+  custom_sub: {
+    hello: "Hello from the submenu item",
+  },
+});
+mergeLocaleMessage("de", {
+  custom_sub: {
+    hello: "Hallo, ich bin ein Sub-Menü-Element!",
+  },
+});
 </script>
 
-<style scoped lang="css">
-  .custom {
-    font-size: 20px;
-    width: 80%;
-  }
+<style lang="css" scoped>
+.custom {
+  font-size: 20px;
+  width: 80%;
+}
 </style>

@@ -54,8 +54,10 @@ public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 			return instance.getServiceUrl();
 		}
 
-		return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path(getServicePath()).path(getWebfluxBasePath())
-				.toUriString();
+		return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
+			.path(getServicePath())
+			.path(getWebfluxBasePath())
+			.toUriString();
 	}
 
 	@Override
@@ -71,8 +73,12 @@ public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 		}
 
 		Ssl ssl = (this.management.getSsl() != null) ? this.management.getSsl() : this.server.getSsl();
-		return UriComponentsBuilder.newInstance().scheme(getScheme(ssl)).host(getManagementHost())
-				.port(getLocalManagementPort()).path(getManagementContextPath()).toUriString();
+		return UriComponentsBuilder.newInstance()
+			.scheme(getScheme(ssl))
+			.host(getManagementHost())
+			.port(getLocalManagementPort())
+			.path(getManagementContextPath())
+			.toUriString();
 	}
 
 	protected String getManagementContextPath() {

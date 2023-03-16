@@ -140,7 +140,7 @@ class Application {
     const responses = (
       await this.axios.post(
         uri`actuator/loggers/${name}`,
-        { configuredLevel: level },
+        level === null ? {} : { configuredLevel: level },
         { headers: { 'Content-Type': 'application/json' } }
       )
     ).data;

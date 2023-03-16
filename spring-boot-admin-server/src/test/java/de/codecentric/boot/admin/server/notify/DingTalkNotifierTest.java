@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 public class DingTalkNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("-id-"))
-			.register(Registration.create("DingTalk", "http://health").build());
+		.register(Registration.create("DingTalk", "http://health").build());
 
 	private InstanceRepository repository;
 
@@ -67,15 +67,15 @@ public class DingTalkNotifierTest {
 	@Test
 	public void test_onApplicationEvent_resolve() {
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		Object expected = expectedMessage(standardMessage("UP"));
 
@@ -85,13 +85,13 @@ public class DingTalkNotifierTest {
 	@Test
 	public void test_onApplicationEvent_trigger() {
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 
 		Object expected = expectedMessage(standardMessage("DOWN"));
 

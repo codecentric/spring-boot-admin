@@ -67,7 +67,8 @@ public final class InstanceExchangeFilterFunctions {
 	public static InstanceExchangeFilterFunction addHeaders(HttpHeadersProvider httpHeadersProvider) {
 		return (instance, request, next) -> {
 			request = ClientRequest.from(request)
-					.headers((headers) -> headers.addAll(httpHeadersProvider.getHeaders(instance))).build();
+				.headers((headers) -> headers.addAll(httpHeadersProvider.getHeaders(instance)))
+				.build();
 			return next.exchange(request);
 		};
 	}
@@ -75,7 +76,8 @@ public final class InstanceExchangeFilterFunctions {
 	public static InstanceExchangeFilterFunction addHeadersReactive(ReactiveHttpHeadersProvider httpHeadersProvider) {
 		return (instance, request, next) -> httpHeadersProvider.getHeaders(instance).flatMap((httpHeaders) -> {
 			ClientRequest requestWithAdditionalHeaders = ClientRequest.from(request)
-					.headers((headers) -> headers.addAll(httpHeaders)).build();
+				.headers((headers) -> headers.addAll(httpHeaders))
+				.build();
 
 			return next.exchange(requestWithAdditionalHeaders);
 		}).switchIfEmpty(Mono.defer(() -> next.exchange(request)));
@@ -86,8 +88,9 @@ public final class InstanceExchangeFilterFunctions {
 			if (request.url().isAbsolute()) {
 				log.trace("Absolute URL '{}' for instance {} not rewritten", request.url(), instance.getId());
 				if (request.url().toString().equals(instance.getRegistration().getManagementUrl())) {
-					request = ClientRequest.from(request).attribute(ATTRIBUTE_ENDPOINT, Endpoint.ACTUATOR_INDEX)
-							.build();
+					request = ClientRequest.from(request)
+						.attribute(ATTRIBUTE_ENDPOINT, Endpoint.ACTUATOR_INDEX)
+						.build();
 				}
 				return next.exchange(request);
 			}
@@ -107,17 +110,23 @@ public final class InstanceExchangeFilterFunctions {
 			URI rewrittenUrl = rewriteUrl(requestUrl, endpoint.get().getUrl());
 			log.trace("URL '{}' for Endpoint {} of instance {} rewritten to {}", requestUrl, endpoint.get().getId(),
 					instance.getId(), rewrittenUrl);
-			request = ClientRequest.from(request).attribute(ATTRIBUTE_ENDPOINT, endpoint.get().getId())
-					.url(rewrittenUrl).build();
+			request = ClientRequest.from(request)
+				.attribute(ATTRIBUTE_ENDPOINT, endpoint.get().getId())
+				.url(rewrittenUrl)
+				.build();
 			return next.exchange(request);
 		};
 	}
 
 	private static URI rewriteUrl(UriComponents oldUrl, String targetUrl) {
-		String[] newPathSegments = oldUrl.getPathSegments().subList(1, oldUrl.getPathSegments().size())
-				.toArray(new String[] {});
-		return UriComponentsBuilder.fromUriString(targetUrl).pathSegment(newPathSegments).query(oldUrl.getQuery())
-				.build(true).toUri();
+		String[] newPathSegments = oldUrl.getPathSegments()
+			.subList(1, oldUrl.getPathSegments().size())
+			.toArray(new String[] {});
+		return UriComponentsBuilder.fromUriString(targetUrl)
+			.pathSegment(newPathSegments)
+			.query(oldUrl.getQuery())
+			.build(true)
+			.toUri();
 	}
 
 	public static InstanceExchangeFilterFunction convertLegacyEndpoints(List<LegacyEndpointConverter> converters) {
@@ -144,9 +153,10 @@ public final class InstanceExchangeFilterFunctions {
 	}
 
 	private static Boolean isLegacyResponse(ClientResponse response) {
-		return response.headers().contentType()
-				.filter((t) -> V1_ACTUATOR_JSON.isCompatibleWith(t) || MediaType.APPLICATION_JSON.isCompatibleWith(t))
-				.isPresent();
+		return response.headers()
+			.contentType()
+			.filter((t) -> V1_ACTUATOR_JSON.isCompatibleWith(t) || MediaType.APPLICATION_JSON.isCompatibleWith(t))
+			.isPresent();
 	}
 
 	private static ClientResponse convertLegacyResponse(LegacyEndpointConverter converter, ClientResponse response) {
@@ -160,8 +170,9 @@ public final class InstanceExchangeFilterFunctions {
 	public static InstanceExchangeFilterFunction setDefaultAcceptHeader() {
 		return (instance, request, next) -> {
 			if (request.headers().getAccept().isEmpty()) {
-				Boolean isRequestForLogfile = request.attribute(ATTRIBUTE_ENDPOINT).map(Endpoint.LOGFILE::equals)
-						.orElse(false);
+				Boolean isRequestForLogfile = request.attribute(ATTRIBUTE_ENDPOINT)
+					.map(Endpoint.LOGFILE::equals)
+					.orElse(false);
 				List<MediaType> acceptedHeaders = isRequestForLogfile ? DEFAULT_LOGFILE_ACCEPT_MEDIA_TYPES
 						: DEFAULT_ACCEPT_MEDIA_TYPES;
 				request = ClientRequest.from(request).headers((headers) -> headers.setAccept(acceptedHeaders)).build();
@@ -184,8 +195,9 @@ public final class InstanceExchangeFilterFunctions {
 	public static InstanceExchangeFilterFunction timeout(Duration defaultTimeout,
 			Map<String, Duration> timeoutPerEndpoint) {
 		return (instance, request, next) -> {
-			Duration timeout = request.attribute(ATTRIBUTE_ENDPOINT).map(timeoutPerEndpoint::get)
-					.orElse(defaultTimeout);
+			Duration timeout = request.attribute(ATTRIBUTE_ENDPOINT)
+				.map(timeoutPerEndpoint::get)
+				.orElse(defaultTimeout);
 			return next.exchange(request).timeout(timeout);
 		};
 	}
@@ -196,8 +208,8 @@ public final class InstanceExchangeFilterFunctions {
 		return (instance, request, next) -> {
 			if (request.attribute(ATTRIBUTE_ENDPOINT).map(Endpoint.LOGFILE::equals).orElse(false)) {
 				List<MediaType> newAcceptHeaders = Stream
-						.concat(request.headers().getAccept().stream(), Stream.of(MediaType.ALL))
-						.collect(Collectors.toList());
+					.concat(request.headers().getAccept().stream(), Stream.of(MediaType.ALL))
+					.collect(Collectors.toList());
 				request = ClientRequest.from(request).headers((h) -> h.setAccept(newAcceptHeaders)).build();
 			}
 			return next.exchange(request);
@@ -215,7 +227,7 @@ public final class InstanceExchangeFilterFunctions {
 			// we need an absolute URL to be able to deal with cookies
 			if (request.url().isAbsolute()) {
 				return next.exchange(enrichRequestWithStoredCookies(instance.getId(), request, store))
-						.map((response) -> storeCookiesFromResponse(instance.getId(), request, response, store));
+					.map((response) -> storeCookiesFromResponse(instance.getId(), request, response, store));
 			}
 
 			return next.exchange(request);

@@ -197,11 +197,18 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		facts.add(new Fact(MANAGEMENT_URL_KEY, instance.getRegistration().getManagementUrl()));
 		facts.add(new Fact(SOURCE_KEY, instance.getRegistration().getSource()));
 
-		Section section = Section.builder().activityTitle(instance.getRegistration().getName())
-				.activitySubtitle(activitySubtitle).facts(facts).build();
+		Section section = Section.builder()
+			.activityTitle(instance.getRegistration().getName())
+			.activitySubtitle(activitySubtitle)
+			.facts(facts)
+			.build();
 
-		return Message.builder().title(registeredTitle).summary(messageSummary)
-				.themeColor(evaluateExpression(context, themeColor)).sections(singletonList(section)).build();
+		return Message.builder()
+			.title(registeredTitle)
+			.summary(messageSummary)
+			.themeColor(evaluateExpression(context, themeColor))
+			.sections(singletonList(section))
+			.build();
 	}
 
 	protected String evaluateExpression(EvaluationContext context, Expression expression) {
@@ -214,8 +221,9 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
 		return SimpleEvaluationContext
-				.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-				.withRootObject(root).build();
+			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+			.withRootObject(root)
+			.build();
 	}
 
 	@Nullable

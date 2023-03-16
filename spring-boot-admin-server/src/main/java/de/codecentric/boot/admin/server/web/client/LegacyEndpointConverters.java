@@ -71,11 +71,12 @@ public final class LegacyEndpointConverters {
 	private static final Jackson2JsonEncoder ENCODER;
 
 	private static final DateTimeFormatter TIMESTAMP_PATTERN = DateTimeFormatter
-			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 	static {
 		ObjectMapper om = Jackson2ObjectMapperBuilder.json()
-				.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).build();
+			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+			.build();
 		DECODER = new Jackson2JsonDecoder(om);
 		ENCODER = new Jackson2JsonEncoder(om);
 	}
@@ -143,10 +144,11 @@ public final class LegacyEndpointConverters {
 		// public java.lang.Object bar.Handler.handle(java.util.List<java.lang.String>)
 		// -> "public","java.lang.Object","bar.Handler.handle(java.util.List)"
 		String[] declarationParts = methodDeclaration
-				// remove parameterized types using the regex below
-				.replaceAll("<[a-zA-Z1-9$_\\.,<> ]*>", "").replace(" synchronized ", " ")
-				// and split on single space to get the decl parts
-				.split(" ");
+			// remove parameterized types using the regex below
+			.replaceAll("<[a-zA-Z1-9$_\\.,<> ]*>", "")
+			.replace(" synchronized ", " ")
+			// and split on single space to get the decl parts
+			.split(" ");
 
 		// method -> "bar.Handler.handle(java.util.List)"
 		String method = declarationParts[2];
@@ -178,22 +180,24 @@ public final class LegacyEndpointConverters {
 		//
 		// methodArgs -> (Ljava/util/List;)
 		String methodArgs = Arrays.stream(method
-				// get what's included in parenthesis
-				.substring(method.indexOf('('), method.length() - 1)
-				// now remove the parenthesis
-				.replaceAll("[()]", "")
-				// and split on comma
-				.split(",")
+			// get what's included in parenthesis
+			.substring(method.indexOf('('), method.length() - 1)
+			// now remove the parenthesis
+			.replaceAll("[()]", "")
+			// and split on comma
+			.split(",")
 		// then for each argument
-		).map((arg) -> arg
+		)
+			.map((arg) -> arg
 				// prepend L char - indicated ObjectType
 				.replaceFirst("^", "L")
 				// replace dots with slashes
 				.replace(".", "/")
 				// and append ;
 				.concat(";")
-		// then join back to simulate MethodDescriptors output
-		).collect(joining("", "(", ")"));
+			// then join back to simulate MethodDescriptors output
+			)
+			.collect(joining("", "(", ")"));
 
 		Map<String, Object> handlerMethod = new LinkedHashMap<>();
 		handlerMethod.put("className", className);
@@ -207,8 +211,9 @@ public final class LegacyEndpointConverters {
 			ParameterizedTypeReference<S> sourceType, ParameterizedTypeReference<T> targetType,
 			Function<S, T> converterFn) {
 		return (input) -> DECODER.decodeToMono(input, ResolvableType.forType(sourceType), null, null)
-				.map((body) -> converterFn.apply((S) body)).flatMapMany((output) -> ENCODER.encode(Mono.just(output),
-						new DefaultDataBufferFactory(), ResolvableType.forType(targetType), null, null));
+			.map((body) -> converterFn.apply((S) body))
+			.flatMapMany((output) -> ENCODER.encode(Mono.just(output), new DefaultDataBufferFactory(),
+					ResolvableType.forType(targetType), null, null));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -314,9 +319,10 @@ public final class LegacyEndpointConverters {
 
 	@SuppressWarnings("unchecked")
 	private static Map<String, Object> convertLiquibase(List<Map<String, Object>> reports) {
-		Map<String, Object> liquibaseBeans = reports.stream().sequential()
-				.collect(toMap((r) -> (String) r.get("name"), (r) -> singletonMap("changeSets", LegacyEndpointConverters
-						.convertLiquibaseChangesets((List<Map<String, Object>>) r.get("changeLogs")))));
+		Map<String, Object> liquibaseBeans = reports.stream()
+			.sequential()
+			.collect(toMap((r) -> (String) r.get("name"), (r) -> singletonMap("changeSets", LegacyEndpointConverters
+				.convertLiquibaseChangesets((List<Map<String, Object>>) r.get("changeLogs")))));
 
 		return singletonMap("contexts", singletonMap("application", singletonMap("liquibaseBeans", liquibaseBeans)));
 	}
@@ -347,9 +353,10 @@ public final class LegacyEndpointConverters {
 
 	@SuppressWarnings("unchecked")
 	private static Map<String, Object> convertFlyway(List<Map<String, Object>> reports) {
-		Map<String, Object> flywayBeans = reports.stream().sequential()
-				.collect(toMap((r) -> (String) r.get("name"), (r) -> singletonMap("migrations", LegacyEndpointConverters
-						.convertFlywayMigrations((List<Map<String, Object>>) r.get("migrations")))));
+		Map<String, Object> flywayBeans = reports.stream()
+			.sequential()
+			.collect(toMap((r) -> (String) r.get("name"), (r) -> singletonMap("migrations", LegacyEndpointConverters
+				.convertFlywayMigrations((List<Map<String, Object>>) r.get("migrations")))));
 		return singletonMap("contexts", singletonMap("application", singletonMap("flywayBeans", flywayBeans)));
 	}
 
@@ -377,7 +384,7 @@ public final class LegacyEndpointConverters {
 
 			List<Map<String, Object>> legacyBeans = (List<Map<String, Object>>) context.get("beans");
 			Map<String, Object> convertedBeans = legacyBeans.stream()
-					.collect(toMap((bean) -> (String) bean.get("bean"), identity()));
+				.collect(toMap((bean) -> (String) bean.get("bean"), identity()));
 
 			Map<String, Object> convertedContext = new LinkedHashMap<>();
 			convertedContext.put("contextName", contextName);
@@ -442,12 +449,12 @@ public final class LegacyEndpointConverters {
 		// {[/scratch/{ticketId}/selectPrize/{prizeId}],methods=[POST]}
 		// -> "/scratch/{ticketId}/selectPrize/{prizeId}","methods=POST"
 		String[] conditionPairs = predicate
-				// remove all {[ and }] pairs
-				.replaceAll("\\{\\[|\\]\\}", "")
-				// remove all single brackets [ and ]
-				.replaceAll("[\\[\\]]", "")
-				// split on comma
-				.split(",");
+			// remove all {[ and }] pairs
+			.replaceAll("\\{\\[|\\]\\}", "")
+			// remove all single brackets [ and ]
+			.replaceAll("[\\[\\]]", "")
+			// split on comma
+			.split(",");
 
 		Map<String, Object> conditionsMap = new LinkedHashMap<>();
 		conditionsMap.put("consumes", emptyList());
@@ -473,17 +480,18 @@ public final class LegacyEndpointConverters {
 			// Based on conditionKey we may need to apply some transformations,
 			// mostly wrapping, of the input values
 			switch (conditionKey) {
-			case "consumes":
-			case "produces":
-				conditionValue = conditionValue.stream().map((v) -> singletonMap("mediaType", v))
+				case "consumes":
+				case "produces":
+					conditionValue = conditionValue.stream()
+						.map((v) -> singletonMap("mediaType", v))
 						.collect(Collectors.toList());
-				break;
-			case "headers":
-			case "params":
-			case "method":
-			case "patterns":
-			default:
-				break;
+					break;
+				case "headers":
+				case "params":
+				case "method":
+				case "patterns":
+				default:
+					break;
 			}
 
 			conditionsMap.put(conditionKey, conditionValue);

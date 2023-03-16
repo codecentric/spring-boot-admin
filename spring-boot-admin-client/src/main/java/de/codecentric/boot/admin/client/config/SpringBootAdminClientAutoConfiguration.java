@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.List;
 
 import jakarta.servlet.ServletContext;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -75,7 +74,6 @@ public class SpringBootAdminClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ApplicationRegistrator registrator(RegistrationClient registrationClient, ClientProperties client,
 			ApplicationFactory applicationFactory) {
-
 		return new DefaultApplicationRegistrator(applicationFactory, registrationClient, client.getAdminUrl(),
 				client.isRegisterOnce());
 	}

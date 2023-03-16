@@ -41,19 +41,23 @@ public class InstanceTest {
 	@Test
 	public void invariants() {
 		assertThatThrownBy(() -> Instance.create(null)).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'id' must not be null");
+			.hasMessage("'id' must not be null");
 
 		assertThatThrownBy(() -> Instance.create(InstanceId.of("id")).register(null))
-				.isInstanceOf(IllegalArgumentException.class).hasMessage("'registration' must not be null");
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("'registration' must not be null");
 
 		assertThatThrownBy(() -> Instance.create(InstanceId.of("id")).withInfo(null))
-				.isInstanceOf(IllegalArgumentException.class).hasMessage("'info' must not be null");
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("'info' must not be null");
 
 		assertThatThrownBy(() -> Instance.create(InstanceId.of("id")).withStatusInfo(null))
-				.isInstanceOf(IllegalArgumentException.class).hasMessage("'statusInfo' must not be null");
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("'statusInfo' must not be null");
 
 		assertThatThrownBy(() -> Instance.create(InstanceId.of("id")).withEndpoints(null))
-				.isInstanceOf(IllegalArgumentException.class).hasMessage("'endpoints' must not be null");
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("'endpoints' must not be null");
 	}
 
 	@Test
@@ -100,12 +104,15 @@ public class InstanceTest {
 
 	@Test
 	public void should_yield_same_status_from_replaying() {
-		Registration registration = Registration.create("foo-instance", "http://health").metadata("version", "1.0.0")
-				.build();
+		Registration registration = Registration.create("foo-instance", "http://health")
+			.metadata("version", "1.0.0")
+			.build();
 		Instance instance = Instance.create(InstanceId.of("id"))
-				.register(registration.toBuilder().clearMetadata().build()).register(registration)
-				.withEndpoints(Endpoints.single("info", "info")).withStatusInfo(StatusInfo.ofUp())
-				.withInfo(Info.from(singletonMap("foo", "bar")));
+			.register(registration.toBuilder().clearMetadata().build())
+			.register(registration)
+			.withEndpoints(Endpoints.single("info", "info"))
+			.withStatusInfo(StatusInfo.ofUp())
+			.withInfo(Info.from(singletonMap("foo", "bar")));
 
 		Instance loaded = Instance.create(InstanceId.of("id")).apply(instance.getUnsavedEvents());
 		assertThat(loaded.getUnsavedEvents()).isEmpty();
@@ -115,7 +122,7 @@ public class InstanceTest {
 		assertThat(loaded.getStatusTimestamp()).isEqualTo(instance.getStatusTimestamp());
 		assertThat(loaded.getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar")));
 		assertThat(loaded.getEndpoints())
-				.isEqualTo(Endpoints.single("info", "info").withEndpoint("health", "http://health"));
+			.isEqualTo(Endpoints.single("info", "info").withEndpoint("health", "http://health"));
 		assertThat(loaded.getVersion()).isEqualTo(4L);
 		assertThat(loaded.getBuildVersion()).isEqualTo(BuildVersion.valueOf("1.0.0"));
 
@@ -135,15 +142,15 @@ public class InstanceTest {
 	public void should_throw_when_applied_wrong_event() {
 		Instance instance = Instance.create(InstanceId.of("id"));
 		assertThatThrownBy(() -> instance.apply((InstanceEvent) null)).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'event' must not be null");
+			.hasMessage("'event' must not be null");
 
 		assertThatThrownBy(() -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("wrong"), 0L)))
-				.isInstanceOf(IllegalArgumentException.class).hasMessage("'event' must refer the same instance");
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("'event' must refer the same instance");
 
 		assertThatThrownBy(() -> instance.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L))
-				.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L)))
-						.isInstanceOf(IllegalArgumentException.class)
-						.hasMessage("Event 1 must be greater or equal to 2");
+			.apply(new InstanceDeregisteredEvent(InstanceId.of("id"), 1L))).isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Event 1 must be greater or equal to 2");
 	}
 
 	@Test
@@ -152,8 +159,9 @@ public class InstanceTest {
 
 		assertThat(instance.getBuildVersion()).isNull();
 
-		Registration registration = Registration.create("foo-instance", "http://health").metadata("version", "1.0.0")
-				.build();
+		Registration registration = Registration.create("foo-instance", "http://health")
+			.metadata("version", "1.0.0")
+			.build();
 		instance = instance.register(registration).withInfo(Info.empty());
 		assertThat(instance.getBuildVersion()).isEqualTo(BuildVersion.valueOf("1.0.0"));
 
@@ -174,7 +182,9 @@ public class InstanceTest {
 		assertThat(instance.getTags().getValues()).isEmpty();
 
 		Registration registration = Registration.create("foo-instance", "http://health")
-				.metadata("tags.environment", "test").metadata("tags.region", "EU").build();
+			.metadata("tags.environment", "test")
+			.metadata("tags.region", "EU")
+			.build();
 
 		instance = instance.register(registration);
 		assertThat(instance.getTags().getValues()).containsExactly(entry("environment", "test"), entry("region", "EU"));
@@ -193,13 +203,15 @@ public class InstanceTest {
 	@Test
 	public void shoud_rebuild_instance() {
 		Instance instance = Instance.create(InstanceId.of("id"))
-				.register(Registration.create("test", "http://test").build())
-				.withInfo(Info.from(singletonMap("info", "remove"))).withInfo(Info.from(singletonMap("info", "test2")));
+			.register(Registration.create("test", "http://test").build())
+			.withInfo(Info.from(singletonMap("info", "remove")))
+			.withInfo(Info.from(singletonMap("info", "test2")));
 
-		List<InstanceEvent> relevantEvents = instance.getUnsavedEvents().stream()
-				.filter((e) -> !(e instanceof InstanceInfoChangedEvent
-						&& ((InstanceInfoChangedEvent) e).getInfo().getValues().get("info").equals("remove")))
-				.collect(Collectors.toList());
+		List<InstanceEvent> relevantEvents = instance.getUnsavedEvents()
+			.stream()
+			.filter((e) -> !(e instanceof InstanceInfoChangedEvent
+					&& ((InstanceInfoChangedEvent) e).getInfo().getValues().get("info").equals("remove")))
+			.collect(Collectors.toList());
 
 		Instance rebuilt = Instance.create(InstanceId.of("id")).apply(relevantEvents);
 

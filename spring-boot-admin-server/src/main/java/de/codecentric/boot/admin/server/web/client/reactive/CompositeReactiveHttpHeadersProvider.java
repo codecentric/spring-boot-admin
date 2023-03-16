@@ -38,8 +38,8 @@ public class CompositeReactiveHttpHeadersProvider implements ReactiveHttpHeaders
 	@Override
 	public Mono<HttpHeaders> getHeaders(Instance instance) {
 		List<Mono<HttpHeaders>> headers = delegates.stream()
-				.map((reactiveHttpHeadersProvider) -> reactiveHttpHeadersProvider.getHeaders(instance))
-				.collect(toList());
+			.map((reactiveHttpHeadersProvider) -> reactiveHttpHeadersProvider.getHeaders(instance))
+			.collect(toList());
 
 		return Mono.zip(headers, this::mergeMonosToHeaders);
 	}

@@ -59,9 +59,12 @@ public class AbstractEventHandlerTest {
 		TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
 		eventHandler.start();
 
-		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
-				.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent)).expectNext(firstEvent, secondEvent)
-				.thenCancel().verify(Duration.ofSeconds(2));
+		StepVerifier.create(eventHandler.getFlux())
+			.expectSubscription()
+			.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent))
+			.expectNext(firstEvent, secondEvent)
+			.thenCancel()
+			.verify(Duration.ofSeconds(2));
 	}
 
 	@Test
@@ -71,9 +74,12 @@ public class AbstractEventHandlerTest {
 		TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
 		eventHandler.start();
 
-		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
-				.then(() -> testPublisher.next(firstEvent, ignoredEvent, secondEvent))
-				.expectNext(firstEvent, secondEvent).thenCancel().verify(Duration.ofSeconds(1));
+		StepVerifier.create(eventHandler.getFlux())
+			.expectSubscription()
+			.then(() -> testPublisher.next(firstEvent, ignoredEvent, secondEvent))
+			.expectNext(firstEvent, secondEvent)
+			.thenCancel()
+			.verify(Duration.ofSeconds(1));
 	}
 
 	public static final class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {

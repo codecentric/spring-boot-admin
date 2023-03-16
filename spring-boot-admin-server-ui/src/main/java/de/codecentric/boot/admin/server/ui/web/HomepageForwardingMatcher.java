@@ -63,8 +63,10 @@ public class HomepageForwardingMatcher<T> implements Predicate<T> {
 	}
 
 	private List<Pattern> toPatterns(List<String> routes) {
-		return routes.stream().map((r) -> "^" + r.replaceAll("/[*][*]", "(/.*)?").replaceAll("/[*]/", "/[^/]+/") + "$")
-				.map(Pattern::compile).collect(Collectors.toList());
+		return routes.stream()
+			.map((r) -> "^" + r.replaceAll("/[*][*]", "(/.*)?").replaceAll("/[*]/", "/[^/]+/") + "$")
+			.map(Pattern::compile)
+			.collect(Collectors.toList());
 	}
 
 }

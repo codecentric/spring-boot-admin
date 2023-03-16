@@ -15,101 +15,113 @@
   -->
 
 <template>
-  <sba-wave />
-  <section>
-    <sba-sticky-subnav>
-      <div class="container mx-auto flex">
-        <application-stats />
-        <ApplicationNotificationCenter
-          v-if="hasNotificationFiltersSupport"
-          :notification-filters="notificationFilters"
-          @filter-remove="removeFilter"
-        />
-        <div class="flex-1">
-          <sba-input
-            v-model="filter"
-            :placeholder="t('term.filter')"
-            name="filter"
-            type="search"
-          >
-            <template #prepend>
-              <font-awesome-icon icon="filter" />
-            </template>
-          </sba-input>
+  <div>
+    <sba-wave />
+    <section>
+      <sba-sticky-subnav>
+        <div class="container mx-auto flex">
+          <application-stats />
+          <ApplicationNotificationCenter
+            v-if="hasNotificationFiltersSupport"
+            :notification-filters="notificationFilters"
+            @filter-remove="removeFilter"
+          />
+          <div class="flex-1">
+            <sba-input
+              v-model="filter"
+              :placeholder="t('term.filter')"
+              name="filter"
+              type="search"
+            >
+              <template #prepend>
+                <font-awesome-icon icon="filter" />
+              </template>
+            </sba-input>
+          </div>
         </div>
+      </sba-sticky-subnav>
+
+      <div class="container mx-auto py-6">
+        <sba-alert
+          v-if="error"
+          :error="error"
+          :title="t('applications.server_connection_failed')"
+          class-names="mb-6"
+          severity="WARN"
+        />
+        <sba-panel v-if="!applicationsInitialized">
+          <p
+            class="is-muted is-loading"
+            v-text="t('applications.loading_applications')"
+          />
+        </sba-panel>
+
+        <application-status-hero v-if="applicationsInitialized" />
+
+        <template v-if="applicationsInitialized">
+          <TransitionGroup>
+            <sba-panel
+              v-if="hasActiveFilter && statusGroups.length === 0"
+              class="text-center"
+            >
+              {{ t('filter.no_results') }}
+            </sba-panel>
+            <sba-panel
+              v-for="group in statusGroups"
+              v-else
+              :key="group.status"
+              :seamless="true"
+              :title="t('term.applications_tc', group.applications.length)"
+              class="application-group"
+            >
+              <template #title>
+                <sba-status-badge :status="group.statusKey" />
+              </template>
+
+              <applications-list-item
+                v-for="application in group.applications"
+                :key="application.name"
+                :application="application"
+                :has-notification-filters-support="
+                  hasNotificationFiltersSupport
+                "
+                :is-expanded="selected === application.name || Boolean(filter)"
+                :notification-filters="notificationFilters"
+                @deselect="deselect"
+                @restart="restart"
+                @select="select"
+                @shutdown="shutdown"
+                @unregister="unregister"
+                @toggle-notification-filter-settings="
+                  toggleNotificationFilterSettings
+                "
+              />
+            </sba-panel>
+          </TransitionGroup>
+          <notification-filter-settings
+            v-if="showNotificationFilterSettingsObject"
+            v-popper="
+              `nf-settings-${
+                showNotificationFilterSettingsObject.id ||
+                showNotificationFilterSettingsObject.name
+              }`
+            "
+            :notification-filters="notificationFilters"
+            :object="showNotificationFilterSettingsObject"
+            @filter-add="addFilter"
+            @filter-remove="removeFilter"
+          />
+        </template>
       </div>
-    </sba-sticky-subnav>
-
-    <div class="container mx-auto py-6">
-      <sba-alert
-        v-if="error"
-        :error="error"
-        :title="t('applications.server_connection_failed')"
-        class-names="mb-6"
-        severity="WARN"
-      />
-      <sba-panel v-if="!applicationsInitialized">
-        <p
-          class="is-muted is-loading"
-          v-text="t('applications.loading_applications')"
-        />
-      </sba-panel>
-
-      <application-status-hero v-if="applicationsInitialized" />
-
-      <template v-if="applicationsInitialized">
-        <TransitionGroup>
-          <sba-panel
-            v-for="group in statusGroups"
-            :key="group.status"
-            :seamless="true"
-            :title="t('term.applications_tc', group.applications.length)"
-            class="application-group"
-          >
-            <template #title>
-              <sba-status-badge :status="group.statusKey" />
-            </template>
-
-            <applications-list-item
-              v-for="application in group.applications"
-              :key="application.name"
-              :application="application"
-              :has-notification-filters-support="hasNotificationFiltersSupport"
-              :is-expanded="selected === application.name || Boolean(filter)"
-              :notification-filters="notificationFilters"
-              @deselect="deselect"
-              @restart="restart"
-              @select="select"
-              @shutdown="shutdown"
-              @unregister="unregister"
-              @toggle-notification-filter-settings="
-                toggleNotificationFilterSettings
-              "
-            />
-          </sba-panel>
-        </TransitionGroup>
-        <notification-filter-settings
-          v-if="showNotificationFilterSettingsObject"
-          v-popper="
-            `nf-settings-${
-              showNotificationFilterSettingsObject.id ||
-              showNotificationFilterSettingsObject.name
-            }`
-          "
-          :notification-filters="notificationFilters"
-          :object="showNotificationFilterSettingsObject"
-          @filter-add="addFilter"
-          @filter-remove="removeFilter"
-        />
-      </template>
-    </div>
-  </section>
+    </section>
+  </div>
 </template>
 
 <script>
 import { groupBy, sortBy, transform } from 'lodash-es';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 
 import SbaStickySubnav from '@/components/sba-sticky-subnav';
 import SbaWave from '@/components/sba-wave';
@@ -160,15 +172,40 @@ export default {
       default: null,
     },
   },
-  setup: function () {
+  setup: function (props) {
     const { t } = useI18n();
+    const router = useRouter();
+    const route = useRoute();
     const { applications, applicationsInitialized } = useApplicationStore();
+    const filter = ref(route.query.q);
+
+    watch(filter, (q) => {
+      let to = {
+        name: 'applications',
+        params: { selected: props.selected },
+      };
+
+      if (q?.length > 0) {
+        to = {
+          ...to,
+          query: { q },
+        };
+      }
+
+      router.replace(to);
+    });
+
+    const hasActiveFilter = computed(() => {
+      return filter.value?.length > 0;
+    });
 
     return {
       applications,
       applicationsInitialized,
       t,
-      filter: ref(null),
+      filter,
+      router,
+      hasActiveFilter,
       hasNotificationFiltersSupport: ref(false),
       showNotificationFilterSettingsObject: ref(null),
       notificationFilters: ref([]),
@@ -201,12 +238,6 @@ export default {
     },
   },
   watch: {
-    '$route.query': {
-      immediate: true,
-      handler() {
-        this.filter = this.$route.query.q || '';
-      },
-    },
     selected: {
       immediate: true,
       handler(newVal) {
@@ -219,7 +250,7 @@ export default {
   },
   methods: {
     select(name) {
-      this.$router.replace({
+      this.router.replace({
         name: 'applications',
         params: { selected: name },
       });
@@ -230,7 +261,7 @@ export default {
       }
       this.toggleNotificationFilterSettings(null);
       if (this.selected === expectedSelected || !expectedSelected) {
-        this.$router.replace({ name: 'applications' });
+        this.router.replace({ name: 'applications' });
       }
     },
     async scrollIntoView(id, behavior) {
