@@ -47,5 +47,8 @@
   },
   "notification_filter_center": {
     "description": "Notifications on following applications or instances will be suppressed."
+  },
+  "filter": {
+    "no_results": "No results matching your filter."
   }
 }
