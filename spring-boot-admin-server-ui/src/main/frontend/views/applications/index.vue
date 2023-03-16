@@ -61,7 +61,14 @@
         <template v-if="applicationsInitialized">
           <TransitionGroup>
             <sba-panel
+              v-if="hasActiveFilter && statusGroups.length === 0"
+              class="text-center"
+            >
+              {{ t('filter.no_results') }}
+            </sba-panel>
+            <sba-panel
               v-for="group in statusGroups"
+              v-else
               :key="group.status"
               :seamless="true"
               :title="t('term.applications_tc', group.applications.length)"
@@ -112,8 +119,9 @@
 
 <script>
 import { groupBy, sortBy, transform } from 'lodash-es';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 
 import SbaStickySubnav from '@/components/sba-sticky-subnav';
 import SbaWave from '@/components/sba-wave';
@@ -164,15 +172,40 @@ export default {
       default: null,
     },
   },
-  setup: function () {
+  setup: function (props) {
     const { t } = useI18n();
+    const router = useRouter();
+    const route = useRoute();
     const { applications, applicationsInitialized } = useApplicationStore();
+    const filter = ref(route.query.q);
+
+    watch(filter, (q) => {
+      let to = {
+        name: 'applications',
+        params: { selected: props.selected },
+      };
+
+      if (q?.length > 0) {
+        to = {
+          ...to,
+          query: { q },
+        };
+      }
+
+      router.replace(to);
+    });
+
+    const hasActiveFilter = computed(() => {
+      return filter.value?.length > 0;
+    });
 
     return {
       applications,
       applicationsInitialized,
       t,
-      filter: ref(null),
+      filter,
+      router,
+      hasActiveFilter,
       hasNotificationFiltersSupport: ref(false),
       showNotificationFilterSettingsObject: ref(null),
       notificationFilters: ref([]),
@@ -205,12 +238,6 @@ export default {
     },
   },
   watch: {
-    '$route.query': {
-      immediate: true,
-      handler() {
-        this.filter = this.$route.query.q || '';
-      },
-    },
     selected: {
       immediate: true,
       handler(newVal) {
@@ -223,7 +250,7 @@ export default {
   },
   methods: {
     select(name) {
-      this.$router.replace({
+      this.router.replace({
         name: 'applications',
         params: { selected: name },
       });
@@ -234,7 +261,7 @@ export default {
       }
       this.toggleNotificationFilterSettings(null);
       if (this.selected === expectedSelected || !expectedSelected) {
-        this.$router.replace({ name: 'applications' });
+        this.router.replace({ name: 'applications' });
       }
     },
     async scrollIntoView(id, behavior) {
