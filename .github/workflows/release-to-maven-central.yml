@@ -75,7 +75,7 @@ jobs:
 
       - name: Deploy Asciidoc docs output to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.4.1
-        if: ${{ github.event.inputs.copyDocsToCurrent }}
+        if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
