@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 public class EndpointDetectionTriggerTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("id-1"))
-			.register(Registration.create("foo", "http://health-1").build());
+		.register(Registration.create("foo", "http://health-1").build());
 
 	private TestPublisher<InstanceEvent> events = TestPublisher.create();
 

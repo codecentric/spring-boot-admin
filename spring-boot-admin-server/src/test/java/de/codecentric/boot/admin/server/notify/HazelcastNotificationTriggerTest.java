@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 class HazelcastNotificationTriggerTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("id-1"))
-			.register(Registration.create("foo", "http://health-1").build());
+		.register(Registration.create("foo", "http://health-1").build());
 
 	private final Notifier notifier = mock(Notifier.class);
 

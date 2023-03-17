@@ -36,7 +36,7 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 
 	@Container
 	private static final GenericContainer<?> hazelcastServer = new GenericContainer<>("hazelcast/hazelcast:4.2.2")
-			.withExposedPorts(5701);
+		.withExposedPorts(5701);
 
 	private final HazelcastInstance hazelcast;
 

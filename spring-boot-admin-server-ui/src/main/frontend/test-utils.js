@@ -55,5 +55,6 @@ export const render = (testComponent, options) => {
     },
     options
   );
-  return tlRender(testComponent, renderOptions);
+  let utils = tlRender(testComponent, renderOptions);
+  return { ...utils };
 };

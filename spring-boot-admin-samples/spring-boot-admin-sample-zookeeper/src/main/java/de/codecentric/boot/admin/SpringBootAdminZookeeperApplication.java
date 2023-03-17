@@ -56,13 +56,12 @@ public class SpringBootAdminZookeeperApplication {
 		@Bean
 		protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests.anyRequest().permitAll())
-					.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-							.ignoringRequestMatchers(
-									new AntPathRequestMatcher(this.adminServer.path("/instances"),
-											HttpMethod.POST.toString()),
-									new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
-											HttpMethod.DELETE.toString()),
-									new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
+				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+					.ignoringRequestMatchers(
+							new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
+									HttpMethod.DELETE.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
 
 			return http.build();
 		}
@@ -86,20 +85,22 @@ public class SpringBootAdminZookeeperApplication {
 			successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-					.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**"))).permitAll()
-					.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll()
-					.anyRequest().authenticated())
-					.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
-							.successHandler(successHandler))
-					.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
-					.httpBasic(Customizer.withDefaults())
-					.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-							.ignoringRequestMatchers(
-									new AntPathRequestMatcher(this.adminServer.path("/instances"),
-											HttpMethod.POST.toString()),
-									new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
-											HttpMethod.DELETE.toString()),
-									new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
+				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**")))
+				.permitAll()
+				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login")))
+				.permitAll()
+				.anyRequest()
+				.authenticated())
+				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
+					.successHandler(successHandler))
+				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
+				.httpBasic(Customizer.withDefaults())
+				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+					.ignoringRequestMatchers(
+							new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
+									HttpMethod.DELETE.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
 
 			return http.build();
 		}

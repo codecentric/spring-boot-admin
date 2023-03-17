@@ -56,8 +56,9 @@ public class InfoMixinTest {
 
 	@Test
 	public void verifyDeserialize() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("build", new JSONObject().put("version", "1.0.0")).put("foo", "bar")
-				.toString();
+		String json = new JSONObject().put("build", new JSONObject().put("version", "1.0.0"))
+			.put("foo", "bar")
+			.toString();
 
 		Info info = objectMapper.readValue(json, Info.class);
 		assertThat(info).isNotNull();

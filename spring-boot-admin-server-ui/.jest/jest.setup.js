@@ -2,17 +2,25 @@ import '@testing-library/jest-dom';
 
 import { server } from '@/mocks/server';
 
+// Add IntersectionObserver and ResizeObserver to global. HeadlessUI relies on this.
+// IntersectionObserver isn't available in test environment
+global.IntersectionObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn()
+}));
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn()
+}));
+
+afterEach(() => {
+  document.body.innerHTML = '';
+});
+
 beforeAll(async () => {
   server.listen();
-
-  // IntersectionObserver isn't available in test environment
-  const mockIntersectionObserver = jest.fn();
-  mockIntersectionObserver.mockReturnValue({
-    observe: () => null,
-    unobserve: () => null,
-    disconnect: () => null,
-  });
-  window.IntersectionObserver = mockIntersectionObserver;
 });
 
 afterAll((done) => {

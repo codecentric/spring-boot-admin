@@ -256,26 +256,29 @@ public class InstanceDiscoveryListenerTest {
 
 		when(this.discovery.getServices()).thenReturn(singletonList("service"));
 		when(this.discovery.getInstances("service"))
-				.thenReturn(singletonList(new DefaultServiceInstance("test-1", "service", "localhost", 80, false)));
+			.thenReturn(singletonList(new DefaultServiceInstance("test-1", "service", "localhost", 80, false)));
 
 		this.listener.onApplicationEvent(new HeartbeatEvent(new Object(), heartbeat));
 		StepVerifier.create(this.registry.getInstances()).verifyComplete();
 
 		this.listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
 		StepVerifier.create(this.registry.getInstances())
-				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+			.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+			.verifyComplete();
 	}
 
 	@Test
 	public void should_remove_instances_when_they_are_no_longer_available_in_discovery() {
 		StepVerifier.create(this.registry.register(Registration.create("ignored", "http://health").build()))
-				.consumeNextWith((id) -> {
-				}).verifyComplete();
+			.consumeNextWith((id) -> {
+			})
+			.verifyComplete();
 		StepVerifier
-				.create(this.registry
-						.register(Registration.create("different-source", "http://health2").source("http-api").build()))
-				.consumeNextWith((id) -> {
-				}).verifyComplete();
+			.create(this.registry
+				.register(Registration.create("different-source", "http://health2").source("http-api").build()))
+			.consumeNextWith((id) -> {
+			})
+			.verifyComplete();
 		this.listener.setIgnoredServices(singleton("ignored"));
 
 		List<ServiceInstance> instances = new ArrayList<>();
@@ -288,29 +291,33 @@ public class InstanceDiscoveryListenerTest {
 		this.listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
 
 		StepVerifier.create(this.registry.getInstances("service"))
-				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
-				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+			.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+			.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+			.verifyComplete();
 
 		StepVerifier.create(this.registry.getInstances("ignored"))
-				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("ignored")).verifyComplete();
+			.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("ignored"))
+			.verifyComplete();
 
 		StepVerifier.create(this.registry.getInstances("different-source"))
-				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
-				.verifyComplete();
+			.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
+			.verifyComplete();
 
 		instances.remove(0);
 
 		this.listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));
 
 		StepVerifier.create(this.registry.getInstances("service"))
-				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service")).verifyComplete();
+			.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("service"))
+			.verifyComplete();
 
 		StepVerifier.create(this.registry.getInstances("ignored"))
-				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("ignored")).verifyComplete();
+			.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("ignored"))
+			.verifyComplete();
 
 		StepVerifier.create(this.registry.getInstances("different-source"))
-				.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
-				.verifyComplete();
+			.assertNext((a) -> assertThat(a.getRegistration().getName()).isEqualTo("different-source"))
+			.verifyComplete();
 
 		// shouldn't deregister a second time
 		this.listener.onApplicationEvent(new HeartbeatEvent(new Object(), new Object()));

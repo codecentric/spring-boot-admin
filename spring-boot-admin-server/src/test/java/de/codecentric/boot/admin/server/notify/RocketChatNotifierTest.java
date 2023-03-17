@@ -56,7 +56,7 @@ public class RocketChatNotifierTest {
 	private static final String message = "test";
 
 	private static final Instance instance = Instance.create(InstanceId.of("-id-"))
-			.register(Registration.create("App", "http://health").build());
+		.register(Registration.create("App", "http://health").build());
 
 	private RocketChatNotifier notifier;
 
@@ -78,15 +78,15 @@ public class RocketChatNotifierTest {
 	@Test
 	public void test_onApplicationEvent_resolve() {
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		HttpEntity<?> expected = expectedMessage(standardMessage(StatusInfo.ofUp().getStatus()));
 		verify(restTemplate).exchange(eq(URI.create(String.format("%s/api/v1/chat.sendMessage", host))),
@@ -97,15 +97,15 @@ public class RocketChatNotifierTest {
 	public void test_onApplicationEvent_resolve_with_given_message() {
 		notifier.setMessage(message);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		HttpEntity<?> expected = expectedMessage(message);
 		verify(restTemplate).exchange(eq(URI.create(String.format("%s/api/v1/chat.sendMessage", host))),

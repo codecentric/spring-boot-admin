@@ -76,8 +76,9 @@ public class InstanceRegistryTest {
 		InstanceId id = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
 		registry.deregister(id).block();
 
-		StepVerifier.create(registry.getInstance(id)).assertNext((app) -> assertThat(app.isRegistered()).isFalse())
-				.verifyComplete();
+		StepVerifier.create(registry.getInstance(id))
+			.assertNext((app) -> assertThat(app.isRegistered()).isFalse())
+			.verifyComplete();
 	}
 
 	@Test
@@ -92,7 +93,7 @@ public class InstanceRegistryTest {
 
 		// When instance registers second time
 		InstanceId refreshId = registry.register(Registration.create("abc", "http://localhost:8080/health").build())
-				.block();
+			.block();
 
 		assertThat(refreshId).isEqualTo(id);
 		StepVerifier.create(registry.getInstance(id)).assertNext((registered) -> {
@@ -108,10 +109,13 @@ public class InstanceRegistryTest {
 		InstanceId id2 = registry.register(Registration.create("abc", "http://localhost:8081/health").build()).block();
 		InstanceId id3 = registry.register(Registration.create("zzz", "http://localhost:9999/health").build()).block();
 
-		StepVerifier.create(registry.getInstances("abc")).recordWith(ArrayList::new).thenConsumeWhile((a) -> true)
-				.consumeRecordedWith((applications) -> assertThat(applications.stream().map(Instance::getId))
-						.doesNotContain(id3).containsExactlyInAnyOrder(id1, id2))
-				.verifyComplete();
+		StepVerifier.create(registry.getInstances("abc"))
+			.recordWith(ArrayList::new)
+			.thenConsumeWhile((a) -> true)
+			.consumeRecordedWith(
+					(applications) -> assertThat(applications.stream().map(Instance::getId)).doesNotContain(id3)
+						.containsExactlyInAnyOrder(id1, id2))
+			.verifyComplete();
 	}
 
 }

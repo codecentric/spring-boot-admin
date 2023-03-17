@@ -35,11 +35,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AdminServerCloudFoundryAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
-					HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
-					AdminServerCloudFoundryAutoConfiguration.class))
-			.withUserConfiguration(AdminServerMarkerConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
+				ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
+				HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
+				AdminServerCloudFoundryAutoConfiguration.class))
+		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
 	public void non_cloud_platform() {

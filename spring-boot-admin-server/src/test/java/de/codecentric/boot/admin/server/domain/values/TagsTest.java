@@ -62,8 +62,10 @@ public class TagsTest {
 
 	@Test
 	public void should_append_tags() {
-		Tags tags = Tags.empty().append(Tags.from(singletonMap("tags.env", "test"), "tags"))
-				.append(Tags.from(singletonMap("env", "test2"))).append(Tags.from(singletonMap("foo", "bar")));
+		Tags tags = Tags.empty()
+			.append(Tags.from(singletonMap("tags.env", "test"), "tags"))
+			.append(Tags.from(singletonMap("env", "test2")))
+			.append(Tags.from(singletonMap("foo", "bar")));
 
 		assertThat(tags.getValues()).containsExactly(entry("env", "test2"), entry("foo", "bar"));
 	}

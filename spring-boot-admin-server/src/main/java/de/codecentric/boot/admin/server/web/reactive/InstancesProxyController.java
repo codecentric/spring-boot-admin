@@ -85,7 +85,7 @@ public class InstancesProxyController {
 				(clientResponse) -> {
 					response.setStatusCode(clientResponse.statusCode());
 					response.getHeaders()
-							.addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
+						.addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
 					return response.writeAndFlushWith(clientResponse.body(BodyExtractors.toDataBuffers()).window(1));
 				});
 	}
@@ -114,9 +114,12 @@ public class InstancesProxyController {
 			String pathPattern) {
 		String localPath = this.getLocalPath(pathPattern, request);
 		URI uri = UriComponentsBuilder.fromPath(localPath).query(request.getURI().getRawQuery()).build(true).toUri();
-		return InstanceWebProxy.ForwardRequest.builder().uri(uri).method(request.getMethod())
-				.headers(this.httpHeadersFilter.filterHeaders(request.getHeaders()))
-				.body(BodyInserters.fromDataBuffers(cachedBody)).build();
+		return InstanceWebProxy.ForwardRequest.builder()
+			.uri(uri)
+			.method(request.getMethod())
+			.headers(this.httpHeadersFilter.filterHeaders(request.getHeaders()))
+			.body(BodyInserters.fromDataBuffers(cachedBody))
+			.build();
 	}
 
 	private String getLocalPath(String pathPattern, ServerHttpRequest request) {

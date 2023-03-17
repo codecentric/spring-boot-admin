@@ -58,8 +58,8 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 
 	private String[] withNewPatterns(Set<PathPattern> patterns) {
 		return patterns.stream()
-				.map((pattern) -> PathUtils.normalizePath(this.adminContextPath + pattern.getPatternString()))
-				.toArray(String[]::new);
+			.map((pattern) -> PathUtils.normalizePath(this.adminContextPath + pattern.getPatternString()))
+			.toArray(String[]::new);
 	}
 
 }

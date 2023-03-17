@@ -34,11 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AdminServerInstanceWebClientConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-					ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
-					WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
-					AdminServerInstanceWebClientConfiguration.class))
-			.withUserConfiguration(AdminServerMarkerConfiguration.class);
+		.withConfiguration(
+				AutoConfigurations.of(RestTemplateAutoConfiguration.class, ClientHttpConnectorAutoConfiguration.class,
+						WebClientAutoConfiguration.class, WebMvcAutoConfiguration.class,
+						AdminServerAutoConfiguration.class, AdminServerInstanceWebClientConfiguration.class))
+		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
 	public void simpleConfig() {
@@ -46,17 +46,18 @@ public class AdminServerInstanceWebClientConfigurationTest {
 			assertThat(context).hasSingleBean(InstanceWebClient.Builder.class);
 			assertThat(context).hasBean("filterInstanceWebClientCustomizer");
 			assertThat(context).hasSingleBean(BasicAuthHttpHeaderProvider.class);
-			assertThat(context).getBeanNames(InstanceExchangeFilterFunction.class).containsExactly(
-					"addHeadersInstanceExchangeFilter", "rewriteEndpointUrlInstanceExchangeFilter",
-					"setDefaultAcceptHeaderInstanceExchangeFilter", "legacyEndpointConverterInstanceExchangeFilter",
-					"logfileAcceptWorkaround", "cookieHandlingInstanceExchangeFilter", "retryInstanceExchangeFilter",
-					"timeoutInstanceExchangeFilter");
-			assertThat(context).getBeanNames(LegacyEndpointConverter.class).containsExactly(
-					"healthLegacyEndpointConverter", "infoLegacyEndpointConverter", "envLegacyEndpointConverter",
-					"httptraceLegacyEndpointConverter", "threaddumpLegacyEndpointConverter",
-					"liquibaseLegacyEndpointConverter", "flywayLegacyEndpointConverter", "beansLegacyEndpointConverter",
-					"configpropsLegacyEndpointConverter", "mappingsLegacyEndpointConverter",
-					"startupLegacyEndpointConverter");
+			assertThat(context).getBeanNames(InstanceExchangeFilterFunction.class)
+				.containsExactly("addHeadersInstanceExchangeFilter", "rewriteEndpointUrlInstanceExchangeFilter",
+						"setDefaultAcceptHeaderInstanceExchangeFilter", "legacyEndpointConverterInstanceExchangeFilter",
+						"logfileAcceptWorkaround", "cookieHandlingInstanceExchangeFilter",
+						"retryInstanceExchangeFilter", "timeoutInstanceExchangeFilter");
+			assertThat(context).getBeanNames(LegacyEndpointConverter.class)
+				.containsExactly("healthLegacyEndpointConverter", "infoLegacyEndpointConverter",
+						"envLegacyEndpointConverter", "httptraceLegacyEndpointConverter",
+						"threaddumpLegacyEndpointConverter", "liquibaseLegacyEndpointConverter",
+						"flywayLegacyEndpointConverter", "beansLegacyEndpointConverter",
+						"configpropsLegacyEndpointConverter", "mappingsLegacyEndpointConverter",
+						"startupLegacyEndpointConverter");
 		});
 	}
 

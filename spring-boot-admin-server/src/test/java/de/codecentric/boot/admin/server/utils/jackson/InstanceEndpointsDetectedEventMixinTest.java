@@ -58,12 +58,14 @@ public class InstanceEndpointsDetectedEventMixinTest {
 
 	@Test
 	public void verifyDeserialize() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "ENDPOINTS_DETECTED")
-				.put("endpoints",
-						new JSONArray().put(new JSONObject().put("id", "info").put("url", "http://localhost:8080/info"))
-								.put(new JSONObject().put("id", "health").put("url", "http://localhost:8080/health")))
-				.toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "ENDPOINTS_DETECTED")
+			.put("endpoints",
+					new JSONArray().put(new JSONObject().put("id", "info").put("url", "http://localhost:8080/info"))
+						.put(new JSONObject().put("id", "health").put("url", "http://localhost:8080/health")))
+			.toString();
 
 		InstanceEndpointsDetectedEvent event = objectMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
 		assertThat(event).isNotNull();
@@ -76,9 +78,12 @@ public class InstanceEndpointsDetectedEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithEmptyEndpoints() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "ENDPOINTS_DETECTED")
-				.put("endpoints", new JSONArray()).toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "ENDPOINTS_DETECTED")
+			.put("endpoints", new JSONArray())
+			.toString();
 
 		InstanceEndpointsDetectedEvent event = objectMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
 		assertThat(event).isNotNull();
@@ -90,8 +95,10 @@ public class InstanceEndpointsDetectedEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("timestamp", 1587751031.000000000)
-				.put("type", "ENDPOINTS_DETECTED").toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "ENDPOINTS_DETECTED")
+			.toString();
 
 		InstanceEndpointsDetectedEvent event = objectMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
 		assertThat(event).isNotNull();
@@ -105,8 +112,8 @@ public class InstanceEndpointsDetectedEventMixinTest {
 	public void verifySerialize() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
-		Endpoints endpoints = Endpoints.single("info", "http://localhost:8080/info").withEndpoint("health",
-				"http://localhost:8080/health");
+		Endpoints endpoints = Endpoints.single("info", "http://localhost:8080/info")
+			.withEndpoint("health", "http://localhost:8080/health");
 		InstanceEndpointsDetectedEvent event = new InstanceEndpointsDetectedEvent(id, 12345678L, timestamp, endpoints);
 
 		JsonContent<InstanceEndpointsDetectedEvent> jsonContent = jsonTester.write(event);
@@ -117,12 +124,12 @@ public class InstanceEndpointsDetectedEventMixinTest {
 		assertThat(jsonContent).extractingJsonPathArrayValue("$.endpoints").hasSize(2);
 
 		assertThat(jsonContent).extractingJsonPathStringValue("$.endpoints[0].id").isIn("info", "health");
-		assertThat(jsonContent).extractingJsonPathStringValue("$.endpoints[0].url").isIn("http://localhost:8080/info",
-				"http://localhost:8080/health");
+		assertThat(jsonContent).extractingJsonPathStringValue("$.endpoints[0].url")
+			.isIn("http://localhost:8080/info", "http://localhost:8080/health");
 
 		assertThat(jsonContent).extractingJsonPathStringValue("$.endpoints[1].id").isIn("info", "health");
-		assertThat(jsonContent).extractingJsonPathStringValue("$.endpoints[1].url").isIn("http://localhost:8080/info",
-				"http://localhost:8080/health");
+		assertThat(jsonContent).extractingJsonPathStringValue("$.endpoints[1].url")
+			.isIn("http://localhost:8080/info", "http://localhost:8080/health");
 	}
 
 	@Test

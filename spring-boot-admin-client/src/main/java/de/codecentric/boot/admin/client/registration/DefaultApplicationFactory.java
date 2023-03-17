@@ -76,8 +76,12 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
 	@Override
 	public Application createApplication() {
-		return Application.create(getName()).healthUrl(getHealthUrl()).managementUrl(getManagementUrl())
-				.serviceUrl(getServiceUrl()).metadata(getMetadata()).build();
+		return Application.create(getName())
+			.healthUrl(getHealthUrl())
+			.managementUrl(getManagementUrl())
+			.serviceUrl(getServiceUrl())
+			.metadata(getMetadata())
+			.build();
 	}
 
 	protected String getName() {
@@ -99,8 +103,11 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 			return baseUrl;
 		}
 
-		return UriComponentsBuilder.newInstance().scheme(getScheme(this.server.getSsl())).host(getServiceHost())
-				.port(getLocalServerPort()).toUriString();
+		return UriComponentsBuilder.newInstance()
+			.scheme(getScheme(this.server.getSsl()))
+			.host(getServiceHost())
+			.port(getLocalServerPort())
+			.toUriString();
 	}
 
 	protected String getServicePath() {
@@ -118,8 +125,10 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 			return this.instance.getManagementUrl();
 		}
 
-		return UriComponentsBuilder.fromUriString(getManagementBaseUrl()).path("/").path(getEndpointsWebPath())
-				.toUriString();
+		return UriComponentsBuilder.fromUriString(getManagementBaseUrl())
+			.path("/")
+			.path(getEndpointsWebPath())
+			.toUriString();
 	}
 
 	protected String getManagementBaseUrl() {
@@ -134,8 +143,11 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		}
 
 		Ssl ssl = (this.management.getSsl() != null) ? this.management.getSsl() : this.server.getSsl();
-		return UriComponentsBuilder.newInstance().scheme(getScheme(ssl)).host(getManagementHost())
-				.port(getLocalManagementPort()).toUriString();
+		return UriComponentsBuilder.newInstance()
+			.scheme(getScheme(ssl))
+			.host(getManagementHost())
+			.port(getLocalManagementPort())
+			.toUriString();
 	}
 
 	protected boolean isManagementPortEqual() {
@@ -150,8 +162,10 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		if (this.instance.getHealthUrl() != null) {
 			return this.instance.getHealthUrl();
 		}
-		return UriComponentsBuilder.fromHttpUrl(getManagementBaseUrl()).path("/").path(getHealthEndpointPath())
-				.toUriString();
+		return UriComponentsBuilder.fromHttpUrl(getManagementBaseUrl())
+			.path("/")
+			.path(getHealthEndpointPath())
+			.toUriString();
 	}
 
 	protected Map<String, String> getMetadata() {

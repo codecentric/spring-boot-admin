@@ -56,15 +56,17 @@ public class InstanceWebClient {
 
 	private static ExchangeFilterFunction setInstance(Mono<Instance> instance) {
 		return (request, next) -> instance
-				.map((i) -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
-				.switchIfEmpty(Mono.error(() -> new ResolveInstanceException("Could not resolve Instance")))
-				.flatMap(next::exchange);
+			.map((i) -> ClientRequest.from(request).attribute(ATTRIBUTE_INSTANCE, i).build())
+			.switchIfEmpty(Mono.error(() -> new ResolveInstanceException("Could not resolve Instance")))
+			.flatMap(next::exchange);
 	}
 
 	private static ExchangeFilterFunction toExchangeFilterFunction(InstanceExchangeFilterFunction filter) {
-		return (request, next) -> request.attribute(ATTRIBUTE_INSTANCE).filter(Instance.class::isInstance)
-				.map(Instance.class::cast).map((instance) -> filter.filter(instance, request, next))
-				.orElseGet(() -> next.exchange(request));
+		return (request, next) -> request.attribute(ATTRIBUTE_INSTANCE)
+			.filter(Instance.class::isInstance)
+			.map(Instance.class::cast)
+			.map((instance) -> filter.filter(instance, request, next))
+			.orElseGet(() -> next.exchange(request));
 	}
 
 	public static class Builder {
@@ -106,8 +108,9 @@ public class InstanceWebClient {
 		}
 
 		public InstanceWebClient build() {
-			this.filters.stream().map(InstanceWebClient::toExchangeFilterFunction)
-					.forEach(this.webClientBuilder::filter);
+			this.filters.stream()
+				.map(InstanceWebClient::toExchangeFilterFunction)
+				.forEach(this.webClientBuilder::filter);
 			return new InstanceWebClient(this.webClientBuilder.build());
 		}
 

@@ -60,10 +60,12 @@ public class InstanceInfoChangedEventMixinTest {
 
 	@Test
 	public void verifyDeserialize() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "INFO_CHANGED")
-				.put("info", new JSONObject().put("build", new JSONObject().put("version", "1.0.0")).put("foo", "bar"))
-				.toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "INFO_CHANGED")
+			.put("info", new JSONObject().put("build", new JSONObject().put("version", "1.0.0")).put("foo", "bar"))
+			.toString();
 
 		InstanceInfoChangedEvent event = objectMapper.readValue(json, InstanceInfoChangedEvent.class);
 		assertThat(event).isNotNull();
@@ -79,8 +81,10 @@ public class InstanceInfoChangedEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("timestamp", 1587751031.000000000)
-				.put("type", "INFO_CHANGED").toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "INFO_CHANGED")
+			.toString();
 
 		InstanceInfoChangedEvent event = objectMapper.readValue(json, InstanceInfoChangedEvent.class);
 		assertThat(event).isNotNull();
@@ -92,9 +96,12 @@ public class InstanceInfoChangedEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithEmptyInfo() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "INFO_CHANGED").put("info", new JSONObject())
-				.toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "INFO_CHANGED")
+			.put("info", new JSONObject())
+			.toString();
 
 		InstanceInfoChangedEvent event = objectMapper.readValue(json, InstanceInfoChangedEvent.class);
 		assertThat(event).isNotNull();

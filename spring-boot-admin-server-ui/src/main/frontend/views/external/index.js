@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { h } from 'vue';
+
 import './style.css';
 
 import sbaConfig from '@/sba-config';
@@ -26,9 +28,9 @@ const addIframeView = (viewRegistry, { url, label, order }) => {
     order,
     component: {
       inheritAttrs: false,
-      render(createElement) {
-        return createElement('div', { class: 'external-view' }, [
-          createElement('iframe', { attrs: { src: url } }),
+      render() {
+        return h('div', { class: 'external-view' }, [
+          h('iframe', { src: url }),
         ]);
       },
     },

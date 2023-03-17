@@ -56,7 +56,7 @@ public class LetsChatNotifierTest {
 	private static final String host = "http://localhost";
 
 	private static final Instance instance = Instance.create(InstanceId.of("-id-"))
-			.register(Registration.create("App", "http://health").build());
+		.register(Registration.create("App", "http://health").build());
 
 	private LetsChatNotifier notifier;
 
@@ -78,15 +78,15 @@ public class LetsChatNotifierTest {
 	@Test
 	public void test_onApplicationEvent_resolve() {
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		HttpEntity<?> expected = expectedMessage(standardMessage("UP"));
 		verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
@@ -97,15 +97,15 @@ public class LetsChatNotifierTest {
 	public void test_onApplicationEvent_resolve_with_custom_message() {
 		notifier.setMessage("TEST");
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		HttpEntity<?> expected = expectedMessage("TEST");
 		verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),

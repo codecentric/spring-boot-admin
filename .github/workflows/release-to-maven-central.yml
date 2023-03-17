@@ -6,7 +6,11 @@ on:
       releaseversion:
         description: 'Release version'
         required: true
-        default: '2.4.0'
+        default: '3.0.0'
+      copyDocsToCurrent:
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   publish-central-and-pages:
@@ -28,7 +32,7 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Cache local Maven repository
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v3.3.1
         env:
           cache-name: cache-mvn
         with:
@@ -69,6 +73,15 @@ jobs:
           target-folder: ${{ github.event.inputs.releaseversion }}
           clean: true # Automatically remove deleted files from the deploy branch
 
+      - name: Deploy Asciidoc docs output to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        if: github.event.inputs.copyDocsToCurrent == 'true'
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          target-folder: /current
+          clean: true # Automatically remove deleted files from the deploy branch
+
 
   publish-github-release:
     needs: publish-central-and-pages
@@ -79,7 +92,7 @@ jobs:
 
       - name: Generate changelog
         id: changelog
-        uses: metcalfc/changelog-generator@v4.0.1
+        uses: metcalfc/changelog-generator@v4.1.0
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
 

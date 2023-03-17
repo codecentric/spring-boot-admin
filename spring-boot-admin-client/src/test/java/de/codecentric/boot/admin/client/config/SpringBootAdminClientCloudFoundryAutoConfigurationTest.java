@@ -34,11 +34,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
 
-	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-					RestTemplateAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class,
-					SpringBootAdminClientCloudFoundryAutoConfiguration.class));
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				RestTemplateAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class,
+				SpringBootAdminClientCloudFoundryAutoConfiguration.class));
 
 	@Test
 	public void non_cloud_platform() {
@@ -51,11 +51,12 @@ public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
 	@Test
 	public void cloudfoundry() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
-				.withPropertyValues("VCAP_APPLICATION:{}").run((context) -> {
-					assertThat(context).hasSingleBean(CloudFoundryMetadataContributor.class);
-					assertThat(context).getBean(ApplicationFactory.class)
-							.isInstanceOf(CloudFoundryApplicationFactory.class);
-				});
+			.withPropertyValues("VCAP_APPLICATION:{}")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(CloudFoundryMetadataContributor.class);
+				assertThat(context).getBean(ApplicationFactory.class)
+					.isInstanceOf(CloudFoundryApplicationFactory.class);
+			});
 	}
 
 	@Test

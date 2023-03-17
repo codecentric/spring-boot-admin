@@ -88,13 +88,19 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 		String managementUrl = getManagementUrl(instance).toString();
 		String serviceUrl = getServiceUrl(instance).toString();
 
-		return Registration.create(instance.getServiceId(), healthUrl).managementUrl(managementUrl)
-				.serviceUrl(serviceUrl).metadata(getMetadata(instance)).build();
+		return Registration.create(instance.getServiceId(), healthUrl)
+			.managementUrl(managementUrl)
+			.serviceUrl(serviceUrl)
+			.metadata(getMetadata(instance))
+			.build();
 	}
 
 	protected URI getHealthUrl(ServiceInstance instance) {
-		return UriComponentsBuilder.fromUri(getManagementUrl(instance)).path("/").path(getHealthPath(instance)).build()
-				.toUri();
+		return UriComponentsBuilder.fromUri(getManagementUrl(instance))
+			.path("/")
+			.path(getHealthPath(instance))
+			.build()
+			.toUri();
 	}
 
 	protected String getHealthPath(ServiceInstance instance) {
@@ -163,10 +169,11 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected Map<String, String> getMetadata(ServiceInstance instance) {
-		return (instance.getMetadata() != null)
-				? instance.getMetadata().entrySet().stream().filter((e) -> e.getKey() != null && e.getValue() != null)
-						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-				: emptyMap();
+		return (instance.getMetadata() != null) ? instance.getMetadata()
+			.entrySet()
+			.stream()
+			.filter((e) -> e.getKey() != null && e.getValue() != null)
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)) : emptyMap();
 	}
 
 	public String getManagementContextPath() {

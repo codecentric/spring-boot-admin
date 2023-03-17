@@ -25,9 +25,9 @@ public class InstanceIdTest {
 	@Test
 	public void invariants() {
 		assertThatThrownBy(() -> InstanceId.of(null)).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'value' must have text");
+			.hasMessage("'value' must have text");
 		assertThatThrownBy(() -> InstanceId.of("")).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'value' must have text");
+			.hasMessage("'value' must have text");
 	}
 
 }

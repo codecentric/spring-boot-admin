@@ -37,7 +37,8 @@ public class EndpointsTest {
 	public void factory_methods() {
 		assertThat(Endpoints.empty()).isEqualTo(Endpoints.of(Collections.emptyList())).isEqualTo(Endpoints.of(null));
 		assertThat(Endpoints.of(Collections.singletonList(Endpoint.of("id", "path"))))
-				.isEqualTo(Endpoints.empty().withEndpoint("id", "path")).isEqualTo(Endpoints.single("id", "path"));
+			.isEqualTo(Endpoints.empty().withEndpoint("id", "path"))
+			.isEqualTo(Endpoints.single("id", "path"));
 	}
 
 	@Test

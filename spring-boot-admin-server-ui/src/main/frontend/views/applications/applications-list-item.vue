@@ -18,13 +18,13 @@
   <div
     :id="application.name"
     v-on-clickaway="(event) => $emit('deselect', event, application.name)"
-    class="application-list-item"
     :class="{ 'is-active': isExpanded }"
+    class="application-list-item"
     @click="$emit('select', application.name)"
   >
     <header
-      class="application-list-item__header"
       :class="headerClass"
+      class="application-list-item__header"
       v-on="$attrs"
     >
       <ApplicationsListItemSummary
@@ -38,15 +38,15 @@
       />
       <div>
         <ApplicationListItemAction
-          :item="application"
           :has-active-notification-filter="
             hasActiveNotificationFilter(application)
           "
           :has-notification-filters-support="hasNotificationFiltersSupport"
-          @filter-settings="toggleFilterSettings"
+          :item="application"
           @restart="confirmRestartApplication"
           @shutdown="confirmShutdownApplication"
           @unregister="confirmUnregisterApplication"
+          @filter-settings="toggleFilterSettings"
         />
       </div>
     </header>
@@ -55,16 +55,16 @@
       <instances-list :instances="application.instances">
         <template #actions="{ instance }">
           <ApplicationListItemAction
-            class="hidden md:flex"
-            :item="instance"
             :has-active-notification-filter="
               hasActiveNotificationFilter(instance)
             "
             :has-notification-filters-support="hasNotificationFiltersSupport"
-            @filter-settings="toggleFilterSettings"
+            :item="instance"
+            class="hidden md:flex"
             @restart="confirmRestartInstance"
             @shutdown="confirmShutdownInstance"
             @unregister="confirmUnregisterInstance"
+            @filter-settings="toggleFilterSettings"
           />
         </template>
       </instances-list>
@@ -135,7 +135,7 @@ export default {
         this.$t('applications.shutdown', { name: application.name })
       );
       if (isConfirmed) {
-        this.$emit('restart', application);
+        this.$emit('shutdown', application);
       }
     },
     async confirmUnregisterApplication(application) {
@@ -180,7 +180,7 @@ export default {
         this.$t('instances.shutdown', { name: instance.id })
       );
       if (isConfirmed) {
-        this.$emit('restart', instance);
+        this.$emit('shutdown', instance);
       }
     },
   },

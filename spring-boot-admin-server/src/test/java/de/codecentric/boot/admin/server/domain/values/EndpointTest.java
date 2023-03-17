@@ -25,9 +25,9 @@ public class EndpointTest {
 	@Test
 	public void invariants() {
 		assertThatThrownBy(() -> Endpoint.of("", "")).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'id' must not be empty.");
+			.hasMessage("'id' must not be empty.");
 		assertThatThrownBy(() -> Endpoint.of("id", "")).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'url' must not be empty.");
+			.hasMessage("'url' must not be empty.");
 	}
 
 }

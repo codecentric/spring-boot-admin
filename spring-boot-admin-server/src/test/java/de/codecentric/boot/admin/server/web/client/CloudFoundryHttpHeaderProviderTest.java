@@ -31,10 +31,12 @@ public class CloudFoundryHttpHeaderProviderTest {
 	@Test
 	public void test_cloud_foundry_header() {
 		Registration registration = Registration.create("foo", "http://health")
-				.metadata("applicationId", "549e64cf-a478-423d-9d6d-02d803a028a8").metadata("instanceId", "0").build();
+			.metadata("applicationId", "549e64cf-a478-423d-9d6d-02d803a028a8")
+			.metadata("instanceId", "0")
+			.build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(headersProvider.getHeaders(instance).get("X-CF-APP-INSTANCE"))
-				.containsOnly("549e64cf-a478-423d-9d6d-02d803a028a8:0");
+			.containsOnly("549e64cf-a478-423d-9d6d-02d803a028a8:0");
 	}
 
 	@Test

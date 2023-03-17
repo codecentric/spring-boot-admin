@@ -15,9 +15,12 @@
  */
 import { remove } from 'lodash-es';
 import { h, markRaw, reactive } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config.js';
 import { VIEW_GROUP } from './views/ViewGroup.js';
+
+let router;
 
 const createI18nTextVNode = (label) => {
   return {
@@ -44,6 +47,19 @@ export default class ViewRegistry {
       (v) => v.path && (!v.parent || !v.isChildRoute)
     );
     return [...routes, ...this._redirects];
+  }
+
+  get router() {
+    return router;
+  }
+
+  createRouter() {
+    router = createRouter({
+      history: createWebHistory(),
+      linkActiveClass: 'is-active',
+      routes: this.routes,
+    });
+    return router;
   }
 
   getViewByName(name) {
@@ -109,7 +125,7 @@ export default class ViewRegistry {
       return {
         path: p.path,
         name: p.name,
-        component: markRaw(p.component),
+        component: p.component,
         props: p.props,
         meta: { view: p },
         children,

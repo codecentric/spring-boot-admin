@@ -63,24 +63,31 @@ public class SecuritySecureConfig {
 		successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
 		http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests //
-				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**"))).permitAll() // <1>
-				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/actuator/info"))).permitAll()
-				.requestMatchers(new AntPathRequestMatcher(adminServer.path("/actuator/health"))).permitAll()
-				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login"))).permitAll()
-				.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll() // https://github.com/spring-projects/spring-security/issues/11027
-				.anyRequest().authenticated()) // <2>
-				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
-						.successHandler(successHandler)) // <3>
-				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
-				.httpBasic(Customizer.withDefaults()); // <4>
+			.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**")))
+			.permitAll() // <1>
+			.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/actuator/info")))
+			.permitAll()
+			.requestMatchers(new AntPathRequestMatcher(adminServer.path("/actuator/health")))
+			.permitAll()
+			.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login")))
+			.permitAll()
+			.dispatcherTypeMatchers(DispatcherType.ASYNC)
+			.permitAll() // https://github.com/spring-projects/spring-security/issues/11027
+			.anyRequest()
+			.authenticated()) // <2>
+			.formLogin(
+					(formLogin) -> formLogin.loginPage(this.adminServer.path("/login")).successHandler(successHandler)) // <3>
+			.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
+			.httpBasic(Customizer.withDefaults()); // <4>
 
 		http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class) // <5>
-				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-						.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()).ignoringRequestMatchers(
-								new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()), // <6>
-								new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()), // <6>
-								new AntPathRequestMatcher(this.adminServer.path("/actuator/**")) // <7>
-						));
+			.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+				.ignoringRequestMatchers(
+						new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()), // <6>
+						new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()), // <6>
+						new AntPathRequestMatcher(this.adminServer.path("/actuator/**")) // <7>
+				));
 
 		http.rememberMe((rememberMe) -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600));
 

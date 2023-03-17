@@ -46,9 +46,9 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 	@Override
 	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
 		return publisher
-				.filter((event) -> event instanceof InstanceRegisteredEvent
-						|| event instanceof InstanceRegistrationUpdatedEvent)
-				.flatMap((event) -> updateStatus(event.getInstance()));
+			.filter((event) -> event instanceof InstanceRegisteredEvent
+					|| event instanceof InstanceRegistrationUpdatedEvent)
+			.flatMap((event) -> updateStatus(event.getInstance()));
 	}
 
 	protected Mono<Void> updateStatus(InstanceId instanceId) {

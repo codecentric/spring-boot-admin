@@ -33,10 +33,15 @@ public class InstanceWebClientTest {
 
 	@Test
 	public void should_error_without_instance() {
-		Mono<Void> response = InstanceWebClient.builder().build().instance(Mono.empty()).get().uri("health")
-				.exchangeToMono((r) -> Mono.empty());
-		StepVerifier.create(response).verifyErrorSatisfies((ex) -> assertThat(ex)
-				.isInstanceOf(ResolveInstanceException.class).hasMessageContaining("Could not resolve Instance"));
+		Mono<Void> response = InstanceWebClient.builder()
+			.build()
+			.instance(Mono.empty())
+			.get()
+			.uri("health")
+			.exchangeToMono((r) -> Mono.empty());
+		StepVerifier.create(response)
+			.verifyErrorSatisfies((ex) -> assertThat(ex).isInstanceOf(ResolveInstanceException.class)
+				.hasMessageContaining("Could not resolve Instance"));
 	}
 
 	@Test
@@ -49,8 +54,9 @@ public class InstanceWebClientTest {
 			return Mono.just(ClientResponse.create(HttpStatus.OK).build());
 		}).build().instance(Mono.just(instance)).get().uri("http://test/health").exchangeToMono(Mono::just);
 
-		StepVerifier.create(response).assertNext((r) -> assertThat(r.statusCode()).isEqualTo(HttpStatus.OK))
-				.verifyComplete();
+		StepVerifier.create(response)
+			.assertNext((r) -> assertThat(r.statusCode()).isEqualTo(HttpStatus.OK))
+			.verifyComplete();
 	}
 
 }

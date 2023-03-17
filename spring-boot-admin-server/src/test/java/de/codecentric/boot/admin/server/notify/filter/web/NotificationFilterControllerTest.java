@@ -46,8 +46,10 @@ public class NotificationFilterControllerTest {
 	private final NotificationFilterController controller = new NotificationFilterController(
 			new FilteringNotifier(new LoggingNotifier(this.repository), this.repository));
 
-	private MockMvc mvc = MockMvcBuilders.standaloneSetup(this.controller).setCustomHandlerMapping(
-			() -> new de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping("/")).build();
+	private MockMvc mvc = MockMvcBuilders.standaloneSetup(this.controller)
+		.setCustomHandlerMapping(
+				() -> new de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping("/"))
+		.build();
 
 	@Test
 	public void test_missing_parameters() throws Exception {
@@ -62,8 +64,11 @@ public class NotificationFilterControllerTest {
 	@Test
 	public void test_post_delete() throws Exception {
 		String response = this.mvc.perform(post("/notifications/filters?instanceId=1337&ttl=10000"))
-				.andExpect(status().isOk()).andExpect(content().string(not(emptyString()))).andReturn().getResponse()
-				.getContentAsString();
+			.andExpect(status().isOk())
+			.andExpect(content().string(not(emptyString())))
+			.andReturn()
+			.getResponse()
+			.getContentAsString();
 		String id = extractId(response);
 
 		this.mvc.perform(get("/notifications/filters")).andExpect(status().isOk());

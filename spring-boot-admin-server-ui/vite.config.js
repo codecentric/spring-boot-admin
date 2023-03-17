@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
     root,
     base: '',
     define: {
+      __VUE_PROD_DEVTOOLS__: process.env.NODE_ENV === 'development',
       __PROJECT_VERSION__: JSON.stringify(
         `${process.env.PROJECT_VERSION || '0.0.0'}`
       ),

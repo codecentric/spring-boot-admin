@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 public class FilteringNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("-"))
-			.register(Registration.create("foo", "http://health").build());
+		.register(Registration.create("foo", "http://health").build());
 
 	private final InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), instance.getVersion(),
 			instance.getRegistration());
@@ -56,7 +56,7 @@ public class FilteringNotifierTest {
 	@Test
 	public void test_ctor_assert() {
 		Assertions.assertThatThrownBy(() -> new FilteringNotifier(null, repository))
-				.isInstanceOf(IllegalArgumentException.class);
+			.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test

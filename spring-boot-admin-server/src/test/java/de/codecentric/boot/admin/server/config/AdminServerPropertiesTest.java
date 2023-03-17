@@ -42,7 +42,7 @@ public class AdminServerPropertiesTest {
 
 		assertThat(serverConfig.getInstanceAuth().getServiceMap().get("my-service").getUserName()).isEqualTo("me");
 		assertThat(serverConfig.getInstanceAuth().getServiceMap().get("my-service").getUserPassword())
-				.isEqualTo("secret");
+			.isEqualTo("secret");
 	}
 
 }

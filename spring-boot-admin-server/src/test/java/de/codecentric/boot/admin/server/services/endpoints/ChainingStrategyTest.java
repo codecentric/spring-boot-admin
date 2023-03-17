@@ -31,9 +31,11 @@ public class ChainingStrategyTest {
 	@Test
 	public void invariants() {
 		assertThatThrownBy(() -> new ChainingStrategy((EndpointDetectionStrategy[]) null))
-				.isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not be null.");
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("'delegates' must not be null.");
 		assertThatThrownBy(() -> new ChainingStrategy((EndpointDetectionStrategy) null))
-				.isInstanceOf(IllegalArgumentException.class).hasMessage("'delegates' must not contain null.");
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("'delegates' must not contain null.");
 	}
 
 	@Test
@@ -43,8 +45,9 @@ public class ChainingStrategyTest {
 		ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty(), (a) -> Mono.empty(),
 				(a) -> Mono.just(Endpoints.single("id", "path")));
 		// when/then
-		StepVerifier.create(strategy.detectEndpoints(instance)).expectNext(Endpoints.single("id", "path"))
-				.verifyComplete();
+		StepVerifier.create(strategy.detectEndpoints(instance))
+			.expectNext(Endpoints.single("id", "path"))
+			.verifyComplete();
 	}
 
 	@Test

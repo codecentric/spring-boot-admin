@@ -41,5 +41,8 @@
   },
   "notification_filter_center": {
     "description": "Benachrichtigungen für folgende Applikationen / Instanzen werden unterdrückt."
+  },
+  "filter": {
+    "no_results": "Keine Ergebnisse für den eingestellten Filter."
   }
 }
