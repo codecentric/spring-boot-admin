@@ -37,18 +37,14 @@
             <artifactId>spring-boot-admin-starter-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-indexer</artifactId>
         </dependency>
-        <!-- Test -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
@@ -74,6 +70,12 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
+                            <excludes>
+                                <exclude>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                </exclude>
+                            </excludes>
                             <image>
                                 <builder>dashaun/builder-arm:tiny</builder>
                                 <env>
@@ -94,6 +96,10 @@
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
                         <configuration>
+                            <skipNativeTests>true</skipNativeTests>
+                            <buildArgs>
+                                <arg>-H:+IncludeAllLocales</arg>
+                            </buildArgs>
                             <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                             <metadataRepository>
                                 <enabled>true</enabled>

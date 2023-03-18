@@ -16,19 +16,37 @@
 
 package de.codecentric.boot.admin;
 
+import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
+import com.fasterxml.jackson.databind.ser.std.FileSerializer;
+import com.fasterxml.jackson.databind.ser.std.StdJdkSerializers;
+import com.fasterxml.jackson.databind.ser.std.TokenBufferSerializer;
 import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.TypeHint;
+import org.springframework.aot.hint.TypeReference;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
+import org.springframework.context.annotation.Configuration;
 
+import de.codecentric.boot.admin.client.registration.Application;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.values.Endpoint;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 
 import static org.springframework.util.ReflectionUtils.findMethod;
 
+@Configuration
+@RegisterReflectionForBinding({ de.codecentric.boot.admin.server.domain.entities.Application.class, Application.class })
 public class MyRuntimeHints implements RuntimeHintsRegistrar {
 
+	@lombok.SneakyThrows
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		// Register method for reflection
@@ -44,21 +62,42 @@ public class MyRuntimeHints implements RuntimeHintsRegistrar {
 				findMethod(UiController.Settings.class, "getAvailableLanguages"),
 				findMethod(UiController.Settings.class, "getRoutes"),
 				findMethod(UiController.Settings.class, "getExternalViews"),
-				findMethod(UiController.Settings.class, "getViewSettings"),
-				findMethod(UiController.Settings.class, "getEnableToasts"),
+				findMethod(UiController.Settings.class, "getViewSettings"), findMethod(UiController.class, "index"),
 				findMethod(AdminServerUiProperties.UiTheme.class, "getPalette"),
 				findMethod(AdminServerUiProperties.UiTheme.class, "getColor") })
 				.forEach((method) -> hints.reflection().registerMethod(method, ExecutableMode.INVOKE));
 
 		// Register resources
-		hints.resources().registerPattern("META-INF/spring-boot-admin-server-ui/**.*");
+		hints.resources().registerPattern("**/spring-boot-admin-server-ui/**.*").registerPattern("**/sba-settings.js")
+				.registerPattern("**/variables.css");
 
-		/*
-		 * // Register serialization
-		 * hints.serialization().registerType(MySerializableClass.class);
-		 *
-		 * // Register proxy hints.proxies().registerJdkProxy(MyInterface.class);
-		 */
+		hints.reflection()
+				.registerType(Application.Builder.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+				.registerType(Application.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+				.registerType(Endpoint.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+				.registerType(Instance.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+				.registerType(InstanceId.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+				.registerType(AdminServerUiProperties.Palette.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+				.registerConstructor(Application.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
+				.registerMethod(Application.Builder.class.getMethod("build"), ExecutableMode.INVOKE)
+				.registerMethod(Application.class.getMethod("builder"), ExecutableMode.INVOKE)
+				.registerConstructor(Registration.class.getDeclaredConstructor(String.class, String.class, String.class,
+						String.class, String.class, Map.class), ExecutableMode.INVOKE)
+				.registerConstructor(Registration.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
+				.registerMethod(Registration.Builder.class.getMethod("build"), ExecutableMode.INVOKE)
+				.registerMethod(Registration.class.getMethod("toBuilder"), ExecutableMode.INVOKE)
+				.registerTypes(TypeReference.listOf(StdJdkSerializers.AtomicBooleanSerializer.class,
+						StdJdkSerializers.AtomicIntegerSerializer.class, StdJdkSerializers.AtomicLongSerializer.class,
+						FileSerializer.class, ClassSerializer.class, TokenBufferSerializer.class),
+						TypeHint.builtWith(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+
+		hints.serialization().registerType(Registration.class).registerType(InstanceId.class);
 	}
 
 }

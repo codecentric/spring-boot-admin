@@ -25,8 +25,6 @@ spring:
     name: spring-boot-admin-3-graalvm
   main:
     lazy-initialization: true
-  jackson:
-    property-naming-strategy: SNAKE_CASE
   boot:
     admin:
       ui:
