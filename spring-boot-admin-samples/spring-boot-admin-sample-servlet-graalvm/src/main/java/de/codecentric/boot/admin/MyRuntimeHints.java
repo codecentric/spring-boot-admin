@@ -65,37 +65,39 @@ public class MyRuntimeHints implements RuntimeHintsRegistrar {
 				findMethod(UiController.Settings.class, "getViewSettings"), findMethod(UiController.class, "index"),
 				findMethod(AdminServerUiProperties.UiTheme.class, "getPalette"),
 				findMethod(AdminServerUiProperties.UiTheme.class, "getColor") })
-				.forEach((method) -> hints.reflection().registerMethod(method, ExecutableMode.INVOKE));
+			.forEach((method) -> hints.reflection().registerMethod(method, ExecutableMode.INVOKE));
 
 		// Register resources
-		hints.resources().registerPattern("**/spring-boot-admin-server-ui/**.*").registerPattern("**/sba-settings.js")
-				.registerPattern("**/variables.css");
+		hints.resources()
+			.registerPattern("**/spring-boot-admin-server-ui/**.*")
+			.registerPattern("**/sba-settings.js")
+			.registerPattern("**/variables.css");
 
 		hints.reflection()
-				.registerType(Application.Builder.class, MemberCategory.INVOKE_PUBLIC_METHODS,
-						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-				.registerType(Application.class, MemberCategory.INVOKE_PUBLIC_METHODS,
-						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-				.registerType(Endpoint.class, MemberCategory.INVOKE_PUBLIC_METHODS,
-						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-				.registerType(Instance.class, MemberCategory.INVOKE_PUBLIC_METHODS,
-						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-				.registerType(InstanceId.class, MemberCategory.INVOKE_PUBLIC_METHODS,
-						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-				.registerType(AdminServerUiProperties.Palette.class, MemberCategory.INVOKE_PUBLIC_METHODS,
-						MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-				.registerConstructor(Application.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
-				.registerMethod(Application.Builder.class.getMethod("build"), ExecutableMode.INVOKE)
-				.registerMethod(Application.class.getMethod("builder"), ExecutableMode.INVOKE)
-				.registerConstructor(Registration.class.getDeclaredConstructor(String.class, String.class, String.class,
-						String.class, String.class, Map.class), ExecutableMode.INVOKE)
-				.registerConstructor(Registration.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
-				.registerMethod(Registration.Builder.class.getMethod("build"), ExecutableMode.INVOKE)
-				.registerMethod(Registration.class.getMethod("toBuilder"), ExecutableMode.INVOKE)
-				.registerTypes(TypeReference.listOf(StdJdkSerializers.AtomicBooleanSerializer.class,
-						StdJdkSerializers.AtomicIntegerSerializer.class, StdJdkSerializers.AtomicLongSerializer.class,
-						FileSerializer.class, ClassSerializer.class, TokenBufferSerializer.class),
-						TypeHint.builtWith(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+			.registerType(Application.Builder.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(Application.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(Endpoint.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(Instance.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(InstanceId.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(AdminServerUiProperties.Palette.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerConstructor(Application.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
+			.registerMethod(Application.Builder.class.getMethod("build"), ExecutableMode.INVOKE)
+			.registerMethod(Application.class.getMethod("builder"), ExecutableMode.INVOKE)
+			.registerConstructor(Registration.class.getDeclaredConstructor(String.class, String.class, String.class,
+					String.class, String.class, Map.class), ExecutableMode.INVOKE)
+			.registerConstructor(Registration.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
+			.registerMethod(Registration.Builder.class.getMethod("build"), ExecutableMode.INVOKE)
+			.registerMethod(Registration.class.getMethod("toBuilder"), ExecutableMode.INVOKE)
+			.registerTypes(TypeReference.listOf(StdJdkSerializers.AtomicBooleanSerializer.class,
+					StdJdkSerializers.AtomicIntegerSerializer.class, StdJdkSerializers.AtomicLongSerializer.class,
+					FileSerializer.class, ClassSerializer.class, TokenBufferSerializer.class),
+					TypeHint.builtWith(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
 
 		hints.serialization().registerType(Registration.class).registerType(InstanceId.class);
 	}
