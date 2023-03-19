@@ -26,7 +26,7 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @EnableAdminServer
-@ImportRuntimeHints({ MyRuntimeHints.class })
+@ImportRuntimeHints({ RuntimeHints.class })
 public class SpringBootAdminServletApplication {
 
 	public static void main(String[] args) {
