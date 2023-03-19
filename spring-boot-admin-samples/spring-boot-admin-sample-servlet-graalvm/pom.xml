@@ -45,6 +45,16 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.github.luben</groupId>
+            <artifactId>zstd-jni</artifactId>
+            <version>1.5.4-2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-tcnative-boringssl-static</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -76,7 +86,7 @@
                                 </exclude>
                             </excludes>
                             <image>
-                                <builder>dashaun/builder-arm:tiny</builder>
+                                <builder>dashaun/native-builder:focal-arm64</builder>
                                 <env>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>
                                 </env>
@@ -98,12 +108,14 @@
                             <skipNativeTests>true</skipNativeTests>
                             <buildArgs>
                                 <arg>-H:+IncludeAllLocales</arg>
+                                <arg>-H:-CheckToolchain</arg>
+                                <arg>-H:+ReportExceptionStackTraces</arg>
                             </buildArgs>
                             <classesDirectory>${project.build.outputDirectory}</classesDirectory>
                             <metadataRepository>
                                 <enabled>true</enabled>
                             </metadataRepository>
-                            <requiredVersion>22.3</requiredVersion>
+                            <requiredVersion>22.3.1</requiredVersion>
                         </configuration>
                         <executions>
                             <execution>
@@ -164,7 +176,7 @@
         </profile>
     </profiles>
     <properties>
-        <native-build-tools-plugin.version>0.9.18</native-build-tools-plugin.version>
+        <native-build-tools-plugin.version>0.9.19</native-build-tools-plugin.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
 

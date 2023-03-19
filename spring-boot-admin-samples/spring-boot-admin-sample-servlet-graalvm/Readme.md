@@ -23,12 +23,18 @@ You should now be able to access Spring Boot Admin locally under http://localhos
 ```
 $ mvn spring-boot:build-image -Pnative -Dspring-boot.build-image.imageName=spring-boot-admin-sample-servlet-graalvm:latest
 ```
+Depending on your OS, you might want to change the builder in your `pom.xml`.
+
+Right now, `<builder>dashaun/native-builder:focal-arm64</builder>` is a good choice for ARM64.
+
+In most other cases `<builder>dashaun/builder-arm:tiny</builder>` should do the job.
 
 ## Running the example
 
 ```
 $ docker run --rm -p 8080:8080 docker.io/library/spring-boot-admin-sample-servlet-graalvm:latest
 ```
+You should now be able to access Spring Boot Admin locally under http://localhost:8080/
 
 ## Current limitations of Spring Boot's native image build feature
 
