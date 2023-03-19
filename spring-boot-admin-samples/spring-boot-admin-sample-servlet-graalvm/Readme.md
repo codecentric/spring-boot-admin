@@ -11,6 +11,12 @@ Make sure to use a GraalVM with a v17-BaseJDK to build the project (e.g. 22.3.r1
 ```
 $ mvn -Pnative native:compile
 ```
+The native application will now be build in the target folder.
+```
+$ cd target
+$ ./spring-boot-admin-sample-servlet-graalvm
+```
+You should now be able to access Spring Boot Admin locally under http://localhost:8080/
 
 ## Build an OCI image that can be run with Docker
 
@@ -23,8 +29,6 @@ $ mvn spring-boot:build-image -Pnative -Dspring-boot.build-image.imageName=sprin
 ```
 $ docker run --rm -p 8080:8080 docker.io/library/spring-boot-admin-sample-servlet-graalvm:latest
 ```
-
-You should now be able to access Spring Boot Admin locally under `http://localhost:8080/`.
 
 ## Current limitations of Spring Boot's native image build feature
 
