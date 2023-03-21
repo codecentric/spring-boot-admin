@@ -71,7 +71,7 @@
     "@testing-library/vue": "7.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "@vitejs/plugin-vue": "4.1.0",
-    "@vue/test-utils": "2.3.1",
+    "@vue/test-utils": "2.3.2",
     "@vue/vue3-jest": "29.2.3",
     "autoprefixer": "10.4.14",
     "babel-jest": "29.5.0",
