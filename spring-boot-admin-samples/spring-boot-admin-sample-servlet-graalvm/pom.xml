@@ -27,6 +27,12 @@
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+
+    <properties>
+        <native-build-tools-plugin.version>0.9.19</native-build-tools-plugin.version>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.codecentric</groupId>
@@ -171,9 +177,5 @@
             </build>
         </profile>
     </profiles>
-    <properties>
-        <native-build-tools-plugin.version>0.9.19</native-build-tools-plugin.version>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
-    </properties>
 
 </project>
