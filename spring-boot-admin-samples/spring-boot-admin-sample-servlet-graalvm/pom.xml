@@ -96,6 +96,12 @@
                         </configuration>
                         <executions>
                             <execution>
+                                <goals>
+                                    <goal>repackage</goal>
+                                    <goal>build-info</goal>
+                                </goals>
+                            </execution>
+                            <execution>
                                 <id>process-aot</id>
                                 <goals>
                                     <goal>process-aot</goal>
