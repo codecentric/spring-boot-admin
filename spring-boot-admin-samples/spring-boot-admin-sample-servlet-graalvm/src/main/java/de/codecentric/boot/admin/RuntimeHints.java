@@ -16,8 +16,6 @@
 
 package de.codecentric.boot.admin;
 
-import java.lang.management.BufferPoolMXBean;
-import java.lang.management.MemoryPoolMXBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +32,6 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jmx.export.MBeanExporter;
 
 import de.codecentric.boot.admin.client.registration.Application;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
