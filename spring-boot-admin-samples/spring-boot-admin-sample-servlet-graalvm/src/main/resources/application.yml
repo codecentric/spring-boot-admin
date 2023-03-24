@@ -19,6 +19,8 @@ management:
       enabled: true
     health:
       show-details: ALWAYS
+    info:
+      enabled: true
 
 spring:
   application:
