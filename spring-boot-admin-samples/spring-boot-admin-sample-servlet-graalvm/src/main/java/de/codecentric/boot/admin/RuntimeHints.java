@@ -16,6 +16,9 @@
 
 package de.codecentric.boot.admin;
 
+import java.lang.management.BufferPoolMXBean;
+import java.lang.management.MemoryPoolMXBean;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,6 +34,7 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jmx.export.MBeanExporter;
 
 import de.codecentric.boot.admin.client.registration.Application;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -75,7 +79,7 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(org.springframework.aot.hint.RuntimeHints hints, ClassLoader classLoader) {
-		regfisterReflectionHints(hints);
+		registerReflectionHints(hints);
 
 		registerResourcesHints(hints);
 
@@ -85,6 +89,7 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
 	private static void registerSerializationHints(org.springframework.aot.hint.RuntimeHints hints) {
 		hints.serialization()
 			.registerType(HashMap.class)
+			.registerType(ArrayList.class)
 			.registerType(Registration.class)
 			.registerType(InstanceId.class)
 			.registerType(Instance.class)
@@ -104,7 +109,7 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
 	}
 
 	@SneakyThrows
-	private static void regfisterReflectionHints(org.springframework.aot.hint.RuntimeHints hints) {
+	private static void registerReflectionHints(org.springframework.aot.hint.RuntimeHints hints) {
 		Set.of(new java.lang.reflect.Method[] { findMethod(UiController.Settings.class, "getTitle"),
 				findMethod(UiController.Settings.class, "getBrand"),
 				findMethod(UiController.Settings.class, "getLoginIcon"),

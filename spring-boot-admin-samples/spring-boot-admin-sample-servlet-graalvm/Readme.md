@@ -39,3 +39,4 @@ You should now be able to access Spring Boot Admin locally under http://localhos
 ## Current limitations of Spring Boot's native image build feature
 
 Keep in mind that currently not all Spring modules have built-in support. Therefore, you might need to tell the AOT compiler about the usage of reflection, dynamic proxies etc. There are several ways to deal with these concerns. A good starting point for specifying additional native configuration can be found in the official [Spring documentation](https://docs.spring.io/spring-framework/docs/6.0.0/reference/html/core.html#aot-hints).
+Some features like gc and memory metrics are not supported by GraalVM yet. So some views (e.g. gc-details) are currently not working.
