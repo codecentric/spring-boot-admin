@@ -16,7 +16,7 @@
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import axios from 'axios';
 
-import sbaConfig from '../sba-config.js';
+import sbaConfig from '../sba-config';
 
 const nc = useNotificationCenter();
 

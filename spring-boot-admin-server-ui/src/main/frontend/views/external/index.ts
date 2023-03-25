@@ -15,9 +15,14 @@
  */
 import { h } from 'vue';
 
+
+
 import './style.css';
 
+
+
 import sbaConfig from '@/sba-config';
+
 
 const addIframeView = (viewRegistry, { url, label, order }) => {
   const urlWithoutScheme = url.replace(/^https?:[/][/]/, '');
@@ -34,7 +39,7 @@ const addIframeView = (viewRegistry, { url, label, order }) => {
         ]);
       },
     },
-  });
+  } as View);
 };
 
 const addExternalLink = (viewRegistry, { url, label, order }) => {
@@ -43,7 +48,7 @@ const addExternalLink = (viewRegistry, { url, label, order }) => {
     href: url,
     label,
     order,
-  });
+  } as View);
 };
 
 export default {

@@ -57,7 +57,7 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': root,
       },
-      extensions: ['.vue', '.js', '.json'],
+      extensions: ['.vue', '.js', '.json', '.ts'],
     },
     server: {
       proxy: {

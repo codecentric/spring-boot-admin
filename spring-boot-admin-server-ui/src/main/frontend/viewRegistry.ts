@@ -17,7 +17,7 @@ import { remove } from 'lodash-es';
 import { h, markRaw, reactive } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
-import sbaConfig from './sba-config.js';
+import sbaConfig from './sba-config';
 import { VIEW_GROUP } from './views/ViewGroup.js';
 
 let router;

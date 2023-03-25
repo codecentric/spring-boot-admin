@@ -1,7 +1,7 @@
 import { isEmpty, merge } from 'lodash-es';
 import { createI18n } from 'vue-i18n';
 
-import sbaConfig from '../sba-config.js';
+import sbaConfig from '../sba-config';
 
 const context = import.meta.globEager('../**/(*.)?i18n.*.json');
 const messages = Object.keys(context)

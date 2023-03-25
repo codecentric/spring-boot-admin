@@ -20,7 +20,7 @@ const isStorybook = Object.prototype.hasOwnProperty.call(window, 'STORIES');
 const views = [];
 
 if (!isStorybook) {
-  const context = import.meta.globEager('./**/index.(js|vue)');
+  const context = import.meta.globEager('./**/index.(js|vue|ts)');
   Object.keys(context)
     .filter((key) => {
       const contextElement = context[key];

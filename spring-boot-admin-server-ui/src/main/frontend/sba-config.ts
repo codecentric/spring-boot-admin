@@ -15,6 +15,7 @@
  */
 import { merge } from 'lodash-es';
 
+
 const DEFAULT_CONFIG = {
   uiSettings: {
     brand:
@@ -30,7 +31,7 @@ const DEFAULT_CONFIG = {
       enabled: true,
     },
     rememberMeEnabled: true,
-    externalViews: [],
+    externalViews: [] as View[],
     favicon: 'assets/img/favicon.png',
     faviconDanger: 'assets/img/favicon-danger.png',
     notificationFilterEnabled: false,
@@ -48,7 +49,6 @@ const DEFAULT_CONFIG = {
   },
   user: null,
   extensions: [],
-  externalViews: [],
   csrf: {
     parameterName: '_csrf',
     headerName: 'X-XSRF-TOKEN',
