@@ -71,7 +71,7 @@
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <asciidoctor-maven-plugin.version>2.2.3</asciidoctor-maven-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-        <flatten-maven-plugin.version>1.4.0</flatten-maven-plugin.version>
+        <flatten-maven-plugin.version>1.4.1</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
         <checkstyle.version>9.3</checkstyle.version>
         <spring-javaformat-checkstyle.version>0.0.38</spring-javaformat-checkstyle.version>
