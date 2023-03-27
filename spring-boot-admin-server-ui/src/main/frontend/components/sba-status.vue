@@ -15,11 +15,11 @@
   -->
 
 <template>
-  <div class="application-status">
+  <div :aria-label="status" class="application-status">
     <font-awesome-icon
+      :class="`application-status__icon--${status}`"
       :icon="icon"
       class="application-status__icon"
-      :class="`application-status__icon--${status}`"
     />
     <small v-if="date" class="hidden md:block">
       <sba-time-ago :date="date" />

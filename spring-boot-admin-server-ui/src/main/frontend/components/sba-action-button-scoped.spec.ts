@@ -15,13 +15,14 @@
  */
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import SbaActionButtonScoped from './sba-action-button-scoped';
+import SbaActionButtonScoped from './sba-action-button-scoped.vue';
 
 import { render } from '@/test-utils';
 
 describe('SbaActionButtonScoped', function () {
-  let actionFn = jest.fn().mockResolvedValue([]);
+  let actionFn = vi.fn().mockResolvedValue([]);
 
   beforeEach(() => {
     render(SbaActionButtonScoped, {

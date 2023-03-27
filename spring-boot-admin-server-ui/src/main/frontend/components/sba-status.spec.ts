@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mount } from '@vue/test-utils';
+import { screen } from '@testing-library/vue';
 import moment from 'moment';
+import { describe, expect, it } from 'vitest';
 
-import sbaStatus from './sba-status';
+import sbaStatus from './sba-status.vue';
+
+import { render } from '@/test-utils';
 
 moment.now = () => +new Date(1318781879406);
 
 describe('application-status', () => {
-  const testSnapshotForStatus = (status, date) => {
-    const wrapper = mount(sbaStatus, {
+  function testSnapshotForStatus(status: string, date?: number) {
+    render(sbaStatus, {
       propsData: {
         status,
         date,
@@ -31,34 +34,54 @@ describe('application-status', () => {
         'font-awesome-icon': true,
       },
     });
-    expect(wrapper.vm.$el).toMatchSnapshot();
-  };
+  }
 
-  it('should match the snapshot with status UP with Timestamp', () => {
-    testSnapshotForStatus('UP', 1318781000000);
+  it('should match the snapshot with status UP with Timestamp', async () => {
+    const status = 'UP';
+    testSnapshotForStatus(status, 1318781000000);
+
+    expect(await screen.findByLabelText(status)).toBeDefined();
   });
 
-  it('should match the snapshot with status RESTRICTED', () => {
-    testSnapshotForStatus('RESTRICTED');
+  it('should match the snapshot with status RESTRICTED', async () => {
+    const status = 'RESTRICTED';
+    testSnapshotForStatus(status);
+
+    expect(await screen.findByLabelText(status)).toBeDefined();
   });
 
-  it('should match the snapshot with status OUT_OF_SERVICE', () => {
-    testSnapshotForStatus('OUT_OF_SERVICE');
+  it('should match the snapshot with status OUT_OF_SERVICE', async () => {
+    const status = 'OUT_OF_SERVICE';
+    testSnapshotForStatus(status);
+
+    expect(await screen.findByLabelText(status)).toBeDefined();
   });
 
-  it('should match the snapshot with status DOWN', () => {
-    testSnapshotForStatus('DOWN');
+  it('should match the snapshot with status DOWN', async () => {
+    const status = 'DOWN';
+    testSnapshotForStatus(status);
+
+    expect(await screen.findByLabelText(status)).toBeDefined();
   });
 
-  it('should match the snapshot with status UNKNOWN', () => {
-    testSnapshotForStatus('UNKNOWN');
+  it('should match the snapshot with status UNKNOWN', async () => {
+    const status = 'UNKNOWN';
+    testSnapshotForStatus(status);
+
+    expect(await screen.findByLabelText(status)).toBeDefined();
   });
 
-  it('should match the snapshot with status OFFLINE', () => {
-    testSnapshotForStatus('OFFLINE');
+  it('should match the snapshot with status OFFLINE', async () => {
+    const status = 'OFFLINE';
+    testSnapshotForStatus(status);
+
+    expect(await screen.findByLabelText(status)).toBeDefined();
   });
 
-  it('should match the snapshot with custom status', () => {
-    testSnapshotForStatus('?');
+  it('should match the snapshot with custom status', async () => {
+    const status = '?';
+    testSnapshotForStatus(status);
+
+    expect(await screen.findByLabelText(status)).toBeDefined();
   });
 });

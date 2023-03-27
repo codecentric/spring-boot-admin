@@ -7,7 +7,7 @@
     "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
     "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --sourcemap --mode development",
     "dev": "vite",
-    "test": "jest",
+    "test": "vitest",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "lint": "eslint --ext .js,.vue src/main/frontend",
@@ -66,24 +66,20 @@
     "@storybook/addon-postcss": "2.0.0",
     "@storybook/builder-vite": "0.4.2",
     "@storybook/vue3": "6.5.16",
-    "@testing-library/jest-dom": "5.16.5",
+    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/user-event": "14.4.3",
     "@testing-library/vue": "7.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "@vitejs/plugin-vue": "4.1.0",
     "@vue/test-utils": "2.3.2",
-    "@vue/vue3-jest": "29.2.3",
     "autoprefixer": "10.4.14",
-    "babel-jest": "29.5.0",
     "babel-loader": "9.1.2",
     "eslint": "7.32.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-storybook": "0.6.11",
     "eslint-plugin-vue": "^9.0.0",
-    "jest": "29.5.0",
-    "jest-environment-jsdom": "29.5.0",
-    "jest-transform-stub": "2.0.0",
+    "jsdom": "^21.1.1",
     "msw": "1.2.0",
     "msw-storybook-addon": "1.8.0",
     "postcss": "8.4.21",
@@ -94,6 +90,7 @@
     "tailwindcss": "3.2.7",
     "vite": "4.2.1",
     "vite-plugin-static-copy": "0.13.1",
+    "vitest": "^0.29.7",
     "vue-loader": "17.0.1"
   },
   "browserslist": [
@@ -101,39 +98,6 @@
     "last 2 versions",
     "not ie <= 8"
   ],
-  "jest": {
-    "collectCoverage": true,
-    "setupFilesAfterEnv": [
-      "<rootDir>/.jest/jest.setup.js"
-    ],
-    "testEnvironment": "jest-environment-jsdom",
-    "testEnvironmentOptions": {
-      "url": "https://example.com",
-      "customExportConditions": [
-        "node",
-        "node-addons"
-      ]
-    },
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
-    "transformIgnorePatterns": [
-      "node_modules/(?!(d3-.*|internmap|lodash-es|pretty-bytes)/)"
-    ],
-    "transform": {
-      ".+\\.vue$": "@vue/vue3-jest",
-      ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-      ".+\\.js$": "babel-jest"
-    },
-    "moduleNameMapper": {
-      "@/(.*)$": "<rootDir>/src/main/frontend/$1"
-    },
-    "testMatch": [
-      "**/*.spec.js"
-    ]
-  },
   "engines": {
     "node": ">=16",
     "npm": ">=8"

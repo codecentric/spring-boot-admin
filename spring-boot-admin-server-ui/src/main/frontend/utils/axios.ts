@@ -16,7 +16,10 @@
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import axios from 'axios';
 
+
+
 import sbaConfig from '../sba-config';
+
 
 const nc = useNotificationCenter();
 
@@ -24,7 +27,7 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.xsrfHeaderName = sbaConfig.csrf.headerName;
 
 export const redirectOn401 =
-  (predicate = () => true) =>
+  (predicate = (_) => true) =>
   (error) => {
     if (error.response && error.response.status === 401 && predicate(error)) {
       window.location.assign(
@@ -34,14 +37,11 @@ export const redirectOn401 =
     return Promise.reject(error);
   };
 
-const instance = axios.create({
-  withCredentials: true,
-  headers: { Accept: 'application/json' },
-});
-instance.interceptors.response.use((response) => response, redirectOn401());
-instance.create = axios.create;
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common['Accept'] = 'application/json';
+axios.interceptors.response.use((response) => response, redirectOn401());
 
-export default instance;
+export default axios;
 
 export const registerErrorToastInterceptor = (axios) => {
   if (sbaConfig.uiSettings.enableToasts === true) {

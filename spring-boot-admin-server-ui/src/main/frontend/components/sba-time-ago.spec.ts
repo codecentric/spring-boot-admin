@@ -13,31 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render } from '@testing-library/vue';
+import { screen } from '@testing-library/vue';
 import moment from 'moment';
+import { render } from 'src/main/frontend/test-utils';
+import { describe, expect, it } from 'vitest';
 
 import sbaTimeAgo from './sba-time-ago.vue';
 
-moment.now = () => +new Date(1318781879406);
+// Sun Oct 16 2011 18:00:00 GMT+0200 (Mitteleuropäische Sommerzeit)
+moment.now = () => Date.now();
 
 describe('time-ago', () => {
-  describe('given  a short time passed time', () => {
-    it('should match the snapshot', () => {
-      render(sbaTimeAgo, {
-        propsData: {
-          date: moment(1318781000000).utc(),
-        },
-      });
+  it('should show short period', async () => {
+    render(sbaTimeAgo, {
+      propsData: {
+        date: moment().subtract(15, 'minutes').utc(),
+      },
     });
+
+    expect(await screen.findByText('15m'));
   });
 
-  describe('given a long time passed time', () => {
-    it('should match the snapshot', () => {
-      render(sbaTimeAgo, {
-        propsData: {
-          date: moment(1310000000000).utc(),
-        },
-      });
+  it('multiple minutes', async () => {
+    render(sbaTimeAgo, {
+      propsData: {
+        date: moment().subtract(800, 'minutes').utc(),
+      },
     });
+
+    expect(await screen.findByText('13h'));
+  });
+
+  it('multiple days', async () => {
+    render(sbaTimeAgo, {
+      propsData: {
+        date: moment().subtract(5, 'days'),
+      },
+    });
+
+    expect(await screen.findByText('4d'));
   });
 });

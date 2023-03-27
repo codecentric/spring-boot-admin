@@ -15,11 +15,14 @@
  */
 import { sortBy } from 'lodash-es';
 
+
+
 import axios, { redirectOn401 } from '../utils/axios';
 import waitForPolyfill from '../utils/eventsource-polyfill';
 import { Observable, concat, from, ignoreElements } from '../utils/rxjs.js';
 import uri from '../utils/uri';
 import Instance from './instance';
+
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -46,11 +49,14 @@ export const convertBody = (responses) =>
   });
 
 class Application {
+  private readonly name: string;
+  private axios: any;
+  private instances: Instance[];
+
   constructor({ name, instances, ...application }) {
     Object.assign(this, application);
     this.name = name;
     this.axios = axios.create({
-      withCredentials: true,
       baseURL: uri`applications/${this.name}`,
       headers: {
         'X-SBA-REQUEST': true,
@@ -68,21 +74,6 @@ class Application {
     );
   }
 
-  filterInstances(predicate) {
-    return new Application({
-      ...this,
-      instances: this.instances.filter(predicate),
-    });
-  }
-
-  hasEndpoint(endpointId) {
-    return this.instances.some((i) => i.hasEndpoint(endpointId));
-  }
-
-  findInstance(instanceId) {
-    return this.instances.find((instance) => instance.id === instanceId);
-  }
-
   get isUnregisterable() {
     return this.instances.some((i) => i.isUnregisterable);
   }
@@ -93,12 +84,6 @@ class Application {
 
   get hasRestartEndpoint() {
     return this.hasEndpoint('restart');
-  }
-
-  async unregister() {
-    return this.axios.delete('', {
-      headers: { Accept: 'application/json' },
-    });
   }
 
   static async list() {
@@ -123,6 +108,39 @@ class Application {
         return () => eventSource.close();
       })
     );
+  }
+
+  static _transformResponse(data) {
+    if (!data) {
+      return data;
+    }
+    const json = JSON.parse(data);
+    if (json instanceof Array) {
+      const applications = json.map((j) => new Application(j));
+      return sortBy(applications, [(item) => item.name]);
+    }
+    return new Application(json);
+  }
+
+  filterInstances(predicate) {
+    return new Application({
+      ...this,
+      instances: this.instances.filter(predicate),
+    });
+  }
+
+  hasEndpoint(endpointId) {
+    return this.instances.some((i) => i.hasEndpoint(endpointId));
+  }
+
+  findInstance(instanceId) {
+    return this.instances.find((instance) => instance.id === instanceId);
+  }
+
+  async unregister() {
+    return this.axios.delete('', {
+      headers: { Accept: 'application/json' },
+    });
   }
 
   async fetchLoggers() {
@@ -205,18 +223,6 @@ class Application {
         'Content-Type': 'application/json',
       },
     });
-  }
-
-  static _transformResponse(data) {
-    if (!data) {
-      return data;
-    }
-    const json = JSON.parse(data);
-    if (json instanceof Array) {
-      const applications = json.map((j) => new Application(j));
-      return sortBy(applications, [(item) => item.name]);
-    }
-    return new Application(json);
   }
 }
 

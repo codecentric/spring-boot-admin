@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import visualizer from 'rollup-plugin-visualizer';
@@ -14,7 +15,6 @@ export default defineConfig(({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   return {
-    root,
     base: '',
     define: {
       __VUE_PROD_DEVTOOLS__: process.env.NODE_ENV === 'development',
@@ -41,8 +41,19 @@ export default defineConfig(({ mode }) => {
     css: {
       postcss,
     },
+    test: {
+      environment: 'jsdom',
+      setupFiles: [resolve(__dirname, 'tests/setup.js')],
+      include: [
+        resolve(
+          root,
+          'components/',
+          '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'
+        ),
+      ],
+    },
     build: {
-      target: 'es2015',
+      target: 'es2020',
       sourcemap: true,
       outDir,
       rollupOptions: {

@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AxiosInstance } from 'axios';
 import saveAs from 'file-saver';
 
-import axios, {
-  redirectOn401,
-  registerErrorToastInterceptor,
-} from '../utils/axios.js';
+
+
+import axios, { redirectOn401, registerErrorToastInterceptor } from '../utils/axios.js';
 import waitForPolyfill from '../utils/eventsource-polyfill';
 import logtail from '../utils/logtail';
 import { Observable, concat, from, ignoreElements } from '../utils/rxjs';
 import uri from '../utils/uri';
+
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -30,10 +31,13 @@ const actuatorMimeTypes = [
   'application/json',
 ].join(',');
 
-const isInstanceActuatorRequest = (url) =>
+const isInstanceActuatorRequest = (url: string) =>
   url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
 
 class Instance {
+  private id: string;
+  private axios: AxiosInstance;
+
   constructor({ id, ...instance }) {
     Object.assign(this, instance);
     this.id = id;
@@ -52,12 +56,63 @@ class Instance {
     registerErrorToastInterceptor(this.axios);
   }
 
-  hasEndpoint(endpointId) {
-    return this.endpoints.some((endpoint) => endpoint.id === endpointId);
-  }
-
   get isUnregisterable() {
     return this.registration.source === 'http-api';
+  }
+
+  static async fetchEvents() {
+    return axios.get(uri`instances/events`, {
+      headers: { Accept: 'application/json' },
+    });
+  }
+
+  static getEventStream() {
+    return concat(
+      from(waitForPolyfill()).pipe(ignoreElements()),
+      Observable.create((observer) => {
+        const eventSource = new EventSource('instances/events');
+        eventSource.onmessage = (message) =>
+          observer.next({
+            ...message,
+            data: JSON.parse(message.data),
+          });
+        eventSource.onerror = (err) => observer.error(err);
+        return () => {
+          eventSource.close();
+        };
+      })
+    );
+  }
+
+  static async get(id) {
+    return axios.get(uri`instances/${id}`, {
+      headers: { Accept: 'application/json' },
+      transformResponse(data) {
+        if (!data) {
+          return data;
+        }
+        const instance = JSON.parse(data);
+        return new Instance(instance);
+      },
+    });
+  }
+
+  static _toMBeans(data) {
+    if (!data) {
+      return data;
+    }
+    const raw = JSON.parse(data);
+    return Object.entries(raw.value).map(([domain, mBeans]) => ({
+      domain,
+      mBeans: Object.entries(mBeans).map(([descriptor, mBean]) => ({
+        descriptor: descriptor,
+        ...mBean,
+      })),
+    }));
+  }
+
+  hasEndpoint(endpointId) {
+    return this.endpoints.some((endpoint) => endpoint.id === endpointId);
   }
 
   async unregister() {
@@ -91,7 +146,7 @@ class Instance {
             params.append('tag', `${name}:${value}`);
             firstElementDuplicated = true;
           }
-        })
+        });
     }
     return this.axios.get(uri`actuator/metrics/${metric}`, {
       params,
@@ -322,12 +377,6 @@ class Instance {
     return this.axios.get(uri`actuator/mappings`);
   }
 
-  static async fetchEvents() {
-    return axios.get(uri`instances/events`, {
-      headers: { Accept: 'application/json' },
-    });
-  }
-
   async fetchQuartzJobs() {
     return this.axios.get(uri`actuator/quartz/jobs`, {
       headers: { Accept: 'application/json' },
@@ -358,51 +407,6 @@ class Instance {
 
   restart() {
     return this.axios.post(uri`actuator/restart`);
-  }
-
-  static getEventStream() {
-    return concat(
-      from(waitForPolyfill()).pipe(ignoreElements()),
-      Observable.create((observer) => {
-        const eventSource = new EventSource('instances/events');
-        eventSource.onmessage = (message) =>
-          observer.next({
-            ...message,
-            data: JSON.parse(message.data),
-          });
-        eventSource.onerror = (err) => observer.error(err);
-        return () => {
-          eventSource.close();
-        };
-      })
-    );
-  }
-
-  static async get(id) {
-    return axios.get(uri`instances/${id}`, {
-      headers: { Accept: 'application/json' },
-      transformResponse(data) {
-        if (!data) {
-          return data;
-        }
-        const instance = JSON.parse(data);
-        return new Instance(instance);
-      },
-    });
-  }
-
-  static _toMBeans(data) {
-    if (!data) {
-      return data;
-    }
-    const raw = JSON.parse(data);
-    return Object.entries(raw.value).map(([domain, mBeans]) => ({
-      domain,
-      mBeans: Object.entries(mBeans).map(([descriptor, mBean]) => ({
-        descriptor: descriptor,
-        ...mBean,
-      })),
-    }));
   }
 }
 

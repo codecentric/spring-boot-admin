@@ -15,10 +15,11 @@
  */
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { render } from '../test-utils.js';
 import { ActionScope } from './ActionScope.js';
-import SbaToggleScopeButton from './sba-toggle-scope-button';
+import SbaToggleScopeButton from './sba-toggle-scope-button.vue';
 
 describe('SbaToggleScopeButton', function () {
   let wrapper;
@@ -31,7 +32,7 @@ describe('SbaToggleScopeButton', function () {
 
   it('should emit changed scope when clicked', async () => {
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Instance' })
+      await screen.findByRole('button', { name: /instance/i })
     );
 
     expect(wrapper.emitted()['update:modelValue'][0]).toEqual(['application']);
@@ -39,14 +40,14 @@ describe('SbaToggleScopeButton', function () {
 
   it('should toggle the scope when clicked twice', async () => {
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Instance' })
+      await screen.findByRole('button', { name: /instance/i })
     );
     expect(wrapper.emitted()['update:modelValue'][0]).toEqual(['application']);
 
     await wrapper.rerender({ modelValue: ActionScope.APPLICATION });
 
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Application' })
+      await screen.findByRole('button', { name: /application/i })
     );
     expect(wrapper.emitted()['update:modelValue'][1]).toEqual(['instance']);
   });

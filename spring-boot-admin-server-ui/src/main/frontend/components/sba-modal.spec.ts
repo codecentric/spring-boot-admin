@@ -15,9 +15,10 @@
  */
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
+import { describe, expect, it } from 'vitest';
 
 import { render } from '../test-utils';
-import SbaModal from './sba-modal';
+import SbaModal from './sba-modal.vue';
 
 describe('sba-modal.vue', () => {
   it('modal is closed when close button is clicked', async () => {

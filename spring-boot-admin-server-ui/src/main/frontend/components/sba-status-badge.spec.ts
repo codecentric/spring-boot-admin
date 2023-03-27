@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { render } from '@testing-library/vue';
+import { describe, it } from 'vitest';
 
 import { HealthStatus } from '../HealthStatus.js';
 import sbaStatusBadge from './sba-status-badge.vue';

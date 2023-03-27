@@ -15,8 +15,9 @@
  */
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import SbaConfirmButton from './sba-confirm-button';
+import SbaConfirmButton from './sba-confirm-button.vue';
 
 import { render } from '@/test-utils';
 

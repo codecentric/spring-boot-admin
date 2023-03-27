@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import { screen } from '@testing-library/vue';
+import { describe, expect, it } from 'vitest';
 
-import SbaPaginationNav from '@/components/sba-pagination-nav';
+import SbaPaginationNav from '@/components/sba-pagination-nav.vue';
 
 import { render } from '@/test-utils';
 
