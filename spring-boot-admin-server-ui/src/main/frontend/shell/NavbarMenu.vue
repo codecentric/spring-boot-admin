@@ -17,12 +17,12 @@
 <template>
   <Menu as="div" class="submenu">
     <MenuButton
-      class="submenu-opener-button"
       :aria-label="$t('term.menu.open')"
+      class="submenu-opener-button"
     >
       <font-awesome-icon
-        class="submenu-opener-icon"
         :icon="['fas', 'chevron-down']"
+        class="submenu-opener-icon"
       />
     </MenuButton>
 

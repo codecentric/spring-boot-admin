@@ -10,7 +10,7 @@ const Template = (args) => ({
   setup() {
     return { args };
   },
-  template: '<sba-tags v-bind="args" />',
+  template: '<SbaTags v-bind="args" />',
 });
 
 export const SingleTag = Template.bind({});

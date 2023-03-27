@@ -83,7 +83,4 @@ export default {
 .instances-list td {
   vertical-align: middle;
 }
-
-.instance-list-item__actions {
-}
 </style>

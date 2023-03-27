@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vite build --emptyOutDir",
     "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
-    "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --sourcemap --mode development",
+    "build:watch": "NODE_ENV=development vite build --watch --sourcemap --mode development",
     "dev": "vite",
     "test": "vitest",
     "storybook": "start-storybook -p 6006",
@@ -91,7 +91,7 @@
     "vite": "4.2.1",
     "vite-plugin-static-copy": "0.13.1",
     "vitest": "^0.29.7",
-    "vue-loader": "17.0.1"
+    "vue-loader": "^16.8.3"
   },
   "browserslist": [
     "> 1%",
