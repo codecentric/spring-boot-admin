@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { remove } from 'lodash-es';
-import { h, markRaw, reactive } from 'vue';
+import { UnwrapNestedRefs, h, markRaw, reactive } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
@@ -32,6 +32,9 @@ const createI18nTextVNode = (label) => {
 };
 
 export default class ViewRegistry {
+  private readonly _redirects: any[];
+  private readonly _views: UnwrapNestedRefs<any[]>;
+
   constructor() {
     this._views = reactive([]);
     this._redirects = [];

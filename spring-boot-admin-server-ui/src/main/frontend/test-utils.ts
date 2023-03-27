@@ -19,7 +19,7 @@ export const render = (testComponent, options) => {
     let viewRegistry = new ViewRegistry();
     testComponent.install({ viewRegistry });
     let routeForComponent = viewRegistry._toRoutes(
-      viewRegistry._views,
+      viewRegistry.views,
       () => true
     )[0];
 
@@ -28,6 +28,7 @@ export const render = (testComponent, options) => {
       path: '/' + routeForComponent.path,
     });
   }
+
   router = createRouter({
     history: createWebHashHistory(),
     routes: routes,
