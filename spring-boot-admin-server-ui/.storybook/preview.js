@@ -1,5 +1,7 @@
+import { withThemeByDataAttribute } from '@storybook/addon-styling';
 import { app } from '@storybook/vue3';
 
+import './storybook.css';
 import '@/index.css';
 
 import components from '@/components';
@@ -10,6 +12,7 @@ app.use(components);
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
+  layout: 'fullscreen',
   controls: {
     matchers: {
       color: /(background|color)$/i,
@@ -17,3 +20,14 @@ export const parameters = {
     },
   },
 };
+
+export const decorators = [
+  withThemeByDataAttribute({
+    themes: {
+      light: 'light',
+      dark: 'dark',
+    },
+    defaultTheme: 'light',
+    attributeName: 'data-mode',
+  }),
+];

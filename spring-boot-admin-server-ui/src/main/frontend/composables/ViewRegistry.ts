@@ -1,10 +1,12 @@
-import ViewRegistry from '../viewRegistry.js';
-import eventBus from '@/services/bus';
 import { debounce } from 'lodash-es';
+
+import ViewRegistry from '../viewRegistry.js';
+
+import eventBus from '@/services/bus';
 
 export const CUSTOM_ROUTES_ADDED_EVENT = 'custom-routes-added';
 
-let viewRegistry;
+let viewRegistry: ViewRegistry;
 
 export function createViewRegistry() {
   if (viewRegistry) throw new Error('ViewRegistry already created!');
@@ -29,7 +31,7 @@ export function useViewRegistry() {
           name: view.name,
           component: view.component,
           props: view.props,
-          meta: { view: view }
+          meta: { view: view },
         });
       } else {
         viewRegistry.router.addRoute({
@@ -37,11 +39,11 @@ export function useViewRegistry() {
           name: view.name,
           component: view.component,
           props: view.props,
-          meta: { view: view }
+          meta: { view: view },
         });
       }
 
       emitCustomRouteAddedEvent();
-    }
+    },
   };
 }

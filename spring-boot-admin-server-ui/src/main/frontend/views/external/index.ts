@@ -15,16 +15,12 @@
  */
 import { h } from 'vue';
 
-
-
 import './style.css';
 
-
-
 import sbaConfig from '@/sba-config';
+import ViewRegistry from '@/viewRegistry';
 
-
-const addIframeView = (viewRegistry, { url, label, order }) => {
+const addIframeView = (viewRegistry: ViewRegistry, { url, label, order }) => {
   const urlWithoutScheme = url.replace(/^https?:[/][/]/, '');
   viewRegistry.addView({
     name: `external/${urlWithoutScheme}`,

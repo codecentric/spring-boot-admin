@@ -16,19 +16,19 @@
 
 <template>
   <aside
-    class="h-full flex flex-col bg-white border-r backdrop-filter backdrop-blur-lg bg-opacity-80 z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
     :class="{ 'w-60': sidebarOpen }"
+    class="h-full flex flex-col bg-white border-r backdrop-filter backdrop-blur-lg bg-opacity-80 z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
   >
     <ul class="relative px-1 py-1 overflow-y-auto">
       <!-- Instance info block -->
       <li class="relative mb-1 hidden md:block">
         <router-link
-          class="instance-info-block"
+          :class="`instance-summary--${instance.statusInfo.status}`"
           :to="{
             name: 'instances/details',
             params: { instanceId: instance.id },
           }"
-          :class="`instance-summary--${instance.statusInfo.status}`"
+          class="instance-info-block"
         >
           <span class="overflow-hidden text-ellipsis">
             <span class="font-bold" v-text="instance.registration.name" /><br />
@@ -52,14 +52,14 @@
         class="relative"
       >
         <router-link
-          class="navbar-link navbar-link__group"
+          :class="{ 'navbar-link__active': isActiveGroup(group) }"
           :to="{
             name: group.views[0].name,
             params: { instanceId: instance.id },
           }"
           active-class=""
+          class="navbar-link navbar-link__group"
           exact-active-class=""
-          :class="{ 'navbar-link__active': isActiveGroup(group) }"
         >
           <span v-html="group.icon" />
           <span
@@ -71,21 +71,21 @@
           />
           <svg
             v-if="hasMultipleViews(group)"
-            aria-hidden="true"
-            focusable="false"
-            data-prefix="fas"
-            class="h-3 ml-auto hidden md:block"
             :class="{
               '-rotate-90': !isActiveGroup(group),
               '': isActiveGroup(group),
             }"
+            aria-hidden="true"
+            class="h-3 ml-auto hidden md:block"
+            data-prefix="fas"
+            focusable="false"
             role="img"
-            xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 448 512"
+            xmlns="http://www.w3.org/2000/svg"
           >
             <path
-              fill="currentColor"
               d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"
+              fill="currentColor"
             />
           </svg>
         </router-link>
@@ -93,8 +93,8 @@
         <!-- Le subnav -->
         <ul
           v-if="hasMultipleViews(group) && isActiveGroup(group)"
-          class="relative block"
           :class="{ 'hidden md:block': !sidebarOpen }"
+          class="relative block"
         >
           <li
             v-for="view in group.views"
@@ -102,9 +102,9 @@
             :data-sba-view="view.name"
           >
             <router-link
-              class="navbar-link navbar-link__group_item"
               :to="{ name: view.name, params: { instanceId: instance.id } }"
               active-class="navbar-link__active"
+              class="navbar-link navbar-link__group_item"
               exact-active-class=""
             >
               <component :is="view.handle" />
@@ -116,10 +116,10 @@
   </aside>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue';
 
-import SbaButton from '@/components/sba-button';
+import SbaButton from '@/components/sba-button.vue';
 
 import Application from '@/services/application';
 import Instance from '@/services/instance';

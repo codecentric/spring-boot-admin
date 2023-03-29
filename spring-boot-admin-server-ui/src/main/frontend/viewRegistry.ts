@@ -15,12 +15,12 @@
  */
 import { remove } from 'lodash-es';
 import { UnwrapNestedRefs, h, markRaw, reactive } from 'vue';
-import { createRouter, createWebHistory } from 'vue-router';
+import { Router, createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
 import { VIEW_GROUP } from './views/ViewGroup.js';
 
-let router;
+let router: Router;
 
 const createI18nTextVNode = (label) => {
   return {
@@ -33,14 +33,14 @@ const createI18nTextVNode = (label) => {
 
 export default class ViewRegistry {
   private readonly _redirects: any[];
-  private readonly _views: UnwrapNestedRefs<any[]>;
+  private readonly _views: UnwrapNestedRefs<SbaView[]>;
 
   constructor() {
     this._views = reactive([]);
     this._redirects = [];
   }
 
-  get views() {
+  get views(): SbaView[] {
     return this._views;
   }
 
@@ -52,7 +52,7 @@ export default class ViewRegistry {
     return [...routes, ...this._redirects];
   }
 
-  get router() {
+  get router(): Router {
     return router;
   }
 
@@ -81,33 +81,40 @@ export default class ViewRegistry {
     }
   }
 
-  _addView(view) {
-    if (view.label && !view.handle) {
-      view.handle = createI18nTextVNode(view.label);
+  _addView(viewConfig) {
+    const view = { ...viewConfig } as SbaView;
+
+    view.parent = viewConfig.parent;
+    view.hasChildren = !!viewConfig.children;
+
+    if (viewConfig.label && !viewConfig.handle) {
+      view.handle = createI18nTextVNode(viewConfig.label);
     }
-    if (!view.group) {
+    if (viewConfig.handle) {
+      view.handle = markRaw(viewConfig.handle);
+    }
+    if (!viewConfig.group) {
       view.group = VIEW_GROUP.NONE;
     }
-    if (!view.name) {
-      view.name = [view.parent, view.path].filter((p) => !!p).join('/');
+    if (!viewConfig.name) {
+      view.name = [viewConfig.parent, viewConfig.path]
+        .filter((p) => !!p)
+        .join('/');
     }
-    if (view.handle) {
-      view.handle = markRaw(view.handle);
+    if (viewConfig.component) {
+      view.component = markRaw(viewConfig.component);
     }
-    if (view.component) {
-      view.component = markRaw(view.component);
-    }
-    if (view.isChildRoute === undefined) {
-      view.isChildRoute = true;
-    }
+    view.isChildRoute = viewConfig.isChildRoute === undefined;
 
-    if (!view.isEnabled) {
+    if (!viewConfig.isEnabled) {
       view.isEnabled = () => {
         let viewSettings = sbaConfig.uiSettings.viewSettings.find(
-          (vs) => vs.name === view.name
+          (vs) => vs.name === viewConfig.name
         );
         return !viewSettings || viewSettings.enabled === true;
       };
+    } else {
+      view.isEnabled = viewConfig.isEnabled;
     }
     this._removeExistingView(view);
     this._views.push(view);

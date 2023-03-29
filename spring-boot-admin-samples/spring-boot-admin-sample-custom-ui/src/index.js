@@ -15,11 +15,10 @@
  */
 
 /* global SBA */
-import customEndpoint from './custom-endpoint.vue';
-import customSubitem from './custom-subitem.vue';
-import custom from './custom.vue';
-import handle from './handle.vue';
-
+import customEndpoint from "./custom-endpoint.vue";
+import customSubitem from "./custom-subitem.vue";
+import custom from "./custom.vue";
+import handle from "./handle.vue";
 
 // tag::customization-ui-toplevel[]
 SBA.use({

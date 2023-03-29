@@ -10,14 +10,9 @@ module.exports = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     {
-      name: '@storybook/addon-postcss',
+      name: '@storybook/addon-styling',
       options: {
-        sass: {
-          implementation: require('sass'),
-        },
-        postcssLoaderOptions: {
-          implementation: require('postcss'),
-        },
+        postCss: true,
       },
     },
   ],

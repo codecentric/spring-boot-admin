@@ -64,6 +64,18 @@ spring:
     admin:
       ui:
         external-views:
+          - label: "Spring Boot Admin"
+            order: 1900
+            children:
+              - label: "📖 Docs"
+                url: https://codecentric.github.io/spring-boot-admin/current/
+                order: 1000
+              - label: "📦 Maven"
+                url: https://search.maven.org/search?q=g:de.codecentric%20AND%20a:spring-boot-admin-starter-server
+                order: 2000
+              - label: "🐙 GitHub"
+                url: https://github.com/codecentric/spring-boot-admin
+                order: 3000
           - label: "🚀"
             url: https://codecentric.de
             order: 2000
