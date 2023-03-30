@@ -21,7 +21,7 @@
         <sba-nav-item v-if="!item.href" :to="{ name: item.name }">
           <component :is="item.handle" :error="error" />
         </sba-nav-item>
-        <sba-nav-item v-else :href="item.href" target='blank'>
+        <sba-nav-item v-else :href="item.href" target="blank">
           <component :is="item.handle" :error="error" />
         </sba-nav-item>
       </template>
@@ -96,10 +96,12 @@ export default defineComponent({
         .sort(compareBy((v) => v.order));
     },
     topLevelViews(): SbaViewDescriptor[] {
-      return this.views.filter(
-        (view) =>
-          !view.name.includes('instance') && !view.path?.includes('/instance')
-      );
+      return this.views
+        .filter(
+          (view) =>
+            !view.name.includes('instance') && !view.path?.includes('/instance')
+        )
+        .sort(compareBy((v) => v.order));
     },
     userSubMenuItems() {
       return this.enabledViews.filter((v) => v.parent === 'user');
