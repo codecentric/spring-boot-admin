@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "target": "esnext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+        "@/*": ["./src/main/frontend/*"]
+    },
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.vue",
+    ],
+    "exclude": [
+      "node_modules"
+    ]
+  },
+}
