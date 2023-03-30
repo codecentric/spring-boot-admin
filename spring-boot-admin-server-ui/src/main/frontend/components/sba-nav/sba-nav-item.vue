@@ -1,10 +1,14 @@
 <template>
-  <a v-if="href" :href="href" class="sba-nav-item">
+  <a v-if="href" :href="href" :target="target" class="sba-nav-item">
     <slot />
   </a>
-  <router-link v-if="to" :to="to" class="sba-nav-item">
+  <router-link v-else-if="to" :to="to" class="sba-nav-item">
     <slot />
   </router-link>
+
+  <div v-else class="sba-nav-item">
+    <slot />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -12,6 +16,10 @@ defineProps({
   href: {
     type: String,
     default: null,
+  },
+  target: {
+    type: String,
+    default: '_blank',
   },
   to: {
     type: String,

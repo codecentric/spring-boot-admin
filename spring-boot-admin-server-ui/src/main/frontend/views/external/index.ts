@@ -38,7 +38,7 @@ const addIframeView = (viewRegistry: ViewRegistry, { url, label, order }) => {
   } as ComponentView);
 };
 
-const addExternalLink = (viewRegistry, { url, label, order }) => {
+const addExternalLink = (viewRegistry: ViewRegistry, { url, label, order }) => {
   viewRegistry.addView({
     href: url,
     label,

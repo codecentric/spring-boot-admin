@@ -23,7 +23,8 @@ declare global {
     name: string;
     parent: string;
     handle: Component | RenderFunction;
-    path: string;
+    path?: string;
+    href?: string;
     order: number;
   };
 

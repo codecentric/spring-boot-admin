@@ -27,7 +27,7 @@
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import SbaNavbar from '@/shell/navbar';
 
-const props = defineProps({
+defineProps({
   error: {
     type: Error,
     default: null,

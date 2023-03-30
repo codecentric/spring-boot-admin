@@ -47,6 +47,7 @@ export default class ViewRegistry {
           parent: view.parent,
           handle: view.handle,
           path: view.path,
+          href: view.href,
           order: view.order,
         } as SbaViewDescriptor;
       })
@@ -66,6 +67,7 @@ export default class ViewRegistry {
   }
 
   createRouter() {
+    console.log(this.routes);
     router = createRouter({
       history: createWebHistory(),
       linkActiveClass: 'is-active',

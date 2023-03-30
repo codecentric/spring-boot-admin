@@ -18,12 +18,13 @@
   <sba-navbar :brand="brand">
     <sba-navbar-nav>
       <template v-for="item in topLevelViews" :key="item.name">
-        <sba-nav-item v-if="!item.href" :to="item.name">
-          <component :is="item.handle" />
+        <sba-nav-item v-if="!item.href" :to="{ name: item.name }">
+          <component :is="item.handle" :error="error" />
+        </sba-nav-item>
+        <sba-nav-item v-else :href="item.href" target='blank'>
+          <component :is="item.handle" :error="error" />
         </sba-nav-item>
       </template>
-      <sba-nav-item>Applications</sba-nav-item>
-      <sba-nav-item>About</sba-nav-item>
     </sba-navbar-nav>
     <sba-navbar-nav class="ml-auto">
       <sba-nav-language-selector
@@ -90,9 +91,7 @@ export default defineComponent({
     enabledViews() {
       return this.topLevelViews
         .filter(
-          (view) =>
-            view.handle &&
-            (typeof view.isEnabled === 'undefined' || view.isEnabled())
+          (view) => typeof view.isEnabled === 'undefined' || view.isEnabled()
         )
         .sort(compareBy((v) => v.order));
     },

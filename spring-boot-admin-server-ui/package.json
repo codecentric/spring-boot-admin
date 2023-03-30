@@ -5,9 +5,9 @@
   "scripts": {
     "build": "vite build --emptyOutDir",
     "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
-    "build:watch": "NODE_ENV=development vite build --watch --sourcemap --mode development",
+    "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --sourcemap --mode development",
     "dev": "vite",
-    "test": "vitest",
+    "test": "vitest run",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "lint": "eslint --ext .js,.vue src/main/frontend",
