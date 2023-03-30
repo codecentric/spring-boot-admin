@@ -15,16 +15,16 @@
   -->
 
 <template>
-  <sba-instance-section :loading="!hasLoaded" :error="error">
+  <sba-instance-section :error="error" :loading="!hasLoaded">
     <template v-for="(context, ctxName) in contexts" :key="ctxName">
       <template
         v-for="(report, name) in context.liquibaseBeans"
         :key="`${ctxName}-${name}`"
       >
         <sba-panel
+          :header-sticks-below="'#subnavigation'"
           :title="`${ctxName}: ${name}`"
           class="change-set"
-          :header-sticks-below="'#subnavigation'"
         >
           <table class="table is-hoverable w-full">
             <thead>
@@ -53,8 +53,8 @@
                   <td v-text="changeSet.id" />
                   <td>
                     <span
-                      class="tag"
                       :class="execClass(execType)"
+                      class="tag"
                       v-text="changeSet.execType"
                     />
                   </td>

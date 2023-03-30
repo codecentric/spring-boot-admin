@@ -28,7 +28,7 @@
       v-if="!applicationsInitialized"
       class="is-muted is-loading"
       v-text="t('applications.loading_applications')"
-    ></p>
+    />
     <hex-mesh
       v-if="applicationsInitialized"
       :class-for-item="classForApplication"

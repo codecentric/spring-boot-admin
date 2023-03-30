@@ -1,5 +1,5 @@
 <template>
-  <section class="section" :class="{ 'is-loading': !hasLoaded }">
+  <section :class="{ 'is-loading': !hasLoaded }" class="section">
     <template v-if="hasLoaded">
       <div v-if="error" class="message is-danger">
         <div class="message-body">

@@ -35,16 +35,15 @@ const addIframeView = (viewRegistry: ViewRegistry, { url, label, order }) => {
         ]);
       },
     },
-  } as View);
+  } as ComponentView);
 };
 
 const addExternalLink = (viewRegistry, { url, label, order }) => {
   viewRegistry.addView({
-    name: url,
     href: url,
     label,
     order,
-  } as View);
+  } as LinkView);
 };
 
 export default {

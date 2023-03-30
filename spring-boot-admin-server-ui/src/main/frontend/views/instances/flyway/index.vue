@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-instance-section :loading="!hasLoaded" :error="error">
+  <sba-instance-section :error="error" :loading="!hasLoaded">
     <template v-for="(context, ctxName) in contexts" :key="ctxName">
       <sba-panel
         v-for="(report, name) in context.flywayBeans"

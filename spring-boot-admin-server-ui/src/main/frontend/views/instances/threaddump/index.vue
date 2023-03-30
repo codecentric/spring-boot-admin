@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-instance-section :loading="!hasLoaded" :error="errorFetch">
+  <sba-instance-section :error="errorFetch" :loading="!hasLoaded">
     <template v-if="threads" #before>
       <sba-sticky-subnav>
         <div class="text-right">

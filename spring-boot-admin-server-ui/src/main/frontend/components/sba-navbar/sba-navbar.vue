@@ -40,7 +40,7 @@ import SbaNavbarToggle from '@/components/sba-navbar/sba-navbar-toggle.vue';
 
 defineProps({
   brand: {
-    type: Object,
+    type: String,
     required: true,
   },
 });
@@ -48,7 +48,6 @@ defineProps({
 const showNavigation = ref(false);
 
 function toggleNavigation() {
-  console.log('asd');
   showNavigation.value = !showNavigation.value;
 }
 </script>

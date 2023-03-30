@@ -1,5 +1,13 @@
 <template>
-  <MenuItem v-slot="{ active }" :active="active" :disabled="disabled">
+  <MenuItem
+    :active="active"
+    :as="as"
+    :disabled="disabled"
+    class="block w-full"
+    type="submit"
+    v-bind="$attrs"
+    @click="emit('click', $event)"
+  >
     <div :active="active" :aria-disabled="disabled" class="sba-dropdown-item">
       <slot :active="active" />
     </div>
@@ -9,6 +17,7 @@
 <script setup>
 import { MenuItem } from '@headlessui/vue';
 
+const emit = defineEmits(['click']);
 defineProps({
   disabled: {
     type: Boolean,
@@ -17,6 +26,10 @@ defineProps({
   active: {
     type: Boolean,
     default: false,
+  },
+  as: {
+    type: String,
+    default: 'div',
   },
 });
 </script>

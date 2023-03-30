@@ -1,5 +1,7 @@
 import { Component, Raw, RenderFunction } from 'vue';
 
+import ViewRegistry from '@/viewRegistry';
+
 export {};
 
 declare module '*.vue' {
@@ -13,29 +15,40 @@ declare module '*.vue' {
 }
 
 declare global {
-  type View = InternalView | ExternalView;
+  type ViewInstallFunctionParams = {
+    viewRegistry: ViewRegistry;
+  };
+
+  type SbaViewDescriptor = {
+    name: string;
+    parent: string;
+    handle: Component | RenderFunction;
+    path: string;
+    order: number;
+  };
 
   type SbaView = {
-    parent: string;
     isEnabled: () => boolean;
     isChildRoute: boolean;
     component: Raw<any>;
-    name: string;
     group: string;
     hasChildren: boolean;
-    handle: Component | RenderFunction;
-  };
+  } & SbaViewDescriptor;
 
-  interface InternalView {
+  type View = ComponentView | LinkView;
+
+  interface ComponentView {
     name: string;
     path: string;
+    label: string;
     order: number;
-
-    [key: string]: any;
+    component: Component;
   }
 
-  interface ExternalView {
+  interface LinkView {
     href: string;
+    label: string;
+    order: number;
   }
 
   type HealthStatus =

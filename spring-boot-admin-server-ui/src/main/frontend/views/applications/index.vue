@@ -117,7 +117,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { groupBy, sortBy, transform } from 'lodash-es';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -431,7 +431,6 @@ export default {
       path: '/applications/:selected?',
       props: true,
       name: 'applications',
-      label: 'applications.title',
       handle,
       order: 0,
       component: this,

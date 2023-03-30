@@ -20,15 +20,18 @@ import { createApp, h, onBeforeMount, onBeforeUnmount, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
-
-
 import './index.css';
 
-
-
 import components from './components';
-import { CUSTOM_ROUTES_ADDED_EVENT, createViewRegistry, useViewRegistry } from './composables/ViewRegistry.js';
-import { createApplicationStore, useApplicationStore } from './composables/useApplicationStore.js';
+import {
+  CUSTOM_ROUTES_ADDED_EVENT,
+  createViewRegistry,
+  useViewRegistry,
+} from './composables/ViewRegistry.js';
+import {
+  createApplicationStore,
+  useApplicationStore,
+} from './composables/useApplicationStore.js';
 import i18n from './i18n';
 import { worker } from './mocks/browser';
 import Notifications from './notifications.js';
@@ -37,13 +40,15 @@ import sbaConfig from './sba-config';
 import sbaShell from './shell/index.vue';
 import views from './views';
 
-
-
 import eventBus from '@/services/bus';
-
 
 const applicationStore = createApplicationStore();
 const viewRegistry = createViewRegistry();
+
+if (process.env.NODE_ENV === 'development') {
+  globalThis.__VUE_OPTIONS_API__ = true;
+  globalThis.__VUE_PROD_DEVTOOLS__ = true;
+}
 
 globalThis.Vue = Vue;
 globalThis.SBA.viewRegistry = useViewRegistry();

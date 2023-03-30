@@ -21,10 +21,10 @@
         <div class="flex gap-2">
           <sba-input
             v-model="filter.uri"
+            :placeholder="$t('term.filter')"
             class="flex-1"
             name="filter"
             type="search"
-            :placeholder="$t('term.filter')"
           >
             <template #prepend>
               <font-awesome-icon icon="filter" />
@@ -38,7 +38,7 @@
             </template>
           </sba-input>
 
-          <sba-input v-model="limit" class="w-32" :min="0" type="number">
+          <sba-input v-model="limit" :min="0" class="w-32" type="number">
             <template #prepend>
               {{ $t('instances.httptrace.limit') }}
             </template>

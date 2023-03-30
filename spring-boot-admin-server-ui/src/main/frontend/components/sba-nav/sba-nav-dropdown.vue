@@ -50,11 +50,11 @@ import { Menu, MenuButton, MenuItems } from '@headlessui/vue';
 defineProps({
   text: {
     type: String,
-    required: true,
+    default: null,
   },
   href: {
     type: String,
-    required: false,
+    default: null,
   },
   active: {
     type: Boolean,

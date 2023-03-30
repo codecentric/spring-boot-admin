@@ -21,8 +21,8 @@
         <div class="col-span-3">
           <div>
             <label
-              for="metric"
               class="block text-sm font-medium text-gray-700"
+              for="metric"
               v-text="$t('instances.metrics.label')"
             />
             <div class="mt-1 relative rounded-md shadow-sm">
@@ -44,8 +44,8 @@
           <template v-if="availableTags">
             <div v-for="tag in availableTags" :key="tag.tag">
               <label
-                for="metric2"
                 class="block text-sm font-medium text-gray-700"
+                for="metric2"
                 >{{ tag.tag }}</label
               >
               <div class="mt-1 relative rounded-md shadow-sm">

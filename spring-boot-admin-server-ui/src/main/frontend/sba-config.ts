@@ -15,13 +15,6 @@
  */
 import { merge } from 'lodash-es';
 
-const readCookie = (name) => {
-  const match = document.cookie.match(
-    new RegExp('(^|;\\s*)(' + name + ')=([^;]*)')
-  );
-  return match ? decodeURIComponent(match[3]) : null;
-};
-
 const DEFAULT_CONFIG = {
   uiSettings: {
     brand:
@@ -62,7 +55,6 @@ const DEFAULT_CONFIG = {
   use: function (ext) {
     this.extensions.push(ext);
   },
-  csrf_token: readCookie('XSRF-TOKEN'),
 };
 
 export default merge(DEFAULT_CONFIG, window.SBA);

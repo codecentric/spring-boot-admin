@@ -17,7 +17,7 @@
 <template>
   <sba-instance-section :error="error" :loading="!hasLoaded">
     <template #before>
-      <details-nav :instance="instance" :application="application" />
+      <details-nav :application="application" :instance="instance" />
       <details-hero :instance="instance" />
     </template>
 

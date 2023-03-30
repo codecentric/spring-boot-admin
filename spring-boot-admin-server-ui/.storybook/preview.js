@@ -1,5 +1,6 @@
 import { withThemeByDataAttribute } from '@storybook/addon-styling';
 import { app } from '@storybook/vue3';
+import { createRouter, createWebHistory } from 'vue-router';
 
 import './storybook.css';
 import '@/index.css';
@@ -9,6 +10,13 @@ import i18n from '@/i18n';
 
 app.use(i18n);
 app.use(components);
+app.use(
+  createRouter({
+    history: createWebHistory(),
+    linkActiveClass: 'is-active',
+    routes: [],
+  })
+);
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },

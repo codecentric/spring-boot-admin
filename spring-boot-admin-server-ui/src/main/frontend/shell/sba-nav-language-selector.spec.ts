@@ -2,15 +2,14 @@ import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
 import { mount } from '@vue/test-utils';
 
-import NavbarItemLanguageSelector from './navbar-item-language-selector';
-
+import SbaNavLanguageSelector from '@/shell/sba-nav-language-selector.vue';
 import { render } from '@/test-utils';
 
 describe('NavbarItemLanguageSelector', () => {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = render(NavbarItemLanguageSelector, {
+    wrapper = render(SbaNavLanguageSelector, {
       props: {
         availableLocales: ['de', 'fr'],
         currentLocale: 'de',
@@ -31,7 +30,7 @@ describe('NavbarItemLanguageSelector', () => {
   });
 
   it('should print the locale as label when it cannot be translated', async () => {
-    render(NavbarItemLanguageSelector, {
+    render(SbaNavLanguageSelector, {
       props: {
         availableLocales: ['zz'],
         currentLocale: 'zz',
@@ -57,7 +56,7 @@ describe('NavbarItemLanguageSelector', () => {
     ${'zh-CN'} | ${'简体中文'}
     ${'zh-TW'} | ${'繁體中文'}
   `("should show '$expected' for given '$locale'", ({ locale, expected }) => {
-    let wrapper = mount(NavbarItemLanguageSelector, {
+    let wrapper = mount(SbaNavLanguageSelector, {
       propsData: {
         availableLocales: [],
         currentLocale: 'en',

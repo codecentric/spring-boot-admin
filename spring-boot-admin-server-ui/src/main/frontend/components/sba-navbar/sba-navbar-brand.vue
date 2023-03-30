@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 defineProps({
   brand: {
-    type: Object,
+    type: String,
     required: true,
   },
 });

@@ -26,8 +26,11 @@ const Template = (args) => {
           <sba-dropdown-divider></sba-dropdown-divider>
           <sba-dropdown-item active>Active action</sba-dropdown-item>
           <sba-dropdown-item disabled>Disabled action</sba-dropdown-item>
+          <sba-dropdown-divider></sba-dropdown-divider>
+          <sba-dropdown-item as='button'>Button</sba-dropdown-item>
         </sba-dropdown>
       </div>
+
     `,
   };
 };

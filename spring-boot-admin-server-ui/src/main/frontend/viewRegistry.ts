@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { remove } from 'lodash-es';
-import { UnwrapNestedRefs, h, markRaw, reactive } from 'vue';
+import { Text, UnwrapNestedRefs, h, markRaw, reactive, shallowRef } from 'vue';
 import { Router, createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
@@ -23,12 +23,11 @@ import { VIEW_GROUP } from './views/ViewGroup.js';
 let router: Router;
 
 const createI18nTextVNode = (label) => {
-  return {
+  return shallowRef({
     render() {
-      const value = this.$t(label);
-      return h('span', value);
+      return h(Text, this.$t(label));
     },
-  };
+  });
 };
 
 export default class ViewRegistry {
@@ -40,8 +39,18 @@ export default class ViewRegistry {
     this._redirects = [];
   }
 
-  get views(): SbaView[] {
-    return this._views;
+  get views(): SbaViewDescriptor[] {
+    return this._views
+      .map((view) => {
+        return {
+          name: view.name,
+          parent: view.parent,
+          handle: view.handle,
+          path: view.path,
+          order: view.order,
+        } as SbaViewDescriptor;
+      })
+      .sort((a, b) => a.order - b.order);
   }
 
   get routes() {
@@ -69,7 +78,7 @@ export default class ViewRegistry {
     return Array.prototype.find.call(this._views, (v) => v.name === name);
   }
 
-  addView(...views) {
+  addView(...views: View[]) {
     views.forEach((view) => this._addView(view));
   }
 
@@ -87,19 +96,22 @@ export default class ViewRegistry {
     view.parent = viewConfig.parent;
     view.hasChildren = !!viewConfig.children;
 
-    if (viewConfig.label && !viewConfig.handle) {
-      view.handle = createI18nTextVNode(viewConfig.label);
-    }
-    if (viewConfig.handle) {
-      view.handle = markRaw(viewConfig.handle);
-    }
-    if (!viewConfig.group) {
-      view.group = VIEW_GROUP.NONE;
-    }
     if (!viewConfig.name) {
       view.name = [viewConfig.parent, viewConfig.path]
         .filter((p) => !!p)
         .join('/');
+    }
+
+    if (viewConfig.label && !viewConfig.handle) {
+      view.handle = createI18nTextVNode(viewConfig.label);
+    }
+
+    if (viewConfig.handle) {
+      view.handle = markRaw(viewConfig.handle);
+    }
+
+    if (!viewConfig.group) {
+      view.group = VIEW_GROUP.NONE;
     }
     if (viewConfig.component) {
       view.component = markRaw(viewConfig.component);
