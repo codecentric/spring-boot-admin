@@ -17,7 +17,7 @@
 <template>
   <nav
     id="navigation"
-    class="bg-black fixed flex flex-wrap justify-between mx-auto top-0 w-full z-50 items-center mx-auto px-4 py-3 sm:px-6 lg:px-8 text-white"
+    class="bg-black fixed flex flex-wrap justify-between mx-auto top-0 w-full z-50 items-center mx-auto px-4 py-2 sm:px-6 lg:px-8 text-white"
   >
     <sba-navbar-brand :brand="brand" />
 
