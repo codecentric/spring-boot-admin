@@ -16,18 +16,24 @@
 
 package de.codecentric.boot.admin.server.ui.config;
 
-import java.util.regex.Pattern;
+import org.assertj.core.api.WithAssertions;
+import org.junit.jupiter.api.Test;
 
-public class CssColorUtils {
+class CssColorUtilsTest implements WithAssertions {
 
-	private static final Pattern HEX_RGB_PATTERN = Pattern.compile("^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$");
+	@Test
+	void hexToRgb() {
+		CssColorUtils cssColorUtils = new CssColorUtils();
 
-	public String hexToRgb(String color) {
-		if (!HEX_RGB_PATTERN.matcher(color).matches()) {
-			throw new IllegalArgumentException(String.format("Invalid hex rgb format %s", color));
-		}
-		return String.format("%s, %s, %s", Integer.valueOf(color.substring(1, 3), 16),
-				Integer.valueOf(color.substring(3, 5), 16), Integer.valueOf(color.substring(5, 7), 16));
+		assertThat(cssColorUtils.hexToRgb(new AdminServerUiProperties.Palette().getShade50()))
+			.isEqualTo("238, 252, 250");
+	}
+
+	@Test
+	void hexToRgb_throws_exception_on_invalid_format() {
+		CssColorUtils cssColorUtils = new CssColorUtils();
+
+		assertThatThrownBy(() -> cssColorUtils.hexToRgb("EEFCFA")).isInstanceOf(IllegalArgumentException.class);
 	}
 
 }
