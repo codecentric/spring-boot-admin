@@ -88,6 +88,7 @@
                                 </exclude>
                             </excludes>
                             <image>
+                                <!--<builder> paketobuildpacks/builder:tiny</builder> -->
                                 <builder>dashaun/native-builder:focal-arm64</builder>
                                 <env>
                                     <BP_NATIVE_IMAGE>true</BP_NATIVE_IMAGE>

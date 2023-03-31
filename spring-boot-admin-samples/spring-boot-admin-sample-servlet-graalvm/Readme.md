@@ -27,7 +27,7 @@ Depending on your OS, you might want to change the builder in your `pom.xml`.
 
 Right now, `<builder>dashaun/native-builder:focal-arm64</builder>` is a good choice for ARM64.
 
-In most other cases `<builder>dashaun/builder-arm:tiny</builder>` should do the job.
+In most other cases `<builder>paketobuildpacks/builder:tiny</builder>` should do the job.
 
 ## Running the example
 
