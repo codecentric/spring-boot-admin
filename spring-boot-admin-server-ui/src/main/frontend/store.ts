@@ -86,7 +86,7 @@ export default class ApplicationStore {
 
   start() {
     // Do not resubscribe when already started
-    if (this.subscription !== undefined) {
+    if (this.subscription !== null) {
       return;
     }
     const list = defer(() => Application.list()).pipe(

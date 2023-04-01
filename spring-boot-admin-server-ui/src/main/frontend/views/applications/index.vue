@@ -222,7 +222,7 @@ export default {
       );
       const list = transform(
         applicationsByStatus,
-        (result, applications, status) => {
+        (result, applications, status: string) => {
           const statusKey = status.replace(/[^\w]/gi, '').toLowerCase();
           result.push({
             statusKey,
