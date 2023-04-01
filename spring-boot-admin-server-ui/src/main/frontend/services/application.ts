@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AxiosInstance } from 'axios';
 import { sortBy } from 'lodash-es';
-
-
 
 import axios, { redirectOn401 } from '../utils/axios';
 import waitForPolyfill from '../utils/eventsource-polyfill';
 import { Observable, concat, from, ignoreElements } from '../utils/rxjs.js';
 import uri from '../utils/uri';
 import Instance from './instance';
-
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -49,9 +47,10 @@ export const convertBody = (responses) =>
   });
 
 class Application {
-  private readonly name: string;
-  private axios: any;
-  private instances: Instance[];
+  readonly name: string;
+  readonly instances: Instance[];
+
+  private readonly axios: AxiosInstance;
 
   constructor({ name, instances, ...application }) {
     Object.assign(this, application);

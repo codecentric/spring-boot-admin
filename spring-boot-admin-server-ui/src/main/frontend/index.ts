@@ -20,8 +20,6 @@ import { createApp, h, onBeforeMount, onBeforeUnmount, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
-import './index.css';
-
 import components from './components';
 import {
   CUSTOM_ROUTES_ADDED_EVENT,
@@ -37,10 +35,10 @@ import { worker } from './mocks/browser';
 import Notifications from './notifications.js';
 import SbaModalPlugin from './plugins/modal';
 import sbaConfig from './sba-config';
-import sbaShell from './shell/index.vue';
 import views from './views';
 
 import eventBus from '@/services/bus';
+import sbaShell from '@/shell';
 
 const applicationStore = createApplicationStore();
 const viewRegistry = createViewRegistry();
@@ -70,8 +68,6 @@ sbaConfig.extensions.forEach((extension) => {
 
 moment.locale(navigator.language.split('-')[0]);
 
-const installables = [Notifications, ...views];
-
 if (process.env.NODE_ENV === 'development') {
   worker.start({
     serviceWorker: {
@@ -80,6 +76,7 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
+const installables = [Notifications, ...views];
 installables.forEach((installable) => {
   installable.install({
     viewRegistry,
@@ -103,7 +100,7 @@ const app = createApp({
       applicationStore.stop();
     });
 
-    let routesAddedEventHandler = async () => {
+    const routesAddedEventHandler = async () => {
       eventBus.off(CUSTOM_ROUTES_ADDED_EVENT, routesAddedEventHandler);
       await router.replace(route);
     };
@@ -129,5 +126,4 @@ app.use(NotificationcenterPlugin, {
 });
 app.use(SbaModalPlugin, { i18n });
 app.use(viewRegistry.createRouter());
-
-const vue = app.mount('#app');
+app.mount('#app');

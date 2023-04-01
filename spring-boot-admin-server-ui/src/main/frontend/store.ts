@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Application from './services/application.js';
 import {
+  Observable,
   bufferTime,
   concat,
   concatMap,
@@ -24,10 +24,15 @@ import {
   map,
   retryWhen,
   tap,
-} from './utils/rxjs.js';
+} from 'rxjs';
 
-export const findInstance = (applications, instanceId) => {
-  for (let application of applications) {
+import Application from './services/application.js';
+
+export const findInstance = (
+  applications: Application[],
+  instanceId: string
+) => {
+  for (const application of applications) {
     const instance = application.findInstance(instanceId);
     if (instance) {
       return instance;
@@ -36,27 +41,32 @@ export const findInstance = (applications, instanceId) => {
   return undefined;
 };
 
-export const findApplicationForInstance = (applications, instanceId) => {
+export const findApplicationForInstance = (
+  applications: Application[],
+  instanceId: string
+) => {
   return applications.find((application) =>
     Boolean(application.findInstance(instanceId))
   );
 };
 
+type ApplicationStoreListener = () => void;
+
 export default class ApplicationStore {
-  constructor() {
-    this._listeners = {};
-    this._applications = new Map();
-    this.applications = [];
-  }
+  private _listeners: { [p: string]: Array<ApplicationStoreListener> } = {};
+  private _applications: Map<string, Application> = new Map();
+  private applications: Application[] = [];
+  private subscription: Observable<any> | null = null;
 
-  addEventListener(type, listener) {
-    if (!(type in this._listeners)) {
-      this._listeners[type] = [];
+  addEventListener(type: string, listener: ApplicationStoreListener) {
+    if (type in this._listeners) {
+      this._listeners[type].push(listener);
+    } else {
+      this._listeners[type] = [listener];
     }
-    this._listeners[type].push(listener);
   }
 
-  removeEventListener(type, listener) {
+  removeEventListener(type: string, listener: ApplicationStoreListener) {
     if (!(type in this._listeners)) {
       return;
     }
@@ -67,12 +77,11 @@ export default class ApplicationStore {
     }
   }
 
-  _dispatchEvent(type, ...args) {
+  _dispatchEvent(type: string, ...args: any[]) {
     if (!(type in this._listeners)) {
       return;
     }
-    const target = this;
-    this._listeners[type].forEach((listener) => listener.call(target, ...args));
+    this._listeners[type].forEach((listener) => listener.call(this, ...args));
   }
 
   start() {
@@ -103,13 +112,13 @@ export default class ApplicationStore {
       });
   }
 
-  updateApplications(applications) {
+  updateApplications(applications: Application[]) {
     applications.forEach((a) => this.updateApplication(a));
     this.applications = [...this._applications.values()];
     this._dispatchEvent('changed', this.applications);
   }
 
-  updateApplication(application) {
+  updateApplication(application: Application) {
     const oldApplication = this._applications.get(application.name);
     if (!oldApplication && application.instances.length > 0) {
       this._applications.set(application.name, application);

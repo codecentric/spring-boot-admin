@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import ApplicationStore from '../store.js';
 
-let applicationStore;
+let applicationStore: ApplicationStore | null = null;
 const applications = ref([]);
 const applicationsInitialized = ref(false);
 const error = ref(null);

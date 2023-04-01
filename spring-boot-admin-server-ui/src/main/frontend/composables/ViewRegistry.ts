@@ -1,4 +1,5 @@
 import { debounce } from 'lodash-es';
+import { inject } from 'vue';
 
 import ViewRegistry from '../viewRegistry.js';
 
@@ -20,6 +21,8 @@ const emitCustomRouteAddedEvent = debounce(() => {
 });
 
 export function useViewRegistry() {
+  console.log(inject('viewRegistry'));
+
   return {
     views: viewRegistry.views,
     addView(view) {

@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 import { remove } from 'lodash-es';
-import { Text, UnwrapNestedRefs, h, markRaw, reactive, shallowRef } from 'vue';
+import {
+  Text,
+  UnwrapNestedRefs,
+  VNode,
+  h,
+  markRaw,
+  reactive,
+  shallowRef,
+} from 'vue';
 import { Router, createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
@@ -22,12 +30,17 @@ import { VIEW_GROUP } from './views/ViewGroup.js';
 
 let router: Router;
 
-const createI18nTextVNode = (label) => {
-  return shallowRef({
-    render() {
+const createI18nTextVNode = (label: string) =>
+  shallowRef({
+    render(): VNode {
       return h(Text, this.$t(label));
     },
   });
+
+// eslint-disable-next-line no-unused-vars
+type ViewFilterFunction = (view: SbaView) => boolean;
+type ViewConfig = {
+  [key: string]: any;
 };
 
 export default class ViewRegistry {
@@ -44,9 +57,8 @@ export default class ViewRegistry {
   }
 
   get routes() {
-    let routes = this._toRoutes(
-      this._views,
-      (v) => v.path && (!v.parent || !v.isChildRoute)
+    const routes = this._toRoutes(
+      (view) => view.path && (!view.parent || !view.isChildRoute)
     );
     return [...routes, ...this._redirects];
   }
@@ -56,6 +68,21 @@ export default class ViewRegistry {
   }
 
   createRouter() {
+    const routesKnownToBackend = sbaConfig.uiSettings.routes.map(
+      (r) => new RegExp(`^${r.replace('/**', '(/.*)?')}$`)
+    );
+    const unknownRoutes = this.routes.filter(
+      (vr) =>
+        vr.path !== '/' && !routesKnownToBackend.some((br) => br.test(vr.path))
+    );
+    if (unknownRoutes.length > 0) {
+      console.warn(
+        `The routes ${JSON.stringify(
+          unknownRoutes.map((r) => r.path)
+        )} aren't known to the backend and may be not properly routed!`
+      );
+    }
+
     router = createRouter({
       history: createWebHistory(),
       linkActiveClass: 'is-active',
@@ -72,7 +99,7 @@ export default class ViewRegistry {
     views.forEach((view) => this._addView(view));
   }
 
-  addRedirect(path, redirect) {
+  addRedirect(path: string, redirect: string | object) {
     if (typeof redirect === 'string') {
       this._redirects.push({ path, redirect: { name: redirect } });
     } else {
@@ -80,7 +107,7 @@ export default class ViewRegistry {
     }
   }
 
-  _addView(viewConfig) {
+  _addView(viewConfig: ViewConfig) {
     const view = { ...viewConfig } as SbaView;
 
     view.parent = viewConfig.parent;
@@ -110,7 +137,7 @@ export default class ViewRegistry {
 
     if (!viewConfig.isEnabled) {
       view.isEnabled = () => {
-        let viewSettings = sbaConfig.uiSettings.viewSettings.find(
+        const viewSettings = sbaConfig.uiSettings.viewSettings.find(
           (vs) => vs.name === viewConfig.name
         );
         return !viewSettings || viewSettings.enabled === true;
@@ -128,18 +155,18 @@ export default class ViewRegistry {
     });
   }
 
-  _toRoutes(views, filter) {
-    return views.filter(filter).map((p) => {
+  _toRoutes(filter: ViewFilterFunction) {
+    return this._views.filter(filter).map((view) => {
       const children = this._toRoutes(
-        views,
-        (v) => v.parent === p.name && v.isChildRoute
+        (childView) => childView.parent === view.name && childView.isChildRoute
       );
+
       return {
-        path: p.path,
-        name: p.name,
-        component: p.component,
-        props: p.props,
-        meta: { view: p },
+        path: view.path,
+        name: view.name,
+        component: view.component,
+        props: view.props,
+        meta: { view: view },
         children,
       };
     });

@@ -4,17 +4,11 @@ import ViewRegistry from '@/viewRegistry';
 
 export {};
 
-declare module '*.vue' {
-  import type { DefineComponent } from 'vue';
-  const component: DefineComponent<
-    Record<string, unknown>,
-    Record<string, unknown>,
-    unknown
-  >;
-  export default component;
-}
-
 declare global {
+  interface Window {
+    SBA: any;
+  }
+
   type ViewInstallFunctionParams = {
     viewRegistry: ViewRegistry;
   };
@@ -34,6 +28,7 @@ declare global {
     component: Raw<any>;
     group: string;
     hasChildren: boolean;
+    props: any;
   } & SbaViewDescriptor;
 
   type View = ComponentView | LinkView;
@@ -42,14 +37,15 @@ declare global {
     name: string;
     path: string;
     label: string;
-    order: number;
+    order?: number;
+    group?: string;
     component: Component;
   }
 
   interface LinkView {
     href: string;
     label: string;
-    order: number;
+    order?: number;
   }
 
   type HealthStatus =

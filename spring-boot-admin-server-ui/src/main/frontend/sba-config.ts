@@ -15,10 +15,12 @@
  */
 import { merge } from 'lodash-es';
 
+const brand =
+  '<img src="assets/img/icon-spring-boot-admin.svg">Spring Boot Admin';
+
 const DEFAULT_CONFIG = {
   uiSettings: {
-    brand:
-      '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
+    brand,
     theme: {
       background: {
         start: '#84eacb',

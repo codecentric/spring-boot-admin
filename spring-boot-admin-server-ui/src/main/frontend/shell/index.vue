@@ -23,7 +23,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import SbaNavbar from '@/shell/navbar';
 
@@ -39,7 +39,6 @@ const { applications } = useApplicationStore();
 
 <style scoped>
 .sba-container {
-  @apply pt-14;
-  height: 100%;
+  @apply pt-14 h-full;
 }
 </style>

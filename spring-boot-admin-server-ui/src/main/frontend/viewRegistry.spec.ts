@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { describe, expect, it } from 'vitest';
+
 import ViewRegistry from './viewRegistry';
 
 import sbaConfig from '@/sba-config';
@@ -23,7 +25,7 @@ describe('viewRegistry', () => {
 
     viewRegistry.addView(
       ...[
-        { name: 'view', group: 'group' },
+        { name: 'view', group: 'group', path: '' },
         { name: 'duplicateView', group: 'group' },
         { name: 'duplicateView', group: 'group' },
       ]

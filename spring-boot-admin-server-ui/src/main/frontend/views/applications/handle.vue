@@ -16,7 +16,7 @@
 
 <template>
   <span>
-    <span v-if="error" class="mr-2">
+    <span v-if="downCount > 0" class="mr-2">
       <font-awesome-icon icon="exclamation-triangle" />
     </span>
     <span
@@ -27,46 +27,33 @@
   </span>
 </template>
 
-<script setup>
+<script lang="ts" setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { computed, watch } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import sbaConfig from '@/sba-config';
 
-defineProps({
-  error: {
-    type: Error,
-    default: null,
-  },
-});
-
 const favicon = sbaConfig.uiSettings.favicon;
 const faviconDanger = sbaConfig.uiSettings.faviconDanger;
 
 const { applications } = useApplicationStore();
-const downCount = computed({
-  get() {
-    return applications.value.reduce((current, next) => {
-      return (
-        current +
-        next.instances.filter((instance) => instance.statusInfo.status !== 'UP')
-          .length
-      );
-    }, 0);
-  },
+const downCount = computed(() => {
+  return applications.value.reduce((current, next) => {
+    return (
+      current +
+      next.instances.filter((instance) => instance.statusInfo.status !== 'UP')
+        .length
+    );
+  }, 0);
 });
 
-watch(
-  () => downCount,
-  (newVal, oldVal) => {
-    if ((newVal === 0) !== (oldVal === 0)) {
-      updateFavicon(newVal === 0);
-    }
-  }
-);
+watch(downCount, (newVal: number) => {
+  updateFavicon(newVal === 0);
+});
 
 const updateFavicon = (up) =>
-  (document.querySelector('link[rel*="icon"]').href = up
+  ((document.querySelector('link[rel*="icon"]') as HTMLLinkElement).href = up
     ? favicon
     : faviconDanger);
 </script>
