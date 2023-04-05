@@ -2,7 +2,7 @@
   <button
     :aria-expanded="showMenu"
     aria-controls="mobile-menu"
-    class="ml-auto lg:hidden bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+    class="ml-auto inline-flex lg:hidden bg-gray-800 items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
     type="button"
     @click="() => emit('click')"
   >

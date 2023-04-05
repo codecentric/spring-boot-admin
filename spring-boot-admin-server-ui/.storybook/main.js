@@ -3,12 +3,13 @@ const path = require('path');
 
 module.exports = {
   stories: [
-    '../src/main/frontend/components/**/*.stories.mdx',
+    '../src/main/frontend/**/*.stories.mdx',
     '../src/main/frontend/components/**/*.stories.@(js|jsx|ts|tsx)',
   ],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
+    '@storybook/addon-docs',
     {
       name: '@storybook/addon-styling',
       options: {

@@ -7,13 +7,10 @@
       }"
       class="submenu-opener"
     >
-      <a
-        v-if="href && text"
-        :href="href"
-        class="submenu-opener-label"
-        v-text="text"
-      />
-      <slot v-else-if="href && !text" name="label" />
+      <a v-if="href" :href="href" class="submenu-opener-label" target="_blank">
+        <span v-if="text" v-text="text" />
+        <slot v-else name="label" />
+      </a>
 
       <MenuButton class="submenu-opener-button">
         <span v-if="!href" class="submenu-opener-label">
@@ -45,6 +42,7 @@
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Menu, MenuButton, MenuItems } from '@headlessui/vue';
 
 defineProps({
@@ -69,6 +67,10 @@ defineProps({
 }
 
 .submenu-opener {
+  @apply flex items-center;
+}
+
+.submenu-opener > button {
   @apply flex items-center px-3 py-2 rounded hover:bg-sba-700;
 }
 
@@ -93,10 +95,13 @@ defineProps({
 }
 
 .submenu-opener--link {
-  @apply py-0 pr-0;
+  @apply hover:bg-sba-700 rounded;
+}
+.submenu-opener--link > a {
+  @apply px-3 py-2;
 }
 
 .submenu-opener--link .submenu-opener-button {
-  @apply px-3 py-3 hover:bg-sba-800 rounded-r border-l border-black ml-auto w-auto;
+  @apply px-3 py-3 hover:bg-sba-800 rounded-r rounded-l-none border-l border-black ml-auto w-auto;
 }
 </style>

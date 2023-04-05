@@ -1,4 +1,3 @@
-import { withThemeByDataAttribute } from '@storybook/addon-styling';
 import { app } from '@storybook/vue3';
 import { createRouter, createWebHistory } from 'vue-router';
 
@@ -28,14 +27,3 @@ export const parameters = {
     },
   },
 };
-
-export const decorators = [
-  withThemeByDataAttribute({
-    themes: {
-      light: 'light',
-      dark: 'dark',
-    },
-    defaultTheme: 'light',
-    attributeName: 'data-mode',
-  }),
-];

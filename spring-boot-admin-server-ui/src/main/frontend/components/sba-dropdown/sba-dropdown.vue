@@ -2,7 +2,12 @@
   <Menu as="div" class="submenu">
     <div class="submenu-opener">
       <MenuButton class="submenu-opener-button">
-        <span class="submenu-opener-label" v-text="text" />
+        <span class="submenu-opener-label">
+          <template v-if="text">
+            <span v-text="text" />
+          </template>
+          <component :is="is" v-else />
+        </span>
         <font-awesome-icon
           :icon="['fas', 'chevron-down']"
           class="submenu-opener-icon"
@@ -28,12 +33,17 @@
 </template>
 
 <script setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Menu, MenuButton, MenuItems } from '@headlessui/vue';
 
 defineProps({
   text: {
     type: String,
-    required: true,
+    default: null,
+  },
+  is: {
+    type: Object,
+    default: null,
   },
 });
 </script>

@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 import { remove } from 'lodash-es';
-import {
-  Text,
-  UnwrapNestedRefs,
-  VNode,
-  h,
-  markRaw,
-  reactive,
-  shallowRef,
-} from 'vue';
+import { Text, VNode, h, markRaw, reactive, shallowRef } from 'vue';
 import { Router, createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
@@ -44,15 +36,11 @@ type ViewConfig = {
 };
 
 export default class ViewRegistry {
-  private readonly _redirects: any[];
-  private readonly _views: UnwrapNestedRefs<SbaView[]>;
+  private readonly _redirects: any[] = [];
 
-  constructor() {
-    this._views = reactive([]);
-    this._redirects = [];
-  }
+  private _views: SbaView[] = reactive([]);
 
-  get views(): SbaViewDescriptor[] {
+  get views(): SbaView[] {
     return this._views;
   }
 
@@ -109,8 +97,6 @@ export default class ViewRegistry {
 
   _addView(viewConfig: ViewConfig) {
     const view = { ...viewConfig } as SbaView;
-
-    view.parent = viewConfig.parent;
     view.hasChildren = !!viewConfig.children;
 
     if (!viewConfig.name) {
@@ -145,7 +131,7 @@ export default class ViewRegistry {
     } else {
       view.isEnabled = viewConfig.isEnabled;
     }
-    this._removeExistingView(view);
+
     this._views.push(view);
   }
 

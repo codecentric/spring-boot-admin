@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
   return {
-    base: '',
+    base: './',
     define: {
       __VUE_PROD_DEVTOOLS__: process.env.NODE_ENV === 'development',
       __PROJECT_VERSION__: JSON.stringify(

@@ -5,7 +5,7 @@ import SbaNavItem from '@/components/sba-nav/sba-nav-item.vue';
 
 export default {
   component: SbaNavDropdown,
-  title: 'Components/Nav/Dropdown',
+  title: 'Components/Navbar/Nav/Dropdown',
 };
 
 const Template = (args) => {

@@ -15,33 +15,60 @@
   -->
 
 <template>
-  <sba-navbar :brand="brand">
+  <sba-navbar :brand="brand" class="text-sm lg:text-base">
     <sba-navbar-nav>
-      <template v-for="item in topLevelViews" :key="item.name">
-        <sba-nav-item v-if="!item.href" :to="{ name: item.name }">
-          <component :is="item.handle" :error="error" />
-        </sba-nav-item>
-        <sba-nav-item v-else :href="item.href" target="blank">
-          <component :is="item.handle" :error="error" />
-        </sba-nav-item>
+      <template v-for="item in topLevelViews" :key="item.id">
+        <template v-if="item.children.length === 0">
+          <sba-nav-item
+            v-if="!item.href && item.name"
+            :to="{ name: item.name }"
+          >
+            <component :is="item.handle" :error="error" />
+          </sba-nav-item>
+          <sba-nav-item
+            v-else-if="item.href !== '#'"
+            :href="item.href"
+            target="blank"
+          >
+            <component :is="item.handle" :error="error" />
+          </sba-nav-item>
+          <sba-nav-item v-else>
+            <component :is="item.handle" :error="error" />
+          </sba-nav-item>
+        </template>
+        <template v-else>
+          <sba-nav-dropdown :href="item.href">
+            <template #label>
+              <component :is="item.handle" />
+            </template>
+            <template #default>
+              <sba-dropdown-item
+                v-for="child in item.children"
+                :key="child.name"
+                v-bind="{ ...child }"
+              >
+                <component :is="child.handle" :error="error" />
+              </sba-dropdown-item>
+            </template>
+          </sba-nav-dropdown>
+        </template>
       </template>
     </sba-navbar-nav>
     <sba-navbar-nav class="ml-auto">
       <sba-nav-language-selector
         :available-locales="AVAILABLE_LANGUAGES"
-        @localeChanged="changeLocale"
+        @locale-changed="changeLocale"
       />
       <sba-nav-usermenu />
     </sba-navbar-nav>
   </sba-navbar>
 </template>
 
-<script lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+<script lang="ts" setup>
 import moment from 'moment';
-import { defineComponent } from 'vue';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import SbaDropdownDivider from '@/components/sba-dropdown/sba-dropdown-divider.vue';
 import SbaDropdownItem from '@/components/sba-dropdown/sba-dropdown-item.vue';
 import SbaNavDropdown from '@/components/sba-nav/sba-nav-dropdown.vue';
 import SbaNavItem from '@/components/sba-nav/sba-nav-item.vue';
@@ -55,67 +82,43 @@ import SbaNavLanguageSelector from '@/shell/sba-nav-language-selector.vue';
 import SbaNavUsermenu from '@/shell/sba-nav-usermenu.vue';
 import { compareBy } from '@/utils/collections';
 
-export default defineComponent({
-  components: {
-    SbaNavLanguageSelector,
-    SbaNavUsermenu,
-    FontAwesomeIcon,
-    SbaNavItem,
-    SbaNavbarNav,
-    SbaNavDropdown,
-    SbaDropdownDivider,
-    SbaDropdownItem,
-    SbaNavbar,
-  },
-  props: {
-    error: {
-      type: Error,
-      default: null,
-    },
-  },
-  setup() {
-    const { views } = useViewRegistry();
-
-    return {
-      views,
-      AVAILABLE_LANGUAGES,
-    };
-  },
-  data: () => ({
-    showMenu: false,
-    brand:
-      '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
-    username: '',
-  }),
-  computed: {
-    enabledViews() {
-      return this.topLevelViews
-        .filter(
-          (view) => typeof view.isEnabled === 'undefined' || view.isEnabled()
-        )
-        .sort(compareBy((v) => v.order));
-    },
-    topLevelViews(): SbaViewDescriptor[] {
-      return this.views
-        .filter(
-          (view) =>
-            !view.name.includes('instance') && !view.path?.includes('/instance')
-        )
-        .sort(compareBy((v) => v.order));
-    },
-    userSubMenuItems() {
-      return this.enabledViews.filter((v) => v.parent === 'user');
-    },
-  },
-  created() {
-    this.brand = sbaConfig.uiSettings.brand;
-    this.availableLocales = AVAILABLE_LANGUAGES;
-  },
-  methods: {
-    changeLocale(locale) {
-      this.$i18n.locale = locale;
-      moment.locale(this.$i18n.locale);
-    },
+defineProps({
+  error: {
+    type: Error,
+    default: null,
   },
 });
+
+const { views } = useViewRegistry();
+const i18n = useI18n();
+
+const brand = sbaConfig.uiSettings.brand;
+
+const topLevelViews = computed(() => {
+  let rootViews = views
+    .filter((view) => {
+      return (
+        !view.parent &&
+        !view.name?.includes('instance') &&
+        !view.path?.includes('/instance')
+      );
+    })
+    .sort(compareBy((v) => v.order));
+
+  return rootViews.map((rootView) => {
+    return {
+      ...rootView,
+      children: views.filter((v) => v.parent === rootView.name),
+    };
+  });
+});
+
+const userSubMenuItems = computed(() => {
+  return views.filter((v) => v.parent === 'user');
+});
+
+const changeLocale = (locale) => {
+  i18n.locale.value = locale;
+  moment.locale(locale);
+};
 </script>

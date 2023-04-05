@@ -6,10 +6,29 @@
     class="block w-full"
     type="submit"
     v-bind="$attrs"
-    @click="emit('click', $event)"
+    @click="onClick"
   >
-    <div :active="active" :aria-disabled="disabled" class="sba-dropdown-item">
+    <a
+      v-if="href"
+      :aria-disabled="disabled"
+      :href="href"
+      class="sba-dropdown-item"
+      target="_blank"
+    >
       <slot :active="active" />
+    </a>
+
+    <router-link
+      v-else-if="to"
+      :aria-disabled="disabled"
+      :to="to"
+      class="sba-dropdown-item"
+    >
+      <slot :active="active" />
+    </router-link>
+
+    <div v-else class="sba-dropdown-item">
+      <slot />
     </div>
   </MenuItem>
 </template>
@@ -17,8 +36,7 @@
 <script setup>
 import { MenuItem } from '@headlessui/vue';
 
-const emit = defineEmits(['click']);
-defineProps({
+const props = defineProps({
   disabled: {
     type: Boolean,
     default: false,
@@ -31,12 +49,28 @@ defineProps({
     type: String,
     default: 'div',
   },
+  href: {
+    type: String,
+    default: null,
+  },
+  to: {
+    type: Object,
+    default: null,
+  },
 });
+
+const emit = defineEmits(['click']);
+
+const onClick = ($event) => {
+  if (!props.href && !props.to) {
+    emit('click', $event);
+  }
+};
 </script>
 
 <style scoped>
 .sba-dropdown-item {
-  @apply flex w-full items-center rounded-md px-2 py-2 text-sm hover:bg-sba-700 hover:text-white;
+  @apply flex w-full items-center rounded-md px-2 py-2 hover:bg-sba-700 hover:text-white;
 }
 .sba-dropdown-item[aria-disabled='true'] {
   @apply text-gray-400 hover:text-gray-400 hover:bg-transparent cursor-not-allowed;

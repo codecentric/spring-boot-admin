@@ -15,17 +15,14 @@
   -->
 
 <template>
-  <nav
-    id="navigation"
-    class="bg-black fixed flex flex-wrap justify-between mx-auto top-0 w-full z-50 items-center mx-auto px-4 py-2 sm:px-6 lg:px-8 text-white"
-  >
+  <nav id="navigation" class="sba-navbar">
     <sba-navbar-brand :brand="brand" />
 
     <sba-navbar-toggle @click="toggleNavigation" />
 
     <div
-      :class="{ block: showNavigation, hidden: !showNavigation }"
-      class="nav-container lg:block"
+      :class="{ 'nav-container--hidden': !showNavigation }"
+      class="nav-container"
     >
       <slot />
     </div>
@@ -52,21 +49,18 @@ function toggleNavigation() {
 }
 </script>
 
-<style>
-.brand {
-  @apply inline-flex items-center;
+<style scoped>
+.sba-navbar {
+  @apply bg-black fixed flex flex-wrap justify-start mx-auto top-0 w-full z-50 items-center px-4 py-2 text-white;
+  @apply sm:px-6;
+  @apply lg:px-8;
 }
-
-.brand img {
-  @apply h-8 w-8 mr-2;
-}
-
-.brand span {
-  @apply font-semibold text-xl;
-}
-
 .nav-container {
-  @apply justify-between flex-grow items-center mt-4 mb-2 p-2 lg:p-0;
-  @apply lg:flex lg:mt-0 lg:mb-0;
+  @apply text-xs flex-grow block w-full flex-row mt-4;
+  @apply lg:w-auto lg:flex lg:mt-0 lg:text-base;
+}
+.nav-container--hidden {
+  @apply hidden;
+  @apply lg:flex;
 }
 </style>

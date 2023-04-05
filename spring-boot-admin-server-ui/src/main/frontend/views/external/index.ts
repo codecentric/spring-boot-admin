@@ -38,17 +38,30 @@ const addIframeView = (viewRegistry: ViewRegistry, { url, label, order }) => {
   } as ComponentView);
 };
 
-const addExternalLink = (viewRegistry: ViewRegistry, { url, label, order }) => {
+const addExternalLink = (
+  viewRegistry: ViewRegistry,
+  { url, label, order, children },
+  parent?: string
+) => {
+  const name = `external/${label.toLowerCase().replace(/[^a-zA-Z]+/g, '-')}`;
+
   viewRegistry.addView({
-    href: url,
+    href: url || '#',
+    name,
+    parent,
     label,
     order,
   } as LinkView);
+
+  children?.forEach((child) => {
+    addExternalLink(viewRegistry, child, name);
+  });
 };
 
 export default {
   install({ viewRegistry }) {
-    sbaConfig.uiSettings.externalViews.forEach((view) => {
+    const externalViews = sbaConfig.uiSettings.externalViews;
+    externalViews.forEach((view) => {
       if (view.iframe) {
         addIframeView(viewRegistry, view);
       } else {

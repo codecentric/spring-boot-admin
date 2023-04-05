@@ -160,7 +160,6 @@ export default {
   },
   install({ viewRegistry }) {
     viewRegistry.addView({
-      id: 'quartz',
       name: 'instances/quartz',
       parent: 'instances',
       path: 'quartz',

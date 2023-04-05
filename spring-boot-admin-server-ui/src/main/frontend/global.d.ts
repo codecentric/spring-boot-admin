@@ -13,23 +13,21 @@ declare global {
     viewRegistry: ViewRegistry;
   };
 
-  type SbaViewDescriptor = {
-    name: string;
+  type SbaView = {
+    id: string;
+    name?: string;
     parent: string;
-    handle: Component | RenderFunction;
+    handle: string | Component | RenderFunction;
     path?: string;
     href?: string;
     order: number;
-  };
-
-  type SbaView = {
     isEnabled: () => boolean;
     isChildRoute: boolean;
     component: Raw<any>;
     group: string;
     hasChildren: boolean;
     props: any;
-  } & SbaViewDescriptor;
+  };
 
   type View = ComponentView | LinkView;
 

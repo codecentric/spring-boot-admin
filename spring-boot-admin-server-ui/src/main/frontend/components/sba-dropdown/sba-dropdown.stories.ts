@@ -15,14 +15,15 @@ const Template = (args) => {
       SbaDropdownDivider,
     },
     setup() {
-      return { ...args };
+      const click = () => alert('Clicked button!');
+      return { ...args, click };
     },
     template: `
       <div class='flex p-2 justify-center'>
         <sba-dropdown text='Simple Dropdown'>
-          <sba-dropdown-item>First Action</sba-dropdown-item>
-          <sba-dropdown-item>Second Action</sba-dropdown-item>
-          <sba-dropdown-item>Third Action</sba-dropdown-item>
+          <sba-dropdown-item @click='click'>On Click</sba-dropdown-item>
+          <sba-dropdown-item href='#'>A link!</sba-dropdown-item>
+          <sba-dropdown-item to='name'>router-link</sba-dropdown-item>
           <sba-dropdown-divider></sba-dropdown-divider>
           <sba-dropdown-item active>Active action</sba-dropdown-item>
           <sba-dropdown-item disabled>Disabled action</sba-dropdown-item>

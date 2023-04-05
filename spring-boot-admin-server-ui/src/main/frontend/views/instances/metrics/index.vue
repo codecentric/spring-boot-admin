@@ -252,7 +252,6 @@ export default {
   },
   install({ viewRegistry }) {
     viewRegistry.addView({
-      id: 'metrics',
       name: 'instances/metrics',
       parent: 'instances',
       path: 'metrics',

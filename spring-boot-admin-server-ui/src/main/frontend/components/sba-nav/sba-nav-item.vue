@@ -30,7 +30,7 @@ defineProps({
 
 <style scoped>
 .sba-nav-item {
-  @apply px-3 py-2 rounded hover:bg-sba-700;
+  @apply px-3 py-2 rounded lg:self-center hover:bg-sba-700;
 }
 </style>
 <style>

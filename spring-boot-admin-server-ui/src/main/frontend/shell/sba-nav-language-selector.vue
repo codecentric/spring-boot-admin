@@ -39,7 +39,7 @@ const props = defineProps({
   availableLocales: { type: Array, required: true },
 });
 
-const emit = defineEmits(['localeChanged']);
+const emit = defineEmits(['locale-changed']);
 
 const selectedLanguage = computed(() => {
   return mapLocale(currentLocale.value);
@@ -54,7 +54,7 @@ const languages = computed(() => {
 const localeChanged = ($event) => {
   const selectedLocale = $event.locale;
   if (selectedLocale !== currentLocale) {
-    emit('localeChanged', selectedLocale);
+    emit('locale-changed', selectedLocale);
   }
 };
 
