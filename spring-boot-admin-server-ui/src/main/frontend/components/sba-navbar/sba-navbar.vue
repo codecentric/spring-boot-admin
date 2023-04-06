@@ -53,14 +53,14 @@ function toggleNavigation() {
 .sba-navbar {
   @apply bg-black fixed flex flex-wrap justify-start mx-auto top-0 w-full z-50 items-center px-4 py-2 text-white;
   @apply sm:px-6;
-  @apply lg:px-8;
+  @apply xl:px-8;
 }
 .nav-container {
-  @apply text-xs flex-grow block w-full flex-row mt-4;
-  @apply lg:w-auto lg:flex lg:mt-0 lg:text-base;
+  @apply flex-grow block w-full flex-row mt-4;
+  @apply lg:w-auto lg:flex xl:mt-0;
 }
 .nav-container--hidden {
   @apply hidden;
-  @apply lg:flex;
+  @apply xl:flex;
 }
 </style>

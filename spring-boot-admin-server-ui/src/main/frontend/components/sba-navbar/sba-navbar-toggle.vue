@@ -1,14 +1,14 @@
 <template>
   <button
-    :aria-expanded="showMenu"
+    :aria-expanded="isMenuShown"
     aria-controls="mobile-menu"
-    class="ml-auto inline-flex lg:hidden bg-gray-800 items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+    class="sba-navbar-toggle"
     type="button"
-    @click="() => emit('click')"
+    @click="handleClick"
   >
     <span class="sr-only">Open main menu</span>
     <svg
-      :class="{ block: !showMenu, hidden: showMenu }"
+      :class="{ block: !isMenuShown, hidden: isMenuShown }"
       aria-hidden="true"
       class="h-6 w-6"
       fill="none"
@@ -24,7 +24,7 @@
       />
     </svg>
     <svg
-      :class="{ block: showMenu, hidden: !showMenu }"
+      :class="{ block: isMenuShown, hidden: !isMenuShown }"
       aria-hidden="true"
       class="h-6 w-6"
       fill="none"
@@ -43,7 +43,9 @@
 </template>
 
 <script lang="ts" setup>
-defineProps({
+import { ref } from 'vue';
+
+const props = defineProps({
   showMenu: {
     type: Boolean,
     default: () => false,
@@ -51,4 +53,20 @@ defineProps({
 });
 
 const emit = defineEmits(['click']);
+
+const isMenuShown = ref(props.showMenu);
+
+const handleClick = () => {
+  isMenuShown.value = !isMenuShown.value;
+  emit('click', isMenuShown.value);
+};
 </script>
+
+<style>
+.sba-navbar-toggle {
+  @apply ml-auto inline-flex bg-gray-800 items-center justify-center p-2 rounded-md text-gray-400;
+  @apply xl:hidden;
+  @apply hover:text-white hover:bg-gray-700;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white;
+}
+</style>
