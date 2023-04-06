@@ -3,7 +3,7 @@ import preact from '@astrojs/preact';
 import react from '@astrojs/react';
 
 // https://astro.build/config
-let config = {
+let config = defineConfig({
   integrations: [
     // Enable Preact to support Preact JSX components.
     preact(),
@@ -12,11 +12,15 @@ let config = {
   ],
   site: `http://localhost:3000/spring-boot-admin/3.0.3-SNAPSHOT/`,
   base: `/spring-boot-admin/3.0.3-SNAPSHOT/`,
+  build: {
+    assets: 'assets',
+  },
   markdown: {
     syntaxHighlight: 'prism'
   },
   outDir: '../../target/generated-docs'
-};
+});
+
 if (process.env.CI) {
   config = {
     ...config,
