@@ -58,6 +58,13 @@ jobs:
         with:
           files: "'*/jacoco.xml'"
 
+      - name: Extract Maven project version for Asciidoc GitHub Pages directory naming
+        run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+        id: project
+
+      - name: Show extracted Maven project version
+        run: echo ${{ steps.project.outputs.version }}
+
       - name: Deploy Asciidoc docs output to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
