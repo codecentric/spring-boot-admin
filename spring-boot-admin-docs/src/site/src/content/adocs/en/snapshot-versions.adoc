@@ -1,0 +1,19 @@
+= Use of SNAPSHOT-Versions =
+
+You can access snapshot builds from the github snapshot repository by adding the following to your `repositories`:
+
+[source,xml]
+.pom.xml
+----
+<repository>
+	<id>sba-snapshot</id>
+	<name>Spring Boot Admin Snapshots</name>
+	<url>https://maven.pkg.github.com/codecentric/spring-boot-admin</url>
+	<snapshots>
+		<enabled>true</enabled>
+	</snapshots>
+	<releases>
+		<enabled>false</enabled>
+	</releases>
+</repository>
+----
