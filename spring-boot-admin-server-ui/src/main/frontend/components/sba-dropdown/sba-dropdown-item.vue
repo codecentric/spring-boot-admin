@@ -13,6 +13,7 @@
       :aria-disabled="disabled"
       :href="href"
       class="sba-dropdown-item"
+      rel="noopener noreferrer"
       target="_blank"
     >
       <slot :active="active" />
@@ -72,9 +73,11 @@ const onClick = ($event) => {
 .sba-dropdown-item {
   @apply flex w-full items-center rounded-md px-2 py-2 hover:bg-sba-700 hover:text-white;
 }
+
 .sba-dropdown-item[aria-disabled='true'] {
   @apply text-gray-400 hover:text-gray-400 hover:bg-transparent cursor-not-allowed;
 }
+
 .sba-dropdown-item[active='true'] {
   @apply bg-sba-700 text-white;
 }

@@ -58,22 +58,24 @@ spring:
   main:
     lazy-initialization: true
 ---
-# tag::customization-external-views[]
+# tag::customization-external-views-simple-link[]
 spring:
   boot:
     admin:
       ui:
         external-views:
-          - label: Link w/ children
-            url: https://codecentric.de
-            children:
-                - label: "❤️ Docs"
-                  url: https://codecentric.github.io/spring-boot-admin/current/
-                - label: "📦 Maven"
-                  url: https://search.maven.org/search?q=g:de.codecentric%20AND%20a:spring-boot-admin-starter-server
-                - label: "🐙 GitHub"
-                  url: https://github.com/codecentric/spring-boot-admin
-          - label: Bookmarks
+          - label: "🚀" #<1>
+            url: "https://codecentric.de" #<2>
+            order: 2000 #<3>
+# end::customization-external-views-simple-link[]
+---
+# tag::customization-external-views-dropdown-with-links[]
+spring:
+  boot:
+    admin:
+      ui:
+        external-views:
+          - label: Link w/o children
             children:
               - label: "📖 Docs"
                 url: https://codecentric.github.io/spring-boot-admin/current/
@@ -81,10 +83,24 @@ spring:
                 url: https://search.maven.org/search?q=g:de.codecentric%20AND%20a:spring-boot-admin-starter-server
               - label: "🐙 GitHub"
                 url: https://github.com/codecentric/spring-boot-admin
-          - label: "🚀"
-            url: https://codecentric.de
-            order: 2000
-# end::customization-external-views[]
+# end::customization-external-views-dropdown-with-links[]
+---
+# tag::customization-external-views-dropdown-is-link-with-links-as-children[]
+spring:
+  boot:
+    admin:
+      ui:
+        external-views:
+          - label: Link w children
+            url: https://codecentric.de  #<1>
+            children:
+              - label: "📖 Docs"
+                url: https://codecentric.github.io/spring-boot-admin/current/
+              - label: "📦 Maven"
+                url: https://search.maven.org/search?q=g:de.codecentric%20AND%20a:spring-boot-admin-starter-server
+              - label: "🐙 GitHub"
+                url: https://github.com/codecentric/spring-boot-admin
+# end::customization-external-views-dropdown-is-link-with-links-as-children[]
 ---
 # tag::customization-view-settings[]
 spring:

@@ -1,5 +1,12 @@
 <template>
-  <a v-if="href" :href="href" :target="target" class="sba-nav-item">
+  <a
+    v-if="href"
+    :href="href"
+    :target="target"
+    class="sba-nav-item"
+    r
+    rel="noopener noreferrer"
+  >
     <slot />
   </a>
   <router-link v-else-if="to" :to="to" class="sba-nav-item">
