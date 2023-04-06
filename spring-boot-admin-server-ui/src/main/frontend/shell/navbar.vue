@@ -60,11 +60,15 @@
         @locale-changed="changeLocale"
       />
       <sba-nav-usermenu />
+      <sba-nav-item :to="{ name: 'about' }">
+        <FontAwesomeIcon icon="question-circle" />
+      </sba-nav-item>
     </sba-navbar-nav>
   </sba-navbar>
 </template>
 
 <script lang="ts" setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import moment from 'moment';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -100,6 +104,7 @@ const topLevelViews = computed(() => {
       return (
         !view.parent &&
         !view.name?.includes('instance') &&
+        !view.name?.includes('about') &&
         !view.path?.includes('/instance')
       );
     })

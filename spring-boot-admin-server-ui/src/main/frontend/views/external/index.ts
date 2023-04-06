@@ -46,7 +46,7 @@ const addExternalLink = (
   const name = `external/${label.toLowerCase().replace(/[^a-zA-Z]+/g, '-')}`;
 
   viewRegistry.addView({
-    href: url || '#',
+    href: url,
     name,
     parent,
     label,

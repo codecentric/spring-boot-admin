@@ -116,6 +116,8 @@ import { defineComponent } from 'vue';
 import SbaButton from '@/components/sba-button';
 import SbaWave from '@/components/sba-wave';
 
+import handle from '@/views/about/handle.vue';
+
 export default defineComponent({
   components: { SbaWave, SbaButton },
   data: () => ({
@@ -138,8 +140,8 @@ export default defineComponent({
     viewRegistry.addView({
       path: '/about',
       name: 'about',
-      label: 'about.label',
-      order: 200,
+      handle: handle,
+      order: Number.MAX_VALUE,
       component: this,
     });
   },

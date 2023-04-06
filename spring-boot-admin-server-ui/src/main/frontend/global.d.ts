@@ -34,14 +34,16 @@ declare global {
   interface ComponentView {
     name: string;
     path: string;
-    label: string;
+    label?: string;
+    handle?: Component | RenderFunction;
     order?: number;
     group?: string;
     component: Component;
+    isEnabled?: () => boolean;
   }
 
   interface LinkView {
-    href: string;
+    href?: string;
     label: string;
     order?: number;
   }
