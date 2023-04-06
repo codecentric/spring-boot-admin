@@ -1,5 +1,6 @@
-<script is:inline>
-	// Redirect your homepage to the first page of documentation.
-	// If you have a landing page, remove this script and add it here!
-	window.location.pathname = `/en/getting-started`;
-</script>
+---
+const canonicalURL = Astro.site.pathname;
+---
+<head>
+  <meta http-equiv="refresh" content={ `0; url=${ canonicalURL + `en/getting-started` }` } />
+</head>
