@@ -57,3 +57,12 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           files: "'*/jacoco.xml'"
+
+      - name: Deploy Asciidoc docs output to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          target-folder: ${{ steps.project.outputs.version }}
+          clean: true # Automatically remove deleted files from the deploy branch
+
