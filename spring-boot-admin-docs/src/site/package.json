@@ -27,6 +27,7 @@
     "react-dom": "^18.1.0"
   },
   "devDependencies": {
-    "html-escaper": "^3.0.3"
+    "html-escaper": "^3.0.3",
+    "sass": "^1.61.0"
   }
 }

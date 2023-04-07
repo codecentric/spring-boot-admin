@@ -1,4 +1,4 @@
-= Use of SNAPSHOT-Versions =
+= Using SNAPSHOT-Versions
 
 You can access snapshot builds from the github snapshot repository by adding the following to your `repositories`:
 

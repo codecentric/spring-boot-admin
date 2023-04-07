@@ -1,20 +1,23 @@
 [[getting-started]]
-= Getting started =
+= Quick start =
 
-== Overview ==
-Spring Boot Admin is a monitoring tool that aims to visualize information provided by Spring Boot Actuators in a nice and accessible way. It consists of two major parts:
+== Introduction ==
 
- * A server that provides a user interface to display and interact with Spring Boot Actuators.
- * A client that is used to register at the server and allow to access actuator endpoints.
+Spring Boot Admin is a monitoring tool that aims to visualize information provided by Spring Boot Actuators in a nice and accessible way.
+It consists of two major parts:
 
-[[set-up-admin-server]]
-== Quick Start ==
+* A server that provides a user interface to display and interact with Spring Boot Actuators.
+* A client that is used to register at the server and allow to access actuator endpoints.
 
-Since Spring Boot Admin relies on Spring Boot, you have to set up a Spring Boot application first. We recommend doing this by using http://start.spring.io. Spring Boot Admin Server is capable of running as servlet or webflux application, you need to decide on this and add the according Spring Boot Starter. In this example we're using the servlet web starter.
+== Server
+Since Spring Boot Admin relies on Spring Boot, you have to set up a Spring Boot application first.
+We recommend doing this by using http://start.spring.io.
+Spring Boot Admin Server is capable of running as servlet or webflux application, you need to decide on this and add the according Spring Boot Starter.
+In this example we're using the servlet web starter.
 
 . Add Spring Boot Admin Server starter to your dependencies:
 +
-[source,xml,subs="verbatim,attributes"]
+[source,xml]
 .pom.xml
 ----
 <dependency>
@@ -47,14 +50,16 @@ NOTE: If you want to setup the Spring Boot Admin Server via war-deployment in a 
 NOTE: See also the {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-servlet/[spring-boot-admin-sample-servlet] project, which also adds security.
 
 [[register-client-applications]]
-== Registering Client Applications ==
+== Client
 
-To register your application at the SBA Server, you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka, Consul, ...). There is also a <<server/discovery#spring-cloud-discovery-static-config,simple option using a static configuration on the SBA Server side>>.
+To register your application at the SBA Server, you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka, Consul, ...).
+There is also a <<server/discovery#spring-cloud-discovery-static-config,static configuration>> on the SBA Server side.
 
 [[register-clients-via-spring-boot-admin]]
 === Spring Boot Admin Client ===
 
-Each application that wants to register has to include the Spring Boot Admin Client. In order to secure the endpoints, also add the `spring-boot-starter-security`.
+Each application that wants to register has to include the Spring Boot Admin Client.
+In order to secure the endpoints, also add the `spring-boot-starter-security`.
 
 . Add spring-boot-admin-starter-client to your dependencies:
 +
@@ -81,9 +86,12 @@ spring.boot.admin.client.url=http://localhost:8080  #<1>
 management.endpoints.web.exposure.include=*  #<2>
 management.info.env.enabled=true #<3>
 ----
+
 <1> The URL of the Spring Boot Admin Server to register at.
-<2> As with Spring Boot 2 most of the endpoints aren't exposed via http by default, we expose all of them. For production you should carefully choose which endpoints to expose.
-<3> Since Spring Boot 2.6, env info contributor is disabled by default. Hence, we have to enable it.
+<2> As with Spring Boot 2 most of the endpoints aren't exposed via http by default, we expose all of them.
+For production you should carefully choose which endpoints to expose.
+<3> Since Spring Boot 2.6, env info contributor is disabled by default.
+Hence, we have to enable it.
 
 . Make the actuator endpoints accessible:
 +
@@ -98,14 +106,18 @@ public static class SecurityPermitAllConfig {
     }
 }
 ----
-<1> For the sake of brevity we're disabling the security for now. Have a look at the <<server/security#securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
+
+<1> For the sake of brevity we're disabling the security for now.
+Have a look at the <<server/security#securing-spring-boot-admin,security section>> on how to deal with secured endpoints.
 
 [[discover-clients-via-spring-cloud-discovery]]
 === Spring Cloud Discovery ===
 
-If you already use Spring Cloud Discovery for your applications you don't need the SBA Client. Just add a DiscoveryClient to Spring Boot Admin Server, the rest is done by our AutoConfiguration.
+If you already use Spring Cloud Discovery for your applications you don't need the SBA Client.
+Just add a DiscoveryClient to Spring Boot Admin Server, the rest is done by our AutoConfiguration.
 
-The following steps uses Eureka, but other Spring Cloud Discovery implementations are supported as well. There are examples using {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-consul/[Consul] and https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/[Zookeeper].
+The following steps uses Eureka, but other Spring Cloud Discovery implementations are supported as well.
+There are examples using {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-consul/[Consul] and https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-zookeeper/[Zookeeper].
 
 Also, have a look at the http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud documentation].
 
@@ -140,10 +152,13 @@ public class SpringBootAdminApplication {
 ----
 include::{samples-dir}/spring-boot-admin-sample-eureka/src/main/resources/application.yml[tags=configuration-eureka]
 ----
+
 <1> Configuration section for the Eureka client
-<2> As with Spring Boot 2 most of the endpoints aren't exposed via http by default, we expose all of them. For production you should carefully choose which endpoints to expose.
+<2> As with Spring Boot 2 most of the endpoints aren't exposed via http by default, we expose all of them.
+For production you should carefully choose which endpoints to expose.
 
 See also {github-src}/spring-boot-admin-samples/spring-boot-admin-sample-eureka/[spring-boot-admin-sample-eureka].
 
-TIP: You can include the Spring Boot Admin Server to your Eureka server. Setup everything as described above and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eureka's one.
+TIP: You can include the Spring Boot Admin Server to your Eureka server.
+Setup everything as described above and set `spring.boot.admin.context-path` to something different than `"/"` so that the Spring Boot Admin Server UI won't clash with Eureka's one.
 
