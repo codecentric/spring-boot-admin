@@ -244,16 +244,23 @@
     </nav>
 </header>
 <section id="main-section" class="container flex-grow-1">
-<div class="sidebarblock hero">
- <div class="content">
-  <div class="title">
-   The Monitoring tool for Spring Boot
-  </div>
+<div class="sect1">
+ <h2 id="customizing-instance-filter">Intercepting Requests And Responses</h2>
+ <div class="sectionbody">
   <div class="paragraph">
-   <p>Monitor your Spring Boot Applications with ease. An open source monitoring tool build by developers for developers.</p>
+   <p>You can intercept and modify requests and responses made to the monitored application’s actuator endpoints by implementing the <code>InstanceExchangeFilterFunction</code> interface. This can be useful for auditing or adding some extra security checks.</p>
   </div>
-  <div class="paragraph">
-   <p><a href="https://github.com/codecentric/spring-boot-admin" class="btn btn-secondary">GitHub</a> <a href="getting-started.html" class="btn btn-primary">Get Started</a></p>
+  <div class="listingblock">
+   <div class="content">
+    <pre class="CodeRay highlight border shadow rounded"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> InstanceExchangeFilterFunction auditLog() {
+        <span class="keyword">return</span> (instance, request, next) -&gt; next.exchange(request).doOnSubscribe((s) -&gt; {
+                <span class="keyword">if</span> (HttpMethod.DELETE.equals(request.method()) || HttpMethod.POST.equals(request.method())) {
+                        log.info(<span class="string"><span class="delimiter">"</span><span class="content">{} for {} on {}</span><span class="delimiter">"</span></span>, request.method(), instance.getId(), request.url());
+                }
+        });
+}</code></pre>
+   </div>
   </div>
  </div>
 </div>

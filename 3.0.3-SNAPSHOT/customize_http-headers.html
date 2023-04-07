@@ -244,16 +244,23 @@
     </nav>
 </header>
 <section id="main-section" class="container flex-grow-1">
-<div class="sidebarblock hero">
- <div class="content">
-  <div class="title">
-   The Monitoring tool for Spring Boot
-  </div>
+<div class="sect1">
+ <h2 id="customizing-headers">Injecting Custom HTTP Headers</h2>
+ <div class="sectionbody">
   <div class="paragraph">
-   <p>Monitor your Spring Boot Applications with ease. An open source monitoring tool build by developers for developers.</p>
+   <p>In case you need to inject custom HTTP headers into the requests made to the monitored application’s actuator endpoints you can easily add a <code>HttpHeadersProvider</code>:</p>
   </div>
-  <div class="paragraph">
-   <p><a href="https://github.com/codecentric/spring-boot-admin" class="btn btn-secondary">GitHub</a> <a href="getting-started.html" class="btn btn-primary">Get Started</a></p>
+  <div class="listingblock">
+   <div class="content">
+    <pre class="CodeRay highlight border shadow rounded"><code data-lang="java"><span class="annotation">@Bean</span>
+<span class="directive">public</span> HttpHeadersProvider customHttpHeadersProvider() {
+        <span class="keyword">return</span> (instance) -&gt; {
+                HttpHeaders httpHeaders = <span class="keyword">new</span> HttpHeaders();
+                httpHeaders.add(<span class="string"><span class="delimiter">"</span><span class="content">X-CUSTOM</span><span class="delimiter">"</span></span>, <span class="string"><span class="delimiter">"</span><span class="content">My Custom Value</span><span class="delimiter">"</span></span>);
+                <span class="keyword">return</span> httpHeaders;
+        };
+}</code></pre>
+   </div>
   </div>
  </div>
 </div>
