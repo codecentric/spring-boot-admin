@@ -35,7 +35,7 @@ const VERSION = import.meta.env.VERSION ?? 'latest';
     <div style='flex-grow: 1;'></div>
     {KNOWN_LANGUAGE_CODES.length > 1 &&
       <LanguageSelect lang={lang} client:idle />}
-    {ALGOLIA.enabled ? (
+    {ALGOLIA.enabled === true ? (
       <div class='search-item'>
         <Search client:idle />
       </div>

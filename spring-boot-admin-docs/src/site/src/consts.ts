@@ -6,7 +6,7 @@ export const SITE = {
 
 export const OPEN_GRAPH = {
   image: {
-    src: "https://github.com/withastro/astro/blob/main/.github/assets/banner.png?raw=true",
+    src: "https://github.com/codecentric/spring-boot-admin/blob/master/images/logo-spring-boot-admin.png?raw=true",
     alt:
       "astro logo on a starry expanse of space," +
       " with a purple saturn-like planet floating in the right foreground",
@@ -19,11 +19,10 @@ export const KNOWN_LANGUAGES = {
 } as const;
 export const KNOWN_LANGUAGE_CODES = Object.values(KNOWN_LANGUAGES);
 
-export const GITHUB_EDIT_URL = `https://github.com/withastro/astro/tree/main/examples/docs`;
+export const GITHUB_EDIT_URL = `https://github.com/codecentric/spring-boot-admin`;
 
-// See "Algolia" section of the README for more information.
 export const ALGOLIA = {
-  indexName: "spring-boot-admin",
+  indexName: "dev_docs",
   appId: "G9FEY71VTH",
   apiKey: "43db92079ef0ad6f92fef7856d8054f6",
   enabled: false,

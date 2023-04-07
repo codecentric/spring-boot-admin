@@ -22,7 +22,6 @@
     "astro": "^2.2.0",
     "astro-adoc": "^0.3.0",
     "highlight.js": "^11.7.0",
-    "jsdom": "^21.1.1",
     "preact": "^10.7.3",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"

@@ -1,95 +1,26 @@
 ---
-import path from 'path';
-import { CollectionEntry, getCollection } from 'astro:content';
 import MainLayout from '../layouts/MainLayout.astro';
-import { getAdoc, getAdocFiles } from 'astro-adoc';
-import asciidoctor from 'asciidoctor';
-
+import { getAdocs } from '../utils/adocs.loader';
+import { getDocs } from '../utils/docs.loader';
 
 export async function getStaticPaths() {
-  const PATH = path.resolve('../../../spring-boot-admin-samples/');
-
-  const ASCIIDOC_OPTIONS = {
-    safe: 'unsafe',
-    attributes: {
-      'samples-dir': PATH,
-      'github-src':
-        'https://github.com/codecentric/spring-boot-admin/tree/master'
-    }
-  };
-  const headerRegex = /.*<h(?<depth>[0-9]).*(id="(?<slug>.*)").*>(?<text>.*)<\/h[0-9]>.*/g;
-  const adocFiles = await getAdocFiles('src/content/adocs/');
-  const adocs = adocFiles
-    .map((file) => {
-      let path = file.replace('.adoc', '');
-      if (path.endsWith('/index'))
-        path = path.replace('/index', '');
-      path = path.replace('src/content/adocs/', '');
-
-      return {
-        path,
-        adoc: getAdoc(file, ASCIIDOC_OPTIONS)
-      };
-    })
-    .map(({ path, adoc }) => {
-      const converted = adoc.convert();
-      const headings = [];
-      let result: RegExpExecArray;
-      do {
-        result = headerRegex.exec(converted);
-        if (result) {
-          headings.push({
-            depth: result.groups.depth,
-            slug: result.groups.slug,
-            text: result.groups.text
-          });
-        }
-      } while (result != null);
-
-      return {
-        params: { slug: path },
-        props: {
-          id: `${path}.adoc`,
-          slug: path,
-          adoc: converted,
-          headings,
-          data: {
-            title: adoc.getTitle()
-          }
-        }
-      };
-    });
-
-  const docFiles = await getCollection('docs');
-  let docs = docFiles.map((entry) => {
-    return {
-      params: {
-        slug: entry.slug
-      },
-      props: entry
-    };
-  });
+  let docs = await getDocs();
+  let adocs = await getAdocs();
 
   return [...docs, ...adocs];
 }
-const post = Astro.props;
-const params = Astro.params;
+const props = Astro.props;
 
 let Content = null;
 let headings = [];
 
-const isAdoc = post.id.includes('.adoc');
-if (isAdoc) {
-  headings = post.headings;
-  Content = post.adoc;
-} else {
-  let rendered = await post.render();
-  Content = rendered.Content;
-  headings = rendered.headings;
-}
+const isAdoc = props.id.includes('.adoc');
+const rendered = await props.render();
+Content = rendered.Content;
+headings = rendered.headings;
 ---
 
-<MainLayout headings={headings} {...post.data}>
+<MainLayout headings={headings} {...props.data}>
   {isAdoc ?
     <Fragment set:html={Content} /> :
     <Content />}
