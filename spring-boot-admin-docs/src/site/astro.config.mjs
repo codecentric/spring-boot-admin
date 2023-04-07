@@ -12,9 +12,6 @@ let config = defineConfig({
   ],
   site: `http://localhost:3000/spring-boot-admin/3.0.3-SNAPSHOT/`,
   base: `/spring-boot-admin/3.0.3-SNAPSHOT/`,
-  build: {
-    assets: 'assets',
-  },
   markdown: {
     syntaxHighlight: 'prism'
   },
