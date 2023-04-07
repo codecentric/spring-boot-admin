@@ -106,7 +106,16 @@ declare module 'astro:content' {
 	>;
 
 	const entryMap: {
-		
+		"docs": {
+"en/impress.md": {
+  id: "en/impress.md",
+  slug: "en/impress",
+  body: string,
+  collection: "docs",
+  data: InferEntrySchema<"docs">
+} & { render(): Render[".md"] },
+},
+
 	};
 
 	type ContentConfig = typeof import("../src/content/config");
