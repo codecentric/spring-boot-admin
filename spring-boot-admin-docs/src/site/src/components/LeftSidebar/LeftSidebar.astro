@@ -8,8 +8,8 @@ type Props = {
 
 const { currentPage } = Astro.props;
 const currentPageMatch = currentPage.endsWith('/')
-	? currentPage.slice(1, -1)
-	: currentPage.slice(1);
+	? currentPage.slice(0, -1)
+	: currentPage.slice(0);
 const langCode = getLanguageFromURL(currentPage);
 const sidebar = SIDEBAR[langCode];
 ---
@@ -26,7 +26,7 @@ const sidebar = SIDEBAR[langCode];
 								const url = Astro.site?.pathname + child.link;
 								return (
 									<li class="nav-link">
-										<a href={url} aria-current={currentPageMatch === child.link ? 'page' : false}>
+										<a href={url} aria-current={currentPageMatch === url ? 'page' : false}>
 											{child.text}
 										</a>
 									</li>

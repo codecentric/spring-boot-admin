@@ -39,7 +39,7 @@ export const SIDEBAR: Sidebar = {
       { text: "Use Snapshots", link: "en/snapshot-versions" },
     ],
     "SBA Server": [
-      { text: "Discover", link: "en/server/discovery" },
+      { text: "Client Discovery", link: "en/server/discovery" },
       { text: "Notifiers", link: "en/server/notifiers" },
       { text: "Clustering", link: "en/server/clustering" },
       { text: "Security", link: "en/server/security" },

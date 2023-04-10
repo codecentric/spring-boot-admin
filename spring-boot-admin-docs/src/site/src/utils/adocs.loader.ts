@@ -1,4 +1,5 @@
 import { getAdoc, getAdocFiles } from "astro-adoc";
+import merge from "lodash.merge";
 import path from "path";
 
 const PATH = path.resolve("../../../spring-boot-admin-samples/");
@@ -9,19 +10,34 @@ const ASCIIDOC_OPTIONS = {
     "samples-dir": PATH,
     "github-src":
       "https://github.com/codecentric/spring-boot-admin/tree/master",
+    "base-path": "/",
   },
 };
 const headerRegex =
   /.*<h(?<depth>[0-9]).*(id="(?<slug>.*)").*>(?<text>.*)<\/h[0-9]>.*/g;
 
-export async function getAdocs(dir: string = "src/content/adocs/") {
+type AdocsParams = {
+  dir?: string;
+  asciidocOptions?: any;
+};
+
+type Header = {
+  depth: string;
+  slug: string;
+  text: string;
+};
+
+export async function getAdocs(opts: AdocsParams) {
+  const dir = opts.dir || "src/content/adocs/";
+
   const adocFiles = await getAdocFiles(dir);
   return adocFiles
     .map((file) => {
       let path = file.replace(".adoc", "");
       if (path.endsWith("/index")) path = path.replace("/index", "");
       path = path.replace(dir, "");
-      const adoc = getAdoc(file, ASCIIDOC_OPTIONS);
+      let options = merge(ASCIIDOC_OPTIONS, opts.asciidocOptions);
+      const adoc = getAdoc(file, options);
 
       return {
         path,
@@ -30,7 +46,7 @@ export async function getAdocs(dir: string = "src/content/adocs/") {
     })
     .map(({ path, adoc }) => {
       const converted = adoc.convert();
-      const headings = [];
+      const headings: Header[] = [];
       let result: RegExpExecArray | null;
       do {
         result = headerRegex.exec(converted);

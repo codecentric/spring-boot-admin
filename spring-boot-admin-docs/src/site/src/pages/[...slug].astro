@@ -5,7 +5,13 @@ import { getDocs } from '../utils/docs.loader';
 
 export async function getStaticPaths() {
   let docs = await getDocs();
-  let adocs = await getAdocs();
+  let adocs = await getAdocs({
+    asciidocOptions: {
+      attributes: {
+        'base-path': Astro.site.pathname
+      }
+    }
+  });
 
   return [...docs, ...adocs];
 }
