@@ -10,8 +10,8 @@ let config = defineConfig({
     // Enable React for the Algolia search component.
     react()
   ],
-  site: `http://localhost:3000/spring-boot-admin/3.0.3-SNAPSHOT/`,
-  base: `/spring-boot-admin/3.0.3-SNAPSHOT/`,
+  site: `http://localhost:3000/3.0.3-SNAPSHOT/`,
+  base: `/3.0.3-SNAPSHOT/`,
   markdown: {
     syntaxHighlight: 'prism'
   },
@@ -21,8 +21,8 @@ let config = defineConfig({
 if (process.env.CI) {
   config = {
     ...config,
-    site: `https://codecentric.github.io/spring-boot-admin/${process.env.VERSION}/`,
-    base: `/spring-boot-admin/${process.env.VERSION}/`
+    site: `https://docs.spring-boot-admin.com/${process.env.VERSION}/`,
+    base: `/${process.env.VERSION}/`
   };
 }
 export default defineConfig(config);
