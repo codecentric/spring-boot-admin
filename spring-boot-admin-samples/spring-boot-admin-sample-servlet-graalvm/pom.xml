@@ -29,7 +29,7 @@
     </parent>
 
     <properties>
-        <native-build-tools-plugin.version>0.9.20</native-build-tools-plugin.version>
+        <native-build-tools-plugin.version>0.9.21</native-build-tools-plugin.version>
         <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
 
