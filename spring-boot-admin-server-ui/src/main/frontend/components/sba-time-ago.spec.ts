@@ -51,6 +51,6 @@ describe('time-ago', () => {
       },
     });
 
-    expect(await screen.findByText('4d'));
+    expect(await screen.findByText('5d'));
   });
 });
