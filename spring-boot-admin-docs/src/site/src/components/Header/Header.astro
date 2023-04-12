@@ -6,6 +6,7 @@ import SkipToContent from './SkipToContent.astro';
 import SidebarToggle from './SidebarToggle';
 import LanguageSelect from './LanguageSelect';
 import Search from './Search';
+import ThemeToggleButton from "../ThemeToggleButton/ThemeToggleButton";
 
 type Props = {
   currentPage: string;
@@ -33,6 +34,7 @@ const VERSION = import.meta.env.VERSION ?? 'latest';
       </div>
     </div>
     <div style='flex-grow: 1;'></div>
+    <ThemeToggleButton client:visible />
     {KNOWN_LANGUAGE_CODES.length > 1 &&
       <LanguageSelect lang={lang} client:idle />}
     {ALGOLIA.enabled === true ? (

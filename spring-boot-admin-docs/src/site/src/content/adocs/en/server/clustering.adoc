@@ -20,18 +20,19 @@ include::{samples-dir}/spring-boot-admin-sample-hazelcast/src/main/java/de/codec
 ----
 
 .Hazelcast configuration options
+[cols="1,1"]
 |===
-| Property name |Description |Default value
+| Property name  | Default value
 
-| spring.boot.admin.hazelcast.enabled
-| Enables the Hazelcast support
+| `spring.boot.admin.hazelcast.enabled`
 | `true`
+2+| Enables the Hazelcast support
 
-| spring.boot.admin.hazelcast.event-store
-| Name of the Hazelcast-map to store the events
+| `spring.boot.admin.hazelcast.event-store`
 | `"spring-boot-admin-event-store"`
+2+| Name of the Hazelcast-map to store the events
 
-| spring.boot.admin.hazelcast.sent-notifications
-| Name of the Hazelcast-map used to deduplicate the notifications.
+| `spring.boot.admin.hazelcast.sent-notifications`
 | `"spring-boot-admin-sent-notifications"`
+2+| Name of the Hazelcast-map used to deduplicate the notifications.
 |===
