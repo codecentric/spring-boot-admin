@@ -16,7 +16,7 @@
 
 <template>
   <div>
-    <sba-panel :title="metricName" :header-sticks-below="'#navigation'">
+    <sba-panel :header-sticks-below="'#navigation'" :title="metricName">
       <template #actions>
         <div
           v-for="statistic in statistics"
@@ -51,21 +51,21 @@
         <div
           v-for="(tags, idx) in tagSelections"
           :key="idx"
-          class="bg-white px-4 py-3 grid grid-cols-3 gap-4"
           :class="{ 'bg-gray-50': idx % 2 !== 0 }"
+          class="bg-white px-4 py-3 grid grid-cols-3 gap-4"
         >
           <div
             class="text-sm flex items-center font-medium text-gray-500 col-span-2"
           >
             <span
-              class="whitespace-pre"
               :title="getLabel(tags)"
+              class="whitespace-pre"
               v-text="getLabel(tags)"
             />
             <span
               v-if="errors[idx]"
-              class="text-yellow-300 pl-1"
               :title="errors[idx]"
+              class="text-yellow-300 pl-1"
             >
               <font-awesome-icon icon="exclamation-triangle" />
             </span>
@@ -82,8 +82,8 @@
               />
               <sba-icon-button
                 v-if="statistic_index === 0"
-                class="self-end"
                 :icon="'trash'"
+                class="self-end"
                 @click.stop="handleRemove(idx)"
               />
             </div>
@@ -230,17 +230,14 @@ export default {
       return from(this.tagSelections).pipe(concatMap(this.fetchMetric));
     },
     createSubscription() {
-      const vm = this;
       return timer(0, 2500)
         .pipe(
-          concatMap(vm.fetchAllTags),
+          concatMap(this.fetchAllTags),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(2));
           })
         )
-        .subscribe({
-          next: () => {},
-        });
+        .subscribe();
     },
   },
 };

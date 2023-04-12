@@ -158,17 +158,16 @@ export default {
       return converted;
     },
     createSubscription() {
-      const vm = this;
-      vm.filterChanged = new Subject();
-      vm.error = null;
+      this.filterChanged = new Subject();
+      this.error = null;
 
       return timer(0, 5000)
         .pipe(
           mergeWith(
-            vm.filterChanged.pipe(
+            this.filterChanged.pipe(
               debounceTime(250),
               tap({
-                next: () => (vm.events = []),
+                next: () => (this.events = []),
               })
             )
           ),
@@ -176,11 +175,11 @@ export default {
         )
         .subscribe({
           next: (events) => {
-            vm.addEvents(events);
+            this.addEvents(events);
           },
           error: (error) => {
             console.warn('Fetching audit events failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },

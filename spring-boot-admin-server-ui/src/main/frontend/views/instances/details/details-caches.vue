@@ -19,8 +19,8 @@
     <details-cache
       v-for="cache in caches"
       :key="cache"
-      :instance="instance"
       :cache-name="cache"
+      :instance="instance"
     />
   </div>
 </template>
@@ -56,7 +56,6 @@ export default {
       );
     },
     createSubscription() {
-      const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.cache)
         .pipe(
           concatMap(this.fetchCaches),
@@ -66,7 +65,7 @@ export default {
         )
         .subscribe({
           next: (names) => {
-            vm.caches = names;
+            this.caches = names;
           },
           error: (error) => {
             console.warn('Fetching caches failed:', error);

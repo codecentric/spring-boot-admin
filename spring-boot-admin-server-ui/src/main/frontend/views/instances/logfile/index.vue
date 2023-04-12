@@ -167,19 +167,20 @@ export default {
   methods: {
     prettyBytes,
     createSubscription() {
-      const vm = this;
-      vm.error = null;
+      this.error = null;
       return this.instance
         .streamLogfile(1000)
         .pipe(
-          tap((part) => (vm.skippedBytes = vm.skippedBytes || part.skipped)),
+          tap(
+            (part) => (this.skippedBytes = this.skippedBytes || part.skipped)
+          ),
           concatMap((part) => chunk(part.addendum.split(/\r?\n/), 250)),
           map((lines) => of(lines, animationFrameScheduler)),
           concatAll()
         )
         .subscribe({
           next: (lines) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             lines.forEach((line) => {
               const row = document.createElement('tr');
               const col = document.createElement('td');
@@ -190,14 +191,14 @@ export default {
               document.querySelector('.log-viewer > table')?.appendChild(row);
             });
 
-            if (!vm.atBottom) {
-              vm.scrollToBottom();
+            if (!this.atBottom) {
+              this.scrollToBottom();
             }
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn('Fetching logfile failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },

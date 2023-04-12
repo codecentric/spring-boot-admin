@@ -290,26 +290,28 @@ export default {
       return exchanges;
     },
     createSubscription() {
-      const vm = this;
       return timer(0, 5000)
         .pipe(
-          concatMap(vm.fetchHttpExchanges),
+          concatMap(this.fetchHttpExchanges),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(2));
           })
         )
         .subscribe({
           next: (exchanges) => {
-            vm.hasLoaded = true;
-            if (vm.exchanges.length > 0) {
-              vm.listOffset += exchanges.length;
+            this.hasLoaded = true;
+            if (this.exchanges.length > 0) {
+              this.listOffset += exchanges.length;
             }
-            vm.exchanges = [...exchanges, ...vm.exchanges].slice(0, vm.limit);
+            this.exchanges = [...exchanges, ...this.exchanges].slice(
+              0,
+              this.limit
+            );
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn('Fetching exchanges failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },

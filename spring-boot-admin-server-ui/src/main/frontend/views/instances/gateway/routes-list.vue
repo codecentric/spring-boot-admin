@@ -37,13 +37,13 @@
           <td v-text="route.order" />
           <td class="routes__delete-action">
             <sba-confirm-button
-              class="button refresh-button is-light"
               :class="{
                 'is-loading': deleting[route.route_id] === 'executing',
                 'is-danger': deleting[route.route_id] === 'failed',
                 'is-info': deleting[route.route_id] === 'completed',
               }"
               :disabled="deleting[route.route_id] === 'executing'"
+              class="button refresh-button is-light"
               @click.stop="deleteRoute(route.route_id)"
             >
               <span
@@ -65,7 +65,7 @@
           v-if="showDetails[route.route_id]"
           :key="`${route.route_id}-detail`"
         >
-          <td colspan="3" class="has-background-white-bis">
+          <td class="has-background-white-bis" colspan="3">
             <route-definition
               v-if="route.route_definition"
               :route-definition="route.route_definition"
@@ -129,11 +129,10 @@ export default {
       return JSON.stringify(obj, null, 4);
     },
     deleteRoute(routeId) {
-      const vm = this;
-      from(vm.instance.deleteGatewayRoute(routeId))
-        .pipe(listen((status) => (vm.deleting[routeId] = status)))
+      from(this.instance.deleteGatewayRoute(routeId))
+        .pipe(listen((status) => (this.deleting[routeId] = status)))
         .subscribe({
-          complete: () => vm.$emit('route-deleted'),
+          complete: () => this.$emit('route-deleted'),
         });
     },
   },

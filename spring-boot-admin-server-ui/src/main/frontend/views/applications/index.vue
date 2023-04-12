@@ -349,16 +349,15 @@ export default {
       }
     },
     createSubscription() {
-      const vm = this;
-      vm.notificationFilterSubject = new Subject();
+      this.notificationFilterSubject = new Subject();
       return timer(0, 60000)
         .pipe(
-          mergeWith(vm.notificationFilterSubject),
+          mergeWith(this.notificationFilterSubject),
           concatMap(this.fetchNotificationFilters)
         )
         .subscribe({
           next: (data) => {
-            vm.notificationFilters = data;
+            this.notificationFilters = data;
           },
           error: (error) => {
             console.warn(

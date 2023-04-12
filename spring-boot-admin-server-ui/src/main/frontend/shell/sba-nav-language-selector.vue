@@ -62,7 +62,7 @@ const mapLocale = (locale) => {
   try {
     let languageTag = locale.split('-').reverse().pop();
     let regionTag =
-      locale.split('-').length > 1 ? `-${locale.split('-').pop()}` : ``;
+      locale.split('-').length > 1 ? `-${locale.split('-').pop()}` : '';
 
     if (locale.toLowerCase().startsWith('zh')) {
       if (locale.endsWith('CN')) {

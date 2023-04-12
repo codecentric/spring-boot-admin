@@ -285,26 +285,25 @@ export default {
       return traces;
     },
     createSubscription() {
-      const vm = this;
       return timer(0, 5000)
         .pipe(
-          concatMap(vm.fetchHttptrace),
+          concatMap(this.fetchHttptrace),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(2));
           })
         )
         .subscribe({
           next: (traces) => {
-            vm.hasLoaded = true;
-            if (vm.traces.length > 0) {
-              vm.listOffset += traces.length;
+            this.hasLoaded = true;
+            if (this.traces.length > 0) {
+              this.listOffset += traces.length;
             }
-            vm.traces = [...traces, ...vm.traces].slice(0, vm.limit);
+            this.traces = [...traces, ...this.traces].slice(0, this.limit);
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn('Fetching traces failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },

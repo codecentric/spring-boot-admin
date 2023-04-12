@@ -90,7 +90,6 @@ export default {
     },
   },
   mounted() {
-    const vm = this;
     const _data = this.data;
     const labels = _data.map((d) => d[this.label]);
     const minTimestamp = Math.min(...labels);
@@ -133,10 +132,10 @@ export default {
                   } = chart.legend.options;
 
                   return data.datasets.map((dataset, i) => {
-                    const style = vm.colors[i];
+                    const style = this.colors[i];
 
                     return {
-                      text: vm.t(dataset.label),
+                      text: this.t(dataset.label),
                       fillStyle: style.backgroundColor,
                       strokeStyle: style.borderColor,
                       lineWidth: 2,

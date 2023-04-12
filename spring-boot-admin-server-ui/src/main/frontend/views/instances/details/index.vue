@@ -100,7 +100,7 @@ export default {
   props: {
     application: {
       type: Application,
-      default: () => {},
+      default: () => ({}),
     },
     instance: {
       type: Instance,

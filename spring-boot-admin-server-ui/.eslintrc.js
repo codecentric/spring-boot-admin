@@ -11,15 +11,17 @@ module.exports = {
   },
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'eslint:recommended',
-    'prettier',
-    'plugin:prettier/recommended',
     'plugin:vue/vue3-recommended',
+    'plugin:prettier/recommended',
   ],
   plugins: ['prettier', '@typescript-eslint'],
   ignorePatterns: ['dist'],
   rules: {
     'vue/multi-word-component-names': 'off',
+    'vue/no-v-html': 'off',
+    'vue/no-reserved-component-names': 'off',
+    'vue/no-v-text-v-html-on-component': 'off',
+    quotes: [2, 'single', { avoidEscape: true }],
   },
   globals: {
     globalThis: false,

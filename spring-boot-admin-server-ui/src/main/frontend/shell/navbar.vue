@@ -118,10 +118,6 @@ const topLevelViews = computed(() => {
   });
 });
 
-const userSubMenuItems = computed(() => {
-  return views.filter((v) => v.parent === 'user');
-});
-
 const changeLocale = (locale) => {
   i18n.locale.value = locale;
   moment.locale(locale);
