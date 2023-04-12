@@ -15,10 +15,11 @@
  */
 import { screen } from '@testing-library/vue';
 import moment from 'moment';
-import { render } from 'src/main/frontend/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import sbaTimeAgo from './sba-time-ago.vue';
+
+import { render } from '@/test-utils';
 
 // Sun Oct 16 2011 18:00:00 GMT+0200 (Mitteleuropäische Sommerzeit)
 moment.now = () => Date.now();
