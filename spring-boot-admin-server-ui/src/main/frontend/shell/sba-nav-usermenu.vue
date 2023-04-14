@@ -15,13 +15,24 @@
     <template v-if="userSubMenuItems.length > 0">
       <sba-dropdown-divider />
 
-      <sba-dropdown-item
-        v-for="child in userSubMenuItems"
-        :key="child.name"
-        v-bind="{ ...child }"
-      >
-        <component :is="child.handle" />
-      </sba-dropdown-item>
+      <template v-for="item in userSubMenuItems" :key="item.name">
+        <sba-dropdown-item
+          v-if="!item.href && item.name"
+          :to="{ name: item.name }"
+        >
+          <component :is="item.handle" />
+        </sba-dropdown-item>
+        <sba-dropdown-item
+          v-else-if="item.href !== '#'"
+          :href="item.href"
+          target="blank"
+        >
+          <component :is="item.handle" />
+        </sba-dropdown-item>
+        <sba-dropdown-item v-else>
+          <component :is="item.handle" />
+        </sba-dropdown-item>
+      </template>
     </template>
 
     <sba-dropdown-divider />

@@ -6,8 +6,82 @@ export {};
 
 declare global {
   interface Window {
-    SBA: any;
+    SBA: SBASettings;
   }
+
+  type JSExtension = {
+    resourcePath: string;
+    resourceLocation: string;
+  };
+
+  type UITheme = {
+    color: string;
+    palette: {
+      shade50: string;
+      shade100: string;
+      shade200: string;
+      shade300: string;
+      shade400: string;
+      shade500: string;
+      shade600: string;
+      shade700: string;
+      shade800: string;
+      shade900: string;
+    };
+  };
+
+  type PollTimer = {
+    cache: number;
+    datasource: number;
+    gc: number;
+    process: number;
+    memory: number;
+    threads: number;
+  };
+
+  type ViewSettings = {
+    name: string;
+    enabled: boolean;
+  };
+
+  type ExternalView = {
+    label: string;
+    url: string;
+    order: number;
+    iframe: boolean;
+    children: ExternalView[];
+  };
+
+  type UISettings = {
+    title: string;
+    brand: string;
+    loginIcon: string;
+    favicon: string;
+    faviconDanger: string;
+    pollTimer: PollTimer;
+    uiTheme: UITheme;
+    notificationFilterEnabled: boolean;
+    rememberMeEnabled: boolean;
+    availableLanguages: string[];
+    routes: string[];
+    externalViews: ExternalView[];
+    viewSettings: ViewSettings[];
+    enableToasts: boolean;
+  };
+
+  type SBASettings = {
+    uiSettings: UISettings;
+    user: {
+      name: string;
+      [key: string]: any;
+    };
+    extensions: JSExtension[];
+    csrf: {
+      headerName: string;
+      parameterName: string;
+    };
+    [key: string]: any;
+  };
 
   type ViewInstallFunctionParams = {
     viewRegistry: ViewRegistry;

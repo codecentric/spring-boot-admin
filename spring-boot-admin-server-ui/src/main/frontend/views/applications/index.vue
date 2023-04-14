@@ -118,10 +118,11 @@
 </template>
 
 <script lang="ts">
+import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter/dist';
 import { groupBy, sortBy, transform } from 'lodash-es';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router';
+import { RouteLocationRaw, useRoute, useRouter } from 'vue-router';
 
 import SbaStickySubnav from '@/components/sba-sticky-subnav';
 import SbaWave from '@/components/sba-wave';
@@ -177,19 +178,20 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const { applications, applicationsInitialized } = useApplicationStore();
-    const filter = ref(route.query.q);
+    const notificationCenter = useNotificationCenter({});
+    const filter = ref(route.query.q?.toString());
 
     watch(filter, (q) => {
       let to = {
         name: 'applications',
         params: { selected: props.selected },
-      };
+      } as RouteLocationRaw;
 
       if (q?.length > 0) {
         to = {
           ...to,
           query: { q },
-        };
+        } as RouteLocationRaw;
       }
 
       router.replace(to);
@@ -206,11 +208,13 @@ export default {
       filter,
       router,
       hasActiveFilter,
+      notificationCenter,
       hasNotificationFiltersSupport: ref(false),
       showNotificationFilterSettingsObject: ref(null),
       notificationFilters: ref([]),
       errors: ref([]),
       palette: ref({}),
+      notificationFilterSubject: new Subject(),
     };
   },
   computed: {
@@ -286,7 +290,7 @@ export default {
           item instanceof Application
             ? 'applications.unregister_successful'
             : 'instances.unregister_successful';
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           this.t(message, { name: item.id || item.name })
         );
       } catch (error) {
@@ -294,7 +298,7 @@ export default {
           item instanceof Application
             ? 'applications.unregister_failed'
             : 'instances.unregister_failed';
-        this.$notificationCenter.error(
+        this.notificationCenter.error(
           this.t(message, {
             name: item.id || item.name,
             error: error.response.status,
@@ -309,7 +313,7 @@ export default {
           item instanceof Application
             ? 'applications.shutdown_successful'
             : 'instances.shutdown_successful';
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           this.t(message, { name: item.id || item.name })
         );
       } catch (error) {
@@ -317,7 +321,7 @@ export default {
           item instanceof Application
             ? 'applications.shutdown_failed'
             : 'instances.shutdown_failed';
-        this.$notificationCenter.error(
+        this.notificationCenter.error(
           this.t(message, {
             name: item.id || item.name,
             error: error.response.status,
@@ -332,7 +336,7 @@ export default {
           item instanceof Application
             ? 'applications.restarted'
             : 'instances.restarted';
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           this.t(message, { name: item.id || item.name })
         );
       } catch (error) {
@@ -340,7 +344,7 @@ export default {
           item instanceof Application
             ? 'applications.restart_failed'
             : 'instances.restart_failed';
-        this.$notificationCenter.error(
+        this.notificationCenter.error(
           this.t(message, {
             name: item.id || item.name,
             error: error.response.status,
@@ -349,7 +353,6 @@ export default {
       }
     },
     createSubscription() {
-      this.notificationFilterSubject = new Subject();
       return timer(0, 60000)
         .pipe(
           mergeWith(this.notificationFilterSubject),
@@ -364,7 +367,7 @@ export default {
               'Fetching notification filters failed with error:',
               error
             );
-            this.$notificationCenter.error(
+            this.notificationCenter.error(
               this.t('applications.fetching_notification_filters_failed')
             );
           },
@@ -382,7 +385,7 @@ export default {
         const response = await NotificationFilter.addFilter(object, ttl);
         let notificationFilter = response.data;
         this.notificationFilterSubject.next(notificationFilter);
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           `${this.t('applications.notifications_suppressed_for', {
             name:
               notificationFilter.applicationName ||
@@ -399,7 +402,7 @@ export default {
       try {
         await activeFilter.delete();
         this.notificationFilterSubject.next(activeFilter.id);
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           this.t('applications.notification_filter.removed')
         );
       } catch (error) {
