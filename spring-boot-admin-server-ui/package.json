@@ -86,7 +86,7 @@
     "jest-transform-stub": "2.0.0",
     "msw": "1.2.1",
     "msw-storybook-addon": "1.8.0",
-    "postcss": "8.4.21",
+    "postcss": "8.4.22",
     "prettier": "2.8.7",
     "rollup-plugin-visualizer": "5.9.0",
     "sass": "^1.57.1",
