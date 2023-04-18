@@ -30,27 +30,39 @@ const Template = (args) => {
   };
 };
 
-export const DefaultButton = Template.bind({});
-DefaultButton.args = {
-  label: 'Default button',
+export const DefaultButton = {
+  render: Template,
+
+  args: {
+    label: 'Default button',
+  },
 };
 
-export const PrimaryButton = Template.bind({});
-PrimaryButton.args = {
-  label: 'Primary button',
-  primary: 'primary',
+export const PrimaryButton = {
+  render: Template,
+
+  args: {
+    label: 'Primary button',
+    primary: 'primary',
+  },
 };
 
-export const DangerButton = Template.bind({});
-DangerButton.args = {
-  label: 'Danger button',
-  class: 'is-danger',
+export const DangerButton = {
+  render: Template,
+
+  args: {
+    label: 'Danger button',
+    class: 'is-danger',
+  },
 };
 
-export const SuccessButton = Template.bind({});
-SuccessButton.args = {
-  label: 'Danger button',
-  class: 'is-success',
+export const SuccessButton = {
+  render: Template,
+
+  args: {
+    label: 'Danger button',
+    class: 'is-success',
+  },
 };
 
 const SizeTemplate = () => {
@@ -63,4 +75,7 @@ const SizeTemplate = () => {
     `,
   };
 };
-export const ButtonSizes = SizeTemplate.bind({});
+
+export const ButtonSizes = {
+  render: SizeTemplate,
+};

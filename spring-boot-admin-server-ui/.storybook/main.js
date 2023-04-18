@@ -1,8 +1,6 @@
 const { mergeConfig } = require('vite');
 const path = require('path');
-
 const frontend = path.resolve(__dirname, '../src/main/frontend/');
-
 module.exports = {
   stories: [
     {
@@ -12,22 +10,14 @@ module.exports = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
-    {
-      name: '@storybook/addon-postcss',
-      options: {
-        postcssLoaderOptions: {
-          implementation: require('postcss'),
-        },
-      },
-    },
+    '@storybook/addon-mdx-gfm',
   ],
-  framework: '@storybook/vue3',
-  core: {
-    builder: '@storybook/builder-vite',
+  framework: {
+    name: '@storybook/vue3-vite',
+    options: {},
   },
   async viteFinal(config) {
     config.plugins = config.plugins.filter((p) => p.name !== 'vue-docgen');
-
     return mergeConfig(config, {
       resolve: {
         alias: {
@@ -36,5 +26,8 @@ module.exports = {
         extensions: ['.vue', '.js', '.json'],
       },
     });
+  },
+  docs: {
+    autodocs: true,
   },
 };

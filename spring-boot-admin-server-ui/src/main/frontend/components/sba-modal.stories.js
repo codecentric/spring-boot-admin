@@ -39,16 +39,22 @@ const Template = (args) => ({
   i18n,
 });
 
-export const ModalWithBody = Template.bind({});
-ModalWithBody.args = {
-  modelValue: true,
-  body: 'I am a body',
+export const ModalWithBody = {
+  render: Template,
+
+  args: {
+    modelValue: true,
+    body: 'I am a body',
+  },
 };
 
-export const ModalWithHeaderAndFooter = Template.bind({});
-ModalWithHeaderAndFooter.args = {
-  modelValue: true,
-  header: 'You are awesome!',
-  body: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla accumsan, metus ultrices eleifend gravida, nulla nunc varius lectus, nec rutrum justo nibh eu lectus.</p>',
-  footer: '<sba-button class="button">Close me!</sba-button>',
+export const ModalWithHeaderAndFooter = {
+  render: Template,
+
+  args: {
+    modelValue: true,
+    header: 'You are awesome!',
+    body: '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla accumsan, metus ultrices eleifend gravida, nulla nunc varius lectus, nec rutrum justo nibh eu lectus.</p>',
+    footer: '<sba-button class="button">Close me!</sba-button>',
+  },
 };

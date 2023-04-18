@@ -185,8 +185,11 @@ const TemplateWithProps = () => ({
   `,
 });
 
-export const Default = TemplateWithProps.bind({});
-Default.args = {
-  startColor: '#ff0000',
-  stopColor: '#00fa73',
+export const Default = {
+  render: TemplateWithProps,
+
+  args: {
+    startColor: '#ff0000',
+    stopColor: '#00fa73',
+  },
 };

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import withVueRouter from 'storybook-vue3-router';
-
 import SbaPanel from '../../components/sba-panel.vue';
 import { applications } from '../../mocks/applications/data.js';
 import Application from '../../services/application.js';
@@ -59,43 +57,52 @@ const Template = (args) => ({
     </sba-panel>`,
 });
 
-export const OneInstance = Template.bind({});
-OneInstance.decorators = [withVueRouter(routes)];
-OneInstance.args = {
-  application: new Application(application),
+export const OneInstance = {
+  render: Template,
+
+  args: {
+    application: new Application(application),
+  },
 };
 
-export const OneInstanceExpanded = Template.bind({});
-OneInstance.decorators = [withVueRouter(routes)];
-OneInstanceExpanded.args = {
-  ...OneInstance.args,
-  isExpanded: true,
+export const OneInstanceExpanded = {
+  render: Template,
+
+  args: {
+    ...OneInstance.args,
+    isExpanded: true,
+  },
 };
 
-export const MultipleInstances = Template.bind({});
-MultipleInstances.decorators = [withVueRouter(routes)];
+export const MultipleInstances = {
+  render: Template,
+  decorators: [withVueRouter(routes)],
 
-MultipleInstances.args = {
-  application: new Application({
-    ...application,
-    instances: [firstInstance, secondInstance],
-  }),
+  args: {
+    application: new Application({
+      ...application,
+      instances: [firstInstance, secondInstance],
+    }),
+  },
 };
 
-export const MultipleInstancesExpanded = Template.bind({});
-MultipleInstancesExpanded.decorators = [withVueRouter(routes)];
-MultipleInstancesExpanded.args = {
-  ...MultipleInstances.args,
-  application: new Application({
-    ...application,
-    instances: [
-      firstInstance,
-      secondInstance,
-      instanceWithoutRestart,
-      instanceWithABunchOfTags,
-    ],
-  }),
-  isExpanded: true,
+export const MultipleInstancesExpanded = {
+  render: Template,
+  decorators: [withVueRouter(routes)],
+
+  args: {
+    ...MultipleInstances.args,
+    application: new Application({
+      ...application,
+      instances: [
+        firstInstance,
+        secondInstance,
+        instanceWithoutRestart,
+        instanceWithABunchOfTags,
+      ],
+    }),
+    isExpanded: true,
+  },
 };
 
 const TemplateWithMultipleApplications = (args) => ({
@@ -114,17 +121,19 @@ const TemplateWithMultipleApplications = (args) => ({
     </sba-panel>`,
 });
 
-export const MultipleApplications = TemplateWithMultipleApplications.bind({});
-MultipleApplications.decorators = [withVueRouter(routes)];
+export const MultipleApplications = {
+  render: TemplateWithMultipleApplications,
+  decorators: [withVueRouter(routes)],
 
-MultipleApplications.args = {
-  applications: [
-    new Application({
-      ...application,
-    }),
-    new Application({
-      ...application,
-      instances: [instanceWithoutRestart],
-    }),
-  ],
+  args: {
+    applications: [
+      new Application({
+        ...application,
+      }),
+      new Application({
+        ...application,
+        instances: [instanceWithoutRestart],
+      }),
+    ],
+  },
 };

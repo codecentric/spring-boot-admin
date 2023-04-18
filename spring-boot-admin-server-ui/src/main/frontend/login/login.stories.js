@@ -13,8 +13,11 @@ const Template = (args) => ({
   template: '<Login v-bind="args" />',
 });
 
-export const LoginForm = Template.bind({});
-LoginForm.args = {
-  title: 'Spring Boot Admin',
-  param: {},
+export const LoginForm = {
+  render: Template,
+
+  args: {
+    title: 'Spring Boot Admin',
+    param: {},
+  },
 };

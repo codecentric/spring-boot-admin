@@ -31,24 +31,33 @@ const Template = (args) => {
   };
 };
 
-export const OneButton = Template.bind({});
-OneButton.args = {
-  slot: '<sba-button>First</sba-button>',
+export const OneButton = {
+  render: Template,
+
+  args: {
+    slot: '<sba-button>First</sba-button>',
+  },
 };
 
-export const TwoButtons = Template.bind({});
-TwoButtons.args = {
-  slot: `
-    <sba-button>First</sba-button>
-    <sba-button>Second</sba-button>
-  `,
+export const TwoButtons = {
+  render: Template,
+
+  args: {
+    slot: `
+      <sba-button>First</sba-button>
+      <sba-button>Second</sba-button>
+    `,
+  },
 };
 
-export const MoreButtons = Template.bind({});
-MoreButtons.args = {
-  slot: `
-    <sba-button>First</sba-button>
-    <sba-button>Second</sba-button>
-    <sba-button>Third</sba-button>
-  `,
+export const MoreButtons = {
+  render: Template,
+
+  args: {
+    slot: `
+      <sba-button>First</sba-button>
+      <sba-button>Second</sba-button>
+      <sba-button>Third</sba-button>
+    `,
+  },
 };

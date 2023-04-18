@@ -35,12 +35,15 @@ const Template = (args) => {
   };
 };
 
-export const SimpleSelect = Template.bind({});
-SimpleSelect.args = {
-  modelValue: 'berlin',
-  options: [
-    { value: 'beer', label: 'Beer' },
-    { value: 'water', label: 'Water' },
-    { value: 'wine', label: 'Wine' },
-  ],
+export const SimpleSelect = {
+  render: Template,
+
+  args: {
+    modelValue: 'berlin',
+    options: [
+      { value: 'beer', label: 'Beer' },
+      { value: 'water', label: 'Water' },
+      { value: 'wine', label: 'Wine' },
+    ],
+  },
 };

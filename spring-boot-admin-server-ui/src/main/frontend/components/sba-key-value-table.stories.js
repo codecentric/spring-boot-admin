@@ -37,23 +37,29 @@ const Template = (args) => {
   };
 };
 
-export const Default = Template.bind({});
-Default.args = {
-  map: {
-    key1: 'value 1',
-    key2: 'value 2',
-    key3: 'value 3',
+export const Default = {
+  render: Template,
+
+  args: {
+    map: {
+      key1: 'value 1',
+      key2: 'value 2',
+      key3: 'value 3',
+    },
   },
 };
 
-export const UsingSlots = Template.bind({});
-UsingSlots.args = {
-  map: {
-    ...Default.args.map,
-    slotProps: 'Special Value',
-    'a key with sapces': {
-      id: 'customId',
-      value: 'Custom value',
+export const UsingSlots = {
+  render: Template,
+
+  args: {
+    map: {
+      ...Default.args.map,
+      slotProps: 'Special Value',
+      'a key with sapces': {
+        id: 'customId',
+        value: 'Custom value',
+      },
     },
   },
 };

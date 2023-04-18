@@ -31,8 +31,11 @@ const Template = (args) => {
   };
 };
 
-export const DefaultButton = Template.bind({});
-DefaultButton.args = {
-  icon: 'trash',
-  title: 'unregister',
+export const DefaultButton = {
+  render: Template,
+
+  args: {
+    icon: 'trash',
+    title: 'unregister',
+  },
 };

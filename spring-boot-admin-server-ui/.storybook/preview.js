@@ -1,4 +1,4 @@
-import { app } from '@storybook/vue3';
+import { setup } from '@storybook/vue3';
 import { initialize, mswDecorator } from 'msw-storybook-addon';
 
 import './storybook.css';
@@ -12,8 +12,10 @@ import mappingsEndpoint from '@/mocks/instance/mappings';
 
 initialize();
 
-app.use(components);
-app.use(i18n);
+setup((app) => {
+  app.use(components);
+  app.use(i18n);
+});
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },

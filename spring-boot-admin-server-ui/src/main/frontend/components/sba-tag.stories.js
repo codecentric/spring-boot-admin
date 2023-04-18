@@ -30,7 +30,10 @@ const Template = (args) => ({
   template: '<sba-tag v-bind="args" />',
 });
 
-export const Tag = Template.bind({});
-Tag.args = {
-  value: 'I am a tag',
+export const Tag = {
+  render: Template,
+
+  args: {
+    value: 'I am a tag',
+  },
 };

@@ -30,7 +30,10 @@ const Template = (args) => {
   };
 };
 
-export const DefaultButton = Template.bind({});
-DefaultButton.args = {
-  label: 'Default confirm button',
+export const DefaultButton = {
+  render: Template,
+
+  args: {
+    label: 'Default confirm button',
+  },
 };
