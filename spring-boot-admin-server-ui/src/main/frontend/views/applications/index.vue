@@ -118,9 +118,9 @@
 </template>
 
 <script lang="ts">
-import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter/dist';
+import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { groupBy, sortBy, transform } from 'lodash-es';
-import { computed, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouteLocationRaw, useRoute, useRouter } from 'vue-router';
 
@@ -151,7 +151,9 @@ const instanceMatchesFilter = (term, instance) => {
   );
 };
 
-export default {
+type NotificationFilterSettingsObject = { id: string; name: string };
+
+export default defineComponent({
   directives: { Popper },
   components: {
     ApplicationNotificationCenter,
@@ -204,17 +206,19 @@ export default {
     return {
       applications,
       applicationsInitialized,
-      t,
-      filter,
-      router,
-      hasActiveFilter,
-      notificationCenter,
-      hasNotificationFiltersSupport: ref(false),
-      showNotificationFilterSettingsObject: ref(null),
-      notificationFilters: ref([]),
       errors: ref([]),
-      palette: ref({}),
+      filter,
+      hasActiveFilter,
+      hasNotificationFiltersSupport: ref(false),
+      notificationCenter,
       notificationFilterSubject: new Subject(),
+      notificationFilters: ref([]),
+      palette: ref({}),
+      router,
+      showNotificationFilterSettingsObject: ref(
+        null as unknown as NotificationFilterSettingsObject
+      ),
+      t,
     };
   },
   computed: {
@@ -244,9 +248,7 @@ export default {
   watch: {
     selected: {
       immediate: true,
-      handler(newVal) {
-        this.scrollIntoView(newVal);
-      },
+      handler: 'scrollIntoView',
     },
   },
   mounted() {
@@ -439,5 +441,5 @@ export default {
     });
     viewRegistry.addRedirect('/', 'applications');
   },
-};
+});
 </script>
