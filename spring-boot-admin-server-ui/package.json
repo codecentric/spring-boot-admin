@@ -93,7 +93,7 @@
     "storybook-vue3-router": "2.3.1",
     "tailwindcss": "3.3.1",
     "vite": "4.2.2",
-    "vite-plugin-static-copy": "0.13.1",
+    "vite-plugin-static-copy": "0.14.0",
     "vue-loader": "17.0.1"
   },
   "browserslist": [
