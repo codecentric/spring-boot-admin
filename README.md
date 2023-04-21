@@ -23,7 +23,7 @@ Hence, it is possible to run Spring Boot Admin Server version 2.6 and monitor a 
 
 ## Getting Started
 
-[A quick guide](http://codecentric.github.io/spring-boot-admin/2.5.1/#getting-started) to get started can be found in our docs.
+[A quick guide](https://docs.spring-boot-admin.com/current/getting-started.html) to get started can be found in our docs.
 
 There are introductory talks available on YouTube:
 
