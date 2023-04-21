@@ -25,6 +25,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -48,6 +49,11 @@ public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTes
 	@AfterEach
 	public void shutdown() {
 		this.instance.close();
+	}
+
+	@Override
+	MediaType getExpectedMediaTypeForJavaScript() {
+		return MediaType.parseMediaType("text/javascript");
 	}
 
 	@EnableAdminServer

@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
@@ -55,6 +56,11 @@ public class AdminUiReactiveApplicationTest extends AbstractAdminUiApplicationTe
 	@BeforeEach
 	public void setupEach() {
 		super.setUp(port);
+	}
+
+	@Override
+	MediaType getExpectedMediaTypeForJavaScript() {
+		return MediaType.parseMediaType("application/javascript");
 	}
 
 	@EnableAdminServer

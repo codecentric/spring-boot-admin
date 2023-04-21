@@ -103,9 +103,11 @@ public abstract class AbstractAdminUiApplicationTest {
 					.header("Accept", "*/*")
 					.exchange()
 					.expectStatus().isOk()
-					.expectHeader().contentType(MediaType.parseMediaType("text/javascript"));
+					.expectHeader().contentType(getExpectedMediaTypeForJavaScript());
 		//@formatter:on
 	}
+
+	abstract MediaType getExpectedMediaTypeForJavaScript();
 
 	@Test
 	public void should_return_correct_content_type_for_css_extensions() {
