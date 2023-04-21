@@ -15,14 +15,14 @@
   -->
 
 <template>
-  <sba-instance-section :loading="!hasLoaded" :error="error">
+  <sba-instance-section :error="error" :loading="!hasLoaded">
     <template #before>
       <sba-sticky-subnav>
         <sba-input
           v-model="filter"
+          :placeholder="$t('term.filter')"
           name="filter"
           type="search"
-          :placeholder="$t('term.filter')"
         >
           <template #prepend>
             <font-awesome-icon icon="filter" />

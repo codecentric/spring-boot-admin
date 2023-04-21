@@ -1,11 +1,34 @@
 [[customizing-external-views]]
-== Linking / Embedding External Pages ==
 
-You can very simply add a link to external pages via configuration or even embed them (adding the `iframe=true`):
+== Linking / Embedding External Pages in Navbar ==
+
+Links will be opened in a new window/tab (i.e. `target="_blank"`) having no access
+to opener and referrer (`rel="noopener noreferrer"`).
+
+=== Simple link ===
+To add a simple link to an external page, use the following snippet.
 
 [source,yaml,indent=0]
 ----
-include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/application.yml[tags=customization-external-views]
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/application.yml[tags=customization-external-views-simple-link]
+----
+
+<1> The label will be shown in the navbar
+<2> URL to the page you want to link to
+<3> Order that allows to specify position of item in navbar
+
+=== Dropdown with links ===
+To aggregate links below a single element, dropdowns can be configured as follows.
+
+[source,yaml,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/application.yml[tags=customization-external-views-dropdown-with-links]
+----
+
+=== Dropdown as link having links as children ===
+[source,yaml,indent=0]
+----
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/application.yml[tags=customization-external-views-dropdown-is-link-with-links-as-children]
 ----
 
 [[customizing-custom-views]]

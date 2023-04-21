@@ -7,7 +7,7 @@
     "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
     "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --sourcemap --mode development",
     "dev": "vite",
-    "test": "jest",
+    "test": "vitest run",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "lint": "eslint --ext .js,.vue src/main/frontend",
@@ -22,7 +22,7 @@
     "@fortawesome/free-solid-svg-icons": "5.15.4",
     "@fortawesome/vue-fontawesome": "3.0.3",
     "@headlessui/vue": "1.7.13",
-    "@stekoe/vue-toast-notificationcenter": "https://github.com/SteKoe/vue-toast-notificationcenter/archive/refs/tags/1.0.0-RC3.tar.gz",
+    "@stekoe/vue-toast-notificationcenter": "https://github.com/SteKoe/vue-toast-notificationcenter/archive/refs/tags/1.0.0-RC5.tar.gz",
     "@tailwindcss/forms": "0.5.3",
     "@tailwindcss/typography": "0.5.9",
     "ansi_up": "5.2.1",
@@ -46,8 +46,10 @@
     "moment": "2.29.4",
     "popper.js": "1.16.1",
     "pretty-bytes": "6.1.0",
+    "random-string": "^0.2.0",
     "resize-observer-polyfill": "1.5.1",
     "rxjs": "7.8.0",
+    "uuid": "^9.0.0",
     "v3-infinite-loading": "1.2.2",
     "vue": "3.2.47",
     "vue-i18n": "9.2.2",
@@ -61,39 +63,45 @@
     "@babel/preset-env": "7.21.4",
     "@babel/runtime": "7.21.0",
     "@storybook/addon-actions": "6.5.16",
+    "@storybook/addon-docs": "^6.5.10",
     "@storybook/addon-essentials": "6.5.16",
     "@storybook/addon-links": "6.5.16",
     "@storybook/addon-postcss": "2.0.0",
+    "@storybook/addon-styling": "^0.3.2",
     "@storybook/builder-vite": "0.4.2",
     "@storybook/vue3": "6.5.16",
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/user-event": "14.4.3",
     "@testing-library/vue": "7.0.0",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+    "@types/lodash-es": "^4.17.7",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
     "@vitejs/plugin-vue": "4.1.0",
+    "@vue/eslint-config-typescript": "^11.0.2",
     "@vue/test-utils": "2.3.2",
-    "@vue/vue3-jest": "29.2.3",
     "autoprefixer": "10.4.14",
-    "babel-jest": "29.5.0",
     "babel-loader": "9.1.2",
-    "eslint": "7.32.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-storybook": "0.6.11",
-    "eslint-plugin-vue": "^9.0.0",
-    "jest": "29.5.0",
-    "jest-environment-jsdom": "29.5.0",
-    "jest-transform-stub": "2.0.0",
-    "msw": "1.2.1",
+    "eslint-plugin-vue": "^9.10.0",
+    "jsdom": "^21.1.1",
+    "msw": "1.2.0",
     "msw-storybook-addon": "1.8.0",
     "postcss": "8.4.23",
-    "prettier": "2.8.7",
+    "prettier": "^2.8.7",
     "rollup-plugin-visualizer": "5.9.0",
     "sass": "^1.57.1",
     "storybook-vue3-router": "2.3.1",
     "tailwindcss": "3.3.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.3",
     "vite": "4.3.1",
     "vite-plugin-static-copy": "0.14.0",
+    "vitest": "^0.29.7",
+    "vue-eslint-parser": "^9.1.0",
     "vue-loader": "17.0.1"
   },
   "browserslist": [
@@ -101,39 +109,6 @@
     "last 2 versions",
     "not ie <= 8"
   ],
-  "jest": {
-    "collectCoverage": true,
-    "setupFilesAfterEnv": [
-      "<rootDir>/.jest/jest.setup.js"
-    ],
-    "testEnvironment": "jest-environment-jsdom",
-    "testEnvironmentOptions": {
-      "url": "https://example.com",
-      "customExportConditions": [
-        "node",
-        "node-addons"
-      ]
-    },
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
-    "transformIgnorePatterns": [
-      "node_modules/(?!(d3-.*|internmap|lodash-es|pretty-bytes)/)"
-    ],
-    "transform": {
-      ".+\\.vue$": "@vue/vue3-jest",
-      ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-      ".+\\.js$": "babel-jest"
-    },
-    "moduleNameMapper": {
-      "@/(.*)$": "<rootDir>/src/main/frontend/$1"
-    },
-    "testMatch": [
-      "**/*.spec.js"
-    ]
-  },
   "engines": {
     "node": ">=16",
     "npm": ">=8"

@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-instance-section :loading="!hasLoaded" :error="error">
+  <sba-instance-section :error="error" :loading="!hasLoaded">
     <template #before>
       <sba-sticky-subnav>
         <div class="flex items-center justify-end gap-1">
@@ -28,15 +28,15 @@
               <input
                 id="wraplines"
                 v-model="wrapLines"
+                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
                 name="wraplines"
                 type="checkbox"
-                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
               />
             </div>
             <div class="ml-3 text-sm">
               <label
-                for="wraplines"
                 class="font-medium text-gray-700"
+                for="wraplines"
                 v-text="$t('instances.logfile.wrap_lines')"
               />
             </div>
@@ -45,33 +45,33 @@
           <div class="mx-3 btn-group">
             <sba-button :disabled="atTop" @click="scrollToTop">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4"
                 fill="none"
-                viewBox="0 0 24 24"
                 stroke="currentColor"
                 stroke-width="2"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
+                  d="M7 11l5-5m0 0l5 5m-5-5v12"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  d="M7 11l5-5m0 0l5 5m-5-5v12"
                 />
               </svg>
             </sba-button>
             <sba-button :disabled="atBottom" @click="scrollToBottom">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4"
                 fill="none"
-                viewBox="0 0 24 24"
                 stroke="currentColor"
                 stroke-width="2"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
+                  d="M17 13l-5 5m0 0l-5-5m5 5V6"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  d="M17 13l-5 5m0 0l-5-5m5 5V6"
                 />
               </svg>
             </sba-button>
@@ -167,19 +167,20 @@ export default {
   methods: {
     prettyBytes,
     createSubscription() {
-      const vm = this;
-      vm.error = null;
+      this.error = null;
       return this.instance
         .streamLogfile(1000)
         .pipe(
-          tap((part) => (vm.skippedBytes = vm.skippedBytes || part.skipped)),
+          tap(
+            (part) => (this.skippedBytes = this.skippedBytes || part.skipped)
+          ),
           concatMap((part) => chunk(part.addendum.split(/\r?\n/), 250)),
           map((lines) => of(lines, animationFrameScheduler)),
           concatAll()
         )
         .subscribe({
           next: (lines) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             lines.forEach((line) => {
               const row = document.createElement('tr');
               const col = document.createElement('td');
@@ -190,14 +191,14 @@ export default {
               document.querySelector('.log-viewer > table')?.appendChild(row);
             });
 
-            if (!vm.atBottom) {
-              vm.scrollToBottom();
+            if (!this.atBottom) {
+              this.scrollToBottom();
             }
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn('Fetching logfile failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },

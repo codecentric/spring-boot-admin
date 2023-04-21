@@ -27,13 +27,13 @@
         <th>
           <sba-confirm-button
             v-if="sessions.length > 1"
-            class="button"
             :class="{
               'is-loading': deletingAll === 'executing',
               'is-info': deletingAll === 'completed',
               'is-danger': deletingAll === 'failed',
             }"
             :disabled="deletingAll !== null"
+            class="button"
             @click="deleteAllSessions()"
           >
             <span
@@ -60,8 +60,9 @@
             params: { instanceId: instance.id },
             query: { sessionId: session.id },
           }"
-          v-text="session.id"
-        />
+        >
+          {{ session.id }}
+        </router-link>
       </td>
       <td v-text="session.creationTime.format('L HH:mm:ss.SSS')" />
       <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')" />
@@ -89,13 +90,13 @@
       </td>
       <td>
         <button
-          class="button"
           :class="{
             'is-loading': deleting[session.id] === 'executing',
             'is-info': deleting[session.id] === 'completed',
             'is-danger': deleting[session.id] === 'failed',
           }"
           :disabled="session.id in deleting"
+          class="button"
           @click="deleteSession(session.id)"
         >
           <span
@@ -155,32 +156,29 @@ export default {
   methods: {
     prettyBytes,
     deleteAllSessions() {
-      const vm = this;
-      vm.subscription = from(vm.sessions)
+      this.subscription = from(this.sessions)
         .pipe(
           map((session) => session.id),
-          concatMap(vm._deleteSession),
-          listen((status) => (vm.deletingAll = status))
+          concatMap(this._deleteSession),
+          listen((status) => (this.deletingAll = status))
         )
         .subscribe({
           complete: () => {
-            vm.$emit('deleted', '*');
+            this.$emit('deleted', '*');
           },
         });
     },
     deleteSession(sessionId) {
-      const vm = this;
-      vm._deleteSession(sessionId)
-        .pipe(listen((status) => (vm.deleting[sessionId] = status)))
+      this._deleteSession(sessionId)
+        .pipe(listen((status) => (this.deleting[sessionId] = status)))
         .subscribe({
-          complete: () => vm.$emit('deleted', sessionId),
+          complete: () => this.$emit('deleted', sessionId),
         });
     },
     _deleteSession(sessionId) {
-      const vm = this;
       return of(sessionId).pipe(
         concatMap(async (sessionId) => {
-          await vm.instance.deleteSession(sessionId);
+          await this.instance.deleteSession(sessionId);
           return sessionId;
         }),
         tap({

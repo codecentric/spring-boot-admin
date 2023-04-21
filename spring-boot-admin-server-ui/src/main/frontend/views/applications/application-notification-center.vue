@@ -89,7 +89,6 @@ const notificationFiltersLength = ref(0);
 
 const momentLocale = computed({
   get() {
-    console.log(locale.value);
     return locale.value;
   },
 });

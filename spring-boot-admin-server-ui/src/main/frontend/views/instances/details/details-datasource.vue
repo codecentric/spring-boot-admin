@@ -110,27 +110,26 @@ export default {
       };
     },
     createSubscription() {
-      const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
         .pipe(
-          concatMap(vm.fetchMetrics),
+          concatMap(this.fetchMetrics),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
           })
         )
         .subscribe({
           next: (data) => {
-            vm.hasLoaded = true;
-            vm.current = data;
-            vm.chartData.push({ ...data, timestamp: moment().valueOf() });
+            this.hasLoaded = true;
+            this.current = data;
+            this.chartData.push({ ...data, timestamp: moment().valueOf() });
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn(
-              `Fetching datasource ${vm.dataSource} metrics failed:`,
+              `Fetching datasource ${this.dataSource} metrics failed:`,
               error
             );
-            vm.error = error;
+            this.error = error;
           },
         });
     },

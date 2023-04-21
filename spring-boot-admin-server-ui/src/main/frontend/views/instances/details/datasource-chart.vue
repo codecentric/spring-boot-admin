@@ -69,7 +69,6 @@ export default {
   },
   methods: {
     drawChart(_data) {
-      const vm = this;
       const data =
         _data.length === 1
           ? _data.concat([{ ..._data[0], timestamp: _data[0].timestamp + 1 }])
@@ -77,15 +76,15 @@ export default {
 
       ///setup x and y scale
       const extent = d3.extent(data, (d) => d.timestamp);
-      const x = d3.scaleTime().range([0, vm.width]).domain(extent);
+      const x = d3.scaleTime().range([0, this.width]).domain(extent);
 
       const y = d3
         .scaleLinear()
-        .range([vm.height, 0])
+        .range([this.height, 0])
         .domain([0, d3.max(data, (d) => d.active) * 1.05]);
 
       //draw max
-      const max = vm.areas
+      const max = this.areas
         .selectAll('.datasource-chart__line--max')
         .data([data]);
       max
@@ -103,7 +102,7 @@ export default {
       max.exit().remove();
 
       //draw areas
-      const active = vm.areas
+      const active = this.areas
         .selectAll('.datasource-chart__area--active')
         .data([data]);
       active
@@ -122,14 +121,14 @@ export default {
       active.exit().remove();
 
       //draw axis
-      vm.xAxis.call(
+      this.xAxis.call(
         d3
           .axisBottom(x)
           .ticks(5)
           .tickFormat((d) => moment(d).format('HH:mm:ss'))
       );
 
-      vm.yAxis.call(d3.axisLeft(y).ticks(5));
+      this.yAxis.call(d3.axisLeft(y).ticks(5));
     },
   },
 };

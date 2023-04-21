@@ -21,8 +21,8 @@
         <div class="col-span-3">
           <div>
             <label
-              for="metric"
               class="block text-sm font-medium text-gray-700"
+              for="metric"
               v-text="$t('instances.metrics.label')"
             />
             <div class="mt-1 relative rounded-md shadow-sm">
@@ -44,8 +44,8 @@
           <template v-if="availableTags">
             <div v-for="tag in availableTags" :key="tag.tag">
               <label
-                for="metric2"
                 class="block text-sm font-medium text-gray-700"
+                for="metric2"
                 >{{ tag.tag }}</label
               >
               <div class="mt-1 relative rounded-md shadow-sm">
@@ -100,6 +100,9 @@
 <script>
 import { sortBy } from 'lodash-es';
 
+import SbaButton from '@/components/sba-button.vue';
+import SbaPanel from '@/components/sba-panel.vue';
+
 import Instance from '@/services/instance';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import Metric from '@/views/instances/metrics/metric';
@@ -118,7 +121,7 @@ function isActuatorApiVersionSupported(headerContentType) {
 }
 
 export default {
-  components: { SbaInstanceSection, Metric },
+  components: { SbaButton, SbaPanel, SbaInstanceSection, Metric },
   props: {
     instance: {
       type: Instance,
@@ -252,7 +255,6 @@ export default {
   },
   install({ viewRegistry }) {
     viewRegistry.addView({
-      id: 'metrics',
       name: 'instances/metrics',
       parent: 'instances',
       path: 'metrics',

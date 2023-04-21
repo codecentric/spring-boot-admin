@@ -25,16 +25,16 @@
       either done by including the
       <a
         :href="`${documentationBaseUrl}/getting-started.html#register-clients-via-spring-boot-admin`"
-        target="_blank"
         rel="noreferrer"
+        target="_blank"
       >
         Spring Boot Admin Client
       </a>
       or using a
       <a
         :href="`${documentationBaseUrl}/getting-started.html#discover-clients-via-spring-cloud-discovery`"
-        target="_blank"
         rel="noreferrer"
+        target="_blank"
       >
         Spring Cloud Discovery Client
       </a>
@@ -45,15 +45,15 @@
       <a :href="`${documentationBaseUrl}`"> Reference Guide </a>, ask on
       <a
         href="https://stackoverflow.com/questions/tagged/spring-boot-admin"
-        target="_blank"
         rel="noreferrer"
+        target="_blank"
         >Stack Overflow</a
       >
       or have a chat on the
       <a
         href="https://gitter.im/codecentric/spring-boot-admin"
-        target="_blank"
         rel="noreferrer"
+        target="_blank"
         >Gitter</a
       >
       channel.
@@ -67,12 +67,12 @@
     </p>
     <div class="flex justify-between">
       <sba-button @click="openLink(documentationBaseUrl)">
-        <font-awesome-icon size="lg" icon="book" />&nbsp;Reference Guide
+        <font-awesome-icon icon="book" size="lg" />&nbsp;Reference Guide
       </sba-button>
       <sba-button
         @click="openLink('https://github.com/codecentric/spring-boot-admin')"
       >
-        <font-awesome-icon size="lg" :icon="['fab', 'github']" />&nbsp;Sources
+        <font-awesome-icon :icon="['fab', 'github']" size="lg" />&nbsp;Sources
       </sba-button>
       <sba-button
         @click="
@@ -82,14 +82,14 @@
         "
       >
         <font-awesome-icon
-          size="lg"
           :icon="['fab', 'stack-overflow']"
+          size="lg"
         />&nbsp;Stack Overflow
       </sba-button>
       <sba-button
         @click="openLink('https://gitter.im/codecentric/spring-boot-admin')"
       >
-        <font-awesome-icon size="lg" :icon="['fab', 'gitter']" />&nbsp;Gitter
+        <font-awesome-icon :icon="['fab', 'gitter']" size="lg" />&nbsp;Gitter
       </sba-button>
     </div>
 
@@ -102,7 +102,7 @@
     </p>
     <p>
       Spring, Spring Boot and Spring Cloud are trademarks of
-      <a href="https://www.vmware.com/" target="_blank" rel="noreferrer"
+      <a href="https://www.vmware.com/" rel="noreferrer" target="_blank"
         >VMware, Inc.</a
       >
       or its affiliates in the U.S. and other countries.
@@ -110,11 +110,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 import SbaButton from '@/components/sba-button';
 import SbaWave from '@/components/sba-wave';
 
-export default {
+import handle from '@/views/about/handle.vue';
+
+export default defineComponent({
   components: { SbaWave, SbaButton },
   data: () => ({
     // eslint-disable-next-line no-undef
@@ -132,14 +136,14 @@ export default {
       window.open(url, '_blank');
     },
   },
-  install({ viewRegistry }) {
+  install({ viewRegistry }: ViewInstallFunctionParams) {
     viewRegistry.addView({
       path: '/about',
       name: 'about',
-      label: 'about.label',
-      order: 200,
+      handle: handle,
+      order: Number.MAX_VALUE,
       component: this,
     });
   },
-};
+});
 </script>
