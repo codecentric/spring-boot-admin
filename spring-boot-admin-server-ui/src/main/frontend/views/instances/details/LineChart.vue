@@ -124,7 +124,7 @@ export default {
           },
           legend: {
             labels: {
-              generateLabels(chart) {
+              generateLabels: (chart) => {
                 const data = chart.data;
                 if (data.datasets.length) {
                   const {
