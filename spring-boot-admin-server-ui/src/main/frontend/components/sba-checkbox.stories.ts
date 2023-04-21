@@ -30,8 +30,11 @@ const Template = (args) => {
   };
 };
 
-export const OneButton = Template.bind({});
-OneButton.args = {
-  modelValue: true,
-  label: 'I am a label',
+export const OneButton = {
+  render: Template,
+
+  args: {
+    modelValue: true,
+    label: 'I am a label',
+  },
 };

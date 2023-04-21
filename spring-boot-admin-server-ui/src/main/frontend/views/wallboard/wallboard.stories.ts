@@ -29,20 +29,24 @@ const Template = (args) => ({
   template: '<Wallboard v-bind="args" />',
 });
 
-export const Default = Template.bind({});
-const healthStatus = Object.keys(HealthStatus);
-Default.args = {
-  applications: shuffle([...healthStatus, ...healthStatus]).map(
-    (healthStatus) => {
-      const application = new Application(applications[0]);
-      application.statusTimestamp = Date.now();
-      application.name = healthStatus;
-      application.status = healthStatus;
-      return application;
-    }
-  ),
-  applicationsInitialized: true,
+export const Default = {
+  render: Template,
+
+  args: {
+    applications: shuffle([...healthStatus, ...healthStatus]).map(
+      (healthStatus) => {
+        const application = new Application(applications[0]);
+        application.statusTimestamp = Date.now();
+        application.name = healthStatus;
+        application.status = healthStatus;
+        return application;
+      }
+    ),
+    applicationsInitialized: true,
+  },
 };
+
+const healthStatus = Object.keys(HealthStatus);
 
 function shuffle(a) {
   for (let i = a.length - 1; i > 0; i--) {

@@ -32,44 +32,62 @@ const Template = (args) => {
   };
 };
 
-export const SimpleInput = Template.bind({});
-SimpleInput.args = {
-  modelValue: 'Hello there!',
+export const SimpleInput = {
+  render: Template,
+
+  args: {
+    modelValue: 'Hello there!',
+  },
 };
 
-export const InputWithError = Template.bind({});
-InputWithError.args = {
-  ...SimpleInput.args,
-  error: 'Please provide a value.',
+export const InputWithError = {
+  render: Template,
+
+  args: {
+    ...SimpleInput.args,
+    error: 'Please provide a value.',
+  },
 };
 
-export const InputWithHint = Template.bind({});
-InputWithHint.args = {
-  ...SimpleInput.args,
-  hint: 'This is a hint',
+export const InputWithHint = {
+  render: Template,
+
+  args: {
+    ...SimpleInput.args,
+    hint: 'This is a hint',
+  },
 };
 
-export const InputWithPrepend = Template.bind({});
-InputWithPrepend.args = {
-  ...SimpleInput.args,
-  slots: `
-    <template #prepend>Prepend</template>
-  `,
+export const InputWithPrepend = {
+  render: Template,
+
+  args: {
+    ...SimpleInput.args,
+    slots: `
+      <template #prepend>Prepend</template>
+    `,
+  },
 };
 
-export const InputWithAppend = Template.bind({});
-InputWithAppend.args = {
-  ...SimpleInput.args,
-  inputClass: 'text-right',
-  slots: `
-    <template #append>EUR</template>
-  `,
+export const InputWithAppend = {
+  render: Template,
+
+  args: {
+    ...SimpleInput.args,
+    inputClass: 'text-right',
+    slots: `
+      <template #append>EUR</template>
+    `,
+  },
 };
 
-export const Complex = Template.bind({});
-Complex.args = {
-  ...SimpleInput.args,
-  label: 'Label',
-  error: 'Please provide a value.',
-  hint: 'I am a hint!',
+export const Complex = {
+  render: Template,
+
+  args: {
+    ...SimpleInput.args,
+    label: 'Label',
+    error: 'Please provide a value.',
+    hint: 'I am a hint!',
+  },
 };

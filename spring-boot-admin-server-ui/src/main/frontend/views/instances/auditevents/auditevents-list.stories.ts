@@ -13,10 +13,13 @@ const Template = (args, { argTypes }) => ({
   template: '<index v-bind="$props" />',
 });
 
-export const Test = Template.bind({});
-Test.args = {
-  instance: new Instance({
-    id: 'bba333956ae6',
-    ...applications[0].instances[0],
-  }),
+export const Test = {
+  render: Template,
+
+  args: {
+    instance: new Instance({
+      id: 'bba333956ae6',
+      ...applications[0].instances[0],
+    }),
+  },
 };

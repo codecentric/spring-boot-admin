@@ -1,34 +1,33 @@
 const { mergeConfig } = require('vite');
 const path = require('path');
-
+const frontend = path.resolve(__dirname, '../src/main/frontend/');
 module.exports = {
   stories: [
-    '../src/main/frontend/**/*.stories.mdx',
-    '../src/main/frontend/components/**/*.stories.@(js|jsx|ts|tsx)',
+    {
+      directory: frontend,
+    },
   ],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
-    '@storybook/addon-docs',
-    {
-      name: '@storybook/addon-styling',
-      options: {
-        postCss: true,
-      },
-    },
+    '@storybook/addon-mdx-gfm',
   ],
-  framework: '@storybook/vue3',
-  core: {
-    builder: '@storybook/builder-vite',
+  framework: {
+    name: '@storybook/vue3-vite',
+    options: {},
   },
   async viteFinal(config) {
+    config.plugins = config.plugins.filter((p) => p.name !== 'vue-docgen');
     return mergeConfig(config, {
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, '../src/main/frontend/'),
+          '@': frontend,
         },
-        extensions: ['.vue', '.js', '.json', '.ts'],
+        extensions: ['.vue', '.js', '.json'],
       },
     });
+  },
+  docs: {
+    autodocs: true,
   },
 };

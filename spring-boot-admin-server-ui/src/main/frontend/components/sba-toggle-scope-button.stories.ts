@@ -17,9 +17,12 @@ const Template = (args) => ({
     '<sba-toggle-scope-button v-bind="args" v-model:model-value="args.modelValue" />',
 });
 
-export const Default = Template.bind({});
-Default.args = {
-  modelValue: ActionScope.INSTANCE,
-  instanceCount: 2,
-  showInfo: true,
+export const Default = {
+  render: Template,
+
+  args: {
+    modelValue: ActionScope.INSTANCE,
+    instanceCount: 2,
+    showInfo: true,
+  },
 };

@@ -1,29 +1,36 @@
-import { app } from '@storybook/vue3';
-import { createRouter, createWebHistory } from 'vue-router';
+import { setup } from '@storybook/vue3';
+import { initialize, mswDecorator } from 'msw-storybook-addon';
 
 import './storybook.css';
 import '@/index.css';
 
-import components from '@/components';
-import i18n from '@/i18n';
+import components from '@/components/index.js';
 
-app.use(i18n);
-app.use(components);
-app.use(
-  createRouter({
-    history: createWebHistory(),
-    linkActiveClass: 'is-active',
-    routes: [],
-  })
-);
+import i18n from '@/i18n/index.js';
+import applicationsEndpoint from '@/mocks/applications';
+import mappingsEndpoint from '@/mocks/instance/mappings';
+
+initialize();
+
+setup((app) => {
+  app.use(components);
+  app.use(i18n);
+});
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
-  layout: 'fullscreen',
   controls: {
     matchers: {
       color: /(background|color)$/i,
       date: /Date$/,
     },
   },
+  msw: {
+    handlers: {
+      auth: null,
+      others: [...mappingsEndpoint, ...applicationsEndpoint],
+    },
+  },
 };
+
+export const decorators = [mswDecorator];

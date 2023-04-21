@@ -31,33 +31,42 @@ const TemplateWithProps = (args) => ({
   i18n,
 });
 
-export const OneInstanceSuccessful = TemplateWithProps.bind({});
-OneInstanceSuccessful.args = {
-  instanceCount: 1,
-  label: 'Push me!',
-  actionFn() {
-    return new Promise((resolve) => {
-      setTimeout(() => resolve(), 2000);
-    });
+export const OneInstanceSuccessful = {
+  render: TemplateWithProps,
+
+  args: {
+    instanceCount: 1,
+    label: 'Push me!',
+    actionFn() {
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(), 2000);
+      });
+    },
   },
 };
 
-export const MultipleInstancesSuccessful = TemplateWithProps.bind({});
-MultipleInstancesSuccessful.args = {
-  ...OneInstanceSuccessful.args,
-  instanceCount: 10,
+export const MultipleInstancesSuccessful = {
+  render: TemplateWithProps,
+
+  args: {
+    ...OneInstanceSuccessful.args,
+    instanceCount: 10,
+  },
 };
 
-export const OneInstanceFailing = TemplateWithProps.bind({});
-OneInstanceFailing.args = {
-  ...OneInstanceSuccessful.args,
-  instanceCount: 1,
-  actionFn() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject();
-      }, 2000);
-    });
+export const OneInstanceFailing = {
+  render: TemplateWithProps,
+
+  args: {
+    ...OneInstanceSuccessful.args,
+    instanceCount: 1,
+    actionFn() {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject();
+        }, 2000);
+      });
+    },
   },
 };
 
@@ -78,26 +87,32 @@ const TemplateWithSlot = (args) => ({
   i18n,
 });
 
-export const SlottedOneInstanceSuccessful = TemplateWithSlot.bind({});
-SlottedOneInstanceSuccessful.args = {
-  instanceCount: 1,
-  actionFn() {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 2000);
-    });
+export const SlottedOneInstanceSuccessful = {
+  render: TemplateWithSlot,
+
+  args: {
+    instanceCount: 1,
+    actionFn() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve();
+        }, 2000);
+      });
+    },
   },
 };
 
-export const SlottedOneInstanceFailing = TemplateWithSlot.bind({});
-SlottedOneInstanceFailing.args = {
-  instanceCount: 1,
-  actionFn() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject();
-      }, 2000);
-    });
+export const SlottedOneInstanceFailing = {
+  render: TemplateWithSlot,
+
+  args: {
+    instanceCount: 1,
+    actionFn() {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          reject();
+        }, 2000);
+      });
+    },
   },
 };

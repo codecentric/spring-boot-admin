@@ -45,19 +45,28 @@ const Template = (args) => {
   };
 };
 
-export const NoPages = Template.bind({});
-NoPages.args = {
-  pageCount: 0,
-  modelValue: 1,
+export const NoPages = {
+  render: Template,
+
+  args: {
+    pageCount: 0,
+    modelValue: 1,
+  },
 };
 
-export const OnePage = Template.bind({});
-OnePage.args = {
-  pageCount: 1,
+export const OnePage = {
+  render: Template,
+
+  args: {
+    pageCount: 1,
+  },
 };
 
-export const ManyPages = Template.bind({});
-ManyPages.args = {
-  modelValue: 1,
-  pageCount: 12,
+export const ManyPages = {
+  render: Template,
+
+  args: {
+    modelValue: 1,
+    pageCount: 12,
+  },
 };

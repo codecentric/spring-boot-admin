@@ -28,39 +28,54 @@ const Template = (args) => ({
   template: '<sba-alert v-bind="args" />',
 });
 
-export const AlertError = Template.bind({});
-AlertError.args = {
-  title: 'Server error',
-  error: new Error('Error reading from endpoint /applications'),
-  severity: Severity.ERROR,
+export const AlertError = {
+  render: Template,
+
+  args: {
+    title: 'Server error',
+    error: new Error('Error reading from endpoint /applications'),
+    severity: Severity.ERROR,
+  },
 };
 
-export const AlertErrorWithoutTitle = Template.bind({});
-AlertErrorWithoutTitle.args = {
-  error: new Error('Error reading from endpoint /applications'),
-  severity: Severity.ERROR,
+export const AlertErrorWithoutTitle = {
+  render: Template,
+
+  args: {
+    error: new Error('Error reading from endpoint /applications'),
+    severity: Severity.ERROR,
+  },
 };
 
-export const AlertWarning = Template.bind({});
-AlertWarning.args = {
-  ...AlertError.args,
-  title: 'Warning',
-  error: new Error('The response took longer than expected.'),
-  severity: 'WARN',
+export const AlertWarning = {
+  render: Template,
+
+  args: {
+    ...AlertError.args,
+    title: 'Warning',
+    error: new Error('The response took longer than expected.'),
+    severity: 'WARN',
+  },
 };
 
-export const AlertInfo = Template.bind({});
-AlertInfo.args = {
-  ...AlertError.args,
-  title: 'Hint',
-  error: new Error('Check GC information as well!'),
-  severity: 'INFO',
+export const AlertInfo = {
+  render: Template,
+
+  args: {
+    ...AlertError.args,
+    title: 'Hint',
+    error: new Error('Check GC information as well!'),
+    severity: 'INFO',
+  },
 };
 
-export const AlertSuccess = Template.bind({});
-AlertSuccess.args = {
-  ...AlertError.args,
-  title: 'Successful',
-  error: new Error('Changes have been applied.'),
-  severity: 'SUCCESS',
+export const AlertSuccess = {
+  render: Template,
+
+  args: {
+    ...AlertError.args,
+    title: 'Successful',
+    error: new Error('Changes have been applied.'),
+    severity: 'SUCCESS',
+  },
 };
