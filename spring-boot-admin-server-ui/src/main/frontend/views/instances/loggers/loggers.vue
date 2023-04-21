@@ -15,24 +15,24 @@
   -->
 
 <template>
-  <sba-instance-section :loading="!hasLoaded" :error="error">
+  <sba-instance-section :error="error" :loading="!hasLoaded">
     <template #before>
       <sba-sticky-subnav>
         <div class="flex gap-2">
           <sba-toggle-scope-button
             v-if="instanceCount >= 1"
             v-model="scope"
-            :show-info="false"
             :instance-count="instanceCount"
+            :show-info="false"
             @change-scope="$emit('changeScope', $event)"
           />
 
           <div class="flex-1">
             <sba-input
               v-model="filter.name"
+              :placeholder="$t('term.filter')"
               name="filter"
               type="search"
-              :placeholder="$t('term.filter')"
             >
               <template #prepend>
                 <font-awesome-icon icon="filter" />
@@ -51,15 +51,15 @@
                 <input
                   id="classOnly"
                   v-model="filter.classOnly"
+                  class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
                   name="wraplines"
                   type="checkbox"
-                  class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
                 />
               </div>
               <div class="ml-3 text-sm">
                 <label
-                  for="classOnly"
                   class="font-medium text-gray-700"
+                  for="classOnly"
                   v-text="$t('instances.loggers.filter.class_only')"
                 />
               </div>
@@ -70,15 +70,15 @@
                 <input
                   id="configuredOnly"
                   v-model="filter.configuredOnly"
+                  class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
                   name="wraplines"
                   type="checkbox"
-                  class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
                 />
               </div>
               <div class="ml-3 text-sm">
                 <label
-                  for="configuredOnly"
                   class="font-medium text-gray-700"
+                  for="configuredOnly"
                   v-text="$t('instances.loggers.filter.configured')"
                 />
               </div>
@@ -93,13 +93,13 @@
       <div v-if="failedInstances > 0" class="message is-warning">
         <div class="message-body">
           <sba-alert
-            severity="WARN"
             :title="
               $t('instances.loggers.fetch_failed_some_instances', {
                 failed: failedInstances,
                 count: instanceCount,
               })
             "
+            severity="WARN"
           />
         </div>
       </div>
@@ -197,13 +197,12 @@ export default {
   },
   methods: {
     configureLogger(logger, level) {
-      const vm = this;
-      from(vm.loggersService.configureLogger(logger.name, level))
+      from(this.loggersService.configureLogger(logger.name, level))
         .pipe(
           listen(
-            (status) => (vm.loggersStatus[logger.name] = { level, status })
+            (status) => (this.loggersStatus[logger.name] = { level, status })
           ),
-          finalize(() => vm.fetchLoggers())
+          finalize(() => this.fetchLoggers())
         )
         .subscribe({
           error: (error) =>

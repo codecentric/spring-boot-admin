@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-instance-section :loading="!hasLoaded" :error="error">
+  <sba-instance-section :error="error" :loading="!hasLoaded">
     <div v-if="isOldMetrics" class="message is-warning">
       <div
         class="message-body"
@@ -23,7 +23,7 @@
       />
     </div>
     <template v-for="(context, ctxName) in contexts" :key="ctxName">
-      <sba-panel :title="ctxName" :seamless="true">
+      <sba-panel :seamless="true" :title="ctxName">
         <dispatcher-mappings
           v-if="hasDispatcherServlets(context)"
           :key="`${ctxName}_dispatcherServlets`"

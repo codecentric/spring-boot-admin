@@ -28,7 +28,7 @@
         :status="instance.statusInfo.status"
       />
     </div>
-    <div class="flex-1">
+    <div class="w-1/3 truncate">
       <a
         :href="
           instance.registration.serviceUrl || instance.registration.healthUrl
@@ -82,8 +82,5 @@ export default {
 <style lang="css">
 .instances-list td {
   vertical-align: middle;
-}
-
-.instance-list-item__actions {
 }
 </style>

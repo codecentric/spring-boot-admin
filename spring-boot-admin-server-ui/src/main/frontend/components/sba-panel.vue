@@ -41,7 +41,7 @@
       v-if="'default' in $slots"
       :class="{
         'rounded-t': !hasTitle,
-        'rounded-b overflow-hidden': !('footer' in $slots),
+        'rounded-b': !('footer' in $slots),
       }"
       class="border-gray-200 px-4 py-3 bg-white"
     >

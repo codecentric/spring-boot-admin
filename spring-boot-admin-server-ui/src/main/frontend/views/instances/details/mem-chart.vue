@@ -16,10 +16,10 @@
 
 <template>
   <LineChart
-    label="timestamp"
-    :datasets="datasets"
     :config="config"
     :data="data"
+    :datasets="datasets"
+    label="timestamp"
   />
 </template>
 
@@ -43,7 +43,6 @@ export default {
     return { ...props, t };
   },
   data() {
-    const vm = this;
     return {
       chart: undefined,
       label: 'timestamp',
@@ -63,11 +62,11 @@ export default {
           plugins: {
             tooltip: {
               callbacks: {
-                title(ctx) {
+                title: (ctx) => {
                   return prettyBytes(ctx[0].parsed.y);
                 },
-                label(ctx) {
-                  return vm.t(ctx.dataset.label);
+                label: (ctx) => {
+                  return this.t(ctx.dataset.label);
                 },
               },
             },

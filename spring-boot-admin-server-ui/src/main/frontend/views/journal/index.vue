@@ -34,7 +34,6 @@
         <label class="label" v-text="$t('journal.per_page.per_page')" />
         <sba-select
           v-model="pageSize"
-          name="pageSize"
           :options="[
             { value: 10, label: 10 },
             { value: 25, label: 25 },
@@ -44,6 +43,7 @@
             { value: 500, label: 500 },
             { value: events.length, label: $t('journal.per_page.all') },
           ]"
+          name="pageSize"
           @change="setPageSize($event.target.value)"
         />
       </div>
@@ -66,14 +66,14 @@
         <transition>
           <tr v-if="newEventsCount > 0">
             <td
-              colspan="4"
               class="has-text-primary has-text-centered is-selectable"
+              colspan="4"
               @click="showNewEvents"
               v-text="`${newEventsCount} new events`"
             />
           </tr>
         </transition>
-        <transition-group tag="tbody" name="fade-in">
+        <transition-group name="fade-in" tag="tbody">
           <template v-for="event in listedEvents" :key="event.key">
             <tr
               class="cursor-pointer"
@@ -85,9 +85,9 @@
             >
               <td class="flex items-center">
                 <font-awesome-icon
+                  :class="{ 'rotate-90': showPayload[event.key] === true }"
                   :icon="['fas', 'chevron-right']"
                   class="mr-2 transition-all"
-                  :class="{ 'rotate-90': showPayload[event.key] === true }"
                 />
                 <span v-text="getName(event.instance)" />
               </td>
@@ -125,9 +125,9 @@
 
     <sba-pagination-nav
       v-model="current"
-      class="mt-6 text-center"
-      :page-size="pageSize"
       :page-count="pageCount"
+      :page-size="pageSize"
+      class="mt-6 text-center"
     />
   </div>
 </template>

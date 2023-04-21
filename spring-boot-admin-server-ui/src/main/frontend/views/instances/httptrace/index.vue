@@ -21,10 +21,10 @@
         <div class="flex gap-2">
           <sba-input
             v-model="filter.uri"
+            :placeholder="$t('term.filter')"
             class="flex-1"
             name="filter"
             type="search"
-            :placeholder="$t('term.filter')"
           >
             <template #prepend>
               <font-awesome-icon icon="filter" />
@@ -38,7 +38,7 @@
             </template>
           </sba-input>
 
-          <sba-input v-model="limit" class="w-32" :min="0" type="number">
+          <sba-input v-model="limit" :min="0" class="w-32" type="number">
             <template #prepend>
               {{ $t('instances.httptrace.limit') }}
             </template>
@@ -285,26 +285,25 @@ export default {
       return traces;
     },
     createSubscription() {
-      const vm = this;
       return timer(0, 5000)
         .pipe(
-          concatMap(vm.fetchHttptrace),
+          concatMap(this.fetchHttptrace),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(2));
           })
         )
         .subscribe({
           next: (traces) => {
-            vm.hasLoaded = true;
-            if (vm.traces.length > 0) {
-              vm.listOffset += traces.length;
+            this.hasLoaded = true;
+            if (this.traces.length > 0) {
+              this.listOffset += traces.length;
             }
-            vm.traces = [...traces, ...vm.traces].slice(0, vm.limit);
+            this.traces = [...traces, ...this.traces].slice(0, this.limit);
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn('Fetching traces failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },
