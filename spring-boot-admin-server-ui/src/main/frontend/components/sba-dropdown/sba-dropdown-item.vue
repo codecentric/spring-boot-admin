@@ -1,12 +1,12 @@
 <template>
   <MenuItem
+    v-slot="{ close }"
     :active="active"
     :as="as"
     :disabled="disabled"
     class="block w-full"
     type="submit"
     v-bind="$attrs"
-    @click="onClick"
   >
     <a
       v-if="href"
@@ -15,6 +15,7 @@
       class="sba-dropdown-item"
       rel="noopener noreferrer"
       target="_blank"
+      @click="(event) => onClick(event, close)"
     >
       <slot :active="active" />
     </a>
@@ -24,11 +25,16 @@
       :aria-disabled="disabled"
       :to="to"
       class="sba-dropdown-item"
+      @click="(event) => onClick(event, close)"
     >
       <slot :active="active" />
     </router-link>
 
-    <div v-else class="sba-dropdown-item">
+    <div
+      v-else
+      class="sba-dropdown-item"
+      @click="(event) => onClick(event, close)"
+    >
       <slot />
     </div>
   </MenuItem>
@@ -62,10 +68,12 @@ const props = defineProps({
 
 const emit = defineEmits(['click']);
 
-const onClick = ($event) => {
+const onClick = ($event, close) => {
   if (!props.href && !props.to) {
     emit('click', $event);
   }
+
+  close();
 };
 </script>
 

@@ -32,7 +32,7 @@ const DEFAULT_CONFIG = {
       enabled: true,
     },
     rememberMeEnabled: true,
-    externalViews: [] as View[],
+    externalViews: [] as ExternalView[],
     favicon: 'assets/img/favicon.png',
     faviconDanger: 'assets/img/favicon-danger.png',
     notificationFilterEnabled: false,

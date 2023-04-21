@@ -100,6 +100,9 @@
 <script>
 import { sortBy } from 'lodash-es';
 
+import SbaButton from '@/components/sba-button.vue';
+import SbaPanel from '@/components/sba-panel.vue';
+
 import Instance from '@/services/instance';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import Metric from '@/views/instances/metrics/metric';
@@ -118,7 +121,7 @@ function isActuatorApiVersionSupported(headerContentType) {
 }
 
 export default {
-  components: { SbaInstanceSection, Metric },
+  components: { SbaButton, SbaPanel, SbaInstanceSection, Metric },
   props: {
     instance: {
       type: Instance,

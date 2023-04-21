@@ -25,7 +25,7 @@ export function useViewRegistry() {
     addView(view) {
       viewRegistry.addView(view);
 
-      if (view.parent && view.isChildRoute) {
+      if (view.parent) {
         viewRegistry.router.addRoute(view.parent, {
           path: view.path,
           name: view.name,

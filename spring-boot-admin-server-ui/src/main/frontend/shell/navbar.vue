@@ -45,6 +45,7 @@
               <sba-dropdown-item
                 v-for="child in item.children"
                 :key="child.name"
+                :to="{ name: child.name }"
                 v-bind="{ ...child }"
               >
                 <component :is="child.handle" :error="error" />
@@ -111,9 +112,11 @@ const topLevelViews = computed(() => {
     .sort(compareBy((v) => v.order));
 
   return rootViews.map((rootView) => {
+    const children = views.filter((v) => v.parent === rootView.name);
+
     return {
       ...rootView,
-      children: views.filter((v) => v.parent === rootView.name),
+      children,
     };
   });
 });

@@ -96,7 +96,6 @@ declare global {
     href?: string;
     order: number;
     isEnabled: () => boolean;
-    isChildRoute: boolean;
     component: Raw<any>;
     group: string;
     hasChildren: boolean;
