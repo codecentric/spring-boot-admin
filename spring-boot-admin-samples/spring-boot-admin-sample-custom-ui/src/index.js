@@ -70,7 +70,7 @@ SBA.viewRegistry.addView({
 SBA.viewRegistry.addView({
   name: "instances/custom",
   parent: "instances", // <1>
-  path: "custom",
+  path: "/custom",
   component: customEndpoint,
   label: "Custom",
   group: "custom", // <2>
