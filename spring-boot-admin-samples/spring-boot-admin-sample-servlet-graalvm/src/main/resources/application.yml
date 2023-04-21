@@ -1,0 +1,33 @@
+---
+logging:
+  level:
+    ROOT: info
+    de.codecentric: trace
+    org.springframework.web: debug
+  file:
+    name: "target/spring-boot-admin-3-graalvm.log"
+  pattern:
+    file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+spring:
+  application:
+    name: spring-boot-admin-3-graalvm
+  main:
+    lazy-initialization: true
+  boot:
+    admin:
+      ui:
+        external-views:
+          - label: "🚀"
+            url: https://codecentric.de
+            order: 2000
+      client:
+        url: http://localhost:8080
+        instance:
+          service-base-url: http://localhost:8080

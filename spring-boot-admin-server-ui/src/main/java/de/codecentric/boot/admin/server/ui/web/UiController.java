@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -96,6 +97,7 @@ public class UiController {
 	}
 
 	@GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
+	@RegisterReflectionForBinding(String.class)
 	public String index() {
 		return "index";
 	}
