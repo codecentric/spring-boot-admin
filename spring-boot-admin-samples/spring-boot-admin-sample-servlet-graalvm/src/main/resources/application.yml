@@ -22,11 +22,6 @@ spring:
     lazy-initialization: true
   boot:
     admin:
-      ui:
-        external-views:
-          - label: "🚀"
-            url: https://codecentric.de
-            order: 2000
       client:
         url: http://localhost:8080
         instance:
