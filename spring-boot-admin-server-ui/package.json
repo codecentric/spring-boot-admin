@@ -77,7 +77,7 @@
     "@types/lodash-es": "^4.17.7",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
-    "@vitejs/plugin-vue": "4.2.0",
+    "@vitejs/plugin-vue": "4.2.1",
     "@vue/eslint-config-typescript": "^11.0.2",
     "@vue/test-utils": "2.3.2",
     "autoprefixer": "10.4.14",
