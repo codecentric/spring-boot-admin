@@ -50,7 +50,7 @@
     "react-dom": "18.2.0",
     "random-string": "0.2.0",
     "resize-observer-polyfill": "1.5.1",
-    "rxjs": "7.8.0",
+    "rxjs": "7.8.1",
     "uuid": "9.0.0",
     "v3-infinite-loading": "1.2.2",
     "vue": "3.2.47",
