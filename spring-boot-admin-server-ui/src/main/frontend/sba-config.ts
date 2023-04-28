@@ -59,4 +59,4 @@ const DEFAULT_CONFIG = {
   },
 };
 
-export default merge(DEFAULT_CONFIG, window.SBA);
+export default merge(DEFAULT_CONFIG, global.SBA);

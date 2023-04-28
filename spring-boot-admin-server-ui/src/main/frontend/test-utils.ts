@@ -9,16 +9,18 @@ import components from './components/index.js';
 import terms from './i18n/i18n.en.json';
 import SbaModalPlugin from './plugins/modal';
 
+import { createViewRegistry } from '@/composables/ViewRegistry';
 import ViewRegistry from '@/viewRegistry';
 
 export let router;
+createViewRegistry();
 
-export const render = (testComponent, options) => {
-  let routes = [{ path: '/', component: testComponent }];
+export const render = (testComponent, options?: any) => {
+  const routes = [{ path: '/', component: testComponent }];
   if (testComponent.install) {
-    let viewRegistry = new ViewRegistry();
+    const viewRegistry = new ViewRegistry();
     testComponent.install({ viewRegistry });
-    let routeForComponent = viewRegistry._toRoutes(
+    const routeForComponent = viewRegistry._toRoutes(
       viewRegistry.views,
       () => true
     )[0];
@@ -34,7 +36,7 @@ export const render = (testComponent, options) => {
     routes: routes,
   });
 
-  let renderOptions = merge(
+  const renderOptions = merge(
     {
       global: {
         plugins: [
@@ -56,6 +58,6 @@ export const render = (testComponent, options) => {
     },
     options
   );
-  let utils = tlRender(testComponent, renderOptions);
+  const utils = tlRender(testComponent, renderOptions);
   return { ...utils };
 };
