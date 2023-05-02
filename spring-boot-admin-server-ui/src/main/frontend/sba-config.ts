@@ -22,10 +22,7 @@ const DEFAULT_CONFIG = {
   uiSettings: {
     brand,
     theme: {
-      background: {
-        start: '#84eacb',
-        stop: '#3abae0',
-      },
+      backgroundEnabled: true,
       color: '#42d3a5',
     },
     notifications: {
@@ -59,4 +56,4 @@ const DEFAULT_CONFIG = {
   },
 };
 
-export default merge(DEFAULT_CONFIG, global.SBA);
+export default merge(DEFAULT_CONFIG, window.SBA);

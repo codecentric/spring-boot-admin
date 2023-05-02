@@ -207,6 +207,8 @@ public class AdminServerUiProperties {
 	@Data
 	public static class UiTheme {
 
+		private Boolean backgroundEnabled = true;
+
 		private Palette palette = new Palette();
 
 		private String color = "#14615A";
