@@ -1,0 +1,43 @@
+<svg id="b8a7043c-f319-49aa-a5c8-1c8f6bf46225" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink" width="1680" height="956.26" viewBox="0 0 1680 956.26">
+  <defs>
+    <style>
+      .a30b772b-ebd2-4e2c-b042-1f30adbf9a47, .a4914f9b-5bb8-44b2-b47f-4b3a6b09a25d,
+      .b0c9bd53-c42a-4b91-9b72-ba504cffbe99 {
+      isolation: isolate;
+      opacity: 0.4;
+      }
+
+      .a4914f9b-5bb8-44b2-b47f-4b3a6b09a25d {
+      fill: url(#e4427b6b-f397-4c12-a65d-436ab1eda250);
+      }
+
+      .a30b772b-ebd2-4e2c-b042-1f30adbf9a47 {
+      fill: url(#b9a0f2be-2cb4-46e9-a0d8-5fcb532aa94f);
+      }
+
+      .b0c9bd53-c42a-4b91-9b72-ba504cffbe99 {
+      fill: url(#ae061dc3-a642-4669-82e5-f8aa8392a165);
+      }
+    </style>
+    <linearGradient id="e4427b6b-f397-4c12-a65d-436ab1eda250" x1="655.61" y1="-47.49" x2="656.61" y2="-47.49"
+                    gradientTransform="translate(-1101424 43979.98) scale(1680 916.53)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#84eacb"/>
+      <stop offset="1" stop-color="#3ABAE0"/>
+    </linearGradient>
+    <linearGradient id="b9a0f2be-2cb4-46e9-a0d8-5fcb532aa94f" x1="655.61" y1="-47.48" x2="656.61" y2="-47.48"
+                    gradientTransform="translate(-1101424 44418.94) scale(1680 925.87)"
+                    xlink:href="#e4427b6b-f397-4c12-a65d-436ab1eda250"/>
+    <linearGradient id="ae061dc3-a642-4669-82e5-f8aa8392a165" x1="655.61" y1="-47.44" x2="656.61" y2="-47.44"
+                    gradientTransform="translate(-1101424 45849.21) scale(1680 956.3)"
+                    xlink:href="#e4427b6b-f397-4c12-a65d-436ab1eda250"/>
+  </defs>
+  <g>
+    <path class="a4914f9b-5bb8-44b2-b47f-4b3a6b09a25d"
+          d="M0,0V858.9q168,73.8,336,42.5t336-46.2q168-15,336,36.8t336-5.6q168-57.45,336-18.9V0Z"/>
+    <path class="a30b772b-ebd2-4e2c-b042-1f30adbf9a47"
+          d="M0,0V868.9q168,64.5,336,29.5t336,2.4q168,37.35,336,19.1a2605.38,2605.38,0,0,1,336-14.6q168,3.6,336-45.5V0Z"/>
+    <path class="b0c9bd53-c42a-4b91-9b72-ba504cffbe99"
+          d="M0,0V897q168,7.35,336-34.1t336,43.3q168,84.75,336-8.4t336,11.9q168,105,336-26.9V0Z"/>
+  </g>
+</svg>
