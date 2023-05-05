@@ -49,15 +49,25 @@ public class SpringNativeAutoConfiguration implements RuntimeHintsRegistrar {
 	}
 
 	private static void registerSerializationHints(org.springframework.aot.hint.RuntimeHints hints) {
-		hints.serialization().registerType(HashMap.class).registerType(ArrayList.class).registerType(Registration.class)
-				.registerType(InstanceId.class).registerType(Instance.class).registerType(BuildVersion.class)
-				.registerType(Endpoint.class).registerType(Endpoints.class).registerType(Info.class)
-				.registerType(StatusInfo.class).registerType(Tags.class);
+		hints.serialization()
+			.registerType(HashMap.class)
+			.registerType(ArrayList.class)
+			.registerType(Registration.class)
+			.registerType(InstanceId.class)
+			.registerType(Instance.class)
+			.registerType(BuildVersion.class)
+			.registerType(Endpoint.class)
+			.registerType(Endpoints.class)
+			.registerType(Info.class)
+			.registerType(StatusInfo.class)
+			.registerType(Tags.class);
 	}
 
 	private static void registerResourcesHints(org.springframework.aot.hint.RuntimeHints hints) {
-		hints.resources().registerPattern("**/spring-boot-admin-server-ui/**.*").registerPattern("**/sba-settings.js")
-				.registerPattern("**/variables.css");
+		hints.resources()
+			.registerPattern("**/spring-boot-admin-server-ui/**.*")
+			.registerPattern("**/sba-settings.js")
+			.registerPattern("**/variables.css");
 	}
 
 	private static void registerReflectionHints(org.springframework.aot.hint.RuntimeHints hints) {
