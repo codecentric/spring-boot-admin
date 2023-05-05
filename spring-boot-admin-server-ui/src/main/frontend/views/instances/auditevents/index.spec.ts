@@ -1,12 +1,13 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Instance from '@/services/instance.js';
 import { render } from '@/test-utils';
-import Auditevents from '@/views/instances/auditevents/index';
+import Auditevents from '@/views/instances/auditevents/index.vue';
 
 describe('Auditevents', () => {
-  const fetchAuditevents = jest.fn().mockResolvedValue({
+  const fetchAuditevents = vi.fn().mockResolvedValue({
     data: {
       events: [],
     },
@@ -31,7 +32,7 @@ describe('Auditevents', () => {
     userEvent.type(input, 'Abc');
 
     await waitFor(() => {
-      let calls = fetchAuditevents.mock.calls;
+      const calls = fetchAuditevents.mock.calls;
       expect(calls[calls.length - 1][0].principal).toEqual('Abc');
     });
   });
@@ -43,7 +44,7 @@ describe('Auditevents', () => {
     userEvent.type(input, 'AUTHENTICATION_FAILURE');
 
     await waitFor(() => {
-      let calls = fetchAuditevents.mock.calls;
+      const calls = fetchAuditevents.mock.calls;
       expect(calls[calls.length - 1][0].type).toEqual('AUTHENTICATION_FAILURE');
     });
   });
@@ -52,7 +53,7 @@ describe('Auditevents', () => {
     await render(Auditevents, {
       props: {
         instance: createInstance(
-          jest.fn().mockRejectedValue({
+          vi.fn().mockRejectedValue({
             response: {
               headers: {
                 'content-type': 'application/vnd.spring-boot.actuator.v2',
@@ -67,7 +68,7 @@ describe('Auditevents', () => {
   });
 
   function createInstance(fetchAuditevents) {
-    let instance = new Instance({ id: 4711 });
+    const instance = new Instance({ id: 4711 });
     instance.fetchAuditevents = fetchAuditevents;
     return instance;
   }

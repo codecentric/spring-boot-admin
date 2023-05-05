@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { redirectOn401 } from './axios';
 
 describe('redirectOn401', () => {
@@ -20,7 +22,7 @@ describe('redirectOn401', () => {
     Object.defineProperty(window, 'location', {
       writable: true,
       value: {
-        assign: jest.fn(),
+        assign: vi.fn(),
         href: 'http://example.com/',
       },
     });

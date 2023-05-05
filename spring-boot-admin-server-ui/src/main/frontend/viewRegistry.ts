@@ -129,6 +129,7 @@ export default class ViewRegistry {
       view.isEnabled = viewConfig.isEnabled;
     }
 
+    this._removeExistingView(view);
     this._views.push(view);
   }
 

@@ -47,7 +47,6 @@ export default defineConfig(({ mode }) => {
       include: [
         resolve(
           frontendDir,
-          'components/',
           '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'
         ),
       ],

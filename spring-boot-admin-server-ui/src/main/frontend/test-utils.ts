@@ -20,10 +20,7 @@ export const render = (testComponent, options?: any) => {
   if (testComponent.install) {
     const viewRegistry = new ViewRegistry();
     testComponent.install({ viewRegistry });
-    const routeForComponent = viewRegistry._toRoutes(
-      viewRegistry.views,
-      () => true
-    )[0];
+    const routeForComponent = viewRegistry._toRoutes(() => true)[0];
 
     routes.push({
       ...routeForComponent,
