@@ -99,6 +99,7 @@ defineProps({
 
 const { views, getViewByName } = useViewRegistry();
 const i18n = useI18n();
+const t = i18n.t;
 
 const brand = sbaConfig.uiSettings.brand;
 
