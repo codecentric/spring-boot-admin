@@ -22,10 +22,7 @@ const DEFAULT_CONFIG = {
   uiSettings: {
     brand,
     theme: {
-      background: {
-        start: '#84eacb',
-        stop: '#3abae0',
-      },
+      backgroundEnabled: true,
       color: '#42d3a5',
     },
     notifications: {

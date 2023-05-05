@@ -60,7 +60,7 @@
         :available-locales="AVAILABLE_LANGUAGES"
         @locale-changed="changeLocale"
       />
-      <sba-nav-usermenu />
+      <sba-nav-usermenu v-if="sbaConfig.user" />
       <sba-nav-item :to="{ name: 'about' }">
         <FontAwesomeIcon icon="question-circle" />
       </sba-nav-item>
