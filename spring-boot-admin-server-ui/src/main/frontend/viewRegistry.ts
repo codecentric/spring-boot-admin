@@ -32,6 +32,7 @@ const createI18nTextVNode = (label: string) =>
 // eslint-disable-next-line no-unused-vars
 type ViewFilterFunction = (view: SbaView) => boolean;
 type ViewConfig = {
+  isEnabled?: (obj?) => boolean;
   [key: string]: any;
 };
 

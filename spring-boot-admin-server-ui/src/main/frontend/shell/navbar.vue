@@ -106,7 +106,8 @@ const topLevelViews = computed(() => {
         !view.parent &&
         !view.name?.includes('instance') &&
         !view.name?.includes('about') &&
-        !view.path?.includes('/instance')
+        !view.path?.includes('/instance') &&
+        view.isEnabled()
       );
     })
     .sort(compareBy((v) => v.order));
