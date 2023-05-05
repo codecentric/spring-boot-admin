@@ -4,7 +4,6 @@
     :href="href"
     :target="target"
     class="sba-nav-item"
-    r
     rel="noopener noreferrer"
   >
     <slot />
