@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin;
+package de.codecentric.boot.admin.server.ui.config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
 import com.fasterxml.jackson.databind.ser.std.FileSerializer;
@@ -28,12 +27,12 @@ import com.fasterxml.jackson.databind.ser.std.TokenBufferSerializer;
 import lombok.SneakyThrows;
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.context.annotation.Configuration;
 
-import de.codecentric.boot.admin.client.registration.Application;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
@@ -50,8 +49,6 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.domain.values.Tags;
-import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties;
-import de.codecentric.boot.admin.server.ui.config.CssColorUtils;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 import de.codecentric.boot.admin.server.utils.jackson.BuildVersionMixin;
 import de.codecentric.boot.admin.server.utils.jackson.EndpointMixin;
@@ -69,13 +66,11 @@ import de.codecentric.boot.admin.server.utils.jackson.StatusInfoMixin;
 import de.codecentric.boot.admin.server.utils.jackson.TagsMixin;
 import de.codecentric.boot.admin.server.web.InstanceWebProxy;
 
-import static org.springframework.util.ReflectionUtils.findMethod;
-
 @Configuration
-public class RuntimeHints implements RuntimeHintsRegistrar {
+public class ServerRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
-	public void registerHints(org.springframework.aot.hint.RuntimeHints hints, ClassLoader classLoader) {
+	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		registerReflectionHints(hints);
 
 		registerResourcesHints(hints);
@@ -83,7 +78,7 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
 		registerSerializationHints(hints);
 	}
 
-	private static void registerSerializationHints(org.springframework.aot.hint.RuntimeHints hints) {
+	private static void registerSerializationHints(RuntimeHints hints) {
 		hints.serialization()
 			.registerType(HashMap.class)
 			.registerType(ArrayList.class)
@@ -107,23 +102,6 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
 
 	@SneakyThrows
 	private static void registerReflectionHints(org.springframework.aot.hint.RuntimeHints hints) {
-		Set.of(new java.lang.reflect.Method[] { findMethod(UiController.Settings.class, "getTitle"),
-				findMethod(UiController.Settings.class, "getBrand"),
-				findMethod(UiController.Settings.class, "getLoginIcon"),
-				findMethod(UiController.Settings.class, "getFavicon"),
-				findMethod(UiController.Settings.class, "getFaviconDanger"),
-				findMethod(UiController.Settings.class, "getPollTimer"),
-				findMethod(UiController.Settings.class, "getTheme"),
-				findMethod(UiController.Settings.class, "isNotificationFilterEnabled"),
-				findMethod(UiController.Settings.class, "isRememberMeEnabled"),
-				findMethod(UiController.Settings.class, "getAvailableLanguages"),
-				findMethod(UiController.Settings.class, "getRoutes"),
-				findMethod(UiController.Settings.class, "getExternalViews"),
-				findMethod(UiController.Settings.class, "getViewSettings"), findMethod(UiController.class, "index"),
-				findMethod(AdminServerUiProperties.UiTheme.class, "getPalette"),
-				findMethod(AdminServerUiProperties.UiTheme.class, "getColor") })
-			.forEach((method) -> hints.reflection().registerMethod(method, ExecutableMode.INVOKE));
-
 		Class<?> queryEndpointStrategyResponse = Class
 			.forName("de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy$Response");
 		Class<?> queryEndpointStrategyResponseEndpointRef = Class.forName(
@@ -134,7 +112,13 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(queryEndpointStrategyResponseEndpointRef, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-			.registerType(Application.Builder.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+			.registerType(UiController.Settings.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(AdminServerUiProperties.UiTheme.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(AdminServerUiProperties.Palette.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(CssColorUtils.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(InstanceDeregisteredEvent.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
@@ -152,8 +136,6 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(InstanceId.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-			.registerType(Application.class, MemberCategory.INVOKE_PUBLIC_METHODS,
-					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(Endpoint.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(Instance.class, MemberCategory.INVOKE_PUBLIC_METHODS,
@@ -163,10 +145,6 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
 			.registerType(InstanceWebProxy.InstanceResponse.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(InstanceWebProxy.ForwardRequest.class, MemberCategory.INVOKE_PUBLIC_METHODS,
-					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-			.registerType(AdminServerUiProperties.Palette.class, MemberCategory.INVOKE_PUBLIC_METHODS,
-					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
-			.registerType(CssColorUtils.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 
 			.registerType(BuildVersionMixin.class, MemberCategory.INVOKE_PUBLIC_METHODS,
@@ -202,9 +180,7 @@ public class RuntimeHints implements RuntimeHintsRegistrar {
 			.registerConstructor(
 					queryEndpointStrategyResponseEndpointRef.getDeclaredConstructor(String.class, boolean.class),
 					ExecutableMode.INVOKE)
-			.registerConstructor(Application.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
-			.registerMethod(Application.Builder.class.getMethod("build"), ExecutableMode.INVOKE)
-			.registerMethod(Application.class.getMethod("builder"), ExecutableMode.INVOKE)
+
 			.registerConstructor(Registration.class.getDeclaredConstructor(String.class, String.class, String.class,
 					String.class, String.class, Map.class), ExecutableMode.INVOKE)
 			.registerConstructor(Registration.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
