@@ -60,10 +60,8 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
  */
 public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
+	private static final String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
-	private static final String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{event.statusInfo.status}] to [#{event.statusInfo.status}]";
-
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 
 	private RestTemplate restTemplate;
@@ -275,7 +273,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	public enum MessageType {
 
-		text, interactive;
+		text, interactive
 
 	}
 
