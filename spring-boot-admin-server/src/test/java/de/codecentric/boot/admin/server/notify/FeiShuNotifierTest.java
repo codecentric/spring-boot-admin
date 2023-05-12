@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014-2023 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.codecentric.boot.admin.server.notify;
 
 import java.net.URI;
@@ -27,7 +43,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class FeiShuNotifierTest {
+
 	public static final String WEBHOOK_URL = "http://localhost/v2";
+
 	private final Instance instance = Instance.create(InstanceId.of("-id-"))
 		.register(Registration.create("App", "http://health").build());
 
@@ -57,19 +75,20 @@ public class FeiShuNotifierTest {
 			.thenReturn(ResponseEntity.ok().build());
 
 		StepVerifier
-			.create(notifier.notify(
-				new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
 			.verifyComplete();
 		StepVerifier
-			.create(notifier.notify(
-				new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
-			Collections.singletonList("application/json"));
+				Collections.singletonList("application/json"));
 
 		Map<String, Object> body = httpRequest.getValue().getBody();
-		assertThat(body).containsEntry("card", "{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [DOWN] to [UP]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
+		assertThat(body).containsEntry("card",
+				"{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [DOWN] to [UP]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
 		assertThat(body).containsEntry("msg_type", FeiShuNotifier.MessageType.interactive);
 	}
 
@@ -85,18 +104,19 @@ public class FeiShuNotifierTest {
 			.thenReturn(ResponseEntity.ok().build());
 
 		StepVerifier
-			.create(notifier.notify(
-				new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 		StepVerifier
-			.create(notifier
-				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
+			.create(notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
 			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
-			Collections.singletonList("application/json"));
+				Collections.singletonList("application/json"));
 		Map<String, Object> body = httpRequest.getValue().getBody();
-		assertThat(body).containsEntry("card", "{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [UP] to [DOWN]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
+		assertThat(body).containsEntry("card",
+				"{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [UP] to [DOWN]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
 		assertThat(body).containsEntry("msg_type", FeiShuNotifier.MessageType.interactive);
 	}
+
 }

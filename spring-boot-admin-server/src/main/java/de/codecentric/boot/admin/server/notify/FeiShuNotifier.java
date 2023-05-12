@@ -61,7 +61,9 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	private static final String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 
 	private RestTemplate restTemplate;
@@ -69,7 +71,8 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 	private Expression message;
 
 	/**
-	 * Webhook URL for the FeiShu(飞书) chat group API (i.e. https://open.feishu.cn/open-apis/bot/v2/hook/xxx).
+	 * Webhook URL for the FeiShu(飞书) chat group API (i.e.
+	 * https://open.feishu.cn/open-apis/bot/v2/hook/xxx).
 	 */
 	private URI webhookUrl;
 
@@ -136,15 +139,15 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		}
 		body.put("msg_type", this.messageType);
 		switch (this.messageType) {
-		case interactive:
-			body.put("card", this.createCardContent(event, instance));
-			break;
-		case text:
-			body.put("content", this.createTextContent(event, instance));
-			break;
+			case interactive:
+				body.put("card", this.createCardContent(event, instance));
+				break;
+			case text:
+				body.put("content", this.createTextContent(event, instance));
+				break;
 
-		default:
-			body.put("content", this.createTextContent(event, instance));
+			default:
+				body.put("content", this.createTextContent(event, instance));
 		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
