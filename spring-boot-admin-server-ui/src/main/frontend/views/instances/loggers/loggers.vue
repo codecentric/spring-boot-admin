@@ -24,7 +24,7 @@
             v-model="scope"
             :instance-count="instanceCount"
             :show-info="false"
-            @change-scope="$emit('changeScope', $event)"
+            @update:model-value="$emit('changeScope', $event)"
           />
 
           <div class="flex-1">
@@ -117,6 +117,7 @@
 </template>
 
 <script>
+import { ActionScope } from '@/components/ActionScope';
 import SbaAlert from '@/components/sba-alert';
 
 import { finalize, from, listen } from '@/utils/rxjs';
@@ -171,7 +172,8 @@ export default {
         configuredOnly: false,
       },
       loggersStatus: {},
-      scope: this.instanceCount > 1 ? 'application' : 'instance',
+      scope:
+        this.instanceCount > 1 ? ActionScope.APPLICATION : ActionScope.INSTANCE,
     };
   },
   computed: {
