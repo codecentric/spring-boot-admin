@@ -45,5 +45,8 @@ export function useViewRegistry() {
 
       emitCustomRouteAddedEvent();
     },
+    getViewByName(name: string) {
+      return viewRegistry.views.find((view) => view.name === name);
+    },
   };
 }
