@@ -13,25 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { describe, expect, it, vi } from 'vitest';
+
 import { delay, doOnSubscribe, listen } from './rxjs';
 
 import { EMPTY, concat, of, throwError } from '@/utils/rxjs';
 
 describe('doOnSubscribe', () => {
-  it('should call callback when subscribing', (done) => {
-    const cb = jest.fn();
-    EMPTY.pipe(doOnSubscribe(cb)).subscribe({
-      complete: () => {
-        expect(cb).toHaveBeenCalledTimes(1);
-        done();
-      },
+  it('should call callback when subscribing', () => {
+    return new Promise((resolve) => {
+      const cb = vi.fn();
+      EMPTY.pipe(doOnSubscribe(cb)).subscribe({
+        complete: () => {
+          expect(cb).toHaveBeenCalledTimes(1);
+          resolve(true);
+        },
+      });
     });
   });
 });
 
 describe('listen', () => {
   it('should call callback with complete', (done) => {
-    const cb = jest.fn();
+    const cb = vi.fn();
     EMPTY.pipe(listen(cb)).subscribe({
       complete: () => {
         expect(cb).toHaveBeenCalledTimes(1);
@@ -42,7 +46,7 @@ describe('listen', () => {
   });
 
   it('should call callback with executing and complete', (done) => {
-    const cb = jest.fn();
+    const cb = vi.fn();
     of(1)
       .pipe(delay(10), listen(cb, 1))
       .subscribe({
@@ -56,8 +60,8 @@ describe('listen', () => {
   });
 
   it('should call callback with failed', (done) => {
-    const cb = jest.fn();
-    console.warn = jest.fn();
+    const cb = vi.fn();
+    console.warn = vi.fn();
     throwError(new Error('test'))
       .pipe(listen(cb))
       .subscribe({
@@ -70,7 +74,7 @@ describe('listen', () => {
   });
 
   it('should call callback with executing and failed', (done) => {
-    const cb = jest.fn();
+    const cb = vi.fn();
 
     concat(of(1).pipe(delay(10)), throwError(new Error('test')))
       .pipe(listen(cb, 1))

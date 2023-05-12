@@ -17,11 +17,10 @@ import { AxiosInstance } from 'axios';
 import saveAs from 'file-saver';
 
 
-
 import axios, { redirectOn401, registerErrorToastInterceptor } from '../utils/axios.js';
 import waitForPolyfill from '../utils/eventsource-polyfill';
 import logtail from '../utils/logtail';
-import { Observable, concat, from, ignoreElements } from '../utils/rxjs';
+import { concat, from, ignoreElements, Observable } from '../utils/rxjs';
 import uri from '../utils/uri';
 
 

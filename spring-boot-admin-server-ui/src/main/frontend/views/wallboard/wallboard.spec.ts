@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/vue';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
@@ -7,8 +8,8 @@ import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 import Wallboard from '@/views/wallboard/index.vue';
 
-jest.mock('@/composables/useApplicationStore', () => ({
-  useApplicationStore: jest.fn(),
+vi.mock('@/composables/useApplicationStore', () => ({
+  useApplicationStore: vi.fn(),
 }));
 
 describe('Wallboard', () => {

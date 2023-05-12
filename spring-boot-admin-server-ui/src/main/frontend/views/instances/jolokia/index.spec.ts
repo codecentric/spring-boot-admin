@@ -12,7 +12,7 @@ describe('Jolokia', () => {
   beforeEach(async () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
-    instance.isEnabled = jest.fn(() => true);
+    instance.isEnabled = vi.fn(() => true);
 
     renderResult = await render(Jolokia, {
       props: {
@@ -23,7 +23,7 @@ describe('Jolokia', () => {
   });
 
   it('DefaultDomain is selected as default', async () => {
-    let button = await screen.findByRole('button', {
+    const button = await screen.findByRole('button', {
       name: 'DefaultDomain',
     });
     await waitFor(() => {
@@ -32,7 +32,7 @@ describe('Jolokia', () => {
   });
 
   it('click on specific domain opens JMX Beans list', async () => {
-    let button = await screen.findByRole('button', {
+    const button = await screen.findByRole('button', {
       name: 'com.codecentric.boot.sample',
     });
     await userEvent.click(button);
@@ -47,7 +47,7 @@ describe('Jolokia', () => {
 
   describe('Attributes', () => {
     beforeEach(async () => {
-      let button = await screen.findByRole('button', {
+      const button = await screen.findByRole('button', {
         name: 'com.codecentric.boot.sample',
       });
       await userEvent.click(button);
@@ -56,12 +56,12 @@ describe('Jolokia', () => {
     });
 
     it('opens attributes on default after click on bean header', async () => {
-      let inputForTest = await screen.findByLabelText('Test');
+      const inputForTest = await screen.findByLabelText('Test');
       expect(inputForTest).toBeDisabled();
     });
 
     it('allows to edit writeable attributes', async () => {
-      let inputForTest = await screen.findByText('Test');
+      const inputForTest = await screen.findByText('Test');
       await userEvent.dblClick(inputForTest);
       expect(inputForTest).toBeEnabled();
     });
@@ -69,7 +69,7 @@ describe('Jolokia', () => {
 
   describe('Operations', () => {
     it('allows to open tab to display operations', async () => {
-      let button = await screen.findByRole('button', {
+      const button = await screen.findByRole('button', {
         name: 'com.codecentric.boot.sample',
       });
       await userEvent.click(button);
@@ -77,7 +77,7 @@ describe('Jolokia', () => {
       await userEvent.click(await screen.findByText('stringMapManagedBean'));
       await userEvent.click(await screen.findByText('Operations'));
 
-      let inputForTest = await screen.findByText('getSize()');
+      const inputForTest = await screen.findByText('getSize()');
       expect(inputForTest).toBeVisible();
     });
   });

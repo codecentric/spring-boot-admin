@@ -11,11 +11,11 @@ import Refresh from '@/views/instances/env/refresh';
 
 // TODO: FIX ME!!!
 describe('Refresh', () => {
-  const refreshInstanceContext = jest.fn().mockResolvedValue({
+  const refreshInstanceContext = vi.fn().mockResolvedValue({
     data: ['spring.redis.host', 'spring.datasource.url'],
   });
 
-  const refreshApplicationContext = jest.fn().mockResolvedValue({
+  const refreshApplicationContext = vi.fn().mockResolvedValue({
     data: [
       {
         instanceId: '123',
@@ -33,13 +33,13 @@ describe('Refresh', () => {
   });
 
   function createInstance() {
-    let instance = new Instance({ id: 1233 });
+    const instance = new Instance({ id: 1233 });
     instance.refreshContext = refreshInstanceContext;
     return instance;
   }
 
   function createApplication() {
-    let application = new Application(_.cloneDeep(applications[1]));
+    const application = new Application(_.cloneDeep(applications[1]));
     application.instances.push(createInstance());
     application.refreshContext = refreshApplicationContext;
     return application;

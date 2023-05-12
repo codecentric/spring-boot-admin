@@ -7,12 +7,13 @@ import { registerWithTwoInstances } from '@/mocks/fixtures/eventStream/registerW
 import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import ApplicationStore from '@/store';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('store.js', () => {
   let applicationStore;
 
   let mockSubject;
-  jest.spyOn(Application, 'getStream').mockImplementation(() => mockSubject);
+  vi.spyOn(Application, 'getStream').mockImplementation(() => mockSubject);
 
   let changedListener;
   let addedListener;
@@ -26,10 +27,10 @@ describe('store.js', () => {
       })
     );
 
-    changedListener = jest.fn();
-    addedListener = jest.fn();
-    updateListener = jest.fn();
-    removedListener = jest.fn();
+    changedListener = vi.fn();
+    addedListener = vi.fn();
+    updateListener = vi.fn();
+    removedListener = vi.fn();
 
     mockSubject = new ReplaySubject();
     applicationStore = new ApplicationStore();
@@ -49,7 +50,7 @@ describe('store.js', () => {
     mockSubject.next({ data: registerWithOneInstance });
 
     await waitFor(() => {
-      let applications = applicationStore.applications;
+      const applications = applicationStore.applications;
       expect(applications).toHaveLength(1);
       expect(applications[0].instances).toHaveLength(1);
     });
@@ -65,7 +66,7 @@ describe('store.js', () => {
     mockSubject.next({ data: registerWithTwoInstances });
 
     await waitFor(() => {
-      let applications = applicationStore.applications;
+      const applications = applicationStore.applications;
       expect(applications).toHaveLength(1);
       expect(applications[0].instances).toHaveLength(2);
     });
@@ -81,7 +82,7 @@ describe('store.js', () => {
     mockSubject.next({ data: registerWithOneInstance });
 
     await waitFor(() => {
-      let applications = applicationStore.applications;
+      const applications = applicationStore.applications;
       expect(applications).toHaveLength(1);
       expect(applications[0].instances).toHaveLength(1);
     });
@@ -99,7 +100,7 @@ describe('store.js', () => {
       expect(applicationStore.applications).toHaveLength(1);
     });
 
-    let data = { ...registerWithOneInstance, instances: [] };
+    const data = { ...registerWithOneInstance, instances: [] };
     mockSubject.next({ data: data });
 
     await waitFor(() => {

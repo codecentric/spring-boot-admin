@@ -84,9 +84,9 @@ public class SecuritySecureConfig {
 			.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 				.ignoringRequestMatchers(
-						new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()), // <6>
-						new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()), // <6>
-						new AntPathRequestMatcher(this.adminServer.path("/actuator/**")) // <7>
+						new AntPathRequestMatcher(this.adminServer.getContextPath() + "/instances", POST.toString()), // <6>
+						new AntPathRequestMatcher(this.adminServer.getContextPath() + ("/instances/*"), DELETE.toString()), // <6>
+						new AntPathRequestMatcher(this.adminServer.getContextPath() + ("/actuator/**")) // <7>
 				));
 
 		http.rememberMe((rememberMe) -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600));
