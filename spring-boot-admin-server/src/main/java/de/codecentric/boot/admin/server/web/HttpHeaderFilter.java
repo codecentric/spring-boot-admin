@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,16 @@ public class HttpHeaderFilter {
 
 	public HttpHeaderFilter(Set<String> ignoredHeaders) {
 		this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
-				.map(String::toLowerCase).collect(Collectors.toSet());
+			.map(String::toLowerCase)
+			.collect(Collectors.toSet());
 	}
 
 	public HttpHeaders filterHeaders(HttpHeaders headers) {
 		HttpHeaders filtered = new HttpHeaders();
-		filtered.putAll(headers.entrySet().stream().filter((e) -> this.includeHeader(e.getKey()))
-				.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
+		filtered.putAll(headers.entrySet()
+			.stream()
+			.filter((e) -> this.includeHeader(e.getKey()))
+			.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
 		return filtered;
 	}
 

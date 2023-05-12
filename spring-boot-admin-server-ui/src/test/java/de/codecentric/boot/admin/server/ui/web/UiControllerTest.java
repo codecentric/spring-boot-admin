@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,39 +34,47 @@ public class UiControllerTest {
 	public void should_use_default_url() throws Exception {
 		MockMvc mockMvc = setupController("");
 
-		mockMvc.perform(get("http://example/")).andExpect(status().isOk()).andExpect(view().name("index"))
-				.andExpect(model().attribute("baseUrl", "http://example/"));
+		mockMvc.perform(get("http://example/"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("index"))
+			.andExpect(model().attribute("baseUrl", "http://example/"));
 	}
 
 	@Test
 	public void should_use_path_from_public_url() throws Exception {
 		MockMvc mockMvc = setupController("/public");
 
-		mockMvc.perform(get("http://example/")).andExpect(status().isOk()).andExpect(view().name("index"))
-				.andExpect(model().attribute("baseUrl", "http://example/public/"));
+		mockMvc.perform(get("http://example/"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("index"))
+			.andExpect(model().attribute("baseUrl", "http://example/public/"));
 	}
 
 	@Test
 	public void should_use_host_and_path_from_public_url() throws Exception {
 		MockMvc mockMvc = setupController("http://public/public");
 
-		mockMvc.perform(get("http://example/")).andExpect(status().isOk()).andExpect(view().name("index"))
-				.andExpect(model().attribute("baseUrl", "http://public/public/"));
+		mockMvc.perform(get("http://example/"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("index"))
+			.andExpect(model().attribute("baseUrl", "http://public/public/"));
 	}
 
 	@Test
 	public void should_use_scheme_host_and_path_from_public_url() throws Exception {
 		MockMvc mockMvc = setupController("https://public/public");
 
-		mockMvc.perform(get("http://example/")).andExpect(status().isOk()).andExpect(view().name("index"))
-				.andExpect(model().attribute("baseUrl", "https://public/public/"));
+		mockMvc.perform(get("http://example/"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("index"))
+			.andExpect(model().attribute("baseUrl", "https://public/public/"));
 	}
 
 	private MockMvc setupController(String publicUrl) {
 		return MockMvcBuilders
-				.standaloneSetup(
-						new UiController(publicUrl, UiExtensions.EMPTY, UiController.Settings.builder().build()))
-				.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping("")).build();
+			.standaloneSetup(new UiController(publicUrl, UiExtensions.EMPTY, UiController.Settings.builder().build()))
+			.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
+			.build();
 	}
 
 }

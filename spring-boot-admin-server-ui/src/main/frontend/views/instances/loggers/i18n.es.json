@@ -3,7 +3,7 @@
     "loggers": {
       "label": "Loggers",
       "application": "Aplicación",
-      "fetch_failed": "Falla obteniendo loggers.",
+
       "fetch_failed_some_instances": "Falla obteniendo loggers para {failed} de {count} instancias. Configurar loggers para estas probablemente falle.",
       "filter": {
         "class_only": "sólo clases",

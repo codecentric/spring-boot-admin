@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
-import javax.annotation.Nullable;
-
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import static java.util.stream.Collectors.toMap;
@@ -78,13 +77,17 @@ public final class Tags implements Serializable {
 			}
 
 			String flatPrefix = prefix + ".";
-			return from(map.entrySet().stream().filter((e) -> e.getKey() != null)
-					.filter((e) -> e.getKey().toLowerCase().startsWith(flatPrefix))
-					.collect(toLinkedHashMap((e) -> e.getKey().substring(flatPrefix.length()), Map.Entry::getValue)));
+			return from(map.entrySet()
+				.stream()
+				.filter((e) -> e.getKey() != null)
+				.filter((e) -> e.getKey().toLowerCase().startsWith(flatPrefix))
+				.collect(toLinkedHashMap((e) -> e.getKey().substring(flatPrefix.length()), Map.Entry::getValue)));
 		}
 
-		return new Tags(map.entrySet().stream().filter((e) -> e.getKey() != null)
-				.collect(toLinkedHashMap(Map.Entry::getKey, (e) -> Objects.toString(e.getValue()))));
+		return new Tags(map.entrySet()
+			.stream()
+			.filter((e) -> e.getKey() != null)
+			.collect(toLinkedHashMap(Map.Entry::getKey, (e) -> Objects.toString(e.getValue()))));
 	}
 
 	private static <T, K, U> Collector<T, ?, LinkedHashMap<K, U>> toLinkedHashMap(

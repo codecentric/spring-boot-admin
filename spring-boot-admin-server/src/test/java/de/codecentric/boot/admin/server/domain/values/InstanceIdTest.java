@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ public class InstanceIdTest {
 	@Test
 	public void invariants() {
 		assertThatThrownBy(() -> InstanceId.of(null)).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'value' must have text");
+			.hasMessage("'value' must have text");
 		assertThatThrownBy(() -> InstanceId.of("")).isInstanceOf(IllegalArgumentException.class)
-				.hasMessage("'value' must have text");
+			.hasMessage("'value' must have text");
 	}
 
 }

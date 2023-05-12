@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,13 @@ public class HazelcastEventStoreWithServerConfigTest extends AbstractEventStoreT
 	@Override
 	protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
 		IMap<InstanceId, List<InstanceEvent>> eventLogs = this.hazelcast
-				.getMap("testList" + System.currentTimeMillis());
+			.getMap("testList" + System.currentTimeMillis());
 		return new HazelcastEventStore(maxLogSizePerAggregate, eventLogs);
+	}
+
+	@Override
+	protected void shutdownStore() {
+		hazelcast.shutdown();
 	}
 
 	private HazelcastInstance createHazelcastInstance() {
@@ -63,17 +68,18 @@ public class HazelcastEventStoreWithServerConfigTest extends AbstractEventStoreT
 		// It should be configured to reliably hold all the data,
 		// Spring Boot Admin will compact the events, if there are too many
 		MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
-				.setBackupCount(1)
-				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+			.setBackupCount(1)
+			.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		// This map is used to deduplicate the notifications.
 		// If data in this map gets lost it should not be a big issue as it will atmost
 		// lead to
 		// the same notification to be sent by multiple instances
 		MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
-				.setInMemoryFormat(InMemoryFormat.OBJECT).setBackupCount(1)
-				.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU))
-				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+			.setInMemoryFormat(InMemoryFormat.OBJECT)
+			.setBackupCount(1)
+			.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU))
+			.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		Config config = new Config();
 		config.addMapConfig(eventStoreMap);

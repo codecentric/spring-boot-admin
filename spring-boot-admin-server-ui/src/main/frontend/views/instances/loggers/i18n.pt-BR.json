@@ -3,7 +3,6 @@
     "loggers": {
       "label": "Loggers",
       "application": "Aplicação",
-      "fetch_failed": "Falha na busca de loggers.",
       "filter": {
         "class_only": "somente classe",
         "configured": "configurado"

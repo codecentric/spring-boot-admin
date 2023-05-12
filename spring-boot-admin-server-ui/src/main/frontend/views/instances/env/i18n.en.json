@@ -13,7 +13,6 @@
       "context_update": "Update",
       "context_update_failed": "Failed",
       "context_updated": "Updated",
-      "fetch_failed": "Fetching environment failed.",
       "no_properties": "No properties set",
       "title": "Environment Manager",
       "refresh": "Refresh environment",

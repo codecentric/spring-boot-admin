@@ -3,7 +3,6 @@
     "loggers": {
       "label": "Журналы",
       "application": "Приложение",
-      "fetch_failed": "Ошибка при получении журналов.",
       "filter": {
         "class_only": "только класс",
         "configured": "настроенные"

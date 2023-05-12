@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "httpexchanges": {
+      "label": "HTTP Exchanges",
+      "chart": {
+        "avg_time": "ø duration",
+        "max_time": "max duration",
+        "status_4xx": "status 4xx",
+        "status_5xx": "status 5xx",
+        "successful_requests": "successful requests",
+        "total_requests": "total requests"
+      },
+      "content_type_response": "Response Content-Type",
+      "content_type_request": "Request Content-Type",
+      "length_request": "Request Length",
+      "fetching_failed": "Fetching exchanges failed.",
+      "limit": "limit",
+      "filter": {
+        "client_errors": "client errors",
+        "exclude_actuator": "exclude {actuator}/**",
+        "server_errors": "server errors",
+        "success": "success"
+      },
+      "length_response": "Response Length",
+      "method": "Method",
+      "no_exchanges_found": "No exchanges found.",
+      "status": "Status",
+      "time": "Time",
+      "timestamp": "Timestamp",
+      "uri": "Path"
+    }
+  }
+}

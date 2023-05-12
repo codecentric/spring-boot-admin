@@ -8,7 +8,7 @@
         "runnable": "Runnable",
         "title": "Cron"
       },
-      "fetch_failed": "Fetching scheduled tasks failed.",
+
       "fixed_delay": {
         "initial_delay_ms": "Initial Delay (ms)",
         "interval_ms": "Interval (ms)",

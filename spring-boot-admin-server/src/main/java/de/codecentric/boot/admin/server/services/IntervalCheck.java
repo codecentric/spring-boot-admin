@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -78,11 +77,13 @@ public class IntervalCheck {
 	public void start() {
 		this.scheduler = Schedulers.newSingle(this.name + "-check");
 		this.subscription = Flux.interval(this.interval)
-				.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
-				.log(log.getName(), Level.FINEST).subscribeOn(this.scheduler).concatMap((i) -> this.checkAllInstances())
-				.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
-						.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
-				.subscribe();
+			.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
+			.log(log.getName(), Level.FINEST)
+			.subscribeOn(this.scheduler)
+			.concatMap((i) -> this.checkAllInstances())
+			.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
+				.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
+			.subscribe();
 	}
 
 	public void markAsChecked(InstanceId instanceId) {
@@ -92,8 +93,11 @@ public class IntervalCheck {
 	protected Mono<Void> checkAllInstances() {
 		log.debug("check {} for all instances", this.name);
 		Instant expiration = Instant.now().minus(this.minRetention);
-		return Flux.fromIterable(this.lastChecked.entrySet()).filter((e) -> e.getValue().isBefore(expiration))
-				.map(Map.Entry::getKey).flatMap(this.checkFn).then();
+		return Flux.fromIterable(this.lastChecked.entrySet())
+			.filter((e) -> e.getValue().isBefore(expiration))
+			.map(Map.Entry::getKey)
+			.flatMap(this.checkFn)
+			.then();
 	}
 
 	public void stop() {

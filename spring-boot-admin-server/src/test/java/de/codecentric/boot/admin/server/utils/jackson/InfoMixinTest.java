@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,9 @@ public class InfoMixinTest {
 
 	@Test
 	public void verifyDeserialize() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("build", new JSONObject().put("version", "1.0.0")).put("foo", "bar")
-				.toString();
+		String json = new JSONObject().put("build", new JSONObject().put("version", "1.0.0"))
+			.put("foo", "bar")
+			.toString();
 
 		Info info = objectMapper.readValue(json, Info.class);
 		assertThat(info).isNotNull();

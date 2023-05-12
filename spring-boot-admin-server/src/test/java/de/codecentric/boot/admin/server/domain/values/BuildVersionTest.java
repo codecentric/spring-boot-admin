@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class BuildVersionTest {
 		assertThat(BuildVersion.from(singletonMap("version", "1.0.0"))).isEqualTo(BuildVersion.valueOf("1.0.0"));
 		assertThat(BuildVersion.from(singletonMap("build.version", "1.0.0"))).isEqualTo(BuildVersion.valueOf("1.0.0"));
 		assertThat(BuildVersion.from(singletonMap("build", singletonMap("version", "1.0.0"))))
-				.isEqualTo(BuildVersion.valueOf("1.0.0"));
+			.isEqualTo(BuildVersion.valueOf("1.0.0"));
 	}
 
 	@Test

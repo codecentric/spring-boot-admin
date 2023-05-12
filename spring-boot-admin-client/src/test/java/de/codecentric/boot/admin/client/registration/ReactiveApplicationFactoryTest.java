@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,6 +107,19 @@ public class ReactiveApplicationFactoryTest {
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/");
+	}
+
+	@Test
+	public void test_mgmtBasePath_mgmtPortPath() {
+		webflux.setBasePath("/app");
+		management.setBasePath("/mgnt");
+		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		publishApplicationReadyEvent(factory, 8080, 8081);
+
+		Application app = factory.createApplication();
+		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/mgnt/actuator");
+		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/mgnt/actuator/health");
+		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
 	}
 
 	private String getHostname() {

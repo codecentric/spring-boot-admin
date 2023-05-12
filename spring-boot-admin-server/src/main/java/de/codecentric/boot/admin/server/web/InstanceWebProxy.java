@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ package de.codecentric.boot.admin.server.web;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-
-import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.netty.handler.timeout.ReadTimeoutException;
@@ -31,6 +30,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ClientHttpRequest;
+import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
@@ -43,6 +43,10 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
+
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 /**
  * Forwards a request to a single instances endpoint and will respond with: - 502 (Bad
@@ -73,18 +77,21 @@ public class InstanceWebProxy {
 			}
 			else {
 				return Mono.defer(() -> responseHandler
-						.apply(ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE, this.strategies).build()));
+					.apply(ClientResponse.create(HttpStatus.SERVICE_UNAVAILABLE, this.strategies).build()));
 			}
 		});
 	}
 
 	public Flux<InstanceResponse> forward(Flux<Instance> instances, ForwardRequest forwardRequest) {
 		return instances.flatMap((instance) -> this.forward(instance, forwardRequest, (clientResponse) -> {
-			InstanceResponse.Builder response = InstanceResponse.builder().instanceId(instance.getId())
-					.status(clientResponse.rawStatusCode())
-					.contentType(String.join(", ", clientResponse.headers().header(HttpHeaders.CONTENT_TYPE)));
-			return clientResponse.bodyToMono(String.class).map(response::body).defaultIfEmpty(response)
-					.map(InstanceResponse.Builder::build);
+			InstanceResponse.Builder response = InstanceResponse.builder()
+				.instanceId(instance.getId())
+				.status(clientResponse.rawStatusCode())
+				.contentType(String.join(", ", clientResponse.headers().header(HttpHeaders.CONTENT_TYPE)));
+			return clientResponse.bodyToMono(String.class)
+				.map(response::body)
+				.defaultIfEmpty(response)
+				.map(InstanceResponse.Builder::build);
 		}));
 	}
 
@@ -92,8 +99,9 @@ public class InstanceWebProxy {
 			Function<ClientResponse, Mono<V>> responseHandler) {
 		log.trace("Proxy-Request for instance {} with URL '{}'", instance.getId(), forwardRequest.getUri());
 		WebClient.RequestBodySpec bodySpec = this.instanceWebClient.instance(instance)
-				.method(forwardRequest.getMethod()).uri(forwardRequest.getUri())
-				.headers((h) -> h.addAll(forwardRequest.getHeaders()));
+			.method(forwardRequest.getMethod())
+			.uri(forwardRequest.getUri())
+			.headers((h) -> h.addAll(forwardRequest.getHeaders()));
 
 		WebClient.RequestHeadersSpec<?> headersSpec = bodySpec;
 		if (requiresBody(forwardRequest.getMethod())) {
@@ -113,7 +121,7 @@ public class InstanceWebProxy {
 				log.trace("Timeout for Proxy-Request for instance {} with URL '{}'", instance.getId(),
 						forwardRequest.getUri());
 				return responseHandler
-						.apply(ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, this.strategies).build());
+					.apply(ClientResponse.create(HttpStatus.GATEWAY_TIMEOUT, this.strategies).build());
 			}
 			if (cause instanceof IOException) {
 				log.trace("Proxy-Request for instance {} with URL '{}' errored", instance.getId(),
@@ -125,14 +133,7 @@ public class InstanceWebProxy {
 	}
 
 	private boolean requiresBody(HttpMethod method) {
-		switch (method) {
-		case PUT:
-		case POST:
-		case PATCH:
-			return true;
-		default:
-			return false;
-		}
+		return List.of(PUT, POST, PATCH).contains(method);
 	}
 
 	@lombok.Data

@@ -15,200 +15,199 @@
   -->
 
 <template>
-  <section :class="{ 'is-loading' : !hasLoaded }" class="section">
-    <sba-alert v-if="error" :error="error" :title="$t('instances.jolokia.fetch_failed')" />
-
-    <div class="columns">
-      <div v-if="selectedDomain" class="column is-four-fifths">
-        <h1 class="heading" v-text="$t('instances.jolokia.mbeans')" />
-        <div v-for="mBean in selectedDomain.mBeans" :id="mBean.descriptor.raw"
-             :key="mBean.descriptor.raw" v-on-clickaway="() => mBean === selectedMBean && select(selectedDomain)"
-             :class="{'is-active': mBean === selectedMBean}"
-             class="m-bean card"
+  <sba-instance-section
+    :error="error"
+    :layout-options="{ noMargin: true, isFlex: true }"
+    :loading="!hasLoaded"
+    class="bg-white h-full"
+  >
+    <nav class="w-1/4 p-2">
+      <div class="nav">
+        <button
+          v-for="domain in domains"
+          :key="domain.domain"
+          :class="{ 'is-active': domain === selectedDomain }"
+          class="nav-item"
+          @click="select(domain)"
+          v-text="domain.domain"
+        />
+      </div>
+    </nav>
+    <div class="flex-1 overflow-scroll bg-white p-2">
+      <div class="flex h-full items-start">
+        <div
+          v-if="selectedDomain"
+          :title="selectedDomain.domain"
+          class="flex-1 gap-1 grid grid-cols-1"
         >
-          <header :class="{'is-primary': mBean === selectedMBean, 'is-selectable' : mBean !== selectedMBean }"
-                  class="m-bean--header hero"
-                  @click="select(selectedDomain, mBean)"
+          <div
+            v-for="mBean in selectedDomain.mBeans"
+            :id="mBean.descriptor.raw"
+            :key="mBean.descriptor.raw"
+            class="m-bean"
           >
-            <div class="level is-clipped">
-              <div class="level-left">
-                <div v-for="attribute in mBean.descriptor.attributes"
-                     :key="`mBean-desc-${attribute.name}`"
-                     class="level-item is-narrow"
+            <header
+              :class="{
+                'is-primary': mBean === selectedMBean,
+                'is-selectable': mBean !== selectedMBean,
+              }"
+              class="m-bean--header hero"
+              @click="select(selectedDomain, mBean)"
+            >
+              <sba-icon-button
+                v-if="mBean === selectedMBean"
+                :icon="['far', 'times-circle']"
+                class="m-bean--header--close"
+                @click.stop="select(selectedDomain)"
+              />
+              <dl class="m-bean-attributes">
+                <div
+                  v-for="attribute in mBean.descriptor.attributes"
+                  :key="`mBean-desc-${attribute.name}`"
                 >
-                  <div :title="`${attribute.name} ${attribute.value}`" class="is-clipped">
-                    <p class="heading" v-text="attribute.name" />
-                    <p class="title is-size-6" v-text="attribute.value" />
-                  </div>
+                  <dt v-text="attribute.name" />
+                  <dd v-text="attribute.value" />
                 </div>
+              </dl>
+            </header>
+            <div class="relative">
+              <div v-if="mBean === selectedMBean" class="tabs">
+                <ul class="nav-tabs">
+                  <li v-if="mBean.attr">
+                    <a
+                      :class="{ 'is-active': selected.view === 'attributes' }"
+                      class="nav-item"
+                      @click.stop="
+                        select(selectedDomain, selectedMBean, 'attributes')
+                      "
+                      v-text="$t('term.attributes')"
+                    />
+                  </li>
+                  <li v-if="mBean.op">
+                    <a
+                      :class="{ 'is-active': selected.view === 'operations' }"
+                      class="nav-item"
+                      @click.stop="
+                        select(selectedDomain, selectedMBean, 'operations')
+                      "
+                      v-text="$t('term.operations')"
+                    />
+                  </li>
+                </ul>
+              </div>
+
+              <div v-if="mBean === selectedMBean" class="mt-3 mx-1">
+                <m-bean-attributes
+                  v-if="selected.view === 'attributes'"
+                  :application="application"
+                  :domain="selectedDomain.domain"
+                  :instance="instance"
+                  :m-bean="mBean"
+                />
+                <m-bean-operations
+                  v-if="selected.view === 'operations'"
+                  :application="application"
+                  :domain="selectedDomain.domain"
+                  :instance="instance"
+                  :m-bean="mBean"
+                />
               </div>
             </div>
-            <sba-icon-button v-if="mBean === selectedMBean" :icon="['far', 'times-circle']"
-                             class="m-bean--header--close has-text-white"
-                             @click.stop="select(selectedDomain)"
-            />
-            <div v-if="mBean === selectedMBean" class="hero-foot tabs is-boxed">
-              <ul>
-                <li v-if="mBean.attr" :class="{'is-active' : selected.view === 'attributes' }">
-                  <a v-text="$t('term.attributes')" @click.stop="select(selectedDomain, selectedMBean, 'attributes')" />
-                </li>
-                <li v-if="mBean.op" :class="{'is-active' : selected.view === 'operations' }">
-                  <a v-text="$t('term.operations')" @click.stop="select(selectedDomain, selectedMBean, 'operations')" />
-                </li>
-              </ul>
-            </div>
-          </header>
-
-          <div v-if="mBean === selectedMBean" class="card-content">
-            <m-bean-attributes v-if="selected.view === 'attributes'" :domain="selectedDomain.domain"
-                               :application="application" :instance="instance" :m-bean="mBean"
-            />
-            <m-bean-operations v-if="selected.view === 'operations'" :domain="selectedDomain.domain"
-                               :application="application" :instance="instance" :m-bean="mBean"
-            />
           </div>
         </div>
       </div>
-      <div class="column is-one-fifth">
-        <nav v-sticks-below="['#navigation']" class="menu">
-          <p class="menu-label" v-text="$t('instances.jolokia.domains')" />
-          <ul class="menu-list">
-            <li>
-              <a v-for="domain in domains" :key="domain.domain" :class="{'is-active' : domain === selectedDomain}"
-                 class=""
-                 :title="domain.domain"
-                 @click="select(domain)" v-text="truncatePackageName(domain.domain, 25)"
-              />
-            </li>
-          </ul>
-        </nav>
-      </div>
     </div>
-  </section>
+  </sba-instance-section>
 </template>
 
 <script>
-import sticksBelow from '@/directives/sticks-below';
+import { isEmpty, sortBy } from 'lodash-es';
+import { directive as onClickaway } from 'vue3-click-away';
+
 import Application from '@/services/application';
 import Instance from '@/services/instance';
-import flatMap from 'lodash/flatMap';
-import fromPairs from 'lodash/fromPairs';
-import isEmpty from 'lodash/isEmpty';
-import sortBy from 'lodash/sortBy';
-import {directive as onClickaway} from 'vue-clickaway2';
-import mBeanAttributes from './m-bean-attributes';
-import mBeanOperations from './m-bean-operations';
-import {VIEW_GROUP} from '../../index';
-import {truncatePackageName} from '@/views/instances/jolokia/utils';
-
-const getOperationName = (name, descriptor) => {
-  const params = descriptor.args.map(arg => arg.type).join(',');
-  return `${name}(${params})`;
-};
-
-class MBeanDescriptor {
-  constructor(raw) {
-    Object.assign(this, MBeanDescriptor.parse(raw));
-    this.raw = raw;
-  }
-
-  static parse(raw) {
-    const attributes = raw.split(',')
-      .map(attribute => attribute.split('='))
-      .map(([name, value]) => ({name, value}));
-    const displayName = attributes.map(({value}) => value).join(' ').trim();
-    return {attributes, displayName}
-  }
-}
-
-export class MBean {
-  constructor({descriptor, op, ...mBean}) {
-    Object.assign(this, mBean);
-    this.descriptor = new MBeanDescriptor(descriptor);
-    const flattenedOps = flatMap(Object.entries(op || {}), ([name, value]) => {
-      if (Array.isArray(value)) {
-        return value.map(v => [name, v]);
-      } else {
-        return [[name, value]];
-      }
-    }).map(([name, operation]) => [getOperationName(name, operation), operation]);
-    this.op = flattenedOps.length > 0 ? fromPairs(flattenedOps) : null;
-  }
-}
+import { VIEW_GROUP } from '@/views/ViewGroup';
+import { MBean } from '@/views/instances/jolokia/MBean';
+import mBeanAttributes from '@/views/instances/jolokia/m-bean-attributes';
+import mBeanOperations from '@/views/instances/jolokia/m-bean-operations';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
+  components: {
+    SbaInstanceSection,
+    mBeanOperations,
+    mBeanAttributes,
+  },
+  directives: { onClickaway },
   props: {
     application: {
       type: Application,
-      required: true
+      required: true,
     },
     instance: {
       type: Instance,
-      required: true
-    }
+      required: true,
+    },
   },
-  components: {mBeanOperations, mBeanAttributes},
-  directives: {onClickaway, sticksBelow},
   data: () => ({
     hasLoaded: false,
     error: null,
     domains: [],
-    truncatePackageName,
     selected: {
       domain: null,
       mBean: null,
-      view: null
-    }
+      view: null,
+    },
   }),
   computed: {
     selectedDomain() {
-      return this.domains.find(d => d.domain === this.selected.domain)
+      return this.domains.find((d) => d.domain === this.selected.domain);
     },
     selectedMBean() {
-      return this.selectedDomain && this.selectedDomain.mBeans.find(b => b.descriptor.raw === this.selected.mBean)
-    }
-  },
-  created() {
-    this.fetchMBeans();
+      return (
+        this.selectedDomain &&
+        this.selectedDomain.mBeans.find(
+          (b) => b.descriptor.raw === this.selected.mBean
+        )
+      );
+    },
   },
   watch: {
-    '$route': {
+    $route: {
       immediate: true,
       handler() {
-        if (!isEmpty(this.$route.query)) {
-          this.selected = this.$route.query;
-        } else if (this.domains.length > 0) {
-          this.select(this.domains[0]);
+        if (this.$route.name === 'instances/jolokia') {
+          if (!isEmpty(this.$route.query)) {
+            this.selected = this.$route.query;
+          } else if (this.domains.length > 0) {
+            this.select(this.domains[0]);
+          }
         }
-      }
+      },
     },
     async selectedMBean(newVal) {
       if (newVal) {
-        await this.$nextTick();
-        const el = document.getElementById(newVal.descriptor.raw);
-        if (el) {
-          const scrollingEl = document.scrollingElement;
-          const navigation = document.querySelector('#navigation');
-          const navbarOffset = (navigation ? navigation.getBoundingClientRect().bottom : 120) + 10;
-          const top = scrollingEl.scrollTop + el.getBoundingClientRect().top - navbarOffset;
-          if (scrollingEl.scrollTo) {
-            scrollingEl.scrollTo({top, behavior: 'smooth'})
-          } else {
-            scrollingEl.scrollTop = top;
-          }
+        if (document.getElementById(newVal.descriptor.raw)?.scrollIntoView) {
+          document.getElementById(newVal.descriptor.raw)?.scrollIntoView();
         }
       }
-    }
+    },
+  },
+  created() {
+    this.fetchMBeans();
   },
   methods: {
     async fetchMBeans() {
       this.error = null;
       try {
         const res = await this.instance.listMBeans();
-        const domains = sortBy(res.data, [d => d.domain]);
-        this.domains = domains.map(domain => ({
+        const domains = sortBy(res.data, [(d) => d.domain]);
+        this.domains = domains.map((domain) => ({
           ...domain,
-          mBeans: sortBy(domain.mBeans.map(mBean => new MBean(mBean)), [b => b.descriptor.displayName])
+          mBeans: sortBy(
+            domain.mBeans.map((mBean) => new MBean(mBean)),
+            [(b) => b.descriptor.displayName]
+          ),
         }));
         if (!this.selectedDomain && this.domains.length > 0) {
           this.select(this.domains[0]);
@@ -223,15 +222,23 @@ export default {
       const selected = {
         domain: domain && domain.domain,
         mBean: mBean && mBean.descriptor.raw,
-        view: view || (mBean ? (mBean.attr ? 'attributes' : (mBean.op ? 'operations' : null)) : null)
+        view:
+          view ||
+          (mBean
+            ? mBean.attr
+              ? 'attributes'
+              : mBean.op
+              ? 'operations'
+              : null
+            : null),
       };
       this.$router.replace({
         name: 'instances/jolokia',
-        query: selected
+        query: selected,
       });
-    }
+    },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/jolokia',
       parent: 'instances',
@@ -240,51 +247,94 @@ export default {
       component: this,
       group: VIEW_GROUP.JVM,
       order: 350,
-      isEnabled: ({instance}) => instance.hasEndpoint('jolokia')
+      isEnabled: ({ instance }) => instance.hasEndpoint('jolokia'),
     });
-  }
-}
+  },
+};
 </script>
 
-<style lang="scss">
-@import "~@/assets/css/utilities";
+<style lang="scss" scoped>
+.tabs {
+  @apply text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700;
 
-.m-bean {
-  transition: all $easing $speed;
+  .nav-tabs {
+    @apply flex flex-wrap -mb-px;
 
-  &.is-active {
-    margin: 0.75rem -0.75rem;
-    max-width: unset;
-  }
+    .nav-item {
+      @apply cursor-pointer inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300;
 
-  &.is-active .m-bean--header {
-    padding-bottom: 0;
-  }
-
-  &:not(.is-active) .m-bean--header:hover {
-    background-color: $white-bis;
-  }
-
-  &--header {
-    & .level .level-left {
-      width: 100%;
-
-      & .level-item {
-        min-width: 0;
-        flex-shrink: 1;
-
-        & p {
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-        }
+      &.is-active {
+        @apply inline-block p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg dark:text-blue-500 dark:border-blue-500;
       }
     }
+  }
+}
 
-    &--close {
-      position: absolute;
-      right: 0.75rem;
-      top: 0.75rem;
+.m-bean {
+  transition: all ease-out 86ms;
+  @apply relative p-2 rounded border;
+  @apply bg-white;
+}
+
+.m-bean:hover {
+}
+
+.m-bean.is-active {
+  margin: 0.75rem -0.75rem;
+  max-width: unset;
+}
+
+.m-bean.is-active .m-bean--header {
+  padding-bottom: 0;
+}
+
+.m-bean--header {
+  cursor: pointer;
+}
+
+.m-bean--header .level .level-left {
+  width: 100%;
+}
+
+.m-bean--header .level .level-left .level-item {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.m-bean--header .level .level-left .level-item p {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.m-bean--header--close {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.m-bean-attributes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  dt {
+    @apply text-xs text-gray-500;
+  }
+}
+
+.nav {
+  @apply flex flex-col;
+
+  .nav-item {
+    @apply px-2 py-1 rounded w-full text-left;
+
+    &:nth-child(odd) {
+      @apply bg-gray-50;
+    }
+
+    &.is-active {
+      @apply font-bold;
     }
   }
 }

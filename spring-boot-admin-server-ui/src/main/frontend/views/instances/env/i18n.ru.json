@@ -13,7 +13,6 @@
       "context_update": "Обновить",
       "context_update_failed": "Ошибка",
       "context_updated": "Обновлено",
-      "fetch_failed": "Ошибка получения окружения.",
       "no_properties": "Параметры не установлены",
       "title": "Менеджер окружения",
       "refresh": "Refresh environment",

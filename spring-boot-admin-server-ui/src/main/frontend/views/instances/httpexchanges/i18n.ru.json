@@ -1,0 +1,31 @@
+{
+  "instances": {
+    "httpexchanges": {
+      "chart": {
+        "avg_time": "ø задержка",
+        "max_time": "максимальная задержка",
+        "status_4xx": "статус 4xx",
+        "status_5xx": "статус 5xx",
+        "successful_requests": "успешные запросы",
+        "total_requests": "всего запросов"
+      },
+      "content_type_response": "Response Content-Type",
+      "content_type_request": "Request Content-Type",
+      "length_request": "Request Длина",
+      "limit": "ограничение",
+      "filter": {
+        "client_errors": "ошибки на клиенте",
+        "exclude_actuator": "исключить {actuator}/**",
+        "server_errors": "ошибки сервера",
+        "success": "успех"
+      },
+      "length_response": "Response Длина",
+      "method": "Метод",
+      "no_exchanges_found": "Трассировка не найдена.",
+      "status": "Статус",
+      "time": "Время",
+      "timestamp": "Время",
+      "uri": "Путь"
+    }
+  }
+}

@@ -3,7 +3,6 @@
     "auditevents": {
       "audit_log_not_supported_spring_boot_1": "Аудирование не поддерживается для приложений на Spring Boot 1.x.",
       "event": "Событие",
-      "fetch_failed": "Ошибка при получении событий аудита.",
       "loading_audit_events": "Загрузка событий аудита...",
       "no_audit_events_found": "События аудита не найдены.",
       "principal": "Принципал",

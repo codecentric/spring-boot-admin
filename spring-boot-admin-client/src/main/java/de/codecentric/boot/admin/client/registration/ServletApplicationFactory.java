@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import javax.servlet.ServletContext;
-
+import jakarta.servlet.ServletContext;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
@@ -60,8 +59,10 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 			return instance.getServiceUrl();
 		}
 
-		return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path(getServicePath())
-				.path(getServerContextPath()).toUriString();
+		return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
+			.path(getServicePath())
+			.path(getServerContextPath())
+			.toUriString();
 	}
 
 	@Override
@@ -73,13 +74,20 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 		}
 
 		if (isManagementPortEqual()) {
-			return UriComponentsBuilder.fromHttpUrl(getServiceUrl()).path("/").path(getDispatcherServletPrefix())
-					.path(getManagementContextPath()).toUriString();
+			return UriComponentsBuilder.fromHttpUrl(getServiceUrl())
+				.path("/")
+				.path(getDispatcherServletPrefix())
+				.path(getManagementContextPath())
+				.toUriString();
 		}
 
 		Ssl ssl = (management.getSsl() != null) ? management.getSsl() : server.getSsl();
-		return UriComponentsBuilder.newInstance().scheme(getScheme(ssl)).host(getManagementHost())
-				.port(getLocalManagementPort()).path(getManagementContextPath()).toUriString();
+		return UriComponentsBuilder.newInstance()
+			.scheme(getScheme(ssl))
+			.host(getManagementHost())
+			.port(getLocalManagementPort())
+			.path(getManagementContextPath())
+			.toUriString();
 	}
 
 	protected String getManagementContextPath() {

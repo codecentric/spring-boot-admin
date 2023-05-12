@@ -9,7 +9,7 @@
   -
   - Unless required by applicable law or agreed to in writing, software
   - distributed under the License is distributed on an "AS IS" BASIS,
-  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - WITHOUT WARRANTIES OR CONDITION S OF ANY KIND, either express or implied.
   - See the License for the specific language governing permissions and
   - limitations under the License.
   -->
@@ -22,26 +22,28 @@
 </template>
 
 <script>
-  export default {
-    props: {
-      instance: { //<1>
-        type: Object,
-        required: true
-      }
+export default {
+  props: {
+    instance: {
+      //<1>
+      type: Object,
+      required: true,
     },
-    data: () => ({
-      text: ''
-    }),
-    async created() {
-      const response = await this.instance.axios.get('actuator/custom'); //<2>
-      this.text = response.data;
-    }
-  };
+  },
+  data: () => ({
+    text: "",
+  }),
+  async created() {
+    console.log(this.instance);
+    const response = await this.instance.axios.get("actuator/custom"); //<2>
+    this.text = response.data;
+  },
+};
 </script>
 
-<style>
-  .custom {
-    font-size: 20px;
-    width: 80%;
-  }
+<style lang="css" scoped>
+.custom {
+  font-size: 20px;
+  width: 80%;
+}
 </style>

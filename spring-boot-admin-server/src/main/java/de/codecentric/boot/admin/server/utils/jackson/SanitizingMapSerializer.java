@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import org.springframework.lang.Nullable;
 
 public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> {
 
@@ -60,7 +59,7 @@ public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> 
 		}
 
 		boolean matchesAnyPattern = Arrays.stream(this.keysToSanitize)
-				.anyMatch((pattern) -> pattern.matcher(key).matches());
+			.anyMatch((pattern) -> pattern.matcher(key).matches());
 		return matchesAnyPattern ? "******" : value;
 	}
 

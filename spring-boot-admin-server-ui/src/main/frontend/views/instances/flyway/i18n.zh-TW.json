@@ -2,7 +2,6 @@
   "instances": {
     "flyway": {
       "label": "Flyway",
-      "fetch_failed": "抓取Flyway報告失敗。",
       "type": "類型",
       "checksum": "驗證碼",
       "version": "版本",

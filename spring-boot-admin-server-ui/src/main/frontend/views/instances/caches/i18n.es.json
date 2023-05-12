@@ -3,7 +3,7 @@
     "caches": {
       "label": "Caches",
       "cache_manager": "Cache Manager",
-      "fetch_failed": "Fallo al recuperar caches.",
+
       "loading": "Cargando Caches...",
       "name": "Nombre",
       "no_caches_found": "No se encontraron caches."

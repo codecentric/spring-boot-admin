@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@ import org.springframework.http.MediaType;
 public class ApiMediaTypeHandler {
 
 	public boolean isApiMediaType(MediaType mediaType) {
-		return Stream.of(ApiVersion.values()).map(ApiVersion::getProducedMimeType)
-				.anyMatch((mimeType) -> mimeType.isCompatibleWith(mediaType));
+		return Stream.of(ApiVersion.values())
+			.map(ApiVersion::getProducedMimeType)
+			.anyMatch((mimeType) -> mimeType.isCompatibleWith(mediaType));
 	}
 
 }

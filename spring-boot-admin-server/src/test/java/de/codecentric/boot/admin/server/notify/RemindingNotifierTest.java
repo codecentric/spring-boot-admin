@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,12 @@ import static org.mockito.Mockito.when;
 public class RemindingNotifierTest {
 
 	private static final Instance instance1 = Instance.create(InstanceId.of("id-1"))
-			.register(Registration.create("App", "http://health").build()).withStatusInfo(StatusInfo.ofDown());
+		.register(Registration.create("App", "http://health").build())
+		.withStatusInfo(StatusInfo.ofDown());
 
 	private static final Instance instance2 = Instance.create(InstanceId.of("id-2"))
-			.register(Registration.create("App", "http://health").build()).withStatusInfo(StatusInfo.ofDown());
+		.register(Registration.create("App", "http://health").build())
+		.withStatusInfo(StatusInfo.ofDown());
 
 	private static final InstanceEvent appDown = new InstanceStatusChangedEvent(instance1.getId(), 0L,
 			StatusInfo.ofDown());
@@ -157,10 +159,15 @@ public class RemindingNotifierTest {
 			reminder.start();
 		});
 
-		StepVerifier.create(emittedNotifications).expectSubscription().then(() -> eventPublisher.next(appDown))
-				.expectNext(appDown, appDown).then(() -> eventPublisher.next(errorTriggeringEvent))
-				.thenConsumeWhile((e) -> !e.equals(errorTriggeringEvent))
-				.expectNext(errorTriggeringEvent, appDown, appDown).thenCancel().verify();
+		StepVerifier.create(emittedNotifications)
+			.expectSubscription()
+			.then(() -> eventPublisher.next(appDown))
+			.expectNext(appDown, appDown)
+			.then(() -> eventPublisher.next(errorTriggeringEvent))
+			.thenConsumeWhile((e) -> !e.equals(errorTriggeringEvent))
+			.expectNext(errorTriggeringEvent, appDown, appDown)
+			.thenCancel()
+			.verify();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,15 +72,21 @@ public class InfoUpdater {
 		}
 
 		log.debug("Update info for {}", instance);
-		return this.instanceWebClient.instance(instance).get().uri(Endpoint.INFO)
-				.exchangeToMono((response) -> convertInfo(instance, response)).log(log.getName(), Level.FINEST)
-				.onErrorResume((ex) -> Mono.just(convertInfo(instance, ex))).map(instance::withInfo);
+		return this.instanceWebClient.instance(instance)
+			.get()
+			.uri(Endpoint.INFO)
+			.exchangeToMono((response) -> convertInfo(instance, response))
+			.log(log.getName(), Level.FINEST)
+			.onErrorResume((ex) -> Mono.just(convertInfo(instance, ex)))
+			.map(instance::withInfo);
 	}
 
 	protected Mono<Info> convertInfo(Instance instance, ClientResponse response) {
-		if (response.statusCode().is2xxSuccessful() && response.headers().contentType().filter(
-				(mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON) || this.apiMediaTypeHandler.isApiMediaType(mt))
-				.isPresent()) {
+		if (response.statusCode().is2xxSuccessful() && response.headers()
+			.contentType()
+			.filter((mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON)
+					|| this.apiMediaTypeHandler.isApiMediaType(mt))
+			.isPresent()) {
 			return response.bodyToMono(RESPONSE_TYPE).map(Info::from).defaultIfEmpty(Info.empty());
 		}
 		log.info("Couldn't retrieve info for {}: {}", instance, response.statusCode());

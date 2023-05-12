@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class DiscordNotifierTest {
 	private static final URI webhookUri = URI.create("http://localhost/");
 
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-			.register(Registration.create(appName, "http://health").build());
+		.register(Registration.create(appName, "http://health").build());
 
 	private DiscordNotifier notifier;
 
@@ -77,14 +77,14 @@ public class DiscordNotifierTest {
 		notifier.setTts(true);
 
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		Object expected = expectedMessage(username, true, avatarUrl, standardMessage("UP"));
 
@@ -94,14 +94,14 @@ public class DiscordNotifierTest {
 	@Test
 	public void test_onApplicationEvent_resolve_minimum_configuration() {
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
 		clearInvocations(restTemplate);
 		StepVerifier
-				.create(notifier.notify(
-						new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
-				.verifyComplete();
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
+			.verifyComplete();
 
 		Object expected = expectedMessage(null, false, null, standardMessage("UP"));
 

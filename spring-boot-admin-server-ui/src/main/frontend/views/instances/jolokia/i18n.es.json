@@ -8,10 +8,6 @@
       "executing": "Ejecutando...",
       "execution_failed": "Ejecución fallida.",
       "execution_successful": "Ejecución exitosa.",
-      "fetch_failed": "Falla recuperando JMX Beans.",
-      "mbean": {
-        "fetch_failed": "Falla recuperando atributos."
-      },
       "mbeans": "MBeans"
     }
   }

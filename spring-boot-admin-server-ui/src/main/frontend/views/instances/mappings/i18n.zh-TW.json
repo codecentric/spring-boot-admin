@@ -4,7 +4,7 @@
       "label": "映射",
       "class": "類型",
       "consumes": "提交內容類型",
-      "fetch_failed": "抓取映射失敗。",
+
       "filter_name": "過濾器名稱",
       "handler": "處理程式",
       "headers": "請求頭",

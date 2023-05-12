@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.lang.Nullable;
 
 public class UiExtensionsScanner {
 
@@ -60,9 +59,9 @@ public class UiExtensionsScanner {
 	private List<Resource> resolveAssets(String location) throws IOException {
 		String widerLocation = toPattern(location);
 		return Stream
-				.concat(Arrays.stream(this.resolver.getResources(widerLocation + "**/*.js")),
-						Arrays.stream(this.resolver.getResources(widerLocation + "**/*.css")))
-				.collect(Collectors.toList());
+			.concat(Arrays.stream(this.resolver.getResources(widerLocation + "**/*.js")),
+					Arrays.stream(this.resolver.getResources(widerLocation + "**/*.css")))
+			.collect(Collectors.toList());
 	}
 
 	private String toPattern(String location) {
@@ -74,7 +73,7 @@ public class UiExtensionsScanner {
 	private String getResourcePath(String location, Resource resource) throws IOException {
 		String locationWithoutPrefix = location.replaceFirst("^[^:]+:", "");
 		Matcher m = Pattern.compile(Pattern.quote(locationWithoutPrefix) + "(.+)$")
-				.matcher(resource.getURI().toString());
+			.matcher(resource.getURI().toString());
 		if (m.find()) {
 			return m.group(1);
 		}

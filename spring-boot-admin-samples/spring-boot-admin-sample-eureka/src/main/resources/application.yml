@@ -27,20 +27,3 @@ management:
     health:
       show-details: ALWAYS
 # end::configuration-eureka[]
-
----
-spring:
-  profiles: insecure
-
----
-spring:
-  profiles: secure
-  security:
-    user:
-      name: "user"
-      password: "password"
-eureka:
-  instance:
-    metadata-map:
-      user.name: "user"         #These two are needed so that the server
-      user.password: "password" #can access the protected client endpoints

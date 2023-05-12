@@ -4,7 +4,7 @@
       "label": "Heap Dump",
       "download": "Hala Heap Dump niður",
       "warn_dump_expensive": "þetta ferli getur verið dýrt með tilliti til CPU og geymslurýma.",
-      "warn_sensitive_data": "Heap dump má innihalda <strong>gögn sem þurfa að vörn</strong>. Fjallið varlega."
+      "warn_sensitive_data": "Heap dump má innihalda gögn sem þurfa að vörn. Fjallið varlega."
     }
   }
 }

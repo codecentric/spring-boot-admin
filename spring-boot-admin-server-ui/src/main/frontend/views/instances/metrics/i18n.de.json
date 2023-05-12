@@ -3,7 +3,6 @@
     "metrics": {
       "label": "Metriken",
       "add_metric": "Metrik hinzufügen",
-      "fetch_failed": "Das Laden der Metriken ist fehlgeschlagen.",
       "fetching_tags": "Verfügbare Tags werden geladen",
       "no_tags": "(keine Tags)",
       "no_tags_available": "Keine Tags verfügbar.",

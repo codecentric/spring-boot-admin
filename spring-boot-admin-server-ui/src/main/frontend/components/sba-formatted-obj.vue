@@ -15,35 +15,38 @@
   -->
 
 <template>
-  <div v-html="formatted" class="formatted" />
+  <div class="formatted" v-html="formatted" />
 </template>
 
 <script>
-  import {Autolink} from '@/utils/autolink';
-  import objToString from '@/utils/objToString';
+import { Autolink } from '@/utils/autolink';
+import objToString from '@/utils/objToString';
 
-  const autolink = new Autolink({truncate: {
-      length: 50,
-      location: 'smart'
-    }});
+const autolink = new Autolink({
+  truncate: {
+    length: 50,
+    location: 'smart',
+  },
+});
 
-  export default {
-    props: {
-      value: {
-        type: null,
-        required: true
-      },
+export default {
+  props: {
+    value: {
+      type: null,
+      required: true,
     },
-    computed: {
-      formatted() {
-         return autolink(objToString(this.value));
-      }
-    }
-  }
+  },
+  computed: {
+    formatted() {
+      return autolink(objToString(this.value));
+    },
+  },
+};
 </script>
 
-<style lang="scss">
-  .formatted {
-    white-space: pre;
-  }
+<style>
+.formatted {
+  white-space: break-spaces;
+  word-break: break-word;
+}
 </style>

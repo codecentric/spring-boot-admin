@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,18 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServe
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import de.codecentric.boot.admin.client.config.InstanceProperties;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 
 public class ReactiveApplicationFactory extends DefaultApplicationFactory {
+
+	private ManagementServerProperties management;
+
+	private final ServerProperties server;
 
 	private WebFluxProperties webflux;
 
@@ -36,6 +42,8 @@ public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
 			MetadataContributor metadataContributor, WebFluxProperties webFluxProperties) {
 		super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
+		this.management = management;
+		this.server = server;
 		this.webflux = webFluxProperties;
 		this.instance = instance;
 	}
@@ -46,8 +54,35 @@ public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 			return instance.getServiceUrl();
 		}
 
-		return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path(getServicePath()).path(getWebfluxBasePath())
-				.toUriString();
+		return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
+			.path(getServicePath())
+			.path(getWebfluxBasePath())
+			.toUriString();
+	}
+
+	@Override
+	protected String getManagementBaseUrl() {
+		String baseUrl = this.instance.getManagementBaseUrl();
+
+		if (StringUtils.hasText(baseUrl)) {
+			return baseUrl;
+		}
+
+		if (isManagementPortEqual()) {
+			return this.getServiceUrl();
+		}
+
+		Ssl ssl = (this.management.getSsl() != null) ? this.management.getSsl() : this.server.getSsl();
+		return UriComponentsBuilder.newInstance()
+			.scheme(getScheme(ssl))
+			.host(getManagementHost())
+			.port(getLocalManagementPort())
+			.path(getManagementContextPath())
+			.toUriString();
+	}
+
+	protected String getManagementContextPath() {
+		return management.getBasePath();
 	}
 
 	protected String getWebfluxBasePath() {

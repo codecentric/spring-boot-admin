@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package de.codecentric.boot.admin.client.config;
 
-import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.logging.DeferredLogs;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,11 +41,11 @@ public class CloudFoundryApplicationPropertiesTest {
 
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("VCAP_APPLICATION", vcap);
-		new CloudFoundryVcapEnvironmentPostProcessor(LogFactory.getLog(CloudFoundryApplicationPropertiesTest.class))
-				.postProcessEnvironment(env, null);
+		new CloudFoundryVcapEnvironmentPostProcessor(new DeferredLogs()).postProcessEnvironment(env, null);
 
 		CloudFoundryApplicationProperties cfProperties = Binder.get(env)
-				.bind("vcap.application", Bindable.of(CloudFoundryApplicationProperties.class)).get();
+			.bind("vcap.application", Bindable.of(CloudFoundryApplicationProperties.class))
+			.get();
 		assertThat(cfProperties.getApplicationId()).isEqualTo("9958288f-9842-4ddc-93dd-1ea3c90634cd");
 		assertThat(cfProperties.getInstanceIndex()).isEqualTo("0");
 	}

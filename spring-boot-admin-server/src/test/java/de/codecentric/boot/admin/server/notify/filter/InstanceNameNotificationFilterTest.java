@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ public class InstanceNameNotificationFilterTest {
 		NotificationFilter filter = new ApplicationNameNotificationFilter("foo", null);
 
 		Instance filteredInstance = Instance.create(InstanceId.of("-"))
-				.register(Registration.create("foo", "http://health").build());
+			.register(Registration.create("foo", "http://health").build());
 		InstanceRegisteredEvent filteredEvent = new InstanceRegisteredEvent(filteredInstance.getId(),
 				filteredInstance.getVersion(), filteredInstance.getRegistration());
 		assertThat(filter.filter(filteredEvent, filteredInstance)).isTrue();
 
 		Instance ignoredInstance = Instance.create(InstanceId.of("-"))
-				.register(Registration.create("bar", "http://health").build());
+			.register(Registration.create("bar", "http://health").build());
 		InstanceRegisteredEvent ignoredEvent = new InstanceRegisteredEvent(ignoredInstance.getId(),
 				ignoredInstance.getVersion(), ignoredInstance.getRegistration());
 		assertThat(filter.filter(ignoredEvent, ignoredInstance)).isFalse();

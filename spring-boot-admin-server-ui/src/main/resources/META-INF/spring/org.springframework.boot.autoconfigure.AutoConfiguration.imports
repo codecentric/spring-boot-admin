@@ -1,1 +1,2 @@
 de.codecentric.boot.admin.server.ui.config.AdminServerUiAutoConfiguration
+de.codecentric.boot.admin.server.ui.config.SpringNativeServerAutoConfiguration

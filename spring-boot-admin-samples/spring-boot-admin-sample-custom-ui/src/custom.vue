@@ -19,15 +19,17 @@
 </template>
 
 <script>
+/* global SBA */
+
 export default {
-  props: {
-    applications: { //<1>
-      type: Array,
-      required: true
-    }
+  setup() {
+    const { applications } = SBA.useApplicationStore(); //<1>
+    return {
+      applications,
+    };
   },
   methods: {
-    stringify: JSON.stringify
-  }
+    stringify: JSON.stringify,
+  },
 };
 </script>

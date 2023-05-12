@@ -1,0 +1,33 @@
+{
+  "instances": {
+    "httpexchanges": {
+      "label": "HTTP-Exchanges",
+      "chart": {
+        "avg_time": "ø Dauer",
+        "max_time": "Max. Dauer",
+        "status_4xx": "Status 4xx",
+        "status_5xx": "Status 5xx",
+        "successful_requests": "Erfolgreiche Anfragen",
+        "total_requests": "Anfragen insgesamt"
+      },
+      "content_type_response": "Response Content-Type",
+      "content_type_request": "Request Content-Type",
+      "fetching_failed": "Das Laden der Exchange-Informationen ist fehlgeschlagen.",
+      "limit": "Limit",
+      "filter": {
+        "client_errors": "Client-Fehler",
+        "exclude_actuator": "ignoriere  {actuator}/**",
+        "server_errors": "Server-Fehler",
+        "success": "erfolgreich"
+      },
+      "length_response": "Response Größe",
+      "length_request": "Request Größe",
+      "method": "Methode",
+      "no_exchanges_found": "Keine Exchanges gefunden.",
+      "status": "Status",
+      "time": "Dauer",
+      "timestamp": "Zeitstempel",
+      "uri": "Pfad"
+    }
+  }
+}

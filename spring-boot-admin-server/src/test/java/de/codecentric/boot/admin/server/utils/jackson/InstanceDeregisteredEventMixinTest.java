@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,11 @@ public class InstanceDeregisteredEventMixinTest {
 
 	@Test
 	public void verifyDeserialize() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("version", 12345678L)
-				.put("timestamp", 1587751031.000000000).put("type", "DEREGISTERED").toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "DEREGISTERED")
+			.toString();
 
 		InstanceDeregisteredEvent event = objectMapper.readValue(json, InstanceDeregisteredEvent.class);
 		assertThat(event).isNotNull();
@@ -67,8 +70,10 @@ public class InstanceDeregisteredEventMixinTest {
 
 	@Test
 	public void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
-		String json = new JSONObject().put("instance", "test123").put("timestamp", 1587751031.000000000)
-				.put("type", "DEREGISTERED").toString();
+		String json = new JSONObject().put("instance", "test123")
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "DEREGISTERED")
+			.toString();
 
 		InstanceDeregisteredEvent event = objectMapper.readValue(json, InstanceDeregisteredEvent.class);
 		assertThat(event).isNotNull();

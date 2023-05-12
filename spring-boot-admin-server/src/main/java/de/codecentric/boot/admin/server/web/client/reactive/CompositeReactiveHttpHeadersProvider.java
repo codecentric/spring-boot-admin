@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ public class CompositeReactiveHttpHeadersProvider implements ReactiveHttpHeaders
 	@Override
 	public Mono<HttpHeaders> getHeaders(Instance instance) {
 		List<Mono<HttpHeaders>> headers = delegates.stream()
-				.map((reactiveHttpHeadersProvider) -> reactiveHttpHeadersProvider.getHeaders(instance))
-				.collect(toList());
+			.map((reactiveHttpHeadersProvider) -> reactiveHttpHeadersProvider.getHeaders(instance))
+			.collect(toList());
 
 		return Mono.zip(headers, this::mergeMonosToHeaders);
 	}

@@ -3,7 +3,6 @@
     "auditevents": {
       "audit_log_not_supported_spring_boot_1": "Les Audit de Log ne sont pas supportés par les applications Spring Boot 1.x.",
       "event": "Événement",
-      "fetch_failed": "Echec de la récupération des audit d'évènements.",
       "loading_audit_events": "Chargement des Audit d'évènements...",
       "no_audit_events_found": "Aucun Audit d'évènements trouvés.",
       "principal": "Principal",

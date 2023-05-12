@@ -8,7 +8,7 @@
         "runnable": "Runnable",
         "title": "Cron"
       },
-      "fetch_failed": "Das Laden der geplanten Aufgaben ist fehlgeschlagen.",
+
       "fixed_delay": {
         "initial_delay_ms": "Verzögerung (ms)",
         "interval_ms": "Intervall (ms)",

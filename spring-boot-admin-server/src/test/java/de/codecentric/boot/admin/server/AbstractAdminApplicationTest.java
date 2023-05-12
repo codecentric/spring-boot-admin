@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,15 +54,20 @@ public abstract class AbstractAdminApplicationTest {
 		StepVerifier.create(getEventStream().log()).expectSubscription().then(() -> {
 			listEmptyInstances();
 			location.set(registerInstance());
-		}).assertNext((event) -> assertThat(event.opt("type")).isEqualTo("REGISTERED"))
-				.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("STATUS_CHANGED"))
-				.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("ENDPOINTS_DETECTED"))
-				.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("INFO_CHANGED")).then(() -> {
-					getInstance(location.get());
-					listInstances();
-					deregisterInstance(location.get());
-				}).assertNext((event) -> assertThat(event.opt("type")).isEqualTo("DEREGISTERED"))
-				.then(this::listEmptyInstances).thenCancel().verify(Duration.ofSeconds(120));
+		})
+			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("REGISTERED"))
+			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("STATUS_CHANGED"))
+			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("ENDPOINTS_DETECTED"))
+			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("INFO_CHANGED"))
+			.then(() -> {
+				getInstance(location.get());
+				listInstances();
+				deregisterInstance(location.get());
+			})
+			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("DEREGISTERED"))
+			.then(this::listEmptyInstances)
+			.thenCancel()
+			.verify(Duration.ofSeconds(120));
 	}
 
 	protected Flux<JSONObject> getEventStream() {
@@ -129,18 +134,23 @@ public abstract class AbstractAdminApplicationTest {
 	}
 
 	private Registration createRegistration() {
-		return Registration.builder().name("Test-Instance").healthUrl("http://localhost:" + this.port + "/mgmt/health")
-				.managementUrl("http://localhost:" + this.port + "/mgmt").serviceUrl("http://localhost:" + this.port)
-				.build();
+		return Registration.builder()
+			.name("Test-Instance")
+			.healthUrl("http://localhost:" + this.port + "/mgmt/health")
+			.managementUrl("http://localhost:" + this.port + "/mgmt")
+			.serviceUrl("http://localhost:" + this.port)
+			.build();
 	}
 
 	protected WebTestClient createWebClient(int port) {
 		ObjectMapper mapper = new ObjectMapper().registerModule(new JsonOrgModule());
-		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
-				.exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
-					configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(mapper));
-					configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));
-				}).build()).build();
+		return WebTestClient.bindToServer()
+			.baseUrl("http://localhost:" + port)
+			.exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
+				configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(mapper));
+				configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));
+			}).build())
+			.build();
 	}
 
 	public int getPort() {

@@ -15,37 +15,51 @@
   -->
 
 <!DOCTYPE html>
-
-<html>
+<html class='h-full'>
 <head>
-    <base th:href="${baseUrl}" href="/">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="format-detection" content="telephone=no,email=no">
-    <meta name="theme-color" content="#42d3a5">
+  <base href='/' th:href='${baseUrl}' />
+  <meta charset='utf-8' />
+  <title th:text='${uiSettings.title}'>Spring Boot Admin</title>
+  <link
+    rel='shortcut icon'
+    th:href='${uiSettings.favicon}'
+    type='image/png'
+  />
+  <meta content='width=device-width, initial-scale=1' name='viewport' />
+  <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible' />
+  <meta content='telephone=no,email=no' name='format-detection' />
+  <meta
+    content='#42d3a5'
+    name='theme-color'
+    th:content='${uiSettings.theme.color}'
+  />
 
-    <!-- include extensions -->
-    <th:block th:each="cssExtension : ${cssExtensions}">
-        <link rel="preload" th:href="'extensions/' + ${cssExtension.resourcePath}" as="style">
-    </th:block>
-    <th:block th:each="jsExtension : ${jsExtensions}">
-        <link rel="preload" th:href="'extensions/' + ${jsExtension.resourcePath}" as="script">
-    </th:block>
-    <th:block th:each="cssExtension : ${cssExtensions}">
-        <link th:href="'extensions/' + ${cssExtension.resourcePath}" rel="stylesheet">
-    </th:block>
+  <link href='./index.css' rel='stylesheet' />
+  <link href='/variables.css' rel='stylesheet' />
 
-    <link rel="shortcut icon" th:href="${uiSettings.favicon}" type="image/png">
-    <title th:text="${uiSettings.title}">Spring Boot Admin</title>
+  <link
+    as='style'
+    rel='preload'
+    th:each='cssExtension : ${cssExtensions}'
+    th:href="'extensions/' + ${cssExtension.resourcePath}"
+  />
+
+  <link
+    rel='stylesheet'
+    th:each='cssExtension : ${cssExtensions}'
+    th:href="'extensions/' + ${cssExtension.resourcePath}"
+  />
+  <script lang='javascript' src='sba-settings.js'></script>
+  <link
+    as='script'
+    rel='prefetch'
+    th:each='jsExtension : ${jsExtensions}'
+    th:src="'extensions/' + ${jsExtension.resourcePath}"
+  />
 </head>
-<body>
+<body class='h-full'>
+<div id='app'></div>
 
-<div id="app"></div>
-
-<script lang="javascript" src="sba-settings.js"></script>
-<!-- include extensions -->
-<th:block th:each="jsExtension : ${jsExtensions}">
-    <script lang="javascript" th:src="'extensions/' + ${jsExtension.resourcePath}"></script>
-</th:block>
+<script src='./index.ts' type='module'></script>
 </body>
 </html>

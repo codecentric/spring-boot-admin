@@ -15,129 +15,81 @@
   -->
 
 <template>
-  <table class="beans table is-fullwidth is-hoverable">
-    <tbody>
-      <template v-for="bean in beans">
-        <tr
-          class="is-selectable"
+  <div class="-mx-4 -my-3">
+    <template v-for="(bean, index) in beans" :key="bean.name">
+      <div
+        :class="{
+          'm-1 border rounded shadow-sm': showDetails[bean.name] === true,
+        }"
+      >
+        <div
           :key="bean.name"
-          @click="showDetails[bean.name] ? $delete(showDetails, bean.name) : $set(showDetails, bean.name, true)"
+          class="flex items-center"
+          :class="{
+            'bg-gray-50': index % 2 === 0 || showDetails[bean.name] === true,
+            'px-3 py-2': showDetails[bean.name] === true,
+            'px-4 py-3': showDetails[bean.name] !== true,
+          }"
+          @click="toggle(bean.name)"
         >
-          <td class="is-breakable">
-            <span
-              v-text="bean.shortName"
+          <div class="flex-1 sm:break-all">
+            <div
+              :class="{ 'font-bold': showDetails[bean.name] === true }"
               :title="bean.name"
-            /><br>
+              v-text="bean.shortName"
+            />
             <small
-              class="is-muted"
-              v-text="bean.shortType"
+              class="sm:break-all"
               :title="bean.type"
+              v-text="bean.shortType"
             />
-          </td>
-          <td>
-            <span
-              v-text="bean.scope"
-              class="tag"
-            />
-          </td>
-        </tr>
-        <tr
+          </div>
+          <div>
+            <span v-text="bean.scope" />
+          </div>
+        </div>
+        <div
+          v-if="showDetails[bean.name] === true"
           :key="`${bean.name}-detail`"
-          v-if="showDetails[bean.name]"
+          class="text-sm"
         >
-          <td
-            colspan="2"
-            class="has-background-white-ter"
-          >
-            <table class="table is-narrow is-fullwidth beans__bean-detail">
-              <tbody>
-                <tr v-if="bean.name !== bean.shortName">
-                  <th>
-                    <small v-text="$t('instances.beans.name')" />
-                  </th>
-                  <td
-                    class="is-breakable"
-                    v-text="bean.name"
-                  />
-                </tr>
-                <tr
-                  v-for="(alias, idx) in bean.aliases"
-                  :key="alias"
-                >
-                  <th
-                    v-if="idx === 0"
-                    :rowspan="bean.aliases.length"
-                  >
-                    <small v-text="$t('instances.beans.aliases')" />
-                  </th>
-                  <td
-                    class="is-breakable"
-                    v-text="alias"
-                  />
-                </tr>
-                <tr v-if="bean.type !== bean.shortType">
-                  <th>
-                    <small v-text="$t('instances.beans.type')" />
-                  </th>
-                  <td
-                    class="is-breakable"
-                    v-text="bean.type"
-                  />
-                </tr>
-                <tr v-if="bean.resource">
-                  <th>
-                    <small v-text="$t('instances.beans.resource')" />
-                  </th>
-                  <td
-                    class="is-breakable"
-                    v-text="bean.resource"
-                  />
-                </tr>
-                <tr
-                  v-for="(dependency, idx) in bean.dependencies"
-                  :key="dependency"
-                >
-                  <th
-                    v-if="idx === 0"
-                    :rowspan="bean.dependencies.length"
-                  >
-                    <small v-text="$t('instances.beans.dependencies')" />
-                  </th>
-                  <td
-                    class="is-breakable"
-                    v-text="dependency"
-                  />
-                </tr>
-              </tbody>
-            </table>
-          </td>
-        </tr>
-      </template>
-    </tbody>
-  </table>
+          <beans-list-details :bean="bean" />
+        </div>
+      </div>
+    </template>
+  </div>
 </template>
+
 <script>
-  export default {
-    props: {
-      beans: {
-        type: Array,
-        default: () => []
+import BeansListDetails from '@/views/instances/beans/beans-list-details';
+
+export default {
+  components: { BeansListDetails },
+  props: {
+    beans: {
+      type: Array,
+      default: () => [],
+    },
+  },
+  data() {
+    return {
+      showDetails: {},
+    };
+  },
+  methods: {
+    toggle(name) {
+      if (this.showDetails[name]) {
+        this.showDetails = {
+          ...this.showDetails,
+          [name]: null,
+        };
+      } else {
+        this.showDetails = {
+          ...this.showDetails,
+          [name]: true,
+        };
       }
     },
-    data: () => ({
-      showDetails: {}
-    })
-  }
+  },
+};
 </script>
-<style lang="scss">
-  @import "~@/assets/css/utilities";
-
-  .beans {
-    table.beans__bean-detail {
-      tbody tr {
-        pointer-events: none;
-        background-color: $white-ter;
-      }
-    }
-  }
-</style>

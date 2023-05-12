@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2021 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 
 	@Container
 	private static final GenericContainer<?> hazelcastServer = new GenericContainer<>("hazelcast/hazelcast:4.2.2")
-			.withExposedPorts(5701);
+		.withExposedPorts(5701);
 
 	private final HazelcastInstance hazelcast;
 
@@ -48,6 +48,11 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 	protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
 		IMap<InstanceId, List<InstanceEvent>> eventLog = this.hazelcast.getMap("testList" + System.currentTimeMillis());
 		return new HazelcastEventStore(maxLogSizePerAggregate, eventLog);
+	}
+
+	@Override
+	protected void shutdownStore() {
+		this.hazelcast.shutdown();
 	}
 
 	private HazelcastInstance createHazelcastInstance() {

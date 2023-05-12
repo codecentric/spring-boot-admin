@@ -6,8 +6,10 @@
     "affects_all_instances": "Affects all {count} instances",
     "affects_this_instance_only": "Affects this instance only",
     "application": "Application",
+    "applications_tc": "{n} application | {n} applications",
     "attributes": "Attributes",
     "bytes": "Bytes",
+    "ok": "OK",
     "cancel": "Cancel",
     "clear": "Clear",
     "cleared": "Cleared",
@@ -26,11 +28,18 @@
     "execution_failed": "Execution failed",
     "execution_successful": "Execution successful",
     "failed": "Failed",
+    "fetching_data": "Fetching data...",
+    "fetch_failed": "Fetching of data failed.",
     "float": "Float",
+    "filter": "Filter",
     "hours": "{count} hour | {count} hours",
     "instance": "Instance",
     "instances": "Instances",
+    "instances_tc": "{n} instance | {n} instances",
     "integer": "Integer",
+    "menu": {
+      "open": "Open menu"
+    },
     "milliseconds": "Milliseconds",
     "minutes": "{count} minute | {count} minutes",
     "name": "Name",
@@ -43,6 +52,7 @@
     "username": "Username",
     "go_to_previous_page": "Go to previous page",
     "go_to_page_n": "Go to page {page}",
+    "current_page": "Page {page}, current page",
     "go_to_next_page": "Go to next page"
   }
 }

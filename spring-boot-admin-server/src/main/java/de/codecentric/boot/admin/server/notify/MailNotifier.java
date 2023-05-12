@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.lang.Nullable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.thymeleaf.TemplateEngine;
@@ -119,28 +118,28 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
 		return templateEngine.process(this.template, singleton("subject"), ctx).trim();
 	}
 
-	public void setTo(String[] to) {
-		this.to = Arrays.copyOf(to, to.length);
-	}
-
 	public String[] getTo() {
 		return Arrays.copyOf(to, to.length);
 	}
 
-	public void setCc(String[] cc) {
-		this.cc = Arrays.copyOf(cc, cc.length);
+	public void setTo(String[] to) {
+		this.to = Arrays.copyOf(to, to.length);
 	}
 
 	public String[] getCc() {
 		return Arrays.copyOf(cc, cc.length);
 	}
 
-	public void setFrom(String from) {
-		this.from = from;
+	public void setCc(String[] cc) {
+		this.cc = Arrays.copyOf(cc, cc.length);
 	}
 
 	public String getFrom() {
 		return from;
+	}
+
+	public void setFrom(String from) {
+		this.from = from;
 	}
 
 	public String getTemplate() {

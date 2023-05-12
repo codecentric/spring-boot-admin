@@ -6,7 +6,11 @@ on:
       releaseversion:
         description: 'Release version'
         required: true
-        default: '2.4.0'
+        default: '3.0.0'
+      copyDocsToCurrent:
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   publish-central-and-pages:
@@ -19,8 +23,8 @@ jobs:
       - name: Set up settings.xml for Maven Central Repository
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '8'
+          distribution: 'adopt'
+          java-version: '17'
           server-id: oss.sonatype.org
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
@@ -28,7 +32,7 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Cache local Maven repository
-        uses: actions/cache@v3.0.10
+        uses: actions/cache@v3.3.1
         env:
           cache-name: cache-mvn
         with:
@@ -55,16 +59,27 @@ jobs:
       - name: Publish package
         run: mvn --batch-mode clean deploy --no-transfer-progress -P central-deploy -DskipTests=true
         env:
+          #TODO: This is a workaround for NEXUS-27902 which uses XStream that fails on JVM >16
+          JDK_JAVA_OPTIONS: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED"
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Deploy Asciidoc docs output to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.4.0
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
           target-folder: ${{ github.event.inputs.releaseversion }}
+          clean: true # Automatically remove deleted files from the deploy branch
+
+      - name: Deploy Asciidoc docs output to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.1
+        if: github.event.inputs.copyDocsToCurrent == 'true'
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          target-folder: /current
           clean: true # Automatically remove deleted files from the deploy branch
 
 
@@ -77,7 +92,7 @@ jobs:
 
       - name: Generate changelog
         id: changelog
-        uses: metcalfc/changelog-generator@v3.0.0
+        uses: metcalfc/changelog-generator@v4.1.0
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
 

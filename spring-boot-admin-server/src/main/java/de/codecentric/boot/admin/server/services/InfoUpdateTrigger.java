@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,10 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	@Override
 	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-		return publisher.filter((event) -> event instanceof InstanceEndpointsDetectedEvent
-				|| event instanceof InstanceStatusChangedEvent || event instanceof InstanceRegistrationUpdatedEvent)
-				.flatMap((event) -> this.updateInfo(event.getInstance()));
+		return publisher
+			.filter((event) -> event instanceof InstanceEndpointsDetectedEvent
+					|| event instanceof InstanceStatusChangedEvent || event instanceof InstanceRegistrationUpdatedEvent)
+			.flatMap((event) -> this.updateInfo(event.getInstance()));
 	}
 
 	protected Mono<Void> updateInfo(InstanceId instanceId) {

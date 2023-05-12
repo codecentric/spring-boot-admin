@@ -3,7 +3,7 @@
     "metrics": {
       "label": "Métricas",
       "add_metric": "Agregar Métrica",
-      "fetch_failed": "Falla recuperando métricas.",
+
       "fetching_tags": "Recuperando tags disponibles",
       "no_tags": "(no tags)",
       "no_tags_available": "No hay tags disponibles.",

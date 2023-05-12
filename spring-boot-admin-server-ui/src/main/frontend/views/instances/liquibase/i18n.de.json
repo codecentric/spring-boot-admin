@@ -12,7 +12,6 @@
       "execution": "Ausführung",
       "execution_date": "Ausführungs-Datum",
       "execution_order": "Reihenfolge",
-      "fetch_failed": "Das Laden der Liquibase-Migrations-Daten ist fehlgeschlagen.",
       "id": "Id",
       "labels": "Label",
       "tag": "Tag"

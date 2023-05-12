@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,11 @@ import org.springframework.security.web.server.authentication.RedirectServerAuth
 import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
 import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
 import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
+import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.notify.LoggingNotifier;
+import de.codecentric.boot.admin.server.notify.Notifier;
 
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
@@ -55,22 +55,30 @@ public class SpringBootAdminReactiveApplication {
 	@Profile("insecure")
 	public SecurityWebFilterChain securityWebFilterChainPermitAll(ServerHttpSecurity http) {
 		return http.authorizeExchange((authorizeExchange) -> authorizeExchange.anyExchange().permitAll())
-				.csrf(ServerHttpSecurity.CsrfSpec::disable).build();
+			.csrf(ServerHttpSecurity.CsrfSpec::disable)
+			.build();
 	}
 
 	@Bean
 	@Profile("secure")
 	public SecurityWebFilterChain securityWebFilterChainSecure(ServerHttpSecurity http) {
 		return http
-				.authorizeExchange((authorizeExchange) -> authorizeExchange
-						.pathMatchers(this.adminServer.path("/assets/**")).permitAll()
-						.pathMatchers("/actuator/health/**").permitAll().pathMatchers(this.adminServer.path("/login"))
-						.permitAll().anyExchange().authenticated())
-				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
-						.authenticationSuccessHandler(loginSuccessHandler(this.adminServer.path("/"))))
-				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout"))
-						.logoutSuccessHandler(logoutSuccessHandler(this.adminServer.path("/login?logout"))))
-				.httpBasic(Customizer.withDefaults()).csrf(ServerHttpSecurity.CsrfSpec::disable).build();
+			.authorizeExchange(
+					(authorizeExchange) -> authorizeExchange.pathMatchers(this.adminServer.path("/assets/**"))
+						.permitAll()
+						.pathMatchers("/actuator/health/**")
+						.permitAll()
+						.pathMatchers(this.adminServer.path("/login"))
+						.permitAll()
+						.anyExchange()
+						.authenticated())
+			.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
+				.authenticationSuccessHandler(loginSuccessHandler(this.adminServer.path("/"))))
+			.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout"))
+				.logoutSuccessHandler(logoutSuccessHandler(this.adminServer.path("/login?logout"))))
+			.httpBasic(Customizer.withDefaults())
+			.csrf(ServerHttpSecurity.CsrfSpec::disable)
+			.build();
 	}
 
 	// The following two methods are only required when setting a custom base-path (see
@@ -88,8 +96,8 @@ public class SpringBootAdminReactiveApplication {
 	}
 
 	@Bean
-	public LoggingNotifier loggerNotifier(InstanceRepository repository) {
-		return new LoggingNotifier(repository);
+	public Notifier notifier() {
+		return (e) -> Mono.empty();
 	}
 
 }

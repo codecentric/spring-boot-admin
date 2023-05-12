@@ -12,7 +12,7 @@
       "execution": "Execution",
       "execution_date": "Execution Date",
       "execution_order": "Execution Order",
-      "fetch_failed": "Fetching Liquibase migrations failed.",
+
       "id": "Id",
       "labels": "Labels",
       "tag": "Tag"

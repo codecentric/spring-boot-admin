@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,10 @@ public class TagsTest {
 
 	@Test
 	public void should_append_tags() {
-		Tags tags = Tags.empty().append(Tags.from(singletonMap("tags.env", "test"), "tags"))
-				.append(Tags.from(singletonMap("env", "test2"))).append(Tags.from(singletonMap("foo", "bar")));
+		Tags tags = Tags.empty()
+			.append(Tags.from(singletonMap("tags.env", "test"), "tags"))
+			.append(Tags.from(singletonMap("env", "test2")))
+			.append(Tags.from(singletonMap("foo", "bar")));
 
 		assertThat(tags.getValues()).containsExactly(entry("env", "test2"), entry("foo", "bar"));
 	}

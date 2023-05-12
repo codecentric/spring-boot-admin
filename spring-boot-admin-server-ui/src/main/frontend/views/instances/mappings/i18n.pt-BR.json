@@ -4,7 +4,7 @@
       "label": "Mappings",
       "class": "Calsses",
       "consumes": "Consumidores",
-      "fetch_failed": "Falha na busca de mapeamentos.",
+
       "filter_name": "Nome do Filtro",
       "handler": "Handler",
       "headers": "Cabeçalhos",

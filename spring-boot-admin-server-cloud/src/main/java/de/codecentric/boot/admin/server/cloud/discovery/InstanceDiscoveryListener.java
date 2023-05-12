@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,20 +123,26 @@ public class InstanceDiscoveryListener {
 
 	protected void discover() {
 		log.debug("Discovering new instances from DiscoveryClient");
-		Flux.fromIterable(discoveryClient.getServices()).filter(this::shouldRegisterService)
-				.flatMapIterable(discoveryClient::getInstances).filter(this::shouldRegisterInstanceBasedOnMetadata)
-				.flatMap(this::registerInstance).collect(Collectors.toSet()).flatMap(this::removeStaleInstances)
-				.subscribe((v) -> {
-				}, (ex) -> log.error("Unexpected error.", ex));
+		Flux.fromIterable(discoveryClient.getServices())
+			.filter(this::shouldRegisterService)
+			.flatMapIterable(discoveryClient::getInstances)
+			.filter(this::shouldRegisterInstanceBasedOnMetadata)
+			.flatMap(this::registerInstance)
+			.collect(Collectors.toSet())
+			.flatMap(this::removeStaleInstances)
+			.subscribe((v) -> {
+			}, (ex) -> log.error("Unexpected error.", ex));
 	}
 
 	protected Mono<Void> removeStaleInstances(Set<InstanceId> registeredInstanceIds) {
-		return repository.findAll().filter(Instance::isRegistered)
-				.filter((instance) -> SOURCE.equals(instance.getRegistration().getSource())).map(Instance::getId)
-				.filter((id) -> !registeredInstanceIds.contains(id))
-				.doOnNext(
-						(id) -> log.info("Instance '{}' missing in DiscoveryClient services and will be removed.", id))
-				.flatMap(registry::deregister).then();
+		return repository.findAll()
+			.filter(Instance::isRegistered)
+			.filter((instance) -> SOURCE.equals(instance.getRegistration().getSource()))
+			.map(Instance::getId)
+			.filter((id) -> !registeredInstanceIds.contains(id))
+			.doOnNext((id) -> log.info("Instance '{}' missing in DiscoveryClient services and will be removed.", id))
+			.flatMap(registry::deregister)
+			.then();
 	}
 
 	protected boolean shouldRegisterService(final String serviceId) {

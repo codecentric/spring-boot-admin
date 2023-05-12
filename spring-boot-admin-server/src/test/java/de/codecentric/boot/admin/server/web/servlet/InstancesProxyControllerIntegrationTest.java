@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package de.codecentric.boot.admin.server.web.servlet;
 
-import javax.annotation.Nullable;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.lang.Nullable;
 
 import de.codecentric.boot.admin.server.AdminServletApplicationTest;
 import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerIntegrationTest;
@@ -36,8 +35,8 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
 	@BeforeAll
 	public static void setUpContext() {
 		context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
-				.web(WebApplicationType.SERVLET)
-				.run("--server.port=0", "--spring.boot.admin.monitor.default-timeout=2500");
+			.web(WebApplicationType.SERVLET)
+			.run("--server.port=0", "--spring.boot.admin.monitor.default-timeout=2500");
 
 	}
 

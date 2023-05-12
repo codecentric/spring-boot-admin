@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2021 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package de.codecentric.boot.admin.server.notify;
 
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -29,10 +29,12 @@ import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -75,7 +77,7 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 	@Override
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
 		return Mono
-				.fromRunnable(() -> restTemplate.postForEntity(buildUrl(), createMessage(event, instance), Void.class));
+			.fromRunnable(() -> restTemplate.postForEntity(buildUrl(), createMessage(event, instance), Void.class));
 	}
 
 	private String buildUrl() {
@@ -101,8 +103,10 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
+		SimpleEvaluationContext context = SimpleEvaluationContext
+			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+			.withRootObject(root)
+			.build();
 		return message.getValue(context, String.class);
 	}
 
@@ -110,8 +114,8 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		try {
 			String stringToSign = timestamp + "\n" + secret;
 			Mac mac = Mac.getInstance("HmacSHA256");
-			mac.init(new SecretKeySpec(secret.getBytes("UTF-8"), "HmacSHA256"));
-			byte[] signData = mac.doFinal(stringToSign.getBytes("UTF-8"));
+			mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+			byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
 			return URLEncoder.encode(new String(Base64.encodeBase64(signData)), "UTF-8");
 		}
 		catch (Exception ex) {

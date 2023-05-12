@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,10 @@ public class HazelcastEventStore extends ConcurrentMapEventStore {
 			public void entryUpdated(EntryEvent<InstanceId, List<InstanceEvent>> event) {
 				log.debug("Updated {}", event);
 				long lastKnownVersion = getLastVersion(event.getOldValue());
-				List<InstanceEvent> newEvents = event.getValue().stream()
-						.filter((e) -> e.getVersion() > lastKnownVersion).collect(Collectors.toList());
+				List<InstanceEvent> newEvents = event.getValue()
+					.stream()
+					.filter((e) -> e.getVersion() > lastKnownVersion)
+					.collect(Collectors.toList());
 				HazelcastEventStore.this.publish(newEvents);
 			}
 		}, true);

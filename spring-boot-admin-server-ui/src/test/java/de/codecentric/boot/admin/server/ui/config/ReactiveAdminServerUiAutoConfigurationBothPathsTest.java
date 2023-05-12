@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2022 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,12 @@ public class ReactiveAdminServerUiAutoConfigurationBothPathsTest extends Reactiv
 	@Override
 	protected ReactiveWebApplicationContextRunner getContextRunner() {
 		return new ReactiveWebApplicationContextRunner()
-				.withPropertyValues("--spring.boot.admin.ui.available-languages=de",
-						"--spring.boot.admin.contextPath=different", "--spring.webflux.base-path=test",
-						"--spring.boot.admin.ui.additional-route-excludes[0]=/instances/*/actuator/some-extension/**")
-				.withBean(AdminServerProperties.class).withBean(WebFluxProperties.class)
-				.withConfiguration(AutoConfigurations.of(AdminServerUiAutoConfiguration.class));
+			.withPropertyValues("--spring.boot.admin.ui.available-languages=de",
+					"--spring.boot.admin.contextPath=different", "--spring.webflux.base-path=test",
+					"--spring.boot.admin.ui.additional-route-excludes[0]=/instances/*/actuator/some-extension/**")
+			.withBean(AdminServerProperties.class)
+			.withBean(WebFluxProperties.class)
+			.withConfiguration(AutoConfigurations.of(AdminServerUiAutoConfiguration.class));
 	}
 
 }

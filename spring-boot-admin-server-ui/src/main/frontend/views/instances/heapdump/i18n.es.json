@@ -4,7 +4,7 @@
       "label": "Heap Dump",
       "download": "Descargar Heap Dump",
       "warn_dump_expensive": "Volcar el heap puede ser costoso en términos de cpu y espacio de disco.",
-      "warn_sensitive_data": "Un heap dump puede contener <strong>información sensible</strong>. Por favor sea cuidadoso."
+      "warn_sensitive_data": "Un heap dump puede contener información sensible. Por favor sea cuidadoso."
     }
   }
 }

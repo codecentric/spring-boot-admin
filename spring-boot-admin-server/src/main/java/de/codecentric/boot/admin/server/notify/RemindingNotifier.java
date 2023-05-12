@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,9 @@ import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -87,11 +86,12 @@ public class RemindingNotifier extends AbstractEventNotifier {
 	public void start() {
 		this.reminderScheduler = Schedulers.newSingle("reminders");
 		this.subscription = Flux.interval(this.checkReminderInverval, this.reminderScheduler)
-				.log(log.getName(), Level.FINEST).doOnSubscribe((s) -> log.debug("Started reminders"))
-				.flatMap((i) -> this.sendReminders())
-				.retryWhen(Retry.indefinitely()
-						.doBeforeRetry((s) -> log.warn("Unexpected error when sending reminders", s.failure())))
-				.subscribe();
+			.log(log.getName(), Level.FINEST)
+			.doOnSubscribe((s) -> log.debug("Started reminders"))
+			.flatMap((i) -> this.sendReminders())
+			.retryWhen(Retry.indefinitely()
+				.doBeforeRetry((s) -> log.warn("Unexpected error when sending reminders", s.failure())))
+			.subscribe();
 	}
 
 	public void stop() {
@@ -110,10 +110,10 @@ public class RemindingNotifier extends AbstractEventNotifier {
 		Instant now = Instant.now();
 
 		return Flux.fromIterable(this.reminders.values())
-				.filter((reminder) -> reminder.getLastNotification().plus(this.reminderPeriod).isBefore(now))
-				.flatMap((reminder) -> this.delegate.notify(reminder.getEvent())
-						.doOnSuccess((signal) -> reminder.setLastNotification(now)))
-				.then();
+			.filter((reminder) -> reminder.getLastNotification().plus(this.reminderPeriod).isBefore(now))
+			.flatMap((reminder) -> this.delegate.notify(reminder.getEvent())
+				.doOnSuccess((signal) -> reminder.setLastNotification(now)))
+			.then();
 	}
 
 	protected boolean shouldStartReminder(InstanceEvent event) {

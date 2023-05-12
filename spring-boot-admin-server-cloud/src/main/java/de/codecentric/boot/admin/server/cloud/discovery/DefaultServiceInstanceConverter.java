@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,10 @@ import java.net.URI;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.lang.Nullable;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -89,13 +88,19 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 		String managementUrl = getManagementUrl(instance).toString();
 		String serviceUrl = getServiceUrl(instance).toString();
 
-		return Registration.create(instance.getServiceId(), healthUrl).managementUrl(managementUrl)
-				.serviceUrl(serviceUrl).metadata(getMetadata(instance)).build();
+		return Registration.create(instance.getServiceId(), healthUrl)
+			.managementUrl(managementUrl)
+			.serviceUrl(serviceUrl)
+			.metadata(getMetadata(instance))
+			.build();
 	}
 
 	protected URI getHealthUrl(ServiceInstance instance) {
-		return UriComponentsBuilder.fromUri(getManagementUrl(instance)).path("/").path(getHealthPath(instance)).build()
-				.toUri();
+		return UriComponentsBuilder.fromUri(getManagementUrl(instance))
+			.path("/")
+			.path(getHealthPath(instance))
+			.build()
+			.toUri();
 	}
 
 	protected String getHealthPath(ServiceInstance instance) {
@@ -164,10 +169,11 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	}
 
 	protected Map<String, String> getMetadata(ServiceInstance instance) {
-		return (instance.getMetadata() != null)
-				? instance.getMetadata().entrySet().stream().filter((e) -> e.getKey() != null && e.getValue() != null)
-						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-				: emptyMap();
+		return (instance.getMetadata() != null) ? instance.getMetadata()
+			.entrySet()
+			.stream()
+			.filter((e) -> e.getKey() != null && e.getValue() != null)
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)) : emptyMap();
 	}
 
 	public String getManagementContextPath() {

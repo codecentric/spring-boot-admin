@@ -1,0 +1,147 @@
+[[spring-boot-admin-server]]
+= Spring Boot Admin Server =
+
+== Running Behind a Front-end Proxy Server ==
+
+In case the Spring Boot Admin server is running behind a reverse proxy, it may be requried to configure the public url where the server is reachable via (`spring.boot.admin.ui.public-url`).
+In addition when the reverse proxy terminates the https connection, it may be necessary to configure `server.forward-headers-strategy=native` (also see https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-use-tomcat-behind-a-proxy-server[Spring Boot Reference Guide]).
+
+== Configuration Options ==
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.server.enabled
+| Enables the Spring Boot Admin Server.
+| `true`
+
+| spring.boot.admin.context-path
+| The context-path prefixes the path where the Admin Server's statics assets and API should be served. Relative to the Dispatcher-Servlet.
+|
+
+| spring.boot.admin.monitor.status-interval
+| Time interval to check the status of instances.
+| 10,000ms
+
+| spring.boot.admin.monitor.status-lifetime
+| Lifetime of status. The status won't be updated as long the last status isn't expired.
+| 10,000ms
+
+| spring.boot.admin.monitor.info-interval
+| Time interval to check the info of instances.
+| 1m
+
+| spring.boot.admin.monitor.info-lifetime
+| Lifetime of info. The info won't be updated as long the last info isn't expired.
+| 1m
+
+| spring.boot.admin.monitor.default-timeout
+| Default timeout when making requests. Individual values for specific endpoints can be overridden using `spring.boot.admin.monitor.timeout.*`.
+| 10,000
+
+| spring.boot.admin.monitor.timeout.*
+| Key-Value-Pairs with the timeout per endpointId. Defaults to default-timeout.
+|
+
+| spring.boot.admin.monitor.default-retries
+| Default number of retries for failed requests. Modifying requests (`PUT`, `POST`, `PATCH`, `DELETE`) are never retried. Individual values for specific endpoints can be overridden using `spring.boot.admin.monitor.retries.*`.
+| 0
+
+| spring.boot.admin.monitor.retries.*
+| Key-Value-Pairs with the number of retries per endpointId. Defaults to default-retries. Modifying requests (`PUT`, `POST`, `PATCH`, `DELETE`) are never retried.
+|
+
+| spring.boot.admin.metadata-keys-to-sanitize
+| Metadata values for the keys matching these regex patterns will be sanitized in all json output.
+| `".*password$", ".*secret$", ".*key$", ".*token$", ".*credentials.*", ".*vcap_services$"`
+
+| spring.boot.admin.probed-endpoints
+| For Spring Boot 1.x client applications SBA probes for the specified endpoints using an OPTIONS request.
+  If the path differs from the id you can specify this as id:path (e.g. health:ping)..
+| `"health", "env", "metrics", "httptrace:trace", "threaddump:dump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers", "auditevents"`
+
+| spring.boot.admin.instance-auth.enabled
+| Enable pulling credentials from spring configuration properties
+| `true`
+
+| spring.boot.admin.instance-auth.default-user-name
+| A default user name used to authenticate to registered services. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
+| `null`
+
+| spring.boot.admin.instance-auth.default-password
+| A default user password used to authenticate to registered services. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
+| `null`
+
+| spring.boot.admin.instance-auth.service-map.*.user-name
+| A user name used to authenticate to the registered service with the specified name. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
+|
+
+| spring.boot.admin.instance-auth.service-map.*.user-password
+| A user password used to authenticate to the registered service with the specified name. The `spring.boot.admin.instance-auth.enabled` property must be `true`.
+|
+
+| spring.boot.admin.instance-proxy.ignored-headers
+|  Headers not to be forwarded when making requests to clients.
+| `"Cookie", "Set-Cookie", "Authorization"`
+
+| spring.boot.admin.ui.public-url
+| Base url to use to build the base href in the ui.
+| If running behind a reverse proxy (using path rewriting) this can be used to make correct self references. If the host/port is omitted it will be inferred from the request.
+
+| spring.boot.admin.ui.brand
+| Brand to be shown in the navbar.
+| `"<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>"`
+
+| spring.boot.admin.ui.title
+| Page-Title to be shown.
+| `"Spring Boot Admin"`
+
+| spring.boot.admin.ui.login-icon
+| Icon used as image on login page.
+| `"assets/img/icon-spring-boot-admin.svg"`
+
+| spring.boot.admin.ui.favicon
+| Icon used as default favicon and icon for desktop notifications.
+| `"assets/img/favicon.png"`
+
+| spring.boot.admin.ui.favicon-danger
+| Icon used as favicon when one or more service is down and for desktop notifications.
+| `"assets/img/favicon-danger.png"`
+
+| spring.boot.admin.ui.remember-me-enabled
+| Switch to show/hide the remember-me checkbox on the login page.
+| `true`
+
+| spring.boot.admin.ui.poll-timer.cache
+| Polling duration in ms to fetch new cache data.
+| `2500`
+
+| spring.boot.admin.ui.poll-timer.datasource
+| Polling duration in ms to fetch new datasource data.
+| `2500`
+
+| spring.boot.admin.ui.poll-timer.gc
+| Polling duration in ms to fetch new gc data.
+| `2500`
+
+| spring.boot.admin.ui.poll-timer.process
+| Polling duration in ms to fetch new process data.
+| `2500`
+
+| spring.boot.admin.ui.poll-timer.memory
+| Polling duration in ms to fetch new memory data.
+| `2500`
+
+| spring.boot.admin.ui.poll-timer.threads
+| Polling duration in ms to fetch new threads data.
+| `2500`
+
+| spring.boot.admin.ui.enable-toasts
+| Allows to enable toast notifications.
+| `false`
+
+|===
+
+include::_server-discovery.adoc[]
+
+include::_server-clustering.adoc[]
+

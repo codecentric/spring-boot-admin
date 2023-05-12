@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,6 +32,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.PollTimer;
+import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.UiTheme;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.AdminController;
@@ -86,10 +88,8 @@ public class UiController {
 		return this.uiExtensions.getJsExtensions();
 	}
 
-	// FIXME: add @Nullable to principal parameter
-	// see https://github.com/spring-projects/spring-framework/issues/25981
 	@ModelAttribute(value = "user", binding = false)
-	public Map<String, Object> getUser(Principal principal) {
+	public Map<String, Object> getUser(@Nullable Principal principal) {
 		if (principal != null) {
 			return singletonMap("name", principal.getName());
 		}
@@ -97,6 +97,7 @@ public class UiController {
 	}
 
 	@GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
+	@RegisterReflectionForBinding(String.class)
 	public String index() {
 		return "index";
 	}
@@ -104,6 +105,11 @@ public class UiController {
 	@GetMapping(path = "/sba-settings.js", produces = "application/javascript")
 	public String sbaSettings() {
 		return "sba-settings.js";
+	}
+
+	@GetMapping(path = "/variables.css", produces = "text/css")
+	public String variablesCss() {
+		return "variables.css";
 	}
 
 	@GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)
@@ -127,6 +133,8 @@ public class UiController {
 
 		private final PollTimer pollTimer;
 
+		private final UiTheme theme;
+
 		private final boolean notificationFilterEnabled;
 
 		private final boolean rememberMeEnabled;
@@ -139,11 +147,12 @@ public class UiController {
 
 		private final List<ViewSettings> viewSettings;
 
+		private final Boolean enableToasts;
+
 	}
 
 	@lombok.Data
 	@JsonInclude(Include.NON_EMPTY)
-	@ConstructorBinding
 	public static class ExternalView {
 
 		/**
@@ -166,20 +175,24 @@ public class UiController {
 		 */
 		private final boolean iframe;
 
-		public ExternalView(String label, String url, Integer order, boolean iframe) {
+		/**
+		 * A list of child views.
+		 */
+		private final List<ExternalView> children;
+
+		public ExternalView(String label, String url, Integer order, boolean iframe, List<ExternalView> children) {
 			Assert.hasText(label, "'label' must not be empty");
-			Assert.hasText(url, "'url' must not be empty");
 			this.label = label;
 			this.url = url;
 			this.order = order;
 			this.iframe = iframe;
+			this.children = children;
 		}
 
 	}
 
 	@lombok.Data
 	@JsonInclude(Include.NON_EMPTY)
-	@ConstructorBinding
 	public static class ViewSettings {
 
 		/**

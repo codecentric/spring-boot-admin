@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2021 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,15 +85,16 @@ public class JdkPerInstanceCookieStore implements PerInstanceCookieStore {
 			final MultiValueMap<String, String> requestHeaders) {
 		try {
 			final List<String> rawCookies = getCookieHandler(instanceId).get(requestUri, requestHeaders)
-					.get(REQ_COOKIE_HEADER_KEY);
+				.get(REQ_COOKIE_HEADER_KEY);
 
 			// split each rawCookie at first '=' into name/cookieValue and
 			// return as MultiValueMap
 			return Optional.ofNullable(rawCookies)
-					.map((rcList) -> rcList.stream().map((rc) -> rc.split("=", 2)).collect(
-							LinkedMultiValueMap<String, String>::new, (map, nv) -> map.add(nv[0], nv[1]),
+				.map((rcList) -> rcList.stream()
+					.map((rc) -> rc.split("=", 2))
+					.collect(LinkedMultiValueMap<String, String>::new, (map, nv) -> map.add(nv[0], nv[1]),
 							(m1, m2) -> m1.addAll(m2)))
-					.orElseGet(LinkedMultiValueMap<String, String>::new);
+				.orElseGet(LinkedMultiValueMap<String, String>::new);
 		}
 		catch (IOException ioe) {
 			throw new InstanceWebClientException("Could not get cookies from store.", ioe);

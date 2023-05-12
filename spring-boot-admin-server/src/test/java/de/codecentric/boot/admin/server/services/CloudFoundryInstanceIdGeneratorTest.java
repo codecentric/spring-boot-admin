@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,11 @@ public class CloudFoundryInstanceIdGeneratorTest {
 	@Test
 	public void test_cloud_foundry_instance_id() {
 		Registration registration = Registration.create("foo", "http://health")
-				.metadata("applicationId", "549e64cf-a478-423d-9d6d-02d803a028a8").metadata("instanceId", "0").build();
+			.metadata("applicationId", "549e64cf-a478-423d-9d6d-02d803a028a8")
+			.metadata("instanceId", "0")
+			.build();
 		assertThat(instance.generateId(registration))
-				.isEqualTo(InstanceId.of("549e64cf-a478-423d-9d6d-02d803a028a8:0"));
+			.isEqualTo(InstanceId.of("549e64cf-a478-423d-9d6d-02d803a028a8:0"));
 	}
 
 	@Test

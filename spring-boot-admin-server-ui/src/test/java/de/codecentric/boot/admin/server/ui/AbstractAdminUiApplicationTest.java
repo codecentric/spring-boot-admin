@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,9 +103,11 @@ public abstract class AbstractAdminUiApplicationTest {
 					.header("Accept", "*/*")
 					.exchange()
 					.expectStatus().isOk()
-					.expectHeader().contentType(MediaType.parseMediaType("application/javascript"));
+					.expectHeader().contentType(getExpectedMediaTypeForJavaScript());
 		//@formatter:on
 	}
+
+	abstract MediaType getExpectedMediaTypeForJavaScript();
 
 	@Test
 	public void should_return_correct_content_type_for_css_extensions() {

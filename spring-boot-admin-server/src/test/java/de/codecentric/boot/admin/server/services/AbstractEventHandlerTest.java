@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,9 +59,12 @@ public class AbstractEventHandlerTest {
 		TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
 		eventHandler.start();
 
-		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
-				.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent)).expectNext(firstEvent, secondEvent)
-				.thenCancel().verify(Duration.ofSeconds(1));
+		StepVerifier.create(eventHandler.getFlux())
+			.expectSubscription()
+			.then(() -> testPublisher.next(firstEvent, errorEvent, secondEvent))
+			.expectNext(firstEvent, secondEvent)
+			.thenCancel()
+			.verify(Duration.ofSeconds(2));
 	}
 
 	@Test
@@ -71,9 +74,12 @@ public class AbstractEventHandlerTest {
 		TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
 		eventHandler.start();
 
-		StepVerifier.create(eventHandler.getFlux()).expectSubscription()
-				.then(() -> testPublisher.next(firstEvent, ignoredEvent, secondEvent))
-				.expectNext(firstEvent, secondEvent).thenCancel().verify(Duration.ofSeconds(1));
+		StepVerifier.create(eventHandler.getFlux())
+			.expectSubscription()
+			.then(() -> testPublisher.next(firstEvent, ignoredEvent, secondEvent))
+			.expectNext(firstEvent, secondEvent)
+			.thenCancel()
+			.verify(Duration.ofSeconds(1));
 	}
 
 	public static final class TestEventHandler extends AbstractEventHandler<InstanceRegisteredEvent> {

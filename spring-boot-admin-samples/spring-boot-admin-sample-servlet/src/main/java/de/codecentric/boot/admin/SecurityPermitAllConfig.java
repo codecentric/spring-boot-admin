@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,24 @@
 
 package de.codecentric.boot.admin;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.POST;
+
 @Profile("insecure")
 @Configuration(proxyBeanMethods = false)
-public class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
+public class SecurityPermitAllConfig {
 
 	private final AdminServerProperties adminServer;
 
@@ -36,13 +41,21 @@ public class SecurityPermitAllConfig extends WebSecurityConfigurerAdapter {
 		this.adminServer = adminServer;
 	}
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests((authorizeRequest) -> authorizeRequest.anyRequest().permitAll()).csrf((csrf) -> csrf
-				.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).ignoringRequestMatchers(
-						new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
-						new AntPathRequestMatcher(this.adminServer.path("/instances/*"), HttpMethod.DELETE.toString()),
+	@Bean
+	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+		http.authorizeHttpRequests((authorizeRequest) -> authorizeRequest.anyRequest().permitAll());
+
+		http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class)
+			.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+				.ignoringRequestMatchers(
+						new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()),
+						new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()),
 						new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
+
+		return http.build();
+
 	}
 
 }

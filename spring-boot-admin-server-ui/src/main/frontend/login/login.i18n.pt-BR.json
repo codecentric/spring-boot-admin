@@ -1,0 +1,14 @@
+{
+  "login": {
+    "button_login": "Entrar",
+    "logout_successful": "Logout com sucesso",
+    "remember_me": "Me lembrar",
+    "error": {
+      "invalid_username_or_password": "Usuário ou senha inválidos"
+    },
+    "placeholder": {
+      "username": "Nome do usuário",
+      "password": "Senha"
+    }
+  }
+}

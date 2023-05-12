@@ -2,8 +2,7 @@
   "instances": {
     "logfile": {
       "label": "Annálaskrá",
-      "download": "Niðurhal",
-      "fetch_failed": "Mistókst að sækja annálaskrá."
+      "download": "Niðurhal"
     }
   }
 }

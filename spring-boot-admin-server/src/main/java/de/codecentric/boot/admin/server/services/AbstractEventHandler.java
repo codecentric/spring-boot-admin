@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2020 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,10 @@ package de.codecentric.boot.admin.server.services;
 
 import java.util.logging.Level;
 
-import javax.annotation.Nullable;
-
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
@@ -52,11 +51,15 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
 
 	public void start() {
 		this.scheduler = this.createScheduler();
-		this.subscription = Flux.from(this.publisher).subscribeOn(this.scheduler).log(this.log.getName(), Level.FINEST)
-				.doOnSubscribe((s) -> this.log.debug("Subscribed to {} events", this.eventType)).ofType(this.eventType)
-				.cast(this.eventType).transform(this::handle)
-				.retryWhen(Retry.indefinitely().doBeforeRetry((s) -> this.log.warn("Unexpected error", s.failure())))
-				.subscribe();
+		this.subscription = Flux.from(this.publisher)
+			.subscribeOn(this.scheduler)
+			.log(this.log.getName(), Level.FINEST)
+			.doOnSubscribe((s) -> this.log.debug("Subscribed to {} events", this.eventType))
+			.ofType(this.eventType)
+			.cast(this.eventType)
+			.transform(this::handle)
+			.retryWhen(Retry.indefinitely().doBeforeRetry((s) -> this.log.warn("Unexpected error", s.failure())))
+			.subscribe();
 	}
 
 	protected abstract Publisher<Void> handle(Flux<T> publisher);

@@ -40,7 +40,7 @@
         <property name="headerFile" value="${checkstyle.header.file}"/>
         <property name="fileExtensions" value="java"/>
     </module>
-    <module name="com.puppycrawl.tools.checkstyle.checks.NewlineAtEndOfFileCheck" />
+    <module name="com.puppycrawl.tools.checkstyle.checks.NewlineAtEndOfFileCheck"/>
 
     <!-- TreeWalker Checks -->
     <module name="com.puppycrawl.tools.checkstyle.TreeWalker">
@@ -156,14 +156,6 @@
                       value="Line has leading space characters; indentation should be performed with tabs only."/>
             <property name="ignoreComments" value="true"/>
         </module>
-        <!-- BDD-Style not used at the moment -->
-        <!--        <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">-->
-        <!--            <property name="maximum" value="0"/>-->
-        <!--            <property name="format" value="org\.mockito\.Mockito\.(when|doThrow|doAnswer)"/>-->
-        <!--            <property name="message"-->
-        <!--                      value="Please use BDDMockito imports."/>-->
-        <!--            <property name="ignoreComments" value="true"/>-->
-        <!--        </module>-->
         <module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
             <property name="maximum" value="0"/>
             <property name="format" value="org\.junit\.(Assert|jupiter\.api\.Assertions)\.assert"/>

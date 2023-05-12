@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nullable;
-
 import lombok.Builder;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -141,7 +142,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	@Override
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
 		Message message;
-		StandardEvaluationContext context = createEvaluationContext(event, instance);
+		EvaluationContext context = createEvaluationContext(event, instance);
 		if (event instanceof InstanceRegisteredEvent) {
 			message = getRegisteredMessage(instance, context);
 		}
@@ -172,23 +173,23 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 				|| super.shouldNotify(event, instance);
 	}
 
-	protected Message getDeregisteredMessage(Instance instance, StandardEvaluationContext context) {
+	protected Message getDeregisteredMessage(Instance instance, EvaluationContext context) {
 		String activitySubtitle = evaluateExpression(context, deregisterActivitySubtitle);
 		return createMessage(instance, deRegisteredTitle, activitySubtitle, context);
 	}
 
-	protected Message getRegisteredMessage(Instance instance, StandardEvaluationContext context) {
+	protected Message getRegisteredMessage(Instance instance, EvaluationContext context) {
 		String activitySubtitle = evaluateExpression(context, registerActivitySubtitle);
 		return createMessage(instance, registeredTitle, activitySubtitle, context);
 	}
 
-	protected Message getStatusChangedMessage(Instance instance, StandardEvaluationContext context) {
+	protected Message getStatusChangedMessage(Instance instance, EvaluationContext context) {
 		String activitySubtitle = evaluateExpression(context, statusActivitySubtitle);
 		return createMessage(instance, statusChangedTitle, activitySubtitle, context);
 	}
 
 	protected Message createMessage(Instance instance, String registeredTitle, String activitySubtitle,
-			StandardEvaluationContext context) {
+			EvaluationContext context) {
 		List<Fact> facts = new ArrayList<>();
 		facts.add(new Fact(STATUS_KEY, instance.getStatusInfo().getStatus()));
 		facts.add(new Fact(SERVICE_URL_KEY, instance.getRegistration().getServiceUrl()));
@@ -196,25 +197,33 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		facts.add(new Fact(MANAGEMENT_URL_KEY, instance.getRegistration().getManagementUrl()));
 		facts.add(new Fact(SOURCE_KEY, instance.getRegistration().getSource()));
 
-		Section section = Section.builder().activityTitle(instance.getRegistration().getName())
-				.activitySubtitle(activitySubtitle).facts(facts).build();
+		Section section = Section.builder()
+			.activityTitle(instance.getRegistration().getName())
+			.activitySubtitle(activitySubtitle)
+			.facts(facts)
+			.build();
 
-		return Message.builder().title(registeredTitle).summary(messageSummary)
-				.themeColor(evaluateExpression(context, themeColor)).sections(singletonList(section)).build();
+		return Message.builder()
+			.title(registeredTitle)
+			.summary(messageSummary)
+			.themeColor(evaluateExpression(context, themeColor))
+			.sections(singletonList(section))
+			.build();
 	}
 
-	protected String evaluateExpression(StandardEvaluationContext context, Expression expression) {
+	protected String evaluateExpression(EvaluationContext context, Expression expression) {
 		return Objects.requireNonNull(expression.getValue(context, String.class));
 	}
 
-	protected StandardEvaluationContext createEvaluationContext(InstanceEvent event, Instance instance) {
+	protected EvaluationContext createEvaluationContext(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
-		return context;
+		return SimpleEvaluationContext
+			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+			.withRootObject(root)
+			.build();
 	}
 
 	@Nullable

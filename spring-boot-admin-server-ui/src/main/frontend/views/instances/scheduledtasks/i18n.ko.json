@@ -8,7 +8,7 @@
         "runnable": "실행가능",
         "title": "Cron"
       },
-      "fetch_failed": "스케쥴 작업을 가져오는데 실패했습니다.",
+
       "fixed_delay": {
         "initial_delay_ms": "기본 지연 (ms)",
         "interval_ms": "반복 주기 (ms)",

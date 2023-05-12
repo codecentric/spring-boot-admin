@@ -3,7 +3,7 @@
     "startup": {
       "label": "Inicio",
       "expand_all": "Expandir todo",
-      "fetch_failed": "Falla recuperando información de inicio.",
+
       "column": {
         "name": "Nombre",
         "duration": "Duración (ms)",

@@ -11,7 +11,6 @@
         "deleted": "Removido",
         "delete": "Remover",
         "delete_failed": "Falha",
-        "fetch_failed": "Falha na busca das rotas do gateway.",
         "filters": "Filtros",
         "id": "Id",
         "loading": "Carregando Rotas...",
@@ -22,7 +21,6 @@
         "uri": "URI"
       },
       "filters": {
-        "fetch_failed": "Falha na busca dos Filtros Globais.",
         "filter_name": "Nome do filtro",
         "loading": "Carregando Filtros Globais...",
         "no_filters_found": "Nunhum Filtro Global foi encontrado.",

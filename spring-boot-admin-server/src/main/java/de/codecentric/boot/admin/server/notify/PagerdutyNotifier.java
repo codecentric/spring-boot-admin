@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
+import jakarta.annotation.Nullable;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -45,7 +45,7 @@ import static java.util.Collections.singletonList;
 public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 
 	public static final URI DEFAULT_URI = URI
-			.create("https://events.pagerduty.com/generic/2010-04-15/create_event.json");
+		.create("https://events.pagerduty.com/generic/2010-04-15/create_event.json");
 
 	private static final String DEFAULT_DESCRIPTION = "#{instance.registration.name}/#{instance.id} is #{instance.statusInfo.status}";
 
@@ -90,7 +90,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 	@Override
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
 		return Mono
-				.fromRunnable(() -> restTemplate.postForEntity(url, createPagerdutyEvent(event, instance), Void.class));
+			.fromRunnable(() -> restTemplate.postForEntity(url, createPagerdutyEvent(event, instance), Void.class));
 	}
 
 	protected Map<String, Object> createPagerdutyEvent(InstanceEvent event, Instance instance) {
@@ -132,9 +132,10 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
-
+		SimpleEvaluationContext context = SimpleEvaluationContext
+			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
+			.withRootObject(root)
+			.build();
 		return description.getValue(context, String.class);
 	}
 
@@ -147,16 +148,12 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return details;
 	}
 
-	public void setUrl(URI url) {
-		this.url = url;
-	}
-
 	public URI getUrl() {
 		return url;
 	}
 
-	public void setClient(@Nullable String client) {
-		this.client = client;
+	public void setUrl(URI url) {
+		this.url = url;
 	}
 
 	@Nullable
@@ -164,8 +161,8 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return client;
 	}
 
-	public void setClientUrl(@Nullable URI clientUrl) {
-		this.clientUrl = clientUrl;
+	public void setClient(@Nullable String client) {
+		this.client = client;
 	}
 
 	@Nullable
@@ -173,8 +170,8 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return clientUrl;
 	}
 
-	public void setServiceKey(@Nullable String serviceKey) {
-		this.serviceKey = serviceKey;
+	public void setClientUrl(@Nullable URI clientUrl) {
+		this.clientUrl = clientUrl;
 	}
 
 	@Nullable
@@ -182,12 +179,16 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return serviceKey;
 	}
 
-	public void setDescription(String description) {
-		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
+	public void setServiceKey(@Nullable String serviceKey) {
+		this.serviceKey = serviceKey;
 	}
 
 	public String getDescription() {
 		return description.getExpressionString();
+	}
+
+	public void setDescription(String description) {
+		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {

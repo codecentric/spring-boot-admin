@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2018 the original author or authors.
+ * Copyright 2014-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 
 	private List<PathPattern> withNewPatterns(Set<PathPattern> patterns) {
 		return patterns.stream()
-				.map((pattern) -> getPathPatternParser().parse(PathUtils.normalizePath(adminContextPath + pattern)))
-				.collect(toList());
+			.map((pattern) -> getPathPatternParser().parse(PathUtils.normalizePath(adminContextPath + pattern)))
+			.collect(toList());
 	}
 
 }

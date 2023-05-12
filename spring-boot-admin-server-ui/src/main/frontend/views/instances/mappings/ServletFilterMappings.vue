@@ -16,7 +16,7 @@
 
 <template>
   <div class="table-container">
-    <table class="table is-fullwidth" v-if="servletFilters.length">
+    <table v-if="servletFilters.length" class="table is-fullwidth">
       <thead>
         <tr>
           <th v-text="$t('instances.mappings.url_pattern')" />
@@ -26,20 +26,25 @@
         </tr>
       </thead>
       <tbody>
-        <template v-for="servletFilterMapping in servletFilters">
-          <tr :key="`${servletFilterMapping.name}`">
+        <template
+          v-for="servletFilterMapping in servletFilters"
+          :key="`${servletFilterMapping.name}`"
+        >
+          <tr>
             <td>
-              <div v-for="mapping in servletFilterMapping.urlPatternMappings"
-                   :key="`${servletFilterMapping.name}_${mapping}`"
+              <div
+                v-for="mapping in servletFilterMapping.urlPatternMappings"
+                :key="`${servletFilterMapping.name}_${mapping}`"
               >
                 <code v-text="mapping" />
               </div>
             </td>
             <td>
-              <div v-for="mapping in servletFilterMapping.servletNameMappings"
-                   :key="`${servletFilterMapping.name}_${mapping}`"
-                   v-text="mapping"
-                   class="is-breakable"
+              <div
+                v-for="mapping in servletFilterMapping.servletNameMappings"
+                :key="`${servletFilterMapping.name}_${mapping}`"
+                class="is-breakable"
+                v-text="mapping"
               />
             </td>
             <td class="is-breakable" v-text="servletFilterMapping.name" />
@@ -51,12 +56,12 @@
   </div>
 </template>
 <script>
-  export default {
-    props: {
-      servletFilters: {
-        type: Array,
-        default: () => []
-      }
-    }
-  }
+export default {
+  props: {
+    servletFilters: {
+      type: Array,
+      default: () => [],
+    },
+  },
+};
 </script>

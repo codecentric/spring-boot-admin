@@ -2,7 +2,6 @@
   "instances": {
     "flyway": {
       "label": "Flyway",
-      "fetch_failed": "Mistókst að sækja Flyway skyrslur.",
       "type": "Gerð",
       "checksum": "Checksum",
       "version": "Útgafa",

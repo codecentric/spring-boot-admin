@@ -1,0 +1,19 @@
+:revnumber: {project-version}
+:revdate: {commit-time}
+:sectanchors:
+:sectlinks:
+:sectnums:
+:icons: font
+:hide-uri-scheme:
+:last-update-label!:
+:tabsize: 2
+
+.The Monitoring tool for Spring Boot
+[.hero]
+****
+Monitor your Spring Boot Applications with ease.
+ An open source monitoring tool build by developers for developers.
+
+link:https://github.com/codecentric/spring-boot-admin["GitHub",role=btn btn-secondary]
+link:getting-started.html["Get Started",role=btn btn-primary]
+****

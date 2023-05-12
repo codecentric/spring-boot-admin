@@ -8,10 +8,6 @@
       "executing": "Выполнение...",
       "execution_failed": "Ошибка при выполнении.",
       "execution_successful": "Выполнено успешно.",
-      "fetch_failed": "Ошибка при получении JMX Beans.",
-      "mbean": {
-        "fetch_failed": "Ошибка при получении атрибутов."
-      },
       "mbeans": "MBeans"
     }
   }

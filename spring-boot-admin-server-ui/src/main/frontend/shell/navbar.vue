@@ -15,171 +15,120 @@
   -->
 
 <template>
-  <nav id="navigation" class="navbar is-fixed-top">
-    <div class="container">
-      <div class="navbar-brand">
-        <router-link class="navbar-item logo" to="/" v-html="brand" />
-
-        <div class="navbar-burger burger" @click.stop="showMenu = !showMenu">
-          <span />
-          <span />
-          <span />
-        </div>
-      </div>
-      <div class="navbar-menu" :class="{'is-active' : showMenu}">
-        <div class="navbar-end">
-          <template v-for="view in mainViews">
-            <div class="navbar-item "
-                 :key="view.name"
-                 :class="{'has-dropdown is-hoverable': hasSubitems(view.name)}"
-            >
-              <navbar-link :applications="applications" :error="error" :has-subitems="hasSubitems(view.name)"
-                           :view="view"
-              />
-
-              <div v-if="hasSubitems(view.name)" class="navbar-dropdown">
-                <template v-for="subitem in getSubitems(view.name)">
-                  <navbar-link :key="subitem.name" :applications="applications" :error="error" :view="subitem" />
-                </template>
-              </div>
-            </div>
-          </template>
-
-          <div class="navbar-item has-dropdown is-hoverable" v-if="userName">
-            <a class="navbar-link">
-              <font-awesome-icon icon="user-circle" size="lg" />&nbsp;<span v-text="userName" />
-            </a>
-            <div class="navbar-dropdown">
-              <navbar-link v-for="userSubMenuItem in userSubMenuItems" :key="userSubMenuItem.name"
-                           :applications="applications" :error="error" :view="userSubMenuItem"
-              />
-
-              <form action="logout" method="post">
-                <input v-if="csrfToken" type="hidden" :name="csrfParameterName" :value="csrfToken">
-                <button class="button is-icon" type="submit" value="logout">
-                  <font-awesome-icon icon="sign-out-alt" />&nbsp;<span v-text="$t('navbar.logout')" />
-                </button>
-              </form>
-            </div>
-          </div>
-          <navbar-item-language-selector v-if="availableLocales.length > 1" :current-locale="$i18n.locale"
-                                         :available-locales="availableLocales"
-                                         @localeChanged="changeLocale"
-          />
-        </div>
-      </div>
-    </div>
-  </nav>
+  <sba-navbar :brand="brand" class="text-sm lg:text-base">
+    <sba-navbar-nav>
+      <template v-for="item in topLevelViews" :key="item.id">
+        <template v-if="item.children.length === 0">
+          <sba-nav-item
+            v-if="!item.href && item.name"
+            :to="{ name: item.name }"
+          >
+            <component :is="item.handle" :error="error" />
+          </sba-nav-item>
+          <sba-nav-item
+            v-else-if="item.href !== '#'"
+            :href="item.href"
+            target="blank"
+          >
+            <component :is="item.handle" :error="error" />
+          </sba-nav-item>
+          <sba-nav-item v-else>
+            <component :is="item.handle" :error="error" />
+          </sba-nav-item>
+        </template>
+        <template v-else>
+          <sba-nav-dropdown :href="item.href">
+            <template #label>
+              <component :is="item.handle" />
+            </template>
+            <template #default>
+              <sba-dropdown-item
+                v-for="child in item.children"
+                :key="child.name"
+                :to="{ name: child.name }"
+                v-bind="{ ...child }"
+              >
+                <component :is="child.handle" :error="error" />
+              </sba-dropdown-item>
+            </template>
+          </sba-nav-dropdown>
+        </template>
+      </template>
+    </sba-navbar-nav>
+    <sba-navbar-nav class="ml-auto">
+      <sba-nav-language-selector
+        :available-locales="AVAILABLE_LANGUAGES"
+        @locale-changed="changeLocale"
+      />
+      <sba-nav-usermenu v-if="sbaConfig.user" />
+      <sba-nav-item v-if="isAboutEnabled" :to="{ name: 'about' }">
+        <FontAwesomeIcon
+          :aria-label="t('about.label')"
+          icon="question-circle"
+        />
+      </sba-nav-item>
+    </sba-navbar-nav>
+  </sba-navbar>
 </template>
 
-<script>
-import sbaConfig from '@/sba-config'
-import {compareBy} from '@/utils/collections';
-import {getAvailableLocales} from '@/i18n';
+<script lang="ts" setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import moment from 'moment';
-import NavbarItemLanguageSelector from '@/shell/navbar-item-language-selector';
-import NavbarLink from '@/shell/NavbarLink.vue';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-const readCookie = (name) => {
-  const match = document.cookie.match(new RegExp('(^|;\\s*)(' + name + ')=([^;]*)'));
-  return (match ? decodeURIComponent(match[3]) : null);
+import SbaDropdownItem from '@/components/sba-dropdown/sba-dropdown-item.vue';
+import SbaNavDropdown from '@/components/sba-nav/sba-nav-dropdown.vue';
+import SbaNavItem from '@/components/sba-nav/sba-nav-item.vue';
+import SbaNavbarNav from '@/components/sba-navbar/sba-navbar-nav.vue';
+import SbaNavbar from '@/components/sba-navbar/sba-navbar.vue';
+
+import { useViewRegistry } from '@/composables/ViewRegistry';
+import { AVAILABLE_LANGUAGES } from '@/i18n';
+import sbaConfig from '@/sba-config';
+import SbaNavLanguageSelector from '@/shell/sba-nav-language-selector.vue';
+import SbaNavUsermenu from '@/shell/sba-nav-usermenu.vue';
+import { compareBy } from '@/utils/collections';
+
+defineProps({
+  error: {
+    type: Error,
+    default: null,
+  },
+});
+
+const { views, getViewByName } = useViewRegistry();
+const i18n = useI18n();
+const t = i18n.t;
+
+const brand = sbaConfig.uiSettings.brand;
+
+const topLevelViews = computed(() => {
+  let rootViews = views
+    .filter((view) => {
+      return (
+        !view.parent &&
+        !view.name?.includes('instance') &&
+        !view.name?.includes('about') &&
+        !view.path?.includes('/instance') &&
+        view.isEnabled()
+      );
+    })
+    .sort(compareBy((v) => v.order));
+
+  return rootViews.map((rootView) => {
+    const children = views.filter((v) => v.parent === rootView.name);
+
+    return {
+      ...rootView,
+      children,
+    };
+  });
+});
+
+const isAboutEnabled = getViewByName('about')?.isEnabled();
+const changeLocale = (locale) => {
+  i18n.locale.value = locale;
+  moment.locale(locale);
 };
-
-export default {
-  components: {NavbarLink, NavbarItemLanguageSelector},
-  data: () => ({
-    showMenu: false,
-    brand: '<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>',
-    userName: null,
-    csrfToken: null,
-    csrfParameterName: null,
-    currentLanguage: null
-  }),
-  props: {
-    views: {
-      type: Array,
-      default: () => []
-    },
-    applications: {
-      type: Array,
-      default: () => [],
-    },
-    error: {
-      type: Error,
-      default: null
-    }
-  },
-  computed: {
-    enabledViews() {
-      return this.views.filter(
-        view => view.handle && (typeof view.isEnabled === 'undefined' || view.isEnabled())
-      ).sort(compareBy(v => v.order));
-    },
-    mainViews() {
-      return this.enabledViews.filter(v => !v.parent);
-    },
-    userSubMenuItems() {
-      return this.enabledViews.filter(v => v.parent === 'user');
-    }
-  },
-  methods: {
-    changeLocale(locale) {
-      this.$i18n.locale = locale;
-      moment.locale(this.$i18n.locale);
-    },
-    getSubitems(parent) {
-      return this.enabledViews.filter(v => v.parent === parent);
-    },
-    hasSubitems(parent) {
-      return this.getSubitems(parent).length > 0;
-    },
-  },
-  created() {
-    this.brand = sbaConfig.uiSettings.brand;
-    this.userName = sbaConfig.user ? sbaConfig.user.name : null;
-    this.availableLocales = getAvailableLocales();
-    this.csrfToken = readCookie('XSRF-TOKEN');
-    this.csrfParameterName = sbaConfig.csrf.parameterName;
-  },
-  mounted() {
-    document.documentElement.classList.add('has-navbar-fixed-top');
-  },
-  beforeDestroy() {
-    document.documentElement.classList.remove('has-navbar-fixed-top')
-  }
-}
 </script>
-
-<style lang="scss">
-@import "~@/assets/css/utilities";
-
-.logo {
-  align-self: center;
-  flex-basis: content;
-  max-height: 2.25em;
-  padding: 0.5em 1em 0.5em 0.5em;
-  font-size: 1.5em;
-  font-weight: 600;
-  white-space: nowrap;
-
-  img {
-    margin-right: 0.5em;
-  }
-}
-</style>
-
-<style lang="scss" scoped>
-.button {
-  padding: 0.375rem 3rem 0.375rem 1rem;
-  font-size: inherit;
-  color: inherit;
-  text-align: left;
-  width: 100%;
-  display: block;
-
-  &:hover {
-    background-color: hsl(0deg, 0%, 96%);
-    color: hsl(0deg, 0%, 4%);
-  }
-}
-</style>
