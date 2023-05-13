@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/vue';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ref } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
@@ -8,10 +8,6 @@ import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 import Wallboard from '@/views/wallboard/index.vue';
 
-vi.mock('@/composables/useApplicationStore', () => ({
-  useApplicationStore: vi.fn(),
-}));
-
 describe('Wallboard', () => {
   let applicationsInitialized;
   let applications;
@@ -19,9 +15,11 @@ describe('Wallboard', () => {
 
   beforeEach(async () => {
     applicationsInitialized = ref(false);
-    applications = ref([]);
+    applications = ref([1, 2, 3]);
     error = ref(null);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     useApplicationStore.mockReturnValue({
       applicationsInitialized,
       applications,

@@ -46,7 +46,7 @@
             <p
               class="application__instances is-muted"
               v-text="
-                $t('wallboard.instances_count', application.instances.length)
+                t('wallboard.instances_count', application.instances.length)
               "
             />
           </div>
