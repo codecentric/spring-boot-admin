@@ -107,8 +107,6 @@ spring:
   boot:
     admin:
       ui:
-        availableLanguages:
-          - "de"
         view-settings:
           - name: "journal"
             enabled: false
