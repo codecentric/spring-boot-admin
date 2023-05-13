@@ -15,7 +15,7 @@ describe('Wallboard', () => {
 
   beforeEach(async () => {
     applicationsInitialized = ref(false);
-    applications = ref([1, 2, 3]);
+    applications = ref([]);
     error = ref(null);
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
