@@ -61,8 +61,11 @@
         @locale-changed="changeLocale"
       />
       <sba-nav-usermenu v-if="sbaConfig.user" />
-      <sba-nav-item :to="{ name: 'about' }">
-        <FontAwesomeIcon icon="question-circle" />
+      <sba-nav-item v-if="isAboutEnabled" :to="{ name: 'about' }">
+        <FontAwesomeIcon
+          :aria-label="t('about.label')"
+          icon="question-circle"
+        />
       </sba-nav-item>
     </sba-navbar-nav>
   </sba-navbar>
@@ -94,8 +97,9 @@ defineProps({
   },
 });
 
-const { views } = useViewRegistry();
+const { views, getViewByName } = useViewRegistry();
 const i18n = useI18n();
+const t = i18n.t;
 
 const brand = sbaConfig.uiSettings.brand;
 
@@ -106,7 +110,8 @@ const topLevelViews = computed(() => {
         !view.parent &&
         !view.name?.includes('instance') &&
         !view.name?.includes('about') &&
-        !view.path?.includes('/instance')
+        !view.path?.includes('/instance') &&
+        view.isEnabled()
       );
     })
     .sort(compareBy((v) => v.order));
@@ -121,6 +126,7 @@ const topLevelViews = computed(() => {
   });
 });
 
+const isAboutEnabled = getViewByName('about')?.isEnabled();
 const changeLocale = (locale) => {
   i18n.locale.value = locale;
   moment.locale(locale);

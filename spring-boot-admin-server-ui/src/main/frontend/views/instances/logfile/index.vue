@@ -184,7 +184,7 @@ export default {
               document.querySelector('.log-viewer > table')?.appendChild(row);
             });
 
-            if (!this.atBottom) {
+            if (this.atBottom) {
               this.scrollToBottom();
             }
           },
