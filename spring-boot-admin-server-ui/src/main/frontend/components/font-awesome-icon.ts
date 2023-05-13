@@ -83,6 +83,7 @@ library.add(
   faDownload,
   faExclamation,
   faExclamationTriangle,
+  faExclamationCircle,
   faFilter,
   faFrownOpen,
   faHeartbeat,

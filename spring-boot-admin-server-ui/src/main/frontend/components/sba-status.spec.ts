@@ -30,9 +30,6 @@ describe('application-status', () => {
         status,
         date,
       },
-      stubs: {
-        'font-awesome-icon': true,
-      },
     });
   }
 

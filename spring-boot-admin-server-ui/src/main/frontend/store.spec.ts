@@ -39,7 +39,7 @@ describe('store.js', () => {
     applicationStore.addEventListener('added', addedListener);
     applicationStore.addEventListener('updated', updateListener);
     applicationStore.addEventListener('removed', removedListener);
-    applicationStore.addEventListener('error', (error) => console.log(error));
+    applicationStore.addEventListener('error', (error) => console.error(error));
   });
 
   afterEach(() => {

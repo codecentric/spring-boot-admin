@@ -7,7 +7,7 @@ const context = import.meta.globEager('../**/(*.)?i18n.*.json');
 const messages = Object.keys(context)
   .map((key) => {
     const localeFromFile = /\.*i18n\.?([^/]*)\.json$/.exec(key);
-    const messages = context[key].default;
+    const messages = (context[key] as { default: never }).default;
     if (localeFromFile[1]) {
       return {
         [localeFromFile[1]]: messages,
@@ -21,7 +21,7 @@ const messages = Object.keys(context)
 export const AVAILABLE_LANGUAGES = getAvailableLocales();
 
 function getAvailableLocales() {
-  let valueFromServer = sbaConfig.uiSettings.availableLanguages;
+  const valueFromServer = sbaConfig.uiSettings.availableLanguages;
 
   const strings = Object.keys(messages);
   return isEmpty(valueFromServer)

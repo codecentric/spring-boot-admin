@@ -14,7 +14,7 @@ describe('Auditevents', () => {
   });
 
   beforeEach(async () => {
-    await render(Auditevents, {
+    render(Auditevents, {
       props: {
         instance: createInstance(fetchAuditevents),
       },
@@ -29,7 +29,7 @@ describe('Auditevents', () => {
     const input = await screen.findByPlaceholderText(
       'instances.auditevents.principal'
     );
-    userEvent.type(input, 'Abc');
+    await userEvent.type(input, 'Abc');
 
     await waitFor(() => {
       const calls = fetchAuditevents.mock.calls;
@@ -41,7 +41,7 @@ describe('Auditevents', () => {
     const input = await screen.findByPlaceholderText(
       'instances.auditevents.type'
     );
-    userEvent.type(input, 'AUTHENTICATION_FAILURE');
+    await userEvent.type(input, 'AUTHENTICATION_FAILURE');
 
     await waitFor(() => {
       const calls = fetchAuditevents.mock.calls;
@@ -50,7 +50,7 @@ describe('Auditevents', () => {
   });
 
   it('handles error when fetching data', async () => {
-    await render(Auditevents, {
+    render(Auditevents, {
       props: {
         instance: createInstance(
           vi.fn().mockRejectedValue({

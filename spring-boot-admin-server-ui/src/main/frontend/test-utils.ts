@@ -57,7 +57,7 @@ export const render = (testComponent, options?) => {
           SbaModalPlugin,
           components,
         ],
-        stubs: { 'font-awesome-icon': true, RouterLink: RouterLinkStub },
+        stubs: { RouterLink: RouterLinkStub },
       },
     },
     options

@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => {
     test: {
       root: __dirname,
       environment: 'jsdom',
-      setupFiles: [resolve(__dirname, 'tests/setup.js')],
+      setupFiles: [resolve(frontendDir, 'tests/setup.js')],
       include: [
         resolve(
           frontendDir,

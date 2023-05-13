@@ -4,9 +4,9 @@ import { initialize, mswDecorator } from 'msw-storybook-addon';
 import './storybook.css';
 import '@/index.css';
 
-import components from '@/components/index.js';
+import components from '@/components';
 
-import i18n from '@/i18n/index.js';
+import i18n from '@/i18n';
 import applicationsEndpoint from '@/mocks/applications';
 import mappingsEndpoint from '@/mocks/instance/mappings';
 

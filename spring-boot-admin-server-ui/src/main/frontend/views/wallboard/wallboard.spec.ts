@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/vue';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
@@ -7,6 +7,10 @@ import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 import Wallboard from '@/views/wallboard/index.vue';
+
+vi.mock('@/composables/useApplicationStore', () => ({
+  useApplicationStore: vi.fn(),
+}));
 
 describe('Wallboard', () => {
   let applicationsInitialized;
