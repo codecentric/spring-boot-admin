@@ -1,7 +1,8 @@
 import { screen } from '@testing-library/vue';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { render } from '@/test-utils';
-import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings';
+import DispatcherMappings from '@/views/instances/mappings/DispatcherMappings.vue';
 
 describe('DispatcherMappings.vue', () => {
   describe('dispatcherServlet available', () => {

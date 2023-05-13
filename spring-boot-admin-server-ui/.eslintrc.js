@@ -17,6 +17,7 @@ module.exports = {
   plugins: ['prettier', '@typescript-eslint'],
   ignorePatterns: ['dist'],
   rules: {
+    'no-console': ['error', { allow: ['warn', 'error'] }],
     'vue/multi-word-component-names': 'off',
     'vue/no-v-html': 'off',
     'vue/no-reserved-component-names': 'off',

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { cloneDeep } from 'lodash-es';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { StartupActuatorService } from './startup-actuator';
 
@@ -27,7 +28,7 @@ describe('StartupActuatorService', () => {
   });
 
   it('should find element by id', () => {
-    let item8 = StartupActuatorService.getById(events, 8);
+    const item8 = StartupActuatorService.getById(events, 8);
 
     expect.assertions(1);
     expect(item8).toEqual({
@@ -50,9 +51,9 @@ describe('StartupActuatorService', () => {
   });
 
   it('should add parents as reference', () => {
-    let tree = StartupActuatorService.parseAsTree(data);
-    let child = tree.getById(8);
-    let parent = tree.getById(7);
+    const tree = StartupActuatorService.parseAsTree(data);
+    const child = tree.getById(8);
+    const parent = tree.getById(7);
 
     expect.assertions(2);
     expect(child.startupStep.parent).toBe(parent);
@@ -60,22 +61,22 @@ describe('StartupActuatorService', () => {
   });
 
   it('should add children as reference', () => {
-    let tree = StartupActuatorService.parseAsTree(data);
-    let parent = tree.getById(7);
-    let child = tree.getById(8);
+    const tree = StartupActuatorService.parseAsTree(data);
+    const parent = tree.getById(7);
+    const child = tree.getById(8);
 
     expect.assertions(1);
     expect(parent.startupStep.children).toContain(child);
   });
 
   it('should extract map from event tags', () => {
-    let tag = {
+    const tag = {
       key: 'event',
       value:
         'ServletRequestHandledEvent: url=[/applications]; client=[0:0:0:0:0:0:0:1]; method=[GET, POST]; servlet=[dispatcherServlet]; session=[null]; user=[null]; time=[13ms]; status=[OK]',
     };
 
-    let parsedTag = StartupActuatorService.parseTag(tag);
+    const parsedTag = StartupActuatorService.parseTag(tag);
 
     expect.assertions(1);
     expect(parsedTag).toStrictEqual({
@@ -95,8 +96,8 @@ describe('StartupActuatorService', () => {
   });
 
   it('should parse tags when iterating startupSteps', () => {
-    let tree = StartupActuatorService.parseAsTree(data);
-    let children = tree.getByParentId(6);
+    const tree = StartupActuatorService.parseAsTree(data);
+    const children = tree.getByParentId(6);
 
     expect.assertions(2);
     expect(children.length).toBe(25);
@@ -107,9 +108,9 @@ describe('StartupActuatorService', () => {
   });
 
   it('should find start and end time', () => {
-    let tree = StartupActuatorService.parseAsTree(data);
-    let startTime = tree.getStartTime();
-    let endTime = tree.getEndTime();
+    const tree = StartupActuatorService.parseAsTree(data);
+    const startTime = tree.getStartTime();
+    const endTime = tree.getEndTime();
 
     expect.assertions(2);
     expect(startTime).toBe(Date.parse('2020-12-10T21:53:41.836728041Z'));
@@ -117,8 +118,8 @@ describe('StartupActuatorService', () => {
   });
 
   it('should return progress of event in context of whole tree', () => {
-    let tree = StartupActuatorService.parseAsTree(data);
-    let period = tree.getPeriod(tree.getById(1));
+    const tree = StartupActuatorService.parseAsTree(data);
+    const period = tree.getPeriod(tree.getById(1));
 
     expect.assertions(2);
     expect(period.start).toBe(0);
@@ -126,16 +127,16 @@ describe('StartupActuatorService', () => {
   });
 
   it('should return the path in tree for a given id (no pun intended)', () => {
-    let tree = StartupActuatorService.parseAsTree(data);
+    const tree = StartupActuatorService.parseAsTree(data);
 
-    let path = tree.getPath(10);
+    const path = tree.getPath(10);
     expect.assertions(1);
     expect(path).toEqual([10, 9, 6, 5]);
   });
 
   it('should parse duration to seconds', () => {
-    let tree = StartupActuatorService.parseAsTree(data);
-    let event = tree.getById(1);
+    const tree = StartupActuatorService.parseAsTree(data);
+    const event = tree.getById(1);
 
     expect.assertions(1);
     expect(event.duration).toBe(45.279861);

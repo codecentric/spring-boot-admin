@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { describe, expect, it, vi } from 'vitest';
+
 import { ApplicationLoggers, InstanceLoggers } from './service';
 
 describe('InstanceLoggers', () => {
   const instance = {
     id: 'test-1',
-    fetchLoggers: jest.fn(),
-    configureLogger: jest.fn(),
+    fetchLoggers: vi.fn(),
+    configureLogger: vi.fn(),
   };
   const service = new InstanceLoggers(instance);
 
@@ -80,8 +82,8 @@ describe('InstanceLoggers', () => {
 
 describe('ApplicationLoggers', () => {
   const application = {
-    fetchLoggers: jest.fn(),
-    configureLogger: jest.fn(),
+    fetchLoggers: vi.fn(),
+    configureLogger: vi.fn(),
   };
   const service = new ApplicationLoggers(application);
 

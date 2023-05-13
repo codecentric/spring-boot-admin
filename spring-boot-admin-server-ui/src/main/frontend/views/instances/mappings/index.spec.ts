@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/vue';
+import { describe, expect, it, vi } from 'vitest';
 
-import Mappings from './index';
+import Mappings from './index.vue';
 
 import { mappings } from '@/mocks/instance/mappings/data';
 import Instance from '@/services/instance.js';
@@ -86,8 +87,8 @@ describe('Mappings', () => {
   }
 
   function createInstanceWithMappingsData(data) {
-    let instance = new Instance({ id: 4711 });
-    instance.fetchMappings = () => ({
+    const instance = new Instance({ id: 4711 });
+    instance.fetchMappings = vi.fn().mockReturnValue({
       headers: {
         'content-type': 'application/vnd.spring-boot.actuator.v2',
       },

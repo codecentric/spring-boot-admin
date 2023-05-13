@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { describe, expect, it } from 'vitest';
+
 import objToString from './objToString';
 
 describe('objToString should', () => {
@@ -42,10 +44,10 @@ d:
     - 3
     - 4
 e:
-  f: 
+  f:
   g: 1
   h: null
-  i: 
+  i:
   j: {}
   k:
     - 1
@@ -55,6 +57,6 @@ e:
       b: foo
     -
       b: 2`;
-    expect(objToString(obj)).toBe(str);
+    expect(objToString(obj)).toEqual(str);
   });
 });

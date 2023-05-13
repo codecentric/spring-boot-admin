@@ -14,6 +14,7 @@ const Template = (args) => {
     },
     setup() {
       const showMenu = ref(false);
+      // eslint-disable-next-line no-console
       const handleClick = (e) => console.log(e);
       return { ...args, showMenu, onClick: handleClick };
     },

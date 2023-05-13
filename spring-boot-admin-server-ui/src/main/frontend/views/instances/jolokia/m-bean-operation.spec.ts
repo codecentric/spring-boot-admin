@@ -15,9 +15,10 @@
  */
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
+import { describe, expect, it } from 'vitest';
 
 import { render } from '@/test-utils';
-import MBeanOperation from '@/views/instances/jolokia/m-bean-operation';
+import MBeanOperation from '@/views/instances/jolokia/m-bean-operation.vue';
 
 describe('m-bean-operation.vue', () => {
   it('should open confirmation modal if operation contains no arguments', async () => {

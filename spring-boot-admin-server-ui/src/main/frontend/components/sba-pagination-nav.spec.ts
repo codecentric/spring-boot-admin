@@ -22,7 +22,7 @@ import { render } from '@/test-utils';
 
 describe('sba-pagination-nav.vue', () => {
   it('should show a button when page count is 0', async () => {
-    await render(SbaPaginationNav, {
+    render(SbaPaginationNav, {
       props: {
         pageCount: 0,
       },
@@ -38,7 +38,7 @@ describe('sba-pagination-nav.vue', () => {
   });
 
   it('should show a button when page count is 1', async () => {
-    await render(SbaPaginationNav, {
+    render(SbaPaginationNav, {
       props: {
         pageCount: 1,
       },
@@ -56,7 +56,7 @@ describe('sba-pagination-nav.vue', () => {
   });
 
   it('should show first and last page when page count is 12 including intermediate pages', async () => {
-    await render(SbaPaginationNav, {
+    render(SbaPaginationNav, {
       props: {
         pageCount: 11,
         modelValue: 6,

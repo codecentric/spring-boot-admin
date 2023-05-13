@@ -7,7 +7,7 @@
     "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
     "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --sourcemap --mode development",
     "dev": "vite",
-    "test": "vitest run",
+    "test": "vitest run --silent",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "lint": "eslint --ext .js,.vue src/main/frontend",

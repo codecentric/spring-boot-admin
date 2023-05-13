@@ -103,14 +103,7 @@ import { debounceTime, fromEvent } from 'rxjs';
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
 import autolink from '@/utils/autolink';
-import {
-  animationFrameScheduler,
-  concatAll,
-  concatMap,
-  map,
-  of,
-  tap,
-} from '@/utils/rxjs';
+import { animationFrameScheduler, concatAll, concatMap, map, of, tap } from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 

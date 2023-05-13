@@ -6,24 +6,27 @@ import { createI18n } from 'vue-i18n';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 import components from './components/index.js';
-import terms from './i18n/i18n.en.json';
 import SbaModalPlugin from './plugins/modal';
 
 import { createViewRegistry } from '@/composables/ViewRegistry';
 import ViewRegistry from '@/viewRegistry';
 
+let terms = {};
+const modules: Record<string, any> = import.meta.glob('@/**/i18n.en.json', {
+  eager: true,
+});
+for (const modulesKey in modules) {
+  terms = { ...terms, ...modules[modulesKey] };
+}
 export let router;
 createViewRegistry();
 
-export const render = (testComponent, options?: any) => {
+export const render = (testComponent, options?) => {
   const routes = [{ path: '/', component: testComponent }];
   if (testComponent.install) {
     const viewRegistry = new ViewRegistry();
     testComponent.install({ viewRegistry });
-    const routeForComponent = viewRegistry._toRoutes(
-      viewRegistry.views,
-      () => true
-    )[0];
+    const routeForComponent = viewRegistry._toRoutes(() => true)[0];
 
     routes.push({
       ...routeForComponent,
@@ -42,6 +45,7 @@ export const render = (testComponent, options?: any) => {
         plugins: [
           router,
           createI18n({
+            locale: options?.locale || 'en',
             messages: {
               en: terms,
             },
@@ -53,7 +57,7 @@ export const render = (testComponent, options?: any) => {
           SbaModalPlugin,
           components,
         ],
-        stubs: { 'font-awesome-icon': true, RouterLink: RouterLinkStub },
+        stubs: { RouterLink: RouterLinkStub },
       },
     },
     options

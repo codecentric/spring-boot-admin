@@ -13,58 +13,60 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { describe, expect, it, vi } from 'vitest';
+
 import { anyValueMatches } from './collections';
 
 describe('anyValueMatches', () => {
   it('should return predicate value', () => {
-    const predicate = jest.fn(() => true);
+    const predicate = vi.fn(() => true);
     expect(anyValueMatches('test', predicate)).toBe(true);
   });
 
   it('should call predicate for string', () => {
-    const predicate = jest.fn();
+    const predicate = vi.fn();
     anyValueMatches('test', predicate);
     expect(predicate).toHaveBeenCalledWith('test');
   });
 
   it('should call predicate for number', () => {
-    const predicate = jest.fn();
+    const predicate = vi.fn();
     anyValueMatches(1, predicate);
     expect(predicate).toHaveBeenCalledWith(1);
   });
 
   it('should call predicate for boolean', () => {
-    const predicate = jest.fn();
+    const predicate = vi.fn();
     anyValueMatches(true, predicate);
     expect(predicate).toHaveBeenCalledWith(true);
   });
 
   it('should call predicate for null', () => {
-    const predicate = jest.fn();
+    const predicate = vi.fn();
     anyValueMatches(null, predicate);
     expect(predicate).toHaveBeenCalledWith(null);
   });
 
   it('should call predicate for undefined', () => {
-    const predicate = jest.fn();
+    const predicate = vi.fn();
     anyValueMatches(undefined, predicate);
     expect(predicate).toHaveBeenCalledWith(undefined);
   });
 
   it('should not call predicate for empty object', () => {
-    const predicate = jest.fn();
+    const predicate = vi.fn();
     anyValueMatches({}, predicate);
     expect(predicate).not.toHaveBeenCalled();
   });
 
   it('should not call predicate for empty array', () => {
-    const predicate = jest.fn();
+    const predicate = vi.fn();
     anyValueMatches([], predicate);
     expect(predicate).not.toHaveBeenCalled();
   });
 
   it('should not call predicate for elements in array', () => {
-    const predicate = jest.fn();
+    const predicate = vi.fn();
     anyValueMatches(
       ['test', 1, true, { value: 'nested-obj' }, ['nested-array'], [], {}],
       predicate

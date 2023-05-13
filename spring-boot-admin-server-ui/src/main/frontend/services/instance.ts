@@ -15,15 +15,15 @@
  */
 import { AxiosInstance } from 'axios';
 import saveAs from 'file-saver';
+import { Observable, concat, from, ignoreElements } from 'rxjs';
 
-
-
-import axios, { redirectOn401, registerErrorToastInterceptor } from '../utils/axios.js';
+import axios, {
+  redirectOn401,
+  registerErrorToastInterceptor,
+} from '../utils/axios.js';
 import waitForPolyfill from '../utils/eventsource-polyfill';
 import logtail from '../utils/logtail';
-import { Observable, concat, from, ignoreElements } from '../utils/rxjs';
 import uri from '../utils/uri';
-
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -35,8 +35,10 @@ const isInstanceActuatorRequest = (url: string) =>
   url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
 
 class Instance {
-  private id: string;
-  private axios: AxiosInstance;
+  private readonly id: string;
+  private readonly axios: AxiosInstance;
+  private registration: any;
+  private endpoints: any[];
 
   constructor({ id, ...instance }) {
     Object.assign(this, instance);
@@ -109,6 +111,10 @@ class Instance {
         ...mBean,
       })),
     }));
+  }
+
+  getId() {
+    return this.id;
   }
 
   hasEndpoint(endpointId) {
@@ -303,7 +309,7 @@ class Instance {
   }
 
   async fetchStartup() {
-    let optionsResponse = await this.axios.options(uri`actuator/startup`);
+    const optionsResponse = await this.axios.options(uri`actuator/startup`);
     if (
       optionsResponse.headers.allow &&
       optionsResponse.headers.allow.includes('GET')

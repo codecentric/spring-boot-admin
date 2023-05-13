@@ -46,9 +46,9 @@ const selectedLanguage = computed(() => {
 });
 
 const languages = computed(() => {
-  return props.availableLocales
-    .map(mapLocale)
-    .filter((l) => l.locale !== selectedLanguage.value.locale);
+  return props.availableLocales.map(mapLocale).filter((mappedLocale) => {
+    return mappedLocale.locale !== selectedLanguage.value.locale;
+  });
 });
 
 const localeChanged = ($event) => {

@@ -44,7 +44,7 @@ const objToString = (obj, indent = '') => {
         if (nonEmptyComplexValue(value)) {
           return `${indent}${key}:\n${objToString(value, indent + '  ')}`;
         }
-        return `${indent}${key}: ${objToString(value, '')}`;
+        return `${indent}${key}:${objToString(value, ' ')}`;
       })
       .join('\n');
   }

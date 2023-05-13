@@ -1,21 +1,21 @@
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
 import _ from 'lodash';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { applications } from '../../../mocks/applications/data';
 
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { render } from '@/test-utils';
-import Refresh from '@/views/instances/env/refresh';
+import Refresh from '@/views/instances/env/refresh.vue';
 
-// TODO: FIX ME!!!
 describe('Refresh', () => {
-  const refreshInstanceContext = jest.fn().mockResolvedValue({
+  const refreshInstanceContext = vi.fn().mockResolvedValue({
     data: ['spring.redis.host', 'spring.datasource.url'],
   });
 
-  const refreshApplicationContext = jest.fn().mockResolvedValue({
+  const refreshApplicationContext = vi.fn().mockResolvedValue({
     data: [
       {
         instanceId: '123',
@@ -33,20 +33,20 @@ describe('Refresh', () => {
   });
 
   function createInstance() {
-    let instance = new Instance({ id: 1233 });
+    const instance = new Instance({ id: 1233 });
     instance.refreshContext = refreshInstanceContext;
     return instance;
   }
 
   function createApplication() {
-    let application = new Application(_.cloneDeep(applications[1]));
+    const application = new Application(_.cloneDeep(applications[1]));
     application.instances.push(createInstance());
     application.refreshContext = refreshApplicationContext;
     return application;
   }
 
   beforeEach(async () => {
-    await render(Refresh, {
+    render(Refresh, {
       props: {
         instance: createInstance(),
         application: createApplication(),
@@ -58,10 +58,10 @@ describe('Refresh', () => {
     const refreshButton = await screen.findByText(
       'instances.env.context_refresh'
     );
-    userEvent.click(refreshButton);
+    await userEvent.click(refreshButton);
 
     const confirmButton = await screen.findByText('Confirm');
-    userEvent.click(confirmButton);
+    await userEvent.click(confirmButton);
 
     expect(screen.findByText('Refreshed configurations:')).toBeDefined();
     expect(screen.findByText('spring.redis.host')).toBeDefined();
@@ -72,15 +72,15 @@ describe('Refresh', () => {
     const toggleScopeButton = await screen.getByRole('button', {
       name: 'Instance',
     });
-    userEvent.click(toggleScopeButton);
+    await userEvent.click(toggleScopeButton);
 
     const refreshButton = await screen.findByText(
       'instances.env.context_refresh'
     );
-    userEvent.click(refreshButton);
+    await userEvent.click(refreshButton);
 
     const confirmButton = await screen.findByText('Confirm');
-    userEvent.click(confirmButton);
+    await userEvent.click(confirmButton);
 
     expect(screen.findByText('Refreshed configurations:')).toBeDefined();
     expect(screen.findByText('spring.redis.host')).toBeDefined();
