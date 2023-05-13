@@ -1,5 +1,5 @@
 <template>
-  <sba-nav-dropdown>
+  <sba-nav-dropdown data-testid="usermenu">
     <template #label>
       <font-awesome-icon
         class="w-10 rounded-full white mr-2"
@@ -49,10 +49,12 @@ import SbaDropdownItem from '@/components/sba-dropdown/sba-dropdown-item.vue';
 import SbaNavDropdown from '@/components/sba-nav/sba-nav-dropdown.vue';
 
 import { useViewRegistry } from '@/composables/ViewRegistry';
-import sbaConfig from '@/sba-config';
+import { getCurrentUser } from '@/sba-config';
 import SbaDropdownLogoutItem from '@/shell/sba-dropdown-logout-item.vue';
 
-const username = sbaConfig.user ? sbaConfig.user.name : null;
+const currentUser = getCurrentUser();
+const username = currentUser ? currentUser.name : null;
+
 const { views } = useViewRegistry();
 
 const userSubMenuItems = computed(() => {
