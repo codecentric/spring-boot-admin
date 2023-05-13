@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  Observable,
+  Subscription,
   bufferTime,
   concat,
   concatMap,
@@ -56,7 +56,7 @@ export default class ApplicationStore {
   private _listeners: { [p: string]: Array<ApplicationStoreListener> } = {};
   private _applications: Map<string, Application> = new Map();
   private applications: Application[] = [];
-  private subscription: Observable<any> | null = null;
+  private subscription: Subscription = null;
 
   addEventListener(type: string, listener: ApplicationStoreListener) {
     if (type in this._listeners) {

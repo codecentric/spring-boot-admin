@@ -15,10 +15,10 @@
  */
 import { AxiosInstance } from 'axios';
 import { sortBy } from 'lodash-es';
+import { Observable, concat, from, ignoreElements } from 'rxjs';
 
 import axios, { redirectOn401 } from '../utils/axios';
 import waitForPolyfill from '../utils/eventsource-polyfill';
-import { Observable, concat, from, ignoreElements } from '../utils/rxjs.js';
 import uri from '../utils/uri';
 import Instance from './instance';
 
@@ -92,7 +92,7 @@ class Application {
     });
   }
 
-  static getStream() {
+  static getStream(): Observable<ApplicationStream | unknown> {
     return concat(
       from(waitForPolyfill()).pipe(ignoreElements()),
       Observable.create((observer) => {
@@ -101,7 +101,7 @@ class Application {
           observer.next({
             ...message,
             data: Application._transformResponse(message.data),
-          });
+          } as ApplicationStream);
 
         eventSource.onerror = (err) => observer.error(err);
         return () => eventSource.close();
@@ -133,7 +133,7 @@ class Application {
   }
 
   findInstance(instanceId) {
-    return this.instances.find((instance) => instance.id === instanceId);
+    return this.instances.find((instance) => instance.getId() === instanceId);
   }
 
   async unregister() {

@@ -28,7 +28,7 @@ describe('Wallboard', () => {
       error,
     });
 
-    await render(Wallboard);
+    render(Wallboard);
   });
 
   it('shows message when applications list is loaded', async () => {

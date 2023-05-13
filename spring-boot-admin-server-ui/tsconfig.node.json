@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -9,7 +10,7 @@
       "@/*": [
         "./src/main/frontend/*"
       ]
-    },
+    }
   },
   "include": [
     "**/*.ts",

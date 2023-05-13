@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { applications } from '@/mocks/applications/data';
 import Application from '@/services/application';
@@ -13,9 +13,8 @@ describe('Jolokia', () => {
   beforeEach(async () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
-    instance.isEnabled = vi.fn(() => true);
 
-    renderResult = await render(Jolokia, {
+    renderResult = render(Jolokia, {
       props: {
         application,
         instance,

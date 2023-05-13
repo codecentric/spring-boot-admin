@@ -2,13 +2,13 @@ import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import TriggerRow from './trigger-row';
+import TriggerRow from './trigger-row.vue';
 
 import { render } from '@/test-utils';
 
 describe('trigger-row.vue', () => {
   beforeEach(async () => {
-    await render(TriggerRow, {
+    render(TriggerRow, {
       props: {
         triggerDetail: {
           group: 'group2',

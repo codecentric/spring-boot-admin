@@ -8,7 +8,7 @@ import { applications } from '../../../mocks/applications/data';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { render } from '@/test-utils';
-import Refresh from '@/views/instances/env/refresh';
+import Refresh from '@/views/instances/env/refresh.vue';
 
 describe('Refresh', () => {
   const refreshInstanceContext = vi.fn().mockResolvedValue({
@@ -46,7 +46,7 @@ describe('Refresh', () => {
   }
 
   beforeEach(async () => {
-    await render(Refresh, {
+    render(Refresh, {
       props: {
         instance: createInstance(),
         application: createApplication(),
@@ -58,10 +58,10 @@ describe('Refresh', () => {
     const refreshButton = await screen.findByText(
       'instances.env.context_refresh'
     );
-    userEvent.click(refreshButton);
+    await userEvent.click(refreshButton);
 
     const confirmButton = await screen.findByText('Confirm');
-    userEvent.click(confirmButton);
+    await userEvent.click(confirmButton);
 
     expect(screen.findByText('Refreshed configurations:')).toBeDefined();
     expect(screen.findByText('spring.redis.host')).toBeDefined();
@@ -72,15 +72,15 @@ describe('Refresh', () => {
     const toggleScopeButton = await screen.getByRole('button', {
       name: 'Instance',
     });
-    userEvent.click(toggleScopeButton);
+    await userEvent.click(toggleScopeButton);
 
     const refreshButton = await screen.findByText(
       'instances.env.context_refresh'
     );
-    userEvent.click(refreshButton);
+    await userEvent.click(refreshButton);
 
     const confirmButton = await screen.findByText('Confirm');
-    userEvent.click(confirmButton);
+    await userEvent.click(confirmButton);
 
     expect(screen.findByText('Refreshed configurations:')).toBeDefined();
     expect(screen.findByText('spring.redis.host')).toBeDefined();

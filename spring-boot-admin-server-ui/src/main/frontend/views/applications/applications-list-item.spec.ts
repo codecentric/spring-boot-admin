@@ -19,10 +19,10 @@ import { cloneDeep } from 'lodash-es';
 import { describe, expect, it } from 'vitest';
 
 import Application from '../../services/application';
-import ApplicationListItem from './applications-list-item';
 
 import { applications } from '@/mocks/applications/data';
 import { render } from '@/test-utils';
+import ApplicationsListItem from '@/views/applications/applications-list-item.vue';
 
 async function clickConfirmModal() {
   await waitFor(() => {
@@ -37,12 +37,12 @@ describe('application-list-item.vue', () => {
   describe('unregister', () => {
     it('on instance', async () => {
       const application = new Application(cloneDeep(applications[0]));
-      const { emitted } = render(ApplicationListItem, {
+      const { emitted } = render(ApplicationsListItem, {
         props: { application, isExpanded: true },
       });
 
       const htmlElement = await screen.findByTestId(
-        application.instances[0].id
+        application.instances[0].getId()
       );
       const element = within(htmlElement).getByTitle('Unregister');
       await userEvent.click(element);
@@ -53,7 +53,7 @@ describe('application-list-item.vue', () => {
     });
 
     it('on application', async () => {
-      const { emitted } = render(ApplicationListItem, {
+      const { emitted } = render(ApplicationsListItem, {
         props: { application: new Application(cloneDeep(applications[0])) },
       });
 
@@ -69,12 +69,12 @@ describe('application-list-item.vue', () => {
   describe('restart', () => {
     it('on instance', async () => {
       const application = new Application(cloneDeep(applications[0]));
-      const { emitted } = render(ApplicationListItem, {
+      const { emitted } = render(ApplicationsListItem, {
         props: { application, isExpanded: true },
       });
 
       const htmlElement = await screen.findByTestId(
-        application.instances[0].id
+        application.instances[0].getId()
       );
       const element = within(htmlElement).getByTitle('Restart');
       await userEvent.click(element);
@@ -85,7 +85,7 @@ describe('application-list-item.vue', () => {
     });
 
     it('on application', async () => {
-      const { emitted } = render(ApplicationListItem, {
+      const { emitted } = render(ApplicationsListItem, {
         props: { application: new Application(cloneDeep(applications[0])) },
       });
 
@@ -100,7 +100,7 @@ describe('application-list-item.vue', () => {
 
   describe('shutdown', () => {
     it('on application', async () => {
-      const { emitted } = render(ApplicationListItem, {
+      const { emitted } = render(ApplicationsListItem, {
         props: { application: new Application(cloneDeep(applications[0])) },
       });
 
@@ -114,12 +114,12 @@ describe('application-list-item.vue', () => {
 
     it('on instance', async () => {
       const application = new Application(cloneDeep(applications[0]));
-      const { emitted } = render(ApplicationListItem, {
+      const { emitted } = render(ApplicationsListItem, {
         props: { application, isExpanded: true },
       });
 
       const htmlElement = await screen.findByTestId(
-        application.instances[0].id
+        application.instances[0].getId()
       );
 
       const element = await within(htmlElement).findByTitle('Shutdown');

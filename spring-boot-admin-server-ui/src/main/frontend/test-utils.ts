@@ -21,7 +21,7 @@ for (const modulesKey in modules) {
 export let router;
 createViewRegistry();
 
-export const render = (testComponent, options) => {
+export const render = (testComponent, options?) => {
   const routes = [{ path: '/', component: testComponent }];
   if (testComponent.install) {
     const viewRegistry = new ViewRegistry();
