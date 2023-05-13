@@ -23,7 +23,6 @@ module.exports = {
     'vue/no-reserved-component-names': 'off',
     'vue/no-v-text-v-html-on-component': 'off',
     quotes: [2, 'single', { avoidEscape: true }],
-    'no-trailing-spaces': [2, { skipBlankLines: true }],
   },
   globals: {
     globalThis: false,
