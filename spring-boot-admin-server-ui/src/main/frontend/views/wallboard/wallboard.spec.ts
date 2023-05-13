@@ -54,9 +54,7 @@ describe('Wallboard', () => {
     applications.value = [];
     error.value = new Error('Connection lost');
     await waitFor(() => {
-      expect(
-        screen.getByText('applications.server_connection_failed')
-      ).toBeVisible();
+      expect(screen.getByText('Server connection failed.')).toBeVisible();
     });
   });
 });

@@ -1,5 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import TriggerRow from './trigger-row';
 

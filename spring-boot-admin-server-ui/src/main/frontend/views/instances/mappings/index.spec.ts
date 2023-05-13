@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/vue';
+import { describe, expect, it } from 'vitest';
 
 import Mappings from './index';
 
@@ -86,7 +87,7 @@ describe('Mappings', () => {
   }
 
   function createInstanceWithMappingsData(data) {
-    let instance = new Instance({ id: 4711 });
+    const instance = new Instance({ id: 4711 });
     instance.fetchMappings = () => ({
       headers: {
         'content-type': 'application/vnd.spring-boot.actuator.v2',

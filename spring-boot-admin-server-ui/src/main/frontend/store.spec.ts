@@ -1,13 +1,13 @@
 import { waitFor } from '@testing-library/vue';
 import { rest } from 'msw';
 import { ReplaySubject } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { registerWithOneInstance } from '@/mocks/fixtures/eventStream/registerWithOneInstance';
 import { registerWithTwoInstances } from '@/mocks/fixtures/eventStream/registerWithTwoInstances';
 import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import ApplicationStore from '@/store';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('store.js', () => {
   let applicationStore;

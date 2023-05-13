@@ -16,6 +16,7 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor, within } from '@testing-library/vue';
 import { cloneDeep } from 'lodash-es';
+import { describe, expect, it } from 'vitest';
 
 import Application from '../../services/application';
 import ApplicationListItem from './applications-list-item';
@@ -35,7 +36,7 @@ async function clickConfirmModal() {
 describe('application-list-item.vue', () => {
   describe('unregister', () => {
     it('on instance', async () => {
-      let application = new Application(cloneDeep(applications[0]));
+      const application = new Application(cloneDeep(applications[0]));
       const { emitted } = render(ApplicationListItem, {
         props: { application, isExpanded: true },
       });
@@ -43,9 +44,7 @@ describe('application-list-item.vue', () => {
       const htmlElement = await screen.findByTestId(
         application.instances[0].id
       );
-      const element = within(htmlElement).queryByTitle(
-        'applications.actions.unregister'
-      );
+      const element = within(htmlElement).getByTitle('Unregister');
       await userEvent.click(element);
 
       await clickConfirmModal();
@@ -58,7 +57,7 @@ describe('application-list-item.vue', () => {
         props: { application: new Application(cloneDeep(applications[0])) },
       });
 
-      const element = screen.queryByTitle('applications.actions.unregister');
+      const element = screen.getByTitle('Unregister');
       await userEvent.click(element);
 
       await clickConfirmModal();
@@ -69,7 +68,7 @@ describe('application-list-item.vue', () => {
 
   describe('restart', () => {
     it('on instance', async () => {
-      let application = new Application(cloneDeep(applications[0]));
+      const application = new Application(cloneDeep(applications[0]));
       const { emitted } = render(ApplicationListItem, {
         props: { application, isExpanded: true },
       });
@@ -77,9 +76,7 @@ describe('application-list-item.vue', () => {
       const htmlElement = await screen.findByTestId(
         application.instances[0].id
       );
-      const element = within(htmlElement).queryByTitle(
-        'applications.actions.restart'
-      );
+      const element = within(htmlElement).getByTitle('Restart');
       await userEvent.click(element);
 
       await clickConfirmModal();
@@ -92,7 +89,7 @@ describe('application-list-item.vue', () => {
         props: { application: new Application(cloneDeep(applications[0])) },
       });
 
-      const element = screen.queryByTitle('applications.actions.restart');
+      const element = screen.getByTitle('Restart');
       await userEvent.click(element);
 
       await clickConfirmModal();
@@ -107,7 +104,7 @@ describe('application-list-item.vue', () => {
         props: { application: new Application(cloneDeep(applications[0])) },
       });
 
-      const element = await screen.findByTitle('applications.actions.shutdown');
+      const element = await screen.findByTitle('Shutdown');
       await userEvent.click(element);
 
       await clickConfirmModal();
@@ -116,16 +113,16 @@ describe('application-list-item.vue', () => {
     });
 
     it('on instance', async () => {
-      let application = new Application(cloneDeep(applications[0]));
+      const application = new Application(cloneDeep(applications[0]));
       const { emitted } = render(ApplicationListItem, {
         props: { application, isExpanded: true },
       });
 
-      let htmlElement = await screen.findByTestId(application.instances[0].id);
-
-      const element = await within(htmlElement).findByTitle(
-        'applications.actions.shutdown'
+      const htmlElement = await screen.findByTestId(
+        application.instances[0].id
       );
+
+      const element = await within(htmlElement).findByTitle('Shutdown');
       await userEvent.click(element);
 
       await clickConfirmModal();

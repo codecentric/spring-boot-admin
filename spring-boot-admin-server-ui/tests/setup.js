@@ -1,6 +1,8 @@
 import matchers from '@testing-library/jest-dom/matchers';
 import { cleanup } from '@testing-library/vue';
-import { afterEach, expect, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, expect, vi } from 'vitest';
+
+import { server } from '@/mocks/server';
 
 // extends Vitest's expect method with methods from react-testing-library
 expect.extend(matchers);
@@ -15,6 +17,10 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }));
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterAll(() => server.close());
+afterEach(() => server.resetHandlers());
 
 // runs a cleanup after each test case (e.g. clearing jsdom)
 afterEach(() => {

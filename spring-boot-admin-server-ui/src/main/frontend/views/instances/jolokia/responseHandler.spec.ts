@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import {
   STATE_COMPLETED,
   STATE_FAILED,

@@ -1,6 +1,7 @@
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
 import _ from 'lodash';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { applications } from '../../../mocks/applications/data';
 
@@ -9,7 +10,6 @@ import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 import Refresh from '@/views/instances/env/refresh';
 
-// TODO: FIX ME!!!
 describe('Refresh', () => {
   const refreshInstanceContext = vi.fn().mockResolvedValue({
     data: ['spring.redis.host', 'spring.datasource.url'],
