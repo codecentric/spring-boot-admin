@@ -1,5 +1,5 @@
 <template>
-  <Menu as="div" class="submenu">
+  <Menu as="div" class="submenu" v-bind="$attrs">
     <div
       :class="{
         'submenu-opener--link': href,

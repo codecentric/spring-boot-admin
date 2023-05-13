@@ -57,10 +57,11 @@
     </sba-navbar-nav>
     <sba-navbar-nav class="ml-auto">
       <sba-nav-language-selector
-        :available-locales="AVAILABLE_LANGUAGES"
+        v-if="availableLocales.length > 1"
+        :available-locales="availableLocales"
         @locale-changed="changeLocale"
       />
-      <sba-nav-usermenu v-if="sbaConfig.user" />
+      <sba-nav-usermenu v-if="showUserMenu" />
       <sba-nav-item v-if="isAboutEnabled" :to="{ name: 'about' }">
         <FontAwesomeIcon
           :aria-label="t('about.label')"
@@ -84,8 +85,8 @@ import SbaNavbarNav from '@/components/sba-navbar/sba-navbar-nav.vue';
 import SbaNavbar from '@/components/sba-navbar/sba-navbar.vue';
 
 import { useViewRegistry } from '@/composables/ViewRegistry';
-import { AVAILABLE_LANGUAGES } from '@/i18n';
-import sbaConfig from '@/sba-config';
+import { getAvailableLocales } from '@/i18n';
+import sbaConfig, { getCurrentUser } from '@/sba-config';
 import SbaNavLanguageSelector from '@/shell/sba-nav-language-selector.vue';
 import SbaNavUsermenu from '@/shell/sba-nav-usermenu.vue';
 import { compareBy } from '@/utils/collections';
@@ -96,6 +97,11 @@ defineProps({
     default: null,
   },
 });
+
+const availableLocales = getAvailableLocales();
+
+const currentUser = getCurrentUser();
+const showUserMenu = !!currentUser && Object.hasOwn(currentUser, 'name');
 
 const { views, getViewByName } = useViewRegistry();
 const i18n = useI18n();

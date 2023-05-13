@@ -56,4 +56,10 @@ const DEFAULT_CONFIG = {
   },
 };
 
-export default merge(DEFAULT_CONFIG, window.SBA);
+const mergedConfig = merge(DEFAULT_CONFIG, window.SBA);
+
+export const getCurrentUser = () => {
+  return mergedConfig.user;
+};
+
+export default mergedConfig;
