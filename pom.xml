@@ -74,7 +74,7 @@
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.2.2</maven-checkstyle-plugin.version>
         <checkstyle.version>9.3</checkstyle.version>
-        <spring-javaformat-checkstyle.version>0.0.38</spring-javaformat-checkstyle.version>
+        <spring-javaformat-checkstyle.version>0.0.39</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
         <node.version>v18.16.0</node.version>
         <npm.version>9.5.1</npm.version>
