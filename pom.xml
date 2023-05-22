@@ -26,7 +26,7 @@
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
-        <revision>3.0.4</revision>
+        <revision>3.0.5-SNAPSHOT</revision>
         <java.version>17</java.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -36,7 +36,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.0.7</spring-boot.version>
+        <spring-boot.version>3.1.0</spring-boot.version>
         <spring-cloud.version>2022.0.2</spring-cloud.version>
         <wiremock.version>2.35.0</wiremock.version>
         <hazelcast-tests.version>5.3.0</hazelcast-tests.version>
@@ -70,7 +70,7 @@
         <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
         <asciidoctor-maven-plugin.version>2.2.3</asciidoctor-maven-plugin.version>
-        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
+        <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
         <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
         <checkstyle.version>9.3</checkstyle.version>
@@ -374,7 +374,7 @@
                 <plugin>
                     <groupId>pl.project13.maven</groupId>
                     <artifactId>git-commit-id-plugin</artifactId>
-                    <version>${git-commit-id-plugin.version}</version>
+                    <version>${git-commit-id-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.asciidoctor</groupId>
