@@ -40,6 +40,7 @@ declare global {
     process: number;
     memory: number;
     threads: number;
+    logfile: number;
   };
 
   type ViewSettings = {

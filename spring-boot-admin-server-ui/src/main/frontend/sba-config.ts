@@ -43,6 +43,7 @@ const DEFAULT_CONFIG = {
       process: 2500,
       memory: 2500,
       threads: 2500,
+      logfile: 1000,
     },
   },
   user: null,
