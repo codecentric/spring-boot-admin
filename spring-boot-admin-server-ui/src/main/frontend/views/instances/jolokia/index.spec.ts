@@ -8,13 +8,11 @@ import { render } from '@/test-utils';
 import Jolokia from '@/views/instances/jolokia/index.vue';
 
 describe('Jolokia', () => {
-  let renderResult;
-
   beforeEach(async () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
 
-    renderResult = render(Jolokia, {
+    render(Jolokia, {
       props: {
         application,
         instance,

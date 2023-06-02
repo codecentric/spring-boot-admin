@@ -30,12 +30,21 @@ Install and configure the Checkstyle Plugin, and enable the configuration file.
 ##### Configuration
 Before configuration, add the  `spring-javaformat-checkstyle` JAR to the Third-Party checks.
 1. Preferences > Tools > Checkstyle > Third-Party Checks
-1. Add `~/.m2/repository/io/spring/javaformat/spring-javaformat-checkstyle/0.0.26/spring-javaformat-checkstyle-0.0.26.jar`
+2. Add `~/.m2/repository/io/spring/javaformat/spring-javaformat-checkstyle/0.0.26/spring-javaformat-checkstyle-0.0.26.jar`
 
 ##### Configuration File
 Add the configuration file and enabled it:
 1. Preferences > Tools > Checkstyle > Configuration File > +
-1. Add a Name, ex. Spring Boot Admin
-1. Use a local Checkstyle File, Browse to `src/checkstyle/checkstyle.xml` and click Next
-1. Enter the full path to the checkstyle header file: `<git repo>/src/checkstyle/checkstyle-header.txt`, click Finish
-1. Select the new configuration file to enable it
+2. Add a Name, ex. Spring Boot Admin
+3. Use a local Checkstyle File, Browse to `src/checkstyle/checkstyle.xml` and click Next
+4. Enter the full path to the checkstyle header file: `<git repo>/src/checkstyle/checkstyle-header.txt`, click Finish
+5. Select the new configuration file to enable it
+
+#### Prettier Plugin
+This plugin is able to run Prettier from within IntelliJ. It can even be configured to run on "Reformat Code" action. It comes bundles with the IDE but needs to be enabled.
+
+##### Configuration
+1. Preferences > Languages & Frameworks > JavaScript > Prettier
+2. Manual Prettier configuration
+   1. Prettier package: `<git repo>/spring-boot-admin-server-ui/node_modules/prettier`
+   2. Enable "Run on 'Reformat Code' action"

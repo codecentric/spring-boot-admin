@@ -34,7 +34,7 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
     }),
     concatMap((response) => {
       let initial = size === 0;
-      let contentLength = response.data.length;
+      const contentLength = response.data.length;
 
       if (response.status === 200) {
         if (!initial) {

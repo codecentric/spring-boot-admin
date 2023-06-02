@@ -69,17 +69,17 @@ describe('viewRegistry', () => {
       ]
     );
 
-    let disabledView = viewRegistry.getViewByName('disabledView');
+    const disabledView = viewRegistry.getViewByName('disabledView');
     expect(disabledView).toBeDefined();
     expect(disabledView.isEnabled()).toBeFalsy();
 
-    let implicitlyEnabledView = viewRegistry.getViewByName(
+    const implicitlyEnabledView = viewRegistry.getViewByName(
       'implicitlyEnabledView'
     );
     expect(implicitlyEnabledView).toBeDefined();
     expect(implicitlyEnabledView.isEnabled()).toBeTruthy();
 
-    let explicitlyEnabledView = viewRegistry.getViewByName(
+    const explicitlyEnabledView = viewRegistry.getViewByName(
       'explicitlyEnabledView'
     );
     expect(explicitlyEnabledView).toBeDefined();

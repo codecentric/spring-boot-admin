@@ -33,6 +33,7 @@ module.exports = {
       files: ['*.ts'],
       rules: {
         'no-undef': 'off',
+        '@typescript-eslint/no-explicit-any': 'off',
       },
     },
   ],

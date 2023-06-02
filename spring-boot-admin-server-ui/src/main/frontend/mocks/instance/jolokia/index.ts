@@ -12,7 +12,7 @@ const jolokiaEndpoint = [
     '/instances/:instanceId/actuator/jolokia',
     async (req, res, ctx) => {
       try {
-        let body = await req.json();
+        const body = await req.json();
         if (body.type === 'read') {
           return res(ctx.status(200), ctx.json(jolokiaRead));
         }

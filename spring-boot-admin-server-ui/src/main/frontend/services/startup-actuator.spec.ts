@@ -23,6 +23,7 @@ describe('StartupActuatorService', () => {
   let events = {};
 
   beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     data = cloneDeep(require('./startup-actuator.fixture.spec.json'));
     events = data.timeline.events;
   });
