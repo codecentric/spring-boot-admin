@@ -56,7 +56,7 @@ export class StartupActuatorEventTree {
   }
 
   getPath(id) {
-    let event = this.getById(id);
+    const event = this.getById(id);
     if (!event) {
       return [];
     }

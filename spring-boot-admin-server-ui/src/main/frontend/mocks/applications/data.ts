@@ -130,7 +130,7 @@ export const instance = {
 };
 
 export const applications = Object.entries(HealthStatus).map((e) => {
-  let STATUS = e[0];
+  const STATUS = e[0];
 
   return {
     name: `application-${STATUS}`,

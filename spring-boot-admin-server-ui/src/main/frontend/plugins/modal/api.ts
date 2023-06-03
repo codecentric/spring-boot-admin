@@ -3,12 +3,13 @@ import { h } from 'vue';
 import ConfirmButtons from './ConfirmButtons';
 import Modal from './Modal';
 import { createComponent } from './helpers';
+
 import eventBus from '@/services/bus';
 
 export const useModal = (globalProps = {}) => {
   const t =
     globalProps.i18n?.global.t ||
-    function(value) {
+    function (value) {
       return value;
     };
 
@@ -18,31 +19,32 @@ export const useModal = (globalProps = {}) => {
       if (typeof options === 'string') title = options;
 
       const defaultProps = {
-        title
+        title,
       };
 
       const propsData = Object.assign({}, defaultProps, globalProps, options);
       return createComponent(Modal, propsData, document.body, slots);
     },
     async confirm(title, body) {
-      let bodyFn = () =>
+      const bodyFn = () =>
         h(
           'span',
           {
-            innerHTML: body
+            innerHTML: body,
           },
           []
         );
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { vNode, destroy } = this.open(
         { title },
         {
           buttons: () =>
             h(ConfirmButtons, {
               labelOk: t('term.ok'),
-              labelCancel: t('term.cancel')
+              labelCancel: t('term.cancel'),
             }),
-          body: bodyFn
+          body: bodyFn,
         }
       );
 
@@ -52,6 +54,6 @@ export const useModal = (globalProps = {}) => {
           resolve(result);
         });
       });
-    }
+    },
   };
 };

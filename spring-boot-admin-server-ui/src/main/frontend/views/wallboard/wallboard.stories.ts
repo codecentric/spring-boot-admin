@@ -13,7 +13,7 @@ export default {
 const Template = (args) => ({
   components: { Wallboard },
   setup() {
-    let { applicationStore } = useApplicationStore();
+    const { applicationStore } = useApplicationStore();
     applicationStore._dispatchEvent(
       'changed',
       shuffle([...healthStatus, ...healthStatus]).map((healthStatus) => {

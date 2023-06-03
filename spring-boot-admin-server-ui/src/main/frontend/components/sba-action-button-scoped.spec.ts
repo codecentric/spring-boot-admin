@@ -22,7 +22,7 @@ import SbaActionButtonScoped from './sba-action-button-scoped.vue';
 import { render } from '@/test-utils';
 
 describe('SbaActionButtonScoped', function () {
-  let actionFn = vi.fn().mockResolvedValue([]);
+  const actionFn = vi.fn().mockResolvedValue([]);
 
   beforeEach(() => {
     render(SbaActionButtonScoped, {

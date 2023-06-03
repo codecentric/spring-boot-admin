@@ -27,6 +27,6 @@ ij_java_layout_static_imports_separately = true
 indent_style = space
 indent_size = 4
 
-[*.{js,vue}]
+[*.{js,ts,vue}]
 indent_style = space
 indent_size = 2

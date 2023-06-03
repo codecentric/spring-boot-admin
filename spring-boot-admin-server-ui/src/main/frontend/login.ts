@@ -20,7 +20,7 @@ import './login.css';
 import i18n from './i18n';
 import Login from './login/login.vue';
 
-let app = createApp(Login, {
+const app = createApp(Login, {
   csrf: window.csrf,
   icon: window.uiSettings.loginIcon,
   title: window.uiSettings.title,
