@@ -36,6 +36,18 @@ body::before {
     margin-top: 80px;
 }
 
+#navbar-footer dt {
+    display: none;
+}
+
+#navbar-footer dl {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: center;
+}
+
+
 #footer-info {
     display: flex;
     flex-direction: column;
@@ -49,8 +61,12 @@ body::before {
     backdrop-filter: blur(10px);
 }
 
-#footer-info a {
+#footer-info a, #navbar-footer a {
     color: #000;
+}
+
+#footer-info a {
+    padding: 0 .5rem;
 }
 
 /* Content */

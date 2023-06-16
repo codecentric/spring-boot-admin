@@ -87,25 +87,27 @@
 </header>
 <main>
     <section id="main-section" class="container flex-grow-1">
-<div class="sect1">
- <h2 id="customizing-headers">Injecting Custom HTTP Headers</h2>
- <div class="sectionbody">
-  <div class="paragraph">
-   <p>In case you need to inject custom HTTP headers into the requests made to the monitored application’s actuator endpoints you can easily add a <code>HttpHeadersProvider</code>:</p>
-  </div>
-  <div class="listingblock">
-   <div class="content">
-    <pre class="CodeRay highlight border shadow rounded"><code data-lang="java"><span class="annotation">@Bean</span>
-<span class="directive">public</span> HttpHeadersProvider customHttpHeadersProvider() {
-        <span class="keyword">return</span> (instance) -&gt; {
-                HttpHeaders httpHeaders = <span class="keyword">new</span> HttpHeaders();
-                httpHeaders.add(<span class="string"><span class="delimiter">"</span><span class="content">X-CUSTOM</span><span class="delimiter">"</span></span>, <span class="string"><span class="delimiter">"</span><span class="content">My Custom Value</span><span class="delimiter">"</span></span>);
-                <span class="keyword">return</span> httpHeaders;
-        };
-}</code></pre>
-   </div>
-  </div>
- </div>
+<header class="pb-2 mt-4 mb-2 border-bottom">
+ <h1 id="Imprint">Imprint</h1>
+</header>
+<div class="paragraph">
+ <p><strong>Hauptsitz der Gesellschaft</strong><br> codecentric AG<br> Hochstraße 11<br> 42697 Solingen<br> Telefon: +49 (0) 212 23 36 28 0<br> Telefax: +49 (0) 212.23 36 28 79<br> E-Mail: <a href="mailto:info@codecentric.de">info@codecentric.de</a></p>
+</div>
+<hr>
+<div class="paragraph">
+ <p><strong>Vorstand</strong><br> Rainer Vehns (Vorsitzender)<br> Stefan Riedel<br> Lars Rückemann</p>
+</div>
+<hr>
+<div class="paragraph">
+ <p><strong>Handelsregister</strong><br> Amtsgericht Wuppertal, HRB 25917</p>
+</div>
+<hr>
+<div class="paragraph">
+ <p><strong>Umsatzsteueridentifikationsnummer</strong><br> DE 119437798</p>
+</div>
+<hr>
+<div class="paragraph">
+ <p><strong>Inhaltlich Verantwortlicher</strong><br> Inhaltlich Verantwortlicher gemäß § 18 Abs. 2 MStV: Rainer Vehns</p>
 </div>
     </section>
 </main>
