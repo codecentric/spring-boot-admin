@@ -7,7 +7,7 @@
     <skin>
         <groupId>com.bernardomg.maven.skins</groupId>
         <artifactId>docs-maven-skin</artifactId>
-        <version>2.2.9</version>
+        <version>2.3.2</version>
     </skin>
 
     <custom>
@@ -20,6 +20,9 @@
                 <menu>Client</menu>
                 <menu>Customize</menu>
             </topNav>
+            <bottomNav>
+                <menu>Imprint</menu>
+            </bottomNav>
         </skinConfig>
     </custom>
 
@@ -43,6 +46,10 @@
             <item name="HTTP Headers" href="./customize_http-headers.html"/>
             <item name="Interceptors" href="./customize_interceptors.html"/>
             <item name="UI" href="./customize_ui.html"/>
+        </menu>
+        <menu name="Imprint" inherit="top">
+            <item name="Imprint" href="./imprint.html"/>
+            <item name="Privacy" href="./privacy.html"/>
         </menu>
     </body>
 </project>
