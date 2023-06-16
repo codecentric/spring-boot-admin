@@ -83,7 +83,6 @@ export default {
       };
     },
     createSubscription() {
-      const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.gc)
         .pipe(
           concatMap(this.fetchMetrics),
@@ -93,13 +92,13 @@ export default {
         )
         .subscribe({
           next: (data) => {
-            vm.hasLoaded = true;
-            vm.current = data;
+            this.hasLoaded = true;
+            this.current = data;
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn('Fetching GC metrics failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },

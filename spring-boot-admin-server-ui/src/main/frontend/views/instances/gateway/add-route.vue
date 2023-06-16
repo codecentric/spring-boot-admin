@@ -67,10 +67,10 @@
         <textarea
           id="predicates"
           v-model="routePredicates"
-          rows="4"
           class="textarea"
           placeholder="[]"
           required
+          rows="4"
         />
       </p>
     </div>
@@ -85,9 +85,9 @@
         <textarea
           id="filters"
           v-model="routeFilters"
-          rows="4"
           class="textarea"
           placeholder="[]"
+          rows="4"
         />
       </p>
     </div>
@@ -112,8 +112,8 @@
     <div class="field is-grouped is-grouped-right">
       <div class="control">
         <button
-          class="button is-primary"
           :disabled="!isAddingRoutePossible"
+          class="button is-primary"
           @click="addRoute"
           v-text="$t('instances.gateway.route.add_route')"
         />
@@ -149,25 +149,24 @@ export default {
   },
   methods: {
     addRoute() {
-      const vm = this;
       const newRoute = {
-        id: vm.routeId,
-        predicates: vm.routePredicates
-          ? JSON.parse(vm.routePredicates)
+        id: this.routeId,
+        predicates: this.routePredicates
+          ? JSON.parse(this.routePredicates)
           : undefined,
-        filters: vm.routeFilters ? JSON.parse(vm.routeFilters) : [],
-        uri: vm.routeUri,
-        order: vm.routeOrder || 0,
+        filters: this.routeFilters ? JSON.parse(this.routeFilters) : [],
+        uri: this.routeUri,
+        order: this.routeOrder || 0,
       };
-      from(vm.instance.addGatewayRoute(newRoute)).subscribe({
+      from(this.instance.addGatewayRoute(newRoute)).subscribe({
         complete: () => {
-          vm.routeId = null;
-          vm.routePredicates = null;
-          vm.routeFilters = null;
-          vm.routeUri = null;
-          vm.routeOrder = null;
-          vm.error = null;
-          setTimeout(() => vm.$emit('route-added'), 2500);
+          this.routeId = null;
+          this.routePredicates = null;
+          this.routeFilters = null;
+          this.routeUri = null;
+          this.routeOrder = null;
+          this.error = null;
+          setTimeout(() => this.$emit('route-added'), 2500);
         },
         error: (error) => {
           this.error = error;

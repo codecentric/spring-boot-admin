@@ -83,7 +83,6 @@ export default {
       };
     },
     createSubscription() {
-      const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.threads)
         .pipe(
           concatMap(this.fetchMetrics),
@@ -93,14 +92,14 @@ export default {
         )
         .subscribe({
           next: (data) => {
-            vm.hasLoaded = true;
-            vm.current = data;
-            vm.chartData.push({ ...data, timestamp: moment().valueOf() });
+            this.hasLoaded = true;
+            this.current = data;
+            this.chartData.push({ ...data, timestamp: moment().valueOf() });
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn('Fetching threads metrics failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },

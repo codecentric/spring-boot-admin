@@ -18,13 +18,13 @@
   <div class="field">
     <div class="control">
       <button
-        class="button is-light"
         :class="{
           'is-loading': refreshingRouteCache === 'executing',
           'is-danger': refreshingRouteCache === 'failed',
           'is-info': refreshingRouteCache === 'completed',
         }"
         :disabled="refreshingRouteCache === 'executing'"
+        class="button is-light"
         @click="refreshRoutesCache"
       >
         <span
@@ -57,13 +57,12 @@ export default {
   }),
   methods: {
     refreshRoutesCache() {
-      const vm = this;
-      from(vm.instance.refreshGatewayRoutesCache())
-        .pipe(listen((status) => (vm.refreshingRouteCache = status)))
+      from(this.instance.refreshGatewayRoutesCache())
+        .pipe(listen((status) => (this.refreshingRouteCache = status)))
         .subscribe({
           complete: () => {
-            vm.$emit('routes-refreshed');
-            return setTimeout(() => (vm.refreshingRouteCache = null), 2500);
+            this.$emit('routes-refreshed');
+            return setTimeout(() => (this.refreshingRouteCache = null), 2500);
           },
         });
     },

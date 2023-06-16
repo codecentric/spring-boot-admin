@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-instance-section :loading="!hasLoaded" :error="errorFetch">
+  <sba-instance-section :error="errorFetch" :loading="!hasLoaded">
     <template v-if="threads" #before>
       <sba-sticky-subnav>
         <div class="text-right">
@@ -67,16 +67,15 @@ export default {
   computed: {},
   methods: {
     updateTimelines(threads) {
-      const vm = this;
       const now = moment().valueOf();
       //initialize with all known live threads, which will be removed from the list if still alive
-      const terminatedThreads = Object.entries(vm.threads)
+      const terminatedThreads = Object.entries(this.threads)
         .filter(([, value]) => value.threadState !== 'TERMINATED')
         .map(([threadId]) => parseInt(threadId));
 
       threads.forEach((thread) => {
-        if (!vm.threads[thread.threadId]) {
-          vm.threads[thread.threadId] = {
+        if (!this.threads[thread.threadId]) {
+          this.threads[thread.threadId] = {
             threadId: thread.threadId,
             threadState: thread.threadState,
             threadName: thread.threadName,
@@ -90,7 +89,7 @@ export default {
             ],
           };
         } else {
-          const entry = vm.threads[thread.threadId];
+          const entry = this.threads[thread.threadId];
           if (entry.threadState !== thread.threadState) {
             entry.threadState = thread.threadState;
             entry.timeline[entry.timeline.length - 1].end = now;
@@ -108,7 +107,7 @@ export default {
       });
 
       terminatedThreads.forEach((threadId) => {
-        const entry = vm.threads[threadId];
+        const entry = this.threads[threadId];
         entry.threadState = 'TERMINATED';
         entry.timeline[entry.timeline.length - 1].end = now;
       });
@@ -118,34 +117,32 @@ export default {
       return response.data.threads;
     },
     async downloadThreaddump() {
-      const vm = this;
-      vm.errorDownload = null;
+      this.errorDownload = null;
       try {
         await this.instance.downloadThreaddump();
       } catch (error) {
         console.warn('Downloading thread dump failed.', error);
-        vm.errorDownload = error;
+        this.errorDownload = error;
       }
     },
     createSubscription() {
-      const vm = this;
-      vm.errorFetch = null;
+      this.errorFetch = null;
       return timer(0, 1000)
         .pipe(
-          concatMap(vm.fetchThreaddump),
+          concatMap(this.fetchThreaddump),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(2));
           })
         )
         .subscribe({
           next: (threads) => {
-            vm.hasLoaded = true;
-            vm.updateTimelines(threads);
+            this.hasLoaded = true;
+            this.updateTimelines(threads);
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn('Fetching threaddump failed:', error);
-            vm.errorFetch = error;
+            this.errorFetch = error;
           },
         });
     },

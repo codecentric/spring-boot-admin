@@ -33,8 +33,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons/faCheckCircle';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons/faExclamationCircle';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
 import classNames from 'classnames';
+import { defineComponent } from 'vue';
 
 import FontAwesomeIcon from '@/components/font-awesome-icon';
 
@@ -45,7 +49,7 @@ export const Severity = {
   SUCCESS: 'SUCCESS',
 };
 
-export default {
+export default defineComponent({
   name: 'SbaAlert',
   components: { FontAwesomeIcon },
   props: {
@@ -60,6 +64,7 @@ export default {
     severity: {
       type: String,
       default: Severity.ERROR,
+      required: true,
     },
   },
   data() {
@@ -108,14 +113,14 @@ export default {
       switch (this.severity.toUpperCase()) {
         case Severity.ERROR:
         case Severity.WARN:
-          return ['fa', 'exclamation-circle'];
+          return faExclamationCircle;
         case Severity.SUCCESS:
-          return ['fa', 'check-circle'];
+          return faCheckCircle;
         case Severity.INFO:
         default:
-          return ['fa', 'info-circle'];
+          return faInfoCircle;
       }
     },
   },
-};
+});
 </script>

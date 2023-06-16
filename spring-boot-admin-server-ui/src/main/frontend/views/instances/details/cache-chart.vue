@@ -70,7 +70,6 @@ export default {
   },
   methods: {
     drawChart(_data) {
-      const vm = this;
       const data =
         _data.length === 1
           ? _data.concat([{ ..._data[0], timestamp: _data[0].timestamp + 1 }])
@@ -78,15 +77,17 @@ export default {
 
       ///setup x and y scale
       const extent = d3.extent(data, (d) => d.timestamp);
-      const x = d3.scaleTime().range([0, vm.width]).domain(extent);
+      const x = d3.scaleTime().range([0, this.width]).domain(extent);
 
       const y = d3
         .scaleLinear()
-        .range([vm.height, 0])
+        .range([this.height, 0])
         .domain([0, d3.max(data, (d) => d.total) * 1.05]);
 
       //draw areas
-      const miss = vm.areas.selectAll('.cache-chart__area--miss').data([data]);
+      const miss = this.areas
+        .selectAll('.cache-chart__area--miss')
+        .data([data]);
       miss
         .enter()
         .append('path')
@@ -102,7 +103,7 @@ export default {
         );
       miss.exit().remove();
 
-      const hit = vm.areas.selectAll('.cache-chart__area--hit').data([data]);
+      const hit = this.areas.selectAll('.cache-chart__area--hit').data([data]);
       hit
         .enter()
         .append('path')
@@ -119,14 +120,14 @@ export default {
       hit.exit().remove();
 
       //draw axis
-      vm.xAxis.call(
+      this.xAxis.call(
         d3
           .axisBottom(x)
           .ticks(5)
           .tickFormat((d) => moment(d).format('HH:mm:ss'))
       );
 
-      vm.yAxis.call(
+      this.yAxis.call(
         d3
           .axisLeft(y)
           .ticks(5)

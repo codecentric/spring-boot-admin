@@ -21,28 +21,28 @@
         <div class="flex gap-2">
           <sba-input
             v-model.trim="filter.principal"
+            :placeholder="$t('instances.auditevents.principal')"
             name="filter_principal"
             type="search"
-            :placeholder="$t('instances.auditevents.principal')"
           />
           <sba-input
             v-model="filter.type"
-            name="filter_type"
             :list="[
               'AUTHENTICATION_FAILURE',
               'AUTHENTICATION_SUCCESS',
               'AUTHENTICATION_SWITCH',
               'AUTHORIZATION_FAILURE',
             ]"
-            type="search"
             :placeholder="$t('instances.auditevents.type')"
+            name="filter_type"
+            type="search"
           />
 
           <sba-input
-            name="filter_datetime"
-            type="datetime-local"
-            placeholder="Date"
             :value="formatDate(filter.after)"
+            name="filter_datetime"
+            placeholder="Date"
+            type="datetime-local"
             @input="filter.after = parseDate($event.target.value)"
           />
         </div>
@@ -51,8 +51,8 @@
 
     <sba-panel :seamless="true">
       <auditevents-list
-        :instance="instance"
         :events="events"
+        :instance="instance"
         :is-loading="isLoading"
       />
     </sba-panel>
@@ -158,17 +158,16 @@ export default {
       return converted;
     },
     createSubscription() {
-      const vm = this;
-      vm.filterChanged = new Subject();
-      vm.error = null;
+      this.filterChanged = new Subject();
+      this.error = null;
 
       return timer(0, 5000)
         .pipe(
           mergeWith(
-            vm.filterChanged.pipe(
+            this.filterChanged.pipe(
               debounceTime(250),
               tap({
-                next: () => (vm.events = []),
+                next: () => (this.events = []),
               })
             )
           ),
@@ -176,11 +175,11 @@ export default {
         )
         .subscribe({
           next: (events) => {
-            vm.addEvents(events);
+            this.addEvents(events);
           },
           error: (error) => {
             console.warn('Fetching audit events failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },

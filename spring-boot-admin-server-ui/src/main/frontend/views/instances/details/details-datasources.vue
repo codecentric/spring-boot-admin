@@ -19,8 +19,8 @@
     <details-datasource
       v-for="dataSource in dataSources"
       :key="dataSource"
-      :instance="instance"
       :data-source="dataSource"
+      :instance="instance"
     />
   </div>
 </template>
@@ -55,7 +55,6 @@ export default {
         .values;
     },
     createSubscription() {
-      const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
         .pipe(
           concatMap(this.fetchDataSources),
@@ -65,7 +64,7 @@ export default {
         )
         .subscribe({
           next: (names) => {
-            vm.dataSources = names;
+            this.dataSources = names;
           },
           error: (error) => {
             console.warn('Fetching datasources failed:', error);

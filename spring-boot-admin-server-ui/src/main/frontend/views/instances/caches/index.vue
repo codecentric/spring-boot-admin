@@ -20,8 +20,8 @@
       <sba-sticky-subnav>
         <div class="flex gap-2">
           <sba-action-button-scoped
-            :instance-count="application.instances.length"
             :action-fn="clearCaches"
+            :instance-count="application.instances.length"
             :show-info="false"
           >
             <template #default="slotProps">
@@ -43,9 +43,9 @@
           <div class="flex-1">
             <sba-input
               v-model="filter"
+              :placeholder="$t('term.filter')"
               name="filter"
               type="search"
-              :placeholder="$t('term.filter')"
             >
               <template #prepend>
                 <font-awesome-icon icon="filter" />
@@ -65,10 +65,10 @@
 
     <sba-panel>
       <caches-list
-        :instance="instance"
-        :caches="filteredCaches"
-        :is-loading="isLoading"
         :application="application"
+        :caches="filteredCaches"
+        :instance="instance"
+        :is-loading="isLoading"
       />
     </sba-panel>
   </sba-instance-section>

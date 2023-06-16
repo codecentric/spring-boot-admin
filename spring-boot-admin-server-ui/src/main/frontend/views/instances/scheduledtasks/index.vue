@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-instance-section :loading="!hasLoaded" :error="err">
+  <sba-instance-section :error="err" :loading="!hasLoaded">
     <sba-panel>
       <div v-if="!hasData" class="message is-warning">
         <div

@@ -17,9 +17,9 @@
 <template>
   <div ref="root" v-on-resize="onResize" class="hex-mesh">
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      :width="meshWidth"
       :height="meshHeight"
+      :width="meshWidth"
+      xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
         <clipPath id="hex-clip">
@@ -30,21 +30,21 @@
         <g
           v-for="col in cols + (row % 2 ? 0 : -1)"
           :key="`${col}-${row}`"
-          class="hex"
-          :transform="translate(col, row)"
           :class="classForItem(item(col, row))"
+          :transform="translate(col, row)"
+          class="hex"
           @click="click($event, col, row)"
         >
           <polygon :points="hexPath" />
           <foreignObject
             v-if="item(col, row)"
+            :height="hexHeight"
+            :width="hexWidth"
+            style="pointer-events: none"
             x="0"
             y="0"
-            :width="hexWidth"
-            :height="hexHeight"
-            style="pointer-events: none"
           >
-            <slot name="item" :item="item(col, row)" />
+            <slot :item="item(col, row)" name="item" />
           </foreignObject>
         </g>
       </template>
@@ -67,7 +67,7 @@ export default {
     },
     classForItem: {
       type: Function,
-      default: () => {},
+      default: () => void 0,
     },
   },
   emits: ['click'],

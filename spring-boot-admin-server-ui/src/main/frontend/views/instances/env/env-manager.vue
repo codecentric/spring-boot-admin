@@ -23,20 +23,20 @@
     >
       <sba-input
         v-model="prop.name"
-        type="text"
-        class="flex-1"
-        placeholder="Property name"
+        :error="prop.validation"
         :list="allPropertyNames"
         :name="prop.name || 'new-prop-name'"
-        :error="prop.validation"
+        class="flex-1"
+        placeholder="Property name"
+        type="text"
         @input="handlePropertyNameChange(prop, index)"
       />
       <sba-input
         v-model="prop.input"
-        type="text"
+        :name="prop.name || 'new-prop-value'"
         class="flex-1"
         placeholder="Value"
-        :name="prop.name || 'new-prop-value'"
+        type="text"
         @input="prop.status = null"
       >
         <template #append>
@@ -69,8 +69,8 @@
       />
 
       <sba-confirm-button
-        class="button is-light"
         :disabled="!hasManagedProperty || resetStatus === 'executing'"
+        class="button is-light"
         @click="resetEnvironment"
       >
         <span
@@ -84,12 +84,12 @@
         <span v-else v-text="$t('instances.env.context_reset')" />
       </sba-confirm-button>
       <sba-confirm-button
-        class="button is-primary"
         :disabled="
           hasErrorProperty ||
           !hasChangedProperty ||
           updateStatus === 'executing'
         "
+        class="button is-primary"
         @click="updateEnvironment"
       >
         <span
@@ -228,51 +228,49 @@ export default {
       }
     }, 250),
     updateEnvironment() {
-      const vm = this;
-      from(vm.managedProperties)
+      from(this.managedProperties)
         .pipe(
           filter(
             (property) => !!property.name && property.input !== property.value
           ),
-          listen((status) => (vm.updateStatus = status)),
+          listen((status) => (this.updateStatus = status)),
           concatMap((property) => {
             let target;
 
-            if (vm.scope === 'instance') {
-              target = vm.instance;
+            if (this.scope === 'instance') {
+              target = this.instance;
             } else {
-              target = vm.application;
+              target = this.application;
             }
 
             return from(target.setEnv(property.name, property.input)).pipe(
               listen((status) => (property.status = status)),
-              listen((status) => (vm.updateStatus = status))
+              listen((status) => (this.updateStatus = status))
             );
           })
         )
         .subscribe({
           complete: () => {
-            setTimeout(() => (vm.updateStatus = null), 2500);
-            return vm.$emit('update');
+            setTimeout(() => (this.updateStatus = null), 2500);
+            return this.$emit('update');
           },
-          error: () => vm.$emit('update'),
+          error: () => this.$emit('update'),
         });
     },
     resetEnvironment() {
-      const vm = this;
       let target;
 
-      if (vm.scope === 'instance') {
-        target = vm.instance;
+      if (this.scope === 'instance') {
+        target = this.instance;
       } else {
-        target = vm.application;
+        target = this.application;
       }
 
       from(target.resetEnv())
-        .pipe(listen((status) => (vm.resetStatus = status)))
+        .pipe(listen((status) => (this.resetStatus = status)))
         .subscribe({
           complete: () => {
-            vm.managedProperties = [
+            this.managedProperties = [
               {
                 name: null,
                 input: null,
@@ -281,10 +279,10 @@ export default {
                 validation: null,
               },
             ];
-            setTimeout(() => (vm.resetStatus = null), 2500);
-            return vm.$emit('refresh');
+            setTimeout(() => (this.resetStatus = null), 2500);
+            return this.$emit('refresh');
           },
-          error: () => vm.$emit('refresh'),
+          error: () => this.$emit('refresh'),
         });
     },
     updateManagedProperties(manager) {

@@ -18,10 +18,10 @@
   <div class="trace-chart">
     <div
       v-if="tooltipSelection"
-      class="trace-chart__tooltip"
       :class="`trace-chart__tooltip--${
         x(tooltipSelection[0]) > width / 2 ? 'left' : 'right'
       }`"
+      class="trace-chart__tooltip"
     >
       <table class="is-narrow is-size-7">
         <tr>
@@ -225,18 +225,16 @@ export default {
   },
   methods: {
     drawChart(data) {
-      const vm = this;
-
       ///setup x and y scale
       const x = d3
         .scaleTime()
-        .range([0, vm.width])
+        .range([0, this.width])
         .domain(d3.extent(data, (d) => d.timeStart));
       this.x = x;
 
       const y = d3
         .scaleLinear()
-        .range([vm.height, 0])
+        .range([this.height, 0])
         .domain([0, d3.max(data, (d) => d.totalCount)]);
 
       //draw areas
@@ -250,7 +248,7 @@ export default {
         .stack()
         .keys(['totalSuccess', 'totalClientErrors', 'totalServerErrors']);
 
-      const d = vm.areas.selectAll('.trace-chart__area').data(stack(data));
+      const d = this.areas.selectAll('.trace-chart__area').data(stack(data));
 
       d.enter()
         .append('path')
@@ -261,14 +259,14 @@ export default {
       d.exit().remove();
 
       //draw axis
-      vm.xAxis.call(
+      this.xAxis.call(
         d3
           .axisBottom(x)
           .ticks(10)
           .tickFormat((d) => moment(d).format('HH:mm:ss'))
       );
 
-      vm.yAxis
+      this.yAxis
         .call(
           d3
             .axisRight(y)
@@ -293,15 +291,15 @@ export default {
         .brushX()
         .extent([
           [0, 0],
-          [vm.width, vm.height],
+          [this.width, this.height],
         ])
         .on('start', (event) => {
           if (event.selection) {
-            vm.isBrushing = true;
-            vm.hovered = null;
+            this.isBrushing = true;
+            this.hovered = null;
           }
         })
-        .on('brush', function (event) {
+        .on('brush', (event) => {
           if (!event.sourceEvent) {
             return;
           }
@@ -312,35 +310,35 @@ export default {
             const ceil =
               Math.ceil(x.invert(event.selection[1]) / interval) * interval;
             d3.select(this).call(event.target.move, [floor, ceil].map(x));
-            vm.brushSelection = [floor, ceil];
+            this.brushSelection = [floor, ceil];
           }
         })
         .on('end', (event) => {
-          vm.isBrushing = false;
+          this.isBrushing = false;
           if (!event.selection) {
-            vm.brushSelection = null;
+            this.brushSelection = null;
           }
         });
 
-      vm.brushGroup
+      this.brushGroup
         .call(brush)
         .on('mousemove', (event) => {
-          if (vm.isBrushing) {
+          if (this.isBrushing) {
             return;
           }
           const mouseX = d3.pointer(
             event,
-            vm.brushGroup.select('.overlay').node()
+            this.brushGroup.select('.overlay').node()
           )[0];
-          vm.hovered = Math.floor(x.invert(mouseX) / interval) * interval;
+          this.hovered = Math.floor(x.invert(mouseX) / interval) * interval;
         })
         .on('mouseout', () => {
-          vm.hovered = null;
+          this.hovered = null;
         });
 
       brush.move(
-        vm.brushGroup,
-        vm.brushSelection ? vm.brushSelection.map(x) : null
+        this.brushGroup,
+        this.brushSelection ? this.brushSelection.map(x) : null
       );
     },
   },

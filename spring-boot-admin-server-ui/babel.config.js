@@ -15,12 +15,10 @@
  */
 
 module.exports = {
-  presets: [
-    ['@babel/preset-env', {modules: 'commonjs'}]
-  ],
+  presets: [['@babel/preset-env', { modules: 'commonjs' }]],
   env: {
     test: {
-      plugins: ["@babel/plugin-transform-runtime"]
-    }
-  }
+      plugins: ['@babel/plugin-transform-runtime', '@babel/preset-typescript'],
+    },
+  },
 };

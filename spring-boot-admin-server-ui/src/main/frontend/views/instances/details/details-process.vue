@@ -128,7 +128,6 @@ export default {
       }
     },
     createSubscription() {
-      const vm = this;
       return timer(0, sbaConfig.uiSettings.pollTimer.process)
         .pipe(
           concatMap(this.fetchCpuLoadMetrics),
@@ -138,13 +137,13 @@ export default {
         )
         .subscribe({
           next: (data) => {
-            vm.processCpuLoad = data.processCpuLoad;
-            vm.systemCpuLoad = data.systemCpuLoad;
+            this.processCpuLoad = data.processCpuLoad;
+            this.systemCpuLoad = data.systemCpuLoad;
           },
           error: (error) => {
-            vm.hasLoaded = true;
+            this.hasLoaded = true;
             console.warn('Fetching CPU Usage metrics failed:', error);
-            vm.error = error;
+            this.error = error;
           },
         });
     },

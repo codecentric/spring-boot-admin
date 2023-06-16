@@ -18,20 +18,20 @@
   <div>
     <sba-button
       v-if="instanceCount <= 1 || modelValue === APPLICATION"
-      class="w-full"
-      size="sm"
       :class="classNames"
       :title="$t('term.affects_all_instances', { count: instanceCount })"
+      class="w-full"
+      size="sm"
       @click="toggleScope(ActionScope.INSTANCE)"
     >
       <span v-text="$t('term.application')" />
     </sba-button>
     <sba-button
       v-else
-      class="w-full"
-      size="sm"
       :class="classNames"
       :title="$t('term.affects_this_instance_only')"
+      class="w-full"
+      size="sm"
       @click="toggleScope(ActionScope.APPLICATION)"
     >
       <span v-text="$t('term.instance')" />
@@ -76,9 +76,6 @@ export default {
       INSTANCE: ActionScope.INSTANCE,
       classNames: [],
     };
-  },
-  mounted() {
-    this.classNames = [...this.$el.classList];
   },
   methods: {
     toggleScope(newScope) {

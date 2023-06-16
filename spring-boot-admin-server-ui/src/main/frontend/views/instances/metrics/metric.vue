@@ -16,7 +16,7 @@
 
 <template>
   <div>
-    <sba-panel :title="metricName" :header-sticks-below="'#navigation'">
+    <sba-panel :header-sticks-below="'#navigation'" :title="metricName">
       <template #actions>
         <div
           v-for="statistic in statistics"
@@ -51,39 +51,37 @@
         <div
           v-for="(tags, idx) in tagSelections"
           :key="idx"
-          class="bg-white px-4 py-3 grid grid-cols-3 gap-4"
           :class="{ 'bg-gray-50': idx % 2 !== 0 }"
+          class="bg-white px-4 py-3 grid grid-cols-3 gap-4"
         >
           <div
             class="text-sm flex items-center font-medium text-gray-500 col-span-2"
           >
             <span
-              class="whitespace-pre"
               :title="getLabel(tags)"
+              class="whitespace-pre"
               v-text="getLabel(tags)"
             />
             <span
               v-if="errors[idx]"
-              class="text-yellow-300 pl-1"
               :title="errors[idx]"
+              class="text-yellow-300 pl-1"
             >
               <font-awesome-icon icon="exclamation-triangle" />
             </span>
           </div>
+
           <div class="mt-1 text-sm text-gray-900">
-            <div
-              v-for="(statistic, statistic_index) in statistics"
-              :key="`value-${idx}-${statistic}`"
-              class="flex items-center"
-            >
+            <div class="flex items-center justify-end">
               <span
+                v-for="statistic in statistics"
+                :key="`value-${idx}-${statistic}`"
                 class="flex-1"
                 v-text="getValue(measurements[idx], statistic)"
               />
               <sba-icon-button
-                v-if="statistic_index === 0"
-                class="self-end"
                 :icon="'trash'"
+                class="self-end"
                 @click.stop="handleRemove(idx)"
               />
             </div>
@@ -94,11 +92,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
 import { take } from 'rxjs/operators';
 import { useI18n } from 'vue-i18n';
+
+import SbaIconButton from '@/components/sba-icon-button.vue';
+import SbaPanel from '@/components/sba-panel.vue';
 
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
@@ -132,6 +134,7 @@ export const toMillis = (value, baseUnit) => {
 
 export default {
   name: 'Metric',
+  components: { SbaIconButton, FontAwesomeIcon, SbaPanel },
   mixins: [subscribing],
   props: {
     metricName: {
@@ -187,7 +190,7 @@ export default {
       if (!measurement) {
         return undefined;
       }
-      const type = this.statisticTypes[statistic];
+      const type = this.statisticTypes?.[statistic];
       switch (type) {
         case 'integer':
           return measurement.value.toFixed(0);
@@ -227,41 +230,16 @@ export default {
       }
     },
     fetchAllTags() {
-      return from(this.tagSelections).pipe(concatMap(this.fetchMetric));
+      return from(this.tagSelections || []).pipe(concatMap(this.fetchMetric));
     },
     createSubscription() {
-      const vm = this;
       return timer(0, 2500)
         .pipe(
-          concatMap(vm.fetchAllTags),
-          retryWhen((err) => {
-            return err.pipe(delay(1000), take(2));
-          })
+          concatMap(this.fetchAllTags),
+          retryWhen((err) => err.pipe(delay(1000), take(2)))
         )
-        .subscribe({
-          next: () => {},
-        });
+        .subscribe();
     },
   },
 };
 </script>
-<style lang="css">
-table .metrics__label {
-  width: 300px;
-  white-space: pre-wrap;
-}
-
-table .metrics__actions {
-  width: 1px;
-  vertical-align: middle;
-}
-
-table .metrics__statistic-name * {
-  vertical-align: middle;
-}
-
-table .metrics__statistic-value {
-  text-align: right;
-  vertical-align: middle;
-}
-</style>

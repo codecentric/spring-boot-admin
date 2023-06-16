@@ -15,23 +15,23 @@
   -->
 
 <template>
-  <sba-instance-section :loading="isLoading" :error="error">
+  <sba-instance-section :error="error" :loading="isLoading">
     <template #before>
       <sba-sticky-subnav v-if="env">
         <div class="flex">
           <div v-if="instance.hasEndpoint('refresh')" class="mr-1">
             <refresh
-              :instance="instance"
               :application="application"
+              :instance="instance"
               @refresh="fetchEnv"
             />
           </div>
           <div class="flex-1">
             <sba-input
               v-model="filter"
+              :placeholder="$t('term.filter')"
               name="filter"
               type="search"
-              :placeholder="$t('term.filter')"
             >
               <template #prepend>
                 <font-awesome-icon icon="filter" />
@@ -74,8 +74,8 @@
       <sba-panel
         v-for="propertySource in propertySources"
         :key="propertySource.name"
-        :title="propertySource.name"
         :header-sticks-below="'#subnavigation'"
+        :title="propertySource.name"
       >
         <div
           v-if="

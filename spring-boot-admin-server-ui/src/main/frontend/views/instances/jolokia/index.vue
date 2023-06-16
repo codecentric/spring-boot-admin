@@ -30,7 +30,7 @@
           class="nav-item"
           @click="select(domain)"
           v-text="domain.domain"
-        ></button>
+        />
       </div>
     </nav>
     <div class="flex-1 overflow-scroll bg-white p-2">
@@ -65,8 +65,8 @@
                   v-for="attribute in mBean.descriptor.attributes"
                   :key="`mBean-desc-${attribute.name}`"
                 >
-                  <dt v-text="attribute.name"></dt>
-                  <dd v-text="attribute.value"></dd>
+                  <dt v-text="attribute.name" />
+                  <dd v-text="attribute.value" />
                 </div>
               </dl>
             </header>

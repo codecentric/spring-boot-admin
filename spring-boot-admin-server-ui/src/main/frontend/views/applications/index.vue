@@ -117,11 +117,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { groupBy, sortBy, transform } from 'lodash-es';
-import { computed, ref, watch } from 'vue';
+import { computed, defineComponent, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router';
+import { RouteLocationRaw, useRoute, useRouter } from 'vue-router';
 
 import SbaStickySubnav from '@/components/sba-sticky-subnav';
 import SbaWave from '@/components/sba-wave';
@@ -150,7 +151,9 @@ const instanceMatchesFilter = (term, instance) => {
   );
 };
 
-export default {
+type NotificationFilterSettingsObject = { id: string; name: string };
+
+export default defineComponent({
   directives: { Popper },
   components: {
     ApplicationNotificationCenter,
@@ -177,19 +180,20 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const { applications, applicationsInitialized } = useApplicationStore();
-    const filter = ref(route.query.q);
+    const notificationCenter = useNotificationCenter({});
+    const filter = ref(route.query.q?.toString());
 
     watch(filter, (q) => {
       let to = {
         name: 'applications',
         params: { selected: props.selected },
-      };
+      } as RouteLocationRaw;
 
       if (q?.length > 0) {
         to = {
           ...to,
           query: { q },
-        };
+        } as RouteLocationRaw;
       }
 
       router.replace(to);
@@ -202,15 +206,19 @@ export default {
     return {
       applications,
       applicationsInitialized,
-      t,
+      errors: ref([]),
       filter,
-      router,
       hasActiveFilter,
       hasNotificationFiltersSupport: ref(false),
-      showNotificationFilterSettingsObject: ref(null),
+      notificationCenter,
+      notificationFilterSubject: new Subject(),
       notificationFilters: ref([]),
-      errors: ref([]),
       palette: ref({}),
+      router,
+      showNotificationFilterSettingsObject: ref(
+        null as unknown as NotificationFilterSettingsObject
+      ),
+      t,
     };
   },
   computed: {
@@ -222,7 +230,7 @@ export default {
       );
       const list = transform(
         applicationsByStatus,
-        (result, applications, status) => {
+        (result, applications, status: string) => {
           const statusKey = status.replace(/[^\w]/gi, '').toLowerCase();
           result.push({
             statusKey,
@@ -240,9 +248,7 @@ export default {
   watch: {
     selected: {
       immediate: true,
-      handler(newVal) {
-        this.scrollIntoView(newVal);
-      },
+      handler: 'scrollIntoView',
     },
   },
   mounted() {
@@ -286,7 +292,7 @@ export default {
           item instanceof Application
             ? 'applications.unregister_successful'
             : 'instances.unregister_successful';
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           this.t(message, { name: item.id || item.name })
         );
       } catch (error) {
@@ -294,7 +300,7 @@ export default {
           item instanceof Application
             ? 'applications.unregister_failed'
             : 'instances.unregister_failed';
-        this.$notificationCenter.error(
+        this.notificationCenter.error(
           this.t(message, {
             name: item.id || item.name,
             error: error.response.status,
@@ -309,7 +315,7 @@ export default {
           item instanceof Application
             ? 'applications.shutdown_successful'
             : 'instances.shutdown_successful';
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           this.t(message, { name: item.id || item.name })
         );
       } catch (error) {
@@ -317,7 +323,7 @@ export default {
           item instanceof Application
             ? 'applications.shutdown_failed'
             : 'instances.shutdown_failed';
-        this.$notificationCenter.error(
+        this.notificationCenter.error(
           this.t(message, {
             name: item.id || item.name,
             error: error.response.status,
@@ -332,7 +338,7 @@ export default {
           item instanceof Application
             ? 'applications.restarted'
             : 'instances.restarted';
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           this.t(message, { name: item.id || item.name })
         );
       } catch (error) {
@@ -340,7 +346,7 @@ export default {
           item instanceof Application
             ? 'applications.restart_failed'
             : 'instances.restart_failed';
-        this.$notificationCenter.error(
+        this.notificationCenter.error(
           this.t(message, {
             name: item.id || item.name,
             error: error.response.status,
@@ -349,23 +355,21 @@ export default {
       }
     },
     createSubscription() {
-      const vm = this;
-      vm.notificationFilterSubject = new Subject();
       return timer(0, 60000)
         .pipe(
-          mergeWith(vm.notificationFilterSubject),
+          mergeWith(this.notificationFilterSubject),
           concatMap(this.fetchNotificationFilters)
         )
         .subscribe({
           next: (data) => {
-            vm.notificationFilters = data;
+            this.notificationFilters = data;
           },
           error: (error) => {
             console.warn(
               'Fetching notification filters failed with error:',
               error
             );
-            this.$notificationCenter.error(
+            this.notificationCenter.error(
               this.t('applications.fetching_notification_filters_failed')
             );
           },
@@ -383,7 +387,7 @@ export default {
         const response = await NotificationFilter.addFilter(object, ttl);
         let notificationFilter = response.data;
         this.notificationFilterSubject.next(notificationFilter);
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           `${this.t('applications.notifications_suppressed_for', {
             name:
               notificationFilter.applicationName ||
@@ -400,7 +404,7 @@ export default {
       try {
         await activeFilter.delete();
         this.notificationFilterSubject.next(activeFilter.id);
-        this.$notificationCenter.success(
+        this.notificationCenter.success(
           this.t('applications.notification_filter.removed')
         );
       } catch (error) {
@@ -431,12 +435,11 @@ export default {
       path: '/applications/:selected?',
       props: true,
       name: 'applications',
-      label: 'applications.title',
       handle,
       order: 0,
       component: this,
     });
     viewRegistry.addRedirect('/', 'applications');
   },
-};
+});
 </script>

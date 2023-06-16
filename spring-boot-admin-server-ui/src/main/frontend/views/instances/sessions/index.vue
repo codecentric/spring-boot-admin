@@ -31,8 +31,8 @@
           </select>
           <sba-input
             v-model="filter.value"
-            name="filter"
             input-class="!rounded-l-none"
+            name="filter"
             type="search"
             @paste="handlePaste"
             @keyup.enter="fetchSessionsByUsername()"

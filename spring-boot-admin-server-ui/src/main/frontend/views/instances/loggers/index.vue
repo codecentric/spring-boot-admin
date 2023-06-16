@@ -16,8 +16,8 @@
 
 <template>
   <loggers
-    :loggers-service="service"
     :instance-count="application.instances.length"
+    :loggers-service="service"
     @change-scope="changeScope"
   />
 </template>

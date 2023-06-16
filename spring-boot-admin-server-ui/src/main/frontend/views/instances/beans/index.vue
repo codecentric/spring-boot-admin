@@ -15,14 +15,14 @@
   -->
 
 <template>
-  <sba-instance-section :loading="isLoading" :error="error">
+  <sba-instance-section :error="error" :loading="isLoading">
     <template #before>
       <sba-sticky-subnav>
         <sba-input
           v-model="filter"
+          :placeholder="$t('term.filter')"
           name="filter"
           type="search"
-          :placeholder="$t('term.filter')"
         >
           <template #prepend>
             <font-awesome-icon icon="filter" />
@@ -35,7 +35,7 @@
     </template>
 
     <template v-for="context in filteredContexts" :key="context.name">
-      <sba-panel :title="context.name" :header-sticks-below="'#subnavigation'">
+      <sba-panel :header-sticks-below="'#subnavigation'" :title="context.name">
         <beans-list :key="`${context.name}-beans`" :beans="context.beans" />
       </sba-panel>
     </template>
