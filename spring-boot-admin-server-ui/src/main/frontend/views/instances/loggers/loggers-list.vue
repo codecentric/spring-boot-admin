@@ -66,7 +66,11 @@
         />
       </tr>
     </tbody>
-    <InfiniteLoading :identifier="loggers" @infinite="increaseScroll">
+    <InfiniteLoading
+      ref="infiniteLoading"
+      :identifier="loggers"
+      @infinite="increaseScroll"
+    >
       <template #complete>
         <span />
       </template>
@@ -75,14 +79,17 @@
 </template>
 
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import InfiniteLoading from 'v3-infinite-loading';
 
 import 'v3-infinite-loading/lib/style.css';
 
+import SbaTag from '@/components/sba-tag.vue';
+
 import SbaLoggerControl from '@/views/instances/loggers/logger-control';
 
 export default {
-  components: { InfiniteLoading, SbaLoggerControl },
+  components: { FontAwesomeIcon, SbaTag, InfiniteLoading, SbaLoggerControl },
   props: {
     levels: {
       type: Array,
