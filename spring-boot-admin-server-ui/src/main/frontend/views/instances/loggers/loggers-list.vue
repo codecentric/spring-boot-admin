@@ -66,7 +66,7 @@
         />
       </tr>
     </tbody>
-    <InfiniteLoading @infinite="increaseScroll">
+    <InfiniteLoading :identifier="loggers" @infinite="increaseScroll">
       <template #complete>
         <span />
       </template>
@@ -104,7 +104,7 @@ export default {
   methods: {
     increaseScroll($state) {
       if (this.visibleLimit < this.loggers.length) {
-        this.visibleLimit += 50;
+        this.visibleLimit += 25;
         $state.loaded();
       } else {
         $state.complete();
