@@ -68,7 +68,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 	 */
 	private String healthEndpointPath = "health";
 
-	private static @Nullable String getMetadataValue(ServiceInstance instance, String[] keys) {
+	protected static @Nullable String getMetadataValue(ServiceInstance instance, String... keys) {
 		Map<String, String> metadata = instance.getMetadata();
 		for (String key : keys) {
 			String value = metadata.get(key);

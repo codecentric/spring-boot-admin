@@ -17,14 +17,31 @@
 package de.codecentric.boot.admin.server.cloud.discovery;
 
 import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.kubernetes.commons.discovery.KubernetesDiscoveryProperties;
 
 import static org.springframework.util.StringUtils.hasText;
 
 public class KubernetesServiceInstanceConverter extends DefaultServiceInstanceConverter {
 
+	public static final String MANAGEMENT_PORT_NAME = "management";
+
+	private final String portsPrefix;
+
+	public KubernetesServiceInstanceConverter(KubernetesDiscoveryProperties discoveryProperties) {
+		if (discoveryProperties.metadata() != null && discoveryProperties.metadata().portsPrefix() != null) {
+			this.portsPrefix = discoveryProperties.metadata().portsPrefix();
+		}
+		else {
+			this.portsPrefix = "";
+		}
+	}
+
 	@Override
 	protected int getManagementPort(ServiceInstance instance) {
-		String managementPort = instance.getMetadata().get("port.management");
+		// the DiscoveryClient implementation using Kubernetes Client
+		// (KubernetesInformerDiscoveryClient) currently ignores
+		// the portsPrefix from KubernetesDiscoveryProperties
+		String managementPort = getMetadataValue(instance, portsPrefix + MANAGEMENT_PORT_NAME, MANAGEMENT_PORT_NAME);
 		if (hasText(managementPort)) {
 			return Integer.parseInt(managementPort);
 		}
