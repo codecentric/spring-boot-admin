@@ -6,7 +6,30 @@ import SkipToContent from './SkipToContent.astro';
 import SidebarToggle from './SidebarToggle';
 import LanguageSelect from './LanguageSelect';
 import Search from './Search';
-import ThemeToggleButton from "../ThemeToggleButton/ThemeToggleButton";
+import ThemeToggleButton from '../ThemeToggleButton/ThemeToggleButton';
+
+import { getAdocs } from '../../utils/adocs.loader';
+import { getDocs } from '../../utils/docs.loader';
+
+export async function props() {
+  let docs = await getDocs();
+  let adocs = await getAdocs({
+    asciidocOptions: {
+      attributes: {
+        'base-path': Astro.site.pathname
+      }
+    }
+  });
+
+  return [...docs, ...adocs]
+    .map(f => f.props)
+    .filter(f => f.slug && f.data.title)
+    .map(f => ({
+      slug: f.slug,
+      title: f.data.title,
+      content: f.render().Content
+    }));
+}
 
 type Props = {
   currentPage: string;
@@ -16,6 +39,8 @@ const { currentPage } = Astro.props;
 const lang = getLanguageFromURL(currentPage);
 
 const VERSION = import.meta.env.VERSION ?? 'latest';
+
+const allPosts = await props();
 ---
 
 <header>
@@ -39,7 +64,7 @@ const VERSION = import.meta.env.VERSION ?? 'latest';
       <LanguageSelect lang={lang} client:idle />}
     {ALGOLIA.enabled === true ? (
       <div class='search-item'>
-        <Search client:idle />
+        <Search client:idle searchList={allPosts} />
       </div>
     ) : ''}
   </nav>

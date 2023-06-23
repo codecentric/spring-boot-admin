@@ -25,7 +25,7 @@ export const ALGOLIA = {
   indexName: "dev_docs",
   appId: "G9FEY71VTH",
   apiKey: "43db92079ef0ad6f92fef7856d8054f6",
-  enabled: false,
+  enabled: true,
 };
 
 export type Sidebar = Record<

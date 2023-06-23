@@ -34,6 +34,20 @@ headings = rendered.headings;
 
 <script is:inline>
   document.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll('h1[id], h2[id], h3[id]').forEach(value => {
+      let anchorElement = document.createElement('a');
+      anchorElement.classList.add('anchor');
+      anchorElement.href = `#${value.id}`;
+
+      let linkElement = document.createElement('a');
+      linkElement.innerText = value.innerText;
+      linkElement.classList.add('link');
+      linkElement.href = `#${value.id}`;
+
+      value.innerText = ""
+      value.append(anchorElement)
+      value.append(linkElement)
+    });
     document.querySelectorAll('pre code').forEach((el) => {
       hljs.highlightElement(el);
     });
