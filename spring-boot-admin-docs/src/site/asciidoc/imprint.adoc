@@ -1,4 +1,4 @@
-= Imprint =
+= Impressum =
 
 [%hardbreaks]
 *Hauptsitz der Gesellschaft*
@@ -14,6 +14,7 @@ E-Mail: info@codecentric.de
 [%hardbreaks]
 *Vorstand*
 Rainer Vehns (Vorsitzender)
+Verena Deller
 Stefan Riedel
 Lars Rückemann
 
