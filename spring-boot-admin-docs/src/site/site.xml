@@ -48,8 +48,8 @@
             <item name="UI" href="./customize_ui.html"/>
         </menu>
         <menu name="Imprint" inherit="top">
-            <item name="Imprint" href="./imprint.html"/>
-            <item name="Privacy" href="./privacy.html"/>
+            <item name="Impressum" href="./imprint.html"/>
+            <item name="Datenschutzerklärung" href="./privacy.html"/>
         </menu>
     </body>
 </project>
