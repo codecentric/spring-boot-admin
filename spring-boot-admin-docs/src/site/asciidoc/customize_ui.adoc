@@ -72,7 +72,7 @@ include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/custom.vue[lines=1
 <1> By destructuring `applications` of `SBA.useApplicationStore()`, you have reactive access to registered applications.
 
 TIP: There are some helpful methods on the application and instances object available.
-Have a look at {github-src}/spring-boot-admin-server-ui/src/main/frontend/services/application.js[application.js] and {github-src}/spring-boot-admin-server-ui/src/main/frontend/services/instance.js[instance.js]
+Have a look at {github-src}/spring-boot-admin-server-ui/src/main/frontend/services/application.ts[application.ts] and {github-src}/spring-boot-admin-server-ui/src/main/frontend/services/instance.ts[instance.ts]
 
 And this is how you register the top-level view.
 
