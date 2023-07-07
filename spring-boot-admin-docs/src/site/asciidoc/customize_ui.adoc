@@ -50,21 +50,34 @@ include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=cust
 <1> Name of the view and the route.
 <2> Path in Vue router.
 <3> The imported custom component, which will be rendered on the route.
-<4> The handle for the custom view to be shown in the top navigation bar.
-<5> Order for the view.
-<6> Using `i18n.mergeLocaleMessage` allows to add custom translations.
+<4> An optional group name that allows to bind views to a logical group (defaults to "none")
+<5> The handle for the custom view to be shown in the top navigation bar.
+<6> Order for the view.
+<7> Using `i18n.mergeLocaleMessage` allows to add custom translations.
 
 Views in the top navigation bar are sorted by ascending order.
 
 If new top level routes are added to the frontend, they also must be known to the backend.
 Add a `/META-INF/spring-boot-admin-server-ui/extensions/{name}/routes.txt` with all your new toplevel routes (one route per line).
 
+Groups are used in instance sidebar to aggregate multiple views into a collapsible menu entry showing the group's name.
+When a group contains just a single element, the label of the view is shown instead of the group's name.
+
+==== Override/Set custom group icons ====
+In order to override or set icons for (custom) groups you can use the `SBA.viewRegistry.setGroupIcon` function as follows:
+
+[source,javascript]
+----
+include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=customization-ui-groups]
+----
+<1> Name of the group to set icon for
+<2> Arbitrary HTML code (e.g. SVG image) that is inserted and parsed as icon.
+
 [[customizing-custom-views-top-level]]
 ==== Adding a Top-Level View ====
 
 Here is a simple top level view just listing all registered applications:
 [source,html]
-
 ----
 include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/custom.vue[lines=17..-1]
 ----
@@ -109,8 +122,8 @@ include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/custom-endpoint.vu
 <2> Each instance has a preconfigured https://github.com/axios/axios[axios] instance to access the endpoints with the correct path and headers.
 
 Registering the instance view works like for the top-level view with some additional properties:
-[source,javascript]
 
+[source,javascript]
 ----
 include::{samples-dir}/spring-boot-admin-sample-custom-ui/src/index.js[tags=customization-ui-endpoint]
 ----

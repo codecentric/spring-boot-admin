@@ -124,7 +124,7 @@ import SbaButton from '@/components/sba-button.vue';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
-import { VIEW_GROUP_ICON } from '@/views';
+import { VIEW_GROUP_ICON } from '@/views/ViewGroup';
 
 export default defineComponent({
   components: { SbaButton },

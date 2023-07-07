@@ -18,7 +18,7 @@ import { Text, VNode, h, markRaw, reactive, shallowRef, toRaw } from 'vue';
 import { Router, createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
-import { VIEW_GROUP } from './views/ViewGroup.js';
+import { VIEW_GROUP, VIEW_GROUP_ICON } from './views/ViewGroup.js';
 
 let router: Router;
 
@@ -52,6 +52,10 @@ export default class ViewRegistry {
 
   get router(): Router {
     return router;
+  }
+
+  setGroupIcon(name, icon) {
+    VIEW_GROUP_ICON[name] = icon;
   }
 
   createRouter() {
