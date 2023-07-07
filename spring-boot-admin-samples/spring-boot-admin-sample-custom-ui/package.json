@@ -6,6 +6,7 @@
   "scripts": {
     "build": "vite build",
     "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
+    "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --sourcemap --mode development",
     "preview": "vite preview"
   },
   "dependencies": {
