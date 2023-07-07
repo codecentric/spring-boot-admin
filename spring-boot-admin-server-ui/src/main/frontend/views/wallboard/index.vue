@@ -96,7 +96,6 @@ import { useI18n } from 'vue-i18n';
 
 import { HealthStatus } from '@/HealthStatus';
 import { useApplicationStore } from '@/composables/useApplicationStore';
-import Application from '@/services/application';
 import hexMesh from '@/views/wallboard/hex-mesh';
 
 export default {
@@ -108,16 +107,6 @@ export default {
 
     const { applications, applicationsInitialized, error } =
       useApplicationStore();
-
-    applications.value.push(
-      new Application({
-        name: 'Abc',
-        status: HealthStatus.UP,
-        statusTimestamp: Date.now() - Math.random() * 100000,
-        buildVersion: Math.random() * 203 + '-SNAPSHOT',
-        instances: [],
-      })
-    );
 
     const fuse = computed(
       () =>
