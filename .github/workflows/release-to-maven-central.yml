@@ -8,6 +8,7 @@ on:
         required: true
         default: '3.0.0'
       copyDocsToCurrent:
+        description: "Should the docs be published at https://docs.spring-boot-admin.com? Otherwise they will be accessible by version number only."
         required: true
         type: boolean
         default: false
@@ -113,3 +114,31 @@ jobs:
             ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: ${{ contains(github.event.inputs.releaseversion, '-') }}
+
+  set-next-snapshot-version:
+    needs: publish-github-release
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set new SNAPSHOT version
+        run: >
+          mvn versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" && \
+            mvn  versions:set -DnextSnapshot && \
+            VERSION=$(mvn exec:exec -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive -q) && \
+            mvn versions:revert && \
+            mvn versions:set-property -Dproperty=revision  -DnewVersion="$VERSION" &&
+            mvn versions:commit
+
+      - name: Commit new SNAPSHOT version
+        uses: stefanzweifel/git-auto-commit-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commit_message: "chore: update to next SNAPSHOT version"
+
+
