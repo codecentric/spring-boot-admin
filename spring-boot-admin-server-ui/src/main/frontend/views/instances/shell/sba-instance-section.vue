@@ -1,5 +1,5 @@
 <template>
-  <section :class="{ loading: showLoadingSpinner }">
+  <section :class="{ loading: loading }" class="relative">
     <slot name="before" />
 
     <div
@@ -23,7 +23,7 @@
         class="mb-6 w-full"
       />
 
-      <div v-if="showLoadingSpinner" class="loading-spinner-wrapper">
+      <div v-if="loading" class="loading-spinner-wrapper">
         <div class="loading-spinner-wrapper-container">
           <sba-loading-spinner size="sm" />
           {{ $t('term.fetching_data') }}
@@ -60,20 +60,6 @@ export default {
       }),
     },
   },
-  data() {
-    return {
-      showLoadingSpinner: false,
-      debouncedLoader: null,
-    };
-  },
-  watch: {
-    loading: function (newVal) {
-      window.clearTimeout(this.debouncedLoader);
-      this.debouncedLoader = window.setTimeout(() => {
-        this.showLoadingSpinner = newVal;
-      }, 250);
-    },
-  },
   methods: {
     classNames: classNames,
   },
@@ -82,10 +68,26 @@ export default {
 
 <style scoped>
 .loading-spinner-wrapper {
-  @apply w-full h-full flex flex-col bg-black/30 absolute z-50 top-0 left-0 justify-center items-center backdrop-blur-sm;
+  @apply absolute w-full h-screen flex flex-col z-50 top-0 left-0 justify-center items-center opacity-0;
+
+  animation-name: show;
+  animation-duration: 0ms;
+  animation-fill-mode: forwards;
+  animation-delay: 250ms;
+  animation-iteration-count: 1;
 }
 
 .loading-spinner-wrapper-container {
-  @apply rounded-md bg-black/30 py-4 px-5 flex w-auto gap-4 flex items-center text-white backdrop-blur;
+  @apply rounded-md bg-black/30 py-4 px-5 flex w-auto gap-4 items-center text-white;
+}
+
+@keyframes show {
+  from {
+    @apply opacity-0;
+  }
+
+  to {
+    @apply opacity-100;
+  }
 }
 </style>
