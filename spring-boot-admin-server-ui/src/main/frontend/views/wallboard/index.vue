@@ -16,6 +16,34 @@
 
 <template>
   <section class="wallboard section">
+    <sba-sticky-subnav>
+      <div class="flex gap-2 justify-end">
+        <sba-input
+          v-model="termFilter"
+          :placeholder="$t('term.filter')"
+          name="filter"
+          type="search"
+        >
+          <template #prepend>
+            <font-awesome-icon icon="filter" />
+          </template>
+        </sba-input>
+
+        <select
+          v-model="statusFilter"
+          class="relative focus:z-10 focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded"
+        >
+          <option selected value="none" v-text="$t('term.all')" />
+          <option
+            v-for="status in healthStatus"
+            :key="status"
+            :value="status"
+            v-text="status"
+          />
+        </select>
+      </div>
+    </sba-sticky-subnav>
+
     <sba-alert
       v-if="error"
       :error="error"
@@ -33,6 +61,7 @@
       v-if="applicationsInitialized"
       :class-for-item="classForApplication"
       :items="applications"
+      class="-mt-14"
       @click="select"
     >
       <template #item="{ item: application }">
@@ -61,20 +90,79 @@
 </template>
 
 <script>
+import Fuse from 'fuse.js';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { HealthStatus } from '@/HealthStatus';
 import { useApplicationStore } from '@/composables/useApplicationStore';
+import Application from '@/services/application';
 import hexMesh from '@/views/wallboard/hex-mesh';
 
 export default {
   components: { hexMesh },
   setup() {
     const { t } = useI18n();
+    const termFilter = ref('');
+    const statusFilter = ref('none');
 
     const { applications, applicationsInitialized, error } =
       useApplicationStore();
-    return { applications, applicationsInitialized, error, t };
+
+    applications.value.push(
+      new Application({
+        name: 'Abc',
+        status: HealthStatus.UP,
+        statusTimestamp: Date.now() - Math.random() * 100000,
+        buildVersion: Math.random() * 203 + '-SNAPSHOT',
+        instances: [],
+      })
+    );
+
+    const fuse = computed(
+      () =>
+        new Fuse(applications.value, {
+          includeScore: true,
+          useExtendedSearch: true,
+          threshold: 0.25,
+          keys: ['name', 'buildVersion', 'instances.name', 'instances.id'],
+        })
+    );
+
+    const filteredApplications = computed(() => {
+      function filterByTerm() {
+        if (termFilter.value.length > 0) {
+          return fuse.value.search(termFilter.value).map((sr) => sr.item);
+        } else {
+          return applications.value;
+        }
+      }
+
+      function filterByStatus(result) {
+        if (statusFilter.value !== 'none') {
+          return result.filter(
+            (application) => application.status === statusFilter.value
+          );
+        }
+
+        return result;
+      }
+
+      let result = filterByTerm();
+      result = filterByStatus(result);
+
+      return result;
+    });
+
+    return {
+      applications: filteredApplications,
+      applicationsInitialized,
+      error,
+      t,
+      termFilter,
+      statusFilter,
+      healthStatus: Object.keys(HealthStatus),
+    };
   },
   methods: {
     classForApplication(application) {
