@@ -2,7 +2,7 @@ spring-boot-admin-sample-custom-ui
 ================================
 
 ### Building this module
-The jar **can be build with Maven** with the maven-exec-plugin. To do this node.js and npm must be installed on your machine and be on your `$PATH`.
+The jar **can be build with Maven** using the frontend-maven-plugin. This will download node.js and npm automatically.
 If you don't want to use the maven exec run the following commands:
 
 ### Running Spring Boot Admin Server for development
