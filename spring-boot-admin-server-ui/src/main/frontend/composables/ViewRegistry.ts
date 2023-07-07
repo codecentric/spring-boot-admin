@@ -22,6 +22,9 @@ const emitCustomRouteAddedEvent = debounce(() => {
 export function useViewRegistry() {
   return {
     views: viewRegistry.views,
+    setGroupIcon(name, icon) {
+      viewRegistry.setGroupIcon(name, icon);
+    },
     addView(viewToAdd) {
       const view = viewRegistry.addView(viewToAdd)[0];
 
