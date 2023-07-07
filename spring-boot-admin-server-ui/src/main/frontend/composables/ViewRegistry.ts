@@ -22,8 +22,8 @@ const emitCustomRouteAddedEvent = debounce(() => {
 export function useViewRegistry() {
   return {
     views: viewRegistry.views,
-    addView(view) {
-      viewRegistry.addView(view);
+    addView(viewToAdd) {
+      const view = viewRegistry.addView(viewToAdd)[0];
 
       if (view.parent) {
         viewRegistry.router.addRoute(view.parent, {
