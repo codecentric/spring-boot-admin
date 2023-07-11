@@ -84,8 +84,8 @@ public class MailNotifierTest {
 		templateEngine.addTemplateResolver(resolver);
 
 		notifier = new MailNotifier(sender, repository, templateEngine);
-		notifier.setTo(new String[] { "foo@bar.com" });
-		notifier.setCc(new String[] { "bar@foo.com" });
+		notifier.setTo(new String[]{"foo@bar.com"});
+		notifier.setCc(new String[]{"bar@foo.com"});
 		notifier.setFrom("SBA <no-reply@example.com>");
 		notifier.setBaseUrl("http://localhost:8080");
 		notifier.setTemplate("/META-INF/spring-boot-admin-server/mail/status-changed.html");
@@ -118,7 +118,7 @@ public class MailNotifierTest {
 
 	@Test
 	public void should_send_mail_using_custom_template_with_additional_properties()
-			throws IOException, MessagingException {
+		throws IOException, MessagingException {
 		notifier.setTemplate("/de/codecentric/boot/admin/server/notify/custom-mail.html");
 		notifier.getAdditionalProperties().put("customProperty", "HELLO WORLD!");
 
@@ -160,7 +160,7 @@ public class MailNotifierTest {
 
 	@Test
 	public void should_not_send_on_wildcard_ignore() {
-		notifier.setIgnoreChanges(new String[] { "*:UP" });
+		notifier.setIgnoreChanges(new String[]{"*:UP"});
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
@@ -192,5 +192,4 @@ public class MailNotifierTest {
 		dataHandler.writeTo(os);
 		return os.toString(StandardCharsets.UTF_8).replaceAll("\\r?\\n", "\n");
 	}
-
 }
