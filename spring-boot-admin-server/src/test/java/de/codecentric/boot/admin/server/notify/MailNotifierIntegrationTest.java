@@ -41,7 +41,7 @@ class MailNotifierIntegrationTest implements WithAssertions {
 		assertThatThrownBy(() -> {
 			URL resource = getClass().getClassLoader().getResource(".");
 			mailNotifier.setTemplate("file://" + resource.getFile()
-					+ "de/codecentric/boot/admin/server/notify/vulnerable-file-calc.html");
+					+ "de/codecentric/boot/admin/server/notify/vulnerable-file.html");
 			mailNotifier.getBody(new Context());
 		}).hasCauseInstanceOf(FileNotFoundException.class);
 	}
@@ -51,7 +51,7 @@ class MailNotifierIntegrationTest implements WithAssertions {
 		assertThatThrownBy(() -> {
 			URL resource = getClass().getClassLoader().getResource(".");
 			mailNotifier.setTemplate(
-					"https://raw.githubusercontent.com/codecentric/spring-boot-admin/gh-pages/vulnerable-file-calc.html");
+					"https://raw.githubusercontent.com/codecentric/spring-boot-admin/gh-pages/vulnerable-file.html");
 			mailNotifier.getBody(new Context());
 		}).hasCauseInstanceOf(FileNotFoundException.class);
 	}
