@@ -1,5 +1,5 @@
 <template>
-  <div class="flex text-center h-full">
+  <div class="flex text-center h-full items-center">
     <svg
       :class="classNames(sizeClassNames)"
       class="inline text-gray-900 animate-spin"

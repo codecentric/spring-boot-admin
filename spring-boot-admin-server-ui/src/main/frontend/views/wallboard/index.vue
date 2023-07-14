@@ -16,33 +16,35 @@
 
 <template>
   <section class="wallboard section">
-    <sba-sticky-subnav>
-      <div class="flex gap-2 justify-end">
-        <sba-input
-          v-model="termFilter"
-          :placeholder="$t('term.filter')"
-          name="filter"
-          type="search"
-        >
-          <template #prepend>
-            <font-awesome-icon icon="filter" />
-          </template>
-        </sba-input>
+    <div class="flex gap-2 justify-end absolute w-full md:w-[28rem] top-14 right-0 bg-black/20 py-3 px-4 rounded-bl">
+      <sba-input
+        class="flex-1"
+        v-model="termFilter"
+        :placeholder="$t('term.filter')"
+        name="filter"
+        type="search"
+      >
+        <template #prepend>
+          <font-awesome-icon icon="filter"/>
+        </template>
+      </sba-input>
 
-        <select
-          v-model="statusFilter"
-          class="relative focus:z-10 focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded"
-        >
-          <option selected value="none" v-text="$t('term.all')" />
+      <select
+        v-if="healthStatus.length > 1"
+        v-model="statusFilter"
+        class="relative focus:z-10 focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded"
+      >
+        <option selected value="none" v-text="$t('term.all')"/>
+        <optgroup :label="t('health.label')">
           <option
             v-for="status in healthStatus"
             :key="status"
             :value="status"
-            v-text="status"
+            v-text="t('health.status.' + status)"
           />
-        </select>
-      </div>
-    </sba-sticky-subnav>
+        </optgroup>
+      </select>
+    </div>
 
     <sba-alert
       v-if="error"
@@ -52,60 +54,65 @@
       severity="WARN"
     />
 
-    <p
+    <sba-loading-spinner
       v-if="!applicationsInitialized"
-      class="is-muted is-loading"
-      v-text="t('applications.loading_applications')"
     />
-    <hex-mesh
-      v-if="applicationsInitialized"
-      :class-for-item="classForApplication"
-      :items="applications"
-      class="-mt-14"
-      @click="select"
-    >
-      <template #item="{ item: application }">
-        <div :key="application.name" class="hex__body application">
-          <div class="application__status-indicator" />
-          <div class="application__header application__time-ago is-muted">
-            <sba-time-ago :date="application.statusTimestamp" />
-          </div>
-          <div class="application__body">
-            <h1 class="application__name" v-text="application.name" />
-            <p
-              class="application__instances is-muted"
-              v-text="
-                t('wallboard.instances_count', application.instances.length)
-              "
+
+    <template v-if="applicationsInitialized">
+      <div class="flex w-full h-full items-center text-center text-white text-xl"
+           v-if="termFilter.length > 0 && applications.length === 0"
+           v-text="t('term.no_results_for_term', {
+             term: termFilter
+           })"/>
+      <hex-mesh
+        v-if="applicationsInitialized"
+        :class-for-item="classForApplication"
+        :items="applications"
+        @click="select"
+      >
+        <template #item="{ item: application }">
+          <div :key="application.name" class="hex__body application">
+            <div class="application__status-indicator"/>
+            <div class="application__header application__time-ago is-muted">
+              <sba-time-ago :date="application.statusTimestamp"/>
+            </div>
+            <div class="application__body">
+              <h1 class="application__name" v-text="application.name"/>
+              <p
+                class="application__instances is-muted"
+                v-text="
+                  t('wallboard.instances_count', application.instances.length)
+                "
+              />
+            </div>
+            <h2
+              class="application__footer application__version"
+              v-text="application.buildVersion"
             />
           </div>
-          <h2
-            class="application__footer application__version"
-            v-text="application.buildVersion"
-          />
-        </div>
-      </template>
-    </hex-mesh>
+        </template>
+      </hex-mesh>
+    </template>
   </section>
 </template>
 
 <script>
 import Fuse from 'fuse.js';
-import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+import {computed, ref} from 'vue';
+import {useI18n} from 'vue-i18n';
 
-import { HealthStatus } from '@/HealthStatus';
-import { useApplicationStore } from '@/composables/useApplicationStore';
+import {HealthStatus} from '@/HealthStatus';
+import {useApplicationStore} from '@/composables/useApplicationStore';
 import hexMesh from '@/views/wallboard/hex-mesh';
 
 export default {
-  components: { hexMesh },
+  components: {hexMesh},
   setup() {
-    const { t } = useI18n();
+    const {t} = useI18n();
     const termFilter = ref('');
     const statusFilter = ref('none');
 
-    const { applications, applicationsInitialized, error } =
+    const {applications, applicationsInitialized, error} =
       useApplicationStore();
 
     const fuse = computed(
@@ -143,6 +150,10 @@ export default {
       return result;
     });
 
+    const healthStatus = computed(() => {
+      return applications.value.map((application) => application.status);
+    });
+
     return {
       applications: filteredApplications,
       applicationsInitialized,
@@ -150,7 +161,7 @@ export default {
       t,
       termFilter,
       statusFilter,
-      healthStatus: Object.keys(HealthStatus),
+      healthStatus,
     };
   },
   methods: {
@@ -182,17 +193,17 @@ export default {
       if (application.instances.length === 1) {
         this.$router.push({
           name: 'instances/details',
-          params: { instanceId: application.instances[0].id },
+          params: {instanceId: application.instances[0].id},
         });
       } else {
         this.$router.push({
           name: 'applications',
-          params: { selected: application.name },
+          params: {selected: application.name},
         });
       }
     },
   },
-  install({ viewRegistry }) {
+  install({viewRegistry}) {
     viewRegistry.addView({
       path: '/wallboard',
       name: 'wallboard',
