@@ -74,7 +74,7 @@ import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterCont
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(NotifierProxyProperties.class)
-@AutoConfigureAfter({MailSenderAutoConfiguration.class})
+@AutoConfigureAfter({ MailSenderAutoConfiguration.class })
 public class AdminServerNotifierAutoConfiguration {
 
 	private static RestTemplate createNotifierRestTemplate(NotifierProxyProperties proxyProperties) {
@@ -86,7 +86,7 @@ public class AdminServerNotifierAutoConfiguration {
 			if (proxyProperties.getUsername() != null && proxyProperties.getPassword() != null) {
 				AuthScope authScope = new AuthScope(proxyProperties.getHost(), proxyProperties.getPort());
 				Credentials usernamePasswordCredentials = new UsernamePasswordCredentials(proxyProperties.getUsername(),
-					proxyProperties.getPassword().toCharArray());
+						proxyProperties.getPassword().toCharArray());
 
 				BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
 				credsProvider.setCredentials(authScope, usernamePasswordCredentials);
@@ -113,7 +113,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Notifier.class)
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class })
 	@Lazy(false)
 	public static class CompositeNotifierConfiguration {
 
@@ -158,7 +158,7 @@ public class AdminServerNotifierAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@ConditionalOnBean(MailSender.class)
 	@Lazy(false)
 	public static class MailNotifierConfiguration {
@@ -173,7 +173,7 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.mail")
 		public MailNotifier mailNotifier(JavaMailSender mailSender, InstanceRepository repository,
-										 TemplateEngine mailNotifierTemplateEngine) {
+				TemplateEngine mailNotifierTemplateEngine) {
 			return new MailNotifier(mailSender, repository, mailNotifierTemplateEngine);
 		}
 
@@ -192,7 +192,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.hipchat", name = "url")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class HipchatNotifierConfiguration {
 
@@ -207,7 +207,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.slack", name = "webhook-url")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class SlackNotifierConfiguration {
 
@@ -222,7 +222,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.letschat", name = "url")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class LetsChatNotifierConfiguration {
 
@@ -230,7 +230,7 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.letschat")
 		public LetsChatNotifier letsChatNotifier(InstanceRepository repository,
-												 NotifierProxyProperties proxyProperties) {
+				NotifierProxyProperties proxyProperties) {
 			return new LetsChatNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
@@ -238,7 +238,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.pagerduty", name = "service-key")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class PagerdutyNotifierConfiguration {
 
@@ -246,7 +246,7 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.pagerduty")
 		public PagerdutyNotifier pagerdutyNotifier(InstanceRepository repository,
-												   NotifierProxyProperties proxyProperties) {
+				NotifierProxyProperties proxyProperties) {
 			return new PagerdutyNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
@@ -254,7 +254,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.opsgenie", name = "api-key")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class OpsGenieNotifierConfiguration {
 
@@ -262,7 +262,7 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.opsgenie")
 		public OpsGenieNotifier opsgenieNotifier(InstanceRepository repository,
-												 NotifierProxyProperties proxyProperties) {
+				NotifierProxyProperties proxyProperties) {
 			return new OpsGenieNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
@@ -270,7 +270,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.ms-teams", name = "webhook-url")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class MicrosoftTeamsNotifierConfiguration {
 
@@ -278,7 +278,7 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.ms-teams")
 		public MicrosoftTeamsNotifier microsoftTeamsNotifier(InstanceRepository repository,
-															 NotifierProxyProperties proxyProperties) {
+				NotifierProxyProperties proxyProperties) {
 			return new MicrosoftTeamsNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
@@ -286,7 +286,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.telegram", name = "auth-token")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class TelegramNotifierConfiguration {
 
@@ -294,7 +294,7 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.telegram")
 		public TelegramNotifier telegramNotifier(InstanceRepository repository,
-												 NotifierProxyProperties proxyProperties) {
+				NotifierProxyProperties proxyProperties) {
 			return new TelegramNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
@@ -302,7 +302,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.discord", name = "webhook-url")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class DiscordNotifierConfiguration {
 
@@ -317,7 +317,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.dingtalk", name = "webhook-url")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class DingTalkNotifierConfiguration {
 
@@ -325,7 +325,7 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.dingtalk")
 		public DingTalkNotifier dingTalkNotifier(InstanceRepository repository,
-												 NotifierProxyProperties proxyProperties) {
+				NotifierProxyProperties proxyProperties) {
 			return new DingTalkNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
@@ -333,7 +333,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.rocketchat", name = "url")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class RocketChatNotifierConfiguration {
 
@@ -341,7 +341,7 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConditionalOnMissingBean
 		@ConfigurationProperties("spring.boot.admin.notify.rocketchat")
 		public RocketChatNotifier rocketChatNotifier(InstanceRepository repository,
-													 NotifierProxyProperties proxyProperties) {
+				NotifierProxyProperties proxyProperties) {
 			return new RocketChatNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
@@ -349,7 +349,7 @@ public class AdminServerNotifierAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.feishu", name = "webhook-url")
-	@AutoConfigureBefore({NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class})
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
 	@Lazy(false)
 	public static class FeiShuNotifierConfiguration {
 

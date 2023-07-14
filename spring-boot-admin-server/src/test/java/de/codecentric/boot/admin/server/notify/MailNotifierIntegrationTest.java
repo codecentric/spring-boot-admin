@@ -30,8 +30,7 @@ import org.thymeleaf.context.Context;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
-
-@SpringBootTest(properties = {"spring.mail.host=localhost", "spring.boot.admin.notify.mail=true"})
+@SpringBootTest(properties = { "spring.mail.host=localhost", "spring.boot.admin.notify.mail=true" })
 class MailNotifierIntegrationTest implements WithAssertions {
 
 	@Autowired
@@ -41,7 +40,8 @@ class MailNotifierIntegrationTest implements WithAssertions {
 	void fileProtocolIsNotAllowed() {
 		assertThatThrownBy(() -> {
 			URL resource = getClass().getClassLoader().getResource(".");
-			mailNotifier.setTemplate("file://" + resource.getFile() + "de/codecentric/boot/admin/server/notify/vulnerable-file-calc.html");
+			mailNotifier.setTemplate("file://" + resource.getFile()
+					+ "de/codecentric/boot/admin/server/notify/vulnerable-file-calc.html");
 			mailNotifier.getBody(new Context());
 		}).hasCauseInstanceOf(FileNotFoundException.class);
 	}
@@ -50,7 +50,8 @@ class MailNotifierIntegrationTest implements WithAssertions {
 	void httpProtocolIsNotAllowed() {
 		assertThatThrownBy(() -> {
 			URL resource = getClass().getClassLoader().getResource(".");
-			mailNotifier.setTemplate("https://raw.githubusercontent.com/codecentric/spring-boot-admin/gh-pages/vulnerable-file-calc.html");
+			mailNotifier.setTemplate(
+					"https://raw.githubusercontent.com/codecentric/spring-boot-admin/gh-pages/vulnerable-file-calc.html");
 			mailNotifier.getBody(new Context());
 		}).hasCauseInstanceOf(FileNotFoundException.class);
 	}
@@ -60,14 +61,14 @@ class MailNotifierIntegrationTest implements WithAssertions {
 		assertThatThrownBy(() -> {
 			mailNotifier.setTemplate("/de/codecentric/boot/admin/server/notify/vulnerable-file.html");
 			String body = mailNotifier.getBody(new Context());
-		})
-			.rootCause()
-			.hasMessageContaining("error=2, No such file or directory");
+		}).rootCause().hasMessageContaining("error=2, No such file or directory");
 	}
 
 	@EnableAdminServer
 	@EnableAutoConfiguration
 	@SpringBootConfiguration
 	public static class TestAdminApplication {
+
 	}
+
 }
