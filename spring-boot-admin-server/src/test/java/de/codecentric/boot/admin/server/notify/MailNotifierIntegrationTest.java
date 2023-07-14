@@ -40,8 +40,8 @@ class MailNotifierIntegrationTest implements WithAssertions {
 	void fileProtocolIsNotAllowed() {
 		assertThatThrownBy(() -> {
 			URL resource = getClass().getClassLoader().getResource(".");
-			mailNotifier.setTemplate("file://" + resource.getFile()
-					+ "de/codecentric/boot/admin/server/notify/vulnerable-file.html");
+			mailNotifier.setTemplate(
+					"file://" + resource.getFile() + "de/codecentric/boot/admin/server/notify/vulnerable-file.html");
 			mailNotifier.getBody(new Context());
 		}).hasCauseInstanceOf(FileNotFoundException.class);
 	}
