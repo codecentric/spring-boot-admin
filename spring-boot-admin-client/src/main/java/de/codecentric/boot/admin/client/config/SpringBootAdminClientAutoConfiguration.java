@@ -139,8 +139,7 @@ public class SpringBootAdminClientAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public RegistrationClient registrationClient(ClientProperties client) {
-			RestTemplateBuilder builder = new RestTemplateBuilder()
-				.setConnectTimeout(client.getConnectTimeout())
+			RestTemplateBuilder builder = new RestTemplateBuilder().setConnectTimeout(client.getConnectTimeout())
 				.setReadTimeout(client.getReadTimeout());
 
 			if (client.getUsername() != null && client.getPassword() != null) {
