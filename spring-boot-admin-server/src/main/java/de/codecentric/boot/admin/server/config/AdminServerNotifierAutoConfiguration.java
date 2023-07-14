@@ -48,8 +48,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
@@ -179,13 +179,12 @@ public class AdminServerNotifierAutoConfiguration {
 
 		@Bean
 		public TemplateEngine mailNotifierTemplateEngine() {
-			SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
-			resolver.setApplicationContext(this.applicationContext);
+			ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
 			resolver.setTemplateMode(TemplateMode.HTML);
 			resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
 			SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-			templateEngine.addTemplateResolver(resolver);
+			templateEngine.setTemplateResolver(resolver);
 			return templateEngine;
 		}
 
