@@ -36,9 +36,9 @@ public class SpringBootAdminClientCloudFoundryAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
-			RestTemplateAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class,
-			SpringBootAdminClientCloudFoundryAutoConfiguration.class));
+				WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+				RestTemplateAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class,
+				SpringBootAdminClientCloudFoundryAutoConfiguration.class));
 
 	@Test
 	public void non_cloud_platform() {
