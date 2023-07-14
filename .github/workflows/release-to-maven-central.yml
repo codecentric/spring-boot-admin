@@ -31,18 +31,7 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
-
-      - name: Cache local Maven repository
-        uses: actions/cache@v3.3.1
-        env:
-          cache-name: cache-mvn
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          cache: 'maven'
 
       - name: Cache node modules
         uses: actions/cache@v3
@@ -58,7 +47,7 @@ jobs:
         run: mvn versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" --no-transfer-progress
 
       - name: Publish package
-        run: mvn --batch-mode clean deploy --no-transfer-progress -P central-deploy -DskipTests=true
+        run: mvn -B deploy --no-transfer-progress -P central-deploy -DskipTests=true
         env:
           #TODO: This is a workaround for NEXUS-27902 which uses XStream that fails on JVM >16
           JDK_JAVA_OPTIONS: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED"
