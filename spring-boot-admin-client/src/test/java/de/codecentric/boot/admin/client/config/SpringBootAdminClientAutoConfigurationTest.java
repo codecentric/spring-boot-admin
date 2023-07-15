@@ -30,6 +30,8 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
@@ -82,6 +84,31 @@ public class SpringBootAdminClientAutoConfigurationTest {
 			.withBean(WebFluxProperties.class);
 		reactiveContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
 			.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
+	}
+
+	@Test
+	public void blockingClientInBlockingEnvironment() {
+		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+					RestTemplateAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
+
+		webApplicationContextRunner
+			.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
+					"spring.boot.admin.client.connectTimeout=1337", "spring.boot.admin.client.readTimeout=42")
+			.run((context) -> {
+				RegistrationClient registrationClient = context.getBean(RegistrationClient.class);
+				RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(registrationClient,
+						"restTemplate");
+				assertThat(restTemplate).isNotNull();
+
+				ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
+
+				Integer connectTimeout = (Integer) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+				assertThat(connectTimeout).isEqualTo(1337);
+				Integer readTimeout = (Integer) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+				assertThat(readTimeout).isEqualTo(42);
+			});
 	}
 
 	@Test
