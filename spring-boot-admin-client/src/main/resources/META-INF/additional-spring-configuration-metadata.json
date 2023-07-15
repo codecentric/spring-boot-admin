@@ -1,10 +1,17 @@
-{"groups": [
-
-],"properties": [
-  {
-    "name": "spring.boot.admin.client.enabled",
-    "type": "java.lang.Boolean",
-    "description": "Enable Spring Admin Client.",
-    "defaultValue": "true"
-  }
-]}
+{
+  "groups": [
+    {
+      "name": "spring.boot.admin.client",
+      "type": "de.codecentric.boot.admin.client.config.ClientProperties",
+      "sourceType": "de.codecentric.boot.admin.client.config.ClientProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.boot.admin.client.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable Spring Admin Client.",
+      "defaultValue": "true"
+    }
+  ]
+}

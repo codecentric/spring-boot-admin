@@ -1,0 +1,3 @@
+= Properties =
+
+include::{samples-dir}/../spring-boot-admin-docs/target/aggregated-adoc.adoc[tag=spring-boot-admin-client]

@@ -21,10 +21,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
 
 @lombok.Data
-@ConfigurationProperties(prefix = "spring.boot.admin.client.instance")
+@Configuration
+@ConfigurationProperties("spring.boot.admin.client.instance")
 public class InstanceProperties {
 
 	/**

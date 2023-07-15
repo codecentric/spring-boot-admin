@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import lombok.Data;
-import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
@@ -212,24 +211,36 @@ public class AdminServerUiProperties {
 	@Data
 	public static class UiTheme {
 
+		/**
+		 * Show the background image.
+		 */
 		private Boolean backgroundEnabled = true;
 
+		/**
+		 * Color palette used in the UI.
+		 */
 		private Palette palette = new Palette();
 
+		/**
+		 * Color used as theme-color meta tag in html head.
+		 */
 		private String color = "#14615A";
 
 	}
 
 	/**
 	 * Color shades are based on Tailwind's color palettes:
-	 * https://tailwindcss.com/docs/customizing-colors
-	 *
+	 * <a href="https://tailwindcss.com/docs/customizing-colors">...</a>
+	 * <p>
 	 * name shade number mainColorLighter 50 mainColorLight 300 mainColor 500
 	 * mainColorDark 700 mainColorDarker 800
 	 */
-	@Getter
+	@Data
 	public static class Palette {
 
+		/**
+		 * Shade 50
+		 */
 		private String shade50 = "#EEFCFA";
 
 		private String shade100 = "#D9F7F4";

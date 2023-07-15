@@ -54,6 +54,7 @@
                     </execution>
                     <execution>
                         <id>npm-install</id>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -63,11 +64,36 @@
                     </execution>
                     <execution>
                         <id>npm-build</id>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
                             <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.rodnansol</groupId>
+                <artifactId>spring-configuration-property-documenter-maven-plugin</artifactId>
+                <version>0.6.1</version>
+                <executions>
+                    <execution>
+                        <id>generate-adoc</id>
+                        <goals>
+                            <goal>generate-and-aggregate-documents</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <type>ADOC</type>
+                            <inputs>
+                                <input>
+                                    <name>spring-boot-admin-server</name>
+                                    <input>../spring-boot-admin-server</input>
+                                </input>
+                            </inputs>
+                            <outputFile>target/aggregated-adoc.adoc</outputFile>
                         </configuration>
                     </execution>
                 </executions>

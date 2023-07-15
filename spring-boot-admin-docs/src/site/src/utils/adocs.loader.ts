@@ -32,7 +32,11 @@ export async function getAdocs(opts: AdocsParams) {
 
   const adocFiles = await getAdocFiles(dir);
   return adocFiles
+    .filter((file) => {
+      return !file.split("/").pop()?.startsWith("_");
+    })
     .map((file) => {
+      console.log(file);
       let path = file.replace(".adoc", "");
       if (path.endsWith("/index")) path = path.replace("/index", "");
       path = path.replace(dir, "");

@@ -52,7 +52,7 @@ public class AdminServerDiscoveryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	@ConfigurationProperties(prefix = "spring.boot.admin.discovery")
+	@ConfigurationProperties("spring.boot.admin.discovery")
 	public InstanceDiscoveryListener instanceDiscoveryListener(ServiceInstanceConverter serviceInstanceConverter,
 			DiscoveryClient discoveryClient, InstanceRegistry registry, InstanceRepository repository) {
 		InstanceDiscoveryListener listener = new InstanceDiscoveryListener(discoveryClient, registry, repository);
@@ -62,7 +62,7 @@ public class AdminServerDiscoveryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean({ ServiceInstanceConverter.class })
-	@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
+	@ConfigurationProperties("spring.boot.admin.discovery.converter")
 	public DefaultServiceInstanceConverter serviceInstanceConverter() {
 		return new DefaultServiceInstanceConverter();
 	}
@@ -73,7 +73,7 @@ public class AdminServerDiscoveryAutoConfiguration {
 	public static class EurekaConverterConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
+		@ConfigurationProperties("spring.boot.admin.discovery.converter")
 		public EurekaServiceInstanceConverter serviceInstanceConverter() {
 			return new EurekaServiceInstanceConverter();
 		}
@@ -86,7 +86,7 @@ public class AdminServerDiscoveryAutoConfiguration {
 	public static class KubernetesConverterConfiguration {
 
 		@Bean
-		@ConfigurationProperties(prefix = "spring.boot.admin.discovery.converter")
+		@ConfigurationProperties("spring.boot.admin.discovery.converter")
 		public KubernetesServiceInstanceConverter serviceInstanceConverter() {
 			return new KubernetesServiceInstanceConverter();
 		}

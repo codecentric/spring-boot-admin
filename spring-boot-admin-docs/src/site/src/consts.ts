@@ -41,14 +41,15 @@ export const SIDEBAR: Sidebar = {
     "SBA Server": [
       { text: "Client Discovery", link: "en/server/discovery" },
       { text: "Notifiers", link: "en/server/notifiers" },
+      { text: "Customize UI", link: "en/server/customize_ui" },
       { text: "Clustering", link: "en/server/clustering" },
       { text: "Security", link: "en/server/security" },
     ],
     "SBA Client": [
       { text: "Configuration", link: "en/client" },
-      { text: "Customize UI", link: "en/client/customize_ui" },
-      { text: "Custom Interceptors", link: "en/client/customize_interceptors" },
-      { text: "Custom HTTP Headers", link: "en/client/customize_http-headers" },
+      { text: "Custom Interceptors", link: "en/client/actuator_interceptors" },
+      { text: "Custom HTTP Headers", link: "en/client/http-headers" },
+      { text: "Properties", link: "en/client/properties" },
     ],
   },
 };

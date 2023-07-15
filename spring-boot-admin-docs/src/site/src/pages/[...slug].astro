@@ -1,19 +1,19 @@
 ---
 import MainLayout from '../layouts/MainLayout.astro';
-import { getAdocs } from '../utils/adocs.loader';
-import { getDocs } from '../utils/docs.loader';
+import {getAdocs} from '../utils/adocs.loader';
+import {getDocs} from '../utils/docs.loader';
 
 export async function getStaticPaths() {
-  let docs = await getDocs();
-  let adocs = await getAdocs({
-    asciidocOptions: {
-      attributes: {
-        'base-path': Astro.site.pathname
-      }
-    }
-  });
+    const docs = await getDocs();
+    let adocs = await getAdocs({
+        asciidocOptions: {
+            attributes: {
+                'base-path': Astro.site.pathname
+            }
+        }
+    });
 
-  return [...docs, ...adocs];
+    return [...docs, ...adocs];
 }
 const props = Astro.props;
 
@@ -27,29 +27,30 @@ headings = rendered.headings;
 ---
 
 <MainLayout headings={headings} {...props.data}>
-  {isAdoc ?
-    <Fragment set:html={Content} /> :
-    <Content />}
+    {isAdoc ?
+            <Fragment set:html={Content}/> :
+            <Content/>
+    }
 </MainLayout>
 
 <script is:inline>
-  document.addEventListener('DOMContentLoaded', (event) => {
-    document.querySelectorAll('h1[id], h2[id], h3[id]').forEach(value => {
-      let anchorElement = document.createElement('a');
-      anchorElement.classList.add('anchor');
-      anchorElement.href = `#${value.id}`;
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('h1[id], h2[id], h3[id]').forEach(value => {
+            let anchorElement = document.createElement('a');
+            anchorElement.classList.add('anchor');
+            anchorElement.href = `#${value.id}`;
 
-      let linkElement = document.createElement('a');
-      linkElement.innerText = value.innerText;
-      linkElement.classList.add('link');
-      linkElement.href = `#${value.id}`;
+            let linkElement = document.createElement('a');
+            linkElement.innerText = value.innerText;
+            linkElement.classList.add('link');
+            linkElement.href = `#${value.id}`;
 
-      value.innerText = ""
-      value.append(anchorElement)
-      value.append(linkElement)
+            value.innerText = ""
+            value.append(anchorElement)
+            value.append(linkElement)
+        });
+        document.querySelectorAll('pre code').forEach((el) => {
+            hljs.highlightElement(el);
+        });
     });
-    document.querySelectorAll('pre code').forEach((el) => {
-      hljs.highlightElement(el);
-    });
-  });
 </script>

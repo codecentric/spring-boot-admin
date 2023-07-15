@@ -22,17 +22,19 @@ import java.time.temporal.ChronoUnit;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.lang.Nullable;
 
 @lombok.Data
-@ConfigurationProperties(prefix = "spring.boot.admin.client")
+@Configuration
+@ConfigurationProperties("spring.boot.admin.client")
 public class ClientProperties {
 
 	/**
 	 * The admin server urls to register at
 	 */
-	private String[] url = new String[] {};
+	private String[] url = new String[0];
 
 	/**
 	 * The admin rest-apis path.
