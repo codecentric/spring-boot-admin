@@ -23,7 +23,11 @@
         class="mb-6 w-full"
       />
 
-      <div v-if="loading" class="loading-spinner-wrapper">
+      <div
+        v-if="loading"
+        class="loading-spinner-wrapper"
+        data-testid="instance-section-loading-spinner"
+      >
         <div class="loading-spinner-wrapper-container">
           <sba-loading-spinner size="sm" />
           {{ $t('term.fetching_data') }}
