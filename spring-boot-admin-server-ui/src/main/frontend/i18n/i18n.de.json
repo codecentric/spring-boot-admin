@@ -5,6 +5,7 @@
   "term": {
     "affects_all_instances": "Betrifft alle {count} Instanzen",
     "affects_this_instance_only": "Betrifft nur diese Instanz",
+    "all": "Alle",
     "application": "Anwendung",
     "attributes": "Attribute",
     "bytes": "Bytes",
@@ -45,6 +46,18 @@
     "go_to_previous_page": "Gehe zur vorherigen Seite",
     "go_to_page_n": "Gehe zu Seite {page}",
     "current_page": "Seite {page}, aktuelle Seite",
-    "go_to_next_page": "Gehe zur nächsten Seite"
+    "go_to_next_page": "Gehe zur nächsten Seite",
+    "no_results_for_term": "Keine Ergebnisse für \"{term}\"."
+  },
+  "health": {
+    "label": "Zustand",
+    "status": {
+      "DOWN":  "down",
+      "UP": "up",
+      "RESTRICTED":  "eingeschränkt",
+      "UNKNOWN": "unbekannt",
+      "OUT_OF_SERVICE":  "außer Betrieb",
+      "OFFLINE": "offline"
+    }
   }
 }
