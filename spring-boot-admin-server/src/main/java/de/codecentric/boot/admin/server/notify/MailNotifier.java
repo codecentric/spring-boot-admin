@@ -76,7 +76,7 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
 	/**
 	 * Thymleaf template for mail
 	 */
-	private String template = "classpath:/META-INF/spring-boot-admin-server/mail/status-changed.html";
+	private String template = "META-INF/spring-boot-admin-server/mail/status-changed.html";
 
 	public MailNotifier(JavaMailSender mailSender, InstanceRepository repository, TemplateEngine templateEngine) {
 		super(repository);
