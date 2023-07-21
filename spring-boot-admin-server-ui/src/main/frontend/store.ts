@@ -50,7 +50,9 @@ export const findApplicationForInstance = (
   );
 };
 
-type ApplicationStoreListener = () => void;
+type NoopListener = () => void;
+type ApplicationAddedListener = (newApplications: Application[]) => void;
+type ApplicationStoreListener = NoopListener | ApplicationAddedListener;
 
 export default class ApplicationStore {
   private _listeners: { [p: string]: Array<ApplicationStoreListener> } = {};

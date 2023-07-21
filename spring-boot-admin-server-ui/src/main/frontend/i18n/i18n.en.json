@@ -5,6 +5,7 @@
   "term": {
     "affects_all_instances": "Affects all {count} instances",
     "affects_this_instance_only": "Affects this instance only",
+    "all": "all",
     "application": "Application",
     "applications_tc": "{n} application | {n} applications",
     "attributes": "Attributes",
@@ -53,6 +54,18 @@
     "go_to_previous_page": "Go to previous page",
     "go_to_page_n": "Go to page {page}",
     "current_page": "Page {page}, current page",
-    "go_to_next_page": "Go to next page"
+    "go_to_next_page": "Go to next page",
+    "no_results_for_term": "No results for \"{term}\"."
+  },
+  "health": {
+    "label": "Health status",
+    "status": {
+      "DOWN":  "down",
+      "UP": "up",
+      "RESTRICTED":  "restricted",
+      "UNKNOWN": "unknown",
+      "OUT_OF_SERVICE":  "out of service",
+      "OFFLINE": "offline"
+    }
   }
 }
