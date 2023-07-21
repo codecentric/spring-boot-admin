@@ -17,17 +17,17 @@
 <template>
   <sba-instance-section :error="error" :loading="!hasLoaded">
     <template #before>
-      <details-nav :application="application" :instance="instance" />
-      <details-hero :instance="instance" />
+      <details-nav :application="application" :instance="instance"/>
+      <details-hero :instance="instance"/>
     </template>
 
     <div class="flex gap-6 flex-col lg:flex-row">
       <div class="flex-1">
-        <details-info v-if="hasInfo" :instance="instance" />
-        <details-metadata v-if="hasMetadata" :instance="instance" />
+        <details-info v-if="hasInfo" :instance="instance"/>
+        <details-metadata v-if="hasMetadata" :instance="instance"/>
       </div>
       <div class="flex-1">
-        <details-health :instance="instance" />
+        <details-health :instance="instance"/>
       </div>
     </div>
 
@@ -38,28 +38,28 @@
           :instance="instance"
           class="break-inside-avoid"
         />
-        <details-gc v-if="hasGc" :instance="instance" />
+        <details-gc v-if="hasGc" :instance="instance"/>
       </div>
       <div class="flex-1">
-        <details-threads v-if="hasThreads" :instance="instance" />
-      </div>
-    </div>
-
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
-        <details-memory v-if="hasMemory" :instance="instance" type="heap" />
-      </div>
-      <div class="flex-1">
-        <details-memory v-if="hasMemory" :instance="instance" type="nonheap" />
+        <details-threads v-if="hasThreads" :instance="instance"/>
       </div>
     </div>
 
     <div class="flex gap-6 flex-col lg:flex-row">
       <div class="flex-1">
-        <details-datasources v-if="hasDatasources" :instance="instance" />
+        <details-memory v-if="hasMemory" :instance="instance" type="heap"/>
       </div>
       <div class="flex-1">
-        <details-caches v-if="hasCaches" :instance="instance" />
+        <details-memory v-if="hasMemory" :instance="instance" type="nonheap"/>
+      </div>
+    </div>
+
+    <div class="flex gap-6 flex-col lg:flex-row">
+      <div class="flex-1">
+        <details-datasources v-if="hasDatasources" :instance="instance"/>
+      </div>
+      <div class="flex-1">
+        <details-caches v-if="hasCaches" :instance="instance"/>
       </div>
     </div>
   </sba-instance-section>
@@ -68,7 +68,7 @@
 <script>
 import Application from '@/services/application';
 import Instance from '@/services/instance';
-import { VIEW_GROUP } from '@/views/ViewGroup';
+import {VIEW_GROUP} from '@/views/ViewGroup';
 import detailsCaches from '@/views/instances/details/details-caches';
 import detailsDatasources from '@/views/instances/details/details-datasources';
 import detailsGc from '@/views/instances/details/details-gc';
@@ -108,7 +108,7 @@ export default {
     },
   },
   data: () => ({
-    hasLoaded: false,
+    hasLoaded: true,
     error: null,
     metrics: [],
   }),
@@ -166,7 +166,7 @@ export default {
       }
     },
   },
-  install({ viewRegistry }) {
+  install({viewRegistry}) {
     viewRegistry.addView({
       name: 'instances/details',
       parent: 'instances',
