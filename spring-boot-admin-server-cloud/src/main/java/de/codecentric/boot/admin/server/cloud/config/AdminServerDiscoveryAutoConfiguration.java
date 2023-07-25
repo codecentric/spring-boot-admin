@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.kubernetes.client.discovery.KubernetesInformerDiscoveryClient;
+import org.springframework.cloud.kubernetes.commons.discovery.KubernetesDiscoveryProperties;
 import org.springframework.cloud.kubernetes.fabric8.discovery.KubernetesDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -87,8 +88,9 @@ public class AdminServerDiscoveryAutoConfiguration {
 
 		@Bean
 		@ConfigurationProperties("spring.boot.admin.discovery.converter")
-		public KubernetesServiceInstanceConverter serviceInstanceConverter() {
-			return new KubernetesServiceInstanceConverter();
+		public KubernetesServiceInstanceConverter serviceInstanceConverter(
+				KubernetesDiscoveryProperties discoveryProperties) {
+			return new KubernetesServiceInstanceConverter(discoveryProperties);
 		}
 
 	}

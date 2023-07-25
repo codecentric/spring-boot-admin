@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { remove } from 'lodash-es';
-import { Text, VNode, h, markRaw, reactive, shallowRef } from 'vue';
+import { Text, VNode, h, markRaw, reactive, shallowRef, toRaw } from 'vue';
 import { Router, createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
-import { VIEW_GROUP } from './views/ViewGroup.js';
+import { VIEW_GROUP, VIEW_GROUP_ICON } from './views/ViewGroup.js';
 
 let router: Router;
 
@@ -54,6 +54,10 @@ export default class ViewRegistry {
     return router;
   }
 
+  setGroupIcon(name, icon) {
+    VIEW_GROUP_ICON[name] = icon;
+  }
+
   createRouter() {
     const routesKnownToBackend = sbaConfig.uiSettings.routes.map(
       (r) => new RegExp(`^${r.replace('/**', '(/.*)?')}$`)
@@ -82,8 +86,8 @@ export default class ViewRegistry {
     return Array.prototype.find.call(this._views, (v) => v.name === name);
   }
 
-  addView(...views: View[]) {
-    views.forEach((view) => this._addView(view));
+  addView(...views: View[]): SbaView[] {
+    return views.map((view) => this._addView(view));
   }
 
   addRedirect(path: string, redirect: string | object) {
@@ -94,7 +98,7 @@ export default class ViewRegistry {
     }
   }
 
-  _addView(viewConfig: ViewConfig) {
+  _addView(viewConfig: ViewConfig): SbaView {
     const view = { ...viewConfig } as SbaView;
     view.hasChildren = !!viewConfig.children;
 
@@ -132,6 +136,8 @@ export default class ViewRegistry {
 
     this._removeExistingView(view);
     this._views.push(view);
+
+    return view;
   }
 
   _removeExistingView(view) {
@@ -151,7 +157,7 @@ export default class ViewRegistry {
         name: view.name,
         component: view.component,
         props: view.props,
-        meta: { view: view },
+        meta: { view: toRaw(view) },
         children,
       };
     });

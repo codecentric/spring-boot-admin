@@ -31,7 +31,9 @@
             v-for="(mapping, idx) in handlerMappings"
             :key="`${dispatcherName}_${idx}_pattern`"
           >
-            <template v-if="mapping.details">
+            <template
+              v-if="mapping.details && mapping.details.requestMappingConditions"
+            >
               <tr>
                 <td
                   :rowspan="

@@ -87,10 +87,21 @@
                         <phase>generate-resources</phase>
                         <configuration>
                             <type>ADOC</type>
+                            <asciiDocCustomization>
+                                <removeEmptyGroups>true</removeEmptyGroups>
+                                <contentCustomization>
+                                    <includeType>false</includeType>
+                                    <includeDeprecation>false</includeDeprecation>
+                                </contentCustomization>
+                            </asciiDocCustomization>
                             <inputs>
                                 <input>
                                     <name>spring-boot-admin-server</name>
                                     <input>../spring-boot-admin-server</input>
+                                </input>
+                                <input>
+                                    <name>spring-boot-admin-client</name>
+                                    <input>../spring-boot-admin-client</input>
                                 </input>
                             </inputs>
                             <outputFile>target/aggregated-adoc.adoc</outputFile>

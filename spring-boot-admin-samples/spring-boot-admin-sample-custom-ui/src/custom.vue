@@ -15,11 +15,32 @@
   -->
 
 <template>
-  <pre v-text="stringify(applications, null, 4)" />
+  <div class="m-4">
+    <template v-for="application in applications" :key="application.name">
+      <sba-panel :title="application.name">
+        This application has the following instances:
+
+        <ul>
+          <template v-for="instance in application.instances">
+            <li>
+              <span class="mx-1" v-text="instance.registration.name"></span>
+
+              <!-- SBA components are registered globally and can be used without importing them! -->
+              <!-- They are defined in spring-boot-admin-server-ui -->
+              <sba-status :status="instance.statusInfo.status" class="mx-1" />
+              <sba-tag :value="instance.id" class="mx-1" label="id" />
+            </li>
+          </template>
+        </ul>
+      </sba-panel>
+    </template>
+    <pre v-text="applications"></pre>
+  </div>
 </template>
 
 <script>
 /* global SBA */
+import "./custom.css";
 
 export default {
   setup() {

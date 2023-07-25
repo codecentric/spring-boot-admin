@@ -1,33 +1,33 @@
 ---
-import { getLanguageFromURL, KNOWN_LANGUAGE_CODES } from '../../languages';
-import { SITE, ALGOLIA } from '../../consts';
-import AstroLogo from './AstroLogo.astro';
-import SkipToContent from './SkipToContent.astro';
-import SidebarToggle from './SidebarToggle';
-import LanguageSelect from './LanguageSelect';
-import Search from './Search';
-import ThemeToggleButton from '../ThemeToggleButton/ThemeToggleButton';
+import { getLanguageFromURL, KNOWN_LANGUAGE_CODES } from "../../languages";
+import { SITE, ALGOLIA } from "../../consts";
+import SbaLogo from "./SbaLogo.astro";
+import SkipToContent from "./SkipToContent.astro";
+import SidebarToggle from "./SidebarToggle";
+import LanguageSelect from "./LanguageSelect";
+import Search from "./Search";
+import ThemeToggleButton from "../ThemeToggleButton/ThemeToggleButton";
 
-import { getAdocs } from '../../utils/adocs.loader';
-import { getDocs } from '../../utils/docs.loader';
+import { getAdocs } from "../../utils/adocs.loader";
+import { getDocs } from "../../utils/docs.loader";
 
 export async function props() {
   let docs = await getDocs();
   let adocs = await getAdocs({
     asciidocOptions: {
       attributes: {
-        'base-path': Astro.site.pathname
-      }
-    }
+        "base-path": Astro.site.pathname,
+      },
+    },
   });
 
   return [...docs, ...adocs]
-    .map(f => f.props)
-    .filter(f => f.slug && f.data.title)
-    .map(f => ({
+    .map((f) => f.props)
+    .filter((f) => f.slug && f.data.title)
+    .map((f) => ({
       slug: f.slug,
       title: f.data.title,
-      content: f.render().Content
+      content: f.render().Content,
     }));
 }
 
@@ -38,147 +38,154 @@ type Props = {
 const { currentPage } = Astro.props;
 const lang = getLanguageFromURL(currentPage);
 
-const VERSION = import.meta.env.VERSION ?? 'latest';
+const VERSION = import.meta.env.VERSION ?? "latest";
 
 const allPosts = await props();
 ---
 
 <header>
   <SkipToContent />
-  <nav class='nav-wrapper' title='Top Navigation'>
-    <div class='menu-toggle'>
+  <nav class="nav-wrapper" title="Top Navigation">
+    <div class="menu-toggle">
       <SidebarToggle client:idle />
     </div>
-    <div class='logo flex'>
+    <div class="logo flex">
       <a href={Astro.site.pathname}>
-        <AstroLogo size={40} />
-        <h1>{SITE.title ?? 'Documentation'}</h1>
+        <SbaLogo size={40} />
+        <h1>{SITE.title ?? "Documentation"}</h1>
       </a>
       <div>
         <small>{VERSION}</small>
       </div>
     </div>
-    <div style='flex-grow: 1;'></div>
+    <div style="flex-grow: 1;"></div>
     <ThemeToggleButton client:visible />
-    {KNOWN_LANGUAGE_CODES.length > 1 &&
-      <LanguageSelect lang={lang} client:idle />}
-    {ALGOLIA.enabled === true ? (
-      <div class='search-item'>
-        <Search client:idle searchList={allPosts} />
-      </div>
-    ) : ''}
+    {
+      KNOWN_LANGUAGE_CODES.length > 1 && (
+        <LanguageSelect lang={lang} client:idle />
+      )
+    }
+    {
+      ALGOLIA.enabled === true ? (
+        <div class="search-item">
+          <Search client:idle searchList={allPosts} />
+        </div>
+      ) : (
+        ""
+      )
+    }
   </nav>
 </header>
 
 <style>
+  header {
+    z-index: 11;
+    height: var(--theme-navbar-height);
+    width: 100%;
+    background-color: var(--theme-navbar-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: sticky;
+    top: 0;
+  }
+
+  .logo {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    width: 30px;
+    font-size: 2rem;
+    flex-shrink: 0;
+    font-weight: 600;
+    line-height: 1;
+    color: hsla(var(--color-base-white), 100%, 1);
+    gap: 0.25em;
+    z-index: -1;
+  }
+
+  .logo a {
+    display: flex;
+    padding: 0.5em 0.25em;
+    margin: -0.5em -0.25em;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .logo a {
+    transition: color 100ms ease-out;
+    color: var(--theme-text);
+  }
+
+  .logo a:hover,
+  .logo a:focus {
+    color: var(--theme-text-accent);
+  }
+
+  .logo h1 {
+    display: none;
+    font: inherit;
+    color: inherit;
+    margin: 0;
+  }
+
+  .nav-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1em;
+    width: 100%;
+    max-width: 82em;
+    padding: 0 1rem;
+  }
+
+  @media (min-width: 50em) {
     header {
-        z-index: 11;
-        height: var(--theme-navbar-height);
-        width: 100%;
-        background-color: var(--theme-navbar-bg);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        position: sticky;
-        top: 0;
+      position: static;
+      padding: 2rem 0rem;
     }
 
     .logo {
-        flex: 1;
-        display: flex;
-        overflow: hidden;
-        width: 30px;
-        font-size: 2rem;
-        flex-shrink: 0;
-        font-weight: 600;
-        line-height: 1;
-        color: hsla(var(--color-base-white), 100%, 1);
-        gap: 0.25em;
-        z-index: -1;
-    }
-
-    .logo a {
-        display: flex;
-        padding: 0.5em 0.25em;
-        margin: -0.5em -0.25em;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    .logo a {
-        transition: color 100ms ease-out;
-        color: var(--theme-text);
-    }
-
-    .logo a:hover,
-    .logo a:focus {
-        color: var(--theme-text-accent);
+      width: auto;
+      margin: 0;
+      z-index: 0;
     }
 
     .logo h1 {
-        display: none;
-        font: inherit;
-        color: inherit;
-        margin: 0;
+      display: initial;
     }
 
-    .nav-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 1em;
-        width: 100%;
-        max-width: 82em;
-        padding: 0 1rem;
+    .menu-toggle {
+      display: none;
     }
+  }
 
-    @media (min-width: 50em) {
-        header {
-            position: static;
-            padding: 2rem 0rem;
-        }
+  /** Style Algolia */
+  :root {
+    --docsearch-primary-color: var(--theme-accent);
+    --docsearch-logo-color: var(--theme-text);
+  }
 
-        .logo {
-            width: auto;
-            margin: 0;
-            z-index: 0;
-        }
+  .search-item {
+    display: none;
+    position: relative;
+    z-index: 10;
+    flex-grow: 1;
+    padding-right: 0.7rem;
+    display: flex;
+    max-width: 200px;
+  }
 
-        .logo h1 {
-            display: initial;
-        }
-
-        .menu-toggle {
-            display: none;
-        }
-    }
-
-    /** Style Algolia */
-    :root {
-        --docsearch-primary-color: var(--theme-accent);
-        --docsearch-logo-color: var(--theme-text);
-    }
-
+  @media (min-width: 50em) {
     .search-item {
-        display: none;
-        position: relative;
-        z-index: 10;
-        flex-grow: 1;
-        padding-right: 0.7rem;
-        display: flex;
-        max-width: 200px;
+      max-width: 400px;
     }
-
-    @media (min-width: 50em) {
-        .search-item {
-            max-width: 400px;
-        }
-    }
+  }
 </style>
 
 <style is:global>
-    .search-item > * {
-        flex-grow: 1;
-    }
+  .search-item > * {
+    flex-grow: 1;
+  }
 </style>

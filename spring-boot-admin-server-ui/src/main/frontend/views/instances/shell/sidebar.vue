@@ -117,14 +117,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, toRaw } from 'vue';
 
 import SbaButton from '@/components/sba-button.vue';
 
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
-import { VIEW_GROUP_ICON } from '@/views';
+import { VIEW_GROUP_ICON } from '@/views/ViewGroup';
 
 export default defineComponent({
   components: { SbaButton },
@@ -195,7 +195,7 @@ export default defineComponent({
       return key === translated ? groupId : translated;
     },
     isActiveGroup(group) {
-      return group.views.includes(this.$route.meta.view);
+      return group.views.some((v) => toRaw(v) === this.$route.meta.view);
     },
     hasMultipleViews(group) {
       return group.views.length > 1;
@@ -208,10 +208,12 @@ export default defineComponent({
 .instance-info-block {
   @apply bg-sba-50 bg-opacity-40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
 }
+
 .navbar-link {
   @apply cursor-pointer bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
   @apply text-gray-700;
 }
+
 .navbar-link:hover,
 .navbar-link__active {
   @apply bg-sba-50 bg-opacity-80 text-sba-900;

@@ -17,7 +17,7 @@
 <template>
   <div class="custom">
     <p>Instance: <span v-text="instance.id" /></p>
-    <p>Output: <span v-text="text" /></p>
+    <p>Output: <span v-html="text" /></p>
   </div>
 </template>
 

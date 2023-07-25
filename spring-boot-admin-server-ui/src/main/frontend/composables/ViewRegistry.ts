@@ -22,8 +22,11 @@ const emitCustomRouteAddedEvent = debounce(() => {
 export function useViewRegistry() {
   return {
     views: viewRegistry.views,
-    addView(view) {
-      viewRegistry.addView(view);
+    setGroupIcon(name, icon) {
+      viewRegistry.setGroupIcon(name, icon);
+    },
+    addView(viewToAdd) {
+      const view = viewRegistry.addView(viewToAdd)[0];
 
       if (view.parent) {
         viewRegistry.router.addRoute(view.parent, {

@@ -3,8 +3,17 @@ import preact from '@astrojs/preact';
 import react from '@astrojs/react';
 
 import tailwind from '@astrojs/tailwind';
+import {readFileSync} from "fs";
 
-let config = defineConfig({
+function readVersionFromPom() {
+  const regex = /<revision>(?<revision>.*)<\/revision>/gm;
+  const pom = readFileSync("../../../pom.xml", "utf8");
+  return pom.matchAll(regex).next().value.groups.revision;
+}
+
+const version = readVersionFromPom();
+
+const config = defineConfig({
   integrations: [
     tailwind({
       applyBaseStyles: false
@@ -13,13 +22,14 @@ let config = defineConfig({
     preact(),
     // Enable React for the Algolia search component.
     react()],
-  site: `http://localhost:3000/3.0.3-SNAPSHOT/`,
-  base: `/3.0.3-SNAPSHOT/`,
+  site: `http://localhost:3000/${version}`,
+  base: `/${version}`,
   markdown: {
     syntaxHighlight: 'prism'
   },
   outDir: '../../target/generated-docs'
 });
+
 if (process.env.CI) {
   config = {
     ...config,
@@ -28,5 +38,4 @@ if (process.env.CI) {
   };
 }
 
-// https://astro.build/config
 export default defineConfig(config);

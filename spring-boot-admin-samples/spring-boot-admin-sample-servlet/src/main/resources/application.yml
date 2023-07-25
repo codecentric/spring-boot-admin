@@ -32,8 +32,6 @@ management:
       show-details: ALWAYS
 
 spring:
-  application:
-    name: spring-boot-admin-sample-servlet
   boot:
     admin:
       client:
