@@ -5,7 +5,7 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import {readFileSync} from "fs";
 
-function readVersionFromPom() {
+export function readVersionFromPom() {
   const regex = /<revision>(?<revision>.*)<\/revision>/gm;
   const pom = readFileSync("../../../pom.xml", "utf8");
   return pom.matchAll(regex).next().value.groups.revision;
@@ -22,7 +22,7 @@ const config = defineConfig({
     preact(),
     // Enable React for the Algolia search component.
     react()],
-  site: `http://localhost:3000/${version}`,
+  site: `http://localhost:3000/${version}/`,
   base: `/${version}`,
   markdown: {
     syntaxHighlight: 'prism'

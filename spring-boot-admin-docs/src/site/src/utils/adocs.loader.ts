@@ -1,13 +1,17 @@
 import { getAdoc, getAdocFiles } from "astro-adoc";
 import merge from "lodash.merge";
 import path from "path";
+import { readVersionFromPom } from "../../astro.config.mjs";
 
 const PATH = path.resolve("../../../spring-boot-admin-samples/");
 
+let readVersionFromPom1 = readVersionFromPom();
+console.log(readVersionFromPom1);
 const ASCIIDOC_OPTIONS = {
   safe: "unsafe",
   attributes: {
     "samples-dir": PATH,
+    "project-version": readVersionFromPom1,
     "github-src":
       "https://github.com/codecentric/spring-boot-admin/tree/master",
     "base-path": "/",
@@ -36,7 +40,6 @@ export async function getAdocs(opts: AdocsParams) {
       return !file.split("/").pop()?.startsWith("_");
     })
     .map((file) => {
-      console.log(file);
       let path = file.replace(".adoc", "");
       if (path.endsWith("/index")) path = path.replace("/index", "");
       path = path.replace(dir, "");

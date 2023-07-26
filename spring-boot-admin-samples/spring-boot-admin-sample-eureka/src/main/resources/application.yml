@@ -5,14 +5,12 @@ spring:
     active:
       - secure
 
-
-# tag::configuration-eureka[]
-eureka:   #<1>
+eureka:
   instance:
     leaseRenewalIntervalInSeconds: 10
     health-check-url-path: /actuator/health
     metadata-map:
-      startup: ${random.int}    #needed to trigger info and endpoint update after restart
+      startup: ${random.int}    # needed to trigger info and endpoint update after restart
   client:
     registryFetchIntervalSeconds: 5
     serviceUrl:
@@ -22,8 +20,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"  #<2>
+        include: "*"
   endpoint:
     health:
       show-details: ALWAYS
-# end::configuration-eureka[]
