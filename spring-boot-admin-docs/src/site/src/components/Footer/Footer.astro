@@ -1,11 +1,12 @@
 <footer>
-  {JSON.stringify(import.meta.env)}
+  <div class="flex items-center justify-center">
+    <a href={Astro.site?.pathname + "en/impress"}>Impressum</a>
+  </div>
 </footer>
 
 <style>
-    footer {
-        margin-top: auto;
-        padding: 2rem;
-        border-top: 3px solid var(--theme-divider);
-    }
+  footer {
+    margin-top: auto;
+    padding: 2rem;
+  }
 </style>

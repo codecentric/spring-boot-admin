@@ -83,3 +83,17 @@ table.tableblock {
 p.tableblock {
     margin: 0;
 }
+
+.colist {
+    margin-left: 1.5rem;
+
+    ol, ul {
+        li {
+            margin: 0;
+        }
+
+        p {
+            margin: .25em 0;
+        }
+    }
+}

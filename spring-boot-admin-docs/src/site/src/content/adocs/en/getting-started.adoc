@@ -6,17 +6,17 @@
 Spring Boot Admin is a monitoring tool that aims to visualize information provided by Spring Boot Actuators in a nice and accessible way.
 It consists of two major parts:
 
-* A server that provides a user interface to display and interact with Spring Boot Actuators.
-* A client that is used to register at the server and allow to access actuator endpoints.
+* A *server* that provides a user interface to display and interact with Spring Boot Actuators.
+* A *client* that is used to register at the server and allow to access actuator endpoints.
 
+== Setting up the server
 
-== Start with your first service
 Since Spring Boot Admin relies on Spring Boot, you have to set up a Spring Boot application first.
 We recommend doing this by using https://start.spring.io/#!dependencies=codecentric-spring-boot-admin-server,web[https://start.spring.io] .
 Spring Boot Admin Server is capable of running as servlet or webflux application, you need to decide on this and add the according Spring Boot Starter.
 In this example we're using the servlet web starter.
 
-. Add Spring Boot Admin Server starter to your dependencies:
+. Add Spring Boot Admin Server and Spring Boot Web to your dependencies:
 +
 [source,xml,subs="verbatim,attributes"]
 .pom.xml
@@ -32,7 +32,7 @@ In this example we're using the servlet web starter.
 </dependency>
 ----
 
-. Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
+. Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your Application class:
 +
 [source,java]
 ----
@@ -45,21 +45,19 @@ public class SpringBootAdminApplication {
 }
 ----
 
-By running `mvn spring-boot:run` you should now be able to browse to http://localhost:8080 and see the Spring Boot Admin Server UI.
-As you have not set up any client service to monitor, there will be no content, sadly.
+Now run `mvn spring-boot:run` to start up the server.
+Aou should now be able to browse to http://localhost:8080 and see the Spring Boot Admin Server UI.
+As you have not set up any service to monitor, there will be no content, sadly.
 Let's change this in the next section.
 
 [[register-clients]]
 [[register-client-applications]]
 === Register Client Applications
 
-To register application at the Spring Boot Admin Server, you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka, Consul, ...).
-There is also a <<server/discovery#spring-cloud-discovery-static-config,static configuration>> on the SBA Server side, but let's start by using Spring Boot Admin Client!
+To register an application at the Spring Boot Admin Server, you can either include the SBA Client or use http://projects.spring.io/spring-cloud/spring-cloud.html[Spring Cloud Discovery] (e.g. Eureka, Consul, ...).
+There is also a <<server/discovery#spring-cloud-discovery-static-config,static configuration>> on the SBA Server side, but let's keep things simple first, by using Spring Boot Admin Client!
 
 [[register-clients-via-spring-boot-admin]]
-
-Each application that wants to register at the server has to include the Spring Boot Admin Client as dependency.
-
 . Add spring-boot-admin-starter-client to your dependencies:
 +
 [source,xml,subs="verbatim,attributes"]
@@ -80,11 +78,16 @@ Each application that wants to register at the server has to include the Spring 
 [source]
 .application.properties
 ----
-spring.boot.admin.client.url=http://localhost:8080  #<1>
-management.endpoints.web.exposure.include=*  #<2>
+server.port=8081 #<1>
+spring.boot.admin.client.url=http://localhost:8080  #<2>
+management.endpoints.web.exposure.include=*  #<3>
 ----
 
-<1> The URL of the Spring Boot Admin Server to register at.
-<2> Spring Boot does not exposed all management endpoints by default, we want all of them.
+<1> Server port of the application. Must be different from the Spring Boot Admin Server port.
+<2> The URL of the Spring Boot Admin Server to register at.
+<3> Spring Boot does not exposed all management endpoints by default, we want all of them.
 For production you should carefully choose which endpoints to expose.
 
+Now run `mvn spring-boot:run` to start up the client.
+After a few seconds, Spring Boot Admin should show the client in the UI as "UP".
+If this is not the case, look at the logs of the client carefully, it should tell you what went wrong:

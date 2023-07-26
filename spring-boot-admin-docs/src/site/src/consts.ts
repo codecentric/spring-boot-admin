@@ -34,22 +34,24 @@ export type Sidebar = Record<
 >;
 export const SIDEBAR: Sidebar = {
   en: {
-    "Start here": [
-      { text: "Getting Started", link: "en/getting-started" },
-      { text: "Use Snapshots", link: "en/snapshot-versions" },
-    ],
+    "Start here": [{ text: "Getting Started", link: "en/getting-started" }],
     "SBA Server": [
       { text: "Client Discovery", link: "en/server/discovery" },
-      { text: "Notifiers", link: "en/server/notifiers" },
-      { text: "Customize UI", link: "en/server/customize_ui" },
+      { text: "Notifications", link: "en/server/notifiers" },
       { text: "Clustering", link: "en/server/clustering" },
       { text: "Security", link: "en/server/security" },
+      { text: "Customizing", link: "en/server/customize_ui" },
     ],
     "SBA Client": [
       { text: "Configuration", link: "en/client" },
       { text: "Custom Interceptors", link: "en/client/actuator_interceptors" },
       { text: "Custom HTTP Headers", link: "en/client/http-headers" },
       { text: "Properties", link: "en/client/properties" },
+    ],
+    Development: [{ text: "Snapshot-Versions", link: "en/snapshot-versions" }],
+    "": [
+      { text: "Impressum", link: "en/impressum" },
+      { text: "Datenschutzerklärung", link: "en/datenschutzerklaerung" },
     ],
   },
 };
