@@ -41,6 +41,7 @@ export const SIDEBAR: Sidebar = {
       { text: "Clustering", link: "en/server/clustering" },
       { text: "Security", link: "en/server/security" },
       { text: "Customizing", link: "en/server/customize_ui" },
+      { text: "Properties", link: "en/server/properties" },
     ],
     "SBA Client": [
       { text: "Configuration", link: "en/client" },

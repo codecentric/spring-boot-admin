@@ -1,0 +1,7 @@
+= Properties =
+
+== spring-boot-admin-server
+
+include::{samples-dir}/../spring-boot-admin-docs/target/aggregated-adoc.adoc[tag=spring.boot.admin]
+include::{samples-dir}/../spring-boot-admin-docs/target/aggregated-adoc.adoc[tag=spring.boot.admin.monitor]
+include::{samples-dir}/../spring-boot-admin-docs/target/aggregated-adoc.adoc[tag=spring.boot.admin.server]

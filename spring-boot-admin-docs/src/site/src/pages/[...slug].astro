@@ -9,6 +9,8 @@ export async function getStaticPaths() {
     asciidocOptions: {
       attributes: {
         "base-path": Astro.site.pathname,
+        "property-group-discrete-heading": true,
+        "property-group-simple-title": true,
       },
     },
   });
