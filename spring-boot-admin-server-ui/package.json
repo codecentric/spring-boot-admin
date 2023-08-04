@@ -46,7 +46,7 @@
     "mitt": "^3.0.0",
     "moment": "2.29.4",
     "popper.js": "1.16.1",
-    "pretty-bytes": "6.1.0",
+    "pretty-bytes": "6.1.1",
     "random-string": "0.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
