@@ -4,8 +4,7 @@
   ],
   "packageRules": [
     {
-      "excludePackageNames": ["de.codecentric"],
-      "enabled": false
+      "excludePackagePatterns": ["^de\\.codecentric\\.boot\\.admin"]
     },
     {
       "description": "Automatically merge minor and patch-level updates when checks pass, creates a PR otherwise",
