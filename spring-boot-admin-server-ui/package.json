@@ -92,7 +92,7 @@
     "msw": "1.2.3",
     "msw-storybook-addon": "1.8.0",
     "postcss": "8.4.27",
-    "prettier": "^2.8.7",
+    "prettier": "^3.0.0",
     "rollup-plugin-visualizer": "5.9.2",
     "sass": "^1.57.1",
     "storybook": "7.2.1",
