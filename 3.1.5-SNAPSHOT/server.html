@@ -167,7 +167,7 @@
     </tr>
     <tr>
      <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.metadata-keys-to-sanitize</p></td>
-     <td class="tableblock halign-left valign-top"><p class="tableblock">Metadata values for the keys matching these regex patterns will be sanitized in all json output.</p></td>
+     <td class="tableblock halign-left valign-top"><p class="tableblock">Metadata values for the keys matching these regex patterns will be sanitized in all json output.</p> <p class="tableblock">Starting from Spring Boot 3, all actuator values are masked by default.</p> <p class="tableblock">Take a look at the Spring Boot documentation in order to configure unsanitizing of values (<a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto.actuator.sanitize-sensitive-values">Sanitize Sensitive Values</a>).</p></td>
      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>".<strong>password$", ".*secret$", ".*key$", ".*token$", ".*credentials.</strong>", ".*vcap_services$"</code></p></td>
     </tr>
     <tr>
