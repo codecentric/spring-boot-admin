@@ -52,6 +52,10 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 
 | spring.boot.admin.metadata-keys-to-sanitize
 | Metadata values for the keys matching these regex patterns will be sanitized in all json output.
+
+Starting from Spring Boot 3, all actuator values are masked by default.
+
+Take a look at the Spring Boot documentation in order to configure unsanitizing of values (https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto.actuator.sanitize-sensitive-values[Sanitize Sensitive Values]).
 | `".*password$", ".*secret$", ".*key$", ".*token$", ".*credentials.*", ".*vcap_services$"`
 
 | spring.boot.admin.probed-endpoints
