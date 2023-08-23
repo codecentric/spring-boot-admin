@@ -1,11 +1,8 @@
-import matchers from '@testing-library/jest-dom/matchers';
+import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/vue';
 import { afterAll, afterEach, beforeAll, expect, vi } from 'vitest';
 
 import { server } from '@/mocks/server';
-
-// extends Vitest's expect method with methods from react-testing-library
-expect.extend(matchers);
 
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
