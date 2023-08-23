@@ -61,7 +61,7 @@ public class HomepageForwardingMatcherTest {
 	}
 
 	@Data
-	private static class MockRequest {
+	private static final class MockRequest {
 
 		private final String method;
 
