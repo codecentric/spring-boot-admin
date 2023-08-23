@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -82,6 +84,7 @@ public class StatusUpdater {
 			.uri(Endpoint.HEALTH)
 			.exchangeToMono(this::convertStatusInfo)
 			.log(log.getName(), Level.FINEST)
+			.timeout(Duration.of(8, ChronoUnit.SECONDS))
 			.doOnError((ex) -> logError(instance, ex))
 			.onErrorResume(this::handleError)
 			.map(instance::withStatusInfo);
