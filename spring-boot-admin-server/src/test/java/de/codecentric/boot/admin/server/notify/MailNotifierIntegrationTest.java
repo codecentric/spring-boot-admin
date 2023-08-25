@@ -56,13 +56,21 @@ class MailNotifierIntegrationTest implements WithAssertions {
 	}
 
 	@Test
-	void classpathProtocolIsAllowed() throws IOException {
+	void classpathProtocolIsAllowed() {
+		assertThatNoException().isThrownBy(() -> {
+			mailNotifier.setTemplate("/de/codecentric/boot/admin/server/notify/allowed-file.html");
+			mailNotifier.getBody(new Context());
+		});
+	}
+
+	@Test
+	void callToReflectionUtilsAreNotAllwed() {
 		assertThatThrownBy(() -> {
 			mailNotifier.setTemplate("/de/codecentric/boot/admin/server/notify/vulnerable-file.html");
 			mailNotifier.getBody(new Context());
 		}).rootCause()
-			.hasMessageContaining(
-					"Access is forbidden for type 'org.springframework.util.ReflectionUtils' in this expression context.");
+				.hasMessageContaining(
+						"Access is forbidden for type 'org.springframework.util.ReflectionUtils' in this expression context.");
 	}
 
 	@EnableAdminServer
