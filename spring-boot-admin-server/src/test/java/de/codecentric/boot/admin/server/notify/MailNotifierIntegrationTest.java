@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.notify;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 
 import org.assertj.core.api.WithAssertions;
