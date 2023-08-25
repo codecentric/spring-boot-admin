@@ -52,6 +52,7 @@ public class IntervalCheck {
 
 	private final Function<InstanceId, Mono<Void>> checkFn;
 
+	@lombok.Getter
 	private Duration interval;
 
 	private Duration minRetention;
@@ -81,7 +82,7 @@ public class IntervalCheck {
 			.log(log.getName(), Level.FINEST)
 			.subscribeOn(this.scheduler)
 			.concatMap((i) -> this.checkAllInstances())
-			.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
+			.retryWhen(Retry.backoff(Long.MAX_VALUE, this.interval.minusSeconds(1))
 				.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
 			.subscribe();
 	}

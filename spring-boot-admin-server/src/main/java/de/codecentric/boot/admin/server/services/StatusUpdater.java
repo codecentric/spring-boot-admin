@@ -61,6 +61,8 @@ public class StatusUpdater {
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
+	private Duration timeout = Duration.ofSeconds(30);
+
 	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
 			ApiMediaTypeHandler apiMediaTypeHandler) {
 		this.repository = repository;
@@ -68,9 +70,13 @@ public class StatusUpdater {
 		this.apiMediaTypeHandler = apiMediaTypeHandler;
 	}
 
+	public StatusUpdater timeout(Duration timeout) {
+		this.timeout = timeout;
+		return this;
+	}
+
 	public Mono<Void> updateStatus(InstanceId id) {
 		return this.repository.computeIfPresent(id, (key, instance) -> this.doUpdateStatus(instance)).then();
-
 	}
 
 	protected Mono<Instance> doUpdateStatus(Instance instance) {
@@ -79,12 +85,13 @@ public class StatusUpdater {
 		}
 
 		log.debug("Update status for {}", instance);
+		timeout = Duration.of(8, ChronoUnit.SECONDS);
 		return this.instanceWebClient.instance(instance)
 			.get()
 			.uri(Endpoint.HEALTH)
 			.exchangeToMono(this::convertStatusInfo)
 			.log(log.getName(), Level.FINEST)
-			.timeout(Duration.of(8, ChronoUnit.SECONDS))
+			.timeout(timeout)
 			.doOnError((ex) -> logError(instance, ex))
 			.onErrorResume(this::handleError)
 			.map(instance::withStatusInfo);
