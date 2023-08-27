@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -61,7 +60,7 @@ public class StatusUpdater {
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
-	private Duration timeout = Duration.ofSeconds(30);
+	private Duration timeout = Duration.ofSeconds(10);
 
 	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
 			ApiMediaTypeHandler apiMediaTypeHandler) {
@@ -85,16 +84,24 @@ public class StatusUpdater {
 		}
 
 		log.debug("Update status for {}", instance);
-		timeout = Duration.of(8, ChronoUnit.SECONDS);
 		return this.instanceWebClient.instance(instance)
 			.get()
 			.uri(Endpoint.HEALTH)
 			.exchangeToMono(this::convertStatusInfo)
 			.log(log.getName(), Level.FINEST)
-			.timeout(timeout)
+			.timeout(getTimeoutWithMargin())
 			.doOnError((ex) -> logError(instance, ex))
+			.onErrorContinue((throwable, o) -> log.error("continue", throwable))
 			.onErrorResume(this::handleError)
 			.map(instance::withStatusInfo);
+	}
+
+	/*
+	 * return a timeout less than the given one to prevent backdrops in concurrent get
+	 * request. This prevents flakyness of health checks.
+	 */
+	private Duration getTimeoutWithMargin() {
+		return this.timeout.minusSeconds(1).abs();
 	}
 
 	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
