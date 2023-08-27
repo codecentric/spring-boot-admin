@@ -18,8 +18,17 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 
+import static org.awaitility.Awaitility.await;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
 
@@ -31,16 +40,6 @@ import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdate
 import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-
-import static org.awaitility.Awaitility.await;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class StatusUpdateTriggerTest {
 
@@ -56,6 +55,7 @@ public class StatusUpdateTriggerTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 		when(this.updater.updateStatus(any(InstanceId.class))).thenReturn(Mono.empty());
+		when(this.updater.timeout(any())).thenReturn(this.updater);
 
 		this.trigger = new StatusUpdateTrigger(this.updater, this.events.flux());
 		this.trigger.start();

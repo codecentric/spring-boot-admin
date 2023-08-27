@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 
+import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -86,6 +87,7 @@ public class AbstractEventHandlerTest {
 
 		private final Sinks.Many<InstanceEvent> unicast;
 
+		@Getter
 		private final Flux<InstanceEvent> flux;
 
 		private TestEventHandler(Publisher<InstanceEvent> publisher) {
@@ -106,10 +108,6 @@ public class AbstractEventHandlerTest {
 					return Mono.empty();
 				}
 			}).then();
-		}
-
-		public Flux<InstanceEvent> getFlux() {
-			return this.flux;
 		}
 
 	}

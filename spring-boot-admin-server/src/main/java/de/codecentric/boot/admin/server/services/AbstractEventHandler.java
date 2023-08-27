@@ -26,7 +26,6 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
-import reactor.util.retry.Retry;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
@@ -58,7 +57,7 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
 			.ofType(this.eventType)
 			.cast(this.eventType)
 			.transform(this::handle)
-			.retryWhen(Retry.indefinitely().doBeforeRetry((s) -> this.log.warn("Unexpected error", s.failure())))
+				.onErrorContinue((throwable, o) -> this.log.warn("Unexpected error", throwable))
 			.subscribe();
 	}
 
