@@ -138,10 +138,13 @@ public class StatusUpdateTriggerTest {
 	@Test
 	public void should_continue_update_after_error() throws InterruptedException {
 		// when status-change event is emitted and an error is emitted
-		when(this.updater.updateStatus(any())).thenReturn(Mono.error(IllegalStateException::new)).thenReturn(Mono.empty());
+		when(this.updater.updateStatus(any())).thenReturn(Mono.error(IllegalStateException::new))
+				.thenReturn(Mono.empty());
 
-		this.events.next(new InstanceRegistrationUpdatedEvent(this.instance.getId(), this.instance.getVersion(), this.instance.getRegistration()));
-		this.events.next(new InstanceRegistrationUpdatedEvent(this.instance.getId(), this.instance.getVersion(), this.instance.getRegistration()));
+		this.events.next(new InstanceRegistrationUpdatedEvent(this.instance.getId(), this.instance.getVersion(),
+				this.instance.getRegistration()));
+		this.events.next(new InstanceRegistrationUpdatedEvent(this.instance.getId(), this.instance.getVersion(),
+				this.instance.getRegistration()));
 
 		// then should update
 		verify(this.updater, times(2)).updateStatus(this.instance.getId());
