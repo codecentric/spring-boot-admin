@@ -87,7 +87,6 @@ public class AbstractEventHandlerTest {
 
 		private final Sinks.Many<InstanceEvent> unicast;
 
-		@Getter
 		private final Flux<InstanceEvent> flux;
 
 		private TestEventHandler(Publisher<InstanceEvent> publisher) {
@@ -108,6 +107,10 @@ public class AbstractEventHandlerTest {
 					return Mono.empty();
 				}
 			}).then();
+		}
+
+		public Flux<InstanceEvent> getFlux() {
+			return this.flux;
 		}
 
 	}
