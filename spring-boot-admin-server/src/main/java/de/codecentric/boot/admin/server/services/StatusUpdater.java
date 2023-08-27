@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -47,27 +47,18 @@ import static java.util.Collections.emptyMap;
  *
  * @author Johannes Edmeier
  */
+@Slf4j
+@RequiredArgsConstructor
 public class StatusUpdater {
-
-	private static final Logger log = LoggerFactory.getLogger(StatusUpdater.class);
 
 	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
 	};
 
 	private final InstanceRepository repository;
-
 	private final InstanceWebClient instanceWebClient;
-
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
 	private Duration timeout = Duration.ofSeconds(10);
-
-	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
-			ApiMediaTypeHandler apiMediaTypeHandler) {
-		this.repository = repository;
-		this.instanceWebClient = instanceWebClient;
-		this.apiMediaTypeHandler = apiMediaTypeHandler;
-	}
 
 	public StatusUpdater timeout(Duration timeout) {
 		this.timeout = timeout;

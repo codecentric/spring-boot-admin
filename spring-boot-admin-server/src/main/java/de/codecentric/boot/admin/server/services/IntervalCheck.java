@@ -23,8 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -42,9 +43,8 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
  *
  * @author Johannes Edmeier
  */
+@Slf4j
 public class IntervalCheck {
-
-	private static final Logger log = LoggerFactory.getLogger(IntervalCheck.class);
 
 	private final String name;
 
@@ -52,9 +52,11 @@ public class IntervalCheck {
 
 	private final Function<InstanceId, Mono<Void>> checkFn;
 
-	@lombok.Getter
+	@Getter
+	@Setter
 	private Duration interval;
 
+	@Setter
 	private Duration minRetention;
 
 	@Nullable
@@ -84,7 +86,7 @@ public class IntervalCheck {
 			.concatMap((i) -> this.checkAllInstances())
 			.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
 				.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
-			.subscribe();
+			.subscribe(null, (error) -> log.error("Unexpected error in {}-check", name, error));
 	}
 
 	public void markAsChecked(InstanceId instanceId) {
@@ -95,7 +97,7 @@ public class IntervalCheck {
 		log.debug("check {} for all instances", this.name);
 		Instant expiration = Instant.now().minus(this.minRetention);
 		return Flux.fromIterable(this.lastChecked.entrySet())
-			.filter((e) -> e.getValue().isBefore(expiration))
+			.filter((entry) -> entry.getValue().isBefore(expiration))
 			.map(Map.Entry::getKey)
 			.flatMap(this.checkFn)
 			.then();
@@ -110,14 +112,6 @@ public class IntervalCheck {
 			this.scheduler.dispose();
 			this.scheduler = null;
 		}
-	}
-
-	public void setInterval(Duration interval) {
-		this.interval = interval;
-	}
-
-	public void setMinRetention(Duration minRetention) {
-		this.minRetention = minRetention;
 	}
 
 }
