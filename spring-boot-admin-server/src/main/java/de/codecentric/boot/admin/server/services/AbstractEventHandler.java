@@ -57,7 +57,7 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
 			.ofType(this.eventType)
 			.cast(this.eventType)
 			.transform(this::handle)
-				.onErrorContinue((throwable, o) -> this.log.warn("Unexpected error", throwable))
+			.onErrorContinue((throwable, o) -> this.log.warn("Unexpected error", throwable))
 			.subscribe();
 	}
 
