@@ -55,7 +55,9 @@ public class StatusUpdater {
 	};
 
 	private final InstanceRepository repository;
+
 	private final InstanceWebClient instanceWebClient;
+
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
 	private Duration timeout = Duration.ofSeconds(10);
