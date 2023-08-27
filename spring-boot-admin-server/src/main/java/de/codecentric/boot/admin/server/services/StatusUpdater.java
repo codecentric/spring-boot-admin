@@ -91,7 +91,6 @@ public class StatusUpdater {
 			.log(log.getName(), Level.FINEST)
 			.timeout(getTimeoutWithMargin())
 			.doOnError((ex) -> logError(instance, ex))
-			.onErrorContinue((throwable, o) -> log.error("continue", throwable))
 			.onErrorResume(this::handleError)
 			.map(instance::withStatusInfo);
 	}
