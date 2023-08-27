@@ -18,7 +18,6 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 
-import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
