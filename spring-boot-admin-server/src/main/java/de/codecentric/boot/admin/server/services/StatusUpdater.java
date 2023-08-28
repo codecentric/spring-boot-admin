@@ -16,13 +16,14 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,9 +45,9 @@ import static java.util.Collections.emptyMap;
  *
  * @author Johannes Edmeier
  */
+@Slf4j
+@RequiredArgsConstructor
 public class StatusUpdater {
-
-	private static final Logger log = LoggerFactory.getLogger(StatusUpdater.class);
 
 	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
 	};
@@ -57,16 +58,15 @@ public class StatusUpdater {
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
-	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
-			ApiMediaTypeHandler apiMediaTypeHandler) {
-		this.repository = repository;
-		this.instanceWebClient = instanceWebClient;
-		this.apiMediaTypeHandler = apiMediaTypeHandler;
+	private Duration timeout = Duration.ofSeconds(10);
+
+	public StatusUpdater timeout(Duration timeout) {
+		this.timeout = timeout;
+		return this;
 	}
 
 	public Mono<Void> updateStatus(InstanceId id) {
 		return this.repository.computeIfPresent(id, (key, instance) -> this.doUpdateStatus(instance)).then();
-
 	}
 
 	protected Mono<Instance> doUpdateStatus(Instance instance) {
@@ -77,8 +77,16 @@ public class StatusUpdater {
 		log.debug("Update status for {}", instance);
 		return this.instanceWebClient.instance(instance).get().uri(Endpoint.HEALTH)
 				.exchangeToMono(this::convertStatusInfo).log(log.getName(), Level.FINEST)
-				.doOnError((ex) -> logError(instance, ex)).onErrorResume(this::handleError)
-				.map(instance::withStatusInfo);
+				.timeout(getTimeoutWithMargin()).doOnError((ex) -> logError(instance, ex))
+				.onErrorResume(this::handleError).map(instance::withStatusInfo);
+	}
+
+	/*
+	 * return a timeout less than the given one to prevent backdrops in concurrent get
+	 * request. This prevents flakyness of health checks.
+	 */
+	private Duration getTimeoutWithMargin() {
+		return this.timeout.minusSeconds(1).abs();
 	}
 
 	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
