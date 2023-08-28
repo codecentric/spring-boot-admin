@@ -52,10 +52,13 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 	}
 
 	protected Mono<Void> updateStatus(InstanceId instanceId) {
-		return this.statusUpdater.updateStatus(instanceId).onErrorResume((e) -> {
-			log.warn("Unexpected error while updating status for {}", instanceId, e);
-			return Mono.empty();
-		}).doFinally((s) -> this.intervalCheck.markAsChecked(instanceId));
+		return this.statusUpdater.timeout(this.intervalCheck.getInterval())
+			.updateStatus(instanceId)
+			.onErrorResume((e) -> {
+				log.warn("Unexpected error while updating status for {}", instanceId, e);
+				return Mono.empty();
+			})
+			.doFinally((s) -> this.intervalCheck.markAsChecked(instanceId));
 	}
 
 	@Override
