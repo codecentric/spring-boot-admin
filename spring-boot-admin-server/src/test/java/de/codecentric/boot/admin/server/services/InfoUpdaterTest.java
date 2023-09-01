@@ -94,7 +94,7 @@ public class InfoUpdaterTest {
 	}
 
 	@Test
-	public void should_update_info_for_online_with_info_endpoint_only() {
+	void should_update_info_for_online_with_info_endpoint_only() {
 		// given
 		Registration registration = Registration.create("foo", this.wireMock.url("/health")).build();
 		Instance instance = Instance.create(InstanceId.of("onl"))
@@ -141,7 +141,7 @@ public class InfoUpdaterTest {
 	}
 
 	@Test
-	public void should_clear_info_on_http_error() {
+	void should_clear_info_on_http_error() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("onl"))
 			.register(Registration.create("foo", this.wireMock.url("/health")).build())
@@ -167,8 +167,7 @@ public class InfoUpdaterTest {
 	}
 
 	@Test
-	public void should_clear_info_on_exception() {
-		this.updater = new InfoUpdater(this.repository, InstanceWebClient.builder().build(), this.apiMediaTypeHandler);
+	void should_clear_info_on_exception() {
 
 		// given
 		Instance instance = Instance.create(InstanceId.of("onl"))
@@ -178,7 +177,7 @@ public class InfoUpdaterTest {
 			.withInfo(Info.from(singletonMap("foo", "bar")));
 		StepVerifier.create(this.repository.save(instance)).expectNextCount(1).verifyComplete();
 
-		this.wireMock.stubFor(get("/info").willReturn(okJson("{ \"foo\": \"bar\" }").withFixedDelay(1500)));
+		this.wireMock.stubFor(get("/info").willReturn(okJson("{ \"foo\": \"bar\" }").withFixedDelay(2100)));
 
 		// when
 		StepVerifier.create(this.eventStore)
@@ -195,7 +194,7 @@ public class InfoUpdaterTest {
 	}
 
 	@Test
-	public void should_retry() {
+	void should_retry() {
 		// given
 		Registration registration = Registration.create("foo", this.wireMock.url("/health")).build();
 		Instance instance = Instance.create(InstanceId.of("onl"))
