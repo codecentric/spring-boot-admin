@@ -19,7 +19,7 @@ jobs:
     steps:
       - run: echo "Will start a Maven Central upload with version ${{ github.event.inputs.releaseversion }}"
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up settings.xml for Maven Central Repository
         uses: actions/setup-java@v3
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Generate changelog
         id: changelog
@@ -112,7 +112,7 @@ jobs:
       contents: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set new SNAPSHOT version
         run: >
