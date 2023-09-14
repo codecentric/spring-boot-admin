@@ -86,7 +86,7 @@ public class InstanceWebProxy {
 		return instances.flatMap((instance) -> this.forward(instance, forwardRequest, (clientResponse) -> {
 			InstanceResponse.Builder response = InstanceResponse.builder()
 				.instanceId(instance.getId())
-				.status(clientResponse.rawStatusCode())
+				.status(clientResponse.statusCode().value())
 				.contentType(String.join(", ", clientResponse.headers().header(HttpHeaders.CONTENT_TYPE)));
 			return clientResponse.bodyToMono(String.class)
 				.map(response::body)

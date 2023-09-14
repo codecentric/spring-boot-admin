@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.notify;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +28,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -115,7 +115,8 @@ public class LetsChatNotifierTest {
 	private HttpEntity<?> expectedMessage(String message) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		String auth = Base64Utils.encodeToString(String.format("%s:%s", token, user).getBytes(StandardCharsets.UTF_8));
+		String auth = Base64.getEncoder()
+			.encodeToString(String.format("%s:%s", token, user).getBytes(StandardCharsets.UTF_8));
 		httpHeaders.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("text", message);

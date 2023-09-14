@@ -39,8 +39,10 @@ public class HomepageForwardingFilter implements WebFilter {
 
 	public HomepageForwardingFilter(String homepage, List<String> routeIncludes, List<String> routeExcludes) {
 		this.homepage = homepage;
-		this.matcher = new HomepageForwardingMatcher<>(routeIncludes, routeExcludes, ServerHttpRequest::getMethodValue,
-				(r) -> r.getPath().pathWithinApplication().toString(), (r) -> r.getHeaders().getAccept());
+		this.matcher = new HomepageForwardingMatcher<>(routeIncludes, routeExcludes,
+				(request) -> request.getMethod().name(),
+				(request) -> request.getPath().pathWithinApplication().toString(),
+				(request) -> request.getHeaders().getAccept());
 	}
 
 	public HomepageForwardingFilter(HomepageForwardingFilterConfig filterConfig) {

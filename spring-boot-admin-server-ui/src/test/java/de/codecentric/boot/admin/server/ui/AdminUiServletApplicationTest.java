@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
@@ -66,15 +67,10 @@ public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTes
 
 			@Bean
 			protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-				http.authorizeHttpRequests()
-					.anyRequest()
-					.permitAll()//
-					.and()
-					.csrf()
-					.disable()
-					.anonymous()
-					.principal("anonymousUser");
-				return http.build();
+				return http.csrf(AbstractHttpConfigurer::disable)
+					.authorizeHttpRequests((authz) -> authz.anyRequest().permitAll())
+					.anonymous((config) -> config.principal("anonymousUser"))
+					.build();
 			}
 
 		}

@@ -200,12 +200,8 @@ class AdminApplicationDiscoveryTest {
 
 		@Bean
 		SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-			return http.authorizeExchange()
-				.anyExchange()
-				.permitAll()//
-				.and()
-				.csrf()
-				.disable()//
+			return http.authorizeExchange((authorizeExchange) -> authorizeExchange.anyExchange().permitAll())
+				.csrf(ServerHttpSecurity.CsrfSpec::disable)
 				.build();
 		}
 
