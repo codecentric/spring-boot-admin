@@ -27,7 +27,6 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
-import reactor.util.retry.Retry;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
@@ -55,8 +54,7 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
 		this.subscription = Flux.from(this.publisher).subscribeOn(this.scheduler).log(this.log.getName(), Level.FINEST)
 				.doOnSubscribe((s) -> this.log.debug("Subscribed to {} events", this.eventType)).ofType(this.eventType)
 				.cast(this.eventType).transform(this::handle)
-				.retryWhen(Retry.indefinitely().doBeforeRetry((s) -> this.log.warn("Unexpected error", s.failure())))
-				.subscribe();
+				.onErrorContinue((throwable, o) -> this.log.warn("Unexpected error", throwable)).subscribe();
 	}
 
 	protected abstract Publisher<Void> handle(Flux<T> publisher);
