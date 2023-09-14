@@ -79,7 +79,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-vue": "4.3.4",
-    "@vue/eslint-config-typescript": "^11.0.2",
+    "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/test-utils": "2.4.1",
     "autoprefixer": "10.4.15",
     "babel-loader": "9.1.3",
