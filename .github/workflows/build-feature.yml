@@ -42,6 +42,6 @@ jobs:
         run: |
           mvn -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           files: "'*/jacoco.xml'"
