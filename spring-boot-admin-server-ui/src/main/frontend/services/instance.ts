@@ -163,6 +163,10 @@ class Instance {
     return await this.axios.get(uri`actuator/health`, { validateStatus: null });
   }
 
+  async fetchHealthGroup(groupName: string) {
+    return await this.axios.get(uri`actuator/health/${groupName}`, { validateStatus: null });
+  }
+
   async fetchEnv(name) {
     return this.axios.get(uri`actuator/env/${name || ''}`);
   }
