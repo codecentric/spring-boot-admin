@@ -75,14 +75,6 @@ sbaConfig.extensions.css.forEach((extension) => {
 
 moment.locale(navigator.language.split('-')[0]);
 
-if (process.env.NODE_ENV === 'development') {
-  worker.start({
-    serviceWorker: {
-      url: './mockServiceWorker.js',
-    },
-  });
-}
-
 const installables = [Notifications, ...views];
 installables.forEach((installable) => {
   installable.install({
