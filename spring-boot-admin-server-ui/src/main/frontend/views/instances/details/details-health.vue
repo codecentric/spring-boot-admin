@@ -21,7 +21,7 @@
         :to="{ name: 'journal', query: { instanceId: instance.id } }"
         class="text-sm inline-flex items-center leading-sm border border-gray-400 bg-white text-gray-700 rounded overflow-hidden px-3 py-1 hover:bg-gray-200 ml-1"
       >
-        <font-awesome-icon icon="history" />
+        <font-awesome-icon icon="history"/>
       </router-link>
     </template>
 
@@ -32,18 +32,25 @@
         :title="$t('term.fetch_failed')"
       />
       <div class="-mx-4 -my-3">
-        <health-details :health="health" name="Instance" />
+        <health-details :health="health" name="Instance"/>
+
+        <template v-for="healthGroup in healthGroups">
+          <div class="px-4 py-2 border-t border-b sm:px-6">
+            <h4 class="leading-6 font-medium text-gray-900" v-text="healthGroup.name" />
+          </div>
+          <health-details :health="healthGroup.data" :name="healthGroup.name"/>
+        </template>
       </div>
     </template>
   </sba-panel>
 </template>
 
-<script>
+<script lang="ts">
 import Instance from '@/services/instance';
 import healthDetails from '@/views/instances/details/health-details';
 
 export default {
-  components: { healthDetails },
+  components: {healthDetails},
   props: {
     instance: {
       type: Instance,
@@ -54,6 +61,7 @@ export default {
     error: null,
     loading: false,
     liveHealth: null,
+    healthGroups: [],
   }),
   computed: {
     health() {
@@ -70,6 +78,19 @@ export default {
       try {
         const res = await this.instance.fetchHealth();
         this.liveHealth = res.data;
+
+        if (Array.isArray(res.data.groups)) {
+          this.healthGroups = (await Promise.allSettled(res.data.groups
+            .map(async (group: string) => {
+              return {
+                name: group,
+                data: (await this.instance.fetchHealthGroup(group)).data,
+              }
+            })))
+            .map((group) => group.status === 'fulfilled' ? group.value : group.reason);
+
+          console.log(this.healthGroups);
+        }
       } catch (error) {
         console.warn('Fetching live health failed:', error);
         this.error = error;
