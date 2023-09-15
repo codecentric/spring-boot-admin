@@ -1,13 +1,13 @@
-import {screen, waitFor} from '@testing-library/vue';
-import {rest} from 'msw';
-import {describe, expect, it, vi} from 'vitest';
+import { screen, waitFor } from '@testing-library/vue';
+import { rest } from 'msw';
+import { describe, expect, it, vi } from 'vitest';
 
 import DetailsView from './index.vue';
 
-import {applications} from '@/mocks/applications/data';
-import {server} from '@/mocks/server';
+import { applications } from '@/mocks/applications/data';
+import { server } from '@/mocks/server';
 import Application from '@/services/application';
-import {render} from '@/test-utils';
+import { render } from '@/test-utils';
 
 describe('InstanceDetails', () => {
     describe('Metrics', () => {
@@ -28,8 +28,10 @@ describe('InstanceDetails', () => {
                 },
             });
 
-            await waitFor(() => {
-                expect(screen.queryByTestId('instance-section-loading-spinner')).not.toBeInTheDocument();
+            await waitFor(async () => {
+                expect(
+                    await screen.queryByTestId('instance-section-loading-spinner')
+                ).not.toBeInTheDocument();
             });
         });
 
@@ -48,8 +50,10 @@ describe('InstanceDetails', () => {
                 },
             });
 
-            await waitFor(() => {
-                expect(screen.queryByTestId('instance-section-loading-spinner')).not.toBeInTheDocument();
+            await waitFor(async () => {
+                expect(
+                    await screen.queryByTestId('instance-section-loading-spinner')
+                ).not.toBeInTheDocument();
             });
         });
     });
