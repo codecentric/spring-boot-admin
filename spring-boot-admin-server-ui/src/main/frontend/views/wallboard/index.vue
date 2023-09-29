@@ -32,6 +32,7 @@
       </sba-input>
 
       <select
+        aria-label="status-filter"
         v-if="healthStatus.size > 1"
         v-model="statusFilter"
         class="relative focus:z-10 focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded"
