@@ -32,7 +32,8 @@
       </sba-input>
 
       <select
-        v-if="healthStatus.length > 1"
+        aria-label="status-filter"
+        v-if="healthStatus.size > 1"
         v-model="statusFilter"
         class="relative focus:z-10 focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded"
       >
@@ -100,7 +101,7 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
 import Fuse from 'fuse.js';
 import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -155,7 +156,7 @@ export default {
     });
 
     const healthStatus = computed(() => {
-      return applications.value.map((application) => application.status);
+      return new Set(applications.value.map((application) => application.status));
     });
 
     return {
