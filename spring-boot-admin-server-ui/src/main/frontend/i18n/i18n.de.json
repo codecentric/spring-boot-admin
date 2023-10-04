@@ -29,6 +29,7 @@
     "hours": "{count} Stunde | {count} Stunden",
     "instance": "Instanz",
     "instances": "Instanzen",
+    "instances_tc": "{count} Instanz | {count} Instanzen",
     "integer": "Integer",
     "menu": {
       "open": "Menü öffnen"

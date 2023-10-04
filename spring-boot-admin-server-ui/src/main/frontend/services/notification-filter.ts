@@ -20,6 +20,11 @@ import axios from '@/utils/axios';
 import uri from '@/utils/uri';
 
 class NotificationFilter {
+  private id: string;
+  private applicationName: string;
+  private instanceId: string;
+  private expiry: moment.Moment | null;
+
   constructor({ expiry, ...filter }) {
     Object.assign(this, filter);
     this.expiry = expiry ? moment(expiry) : null;
@@ -42,11 +47,11 @@ class NotificationFilter {
   }
 
   get isApplicationFilter() {
-    return 'applicationName' in this;
+    return this.applicationName != null;
   }
 
   get isInstanceFilter() {
-    return 'instanceId' in this;
+    return this.instanceId != null;
   }
 
   async delete() {

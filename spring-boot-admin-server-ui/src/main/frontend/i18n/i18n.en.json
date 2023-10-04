@@ -36,7 +36,7 @@
     "hours": "{count} hour | {count} hours",
     "instance": "Instance",
     "instances": "Instances",
-    "instances_tc": "{n} instance | {n} instances",
+    "instances_tc": "{count} instance | {count} instances",
     "integer": "Integer",
     "menu": {
       "open": "Open menu"

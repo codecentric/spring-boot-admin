@@ -1,39 +1,47 @@
-import { ref } from 'vue';
+import {Ref, ref, UnwrapRef} from 'vue';
 
 import ApplicationStore from '../store.js';
+import Application from "@/services/application";
 
 let applicationStore: ApplicationStore | null = null;
-const applications = ref([]);
+const applications = ref([] as Application[]);
 const applicationsInitialized = ref(false);
 const error = ref(null);
 
 export function createApplicationStore() {
-  if (applicationStore) throw new Error('ApplicationStore already created!');
+    if (applicationStore) throw new Error('ApplicationStore already created!');
 
-  applicationStore = new ApplicationStore();
-  return applicationStore;
+    applicationStore = new ApplicationStore();
+    return applicationStore;
 }
 
-export function useApplicationStore() {
-  applicationStore.addEventListener('connected', () => {
-    applicationsInitialized.value = true;
-    error.value = null;
-  });
+type ApplicationStoreValue = {
+    applications: Ref<UnwrapRef<Application[]>>;
+    applicationsInitialized: Ref<boolean>;
+    error: Ref<any>;
+    applicationStore: ApplicationStore;
+}
 
-  applicationStore.addEventListener('changed', (newApplications) => {
-    applicationsInitialized.value = true;
-    applications.value = newApplications;
-    error.value = null;
-  });
+export function useApplicationStore(): ApplicationStoreValue {
+    applicationStore.addEventListener('connected', () => {
+        applicationsInitialized.value = true;
+        error.value = null;
+    });
 
-  applicationStore.addEventListener('error', (errorResponse) => {
-    applicationsInitialized.value = true;
-    error.value = errorResponse;
-  });
+    applicationStore.addEventListener('changed', (newApplications) => {
+        applicationsInitialized.value = true;
+        applications.value = newApplications;
+        error.value = null;
+    });
 
-  applicationStore.addEventListener('removed', () => {
-    applicationsInitialized.value = false;
-  });
+    applicationStore.addEventListener('error', (errorResponse) => {
+        applicationsInitialized.value = true;
+        error.value = errorResponse;
+    });
 
-  return { applications, applicationsInitialized, error, applicationStore };
+    applicationStore.addEventListener('removed', () => {
+        applicationsInitialized.value = false;
+    });
+
+    return {applications, applicationsInitialized, error, applicationStore};
 }

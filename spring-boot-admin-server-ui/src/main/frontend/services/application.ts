@@ -47,8 +47,11 @@ export const convertBody = (responses) =>
   });
 
 class Application {
-  readonly name: string;
-  readonly instances: Instance[];
+  public readonly name: string;
+  public readonly instances: Instance[];
+  public readonly buildVersion? = {} as {value: string};
+  public readonly status: string;
+  public readonly statusTimestamp: string;
 
   private readonly axios: AxiosInstance;
 

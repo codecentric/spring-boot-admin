@@ -8,7 +8,7 @@
           ? t('applications.actions.notification_filters')
           : t('applications.notification_filter.none')
       "
-      class="mr-1"
+      class="mr-1 h-full"
     >
       <font-awesome-icon
         :icon="notificationFiltersLength > 0 ? 'bell-slash' : 'bell'"
