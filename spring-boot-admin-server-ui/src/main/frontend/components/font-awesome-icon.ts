@@ -21,8 +21,8 @@ import { faStopCircle as farStopCircle } from '@fortawesome/free-regular-svg-ico
 import { faTimesCircle as farTimesCircle } from '@fortawesome/free-regular-svg-icons/faTimesCircle';
 import {
   faAngleDoubleLeft,
-  faCogs,
-  faEye,
+  faCogs, faExpand,
+  faEye, faList,
   faPowerOff,
   faUndoAlt,
 } from '@fortawesome/free-solid-svg-icons';
@@ -91,6 +91,8 @@ library.add(
   faInfoCircle,
   faExclamationCircle,
   faHome,
+  faList,
+  faExpand,
   faMapMarkerAlt,
   faCheckCircle,
   faMinusCircle,

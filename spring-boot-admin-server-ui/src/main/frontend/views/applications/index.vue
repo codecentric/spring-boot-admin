@@ -69,8 +69,12 @@
           <template v-else>
             <div class="text-right mb-6" v-if="groupNames.length > 1">
               <sba-button-group>
-                <sba-button @click="() => setGroupingFunction('application')">By Application</sba-button>
-                <sba-button @click="() => setGroupingFunction('group')">By Group</sba-button>
+                <sba-button @click="() => setGroupingFunction('application')">
+                  <font-awesome-icon icon="list"/>
+                </sba-button>
+                <sba-button @click="() => setGroupingFunction('group')">
+                  <font-awesome-icon icon="expand"/>
+                </sba-button>
               </sba-button-group>
             </div>
 
@@ -78,7 +82,7 @@
                 v-for="group in grouped"
                 :key="group.name"
                 :seamless="true"
-                :title="group.name"
+                :title="t(group.name)"
                 :subtitle="t('term.instances_tc', {count: group.instances?.length ?? 0})"
                 class="application-group"
                 @titleClick="() => toggleGroup(group.name)"
@@ -185,7 +189,7 @@ type InstancesListType = {
 
 const groupingFunctions = {
   'application': (instance: Instance) => instance.registration.name,
-  'group': (instance: Instance) => instance.registration.metadata?.['group'] ?? "Ungrouped",
+  'group': (instance: Instance) => instance.registration.metadata?.['group'] ?? "term.no_group",
 }
 
 export default defineComponent({
