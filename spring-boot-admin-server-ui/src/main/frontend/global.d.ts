@@ -1,4 +1,4 @@
-import Vue, { Component, Raw, RenderFunction } from 'vue';
+import {Component, Raw, RenderFunction} from 'vue';
 
 import ViewRegistry from '@/viewRegistry';
 
@@ -8,6 +8,7 @@ declare global {
   type ApplicationStream = {
     data: any;
   } & MessageEvent;
+
   interface Window {
     SBA: SBASettings;
   }
