@@ -3,7 +3,7 @@
   "private": true,
   "description": "Spring Boot Admin UI",
   "scripts": {
-    "build": "vite build --emptyOutDir",
+    "build": "vite build --emptyOutDir --sourcemap",
     "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
     "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --mode development",
     "dev": "vite",

@@ -16,25 +16,25 @@
 
 <template>
   <div>
-    <sba-wave />
+    <sba-wave/>
     <section>
       <sba-sticky-subnav>
         <div class="container mx-auto flex">
-          <application-stats />
+          <ApplicationStats/>
           <ApplicationNotificationCenter
-            v-if="hasNotificationFiltersSupport"
-            :notification-filters="notificationFilters"
-            @filter-remove="removeFilter"
+              v-if="hasNotificationFiltersSupport"
+              :notification-filters="notificationFilters"
+              @filter-remove="removeFilter"
           />
           <div class="flex-1">
             <sba-input
-              v-model="filter"
-              :placeholder="t('term.filter')"
-              name="filter"
-              type="search"
+                v-model="filter"
+                :placeholder="t('term.filter')"
+                name="filter"
+                type="search"
             >
               <template #prepend>
-                <font-awesome-icon icon="filter" />
+                <font-awesome-icon icon="filter"/>
               </template>
             </sba-input>
           </div>
@@ -43,73 +43,94 @@
 
       <div class="container mx-auto py-6">
         <sba-alert
-          v-if="error"
-          :error="error"
-          :title="t('applications.server_connection_failed')"
-          class-names="mb-6"
-          severity="WARN"
+            v-if="error"
+            :error="error"
+            :title="t('applications.server_connection_failed')"
+            class-names="mb-6"
+            severity="WARN"
         />
         <sba-panel v-if="!applicationsInitialized">
           <p
-            class="is-muted is-loading"
-            v-text="t('applications.loading_applications')"
+              class="is-muted is-loading"
+              v-text="t('applications.loading_applications')"
           />
         </sba-panel>
 
-        <application-status-hero v-if="applicationsInitialized" />
+        <ApplicationStatusHero v-if="applicationsInitialized"/>
 
         <template v-if="applicationsInitialized">
-          <TransitionGroup>
-            <sba-panel
-              v-if="hasActiveFilter && statusGroups.length === 0"
+          <sba-panel
+              v-if="hasActiveFilter && grouped.length === 0"
               class="text-center"
-            >
-              {{ t('filter.no_results') }}
-            </sba-panel>
+          >
+            {{ t('filter.no_results') }}
+          </sba-panel>
+
+          <template v-else>
+            <div class="text-right mb-6" v-if="groupNames.length > 1">
+              <sba-button-group>
+                <sba-button @click="() => setGroupingFunction('application')">
+                  <font-awesome-icon icon="list"/>
+                </sba-button>
+                <sba-button @click="() => setGroupingFunction('group')">
+                  <font-awesome-icon icon="expand"/>
+                </sba-button>
+              </sba-button-group>
+            </div>
+
             <sba-panel
-              v-for="group in statusGroups"
-              v-else
-              :key="group.status"
-              :seamless="true"
-              :title="t('term.applications_tc', group.applications.length)"
-              class="application-group"
+                v-for="group in grouped"
+                :key="group.name"
+                :seamless="true"
+                :title="t(group.name)"
+                :subtitle="t('term.instances_tc', {count: group.instances?.length ?? 0})"
+                class="application-group"
+                @titleClick="() => toggleGroup(group.name)"
             >
-              <template #title>
-                <sba-status-badge :status="group.statusKey" />
+              <template #prefix>
+                <font-awesome-icon icon="chevron-down"
+                                   :class="{'-rotate-90': !isExpanded(group.name), 'mr-2 transition-[transform]': true}"/>
+                <sba-status-badge class="mr-2" v-if="isGroupedByApplication"
+                                  :status="findApplicationByInstanceId(group.instances[0].id)?.status"/>
               </template>
 
-              <applications-list-item
-                v-for="application in group.applications"
-                :key="application.name"
-                :application="application"
-                :has-notification-filters-support="
-                  hasNotificationFiltersSupport
-                "
-                :is-expanded="selected === application.name || Boolean(filter)"
-                :notification-filters="notificationFilters"
-                @deselect="deselect"
-                @restart="restart"
-                @select="select"
-                @shutdown="shutdown"
-                @unregister="unregister"
-                @toggle-notification-filter-settings="
-                  toggleNotificationFilterSettings
-                "
-              />
+              <template #actions v-if="isGroupedByApplication">
+                <ApplicationListItemAction
+                    :has-notification-filters-support="hasNotificationFiltersSupport"
+                    :item="findApplicationByInstanceId(group.instances[0].id)"
+                    @filter-settings="toggleNotificationFilterSettings"
+                />
+              </template>
+
+              <template #default v-if="isExpanded(group.name)">
+                <InstancesList :instances="group.instances">
+                  <template #actions="{instance}">
+                    <ApplicationListItemAction
+                        :has-notification-filters-support="hasNotificationFiltersSupport"
+                        :item="instance"
+                        class="md:hidden"
+                        @filter-settings="toggleNotificationFilterSettings"
+                    />
+                  </template>
+                </InstancesList>
+              </template>
             </sba-panel>
-          </TransitionGroup>
-          <notification-filter-settings
-            v-if="showNotificationFilterSettingsObject"
-            v-popper="
+          </template>
+
+
+          <NotificationFilterSettings
+              v-on-clickaway="() => toggleNotificationFilterSettings(null)"
+              v-if="showNotificationFilterSettingsObject"
+              v-popper="
               `nf-settings-${
                 showNotificationFilterSettingsObject.id ||
                 showNotificationFilterSettingsObject.name
               }`
             "
-            :notification-filters="notificationFilters"
-            :object="showNotificationFilterSettingsObject"
-            @filter-add="addFilter"
-            @filter-remove="removeFilter"
+              :notification-filters="notificationFilters"
+              :object="showNotificationFilterSettingsObject"
+              @filter-add="addFilter"
+              @filter-remove="removeFilter"
           />
         </template>
       </div>
@@ -118,50 +139,70 @@
 </template>
 
 <script lang="ts">
-import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
-import { groupBy, sortBy, transform } from 'lodash-es';
-import { computed, defineComponent, ref, watch } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { RouteLocationRaw, useRoute, useRouter } from 'vue-router';
+import {useNotificationCenter} from '@stekoe/vue-toast-notificationcenter';
+import {groupBy, sortBy, transform} from 'lodash-es';
+import {computed, defineComponent, ref, watch} from 'vue';
+import {useI18n} from 'vue-i18n';
+import {RouteLocationNamedRaw, useRoute, useRouter} from 'vue-router';
 
-import SbaStickySubnav from '@/components/sba-sticky-subnav';
-import SbaWave from '@/components/sba-wave';
+import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
+import SbaWave from '@/components/sba-wave.vue';
 
-import { useApplicationStore } from '@/composables/useApplicationStore';
+import {useApplicationStore} from '@/composables/useApplicationStore';
 import Popper from '@/directives/popper';
 import subscribing from '@/mixins/subscribing';
 import Application from '@/services/application';
 import NotificationFilter from '@/services/notification-filter';
-import { anyValueMatches } from '@/utils/collections';
-import { Subject, concatMap, mergeWith, timer } from '@/utils/rxjs';
-import ApplicationNotificationCenter from '@/views/applications/application-notification-center';
-import ApplicationStats from '@/views/applications/application-stats';
-import ApplicationStatusHero from '@/views/applications/application-status-hero';
-import ApplicationsListItem from '@/views/applications/applications-list-item';
-import handle from '@/views/applications/handle';
-import NotificationFilterSettings from '@/views/applications/notification-filter-settings';
+import {anyValueMatches} from '@/utils/collections';
+import {concatMap, mergeWith, Subject, timer} from '@/utils/rxjs';
+import ApplicationNotificationCenter from '@/views/applications/ApplicationNotificationCenter.vue';
+import ApplicationStats from '@/views/applications/ApplicationStats.vue';
+import ApplicationStatusHero from '@/views/applications/ApplicationStatusHero.vue';
+import handle from '@/views/applications/handle.vue';
+import NotificationFilterSettings from '@/views/applications/NotificationFilterSettings.vue';
+import Instance from "@/services/instance";
+import ApplicationListItemAction from "@/views/applications/ApplicationListItemAction.vue";
+import InstancesList from "@/views/applications/InstancesList.vue";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { directive as onClickaway } from 'vue3-click-away';
+
 
 const instanceMatchesFilter = (term, instance) => {
   const predicate = (value) => String(value).toLowerCase().includes(term);
   return (
-    anyValueMatches(instance.registration, predicate) ||
-    anyValueMatches(instance.buildVersion, predicate) ||
-    anyValueMatches(instance.id, predicate) ||
-    anyValueMatches(instance.tags, predicate)
+      anyValueMatches(instance.registration, predicate) ||
+      anyValueMatches(instance.buildVersion, predicate) ||
+      anyValueMatches(instance.id, predicate) ||
+      anyValueMatches(instance.tags, predicate)
   );
 };
 
 type NotificationFilterSettingsObject = { id: string; name: string };
 
+type InstancesListType = {
+  name?: string;
+  statusKey?: string;
+  status?: string;
+  instances?: Instance[];
+  applications?: Application[];
+}
+
+const groupingFunctions = {
+  'application': (instance: Instance) => instance.registration.name,
+  'group': (instance: Instance) => instance.registration.metadata?.['group'] ?? "term.no_group",
+}
+
 export default defineComponent({
-  directives: { Popper },
+  directives: {Popper, onClickaway},
   components: {
+    FontAwesomeIcon,
+    InstancesList,
+    ApplicationListItemAction,
     ApplicationNotificationCenter,
     SbaWave,
     ApplicationStatusHero,
     SbaStickySubnav,
     ApplicationStats,
-    ApplicationsListItem,
     NotificationFilterSettings,
   },
   mixins: [subscribing],
@@ -176,24 +217,28 @@ export default defineComponent({
     },
   },
   setup: function (props) {
-    const { t } = useI18n();
+    const {t} = useI18n();
     const router = useRouter();
     const route = useRoute();
-    const { applications, applicationsInitialized } = useApplicationStore();
+    const {applications, applicationsInitialized, applicationStore} = useApplicationStore();
     const notificationCenter = useNotificationCenter({});
     const filter = ref(route.query.q?.toString());
+    const expandedGroups = ref([]);
+    const groupingFunction = ref(groupingFunctions.application);
 
     watch(filter, (q) => {
       let to = {
         name: 'applications',
-        params: { selected: props.selected },
-      } as RouteLocationRaw;
+        params: {selected: props.selected},
+      } as RouteLocationNamedRaw;
 
       if (q?.length > 0) {
         to = {
           ...to,
-          query: { q },
-        } as RouteLocationRaw;
+          query: {
+            q
+          },
+        } as RouteLocationNamedRaw;
       }
 
       router.replace(to);
@@ -206,6 +251,11 @@ export default defineComponent({
     return {
       applications,
       applicationsInitialized,
+      setGroupingFunction: (key: keyof typeof groupingFunctions) => {
+        groupingFunction.value = groupingFunctions[key];
+        expandedGroups.value = [];
+      },
+      findApplicationByInstanceId: applicationStore.findApplicationByInstanceId,
       errors: ref([]),
       filter,
       hasActiveFilter,
@@ -215,34 +265,52 @@ export default defineComponent({
       notificationFilters: ref([]),
       palette: ref({}),
       router,
+      expandedGroups,
+      isExpanded: (name: string) => expandedGroups.value.includes(name),
+      groupingFunction,
+      toggleGroup: (name: string) => {
+        if (expandedGroups.value.includes(name)) {
+          expandedGroups.value = expandedGroups.value.filter((n) => n !== name);
+        } else {
+          expandedGroups.value = [...expandedGroups.value, name];
+        }
+      },
       showNotificationFilterSettingsObject: ref(
-        null as unknown as NotificationFilterSettingsObject
+          null as unknown as NotificationFilterSettingsObject
       ),
       t,
     };
   },
   computed: {
-    statusGroups() {
+    groupNames() {
+      return [...new Set(this.applications.flatMap(application => application.instances)
+          .map(instance => instance.registration.metadata?.['group'] ?? "Ungrouped"))];
+    },
+    grouped() {
       const filteredApplications = this.filterInstances(this.applications);
-      const applicationsByStatus = groupBy(
-        filteredApplications,
-        (application) => application.status
+
+      const instances = filteredApplications.flatMap(application => application.instances);
+
+      const grouped = groupBy<Instance>(
+          instances,
+          this.groupingFunction
       );
-      const list = transform(
-        applicationsByStatus,
-        (result, applications, status: string) => {
-          const statusKey = status.replace(/[^\w]/gi, '').toLowerCase();
-          result.push({
-            statusKey,
-            status: status,
-            applications: sortBy(applications, [
-              (application) => application.name,
-            ]),
-          });
-        },
-        []
-      );
+
+      const list = transform<Instance[], InstancesListType[]>(
+          grouped,
+          (result, instances, name) => {
+            result.push({
+              name,
+              instances: sortBy(instances, [
+                (instance) => instance.registration.name,
+              ]),
+            });
+          }, []);
+
       return sortBy(list, [(item) => item.status]);
+    },
+    isGroupedByApplication() {
+      return this.groupingFunction === groupingFunctions.application;
     },
   },
   watch: {
@@ -258,7 +326,7 @@ export default defineComponent({
     select(name) {
       this.router.replace({
         name: 'applications',
-        params: { selected: name },
+        params: {selected: name},
       });
     },
     deselect(event, expectedSelected) {
@@ -267,7 +335,7 @@ export default defineComponent({
       }
       this.toggleNotificationFilterSettings(null);
       if (this.selected === expectedSelected || !expectedSelected) {
-        this.router.replace({ name: 'applications' });
+        this.router.replace({name: 'applications'});
       }
     },
     async scrollIntoView(id, behavior) {
@@ -284,96 +352,26 @@ export default defineComponent({
         }
       }
     },
-    async unregister(item) {
-      this.toggleNotificationFilterSettings(null);
-      try {
-        await item.unregister();
-        const message =
-          item instanceof Application
-            ? 'applications.unregister_successful'
-            : 'instances.unregister_successful';
-        this.notificationCenter.success(
-          this.t(message, { name: item.id || item.name })
-        );
-      } catch (error) {
-        const message =
-          item instanceof Application
-            ? 'applications.unregister_failed'
-            : 'instances.unregister_failed';
-        this.notificationCenter.error(
-          this.t(message, {
-            name: item.id || item.name,
-            error: error.response.status,
-          })
-        );
-      }
-    },
-    async shutdown(item) {
-      try {
-        await item.shutdown();
-        const message =
-          item instanceof Application
-            ? 'applications.shutdown_successful'
-            : 'instances.shutdown_successful';
-        this.notificationCenter.success(
-          this.t(message, { name: item.id || item.name })
-        );
-      } catch (error) {
-        const message =
-          item instanceof Application
-            ? 'applications.shutdown_failed'
-            : 'instances.shutdown_failed';
-        this.notificationCenter.error(
-          this.t(message, {
-            name: item.id || item.name,
-            error: error.response.status,
-          })
-        );
-      }
-    },
-    async restart(item) {
-      try {
-        await item.restart();
-        const message =
-          item instanceof Application
-            ? 'applications.restarted'
-            : 'instances.restarted';
-        this.notificationCenter.success(
-          this.t(message, { name: item.id || item.name })
-        );
-      } catch (error) {
-        const message =
-          item instanceof Application
-            ? 'applications.restart_failed'
-            : 'instances.restart_failed';
-        this.notificationCenter.error(
-          this.t(message, {
-            name: item.id || item.name,
-            error: error.response.status,
-          })
-        );
-      }
-    },
     createSubscription() {
       return timer(0, 60000)
-        .pipe(
-          mergeWith(this.notificationFilterSubject),
-          concatMap(this.fetchNotificationFilters)
-        )
-        .subscribe({
-          next: (data) => {
-            this.notificationFilters = data;
-          },
-          error: (error) => {
-            console.warn(
-              'Fetching notification filters failed with error:',
-              error
-            );
-            this.notificationCenter.error(
-              this.t('applications.fetching_notification_filters_failed')
-            );
-          },
-        });
+          .pipe(
+              mergeWith(this.notificationFilterSubject),
+              concatMap(this.fetchNotificationFilters)
+          )
+          .subscribe({
+            next: (data) => {
+              this.notificationFilters = data;
+            },
+            error: (error) => {
+              console.warn(
+                  'Fetching notification filters failed with error:',
+                  error
+              );
+              this.notificationCenter.error(
+                  this.t('applications.fetching_notification_filters_failed')
+              );
+            },
+          });
     },
     async fetchNotificationFilters() {
       if (this.hasNotificationFiltersSupport) {
@@ -382,17 +380,17 @@ export default defineComponent({
       }
       return [];
     },
-    async addFilter({ object, ttl }) {
+    async addFilter({object, ttl}) {
       try {
         const response = await NotificationFilter.addFilter(object, ttl);
         let notificationFilter = response.data;
         this.notificationFilterSubject.next(notificationFilter);
         this.notificationCenter.success(
-          `${this.t('applications.notifications_suppressed_for', {
-            name:
-              notificationFilter.applicationName ||
-              notificationFilter.instanceId,
-          })} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`
+            `${this.t('applications.notifications_suppressed_for', {
+              name:
+                  notificationFilter.applicationName ||
+                  notificationFilter.instanceId,
+            })} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`
         );
       } catch (error) {
         console.warn('Adding notification filter failed:', error);
@@ -405,7 +403,7 @@ export default defineComponent({
         await activeFilter.delete();
         this.notificationFilterSubject.next(activeFilter.id);
         this.notificationCenter.success(
-          this.t('applications.notification_filter.removed')
+            this.t('applications.notification_filter.removed')
         );
       } catch (error) {
         console.warn('Deleting notification filter failed:', error);
@@ -416,21 +414,21 @@ export default defineComponent({
     toggleNotificationFilterSettings(obj) {
       this.showNotificationFilterSettingsObject = obj ? obj : null;
     },
-    filterInstances(applications) {
+    filterInstances(applications: Application[]) {
       if (!this.filter) {
         return applications;
       }
 
       return applications
-        .map((application) =>
-          application.filterInstances((i) =>
-            instanceMatchesFilter(this.filter.toLowerCase(), i)
+          .map((application) =>
+              application.filterInstances((i) =>
+                  instanceMatchesFilter(this.filter.toLowerCase(), i)
+              )
           )
-        )
-        .filter((application) => application.instances.length > 0);
+          .filter((application) => application.instances.length > 0);
     },
   },
-  install({ viewRegistry }) {
+  install({viewRegistry}) {
     viewRegistry.addView({
       path: '/applications/:selected?',
       props: true,

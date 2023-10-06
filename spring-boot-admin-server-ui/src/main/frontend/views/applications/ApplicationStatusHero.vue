@@ -49,7 +49,6 @@ const options = {
 };
 
 export default {
-  name: 'ApplicationStatusHero',
   setup() {
     const { applications } = useApplicationStore();
     return { applications };

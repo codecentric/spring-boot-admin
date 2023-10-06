@@ -36,7 +36,7 @@
     "hours": "{count} hour | {count} hours",
     "instance": "Instance",
     "instances": "Instances",
-    "instances_tc": "{n} instance | {n} instances",
+    "instances_tc": "{count} instance | {count} instances",
     "integer": "Integer",
     "menu": {
       "open": "Open menu"
@@ -50,6 +50,7 @@
     "suppress": "Suppress",
     "time": "Time",
     "unsuppress": "Unsuppress",
+    "no_group": "No Group",
     "username": "Username",
     "go_to_previous_page": "Go to previous page",
     "go_to_page_n": "Go to page {page}",

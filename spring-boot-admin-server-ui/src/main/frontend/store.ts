@@ -143,4 +143,8 @@ export default class ApplicationStore {
       }
     }
   }
+
+  findApplicationByInstanceId(instanceId: string) {
+    return findApplicationForInstance(this.applications, instanceId);
+  }
 }

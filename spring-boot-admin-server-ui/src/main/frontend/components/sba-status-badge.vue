@@ -12,12 +12,6 @@ export default {
     status: {
       type: [HealthStatus, String, Number],
       required: true,
-      validator(value) {
-        return Object.prototype.hasOwnProperty.call(
-          HealthStatus,
-          value.toUpperCase()
-        );
-      },
     },
   },
   computed: {

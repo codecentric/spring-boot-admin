@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <sba-panel class="shadow-lg">
+  <sba-panel class="shadow-xl">
     <template v-if="!activeFilter">
       <div class="field">
         <p class="control has-inline-text">
