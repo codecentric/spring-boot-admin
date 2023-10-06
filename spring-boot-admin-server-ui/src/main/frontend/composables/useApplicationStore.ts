@@ -16,7 +16,7 @@ export function createApplicationStore() {
 }
 
 type ApplicationStoreValue = {
-    applications: Ref<UnwrapRef<Application[]>>;
+    applications: Ref<Application[]>;
     applicationsInitialized: Ref<boolean>;
     error: Ref<any>;
     applicationStore: ApplicationStore;
