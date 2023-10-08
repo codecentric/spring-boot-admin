@@ -463,7 +463,12 @@ The restful interface provides the following methods for getting, adding, and de
 * `DELETE notifications/filters/{id}`
 ** Deletes the notification filter with the requested id from the filters.
 
-This notifier might be useful, for instance, if you don't want to receive notifications when deploying your applications. Before stopping the application, you can add an (expiring) filter via a `POST` request.
+You may as well access all notification filter configurations via the main applications view inside SBA client, as seen in the screenshot below.
+
+.Sample notification filters
+image::images/notification-filter.png[Sample notification filters]
+
+A `FilteringNotifier` might be useful, for instance, if you don't want to receive notifications when deploying your applications. Before stopping the application, you can add an (expiring) filter via a `POST` request.
 
 .How to configure filtering
 [source,java,indent=0]
