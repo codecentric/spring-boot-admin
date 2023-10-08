@@ -452,8 +452,18 @@ public class NotifierConfiguration {
 The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
 
 If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `notifications/filter` gets available.
+The restful interface provides the following methods for getting, adding, and deleting notification filters:
 
-This notifier is useful if you don't want receive notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request.
+* `GET notifications/filter`
+** Returns a list of all registered notification filters. Each containing the attributes `id`, `applicationName`, `expiry`, and `expired`.
+
+* `POST notifications/filters?instanceId=<yourInstanceId>&applicationName=<yourApplicationName>&ttl=<yourInstant>`
+** Posts a new notification filter for the application/instance of the given `instanceId` or `applicationName`. Either `instanceId` or `applicationName` must be set. The parameter `ttl` is optional and represents the expiration of the filter as an instant (the number of seconds from the epoch of `1970-01-01T00:00:00Z`).
+
+* `DELETE notifications/filters/{id}`
+** Deletes the notification filter with the requested id from the filters.
+
+This notifier might be useful, for instance, if you don't want to receive notifications when deploying your applications. Before stopping the application, you can add an (expiring) filter via a `POST` request.
 
 .How to configure filtering
 [source,java,indent=0]
