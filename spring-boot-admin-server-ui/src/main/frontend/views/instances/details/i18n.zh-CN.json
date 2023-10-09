@@ -47,7 +47,7 @@
         "uptime": "运行时间"
       },
       "threads": {
-        "daemon": "守护进程",
+        "daemon": "守护线程",
         "live": "活动线程",
         "peak_live": "线程峰值",
         "title": "线程"
