@@ -23,10 +23,13 @@ import org.springframework.http.MediaType;
 
 public class ApiMediaTypeHandler {
 
+	public static final org.springframework.http.MediaType ACTUATOR_V1_MEDIATYPE = org.springframework.http.MediaType
+		.parseMediaType("application/vnd.spring-boot.actuator.v1+json");
+
 	public boolean isApiMediaType(MediaType mediaType) {
 		return Stream.of(ApiVersion.values())
 			.map(ApiVersion::getProducedMimeType)
-			.anyMatch((mimeType) -> mimeType.isCompatibleWith(mediaType));
+			.anyMatch((mimeType) -> mimeType.isCompatibleWith(mediaType) || ACTUATOR_V1_MEDIATYPE.isCompatibleWith(mediaType));
 	}
 
 }
