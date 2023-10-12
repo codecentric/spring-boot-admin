@@ -124,7 +124,7 @@ jobs:
             mvn versions:commit
 
       - name: Commit new SNAPSHOT version
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
