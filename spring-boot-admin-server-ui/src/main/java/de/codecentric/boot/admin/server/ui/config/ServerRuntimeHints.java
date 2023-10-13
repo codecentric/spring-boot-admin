@@ -114,9 +114,17 @@ public class ServerRuntimeHints implements RuntimeHintsRegistrar {
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(UiController.Settings.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(UiController.ExternalView.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(AdminServerUiProperties.UiTheme.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(AdminServerUiProperties.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(AdminServerUiProperties.Palette.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(AdminServerUiProperties.Cache.class, MemberCategory.INVOKE_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
+			.registerType(AdminServerUiProperties.PollTimer.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerType(CssColorUtils.class, MemberCategory.INVOKE_PUBLIC_METHODS,
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
