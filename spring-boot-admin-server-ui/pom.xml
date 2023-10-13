@@ -79,6 +79,7 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
+                        <phase>validate</phase>
                         <configuration>
                             <nodeVersion>${node.version}</nodeVersion>
                             <npmVersion>${npm.version}</npmVersion>
@@ -113,9 +114,6 @@
                         <phase>validate</phase>
                         <configuration>
                             <arguments>run format</arguments>
-                            <environmentVariables>
-                                <PROJECT_VERSION>${project.version}</PROJECT_VERSION>
-                            </environmentVariables>
                         </configuration>
                     </execution>
                     <execution>
@@ -126,9 +124,6 @@
                         <phase>validate</phase>
                         <configuration>
                             <arguments>run lint</arguments>
-                            <environmentVariables>
-                                <PROJECT_VERSION>${project.version}</PROJECT_VERSION>
-                            </environmentVariables>
                         </configuration>
                     </execution>
                     <execution>
