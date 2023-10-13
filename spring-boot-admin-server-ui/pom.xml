@@ -107,16 +107,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>npm-check-format</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>validate</phase>
-                        <configuration>
-                            <arguments>run format</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>npm-lint</id>
                         <goals>
                             <goal>npm</goal>
