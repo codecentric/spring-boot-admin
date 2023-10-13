@@ -37,6 +37,6 @@ spring:
           service-base-url: http://localhost:8080
       ui:
         external-views:
-          - label: 'SmokeTest'
+          - label: 'Is it Christmas yet?'
             url: https://isitchristmas.com/
 
