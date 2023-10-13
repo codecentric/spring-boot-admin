@@ -100,7 +100,7 @@ function flattenBean(obj, prefix = '') {
     } else {
       return Object.entries(obj)
         .map(([name, value]) =>
-          flattenBean(value, prefix ? `${prefix}.${name}` : name)
+          flattenBean(value, prefix ? `${prefix}.${name}` : name),
         )
         .reduce((c, n) => ({ ...c, ...n }), {});
     }
@@ -119,7 +119,7 @@ const flattenConfigurationPropertiesBeans = (configprops) => {
       const bean = context.beans[beanName];
       const properties = mapKeys(
         flattenBean(bean.properties),
-        (value, key) => `${bean.prefix}.${key}`
+        (value, key) => `${bean.prefix}.${key}`,
       );
       propertySources.push({
         name:
@@ -152,7 +152,7 @@ export default {
         return [];
       }
       const configurationProperties = flattenConfigurationPropertiesBeans(
-        this.configprops
+        this.configprops,
       );
       if (!this.filter) {
         return configurationProperties;

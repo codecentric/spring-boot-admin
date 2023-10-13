@@ -109,7 +109,7 @@ export default {
               ...this.clearing,
               [cache.key]: status,
             };
-          })
+          }),
         )
         .subscribe({
           complete: () => {
@@ -131,7 +131,7 @@ export default {
           error: (error) => {
             console.warn(`Clearing cache ${cache.key} failed:`, error);
           },
-        })
+        }),
       );
     },
   },

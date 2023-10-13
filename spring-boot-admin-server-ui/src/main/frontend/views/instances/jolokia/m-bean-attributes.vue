@@ -86,7 +86,7 @@ export default {
         this.loading = true;
         const response = await this.instance.readMBeanAttributes(
           this.domain,
-          this.mBean.descriptor.raw
+          this.mBean.descriptor.raw,
         );
         this.attributeValues = response.data.value;
       } catch (error) {
@@ -104,7 +104,7 @@ export default {
           this.domain,
           this.mBean.descriptor.raw,
           attribute,
-          value
+          value,
         );
       } catch (error) {
         console.warn(`Error saving attribute ${attribute}`, error);

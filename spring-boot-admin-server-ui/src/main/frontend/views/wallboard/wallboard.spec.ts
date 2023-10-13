@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/vue";
+import { screen, waitFor, within } from '@testing-library/vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 
@@ -66,28 +66,34 @@ describe('Wallboard', () => {
         name: 'Test Application',
         statusTimestamp: Date.now(),
         instances: [new Instance({ id: '4711' })],
-        status: 'UP'
+        status: 'UP',
       }),
       new Application({
         name: 'Test Application 2',
         statusTimestamp: Date.now(),
         instances: [new Instance({ id: '4712' })],
-        status: 'UP'
+        status: 'UP',
       }),
       new Application({
         name: 'Test Application Down',
         statusTimestamp: Date.now(),
         instances: [new Instance({ id: '4713' })],
-        status: 'DOWN'
+        status: 'DOWN',
       }),
     ];
 
     await waitFor(() => {
-      let dropdown = screen.queryByLabelText('status-filter');
+      const dropdown = screen.queryByLabelText('status-filter');
       expect(within(dropdown).getAllByRole('option')).toHaveLength(3);
-      expect(within(dropdown).getByRole('option', {name:'all'})).toBeVisible();
-      expect(within(dropdown).getByRole('option', {name:'up'})).toBeVisible();// expecting only one!
-      expect(within(dropdown).getByRole('option', {name:'down'})).toBeVisible();
+      expect(
+        within(dropdown).getByRole('option', { name: 'all' }),
+      ).toBeVisible();
+      expect(
+        within(dropdown).getByRole('option', { name: 'up' }),
+      ).toBeVisible(); // expecting only one!
+      expect(
+        within(dropdown).getByRole('option', { name: 'down' }),
+      ).toBeVisible();
     });
   });
 });

@@ -87,7 +87,7 @@ describe('responseHandler.js', () => {
 
       expect(state).toBe(STATE_FAILED);
       expect(error.message).toBe(
-        'Execution failed: java.lang.IllegalArgumentException : Cannot convert string ^12 to type java.time.OffsetDateTime because no converter could be found'
+        'Execution failed: java.lang.IllegalArgumentException : Cannot convert string ^12 to type java.time.OffsetDateTime because no converter could be found',
       );
     });
   });
@@ -106,7 +106,7 @@ describe('responseHandler.js', () => {
 
       expect(state).toBe(STATE_FAILED);
       expect(error.message).toBe(
-        'Execution failed: java.lang.IllegalArgumentException : Cannot convert string ^12 to type java.time.OffsetDateTime because no converter could be found'
+        'Execution failed: java.lang.IllegalArgumentException : Cannot convert string ^12 to type java.time.OffsetDateTime because no converter could be found',
       );
     });
   });

@@ -20,7 +20,7 @@ const views = [];
 
 if (!isStorybook) {
   const context: Record<string, any> = import.meta.globEager(
-    './**/index.(js|vue|ts)'
+    './**/index.(js|vue|ts)',
   );
   Object.keys(context)
     .filter((key) => {

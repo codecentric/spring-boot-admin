@@ -97,7 +97,7 @@ watch(
   () => props.notificationFilters,
   (notificationFilters) => {
     notificationFiltersLength.value = notificationFilters.length;
-  }
+  },
 );
 
 const removeFilter = async (filter, closePopover) => {

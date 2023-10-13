@@ -64,23 +64,23 @@ describe('sba-pagination-nav.vue', () => {
     });
 
     expect(
-      screen.queryByRole('button', { name: 'Go to previous page' })
+      screen.queryByRole('button', { name: 'Go to previous page' }),
     ).not.toBeDisabled();
 
     expect(
-      screen.queryByRole('button', { name: 'Go to page 1' })
+      screen.queryByRole('button', { name: 'Go to page 1' }),
     ).toBeVisible();
     expect(
-      screen.queryByRole('button', { name: 'Go to page 2' })
+      screen.queryByRole('button', { name: 'Go to page 2' }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: 'Go to page 3' })
+      screen.queryByRole('button', { name: 'Go to page 3' }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: 'Go to page 4' })
+      screen.queryByRole('button', { name: 'Go to page 4' }),
     ).toBeVisible();
     expect(
-      screen.queryByRole('button', { name: 'Go to page 5' })
+      screen.queryByRole('button', { name: 'Go to page 5' }),
     ).toBeVisible();
 
     const selectedButton = screen.getByRole('button', {
@@ -91,23 +91,23 @@ describe('sba-pagination-nav.vue', () => {
     expect(selectedButton).toHaveClass('is-active');
 
     expect(
-      screen.queryByRole('button', { name: 'Go to page 7' })
+      screen.queryByRole('button', { name: 'Go to page 7' }),
     ).toBeVisible();
     expect(
-      screen.queryByRole('button', { name: 'Go to page 8' })
+      screen.queryByRole('button', { name: 'Go to page 8' }),
     ).toBeVisible();
     expect(
-      screen.queryByRole('button', { name: 'Go to page 9' })
+      screen.queryByRole('button', { name: 'Go to page 9' }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: 'Go to page 10' })
+      screen.queryByRole('button', { name: 'Go to page 10' }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: 'Go to page 11' })
+      screen.queryByRole('button', { name: 'Go to page 11' }),
     ).toBeVisible();
 
     expect(
-      screen.queryByRole('button', { name: 'Go to previous page' })
+      screen.queryByRole('button', { name: 'Go to previous page' }),
     ).not.toBeDisabled();
   });
 });

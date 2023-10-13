@@ -72,12 +72,12 @@ export default {
           ...current,
           [measurement.statistic.toLowerCase()]: measurement.value,
         }),
-        {}
+        {},
       );
       return {
         ...measurements,
         total_time: moment.duration(
-          toMillis(measurements.total_time, response.baseUnit)
+          toMillis(measurements.total_time, response.baseUnit),
         ),
         max: moment.duration(toMillis(measurements.max, response.baseUnit)),
       };
@@ -88,7 +88,7 @@ export default {
           concatMap(this.fetchMetrics),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
-          })
+          }),
         )
         .subscribe({
           next: (data) => {

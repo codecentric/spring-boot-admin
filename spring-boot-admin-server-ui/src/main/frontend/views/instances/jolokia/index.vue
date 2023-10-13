@@ -167,7 +167,7 @@ export default {
       return (
         this.selectedDomain &&
         this.selectedDomain.mBeans.find(
-          (b) => b.descriptor.raw === this.selected.mBean
+          (b) => b.descriptor.raw === this.selected.mBean,
         )
       );
     },
@@ -206,7 +206,7 @@ export default {
           ...domain,
           mBeans: sortBy(
             domain.mBeans.map((mBean) => new MBean(mBean)),
-            [(b) => b.descriptor.displayName]
+            [(b) => b.descriptor.displayName],
           ),
         }));
         if (!this.selectedDomain && this.domains.length > 0) {

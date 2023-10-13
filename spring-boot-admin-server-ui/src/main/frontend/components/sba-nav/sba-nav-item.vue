@@ -1,25 +1,25 @@
 <template>
   <a
-      v-if="href"
-      :href="href"
-      :target="target"
-      class="sba-nav-item"
-      rel="noopener noreferrer"
+    v-if="href"
+    :href="href"
+    :target="target"
+    class="sba-nav-item"
+    rel="noopener noreferrer"
   >
-    <slot/>
+    <slot />
   </a>
   <router-link v-else-if="to" :to="to" class="sba-nav-item">
-    <slot/>
+    <slot />
   </router-link>
 
   <div v-else class="sba-nav-item">
-    <slot/>
+    <slot />
   </div>
 </template>
 
 <script lang="ts" setup>
-import {RouteLocationRaw} from "vue-router";
-import {PropType} from "vue";
+import { PropType } from 'vue';
+import { RouteLocationRaw } from 'vue-router';
 
 defineProps({
   href: {

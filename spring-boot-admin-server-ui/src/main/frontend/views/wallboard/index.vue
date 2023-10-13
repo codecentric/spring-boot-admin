@@ -32,9 +32,9 @@
       </sba-input>
 
       <select
-        aria-label="status-filter"
         v-if="healthStatus.size > 1"
         v-model="statusFilter"
+        aria-label="status-filter"
         class="relative focus:z-10 focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded"
       >
         <option selected value="none" v-text="$t('term.all')" />
@@ -156,7 +156,9 @@ export default {
     });
 
     const healthStatus = computed(() => {
-      return new Set(applications.value.map((application) => application.status));
+      return new Set(
+        applications.value.map((application) => application.status),
+      );
     });
 
     return {

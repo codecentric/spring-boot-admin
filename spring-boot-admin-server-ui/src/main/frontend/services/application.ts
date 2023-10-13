@@ -49,7 +49,7 @@ export const convertBody = (responses) =>
 class Application {
   public readonly name: string;
   public readonly instances: Instance[];
-  public readonly buildVersion? = {} as {value: string};
+  public readonly buildVersion? = {} as { value: string };
   public readonly status: string;
   public readonly statusTimestamp: string;
 
@@ -66,13 +66,13 @@ class Application {
     });
     this.axios.interceptors.response.use(
       (response) => response,
-      redirectOn401()
+      redirectOn401(),
     );
     this.instances = sortBy(
       instances.map(
         (i) => new Instance(i),
-        [(instance) => instance.registration.healthUrl]
-      )
+        [(instance) => instance.registration.healthUrl],
+      ),
     );
   }
 
@@ -108,7 +108,7 @@ class Application {
 
         eventSource.onerror = (err) => observer.error(err);
         return () => eventSource.close();
-      })
+      }),
     );
   }
 
@@ -151,7 +151,7 @@ class Application {
         await this.axios.get(uri`actuator/loggers`, {
           headers: { Accept: actuatorMimeTypes.join(',') },
         })
-      ).data
+      ).data,
     );
     return { responses };
   }
@@ -161,7 +161,7 @@ class Application {
       await this.axios.post(
         uri`actuator/loggers/${name}`,
         level === null ? {} : { configuredLevel: level },
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { 'Content-Type': 'application/json' } },
       )
     ).data;
     return { responses };
@@ -173,7 +173,7 @@ class Application {
       { name, value },
       {
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
   }
 

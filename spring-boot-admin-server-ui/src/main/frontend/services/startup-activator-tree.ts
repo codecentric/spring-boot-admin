@@ -29,7 +29,7 @@ export class StartupActuatorEventTree {
 
   getByDepth(depth) {
     return this.getEvents().filter(
-      (event) => event.startupStep.depth === depth
+      (event) => event.startupStep.depth === depth,
     );
   }
 
@@ -39,7 +39,7 @@ export class StartupActuatorEventTree {
 
   getByParentId(parentId) {
     return this.getEvents().filter(
-      (event) => event.startupStep.parentId === parentId
+      (event) => event.startupStep.parentId === parentId,
     );
   }
 

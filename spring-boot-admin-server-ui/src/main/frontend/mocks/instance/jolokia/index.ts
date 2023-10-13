@@ -19,7 +19,7 @@ const jolokiaEndpoint = [
       } catch (e) {
         console.error(e);
       }
-    }
+    },
   ),
 ];
 

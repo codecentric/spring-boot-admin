@@ -60,7 +60,7 @@ export const render = (testComponent, options?) => {
         stubs: { RouterLink: RouterLinkStub },
       },
     },
-    options
+    options,
   );
   const utils = tlRender(testComponent, renderOptions);
   return { ...utils };

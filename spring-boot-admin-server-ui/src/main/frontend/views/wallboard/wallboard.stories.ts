@@ -22,7 +22,7 @@ const Template = (args) => ({
         application.name = healthStatus;
         application.status = healthStatus;
         return application;
-      })
+      }),
     );
     return { args };
   },
@@ -40,7 +40,7 @@ export const Default = {
         application.name = healthStatus;
         application.status = healthStatus;
         return application;
-      }
+      },
     ),
     applicationsInitialized: true,
   },

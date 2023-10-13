@@ -1,5 +1,6 @@
 {
   "singleQuote": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "importOrder": ["(.*).css$","^[./]" ,"^@/components/(.*)$","^@/(.*)$"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true

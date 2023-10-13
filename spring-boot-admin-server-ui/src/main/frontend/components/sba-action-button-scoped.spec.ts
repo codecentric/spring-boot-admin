@@ -36,10 +36,10 @@ describe('SbaActionButtonScoped', function () {
 
   it('should cal actionFn when confirmed', async () => {
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Execute' })
+      await screen.findByRole('button', { name: 'Execute' }),
     );
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Confirm' })
+      await screen.findByRole('button', { name: 'Confirm' }),
     );
 
     expect(actionFn).toHaveBeenCalledTimes(1);

@@ -1,4 +1,4 @@
-import {Component, Raw, RenderFunction} from 'vue';
+import { Component, Raw, RenderFunction } from 'vue';
 
 import ViewRegistry from '@/viewRegistry';
 
