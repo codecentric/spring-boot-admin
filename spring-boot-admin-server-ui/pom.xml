@@ -79,7 +79,6 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
-                        <phase>validate</phase>
                         <configuration>
                             <nodeVersion>${node.version}</nodeVersion>
                             <npmVersion>${npm.version}</npmVersion>
@@ -111,7 +110,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <phase>validate</phase>
+                        <phase>verify</phase>
                         <configuration>
                             <arguments>run lint</arguments>
                         </configuration>
@@ -121,7 +120,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <phase>test</phase>
+                        <phase>verify</phase>
                         <configuration>
                             <arguments>run test</arguments>
                         </configuration>
