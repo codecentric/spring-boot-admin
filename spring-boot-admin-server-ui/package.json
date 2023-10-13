@@ -11,8 +11,8 @@
     "test:watch": "vitest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "lint": "eslint --ext .js,.ts,.vue src/main/frontend",
-    "lint:fix": "eslint --ext .js,.ts,.vue --fix src/main/frontend"
+    "lint": "npx eslint --ext .js,.ts,.vue src/main/frontend",
+    "lint:fix": "npx  eslint --ext .js,.ts,.vue --fix src/main/frontend"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "6.4.2",
