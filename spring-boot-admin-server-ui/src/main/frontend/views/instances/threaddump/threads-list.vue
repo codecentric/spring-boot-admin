@@ -94,14 +94,14 @@ export default {
             start: Math.min(current.start, next.start),
             end: Math.max(current.end, next.end),
           }),
-          { start: Number.MAX_SAFE_INTEGER, end: Number.MIN_SAFE_INTEGER }
+          { start: Number.MAX_SAFE_INTEGER, end: Number.MIN_SAFE_INTEGER },
         );
     },
     showThreadDetails({ threadId, start }) {
       const previousSelectedStart = this.showDetails[threadId];
       if (previousSelectedStart) {
         d3.selectAll(
-          '#rect-threadid-' + threadId + '-start-' + previousSelectedStart
+          '#rect-threadid-' + threadId + '-start-' + previousSelectedStart,
         ).attr('class', (d) => `thread thread--${d.threadState.toLowerCase()}`);
       }
 
@@ -117,7 +117,8 @@ export default {
         };
         d3.selectAll('#rect-threadid-' + threadId + '-start-' + start).attr(
           'class',
-          (d) => `thread thread--${d.threadState.toLowerCase()} thread--clicked`
+          (d) =>
+            `thread thread--${d.threadState.toLowerCase()} thread--clicked`,
         );
       }
     },
@@ -142,7 +143,7 @@ export default {
             d3
               .axisBottom(x)
               .ticks(Math.max(2, Math.floor(width / 50)))
-              .tickFormat((d) => moment(d).format('HH:mm:ss'))
+              .tickFormat((d) => moment(d).format('HH:mm:ss')),
           );
 
         Object.entries(timelines).forEach(([threadId, value]) => {
@@ -156,27 +157,27 @@ export default {
               'rect-threadid-' +
                 threadId +
                 '-start-' +
-                value.timeline[value.timeline.length - 1].start
+                value.timeline[value.timeline.length - 1].start,
             )
             .attr(
               'class',
-              (d) => `thread thread--${d.threadState.toLowerCase()}`
+              (d) => `thread thread--${d.threadState.toLowerCase()}`,
             )
             .merge(d)
             .attr('height', '2em')
             .attr('x', (d) => x(d.start))
             .transition(150)
             .attr('width', (d) =>
-              Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start))
+              Math.max(x(d.end) - x(d.start), x(d.start + 500) - x(d.start)),
             );
 
           d3.selectAll(
             '#rect-threadid-' +
               threadId +
               '-start-' +
-              value.timeline[value.timeline.length - 1].start
+              value.timeline[value.timeline.length - 1].start,
           ).on('click', (event, d) =>
-            this.showThreadDetails({ threadId: threadId, start: d.start })
+            this.showThreadDetails({ threadId: threadId, start: d.start }),
           );
         });
 

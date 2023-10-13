@@ -157,7 +157,7 @@ export default defineComponent({
         .filter(
           (view) =>
             typeof view.isEnabled === 'undefined' ||
-            view.isEnabled({ instance: this.instance })
+            view.isEnabled({ instance: this.instance }),
         )
         .sort(compareBy((v) => v.order));
     },

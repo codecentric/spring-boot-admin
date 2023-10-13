@@ -61,11 +61,11 @@
   "health": {
     "label": "Health status",
     "status": {
-      "DOWN":  "down",
+      "DOWN": "down",
       "UP": "up",
-      "RESTRICTED":  "restricted",
+      "RESTRICTED": "restricted",
       "UNKNOWN": "unknown",
-      "OUT_OF_SERVICE":  "out of service",
+      "OUT_OF_SERVICE": "out of service",
       "OFFLINE": "offline"
     }
   }

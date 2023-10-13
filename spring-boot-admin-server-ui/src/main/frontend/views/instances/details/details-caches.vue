@@ -52,7 +52,7 @@ export default {
       const response = await this.instance.fetchMetric('cache.gets');
       return uniq(
         response.data.availableTags.filter((tag) => tag.tag === 'name')[0]
-          .values
+          .values,
       );
     },
     createSubscription() {
@@ -61,7 +61,7 @@ export default {
           concatMap(this.fetchCaches),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
-          })
+          }),
         )
         .subscribe({
           next: (names) => {

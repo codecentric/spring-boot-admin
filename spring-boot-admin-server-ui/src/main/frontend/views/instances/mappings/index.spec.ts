@@ -22,7 +22,7 @@ describe('Mappings', () => {
     });
 
     const header = await waitFor(() =>
-      screen.getByRole('heading', { name: 'spring-boot-admin-sample-servlet' })
+      screen.getByRole('heading', { name: 'spring-boot-admin-sample-servlet' }),
     );
     expect(header).toBeVisible();
   });
@@ -38,7 +38,7 @@ describe('Mappings', () => {
       },
     });
     const element = await waitFor(() =>
-      screen.getByRole('cell', { name: 'Actuator root web endpoint' })
+      screen.getByRole('cell', { name: 'Actuator root web endpoint' }),
     );
     expect(element).toBeVisible();
   });
@@ -56,7 +56,7 @@ describe('Mappings', () => {
     const element = await waitFor(() =>
       screen.getByRole('cell', {
         name: 'org.springframework.web.servlet.DispatcherServlet',
-      })
+      }),
     );
     expect(element).toBeVisible();
   });
@@ -72,7 +72,7 @@ describe('Mappings', () => {
       },
     });
     const element = await waitFor(() =>
-      screen.getByRole('cell', { name: 'webMvcMetricsFilter' })
+      screen.getByRole('cell', { name: 'webMvcMetricsFilter' }),
     );
     expect(element).toBeVisible();
   });

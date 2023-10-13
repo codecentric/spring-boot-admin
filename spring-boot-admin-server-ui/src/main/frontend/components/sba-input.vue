@@ -153,11 +153,11 @@ export default {
 
       if (this.error !== null && this.error !== undefined) {
         classNames.push(
-          'focus:ring-red-500 focus:border-red-500 border-red-400'
+          'focus:ring-red-500 focus:border-red-500 border-red-400',
         );
       } else {
         classNames.push(
-          'focus:ring-indigo-500 focus:border-indigo-500 border-gray-300'
+          'focus:ring-indigo-500 focus:border-indigo-500 border-gray-300',
         );
       }
 

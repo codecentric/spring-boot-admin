@@ -56,7 +56,7 @@ describe('Refresh', () => {
 
   it('shows the changed configurations for the current instance', async () => {
     const refreshButton = await screen.findByText(
-      'instances.env.context_refresh'
+      'instances.env.context_refresh',
     );
     await userEvent.click(refreshButton);
 
@@ -75,7 +75,7 @@ describe('Refresh', () => {
     await userEvent.click(toggleScopeButton);
 
     const refreshButton = await screen.findByText(
-      'instances.env.context_refresh'
+      'instances.env.context_refresh',
     );
     await userEvent.click(refreshButton);
 

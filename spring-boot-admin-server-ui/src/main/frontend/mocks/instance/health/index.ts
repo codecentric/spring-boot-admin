@@ -50,7 +50,7 @@ const healthEndpoint = [
           },
           refreshScope: { status: 'UP' },
         },
-      })
+      }),
     );
   }),
 ];

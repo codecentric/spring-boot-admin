@@ -7,9 +7,8 @@ import Navbar from '@/shell/navbar.vue';
 import { render } from '@/test-utils';
 
 vi.mock('@/sba-config', async () => {
-  const sbaConfig = await vi.importActual<typeof import('@/sba-config')>(
-    '@/sba-config'
-  );
+  const sbaConfig =
+    await vi.importActual<typeof import('@/sba-config')>('@/sba-config');
 
   return {
     ...sbaConfig,

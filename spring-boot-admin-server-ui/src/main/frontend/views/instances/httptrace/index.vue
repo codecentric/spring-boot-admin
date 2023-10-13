@@ -226,11 +226,11 @@ export default {
     actuatorPath() {
       if (
         this.instance.registration.managementUrl.includes(
-          this.instance.registration.serviceUrl
+          this.instance.registration.serviceUrl,
         )
       ) {
         const appendix = this.instance.registration.managementUrl.substring(
-          this.instance.registration.serviceUrl.length
+          this.instance.registration.serviceUrl.length,
         );
         if (appendix.length > 0) {
           return appendix.startsWith('/') ? appendix : `/${appendix}`;
@@ -254,7 +254,7 @@ export default {
       const [start, end] = this.selection;
       return traces.filter(
         (trace) =>
-          !trace.timestamp.isBefore(start) && !trace.timestamp.isAfter(end)
+          !trace.timestamp.isBefore(start) && !trace.timestamp.isAfter(end),
       );
     },
     lastTimestamp() {
@@ -290,7 +290,7 @@ export default {
           concatMap(this.fetchHttptrace),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(2));
-          })
+          }),
         )
         .subscribe({
           next: (traces) => {
@@ -312,13 +312,13 @@ export default {
       if (this.actuatorPath !== null && this.filter.excludeActuator) {
         filterFn = addToFilter(
           filterFn,
-          (trace) => !trace.request.uri.includes(this.actuatorPath)
+          (trace) => !trace.request.uri.includes(this.actuatorPath),
         );
       }
       if (this.filter.uri) {
         const normalizedFilter = this.filter.uri.toLowerCase();
         filterFn = addToFilter(filterFn, (trace) =>
-          trace.request.uri.toLowerCase().includes(normalizedFilter)
+          trace.request.uri.toLowerCase().includes(normalizedFilter),
         );
       }
       if (!this.filter.showSuccess) {

@@ -92,15 +92,15 @@ export default {
     async fetchMetrics() {
       const responseActive = this.instance.fetchMetric(
         'data.source.active.connections',
-        { name: this.dataSource }
+        { name: this.dataSource },
       );
       const responseMin = this.instance.fetchMetric(
         'data.source.min.connections',
-        { name: this.dataSource }
+        { name: this.dataSource },
       );
       const responseMax = this.instance.fetchMetric(
         'data.source.max.connections',
-        { name: this.dataSource }
+        { name: this.dataSource },
       );
 
       return {
@@ -115,7 +115,7 @@ export default {
           concatMap(this.fetchMetrics),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
-          })
+          }),
         )
         .subscribe({
           next: (data) => {
@@ -127,7 +127,7 @@ export default {
             this.hasLoaded = true;
             console.warn(
               `Fetching datasource ${this.dataSource} metrics failed:`,
-              error
+              error,
             );
             this.error = error;
           },

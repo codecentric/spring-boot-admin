@@ -41,7 +41,7 @@ const addIframeView = (viewRegistry: ViewRegistry, { url, label, order }) => {
 const addExternalLink = (
   viewRegistry: ViewRegistry,
   { url, label, order, children },
-  parent?: string
+  parent?: string,
 ) => {
   const name = `external/${label.toLowerCase().replace(/[^a-zA-Z]+/g, '-')}`;
 

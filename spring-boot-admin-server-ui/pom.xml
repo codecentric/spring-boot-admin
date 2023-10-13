@@ -106,6 +106,32 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>npm-check-format</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <arguments>run format</arguments>
+                            <environmentVariables>
+                                <PROJECT_VERSION>${project.version}</PROJECT_VERSION>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-lint</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <arguments>run lint</arguments>
+                            <environmentVariables>
+                                <PROJECT_VERSION>${project.version}</PROJECT_VERSION>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>npm-test</id>
                         <goals>
                             <goal>npm</goal>

@@ -60,17 +60,17 @@ export default class ViewRegistry {
 
   createRouter() {
     const routesKnownToBackend = sbaConfig.uiSettings.routes.map(
-      (r) => new RegExp(`^${r.replace('/**', '(/.*)?')}$`)
+      (r) => new RegExp(`^${r.replace('/**', '(/.*)?')}$`),
     );
     const unknownRoutes = this.routes.filter(
       (vr) =>
-        vr.path !== '/' && !routesKnownToBackend.some((br) => br.test(vr.path))
+        vr.path !== '/' && !routesKnownToBackend.some((br) => br.test(vr.path)),
     );
     if (unknownRoutes.length > 0) {
       console.warn(
         `The routes ${JSON.stringify(
-          unknownRoutes.map((r) => r.path)
-        )} aren't known to the backend and may be not properly routed!`
+          unknownRoutes.map((r) => r.path),
+        )} aren't known to the backend and may be not properly routed!`,
       );
     }
 
@@ -126,7 +126,7 @@ export default class ViewRegistry {
     if (!viewConfig.isEnabled) {
       view.isEnabled = () => {
         const viewSettings = sbaConfig.uiSettings.viewSettings.find(
-          (vs) => vs.name === viewConfig.name
+          (vs) => vs.name === viewConfig.name,
         );
         return !viewSettings || viewSettings.enabled === true;
       };
@@ -149,7 +149,7 @@ export default class ViewRegistry {
   _toRoutes(filter: ViewFilterFunction) {
     return this._views.filter(filter).map((view) => {
       const children = this._toRoutes(
-        (childView) => childView.parent === view.name
+        (childView) => childView.parent === view.name,
       );
 
       return {

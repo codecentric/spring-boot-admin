@@ -117,7 +117,7 @@ export default {
       from(this.actionFn(this.currentScope))
         .pipe(
           listen((status) => (this.refreshStatus = status)),
-          finalize(() => this.resetRefreshState())
+          finalize(() => this.resetRefreshState()),
         )
         .subscribe();
     },

@@ -93,7 +93,7 @@ export default {
         return sortGlobalFilter(this.$data.$globalFilters);
       }
       const filtered = this.$data.$globalFilters.filter((globalFilter) =>
-        globalFilterHasKeyword(globalFilter, this.filterCriteria.toLowerCase())
+        globalFilterHasKeyword(globalFilter, this.filterCriteria.toLowerCase()),
       );
       return sortGlobalFilter(filtered);
     },
@@ -115,7 +115,7 @@ export default {
               objectId,
               order,
             };
-          }
+          },
         );
       } catch (error) {
         console.warn('Fetching global filters failed:', error);

@@ -77,7 +77,7 @@
       <sba-button
         @click="
           openLink(
-            'https://stackoverflow.com/questions/tagged/spring-boot-admin'
+            'https://stackoverflow.com/questions/tagged/spring-boot-admin',
           )
         "
       >

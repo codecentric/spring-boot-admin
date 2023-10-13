@@ -46,7 +46,7 @@ describe('InstanceLoggers', () => {
             },
           },
         },
-      })
+      }),
     );
 
     const cfg = await service.fetchLoggers();
@@ -131,7 +131,7 @@ describe('ApplicationLoggers', () => {
             },
           },
         ],
-      })
+      }),
     );
 
     const cfg = await service.fetchLoggers();

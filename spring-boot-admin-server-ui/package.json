@@ -13,8 +13,8 @@
     "build-storybook": "storybook build",
     "lint": "eslint --ext .js,.ts,.vue src/main/frontend",
     "lint:fix": "eslint --ext .js,.ts,.vue --fix src/main/frontend",
-    "format": "prettier src/main/frontend",
-    "format:fix": "prettier src/main/frontend --write"
+    "format": "prettier -c src/main/frontend",
+    "format:fix": "prettier -c src/main/frontend --write"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "6.4.2",
@@ -75,7 +75,7 @@
     "@testing-library/jest-dom": "6.1.4",
     "@testing-library/user-event": "14.5.1",
     "@testing-library/vue": "7.0.0",
-    "@trivago/prettier-plugin-sort-imports": "^4.0.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/lodash-es": "^4.17.7",
     "@types/testing-library__jest-dom": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",

@@ -132,7 +132,7 @@ export default {
           concatMap(this.fetchThreaddump),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(2));
-          })
+          }),
         )
         .subscribe({
           next: (threads) => {

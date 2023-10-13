@@ -38,7 +38,7 @@ describe('Jolokia', () => {
     await waitFor(async () => {
       expect(await screen.findByText('StringMapManagedBean')).toBeVisible();
       expect(
-        await screen.findByText('StringMapManagedBean.StringSetter')
+        await screen.findByText('StringMapManagedBean.StringSetter'),
       ).toBeVisible();
     });
   });

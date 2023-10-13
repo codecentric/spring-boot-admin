@@ -99,7 +99,7 @@ export default {
             .area()
             .x((d) => x(d.timestamp))
             .y0((d) => y(d.hit))
-            .y1((d) => y(d.total))
+            .y1((d) => y(d.total)),
         );
       miss.exit().remove();
 
@@ -115,7 +115,7 @@ export default {
             .area()
             .x((d) => x(d.timestamp))
             .y0(y(0))
-            .y1((d) => y(d.hit))
+            .y1((d) => y(d.hit)),
         );
       hit.exit().remove();
 
@@ -124,14 +124,14 @@ export default {
         d3
           .axisBottom(x)
           .ticks(5)
-          .tickFormat((d) => moment(d).format('HH:mm:ss'))
+          .tickFormat((d) => moment(d).format('HH:mm:ss')),
       );
 
       this.yAxis.call(
         d3
           .axisLeft(y)
           .ticks(5)
-          .tickFormat((d) => (d <= 1000 ? d : (d / 1000).toFixed(1) + 'K'))
+          .tickFormat((d) => (d <= 1000 ? d : (d / 1000).toFixed(1) + 'K')),
       );
     },
   },
