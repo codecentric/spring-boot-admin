@@ -51,6 +51,8 @@ public class SecurityPermitAllConfig {
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 				.ignoringRequestMatchers(
 						new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()),
+						new AntPathRequestMatcher(this.adminServer.path("/notifications/**"), POST.toString()),
+						new AntPathRequestMatcher(this.adminServer.path("/notifications/**"), DELETE.toString()),
 						new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()),
 						new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
 
