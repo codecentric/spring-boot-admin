@@ -13,90 +13,85 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import moment from 'moment';
-
 import sbaConfig from '@/sba-config';
 import axios from '@/utils/axios';
 import uri from '@/utils/uri';
+import Application from "@/services/application";
+import Instance from "@/services/instance";
+
+export type NotificationFilterProps = {
+    id: string,
+    applicationName: string,
+    instanceId: string,
+    expiry: string,
+    expired: boolean
+}
 
 class NotificationFilter {
-  private id: string;
-  private applicationName: string;
-  private instanceId: string;
-  private expiry: moment.Moment | null;
+    public readonly expired: boolean;
+    private readonly id: string;
+    private readonly applicationName: string;
+    private readonly instanceId: string;
 
-  constructor({ expiry, ...filter }) {
-    Object.assign(this, filter);
-    this.expiry = expiry ? moment(expiry) : null;
-  }
-
-  affects(obj) {
-    if (!obj) {
-      return false;
+    constructor({id, applicationName, instanceId, expiry, expired, ...filter}: NotificationFilterProps) {
+        Object.assign(this, filter);
+        this.id = id;
+        this.applicationName = applicationName;
+        this.instanceId = instanceId;
+        this.expired = expired;
     }
 
-    if (this.isApplicationFilter) {
-      return this.applicationName === obj.name;
+    static isSupported() {
+        return Boolean(sbaConfig.uiSettings.notificationFilterEnabled);
     }
 
-    if (this.isInstanceFilter) {
-      return this.instanceId === obj.id;
+    static async getFilters() {
+        return axios.get('notifications/filters', {
+            transformResponse: NotificationFilter._transformResponse,
+        });
     }
 
-    return false;
-  }
-
-  get isApplicationFilter() {
-    return this.applicationName != null;
-  }
-
-  get isInstanceFilter() {
-    return this.instanceId != null;
-  }
-
-  async delete() {
-    return axios.delete(uri`notifications/filters/${this.id}`);
-  }
-
-  static isSupported() {
-    return Boolean(sbaConfig.uiSettings.notificationFilterEnabled);
-  }
-
-  static async getFilters() {
-    return axios.get('notifications/filters', {
-      transformResponse: NotificationFilter._transformResponse,
-    });
-  }
-
-  static async addFilter(object, ttl) {
-    const params = { ttl };
-    if ('name' in object) {
-      params.applicationName = object.name;
-    } else if ('id' in object) {
-      params.instanceId = object.id;
+    static async addFilter(object: Instance | Application, ttl: number) {
+        const params = {ttl} as { ttl: number, applicationName?: string; instanceId?: string };
+        if (object instanceof Application) {
+            params.applicationName = object.name;
+        } else if ('id' in object) {
+            params.instanceId = object.id;
+        }
+        return axios.post('notifications/filters', null, {
+            params,
+            transformResponse: NotificationFilter._transformResponse,
+        });
     }
-    return axios.post('notifications/filters', null, {
-      params,
-      transformResponse: NotificationFilter._transformResponse,
-    });
-  }
 
-  static _transformResponse(data) {
-    if (!data) {
-      return data;
+    static _transformResponse(data: any) {
+        if (!data) {
+            return data;
+        }
+        const json = JSON.parse(data);
+        if (json instanceof Array) {
+            return json
+                .map((notificationFilter) => new NotificationFilter(notificationFilter))
+                .filter((f) => !f.expired);
+        }
+        return new NotificationFilter(json);
     }
-    const json = JSON.parse(data);
-    if (json instanceof Array) {
-      return json
-        .map(NotificationFilter._toNotificationFilters)
-        .filter((f) => !f.expired);
-    }
-    return NotificationFilter._toNotificationFilters(json);
-  }
 
-  static _toNotificationFilters(notificationFilter) {
-    return new NotificationFilter(notificationFilter);
-  }
+    affects(obj: Instance | Application) {
+        if (!obj) {
+            return false;
+        }
+
+        if (obj instanceof Application) {
+            return this.applicationName === obj.name;
+        }
+
+        return this.instanceId === obj.id;
+    }
+
+    async delete() {
+        return axios.delete(uri`notifications/filters/${this.id}`);
+    }
 }
 
 export default NotificationFilter;

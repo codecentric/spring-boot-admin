@@ -39,6 +39,7 @@ import views from './views';
 
 import eventBus from '@/services/bus';
 import sbaShell from '@/shell';
+import VueClickAwayPlugin from "vue3-click-away";
 
 const applicationStore = createApplicationStore();
 const viewRegistry = createViewRegistry();
@@ -128,6 +129,7 @@ const app = createApp({
 
 app.use(i18n);
 app.use(components);
+app.use(VueClickAwayPlugin);
 app.use(NotificationcenterPlugin, {
   duration: 10_000,
 });

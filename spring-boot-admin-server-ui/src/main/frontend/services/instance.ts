@@ -433,6 +433,13 @@ type Registration = {
 }
 
 type StatusInfo = {
-    status: string
+    status: Status
     details: { [key: string]: string }
 }
+
+export type Status = "UNKNOWN" |
+    "OUT_OF_SERVICE" |
+    "UP" |
+    "DOWN" |
+    "OFFLINE" |
+    "RESTRICTED";

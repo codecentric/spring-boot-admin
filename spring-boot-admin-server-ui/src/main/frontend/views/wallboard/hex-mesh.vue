@@ -17,34 +17,29 @@
 <template>
   <div ref="root" v-on-resize="onResize" class="hex-mesh">
     <svg
-      :height="meshHeight"
-      :width="meshWidth"
-      xmlns="http://www.w3.org/2000/svg"
+        :height="meshHeight"
+        :width="meshWidth"
+        xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <clipPath id="hex-clip">
-          <polygon :points="hexPath" />
-        </clipPath>
-      </defs>
       <template v-for="row in rows">
         <g
-          v-for="col in cols + (row % 2 ? 0 : -1)"
-          :key="`${col}-${row}`"
-          :class="classForItem(item(col, row))"
-          :transform="translate(col, row)"
-          class="hex"
-          @click="click($event, col, row)"
+            v-for="col in cols + (row % 2 ? 0 : -1)"
+            :key="`${col}-${row}`"
+            :class="classForItem(item(col, row))"
+            :transform="translate(col, row)"
+            class="hex"
+            @click="click($event, col, row)"
         >
-          <polygon :points="hexPath" />
+          <polygon :points="hexPath"/>
           <foreignObject
-            v-if="item(col, row)"
-            :height="hexHeight"
-            :width="hexWidth"
-            style="pointer-events: none"
-            x="0"
-            y="0"
+              v-if="item(col, row)"
+              :height="hexHeight"
+              :width="hexWidth"
+              style="pointer-events: none"
+              x="0"
+              y="0"
           >
-            <slot :item="item(col, row)" name="item" />
+            <slot :item="item(col, row)" name="item"/>
           </foreignObject>
         </g>
       </template>
@@ -52,27 +47,28 @@
   </div>
 </template>
 
-<script>
-import { ref } from 'vue';
+<script lang="ts">
+import {PropType, ref} from 'vue';
 
 import onResize from '@/directives/on-resize';
-import { calcLayout } from '@/views/wallboard/utils';
+import {calcLayout} from '@/views/wallboard/utils';
+import {InstancesListItem} from "@/services/instanceGroupService";
 
 export default {
-  directives: { onResize },
+  directives: {onResize},
   props: {
     items: {
-      type: Array,
+      type: Object as PropType<InstancesListItem[]>,
       default: () => [],
     },
     classForItem: {
-      type: Function,
-      default: () => void 0,
+      type: Object as PropType<Function>,
+      default: () => () => void 0,
     },
   },
   emits: ['click'],
   setup() {
-    const root = ref(null);
+    const root = ref<HTMLElement | null>(null);
 
     return {
       root,
@@ -89,7 +85,7 @@ export default {
     },
     hexPath() {
       return `${this.point(0)} ${this.point(1)} ${this.point(2)} ${this.point(
-        3
+          3
       )} ${this.point(4)} ${this.point(5)}`;
     },
     hexHeight() {
@@ -107,7 +103,9 @@ export default {
   },
   watch: {
     sideLength(newVal) {
-      this.root.style['font-size'] = `${newVal / 9.5}px`;
+      if (this.root) {
+        this.root.style.fontSize = `${newVal / 9.5}px`;
+      }
     },
     itemCount: {
       handler: 'updateLayout',
@@ -115,26 +113,26 @@ export default {
     },
   },
   methods: {
-    translate(col, row) {
+    translate(col: number, row: number) {
       const x = (col - 1) * this.hexWidth + (row % 2 ? 0 : this.hexWidth / 2);
       const y = (row - 1) * this.sideLength * 1.5;
       return `translate(${x},${y})`;
     },
-    item(col, row) {
+    item(col: number, row: number): InstancesListItem {
       const rowOffset =
-        (row - 1) * this.cols - Math.max(Math.floor((row - 1) / 2), 0);
+          (row - 1) * this.cols - Math.max(Math.floor((row - 1) / 2), 0);
       const index = rowOffset + col - 1;
       return this.items[index];
     },
-    point(i) {
+    point(i: number): string {
       const innerSideLength = this.sideLength * 0.95;
       const marginTop = this.hexHeight / 2;
       const marginLeft = this.hexWidth / 2;
       return `${
-        marginLeft + innerSideLength * Math.cos(((1 + i * 2) * Math.PI) / 6)
+          marginLeft + innerSideLength * Math.cos(((1 + i * 2) * Math.PI) / 6)
       },${marginTop + innerSideLength * Math.sin(((1 + i * 2) * Math.PI) / 6)}`;
     },
-    click(event, col, row) {
+    click(event: MouseEvent, col: number, row: number) {
       const item = this.item(col, row);
       if (item) {
         this.$emit('click', item, event);
@@ -144,18 +142,18 @@ export default {
       if (this.root) {
         const boundingClientRect = this.root.getBoundingClientRect();
         const layout = calcLayout(
-          this.itemCount,
-          boundingClientRect.width,
-          boundingClientRect.height
+            this.itemCount,
+            boundingClientRect.width,
+            boundingClientRect.height
         );
         this.cols = layout.cols;
         this.rows = layout.rows;
         this.sideLength = layout.sideLength;
       }
     },
-    onResize(entries) {
+    onResize(entries: Event[]) {
       for (let e of entries) {
-        if (e.target === this.root) {
+        if (e.target as HTMLElement === this.root) {
           this.updateLayout();
         }
       }

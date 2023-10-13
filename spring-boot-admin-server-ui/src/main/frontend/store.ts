@@ -144,7 +144,7 @@ export default class ApplicationStore {
     }
   }
 
-  findApplicationByInstanceId(instanceId: string) {
+  findApplicationByInstanceId(instanceId: string): Application | undefined {
     return findApplicationForInstance(this.applications, instanceId);
   }
 }

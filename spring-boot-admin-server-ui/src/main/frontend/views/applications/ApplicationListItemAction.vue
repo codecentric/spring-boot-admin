@@ -52,6 +52,7 @@ import {ActionHandler, ApplicationActionHandler, InstanceActionHandler} from "@/
 import {useI18n} from "vue-i18n";
 import {useNotificationCenter} from "@stekoe/vue-toast-notificationcenter";
 import {inject} from "@vue/runtime-core";
+import {PropType} from "vue";
 
 const $sbaModal = inject('$sbaModal');
 const {t} = useI18n();
@@ -59,7 +60,7 @@ const notificationCenter = useNotificationCenter({});
 
 const props = defineProps({
   item: {
-    type: [Application, Instance],
+    type: Object as PropType<Application | Instance>,
     required: true,
   },
   hasActiveNotificationFilter: {
@@ -80,7 +81,7 @@ if (props.item instanceof Application) {
     name: 'journal',
     query: {application: props.item.name},
   };
-} else if(props.item instanceof Instance) {
+} else if (props.item instanceof Instance) {
   actionHandler = new InstanceActionHandler($sbaModal, t, notificationCenter);
   journalLink = {name: 'journal', query: {instanceId: props.item.id}};
 }
