@@ -54,7 +54,6 @@ export default defineConfig(({ mode }) => {
     root: frontendDir,
     build: {
       target: 'es2020',
-      sourcemap: true,
       outDir,
       rollupOptions: {
         input: {

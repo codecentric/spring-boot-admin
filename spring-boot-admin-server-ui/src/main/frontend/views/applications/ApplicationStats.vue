@@ -40,7 +40,7 @@ const instancesCount = computed({
   get() {
     return applications.value.reduce(
       (current, next) => current + next.instances.length,
-      0
+      0,
     );
   },
 });

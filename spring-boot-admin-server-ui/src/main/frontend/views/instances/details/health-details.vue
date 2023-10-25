@@ -19,10 +19,16 @@
     class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
     :class="{ 'bg-white': index % 2 === 0, 'bg-gray-50': index % 2 !== 0 }"
   >
-    <dt class="text-sm font-medium text-gray-500" :id="'health-detail__' + name">
+    <dt
+      :id="'health-detail__' + name"
+      class="text-sm font-medium text-gray-500"
+    >
       {{ name }}
     </dt>
-    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2" :aria-labelledby="'health-detail__' + name">
+    <dd
+      class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+      :aria-labelledby="'health-detail__' + name"
+    >
       <sba-status-badge :status="health.status" />
 
       <dl v-if="details && details.length > 0" class="grid grid-cols-2 mt-2">
@@ -42,7 +48,11 @@
               v-text="toJson(detail.value)"
             />
           </dd>
-          <dd v-else class="break-words whitespace-pre-wrap" v-text="detail.value" />
+          <dd
+            v-else
+            class="break-words whitespace-pre-wrap"
+            v-text="detail.value"
+          />
         </template>
       </dl>
     </dd>

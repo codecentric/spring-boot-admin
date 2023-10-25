@@ -36,11 +36,11 @@ export const StartupActuatorService = {
       .map((event) => {
         event.startupStep.parent = this.getById(
           events,
-          event.startupStep.parentId
+          event.startupStep.parentId,
         );
         event.startupStep.children = this.getByParentId(
           events,
-          event.startupStep.id
+          event.startupStep.id,
         );
 
         event.startupStep.tags = event.startupStep.tags.map(this.parseTag);

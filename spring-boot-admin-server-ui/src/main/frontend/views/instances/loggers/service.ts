@@ -54,7 +54,7 @@ export class ApplicationLoggers {
     try {
       const responses = (await this.application.fetchLoggers()).responses;
       const successful = responses.filter(
-        (r) => r.body && r.status >= 200 && r.status < 299
+        (r) => r.body && r.status >= 200 && r.status < 299,
       );
 
       errors = responses
@@ -66,10 +66,10 @@ export class ApplicationLoggers {
       loggers = Object.entries(
         groupBy(
           flatMap(successful, (r) =>
-            convertLoggers(r.body.loggers, r.instanceId)
+            convertLoggers(r.body.loggers, r.instanceId),
           ),
-          (l) => l.name
-        )
+          (l) => l.name,
+        ),
       ).map(([name, configs]) => ({
         name,
         level: flatMap(configs, (c) => c.level),

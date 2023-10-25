@@ -109,7 +109,7 @@ import { concatMap, delay, from, retryWhen, timer } from '@/utils/rxjs';
 const formatDuration = (value, baseUnit) => {
   const duration = moment.duration(toMillis(value, baseUnit));
   return `${Math.floor(
-    duration.asDays()
+    duration.asDays(),
   )}d ${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s`;
 };
 
@@ -236,7 +236,7 @@ export default {
       return timer(0, 2500)
         .pipe(
           concatMap(this.fetchAllTags),
-          retryWhen((err) => err.pipe(delay(1000), take(2)))
+          retryWhen((err) => err.pipe(delay(1000), take(2))),
         )
         .subscribe();
     },

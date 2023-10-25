@@ -104,7 +104,7 @@ export default {
         return sortRoutes(this.$data.$routes);
       }
       const filtered = this.$data.$routes.filter((route) =>
-        routeMatches(route, this.routesFilterCriteria.toLowerCase())
+        routeMatches(route, this.routesFilterCriteria.toLowerCase()),
       );
       return sortRoutes(filtered);
     },

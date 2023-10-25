@@ -184,7 +184,7 @@ export default {
     };
 
     this.chart = shallowRef(
-      new Chart(this.$refs.chart, merge(config, this.config))
+      new Chart(this.$refs.chart, merge(config, this.config)),
     );
   },
   beforeUnmount() {

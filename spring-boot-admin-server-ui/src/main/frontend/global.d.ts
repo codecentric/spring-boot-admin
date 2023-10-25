@@ -8,6 +8,7 @@ declare global {
   type ApplicationStream = {
     data: any;
   } & MessageEvent;
+
   interface Window {
     SBA: SBASettings;
   }

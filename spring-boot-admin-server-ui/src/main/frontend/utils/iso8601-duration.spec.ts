@@ -37,6 +37,6 @@ describe('iso8601-duration', () => {
       const milliseconds = toMilliseconds(duration);
 
       expect(milliseconds).toBeCloseTo(expected);
-    }
+    },
   );
 });

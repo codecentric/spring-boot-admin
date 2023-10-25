@@ -141,7 +141,7 @@ export default {
         .filter(
           (bucket) =>
             bucket.timeStart.valueOf() >= selection[0] &&
-            bucket.timeStart.valueOf() < selection[1]
+            bucket.timeStart.valueOf() < selection[1],
         )
         .reduce(
           (current, next) => ({
@@ -161,7 +161,7 @@ export default {
             totalServerErrors: 0,
             totalTime: 0,
             maxTime: 0,
-          }
+          },
         );
       return {
         ...totals,
@@ -260,7 +260,7 @@ export default {
         .merge(d)
         .attr(
           'class',
-          (d) => `exchange-chart__area exchange-chart__area--${d.key}`
+          (d) => `exchange-chart__area exchange-chart__area--${d.key}`,
         )
         .attr('d', area);
 
@@ -271,7 +271,7 @@ export default {
         d3
           .axisBottom(x)
           .ticks(10)
-          .tickFormat((d) => moment(d).format('HH:mm:ss'))
+          .tickFormat((d) => moment(d).format('HH:mm:ss')),
       );
 
       this.yAxis
@@ -281,17 +281,17 @@ export default {
             .ticks(
               Math.min(
                 5,
-                d3.max(data, (d) => d.totalCount)
-              )
+                d3.max(data, (d) => d.totalCount),
+              ),
             )
-            .tickSize(this.width)
+            .tickSize(this.width),
         )
         .call((axis) =>
           axis
             .selectAll('.tick text')
             .attr('x', -2)
             .attr('dy', 2)
-            .attr('text-anchor', 'end')
+            .attr('text-anchor', 'end'),
         );
 
       //draw brush selection
@@ -336,7 +336,7 @@ export default {
           }
           const mouseX = d3.pointer(
             event,
-            this.brushGroup.select('.overlay').node()
+            this.brushGroup.select('.overlay').node(),
           )[0];
           this.hovered = Math.floor(x.invert(mouseX) / interval) * interval;
         })
@@ -346,7 +346,7 @@ export default {
 
       brush.move(
         this.brushGroup,
-        this.brushSelection ? this.brushSelection.map(x) : null
+        this.brushSelection ? this.brushSelection.map(x) : null,
       );
     },
   },

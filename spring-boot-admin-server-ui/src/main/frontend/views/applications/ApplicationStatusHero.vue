@@ -49,7 +49,6 @@ const options = {
 };
 
 export default {
-  name: 'ApplicationStatusHero',
   setup() {
     const { applications } = useApplicationStore();
     return { applications };
@@ -66,7 +65,7 @@ export default {
         return (
           current +
           next.instances.filter(
-            (instance) => instance.statusInfo.status !== 'UP'
+            (instance) => instance.statusInfo.status !== 'UP',
           ).length
         );
       }, 0);
@@ -77,7 +76,7 @@ export default {
     instancesCount() {
       return this.applications.reduce(
         (current, next) => current + next.instances.length,
-        0
+        0,
       );
     },
   },

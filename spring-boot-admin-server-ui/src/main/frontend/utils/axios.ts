@@ -28,7 +28,9 @@ export const redirectOn401 =
   (error) => {
     if (error.response && error.response.status === 401 && predicate(error)) {
       window.location.assign(
-        `login?redirectTo=${encodeURIComponent(window.location.href)}&error=401`
+        `login?redirectTo=${encodeURIComponent(
+          window.location.href,
+        )}&error=401`,
       );
     }
     return Promise.reject(error);
@@ -55,7 +57,7 @@ export const registerErrorToastInterceptor = (axios) => {
           title: `Error ${data.status}`,
           duration: 10000,
         });
-      }
+      },
     );
   }
 };

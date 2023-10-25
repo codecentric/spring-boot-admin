@@ -84,7 +84,7 @@ export default {
         this.domain,
         this.mBean.descriptor.raw,
         this.invocation.name,
-        args
+        args,
       );
     },
   },

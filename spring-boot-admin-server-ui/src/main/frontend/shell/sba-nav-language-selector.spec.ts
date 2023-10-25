@@ -77,6 +77,6 @@ describe('NavbarItemLanguageSelector', () => {
       });
 
       await userEvent.click(await screen.findByText(expected));
-    }
+    },
   );
 });

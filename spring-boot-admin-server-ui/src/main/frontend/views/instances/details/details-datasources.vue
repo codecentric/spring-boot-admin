@@ -49,7 +49,7 @@ export default {
   methods: {
     async fetchDataSources() {
       const response = await this.instance.fetchMetric(
-        'data.source.active.connections'
+        'data.source.active.connections',
       );
       return response.data.availableTags.filter((tag) => tag.tag === 'name')[0]
         .values;
@@ -60,7 +60,7 @@ export default {
           concatMap(this.fetchDataSources),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
-          })
+          }),
         )
         .subscribe({
           next: (names) => {

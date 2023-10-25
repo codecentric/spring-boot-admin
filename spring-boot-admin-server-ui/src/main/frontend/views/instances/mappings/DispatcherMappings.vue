@@ -44,7 +44,7 @@
                       'consumes',
                       'produces',
                       'params',
-                      'headers'
+                      'headers',
                     )
                   "
                 >
@@ -84,7 +84,7 @@
                   class="font-mono is-breakable"
                   v-text="
                     mediaTypePredicates(
-                      mapping.details.requestMappingConditions.consumes
+                      mapping.details.requestMappingConditions.consumes,
                     )
                   "
                 />
@@ -101,7 +101,7 @@
                   class="font-mono is-breakable"
                   v-text="
                     mediaTypePredicates(
-                      mapping.details.requestMappingConditions.produces
+                      mapping.details.requestMappingConditions.produces,
                     )
                   "
                 />
@@ -118,7 +118,7 @@
                   class="font-mono is-breakable"
                   v-text="
                     paramPredicates(
-                      mapping.details.requestMappingConditions.params
+                      mapping.details.requestMappingConditions.params,
                     )
                   "
                 />
@@ -135,7 +135,7 @@
                   class="font-mono is-breakable"
                   v-text="
                     paramPredicates(
-                      mapping.details.requestMappingConditions.headers
+                      mapping.details.requestMappingConditions.headers,
                     )
                   "
                 />

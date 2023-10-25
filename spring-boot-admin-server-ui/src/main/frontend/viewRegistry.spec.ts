@@ -28,7 +28,7 @@ describe('viewRegistry', () => {
         { name: 'view', group: 'group', path: '' },
         { name: 'duplicateView', group: 'group' },
         { name: 'duplicateView', group: 'group' },
-      ]
+      ],
     );
 
     expect(viewRegistry.views).toHaveLength(2);
@@ -44,13 +44,13 @@ describe('viewRegistry', () => {
       expect.objectContaining({
         path: '/',
         redirect: { name: 'asString' },
-      })
+      }),
     );
     expect(viewRegistry.routes).toContainEqual(
       expect.objectContaining({
         path: '/',
         redirect: { name: 'asObject' },
-      })
+      }),
     );
   });
 
@@ -66,7 +66,7 @@ describe('viewRegistry', () => {
         { name: 'disabledView', group: 'group' },
         { name: 'explicitlyEnabledView', group: 'group' },
         { name: 'implicitlyEnabledView', group: 'group' },
-      ]
+      ],
     );
 
     const disabledView = viewRegistry.getViewByName('disabledView');
@@ -74,13 +74,13 @@ describe('viewRegistry', () => {
     expect(disabledView.isEnabled()).toBeFalsy();
 
     const implicitlyEnabledView = viewRegistry.getViewByName(
-      'implicitlyEnabledView'
+      'implicitlyEnabledView',
     );
     expect(implicitlyEnabledView).toBeDefined();
     expect(implicitlyEnabledView.isEnabled()).toBeTruthy();
 
     const explicitlyEnabledView = viewRegistry.getViewByName(
-      'explicitlyEnabledView'
+      'explicitlyEnabledView',
     );
     expect(explicitlyEnabledView).toBeDefined();
     expect(explicitlyEnabledView.isEnabled()).toBeTruthy();
@@ -96,14 +96,14 @@ describe('viewRegistry', () => {
   it('derives name from parent and path', () => {
     const viewRegistry = new ViewRegistry();
     viewRegistry.addView(
-      ...[{ path: 'parent' }, { parent: 'parent', path: 'path' }]
+      ...[{ path: 'parent' }, { parent: 'parent', path: 'path' }],
     );
 
     expect(viewRegistry.views).toContainEqual(
-      expect.objectContaining({ name: 'parent' })
+      expect.objectContaining({ name: 'parent' }),
     );
     expect(viewRegistry.views).toContainEqual(
-      expect.objectContaining({ name: 'parent/path' })
+      expect.objectContaining({ name: 'parent/path' }),
     );
   });
 
@@ -113,18 +113,18 @@ describe('viewRegistry', () => {
       ...[
         { path: 'parent', component: {} },
         { parent: 'parent', path: 'path', component: {} },
-      ]
+      ],
     );
 
     expect(viewRegistry.routes).toContainEqual(
       expect.objectContaining({
         name: 'parent',
-      })
+      }),
     );
     expect(viewRegistry.routes[0].children).toContainEqual(
       expect.objectContaining({
         name: 'parent/path',
-      })
+      }),
     );
   });
 });

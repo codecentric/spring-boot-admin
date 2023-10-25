@@ -23,9 +23,16 @@
       class="rounded-t flex justify-between px-4 pt-5 pb-5 border-b sm:px-6 items-center bg-white transition-all"
     >
       <h3 class="text-lg leading-6 font-medium text-gray-900">
-        <span v-text="title" />&nbsp;
-        <span v-if="subtitle" class="text-sm text-gray-500" v-text="subtitle" />
-        <slot v-if="'title' in $slots" name="title" />
+        <button class="flex items-center" @click="$emit('title-click')">
+          <slot v-if="'prefix' in $slots" name="prefix" />
+          <span v-text="title" />
+          <span
+            v-if="subtitle"
+            class="ml-2 text-sm text-gray-500 self-end"
+            v-text="subtitle"
+          />
+          <slot v-if="'title' in $slots" name="title" />
+        </button>
       </h3>
 
       <div>
@@ -95,7 +102,7 @@ export default {
       default: false,
     },
   },
-  emits: ['close'],
+  emits: ['close', 'title-click'],
   data() {
     return {
       headerTopValue: 0,
@@ -112,7 +119,7 @@ export default {
       const header = this.$refs.header;
       this.headerTopValue = +header.style.top.substr(
         0,
-        header.style.top.length - 2
+        header.style.top.length - 2,
       );
 
       this.onScrollFn = throttle(this.onScroll, 150);

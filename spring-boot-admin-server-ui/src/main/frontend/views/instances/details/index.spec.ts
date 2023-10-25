@@ -18,7 +18,7 @@ describe('InstanceDetails', () => {
       server.use(
         rest.get('/instances/:instanceId/actuator/metrics', (req, res, ctx) => {
           return res(ctx.status(404), ctx.json({}));
-        })
+        }),
       );
 
       render(DetailsView, {
@@ -30,7 +30,7 @@ describe('InstanceDetails', () => {
 
       await waitFor(async () => {
         expect(
-          await screen.queryByTestId('instance-section-loading-spinner')
+          await screen.queryByTestId('instance-section-loading-spinner'),
         ).not.toBeInTheDocument();
       });
     });
@@ -52,7 +52,7 @@ describe('InstanceDetails', () => {
 
       await waitFor(async () => {
         expect(
-          await screen.queryByTestId('instance-section-loading-spinner')
+          await screen.queryByTestId('instance-section-loading-spinner'),
         ).not.toBeInTheDocument();
       });
     });

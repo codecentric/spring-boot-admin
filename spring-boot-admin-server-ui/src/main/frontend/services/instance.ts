@@ -35,10 +35,14 @@ const isInstanceActuatorRequest = (url: string) =>
   url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
 
 class Instance {
-  private readonly id: string;
+  public readonly id: string;
+  public registration: Registration;
+  public endpoints: any[];
+  public tags: { [key: string]: string }[];
+  public statusTimestamp: string;
+  public buildVersion: string;
+  public statusInfo: StatusInfo;
   private readonly axios: AxiosInstance;
-  private registration: any;
-  private endpoints: any[];
 
   constructor({ id, ...instance }) {
     Object.assign(this, instance);
@@ -52,8 +56,8 @@ class Instance {
       (response) => response,
       redirectOn401(
         (error) =>
-          !isInstanceActuatorRequest(error.config.baseURL + error.config.url)
-      )
+          !isInstanceActuatorRequest(error.config.baseURL + error.config.url),
+      ),
     );
     registerErrorToastInterceptor(this.axios);
   }
@@ -82,7 +86,7 @@ class Instance {
         return () => {
           eventSource.close();
         };
-      })
+      }),
     );
   }
 
@@ -164,7 +168,9 @@ class Instance {
   }
 
   async fetchHealthGroup(groupName: string) {
-    return await this.axios.get(uri`actuator/health/${groupName}`, { validateStatus: null });
+    return await this.axios.get(uri`actuator/health/${groupName}`, {
+      validateStatus: null,
+    });
   }
 
   async fetchEnv(name) {
@@ -192,7 +198,7 @@ class Instance {
       { name, value },
       {
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
   }
 
@@ -258,7 +264,7 @@ class Instance {
       level === null ? {} : { configuredLevel: level },
       {
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
   }
 
@@ -327,7 +333,7 @@ class Instance {
   streamLogfile(interval) {
     return logtail(
       (opt) => this.axios.get(uri`actuator/logfile`, opt),
-      interval
+      interval,
     );
   }
 
@@ -421,3 +427,17 @@ class Instance {
 }
 
 export default Instance;
+
+type Registration = {
+  name: string;
+  managementUrl?: string;
+  healthUrl: string;
+  serviceUrl?: string;
+  source: string;
+  metadata?: { [key: string]: string }[];
+};
+
+type StatusInfo = {
+  status: string;
+  details: { [key: string]: string };
+};

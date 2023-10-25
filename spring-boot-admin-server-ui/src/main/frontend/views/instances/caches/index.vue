@@ -94,7 +94,7 @@ const flattenCaches = (cacheData) => {
         cacheManager: cacheManagerName,
         name: cacheName,
         key: `${cacheManagerName}:${cacheName}`,
-      }))
+      })),
   );
   return mappend.sort((c1, c2) => c1.key.localeCompare(c2.key));
 };

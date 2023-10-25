@@ -45,7 +45,7 @@ const notifyForSingleChange = (application, oldApplication) => {
           : sbaConfig.uiSettings.faviconDanger,
       renotify: true,
       timeout: 5000,
-    }
+    },
   );
 };
 
@@ -85,14 +85,14 @@ export default {
     queue
       .pipe(
         bufferTime(1000),
-        filter((n) => n.length > 0)
+        filter((n) => n.length > 0),
       )
       .subscribe({
         next: (events) => {
           const groupedByChange = groupBy(
             events,
             (event) =>
-              `${event.oldApplication.status}-${event.application.status}`
+              `${event.oldApplication.status}-${event.application.status}`,
           );
           for (const eventsPerChange of values(groupedByChange)) {
             if (eventsPerChange.length <= 5) {
@@ -116,7 +116,7 @@ export default {
         if (application.status !== oldApplication.status) {
           queue.next({ application, oldApplication });
         }
-      }
+      },
     );
   },
 };

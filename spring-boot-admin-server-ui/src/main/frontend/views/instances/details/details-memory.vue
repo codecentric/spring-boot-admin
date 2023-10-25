@@ -101,7 +101,7 @@ export default {
         area: this.type,
       });
       const hasMetaspace = (await responseUsed).data.availableTags.some(
-        (tag) => tag.tag === 'id' && tag.values.includes('Metaspace')
+        (tag) => tag.tag === 'id' && tag.values.includes('Metaspace'),
       );
       const responeMetaspace =
         this.type === 'nonheap' && hasMetaspace
@@ -112,7 +112,7 @@ export default {
           : null;
       const responseCommitted = this.instance.fetchMetric(
         'jvm.memory.committed',
-        { area: this.type }
+        { area: this.type },
       );
       return {
         max: (await responseMax).data.measurements[0].value,
@@ -129,7 +129,7 @@ export default {
           concatMap(this.fetchMetrics),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
-          })
+          }),
         )
         .subscribe({
           next: (data) => {

@@ -120,7 +120,7 @@ export default {
     expandTree() {
       if (!this.isExpanded) {
         this.expandedNodes = new Set(
-          this.eventTree.getEvents().map((e) => e.startupStep.id)
+          this.eventTree.getEvents().map((e) => e.startupStep.id),
         );
         this.isExpanded = true;
       } else {
@@ -152,7 +152,7 @@ export default {
     loadTreeState() {
       if (window.localStorage) {
         let value = localStorage.getItem(
-          `applications/${this.instance.registration.name}/startup`
+          `applications/${this.instance.registration.name}/startup`,
         );
         if (value) {
           let parse = JSON.parse(value);
@@ -166,7 +166,7 @@ export default {
           `applications/${this.instance.registration.name}/startup`,
           JSON.stringify({
             expandedNodes: [...$event.expandedNodes],
-          })
+          }),
         );
       }
     },

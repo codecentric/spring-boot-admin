@@ -22,14 +22,14 @@
       v-if="item.isUnregisterable"
       class="btn-unregister"
       :title="$t('applications.actions.unregister')"
-      @click.stop="$emit('unregister', item)"
+      @click.stop="actionHandler.unregister(item)"
     >
       <font-awesome-icon :icon="'trash'" />
     </sba-button>
     <sba-button
       v-if="item.hasEndpoint('restart')"
       :title="$t('applications.actions.restart')"
-      @click.stop="$emit('restart', item)"
+      @click.stop="actionHandler.restart(item)"
     >
       <font-awesome-icon icon="undo-alt" />
     </sba-button>
@@ -37,52 +37,64 @@
       v-if="item.hasEndpoint('shutdown')"
       :title="$t('applications.actions.shutdown')"
       class="is-danger btn-shutdown"
-      @click.stop="$emit('shutdown', item)"
+      @click.stop="actionHandler.shutdown(item)"
     >
       <font-awesome-icon :icon="['fa', 'power-off']" />
     </sba-button>
   </sba-button-group>
 </template>
-<script>
+
+<script lang="ts" setup>
+import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
+import { inject } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { RouteLocationNamedRaw } from 'vue-router';
+
 import Application from '@/services/application';
 import Instance from '@/services/instance';
+import {
+  ActionHandler,
+  ApplicationActionHandler,
+  InstanceActionHandler,
+} from '@/views/applications/ActionHandler';
 
-export default {
-  name: 'ApplicationListItemActions',
-  props: {
-    item: {
-      type: [Application, Instance],
-      required: true,
-    },
-    hasActiveNotificationFilter: {
-      type: Boolean,
-      default: false,
-    },
-    hasNotificationFiltersSupport: {
-      type: Boolean,
-      default: false,
-    },
+const $sbaModal = inject('$sbaModal');
+const { t } = useI18n();
+const notificationCenter = useNotificationCenter({});
+
+const props = defineProps({
+  item: {
+    type: [Application, Instance],
+    required: true,
   },
-  emits: ['filter-settings', 'unregister', 'shutdown', 'restart'],
-  setup(props) {
-    let isApplication = props.item instanceof Application;
-
-    let journalLink;
-    if (isApplication) {
-      journalLink = {
-        name: 'journal',
-        query: { application: props.item.name },
-      };
-    } else {
-      journalLink = { name: 'journal', query: { instanceId: props.item.id } };
-    }
-
-    return {
-      journalLink,
-      isApplication,
-    };
+  hasActiveNotificationFilter: {
+    type: Boolean,
+    default: false,
   },
-};
+  hasNotificationFiltersSupport: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+defineEmits(['filter-settings']);
+
+let journalLink: RouteLocationNamedRaw;
+let actionHandler: ActionHandler;
+if (props.item instanceof Application) {
+  actionHandler = new ApplicationActionHandler(
+    $sbaModal,
+    t,
+    notificationCenter,
+  );
+  journalLink = {
+    name: 'journal',
+    query: { application: props.item.name },
+  };
+} else if (props.item instanceof Instance) {
+  actionHandler = new InstanceActionHandler($sbaModal, t, notificationCenter);
+  journalLink = { name: 'journal', query: { instanceId: props.item.id } };
+}
 </script>
 
 <style scoped>

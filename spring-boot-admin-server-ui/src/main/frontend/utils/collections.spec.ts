@@ -69,7 +69,7 @@ describe('anyValueMatches', () => {
     const predicate = vi.fn();
     anyValueMatches(
       ['test', 1, true, { value: 'nested-obj' }, ['nested-array'], [], {}],
-      predicate
+      predicate,
     );
     expect(predicate).toHaveBeenNthCalledWith(1, 'test');
     expect(predicate).toHaveBeenNthCalledWith(2, 1);
