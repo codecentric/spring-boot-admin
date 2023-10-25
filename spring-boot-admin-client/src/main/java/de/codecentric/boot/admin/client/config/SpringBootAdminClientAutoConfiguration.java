@@ -169,8 +169,10 @@ public class SpringBootAdminClientAutoConfiguration {
 				webClient = webClient.filter(basicAuthentication(client.getUsername(), client.getPassword()));
 			}
 			HttpClient httpClient = HttpClient.create()
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, Long.valueOf(client.getConnectTimeout().toMillis()).intValue())
-				.doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(client.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)));
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
+						Long.valueOf(client.getConnectTimeout().toMillis()).intValue())
+				.doOnConnected(conn -> conn
+					.addHandlerLast(new ReadTimeoutHandler(client.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)));
 			webClient.clientConnector(new ReactorClientHttpConnector(httpClient));
 			return new ReactiveRegistrationClient(webClient.build(), client.getReadTimeout());
 		}

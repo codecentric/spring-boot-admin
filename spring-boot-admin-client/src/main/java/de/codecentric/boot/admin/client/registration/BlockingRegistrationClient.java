@@ -42,10 +42,8 @@ public class BlockingRegistrationClient implements RegistrationClient {
 	@Override
 	public Optional<String> register(String adminUrl, Application application) {
 		ResponseEntity<Map<String, Object>> response = this.restTemplate.exchange(adminUrl, HttpMethod.POST,
-			new HttpEntity<>(application, this.createRequestHeaders()), RESPONSE_TYPE);
-		return Optional.ofNullable(response.getBody())
-			.map(body -> body.get("id"))
-			.map(Object::toString);
+				new HttpEntity<>(application, this.createRequestHeaders()), RESPONSE_TYPE);
+		return Optional.ofNullable(response.getBody()).map(body -> body.get("id")).map(Object::toString);
 	}
 
 	@Override

@@ -72,7 +72,8 @@ public class DefaultApplicationRegistratorTest {
 
 		when(this.registrationClient.register("http://sba:8080/instances", this.application))
 			.thenThrow(new RestClientException("Error"));
-		when(this.registrationClient.register("http://sba2:8080/instances", this.application)).thenReturn(Optional.of("-id-"));
+		when(this.registrationClient.register("http://sba2:8080/instances", this.application))
+			.thenReturn(Optional.of("-id-"));
 
 		assertThat(registrator.register()).isTrue();
 		assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
