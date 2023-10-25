@@ -18,14 +18,14 @@ import { h } from 'vue';
 import sbaConfig from '@/sba-config';
 import ViewRegistry from '@/viewRegistry';
 
-const addIframeView = (
+export const addIframeView = (
   viewRegistry: ViewRegistry,
   { url, label, order }: Omit<ExternalView, 'children'>,
 ) => {
   const urlWithoutScheme = url.replace(/^https?:[/][/]/, '');
   viewRegistry.addView({
-    name: `external/${urlWithoutScheme}`,
-    path: `/external/${urlWithoutScheme.replace(/[^a-zA-Z]+/g, '-')}`,
+    name: `external/${label}`,
+    path: `/external/${encodeURIComponent(urlWithoutScheme)}`,
     label,
     order,
     component: {
