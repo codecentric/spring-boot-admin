@@ -105,7 +105,7 @@
     "vite-plugin-static-copy": "0.17.0",
     "vitest": "0.34.6",
     "vue-eslint-parser": "^9.1.0",
-    "vue-loader": "17.3.0"
+    "vue-loader": "17.3.1"
   },
   "browserslist": [
     "> 1%",
