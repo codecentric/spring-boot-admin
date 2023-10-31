@@ -15,16 +15,17 @@
  */
 import { h } from 'vue';
 
-import './style.css';
-
 import sbaConfig from '@/sba-config';
 import ViewRegistry from '@/viewRegistry';
 
-const addIframeView = (viewRegistry: ViewRegistry, { url, label, order }) => {
+export const addIframeView = (
+  viewRegistry: ViewRegistry,
+  { url, label, order }: Omit<ExternalView, 'children'>,
+) => {
   const urlWithoutScheme = url.replace(/^https?:[/][/]/, '');
   viewRegistry.addView({
-    name: `external/${urlWithoutScheme}`,
-    path: `/external/${urlWithoutScheme.replace(/[^a-zA-Z]+/g, '-')}`,
+    name: `external/${label}`,
+    path: `/external/${encodeURIComponent(urlWithoutScheme)}`,
     label,
     order,
     component: {
@@ -38,12 +39,12 @@ const addIframeView = (viewRegistry: ViewRegistry, { url, label, order }) => {
   } as ComponentView);
 };
 
-const addExternalLink = (
+export const addExternalLink = (
   viewRegistry: ViewRegistry,
-  { url, label, order, children },
+  { url, label, order, children }: Omit<ExternalView, 'iframe'>,
   parent?: string,
 ) => {
-  const name = `external/${label.toLowerCase().replace(/[^a-zA-Z]+/g, '-')}`;
+  const name = `external/${label}`;
 
   viewRegistry.addView({
     href: url,
