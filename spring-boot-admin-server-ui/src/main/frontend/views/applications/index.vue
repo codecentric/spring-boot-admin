@@ -82,6 +82,7 @@
               v-for="group in grouped"
               :id="group.name"
               :key="group.name"
+              v-on-clickaway="(event: Event) => deselect(event, group.name)"
               :seamless="true"
               :title="t(group.name)"
               :subtitle="
@@ -89,7 +90,6 @@
               "
               class="application-group"
               :aria-expanded="isExpanded(group.name)"
-              v-on-clickaway="(event: Event) => deselect(event, group.name)"
               @title-click="
                 () => {
                   select(group.name);

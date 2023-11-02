@@ -1,5 +1,5 @@
-import { UnwrapNestedRefs } from '@vue/reactivity';
 import qs from 'qs';
+import { UnwrapNestedRefs } from 'vue';
 import { reactive, watch } from 'vue';
 import { LocationQuery, useRoute, useRouter } from 'vue-router';
 
@@ -42,7 +42,7 @@ export function useRouterState<T extends object>(
 function parseQueryParams(queryParams: string) {
   return qs.parse(queryParams, {
     decoder: (str, defaultDecoder, charset, type) => {
-      let bools = {
+      const bools = {
         true: true,
         false: false,
       };

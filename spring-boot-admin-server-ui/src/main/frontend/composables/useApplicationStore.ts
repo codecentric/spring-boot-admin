@@ -5,7 +5,7 @@ import ApplicationStore from '../store.js';
 import Application from '@/services/application';
 
 let applicationStore: ApplicationStore | null = null;
-let applications: Ref<Application[]> = ref([]);
+const applications: Ref<Application[]> = ref([]);
 const applicationsInitialized = ref(false);
 const error = ref(null);
 

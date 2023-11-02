@@ -5,7 +5,7 @@ import { reactive } from 'vue';
 import { useRouterState } from '@/utils/useRouterState';
 
 const routerReplace = vi.fn();
-let mockedQuery = vi.fn().mockReturnValue({});
+const mockedQuery = vi.fn().mockReturnValue({});
 
 vi.mock('vue-router', () => {
   return {
@@ -65,7 +65,7 @@ describe('useRouterState', () => {
       foo: 'bar',
     });
 
-    let routerState = useRouterState({
+    const routerState = useRouterState({
       bar: 'baz',
     });
 
@@ -88,7 +88,7 @@ describe('useRouterState', () => {
       foo: 'bar',
     });
 
-    let routerState = useRouterState({
+    const routerState = useRouterState({
       foo: 'baz',
     });
 

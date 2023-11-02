@@ -1,12 +1,12 @@
 import userEvent from '@testing-library/user-event';
-import { RenderResult, screen, waitFor } from '@testing-library/vue';
+import { screen, waitFor } from '@testing-library/vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Ref, ref } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import Application from '@/services/application';
 import Instance, { Registration } from '@/services/instance';
-import { render, router } from '@/test-utils';
+import { render } from '@/test-utils';
 import Applications from '@/views/applications/index.vue';
 
 vi.mock('@/composables/useApplicationStore', () => ({

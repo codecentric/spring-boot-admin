@@ -16,9 +16,9 @@
 
 <template>
   <div
+    :id="$attrs.id"
     class="shadow-sm border rounded break-inside-avoid mb-6"
-    v-bind:aria-expanded="$attrs.ariaExpanded"
-    v-bind:id="$attrs.id"
+    :aria-expanded="$attrs.ariaExpanded"
   >
     <header
       v-if="hasTitle"
