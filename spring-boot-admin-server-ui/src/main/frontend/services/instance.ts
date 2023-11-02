@@ -428,7 +428,7 @@ class Instance {
 
 export default Instance;
 
-type Registration = {
+export type Registration = {
   name: string;
   managementUrl?: string;
   healthUrl: string;
