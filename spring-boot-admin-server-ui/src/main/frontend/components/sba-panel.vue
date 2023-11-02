@@ -15,7 +15,11 @@
   -->
 
 <template>
-  <div class="shadow-sm border rounded break-inside-avoid mb-6">
+  <div
+    class="shadow-sm border rounded break-inside-avoid mb-6"
+    v-bind:aria-expanded="$attrs.ariaExpanded"
+    v-bind:id="$attrs.id"
+  >
     <header
       v-if="hasTitle"
       ref="header"
