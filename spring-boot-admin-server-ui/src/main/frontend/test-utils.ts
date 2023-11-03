@@ -1,5 +1,5 @@
 import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
-import { render as tlRender } from '@testing-library/vue';
+import { RenderResult, render as tlRender } from '@testing-library/vue';
 import { RouterLinkStub } from '@vue/test-utils';
 import { merge } from 'lodash-es';
 import { createI18n } from 'vue-i18n';
@@ -21,7 +21,7 @@ for (const modulesKey in modules) {
 export let router;
 createViewRegistry();
 
-export const render = (testComponent, options?) => {
+export const render = (testComponent, options?): RenderResult => {
   const routes = [{ path: '/', component: testComponent }];
   if (testComponent.install) {
     const viewRegistry = new ViewRegistry();
@@ -62,6 +62,5 @@ export const render = (testComponent, options?) => {
     },
     options,
   );
-  const utils = tlRender(testComponent, renderOptions);
-  return { ...utils };
+  return tlRender(testComponent, renderOptions);
 };
