@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import de.codecentric.boot.admin.server.services.InstanceFilter;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -62,7 +64,7 @@ public class InstanceDiscoveryListenerTest {
 	public void setup() {
 		this.discovery = mock(DiscoveryClient.class);
 		InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
-		this.registry = spy(new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator()));
+		this.registry = spy(new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator(), new InstanceFilter()));
 		this.listener = new InstanceDiscoveryListener(this.discovery, this.registry, repository);
 	}
 
