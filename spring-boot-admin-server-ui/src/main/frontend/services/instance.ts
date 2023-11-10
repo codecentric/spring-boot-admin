@@ -37,7 +37,7 @@ const isInstanceActuatorRequest = (url: string) =>
 class Instance {
   public readonly id: string;
   public registration: Registration;
-  public endpoints: any[];
+  public endpoints: any[] = [];
   public tags: { [key: string]: string }[];
   public statusTimestamp: string;
   public buildVersion: string;
@@ -428,7 +428,7 @@ class Instance {
 
 export default Instance;
 
-type Registration = {
+export type Registration = {
   name: string;
   managementUrl?: string;
   healthUrl: string;

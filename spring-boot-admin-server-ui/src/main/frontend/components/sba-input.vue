@@ -53,6 +53,7 @@
           :readonly="readonly"
           :type="type"
           :value="modelValue"
+          :aria-label="label || placeholder"
           class="focus:z-10 p-2 relative flex-1 block w-full rounded-none bg-opacity-40 backdrop-blur-sm"
           @input="handleInput"
         />

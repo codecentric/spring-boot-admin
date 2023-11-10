@@ -1,6 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import Application from '@/services/application';
@@ -13,9 +13,9 @@ vi.mock('@/composables/useApplicationStore', () => ({
 }));
 
 describe('Wallboard', () => {
-  let applicationsInitialized;
-  let applications;
-  let error;
+  let applicationsInitialized: Ref<boolean>;
+  let applications: Ref<Application[]>;
+  let error: Ref<any>;
 
   beforeEach(async () => {
     applicationsInitialized = ref(false);

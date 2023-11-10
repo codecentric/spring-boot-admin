@@ -15,7 +15,11 @@
   -->
 
 <template>
-  <div class="shadow-sm border rounded break-inside-avoid mb-6">
+  <div
+    :id="$attrs.id"
+    class="shadow-sm border rounded break-inside-avoid mb-6"
+    :aria-expanded="$attrs.ariaExpanded"
+  >
     <header
       v-if="hasTitle"
       ref="header"
