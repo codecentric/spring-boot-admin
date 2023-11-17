@@ -52,6 +52,9 @@ public class IntervalCheck {
 
 	private final Function<InstanceId, Mono<Void>> checkFn;
 
+	@Setter
+	private Duration maxBackoff;
+
 	@Getter
 	@Setter
 	private Duration interval;
@@ -66,15 +69,16 @@ public class IntervalCheck {
 	private Scheduler scheduler;
 
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn) {
-		this(name, checkFn, Duration.ofSeconds(10), Duration.ofSeconds(10));
+		this(name, checkFn, Duration.ofSeconds(10), Duration.ofSeconds(10), Duration.ofSeconds(60));
 	}
 
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn, Duration interval,
-			Duration minRetention) {
+			Duration minRetention, Duration maxBackoff) {
 		this.name = name;
 		this.checkFn = checkFn;
 		this.interval = interval;
 		this.minRetention = minRetention;
+		this.maxBackoff = maxBackoff;
 	}
 
 	public void start() {

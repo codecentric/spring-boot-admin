@@ -98,6 +98,7 @@ public class AdminServerAutoConfiguration {
 		StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
 		trigger.setInterval(this.adminServerProperties.getMonitor().getStatusInterval());
 		trigger.setLifetime(this.adminServerProperties.getMonitor().getStatusLifetime());
+		trigger.setMaxBackoff(this.adminServerProperties.getMonitor().getStatusMaxBackoff());
 		return trigger;
 	}
 
@@ -132,6 +133,7 @@ public class AdminServerAutoConfiguration {
 		InfoUpdateTrigger trigger = new InfoUpdateTrigger(infoUpdater, events);
 		trigger.setInterval(this.adminServerProperties.getMonitor().getInfoInterval());
 		trigger.setLifetime(this.adminServerProperties.getMonitor().getInfoLifetime());
+		trigger.setMaxBackoff(this.adminServerProperties.getMonitor().getInfoMaxBackoff());
 		return trigger;
 	}
 

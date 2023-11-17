@@ -81,4 +81,8 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 		this.intervalCheck.setMinRetention(statusLifetime);
 	}
 
+	public void setMaxBackoff(Duration maxBackoff) {
+		this.intervalCheck.setMaxBackoff(maxBackoff);
+	}
+
 }

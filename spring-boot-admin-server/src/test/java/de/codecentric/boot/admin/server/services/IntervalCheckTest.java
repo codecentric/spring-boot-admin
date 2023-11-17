@@ -41,7 +41,7 @@ public class IntervalCheckTest {
 	private final Function<InstanceId, Mono<Void>> checkFn = mock(Function.class, (i) -> Mono.empty());
 
 	private final IntervalCheck intervalCheck = new IntervalCheck("test", this.checkFn, Duration.ofMillis(10),
-			Duration.ofMillis(10));
+			Duration.ofMillis(10), Duration.ofMinutes(60));
 
 	@Test
 	public void should_check_after_being_started() throws InterruptedException {
