@@ -104,10 +104,10 @@ public class AdminServerProperties {
 		private Duration statusLifetime = Duration.ofMillis(10_000L);
 
 		/**
-		 * Time interval representing the maximal backoff for status check retries.
+		 * The maximal backoff for status check retries (retry after error has exponential backoff, minimum backoff is 1 second).
 		 */
 		@DurationUnit(ChronoUnit.MILLIS)
-		private Duration statusMaxBackoff = Duration.ofMillis(10_000L);
+		private Duration statusMaxBackoff = Duration.ofMillis(60_000L);
 
 		/**
 		 * Time interval to check the info of instances,
@@ -116,10 +116,10 @@ public class AdminServerProperties {
 		private Duration infoInterval = Duration.ofMinutes(1L);
 
 		/**
-		 * Time interval representing the maximal backoff for info check retries.
+		 * The maximal backoff for info check retries (retry after error has exponential backoff, minimum backoff is 1 second).
 		 */
 		@DurationUnit(ChronoUnit.MILLIS)
-		private Duration infoMaxBackoff = Duration.ofMinutes(1L);
+		private Duration infoMaxBackoff = Duration.ofMinutes(10);
 
 		/**
 		 * Lifetime of info. The info won't be updated as long the last info isn't
