@@ -85,6 +85,7 @@ public class IntervalCheck {
 			.subscribeOn(this.scheduler)
 			.concatMap((i) -> this.checkAllInstances())
 			.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
+				.maxBackoff(maxBackoff)
 				.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
 			.subscribe(null, (error) -> log.error("Unexpected error in {}-check", name, error));
 	}
