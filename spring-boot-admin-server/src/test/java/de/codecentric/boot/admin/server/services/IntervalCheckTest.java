@@ -41,7 +41,7 @@ public class IntervalCheckTest {
 	private final Function<InstanceId, Mono<Void>> checkFn = mock(Function.class, (i) -> Mono.empty());
 
 	private final IntervalCheck intervalCheck = new IntervalCheck("test", this.checkFn, Duration.ofMillis(10),
-			Duration.ofMillis(10), Duration.ofMinutes(60));
+			Duration.ofMillis(10), Duration.ofSeconds(1));
 
 	@Test
 	public void should_check_after_being_started() throws InterruptedException {
@@ -79,6 +79,20 @@ public class IntervalCheckTest {
 		this.intervalCheck.start();
 		Thread.sleep(100);
 		verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID);
+	}
+
+	@Test
+	public void should_not_wait_longer_than_maxBackoff() throws InterruptedException {
+		this.intervalCheck.setInterval(Duration.ofMillis(10));
+		this.intervalCheck.setMinRetention(Duration.ofMillis(10));
+		this.intervalCheck.setMaxBackoff(Duration.ofSeconds(2));
+		this.intervalCheck.markAsChecked(INSTANCE_ID);
+
+		when(this.checkFn.apply(any())).thenReturn(Mono.error(new RuntimeException("Test")));
+
+		this.intervalCheck.start();
+		Thread.sleep(1000 * 10);
+		verify(this.checkFn, atLeast(7)).apply(INSTANCE_ID);
 	}
 
 	@Test
