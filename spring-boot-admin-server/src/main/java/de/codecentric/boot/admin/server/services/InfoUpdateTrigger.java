@@ -38,11 +38,11 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	private final IntervalCheck intervalCheck;
 
-	public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher) {
+	public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher, Duration updateInterval,
+			Duration infoLifetime, Duration maxBackoff) {
 		super(publisher, InstanceEvent.class);
 		this.infoUpdater = infoUpdater;
-		this.intervalCheck = new IntervalCheck("info", this::updateInfo, Duration.ofMinutes(5), Duration.ofMinutes(1),
-				Duration.ofMinutes(10));
+		this.intervalCheck = new IntervalCheck("info", this::updateInfo, updateInterval, infoLifetime, maxBackoff);
 	}
 
 	@Override
@@ -78,10 +78,6 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	public void setLifetime(Duration infoLifetime) {
 		this.intervalCheck.setMinRetention(infoLifetime);
-	}
-
-	public void setMaxBackoff(Duration maxBackoff) {
-		this.intervalCheck.setMaxBackoff(maxBackoff);
 	}
 
 }

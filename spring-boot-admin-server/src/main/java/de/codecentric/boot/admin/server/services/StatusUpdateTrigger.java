@@ -37,11 +37,12 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	private final IntervalCheck intervalCheck;
 
-	public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher) {
+	public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher, Duration updateInterval,
+			Duration statusLifetime, Duration maxBackoff) {
 		super(publisher, InstanceEvent.class);
 		this.statusUpdater = statusUpdater;
-		this.intervalCheck = new IntervalCheck("status", this::updateStatus, Duration.ofSeconds(10),
-				Duration.ofSeconds(10), Duration.ofSeconds(60));
+		this.intervalCheck = new IntervalCheck("status", this::updateStatus, updateInterval, statusLifetime,
+				maxBackoff);
 	}
 
 	@Override
@@ -80,10 +81,6 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	public void setLifetime(Duration statusLifetime) {
 		this.intervalCheck.setMinRetention(statusLifetime);
-	}
-
-	public void setMaxBackoff(Duration maxBackoff) {
-		this.intervalCheck.setMaxBackoff(maxBackoff);
 	}
 
 }
