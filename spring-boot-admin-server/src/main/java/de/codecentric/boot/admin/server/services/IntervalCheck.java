@@ -68,10 +68,6 @@ public class IntervalCheck {
 	@Nullable
 	private Scheduler scheduler;
 
-	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn) {
-		this(name, checkFn, Duration.ofSeconds(10), Duration.ofSeconds(10), Duration.ofSeconds(60));
-	}
-
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn, Duration interval,
 			Duration minRetention, Duration maxBackoff) {
 		this.name = name;
