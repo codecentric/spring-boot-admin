@@ -40,7 +40,8 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 	public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher) {
 		super(publisher, InstanceEvent.class);
 		this.statusUpdater = statusUpdater;
-		this.intervalCheck = new IntervalCheck("status", this::updateStatus, Duration.ofSeconds(10), Duration.ofSeconds(10), Duration.ofSeconds(60));
+		this.intervalCheck = new IntervalCheck("status", this::updateStatus, Duration.ofSeconds(10),
+				Duration.ofSeconds(10), Duration.ofSeconds(60));
 	}
 
 	@Override
