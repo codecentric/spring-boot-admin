@@ -60,7 +60,8 @@ public class InfoUpdateTriggerTest {
 	public void setUp() throws Exception {
 		when(this.updater.updateInfo(any(InstanceId.class))).thenReturn(Mono.empty());
 
-		this.trigger = new InfoUpdateTrigger(this.updater, this.events.flux());
+		this.trigger = new InfoUpdateTrigger(this.updater, this.events.flux(), Duration.ofMinutes(5), Duration.ofMinutes(1),
+			Duration.ofMinutes(10));
 		this.trigger.start();
 		await().until(this.events::wasSubscribed);
 	}

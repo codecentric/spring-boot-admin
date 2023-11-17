@@ -52,6 +52,9 @@ public class IntervalCheck {
 
 	private final Function<InstanceId, Mono<Void>> checkFn;
 
+	@Setter
+	private Duration maxBackoff;
+
 	@Getter
 	@Setter
 	private Duration interval;
@@ -65,16 +68,13 @@ public class IntervalCheck {
 	@Nullable
 	private Scheduler scheduler;
 
-	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn) {
-		this(name, checkFn, Duration.ofSeconds(10), Duration.ofSeconds(10));
-	}
-
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn, Duration interval,
-			Duration minRetention) {
+			Duration minRetention, Duration maxBackoff) {
 		this.name = name;
 		this.checkFn = checkFn;
 		this.interval = interval;
 		this.minRetention = minRetention;
+		this.maxBackoff = maxBackoff;
 	}
 
 	public void start() {
@@ -85,6 +85,7 @@ public class IntervalCheck {
 			.subscribeOn(this.scheduler)
 			.concatMap((i) -> this.checkAllInstances())
 			.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
+				.maxBackoff(maxBackoff)
 				.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
 			.subscribe(null, (error) -> log.error("Unexpected error in {}-check", name, error));
 	}
