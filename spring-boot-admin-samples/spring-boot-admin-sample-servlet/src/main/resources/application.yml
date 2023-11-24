@@ -100,6 +100,9 @@ spring:
                 url: https://search.maven.org/search?q=g:de.codecentric%20AND%20a:spring-boot-admin-starter-server
               - label: "🐙 GitHub"
                 url: https://github.com/codecentric/spring-boot-admin
+          - label: "Is it christmas"
+            url: https://isitchristmas.com
+            iframe: true
 # end::customization-external-views-dropdown-is-link-with-links-as-children[]
 ---
 # tag::customization-view-settings[]
