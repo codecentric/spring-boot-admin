@@ -119,5 +119,83 @@ describe('Applications', () => {
 
       expect(await screen.findByText('serviceUrl')).toBeVisible();
     });
+
+    describe('application list', () => {
+      beforeEach(async () => {
+        applications.value = [
+          new Application({
+            id: 'app-id',
+            name: 'spring-boot-admin-sample-servlet',
+            instances: [
+              {
+                id: 'id',
+                statusInfo: {
+                  status: 'UP',
+                },
+                registration: {
+                  name: 'spring-boot-admin-sample-servlet',
+                  serviceUrl: 'serviceUrl',
+                  metadata: {},
+                } as Registration,
+              },
+            ],
+            status: 'UP',
+          }),
+          new Application({
+            id: 'app-id2',
+            name: 'spring-boot-admin-sample-servlet-down',
+            instances: [
+              {
+                id: 'id2',
+                statusInfo: {
+                  status: 'DOWN',
+                },
+                registration: {
+                  name: 'spring-boot-admin-sample-servlet-down',
+                  serviceUrl: 'serviceUrl',
+                  metadata: {},
+                } as Registration,
+              },
+            ],
+            status: 'DOWN',
+          }),
+          new Application({
+            id: 'app-id3',
+            name: 'spring-boot-admin-sample-servlet-a',
+            instances: [
+              {
+                id: 'id5',
+                statusInfo: {
+                  status: 'UP',
+                },
+                registration: {
+                  name: 'spring-boot-admin-sample-servlet-a',
+                  serviceUrl: 'serviceUrl',
+                  metadata: {},
+                } as Registration,
+              },
+            ],
+            status: 'UP',
+          }),
+        ];
+      });
+
+      it('should show applications with status down on top', () => {
+        const allByRole = screen.getAllByRole('button');
+
+        const getIndex = (status: string) =>
+          allByRole.findIndex((element: HTMLElement) =>
+            element.textContent.startsWith(
+              `${status}spring-boot-admin-sample-servlet`,
+            ),
+          );
+
+        const indexDown = getIndex('DOWN');
+        const indexUp = getIndex('UP');
+
+        expect(indexDown).toBeGreaterThan(-1);
+        expect(indexDown).toBeLessThan(indexUp);
+      });
+    });
   });
 });
