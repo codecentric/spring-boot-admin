@@ -15,6 +15,8 @@
  */
 import { h } from 'vue';
 
+import './style.css';
+
 import sbaConfig from '@/sba-config';
 import ViewRegistry from '@/viewRegistry';
 
