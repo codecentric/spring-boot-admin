@@ -80,6 +80,7 @@ jobs:
         uses: metcalfc/changelog-generator@v3.0.0
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
+          base-ref:  '2.17.13'
 
       - name: Create GitHub Release
         id: create_release
