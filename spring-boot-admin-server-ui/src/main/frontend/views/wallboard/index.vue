@@ -248,6 +248,10 @@ export default {
   flex-direction: column;
 }
 
+.wallboard .application__body {
+  width: 80%;
+}
+
 .wallboard .application__name {
   width: 100%;
   padding: 2.5%;
