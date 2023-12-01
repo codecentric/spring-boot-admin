@@ -80,7 +80,7 @@
     "@types/testing-library__jest-dom": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "@vitejs/plugin-vue": "4.5.0",
+    "@vitejs/plugin-vue": "4.5.1",
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/test-utils": "2.4.3",
     "autoprefixer": "10.4.16",
