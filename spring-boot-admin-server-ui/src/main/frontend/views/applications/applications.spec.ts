@@ -125,7 +125,7 @@ describe('Applications', () => {
         applications.value = [
           new Application({
             id: 'app-id',
-            name: 'spring-boot-admin-sample-servlet',
+            name: 'spring-boot-admin-sample-servlet-up',
             instances: [
               {
                 id: 'id',
@@ -133,7 +133,7 @@ describe('Applications', () => {
                   status: 'UP',
                 },
                 registration: {
-                  name: 'spring-boot-admin-sample-servlet',
+                  name: 'spring-boot-admin-sample-servlet-up',
                   serviceUrl: 'serviceUrl',
                   metadata: {},
                 } as Registration,
@@ -161,7 +161,7 @@ describe('Applications', () => {
           }),
           new Application({
             id: 'app-id3',
-            name: 'spring-boot-admin-sample-servlet-a',
+            name: 'spring-boot-admin-sample-servlet-up2',
             instances: [
               {
                 id: 'id5',
@@ -169,7 +169,7 @@ describe('Applications', () => {
                   status: 'UP',
                 },
                 registration: {
-                  name: 'spring-boot-admin-sample-servlet-a',
+                  name: 'spring-boot-admin-sample-servlet-up2',
                   serviceUrl: 'serviceUrl',
                   metadata: {},
                 } as Registration,
@@ -177,10 +177,39 @@ describe('Applications', () => {
             ],
             status: 'UP',
           }),
+          new Application({
+            id: 'app-id4',
+            name: 'spring-boot-admin-sample-servlet-restricted',
+            instances: [
+              {
+                id: 'id6',
+                statusInfo: {
+                  status: 'UP',
+                },
+                registration: {
+                  name: 'spring-boot-admin-sample-servlet-restricted',
+                  serviceUrl: 'serviceUrl',
+                  metadata: {},
+                } as Registration,
+              },
+              {
+                id: 'id7',
+                statusInfo: {
+                  status: 'DOWN',
+                },
+                registration: {
+                  name: 'spring-boot-admin-sample-servlet-restricted',
+                  serviceUrl: 'serviceUrl',
+                  metadata: {},
+                } as Registration,
+              },
+            ],
+            status: 'RESTRICTED',
+          }),
         ];
       });
 
-      it('should show applications with status down on top', () => {
+      it('should show applications ordered by status DOWN, RESTRICTED and UP', () => {
         const allByRole = screen.getAllByRole('button');
 
         const getIndex = (status: string) =>
@@ -191,10 +220,12 @@ describe('Applications', () => {
           );
 
         const indexDown = getIndex('DOWN');
+        const indexRestricted = getIndex('RESTRICTED');
         const indexUp = getIndex('UP');
 
         expect(indexDown).toBeGreaterThan(-1);
-        expect(indexDown).toBeLessThan(indexUp);
+        expect(indexDown).toBeLessThan(indexRestricted);
+        expect(indexRestricted).toBeLessThan(indexUp);
       });
     });
   });
