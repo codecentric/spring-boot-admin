@@ -312,8 +312,13 @@ const grouped = computed(() => {
     [],
   );
 
-  return sortBy(list, [(item) => item.status]);
+  return sortBy(list, [(item) => getApplicationStatus(item)]);
 });
+
+function getApplicationStatus(item: InstancesListType): string {
+  return applicationStore.findApplicationByInstanceId(item.instances[0].id)
+    ?.status;
+}
 
 function filterInstances(applications: Application[]) {
   if (!routerState.q) {
