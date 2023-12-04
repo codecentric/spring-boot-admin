@@ -98,7 +98,7 @@
     "rollup-plugin-visualizer": "5.10.0",
     "sass": "^1.57.1",
     "storybook": "7.6.3",
-    "tailwindcss": "3.3.5",
+    "tailwindcss": "3.3.6",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
     "vite": "4.5.1",
