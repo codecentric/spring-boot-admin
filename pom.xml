@@ -36,16 +36,14 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.1.6</spring-boot.version>
-        <spring-cloud.version>2022.0.4</spring-cloud.version>
+        <spring-boot.version>3.2.0</spring-boot.version>
+        <spring-cloud.version>2023.0.0</spring-cloud.version>
         <wiremock.version>3.0.1</wiremock.version>
         <hazelcast-tests.version>5.3.6</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.2.0</awaitility.version>
         <testcontainers.version>1.19.3</testcontainers.version>
         <eureka-client.version>3.1.1</eureka-client.version>
-        <!-- Wiremock does not yet support jetty 11 (see also https://github.com/wiremock/wiremock/issues/1760). -->
-        <!--<jetty.version>11.0.6</jetty.version>-->
         <jetty.version>12.0.4</jetty.version>
 
         <!-- plugin versions -->
