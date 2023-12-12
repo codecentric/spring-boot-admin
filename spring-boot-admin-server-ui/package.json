@@ -42,7 +42,7 @@
     "event-source-polyfill": "1.0.31",
     "file-saver": "2.0.5",
     "fuse.js": "^7.0.0",
-    "iso8601-duration": "2.1.1",
+    "iso8601-duration": "2.1.2",
     "lodash-es": "4.17.21",
     "mitt": "^3.0.0",
     "moment": "2.29.4",
