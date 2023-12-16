@@ -438,6 +438,13 @@ export type Registration = {
 };
 
 type StatusInfo = {
-  status: string;
+  status:
+    | 'UNKNOWN'
+    | 'OUT_OF_SERVICE'
+    | 'UP'
+    | 'DOWN'
+    | 'OFFLINE'
+    | 'RESTRICTED'
+    | string;
   details: { [key: string]: string };
 };

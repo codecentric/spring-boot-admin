@@ -2,19 +2,29 @@
   <sba-panel>
     <template v-if="applicationsCount > 0">
       <div class="flex flex-row md:flex-col items-center justify-center">
-        <template v-if="downCount === 0">
+        <template v-if="allInstancesUp">
           <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
           <div class="text-center">
             <h1 class="font-bold text-2xl" v-text="$t('applications.all_up')" />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
         </template>
-        <template v-else>
+        <template v-else-if="someInstancesDown">
           <font-awesome-icon icon="minus-circle" class="text-red-500 icon" />
           <div class="text-center">
             <h1
               class="font-bold text-2xl"
               v-text="$t('applications.instances_down')"
+            />
+            <p class="text-gray-400" v-text="lastUpdate" />
+          </div>
+        </template>
+        <template v-else-if="notUpCount > 0">
+          <font-awesome-icon icon="minus-circle" class="text-yellow-200 icon" />
+          <div class="text-center">
+            <h1
+              class="font-bold text-2xl"
+              v-text="$t('applications.instances_unknown')"
             />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
@@ -60,7 +70,17 @@ export default {
     };
   },
   computed: {
-    downCount() {
+    allInstancesUp() {
+      return this.applications
+        .flatMap((application) => application.instances)
+        .every((instance) => instance.statusInfo.status === 'UP');
+    },
+    someInstancesDown() {
+      return this.applications
+        .flatMap((application) => application.instances)
+        .some((instance) => instance.statusInfo.status === 'DOWN');
+    },
+    notUpCount() {
       return this.applications.reduce((current, next) => {
         return (
           current +
@@ -81,7 +101,7 @@ export default {
     },
   },
   watch: {
-    downCount() {
+    notUpCount() {
       this.updateLastUpdateTime();
     },
   },

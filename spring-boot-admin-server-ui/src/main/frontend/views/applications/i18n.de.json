@@ -16,6 +16,7 @@
     },
     "instances": "Instanzen",
     "instances_down": "Einige Instanzen sind ausgefallen",
+    "instances_unknown": "Verfügbar, aber einige haben unbekannten Status",
     "loading_applications": "Anwendungen werden geladen...",
     "no_applications_registered": "Keine Anwendungen registriert.",
     "notifications_suppressed_for": "Benachrichtigungen für <code>{name}</code> werden unterdrückt für",
