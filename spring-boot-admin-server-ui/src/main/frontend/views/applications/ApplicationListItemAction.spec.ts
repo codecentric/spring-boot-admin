@@ -40,7 +40,7 @@ describe('ApplicationListItemAction', () => {
   let application: Application;
   let instance: Instance;
 
-  beforeAll(() => {
+  beforeEach(() => {
     server.use(
       // Instances
       rest.delete('/instances/:instanceId', (req, res, ctx) => {
