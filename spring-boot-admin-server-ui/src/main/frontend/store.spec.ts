@@ -1,5 +1,5 @@
 import { waitFor } from '@testing-library/vue';
-import { http } from 'msw';
+import { HttpResponse, http } from 'msw';
 import { ReplaySubject } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -23,7 +23,7 @@ describe('store.js', () => {
   beforeEach(() => {
     server.use(
       http.get('/applications', () => {
-        return res(ctx.status(200), ctx.json([]));
+        return HttpResponse.json([]);
       }),
     );
 
