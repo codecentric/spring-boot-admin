@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
 import { cloneDeep } from 'lodash-es';
 import { rest } from 'msw';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Application from '../../services/application';
 
@@ -40,7 +40,7 @@ describe('ApplicationListItemAction', () => {
   let application: Application;
   let instance: Instance;
 
-  beforeAll(() => {
+  beforeEach(() => {
     server.use(
       // Instances
       rest.delete('/instances/:instanceId', (req, res, ctx) => {
