@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { applications } from '@/mocks/applications/data';
@@ -13,30 +13,21 @@ describe('DetailsHealth', () => {
   describe('Health Group', () => {
     beforeEach(() => {
       server.use(
-        rest.get('/instances/:instanceId/actuator/health', (req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.json({
-              instance: 'UP',
-              groups: ['liveness'],
-            }),
-          );
+        http.get('/instances/:instanceId/actuator/health', () => {
+          return HttpResponse.json({
+            instance: 'UP',
+            groups: ['liveness'],
+          });
         }),
-        rest.get(
-          '/instances/:instanceId/actuator/health/liveness',
-          (req, res, ctx) => {
-            return res(
-              ctx.status(200),
-              ctx.json({
-                status: 'UP',
-                details: {
-                  disk: { status: 'UNKNOWN' },
-                  database: { status: 'UNKNOWN' },
-                },
-              }),
-            );
-          },
-        ),
+        http.get('/instances/:instanceId/actuator/health/liveness', () => {
+          return HttpResponse.json({
+            status: 'UP',
+            details: {
+              disk: { status: 'UNKNOWN' },
+              database: { status: 'UNKNOWN' },
+            },
+          });
+        }),
       );
     });
 
