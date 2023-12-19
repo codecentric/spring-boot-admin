@@ -16,7 +16,7 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
 import { cloneDeep } from 'lodash-es';
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Application from '../../services/application';
@@ -43,24 +43,24 @@ describe('ApplicationListItemAction', () => {
   beforeAll(() => {
     server.use(
       // Instances
-      rest.delete('/instances/:instanceId', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
+      http.delete('/instances/:instanceId', () => {
+        return HttpResponse.json({});
       }),
-      rest.post('/instances/:instanceId/actuator/restart', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
+      http.post('/instances/:instanceId/actuator/restart', () => {
+        return HttpResponse.json({});
       }),
-      rest.post('/instances/:instanceId/actuator/shutdown', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
+      http.post('/instances/:instanceId/actuator/shutdown', () => {
+        return HttpResponse.json({});
       }),
       // Applications
-      rest.delete('/applications/:name', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
+      http.delete('/applications/:name', () => {
+        return HttpResponse.json({});
       }),
-      rest.post('/applications/:name/actuator/restart', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
+      http.post('/applications/:name/actuator/restart', () => {
+        return HttpResponse.json({});
       }),
-      rest.post('/applications/:name/actuator/shutdown', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({}));
+      http.post('/applications/:name/actuator/shutdown', () => {
+        return HttpResponse.json({});
       }),
     );
   });

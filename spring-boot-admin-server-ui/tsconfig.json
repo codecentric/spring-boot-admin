@@ -16,6 +16,7 @@
     ],
     "skipLibCheck": true,
     "noEmit": true,
+    "types": ["vitest/globals"],
     "paths": {
       "@/*": [
         "./src/main/frontend/*"
