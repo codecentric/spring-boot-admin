@@ -6,7 +6,7 @@ on:
       releaseversion:
         description: 'Release version'
         required: true
-        default: '2.4.0'
+        default: '2.7.0'
 
 jobs:
   publish-central-and-pages:
@@ -80,7 +80,7 @@ jobs:
         uses: metcalfc/changelog-generator@v3.0.0
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
-          base-ref:  '2.7.13'
+          base-ref:  '2.7.14'
 
       - name: Create GitHub Release
         id: create_release
