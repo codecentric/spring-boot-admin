@@ -127,8 +127,8 @@ export default {
       return this.brushSelection
         ? this.brushSelection
         : this.hovered
-        ? [this.hovered, this.hovered + interval]
-        : null;
+          ? [this.hovered, this.hovered + interval]
+          : null;
     },
     tooltipContent() {
       const selection = this.tooltipSelection;

@@ -1,10 +1,10 @@
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 import { auditeventsresponse } from '@/mocks/instance/auditevents/data';
 
 const endpoints = [
-  rest.get('/instances/:instanceId/actuator/auditevents', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(auditeventsresponse));
+  http.get('/instances/:instanceId/actuator/auditevents', () => {
+    return HttpResponse.json(auditeventsresponse);
   }),
 ];
 

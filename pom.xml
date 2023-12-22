@@ -26,7 +26,7 @@
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
-        <revision>3.2.0-SNAPSHOT</revision>
+        <revision>3.2.1-SNAPSHOT</revision>
         <java.version>17</java.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -36,7 +36,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.2.0</spring-boot.version>
+        <spring-boot.version>3.2.1</spring-boot.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
         <wiremock.version>3.0.1</wiremock.version>
         <hazelcast-tests.version>5.3.6</hazelcast-tests.version>
@@ -44,11 +44,11 @@
         <awaitility.version>4.2.0</awaitility.version>
         <testcontainers.version>1.19.3</testcontainers.version>
         <eureka-client.version>3.1.1</eureka-client.version>
-        <jetty.version>12.0.4</jetty.version>
+        <jetty.version>12.0.5</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.5.0</build-helper-maven-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.12.0</maven-compiler-plugin.version>
         <versions-maven-plugin.version>2.16.2
         </versions-maven-plugin.version> <!-- because of https://github.com/mojohaus/versions/issues/855 -->
         <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>

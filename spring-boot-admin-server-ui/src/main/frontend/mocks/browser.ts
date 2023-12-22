@@ -1,4 +1,4 @@
-import { setupWorker } from 'msw';
+import { setupWorker } from 'msw/browser';
 
 import auditEventsEndpoint from './instance/auditevents/index.js';
 import flywayEndpoints from './instance/flyway/index.js';
