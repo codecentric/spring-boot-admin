@@ -79,6 +79,15 @@ import sortBy from 'lodash/sortBy';
 import Metric from './metric';
 import {VIEW_GROUP} from '../../index';
 
+const ApiVersion = Object.freeze({
+  V2: 'application/vnd.spring-boot.actuator.v2',
+  V3: 'application/vnd.spring-boot.actuator.v3'
+});
+
+function isActuatorApiVersionSupported(headerContentType) {
+  return headerContentType.includes(ApiVersion.V2) || headerContentType.includes(ApiVersion.V3);
+}
+
 export default {
   components: {Metric},
   props: {
@@ -164,7 +173,8 @@ export default {
       this.error = null;
       try {
         const res = await this.instance.fetchMetrics();
-        if (res.headers['content-type'].includes('application/vnd.spring-boot.actuator.v2')) {
+        let header = res.headers['content-type'];
+        if (isActuatorApiVersionSupported(header)) {
           this.availableMetrics = res.data.names;
           this.availableMetrics.sort();
           this.selectedMetric = this.availableMetrics[0];

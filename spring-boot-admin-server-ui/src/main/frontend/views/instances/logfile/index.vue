@@ -33,7 +33,7 @@
                          @click="scrollToBottom"
         />
       </div>
-      <a :href="`instances/${instance.id}/actuator/logfile`" class="logfile-view-action button" target="_blank">
+      <a :href="`instances/${instance.id}/actuator/logfile`" class="logfile-view-action button" target="_blank" download>
         <font-awesome-icon icon="download" />&nbsp;
         <span v-text="$t('instances.logfile.download')" />
       </a>

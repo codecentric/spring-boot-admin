@@ -102,9 +102,9 @@ Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](
 You can access snapshot builds from the sonatype snapshot repository by adding the following to your `repositories`:
 ```xml
 <repository>
-	<id>sonatype-nexus-snapshots</id>
-	<name>Sonatype Nexus Snapshots</name>
-	<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+	<id>sba-snapshot</id>
+	<name>Spring Boot Admin Snapshots</name>
+	<url>https://maven.pkg.github.com/codecentric/spring-boot-admin</url>
 	<snapshots>
 		<enabled>true</enabled>
 	</snapshots>

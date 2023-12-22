@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin;
 
+import java.net.URI;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +26,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.authentication.RedirectServerAuthenticationSuccessHandler;
+import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
+import org.springframework.security.web.server.authentication.logout.RedirectServerLogoutSuccessHandler;
+import org.springframework.security.web.server.authentication.logout.ServerLogoutSuccessHandler;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
@@ -60,9 +66,25 @@ public class SpringBootAdminReactiveApplication {
 						.pathMatchers(this.adminServer.path("/assets/**")).permitAll()
 						.pathMatchers("/actuator/health/**").permitAll().pathMatchers(this.adminServer.path("/login"))
 						.permitAll().anyExchange().authenticated())
-				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login")))
-				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
+				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
+						.authenticationSuccessHandler(loginSuccessHandler(this.adminServer.path("/"))))
+				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout"))
+						.logoutSuccessHandler(logoutSuccessHandler(this.adminServer.path("/login?logout"))))
 				.httpBasic(Customizer.withDefaults()).csrf(ServerHttpSecurity.CsrfSpec::disable).build();
+	}
+
+	// The following two methods are only required when setting a custom base-path (see
+	// 'basepath' profile in application.yml)
+	private ServerLogoutSuccessHandler logoutSuccessHandler(String uri) {
+		RedirectServerLogoutSuccessHandler successHandler = new RedirectServerLogoutSuccessHandler();
+		successHandler.setLogoutSuccessUrl(URI.create(uri));
+		return successHandler;
+	}
+
+	private ServerAuthenticationSuccessHandler loginSuccessHandler(String uri) {
+		RedirectServerAuthenticationSuccessHandler successHandler = new RedirectServerAuthenticationSuccessHandler();
+		successHandler.setLocation(URI.create(uri));
+		return successHandler;
 	}
 
 	@Bean

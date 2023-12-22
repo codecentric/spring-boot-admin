@@ -60,4 +60,8 @@ spring:
             user.name: "user"         #These two are needed so that the server
             user.password: "password" #can access the protected client endpoints
 
-
+---
+spring:
+  profiles: basepath
+  webflux:
+    base-path: /sba

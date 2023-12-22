@@ -6,6 +6,7 @@
       "domains": "Domains",
       "execute": "Execute",
       "executing": "Führe aus...",
+      "execute_modal_header": "<code>{name}</code> ausführen?",
       "execution_failed": "Ausführung fehlgeschlagen.",
       "execution_successful": "Ausführung erfolgreich.",
       "fetch_failed": "Das Laden der JMX-Beans ist fehlgeschlagen.",

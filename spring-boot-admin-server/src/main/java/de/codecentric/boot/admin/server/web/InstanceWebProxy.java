@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -104,8 +104,11 @@ public class InstanceWebProxy {
 			log.trace("No Endpoint found for Proxy-Request for instance {} with URL '{}'", instance.getId(),
 					forwardRequest.getUri());
 			return responseHandler.apply(ClientResponse.create(HttpStatus.NOT_FOUND, this.strategies).build());
-		}).onErrorResume(WebClientRequestException.class, (ex) -> {
-			Throwable cause = ex.getCause();
+		}).onErrorResume((ex) -> {
+			Throwable cause = ex;
+			if (ex instanceof WebClientRequestException) {
+				cause = ex.getCause();
+			}
 			if (cause instanceof ReadTimeoutException || cause instanceof TimeoutException) {
 				log.trace("Timeout for Proxy-Request for instance {} with URL '{}'", instance.getId(),
 						forwardRequest.getUri());

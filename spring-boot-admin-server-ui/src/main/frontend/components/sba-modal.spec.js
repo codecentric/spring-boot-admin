@@ -23,7 +23,7 @@ describe('sba-modal.vue', () => {
   it('modal is closed when close button is clicked', async () => {
     const {emitted} = render(SbaModal, {props: {open: true}})
 
-    userEvent.click(screen.getByLabelText('close'));
+    await userEvent.click(screen.getByLabelText('close'));
 
     expect(emitted().change[0]).toContain(false);
   })

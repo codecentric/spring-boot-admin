@@ -52,10 +52,10 @@ describe('Refresh', () => {
 
   it('shows the changed configurations for the current instance', async () => {
     const refreshButton = await screen.findByText('Refresh context');
-    userEvent.click(refreshButton);
+    await userEvent.click(refreshButton);
 
     const confirmButton = await screen.findByText('Confirm');
-    userEvent.click(confirmButton);
+    await userEvent.click(confirmButton);
 
     await screen.findAllByTestId('refreshModal');
     expect(screen.findByText('Refreshed configurations:')).toBeDefined();
@@ -67,13 +67,13 @@ describe('Refresh', () => {
     const toggleScopeButton = await screen.getByRole('button', {
       name: 'Instance',
     });
-    userEvent.click(toggleScopeButton);
+    await userEvent.click(toggleScopeButton);
 
     const refreshButton = await screen.findByText('Refresh context');
-    userEvent.click(refreshButton);
+    await userEvent.click(refreshButton);
 
     const confirmButton = await screen.findByText('Confirm');
-    userEvent.click(confirmButton);
+    await userEvent.click(confirmButton);
 
     await screen.findAllByTestId('refreshModal');
     expect(screen.findByText('Refreshed configurations:')).toBeDefined();

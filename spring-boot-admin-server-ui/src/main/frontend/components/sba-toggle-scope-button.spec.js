@@ -27,18 +27,18 @@ describe('SbaToggleScopeButton', function () {
   })
 
   it('should emit changed scope when clicked', async () => {
-    userEvent.click(await screen.findByRole('button', {name: 'Instance'}));
+    await userEvent.click(await screen.findByRole('button', {name: 'Instance'}));
 
     expect(wrapper.emitted().changeScope[0]).toEqual(['application']);
   });
 
   it('should toggle the scope when clicked twice', async () => {
-    userEvent.click(await screen.findByRole('button', {name: 'Instance'}));
+    await userEvent.click(await screen.findByRole('button', {name: 'Instance'}));
     expect(wrapper.emitted().changeScope[0]).toEqual(['application']);
 
     wrapper.updateProps({scope: 'application'})
 
-    userEvent.click(await screen.findByRole('button', {name: 'Application'}));
+    await userEvent.click(await screen.findByRole('button', {name: 'Application'}));
     expect(wrapper.emitted().changeScope[1]).toEqual(['instance']);
   });
 });

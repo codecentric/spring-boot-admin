@@ -31,7 +31,7 @@ describe('trigger-row.vue', () => {
 
   it('should render details when clicking on arrow', async () => {
     const toggleArrow = await screen.findByRole('button')
-    userEvent.click(toggleArrow)
+    await userEvent.click(toggleArrow)
     const intervalElement = await screen.findByText('interval')
     expect(intervalElement).toBeVisible()
   })

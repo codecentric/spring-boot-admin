@@ -47,6 +47,8 @@ TIP: You can modify how the information from the registry is used to register th
 
 NOTE: When using Eureka, the `healthCheckUrl` known to Eureka is used for health-checking, which can be set on your client using `eureka.instance.healthCheckUrl`.
 
+WARNING: Consul does not allow dots (`.`) in metadata keys, use dashes instead (e.g. `management-context-path`).
+
 .Instance metadata options
 |===
 | Key |Value |Default value

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -124,7 +124,20 @@ public final class StatusInfo implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public static StatusInfo from(Map<String, ?> body) {
-		return StatusInfo.valueOf((String) (body).get("status"), (Map<String, ?>) body.get("details"));
+		Map<String, ?> details = Collections.emptyMap();
+
+		/*
+		 * Key "details" is present when accessing Spring Boot Actuator Health using
+		 * Accept-Header {@link org.springframework.boot.actuate.endpoint.ApiVersion#V2}.
+		 */
+		if (body.containsKey("details")) {
+			details = (Map<String, ?>) body.get("details");
+		}
+		else if (body.containsKey("components")) {
+			details = (Map<String, ?>) body.get("components");
+		}
+
+		return StatusInfo.valueOf((String) body.get("status"), details);
 	}
 
 }

@@ -103,11 +103,11 @@ eureka:
 spring.cloud.consul:
   discovery:
     metadata:
-        user-name: ${spring.security.user.name}
-        user-password: ${spring.security.user.password}
+      user-name: ${spring.security.user.name}
+      user-password: ${spring.security.user.password}
 ----
 
-WARNING: Consul does not allow dots (".") in metadata keys, use dashes instead.
+WARNING: Consul does not allow dots (`.`) in metadata keys, use dashes instead.
 
 
 ==== CSRF on Actuator Endpoints ====

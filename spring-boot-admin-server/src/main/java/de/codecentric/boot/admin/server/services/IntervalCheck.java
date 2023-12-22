@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -83,7 +83,7 @@ public class IntervalCheck {
 		this.subscription = Flux.interval(this.interval)
 				.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
 				.log(log.getName(), Level.FINEST).subscribeOn(this.scheduler).concatMap((i) -> this.checkAllInstances())
-				.retryWhen(Retry.indefinitely()
+				.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
 						.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
 				.subscribe(null, (error) -> log.error("Unexpected error in {}-check", name, error));
 	}

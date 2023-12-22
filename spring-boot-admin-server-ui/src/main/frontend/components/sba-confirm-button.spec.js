@@ -28,14 +28,14 @@ describe('SbaConfirmButton', function () {
   })
 
   it('should not emit when clicked once', async () => {
-    userEvent.click(await screen.findByRole('button', {name: 'Execute'}));
+    await userEvent.click(await screen.findByRole('button', {name: 'Execute'}));
 
     expect(emitted().click).toBeUndefined();
   });
 
   it('should emit when click confirmed', async () => {
-    userEvent.click(await screen.findByRole('button', {name: 'Execute'}));
-    userEvent.click(await screen.findByRole('button', {name: 'Confirm'}));
+    await userEvent.click(await screen.findByRole('button', {name: 'Execute'}));
+    await userEvent.click(await screen.findByRole('button', {name: 'Confirm'}));
 
     expect(emitted().click).toBeDefined();
   });

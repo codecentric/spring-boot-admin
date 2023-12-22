@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,7 +72,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 	@BeforeAll
 	public static void setUp() {
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(60));
+		StepVerifier.setDefaultTimeout(Duration.ofSeconds(600));
 	}
 
 	@AfterAll
@@ -124,10 +124,10 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 	@Test
 	public void should_return_status_504() {
-		// 502 on invalid response
-		this.client.get().uri("/instances/{instanceId}/actuator/invalid", this.instanceId)
+		// 504 on read timeout
+		this.client.get().uri("/instances/{instanceId}/actuator/timeout", this.instanceId)
 				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType())).exchange().expectStatus()
-				.isEqualTo(HttpStatus.BAD_GATEWAY);
+				.isEqualTo(HttpStatus.GATEWAY_TIMEOUT);
 	}
 
 	@Test
@@ -197,13 +197,13 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 		//@formatter:off
 		String actuatorIndex = "{ \"_links\": { " +
-							"\"env\": { \"href\": \"" + managementUrl + "/env\", \"templated\": false }," +
-							"\"test\": { \"href\": \"" + managementUrl + "/test\", \"templated\": false }," +
-							"\"post\": { \"href\": \"" + managementUrl + "/post\", \"templated\": false }," +
-							"\"delete\": { \"href\": \"" + managementUrl + "/delete\", \"templated\": false }," +
-							"\"invalid\": { \"href\": \"" + managementUrl + "/invalid\", \"templated\": false }," +
-							"\"timeout\": { \"href\": \"" + managementUrl + "/timeout\", \"templated\": false }" +
-							" } }";
+			"\"env\": { \"href\": \"" + managementUrl + "/env\", \"templated\": false }," +
+			"\"test\": { \"href\": \"" + managementUrl + "/test\", \"templated\": false }," +
+			"\"post\": { \"href\": \"" + managementUrl + "/post\", \"templated\": false }," +
+			"\"delete\": { \"href\": \"" + managementUrl + "/delete\", \"templated\": false }," +
+			"\"invalid\": { \"href\": \"" + managementUrl + "/invalid\", \"templated\": false }," +
+			"\"timeout\": { \"href\": \"" + managementUrl + "/timeout\", \"templated\": false }" +
+			" } }";
 		//@formatter:on
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/health")).willReturn(ok("{ \"status\" : \"UP\" }")
 				.withHeader(CONTENT_TYPE, ApiVersion.LATEST.getProducedMimeType().toString())));
@@ -242,17 +242,17 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 		//@formatter:off
 		String registration = "{ \"name\": \"test\", " +
-							"\"healthUrl\": \"" + managementUrl + "/health\", " +
-							"\"managementUrl\": \"" + managementUrl + "\" }";
+			"\"healthUrl\": \"" + managementUrl + "/health\", " +
+			"\"managementUrl\": \"" + managementUrl + "\" }";
 
 		EntityExchangeResult<Map<String, Object>> result = this.client.post()
-																.uri("/instances")
-																.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-																.bodyValue(registration)
-																.exchange()
-																.expectStatus().isCreated()
-																.expectBody(RESPONSE_TYPE)
-																.returnResult();
+			.uri("/instances")
+			.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+			.bodyValue(registration)
+			.exchange()
+			.expectStatus().isCreated()
+			.expectBody(RESPONSE_TYPE)
+			.returnResult();
 		//@formatter:on
 		assertThat(result.getResponseBody()).containsKeys("id");
 		return result.getResponseBody().get("id").toString();
@@ -261,9 +261,9 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	private Flux<Map<String, Object>> getEventStream() {
 		//@formatter:off
 		return this.client.get().uri("/instances/events").accept(MediaType.TEXT_EVENT_STREAM)
-						.exchange()
-						.expectStatus().isOk()
-						.returnResult(RESPONSE_TYPE).getResponseBody();
+			.exchange()
+			.expectStatus().isOk()
+			.returnResult(RESPONSE_TYPE).getResponseBody();
 		//@formatter:on
 	}
 
