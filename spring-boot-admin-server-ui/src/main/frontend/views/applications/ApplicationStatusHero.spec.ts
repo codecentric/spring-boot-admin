@@ -27,56 +27,37 @@ describe('ApplicationStatusHero', () => {
     });
   });
 
-  it('shows "all up" when all are up', () => {
-    applications.value = [
-      new Application({
-        name: 'Test Application',
-        statusTimestamp: Date.now(),
-        instances: [
-          new Instance({ id: '4711', statusInfo: { status: 'UP' } }),
-          new Instance({ id: '4712', statusInfo: { status: 'UP' } }),
-        ],
-      }),
-    ];
+  it.each`
+    instance1Status | instance2Status | expectedMessage
+    ${'UP'}         | ${'UP'}         | ${'all up'}
+    ${'OFFLINE'}    | ${'OFFLINE'}    | ${'all down'}
+    ${'UNKNOWN'}    | ${'UNKNOWN'}    | ${'all in unknown state'}
+    ${'UP'}         | ${'UNKNOWN'}    | ${'some instances are in unknown state'}
+    ${'UP'}         | ${'DOWN'}       | ${'some instances are down'}
+    ${'UP'}         | ${'OFFLINE'}    | ${'some instances are down'}
+  `(
+    '`$expectedMessage` is shown when `$instance1Status` and `$instance2Status`',
+    ({ instance1Status, instance2Status, expectedMessage }) => {
+      applications.value = [
+        new Application({
+          name: 'Test Application',
+          statusTimestamp: Date.now(),
+          instances: [
+            new Instance({
+              id: '4711',
+              statusInfo: { status: instance1Status },
+            }),
+            new Instance({
+              id: '4712',
+              statusInfo: { status: instance2Status },
+            }),
+          ],
+        }),
+      ];
 
-    render(ApplicationStatusHero);
+      render(ApplicationStatusHero);
 
-    expect(screen.getByText('all up')).toBeVisible();
-  });
-
-  it('shows "Some instances are down" when one is down', () => {
-    applications.value = [
-      new Application({
-        name: 'Test Application',
-        statusTimestamp: Date.now(),
-        instances: [
-          new Instance({ id: '4711', statusInfo: { status: 'UP' } }),
-          new Instance({ id: '4712', statusInfo: { status: 'DOWN' } }),
-        ],
-      }),
-    ];
-
-    render(ApplicationStatusHero);
-
-    expect(screen.getByText('Some instances are down')).toBeVisible();
-  });
-
-  it('shows "up but unknow" when one is unknown', () => {
-    applications.value = [
-      new Application({
-        name: 'Test Application',
-        statusTimestamp: Date.now(),
-        instances: [
-          new Instance({ id: '4711', statusInfo: { status: 'UP' } }),
-          new Instance({ id: '4712', statusInfo: { status: 'UNKNOWN' } }),
-        ],
-      }),
-    ];
-
-    render(ApplicationStatusHero);
-
-    expect(
-      screen.getByText('Up, but some instances are unknown'),
-    ).toBeVisible();
-  });
+      expect(screen.getByText(expectedMessage)).toBeVisible();
+    },
+  );
 });

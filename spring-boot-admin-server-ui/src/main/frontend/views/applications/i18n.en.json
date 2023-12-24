@@ -8,6 +8,8 @@
       "restart": "Restart"
     },
     "all_up": "all up",
+    "all_down": "all down",
+    "all_unknown": "all in unknown state",
     "applications": "Applications",
     "fetching_notification_filters_failed": "Fetching notification filters failed.",
     "notification_filter": {

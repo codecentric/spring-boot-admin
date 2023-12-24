@@ -448,3 +448,7 @@ type StatusInfo = {
     | string;
   details: { [key: string]: string };
 };
+
+export const DOWN_STATES = ['OUT_OF_SERVICE', 'DOWN', 'OFFLINE', 'RESTRICTED'];
+export const UP_STATES = ['UP'];
+export const UNKNOWN_STATES = ['UNKNOWN'];

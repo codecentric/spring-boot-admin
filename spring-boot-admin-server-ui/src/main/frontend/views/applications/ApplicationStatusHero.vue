@@ -2,10 +2,30 @@
   <sba-panel>
     <template v-if="applicationsCount > 0">
       <div class="flex flex-row md:flex-col items-center justify-center">
-        <template v-if="allInstancesUp">
+        <template v-if="statusInfo.allUp">
           <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
           <div class="text-center">
             <h1 class="font-bold text-2xl" v-text="$t('applications.all_up')" />
+            <p class="text-gray-400" v-text="lastUpdate" />
+          </div>
+        </template>
+        <template v-else-if="statusInfo.allDown">
+          <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
+          <div class="text-center">
+            <h1
+              class="font-bold text-2xl"
+              v-text="$t('applications.all_down')"
+            />
+            <p class="text-gray-400" v-text="lastUpdate" />
+          </div>
+        </template>
+        <template v-if="statusInfo.allUnknown">
+          <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
+          <div class="text-center">
+            <h1
+              class="font-bold text-2xl"
+              v-text="$t('applications.all_unknown')"
+            />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
         </template>
@@ -47,7 +67,11 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+
 import { useApplicationStore } from '@/composables/useApplicationStore';
+import { getStatusInfo } from '@/services/application';
+import { DOWN_STATES, UNKNOWN_STATES, UP_STATES } from '@/services/instance';
 
 const options = {
   year: 'numeric',
@@ -61,7 +85,10 @@ const options = {
 export default {
   setup() {
     const { applications } = useApplicationStore();
-    return { applications };
+
+    const statusInfo = computed(() => getStatusInfo(applications.value));
+
+    return { applications, statusInfo };
   },
   data() {
     return {
@@ -71,14 +98,10 @@ export default {
   },
   computed: {
     allInstancesUp() {
-      return this.applications
-        .flatMap((application) => application.instances)
-        .every((instance) => instance.statusInfo.status === 'UP');
+      return this.statusInfo.allUp;
     },
     someInstancesDown() {
-      return this.applications
-        .flatMap((application) => application.instances)
-        .some((instance) => instance.statusInfo.status === 'DOWN');
+      return this.statusInfo.downCount > 0;
     },
     notUpCount() {
       return this.applications.reduce((current, next) => {
