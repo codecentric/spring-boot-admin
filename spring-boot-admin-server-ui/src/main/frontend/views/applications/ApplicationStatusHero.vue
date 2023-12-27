@@ -71,7 +71,6 @@ import { computed } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import { getStatusInfo } from '@/services/application';
-import { DOWN_STATES, UNKNOWN_STATES, UP_STATES } from '@/services/instance';
 
 const options = {
   year: 'numeric',
