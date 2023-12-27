@@ -45,7 +45,7 @@
     "iso8601-duration": "2.1.2",
     "lodash-es": "4.17.21",
     "mitt": "^3.0.0",
-    "moment": "2.30.0",
+    "moment": "2.30.1",
     "popper.js": "1.16.1",
     "pretty-bytes": "6.1.1",
     "random-string": "0.2.0",
