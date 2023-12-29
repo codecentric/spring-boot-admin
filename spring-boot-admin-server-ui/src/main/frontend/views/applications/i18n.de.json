@@ -8,6 +8,10 @@
       "restart": "Neu starten"
     },
     "all_up": "Alle verfügbar",
+    "all_down": "Keine verfügbar",
+    "all_unknown": "Alle im Status unknown",
+    "some_unknown": "Einige im Status unknown",
+    "some_down": "Einige im Status down",
     "applications": "Anwendungen",
     "fetching_notification_filters_failed": "Der Abruf der Benachrichtigungseinstellungen ist fehlgeschlagen.",
     "notification_filter": {

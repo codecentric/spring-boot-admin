@@ -34,11 +34,23 @@
           <div class="text-center">
             <h1
               class="font-bold text-2xl"
-              v-text="$t('applications.instances_down')"
+              v-text="$t('applications.some_down')"
             />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
         </template>
+
+        <template v-else-if="someInstancesUnknown">
+          <font-awesome-icon icon="minus-circle" class="text-yellow-500 icon" />
+          <div class="text-center">
+            <h1
+              class="font-bold text-2xl"
+              v-text="$t('applications.some_unknown')"
+            />
+            <p class="text-gray-400" v-text="lastUpdate" />
+          </div>
+        </template>
+
         <template v-else-if="notUpCount > 0">
           <font-awesome-icon icon="minus-circle" class="text-yellow-200 icon" />
           <div class="text-center">
@@ -96,11 +108,11 @@ export default {
     };
   },
   computed: {
-    allInstancesUp() {
-      return this.statusInfo.allUp;
-    },
     someInstancesDown() {
-      return this.statusInfo.downCount > 0;
+      return this.statusInfo.someDown;
+    },
+    someInstancesUnknown() {
+      return this.statusInfo.someUnknown;
     },
     notUpCount() {
       return this.applications.reduce((current, next) => {
@@ -120,11 +132,6 @@ export default {
         (current, next) => current + next.instances.length,
         0,
       );
-    },
-  },
-  watch: {
-    notUpCount() {
-      this.updateLastUpdateTime();
     },
   },
   beforeMount() {

@@ -70,6 +70,8 @@ export const getStatusInfo = (applications: Application[]) => {
     allUp: upCount === instances.length,
     allDown: downCount === instances.length,
     allUnknown: unknownCount === instances.length,
+    someUnknown: unknownCount > 0 && unknownCount < instances.length,
+    someDown: downCount > 0 && downCount < instances.length,
   };
 };
 
