@@ -35,6 +35,9 @@ describe('ApplicationStatusHero', () => {
     ${'UP'}         | ${'UNKNOWN'}    | ${'some instances are in unknown state'}
     ${'UP'}         | ${'DOWN'}       | ${'some instances are down'}
     ${'UP'}         | ${'OFFLINE'}    | ${'some instances are down'}
+    ${'DOWN'}       | ${'UNKNOWN'}    | ${'some instances are down'}
+    ${'DOWN'}       | ${'OFFLINE'}    | ${'all down'}
+    ${'OFFLINE'}    | ${'UP'}         | ${'some instances are down'}
   `(
     '`$expectedMessage` is shown when `$instance1Status` and `$instance2Status`',
     ({ instance1Status, instance2Status, expectedMessage }) => {
