@@ -22,7 +22,7 @@
         <template v-if="statusInfo.allUnknown">
           <font-awesome-icon
             icon="question-circle"
-            class="text-gray-400 icon"
+            class="text-gray-300 icon"
           />
           <div class="text-center">
             <h1
@@ -46,23 +46,12 @@
         <template v-else-if="someInstancesUnknown">
           <font-awesome-icon
             icon="question-circle"
-            class="text-gray-400 icon"
+            class="text-gray-300 icon"
           />
           <div class="text-center">
             <h1
               class="font-bold text-2xl"
               v-text="$t('applications.some_unknown')"
-            />
-            <p class="text-gray-400" v-text="lastUpdate" />
-          </div>
-        </template>
-
-        <template v-else-if="notUpCount > 0">
-          <font-awesome-icon icon="minus-circle" class="text-yellow-200 icon" />
-          <div class="text-center">
-            <h1
-              class="font-bold text-2xl"
-              v-text="$t('applications.instances_unknown')"
             />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>

@@ -19,7 +19,6 @@
       "removed": "Notification filter removed."
     },
     "instances": "Instances",
-    "instances_unknown": "Up, but some instances are unknown",
     "loading_applications": "Loading applications...",
     "no_applications_registered": "No applications registered.",
     "notifications_suppressed_for": "Notifications on <code>{name}</code> are suppressed for",
