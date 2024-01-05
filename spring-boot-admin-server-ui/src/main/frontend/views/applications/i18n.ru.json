@@ -3,7 +3,7 @@
     "all_up": "все доступны",
     "applications": "Приложения",
     "instances": "Экземпляры",
-    "instances_down": "экземпляры недоступны",
+    "some_down": "экземпляры недоступны",
     "loading_applications": "Загрузка приложений...",
     "no_applications_registered": "Нет зарегистрированных приложений.",
     "notifications_suppressed_for": "Уведомления для <code>{name}</code> отключены на",

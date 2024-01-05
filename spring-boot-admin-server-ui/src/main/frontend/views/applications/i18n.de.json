@@ -8,10 +8,10 @@
       "restart": "Neu starten"
     },
     "all_up": "Alle verfügbar",
-    "all_down": "Keine verfügbar",
-    "all_unknown": "Alle im Status unknown",
-    "some_unknown": "Einige im Status unknown",
-    "some_down": "Einige im Status down",
+    "all_down": "Alle Instanzen sind ausgefallen",
+    "all_unknown": "Alle Instanzen haben unbekannten Status",
+    "some_unknown": "Einige Instanzen haben unbekannten Status",
+    "some_down": "Einige Instanzen sind ausgefallen",
     "applications": "Anwendungen",
     "fetching_notification_filters_failed": "Der Abruf der Benachrichtigungseinstellungen ist fehlgeschlagen.",
     "notification_filter": {
@@ -19,7 +19,6 @@
       "removed": "Benachrichtigungseinstellungen wurden geändert."
     },
     "instances": "Instanzen",
-    "instances_down": "Einige Instanzen sind ausgefallen",
     "instances_unknown": "Verfügbar, aber einige haben unbekannten Status",
     "loading_applications": "Anwendungen werden geladen...",
     "no_applications_registered": "Keine Anwendungen registriert.",
