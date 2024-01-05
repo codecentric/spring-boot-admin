@@ -3,7 +3,7 @@
     "all_up": "全部正常",
     "applications": "應用數",
     "instances": "實例數",
-    "instances_down": "離線實例",
+    "some_down": "離線實例",
     "loading_applications": "應用下載中...",
     "no_applications_registered": "暫無應用註冊。",
     "notifications_suppressed_for": "Notifications on <code>{name}</code> are suppressed for",

@@ -3,7 +3,7 @@
     "all_up": "tout est disponible",
     "applications": "Applications",
     "instances": "Instances",
-    "instances_down": "instances inaccessibles",
+    "some_down": "instances inaccessibles",
     "loading_applications": "Chargement des applications...",
     "no_applications_registered": "Aucune application enregistrée.",
     "notifications_suppressed_for": "Les notifications sur <code>{name}</code> sont supprimées",
