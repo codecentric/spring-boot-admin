@@ -20,7 +20,10 @@
           </div>
         </template>
         <template v-if="statusInfo.allUnknown">
-          <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
+          <font-awesome-icon
+            icon="question-circle"
+            class="text-gray-400 icon"
+          />
           <div class="text-center">
             <h1
               class="font-bold text-2xl"
@@ -41,7 +44,10 @@
         </template>
 
         <template v-else-if="someInstancesUnknown">
-          <font-awesome-icon icon="minus-circle" class="text-yellow-500 icon" />
+          <font-awesome-icon
+            icon="question-circle"
+            class="text-gray-400 icon"
+          />
           <div class="text-center">
             <h1
               class="font-bold text-2xl"
