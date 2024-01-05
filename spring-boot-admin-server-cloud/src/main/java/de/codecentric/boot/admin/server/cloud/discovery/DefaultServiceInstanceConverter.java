@@ -50,7 +50,7 @@ public class DefaultServiceInstanceConverter implements ServiceInstanceConverter
 
 	private static final String[] KEYS_MANAGEMENT_ADDRESS = { "management.address", "management-address" };
 
-	private static final String[] KEYS_MANAGEMENT_PORT = { "management.port", "management-port" };
+	private static final String[] KEYS_MANAGEMENT_PORT = { "management.port", "management-port", "port.management" };
 
 	private static final String[] KEYS_MANAGEMENT_PATH = { "management.context-path", "management-context-path" };
 
