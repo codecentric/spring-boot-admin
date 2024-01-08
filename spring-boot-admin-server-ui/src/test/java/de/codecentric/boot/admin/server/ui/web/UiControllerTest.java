@@ -16,23 +16,29 @@
 
 package de.codecentric.boot.admin.server.ui.web;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class UiControllerTest {
 
 	@Test
 	public void should_use_default_url() throws Exception {
-		MockMvc mockMvc = setupController("");
+		MockMvc mockMvc = setupController("", List.of());
 
 		mockMvc.perform(get("http://example/"))
 			.andExpect(status().isOk())
@@ -42,7 +48,7 @@ public class UiControllerTest {
 
 	@Test
 	public void should_use_path_from_public_url() throws Exception {
-		MockMvc mockMvc = setupController("/public");
+		MockMvc mockMvc = setupController("/public", List.of());
 
 		mockMvc.perform(get("http://example/"))
 			.andExpect(status().isOk())
@@ -52,7 +58,7 @@ public class UiControllerTest {
 
 	@Test
 	public void should_use_host_and_path_from_public_url() throws Exception {
-		MockMvc mockMvc = setupController("http://public/public");
+		MockMvc mockMvc = setupController("http://public/public", List.of());
 
 		mockMvc.perform(get("http://example/"))
 			.andExpect(status().isOk())
@@ -62,7 +68,7 @@ public class UiControllerTest {
 
 	@Test
 	public void should_use_scheme_host_and_path_from_public_url() throws Exception {
-		MockMvc mockMvc = setupController("https://public/public");
+		MockMvc mockMvc = setupController("https://public/public", List.of());
 
 		mockMvc.perform(get("http://example/"))
 			.andExpect(status().isOk())
@@ -70,9 +76,39 @@ public class UiControllerTest {
 			.andExpect(model().attribute("baseUrl", "https://public/public/"));
 	}
 
-	private MockMvc setupController(String publicUrl) {
+	@ParameterizedTest
+	@CsvSource(value = { //
+			"link without children with url, https://codecentric.de, false, false", //
+			"link without children without url, null, false, true", //
+			"link with children, null, true, false" }, //
+			nullValues = { "null" })
+	public void should_validate_external_views(String label, String url, boolean hasChildren, boolean shouldFail) {
+		try {
+			UiController.ExternalView externalView = new UiController.ExternalView(label, url, 1, false,
+					hasChildren
+							? List.of(new UiController.ExternalView("child", "https://urli.com", 1, false, List.of()))
+							: List.of());
+
+			setupController("http://mysba.com", List.of(externalView));
+		}
+		catch (Exception ex) {
+			if (!shouldFail) {
+				fail("Initialization of External View should have failed");
+			}
+		}
+	}
+
+	// TODO: parametrisieren mit und ohne External Views
+	// external view mit/ohne children
+	// mit children und mit / ohne url
+	// Dann für alle Fälle einen parametrisierten Test
+	private MockMvc setupController(String publicUrl, List<UiController.ExternalView> externalViews) {
+		var uiControllerSettings = UiController.Settings.builder();
+		if (!isEmpty(externalViews)) {
+			uiControllerSettings.externalViews(externalViews);
+		}
 		return MockMvcBuilders
-			.standaloneSetup(new UiController(publicUrl, UiExtensions.EMPTY, UiController.Settings.builder().build()))
+			.standaloneSetup(new UiController(publicUrl, UiExtensions.EMPTY, uiControllerSettings.build()))
 			.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
 			.build();
 	}
