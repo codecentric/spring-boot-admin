@@ -98,10 +98,6 @@ public class UiControllerTest {
 		}
 	}
 
-	// TODO: parametrisieren mit und ohne External Views
-	// external view mit/ohne children
-	// mit children und mit / ohne url
-	// Dann für alle Fälle einen parametrisierten Test
 	private MockMvc setupController(String publicUrl, List<UiController.ExternalView> externalViews) {
 		var uiControllerSettings = UiController.Settings.builder();
 		if (!isEmpty(externalViews)) {
