@@ -48,7 +48,12 @@
         <br />
         <span class="text-sm italic" v-text="instance.id" />
       </div>
-      <div class="hidden xl:block w-1/4 overflow-x-scroll">
+      <div
+        class="hidden xl:block w-1/4"
+        :class="{
+          'overflow-x-scroll': Object.keys(instance.tags ?? {}).length > 0,
+        }"
+      >
         <sba-tags :small="true" :tags="instance.tags" :wrap="false" />
       </div>
       <div
