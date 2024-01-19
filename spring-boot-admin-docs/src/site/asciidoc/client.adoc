@@ -153,7 +153,7 @@ spring.boot.admin.client.password
 
 | spring.boot.admin.client.instance.health-url
 | Health-url to register with. Can be overridden in case the reachable URL is different (e.g. Docker). Must be unique in registry.
-| Guessed based on management-url and `endpoints.health.id`.
+| Guessed based on management-base-url and `endpoints.health.id`.
 
 | spring.boot.admin.client.instance.management-base-url
 | Base url for computing the management-url to register with. The path is inferred at runtime, and appended to the base url.
