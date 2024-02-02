@@ -218,6 +218,12 @@ class Application {
     return this.axios.delete(uri`actuator/caches`);
   }
 
+  async clearCache(name, cacheManager) {
+    return this.axios.delete(uri`actuator/caches/${name}`, {
+      params: { cacheManager: cacheManager },
+    });
+  }
+
   shutdown() {
     return this.axios.post(uri`actuator/shutdown`);
   }
