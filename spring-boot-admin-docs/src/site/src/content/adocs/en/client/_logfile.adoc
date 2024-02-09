@@ -13,7 +13,7 @@ You need to set a custom file log pattern as Spring Boot's default one doesn't u
 To enforce the use of ANSI-colored output, set `spring.output.ansi.enabled=ALWAYS`.
 Otherwise Spring tries to detect if ANSI-colored output is available and might disable it.
 
-[source]
+[source,properties]
 .application.properties
 ----
 logging.file.name=/var/log/sample-boot-application.log <1>

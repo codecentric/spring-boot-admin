@@ -17,20 +17,7 @@ Spring Boot Admin Server is capable of running as servlet or webflux application
 In this example we're using the servlet web starter.
 
 . Add Spring Boot Admin Server and Spring Boot Web to your dependencies:
-+
-[source,xml,subs="verbatim,attributes"]
-.pom.xml
-----
-<dependency>
-    <groupId>de.codecentric</groupId>
-    <artifactId>spring-boot-admin-starter-server</artifactId>
-    <version>{project-version}</version>
-</dependency>
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-web</artifactId>
-</dependency>
-----
+
 
 . Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your Application class:
 +
@@ -60,7 +47,7 @@ There is also a <<server/discovery#spring-cloud-discovery-static-config,static c
 [[register-clients-via-spring-boot-admin]]
 . Add spring-boot-admin-starter-client to your dependencies:
 +
-[source,xml,subs="verbatim,attributes"]
+[source,xml]
 .pom.xml
 ----
 <dependency>
@@ -75,7 +62,7 @@ There is also a <<server/discovery#spring-cloud-discovery-static-config,static c
 
 . Enable the SBA Client by configuring the URL of the Spring Boot Admin Server:
 +
-[source]
+[source,properties]
 .application.properties
 ----
 server.port=8081 #<1>
