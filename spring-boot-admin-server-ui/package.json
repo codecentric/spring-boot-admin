@@ -117,6 +117,9 @@
     "npm": ">=8"
   },
   "msw": {
-    "workerDirectory": "./public"
+    "workerDirectory": [
+      "./src/main/frontend/public",
+      "src/main/frontend/public"
+    ]
   }
 }

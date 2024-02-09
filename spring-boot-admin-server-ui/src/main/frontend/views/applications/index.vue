@@ -171,9 +171,9 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { groupBy, sortBy, transform } from 'lodash-es';
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 import SbaWave from '@/components/sba-wave.vue';
@@ -234,6 +234,7 @@ const groupingFunctions = {
 
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();
 const { applications, applicationsInitialized, applicationStore } =
   useApplicationStore();
 const notificationCenter = useNotificationCenter({});
@@ -377,9 +378,10 @@ function toggleGroup(name: string) {
 }
 
 function select(name: string) {
-  router.replace({
+  router.push({
     name: 'applications',
     params: { selected: name },
+    query: { ...route.query },
   });
 }
 
@@ -389,7 +391,7 @@ function deselect(event: Event, expectedSelected: string) {
   }
   toggleNotificationFilterSettings(null);
   if (!expectedSelected || props.selected === expectedSelected) {
-    router.replace({ name: 'applications' });
+    router.push({ name: 'applications' });
   }
 }
 
