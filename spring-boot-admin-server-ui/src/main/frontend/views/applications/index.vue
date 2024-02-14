@@ -171,7 +171,7 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { groupBy, sortBy, transform } from 'lodash-es';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
