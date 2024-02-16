@@ -88,7 +88,7 @@
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-storybook": "0.6.15",
+    "eslint-plugin-storybook": "0.8.0",
     "eslint-plugin-vue": "^9.10.0",
     "jsdom": "^24.0.0",
     "msw": "2.2.0",
