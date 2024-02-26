@@ -381,7 +381,7 @@ To enable https://www.webex.com/[Webex] notifications, you need to set the appro
 |
 
 | spring.boot.admin.notify.webex.message
-| Text to send. SpEL-expressions are supported.
+| Text to send. SpEL-expressions are supported. By default, messages will be sent as Markdown, so you can include Markdown formatting.
 | `+++"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"+++`
 |===
 
