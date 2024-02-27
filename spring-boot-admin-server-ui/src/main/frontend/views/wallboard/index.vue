@@ -132,7 +132,7 @@ export default {
         new Fuse<Application>(applications.value, {
           includeScore: true,
           useExtendedSearch: true,
-          threshold: 0.25,
+          threshold: 0.4,
           keys: ['name', 'buildVersion', 'instances.name', 'instances.id'],
         }),
     );
