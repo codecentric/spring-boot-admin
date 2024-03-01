@@ -116,6 +116,10 @@
                 />
               </template>
 
+              <template v-if="singleVersionInGroup(group)" #version>
+                <span v-text="group.instances[0].buildVersion" />
+              </template>
+
               <template v-if="isGroupedByApplication" #actions>
                 <ApplicationListItemAction
                   :has-notification-filters-support="
@@ -338,6 +342,15 @@ function filterInstances(applications: Application[]) {
 const isGroupedByApplication = computed(() => {
   return groupingFunction.value === groupingFunctions.application;
 });
+
+const singleVersionInGroup = (group) => {
+  return (
+    group.length === 1 ||
+    group.instances.filter(
+      (instance) => group.instances[0].buildVersion !== instance.buildVersion,
+    ).length === 0
+  );
+};
 
 if (props.selected) {
   scrollIntoView(props.selected);
