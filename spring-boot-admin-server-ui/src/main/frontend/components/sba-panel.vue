@@ -38,9 +38,11 @@
           <slot v-if="'title' in $slots" name="title" />
         </button>
       </h3>
+
       <div>
         <slot v-if="'version' in $slots" name="version" />
       </div>
+
       <div>
         <slot v-if="'actions' in $slots" name="actions" />
         <sba-icon-button
