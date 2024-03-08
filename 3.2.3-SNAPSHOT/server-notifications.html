@@ -648,13 +648,63 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
    </table>
   </div>
   <div class="sect2">
+   <h3 id="webex-notifications">Webex Notifications</h3>
+   <div class="paragraph">
+    <p>To enable <a href="https://www.webex.com/">Webex</a> notifications, you need to set the appropriate configuration properties for <code>auth-token</code> and <code>room-id</code>.</p>
+   </div>
+   <table class="tableblock frame-all grid-all stretch table table-striped table-bordered">
+    <caption class="title">
+     Table 9. Webex notifications configuration options
+    </caption>
+    <colgroup>
+     <col style="width: 33.3333%;">
+     <col style="width: 33.3333%;">
+     <col style="width: 33.3334%;">
+    </colgroup>
+    <thead>
+     <tr>
+      <th class="tableblock halign-left valign-top">Property name</th>
+      <th class="tableblock halign-left valign-top">Description</th>
+      <th class="tableblock halign-left valign-top">Default value</th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.webex.enabled</p></td>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">Enable Webex notifications</p></td>
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+     </tr>
+     <tr>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.webex.url</p></td>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">The Webex server url to send the notifications to.</p></td>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">"https://webexapis.com/v1/messages"</p></td>
+     </tr>
+     <tr>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.webex.auth-token</p></td>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">The authentication token for your Webex account (e.g. <code>123456-ascbhuwbtzzk-abtabhixta-788654</code>).</p></td>
+      <td class="tableblock halign-left valign-top"></td>
+     </tr>
+     <tr>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.webex.room-id</p></td>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">Unique identifier for the target room in Webex.</p></td>
+      <td class="tableblock halign-left valign-top"></td>
+     </tr>
+     <tr>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">spring.boot.admin.notify.webex.message</p></td>
+      <td class="tableblock halign-left valign-top"><p class="tableblock">Text to send. SpEL-expressions are supported. By default, messages will be sent as Markdown, so you can include Markdown formatting.</p></td>
+      <td class="tableblock halign-left valign-top"><p class="tableblock"><code>"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"</code></p></td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+  <div class="sect2">
    <h3 id="discord-notifications">Discord Notifications</h3>
    <div class="paragraph">
     <p>To enable Discord notifications you need to create a webhook and set the appropriate configuration property.</p>
    </div>
    <table class="tableblock frame-all grid-all stretch table table-striped table-bordered">
     <caption class="title">
-     Table 9. Discord notifications configuration options
+     Table 10. Discord notifications configuration options
     </caption>
     <colgroup>
      <col style="width: 33.3333%;">
@@ -709,7 +759,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
    </div>
    <table class="tableblock frame-all grid-all stretch table table-striped table-bordered">
     <caption class="title">
-     Table 10. Notification Proxy configuration options
+     Table 11. Notification Proxy configuration options
     </caption>
     <colgroup>
      <col style="width: 33.3333%;">
@@ -909,7 +959,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
    </div>
    <table class="tableblock frame-all grid-all stretch table table-striped table-bordered">
     <caption class="title">
-     Table 11. DingTalk notifications configuration options
+     Table 12. DingTalk notifications configuration options
     </caption>
     <colgroup>
      <col style="width: 33.3333%;">
@@ -954,7 +1004,7 @@ spring.boot.admin.notify.mail.to=admin@example.com</pre>
    </div>
    <table class="tableblock frame-all grid-all stretch table table-striped table-bordered">
     <caption class="title">
-     Table 12. RocketChat notifications configuration options
+     Table 13. RocketChat notifications configuration options
     </caption>
     <colgroup>
      <col style="width: 33.3333%;">
