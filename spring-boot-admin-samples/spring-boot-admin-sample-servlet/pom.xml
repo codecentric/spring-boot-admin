@@ -103,6 +103,7 @@
                 <configuration>
                     <mainClass>de.codecentric.boot.admin.SpringBootAdminServletApplication</mainClass>
                     <addResources>false</addResources>
+                    <executable>true</executable>
                 </configuration>
             </plugin>
         </plugins>
