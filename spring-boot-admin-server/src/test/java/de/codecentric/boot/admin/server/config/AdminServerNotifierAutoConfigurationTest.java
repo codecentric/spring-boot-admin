@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import de.codecentric.boot.admin.server.notify.RocketChatNotifier;
 import de.codecentric.boot.admin.server.notify.SlackNotifier;
 import de.codecentric.boot.admin.server.notify.TelegramNotifier;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
+import de.codecentric.boot.admin.server.notify.WebexNotifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -129,6 +130,13 @@ public class AdminServerNotifierAutoConfigurationTest {
 	public void test_rocketchat() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.notify.rocketchat.url:http://example.com")
 			.run((context) -> assertThat(context).hasSingleBean(RocketChatNotifier.class));
+	}
+
+	@Test
+	public void test_webex() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.notify.webex.auth-token:123456:abtshubzztk-abtabhixta-788654")
+			.run((context) -> assertThat(context).hasSingleBean(WebexNotifier.class));
 	}
 
 	@Test
