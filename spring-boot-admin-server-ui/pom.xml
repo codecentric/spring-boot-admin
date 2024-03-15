@@ -91,7 +91,7 @@
                         </goals>
                         <configuration>
                             <!-- needs to be installed instead of ci as of a bug in npm; https://github.com/npm/cli/issues/4828 -->
-                            <arguments>i --no-save --no-progress --no-audit --quiet --silent</arguments>
+                            <arguments>i --no-progress --no-audit --quiet --silent</arguments>
                         </configuration>
                     </execution>
                     <execution>
@@ -144,7 +144,13 @@
                             <excludeDefaultDirectories>true</excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>node_modules/@rollup/rollup-linux-x64-gnu</directory>
+                                    <directory>node_modules</directory>
+                                </fileset>
+                                <fileset>
+                                    <directory>./</directory>
+                                    <includes>
+                                        <include>package-lock.json</include>
+                                    </includes>
                                 </fileset>
                             </filesets>
                         </configuration>
