@@ -20,7 +20,7 @@
       class="flex gap-2 justify-end absolute w-full md:w-[28rem] top-14 right-0 bg-black/20 py-3 px-4 rounded-bl"
     >
       <sba-input
-        v-model="termFilter"
+        v-model="routerState.termFilter"
         class="flex-1"
         :placeholder="$t('term.filter')"
         name="filter"
@@ -33,7 +33,7 @@
 
       <select
         v-if="healthStatus.size > 1"
-        v-model="statusFilter"
+        v-model="routerState.statusFilter"
         aria-label="status-filter"
         class="relative focus:z-10 focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded"
       >
@@ -61,11 +61,11 @@
 
     <template v-if="applicationsInitialized">
       <div
-        v-if="termFilter.length > 0 && applications.length === 0"
+        v-if="routerState.termFilter.length > 0 && applications.length === 0"
         class="flex w-full h-full items-center text-center text-white text-xl"
         v-text="
           t('term.no_results_for_term', {
-            term: termFilter,
+            term: routerState.termFilter,
           })
         "
       />
@@ -102,47 +102,55 @@
 </template>
 
 <script lang="ts">
+import classNames from 'classnames';
 import Fuse from 'fuse.js';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { HealthStatus } from '@/HealthStatus';
 import { useApplicationStore } from '@/composables/useApplicationStore';
-import hexMesh from '@/views/wallboard/hex-mesh';
+import Application from '@/services/application';
+import { useRouterState } from '@/utils/useRouterState';
+import hexMesh from '@/views/wallboard/hex-mesh.vue';
 
 export default {
   components: { hexMesh },
   setup() {
     const { t } = useI18n();
-    const termFilter = ref('');
-    const statusFilter = ref('none');
+
+    const routerState = useRouterState({
+      termFilter: '',
+      wordWrap: true,
+      statusFilter: 'none',
+    });
 
     const { applications, applicationsInitialized, error } =
       useApplicationStore();
 
     const fuse = computed(
       () =>
-        new Fuse(applications.value, {
+        new Fuse<Application>(applications.value, {
           includeScore: true,
           useExtendedSearch: true,
-          threshold: 0.25,
+          threshold: 0.4,
           keys: ['name', 'buildVersion', 'instances.name', 'instances.id'],
         }),
     );
 
     const filteredApplications = computed(() => {
-      function filterByTerm() {
-        if (termFilter.value.length > 0) {
-          return fuse.value.search(termFilter.value).map((sr) => sr.item);
+      function filterByTerm(): Application[] {
+        if (routerState.termFilter.length > 0) {
+          return fuse.value.search(routerState.termFilter).map((sr) => sr.item);
         } else {
           return applications.value;
         }
       }
 
-      function filterByStatus(result) {
-        if (statusFilter.value !== 'none') {
+      function filterByStatus(result: Application[]) {
+        if (routerState.statusFilter !== 'none') {
           return result.filter(
-            (application) => application.status === statusFilter.value,
+            (application: Application) =>
+              application.status === routerState.statusFilter,
           );
         }
 
@@ -166,13 +174,13 @@ export default {
       applicationsInitialized,
       error,
       t,
-      termFilter,
-      statusFilter,
       healthStatus,
+      routerState,
     };
   },
   methods: {
-    classForApplication(application) {
+    classNames,
+    classForApplication(application: Application) {
       if (!application) {
         return null;
       }
@@ -196,7 +204,7 @@ export default {
       }
       return '';
     },
-    select(application) {
+    select(application: Application) {
       if (application.instances.length === 1) {
         this.$router.push({
           name: 'instances/details',
@@ -244,7 +252,6 @@ export default {
   width: 100%;
   padding: 2.5%;
   color: #fff;
-  word-break: break-word;
   font-size: 2em;
   font-weight: 600;
   line-height: 1.125;

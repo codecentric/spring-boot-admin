@@ -356,6 +356,34 @@ To enable https://telegram.org/[Telegram] notifications you need to create and a
 | `+++"&lt;strong&gt;#{instance.registration.name}&lt;/strong&gt;/#{instance.id} is &lt;strong&gt;#{event.statusInfo.status}&lt;/strong&gt;"+++`
 |===
 
+[[webex-notifications]]
+=== Webex Notifications ===
+To enable https://www.webex.com/[Webex] notifications, you need to set the appropriate configuration properties for `auth-token` and `room-id`.
+
+.Webex notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.webex.enabled
+| Enable Webex notifications
+| `true`
+
+| spring.boot.admin.notify.webex.url
+| The Webex server url to send the notifications to.
+| "https://webexapis.com/v1/messages"
+
+| spring.boot.admin.notify.webex.auth-token
+| The authentication token for your Webex account (e.g. `123456-ascbhuwbtzzk-abtabhixta-788654`).
+|
+
+| spring.boot.admin.notify.webex.room-id
+| Unique identifier for the target room in Webex.
+|
+
+| spring.boot.admin.notify.webex.message
+| Text to send. SpEL-expressions are supported. By default, messages will be sent as Markdown, so you can include Markdown formatting.
+| `+++"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"+++`
+|===
 
 [[discord-notifications]]
 === Discord Notifications ===

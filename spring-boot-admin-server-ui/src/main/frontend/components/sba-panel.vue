@@ -15,7 +15,11 @@
   -->
 
 <template>
-  <div class="shadow-sm border rounded break-inside-avoid mb-6">
+  <div
+    :id="$attrs.id"
+    class="shadow-sm border rounded break-inside-avoid mb-6"
+    :aria-expanded="$attrs.ariaExpanded"
+  >
     <header
       v-if="hasTitle"
       ref="header"
@@ -34,6 +38,10 @@
           <slot v-if="'title' in $slots" name="title" />
         </button>
       </h3>
+
+      <div>
+        <slot v-if="'version' in $slots" name="version" />
+      </div>
 
       <div>
         <slot v-if="'actions' in $slots" name="actions" />

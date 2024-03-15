@@ -71,6 +71,8 @@
   </table>
 </template>
 <script>
+import { ActionScope } from '@/components/ActionScope';
+
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { concatMap, listen, of, tap } from '@/utils/rxjs';
@@ -93,6 +95,10 @@ export default {
     isLoading: {
       type: Boolean,
       default: false,
+    },
+    scope: {
+      type: ActionScope,
+      required: true,
     },
   },
   emits: ['cleared'],
@@ -122,9 +128,14 @@ export default {
         });
     },
     _clearCache(cache) {
+      let scope = this.scope;
       return of(cache).pipe(
         concatMap(async (cache) => {
-          await this.instance.clearCache(cache.name, cache.cacheManager);
+          if (scope === ActionScope.APPLICATION) {
+            await this.application.clearCache(cache.name, cache.cacheManager);
+          } else {
+            await this.instance.clearCache(cache.name, cache.cacheManager);
+          }
           return cache.key;
         }),
         tap({

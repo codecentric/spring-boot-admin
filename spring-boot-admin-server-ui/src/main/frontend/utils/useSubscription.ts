@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Subscription } from 'rxjs';
+import { onBeforeUnmount } from 'vue';
 
-package de.codecentric.boot.admin;
-
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = { SpringBootAdminEurekaApplication.class })
-class SpringBootAdminEurekaApplicationTest {
-
-	@Test
-	void contextLoads() {
-	}
-
-}
+/**
+ * When a subscription is passed, it will be unsubscribed on unmount.
+ *
+ * @param subscription Subscription
+ */
+export const useSubscription = (subscription: Subscription) => {
+  onBeforeUnmount(() => {
+    if (subscription) {
+      try {
+        !subscription.closed && subscription.unsubscribe();
+      } finally {
+        subscription = null;
+      }
+    }
+  });
+};

@@ -95,10 +95,10 @@ public class AdminServerAutoConfiguration {
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
-		StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
-		trigger.setInterval(this.adminServerProperties.getMonitor().getStatusInterval());
-		trigger.setLifetime(this.adminServerProperties.getMonitor().getStatusLifetime());
-		return trigger;
+		return new StatusUpdateTrigger(statusUpdater, events,
+				this.adminServerProperties.getMonitor().getStatusInterval(),
+				this.adminServerProperties.getMonitor().getStatusLifetime(),
+				this.adminServerProperties.getMonitor().getStatusMaxBackoff());
 	}
 
 	@Bean
@@ -129,10 +129,9 @@ public class AdminServerAutoConfiguration {
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> events) {
-		InfoUpdateTrigger trigger = new InfoUpdateTrigger(infoUpdater, events);
-		trigger.setInterval(this.adminServerProperties.getMonitor().getInfoInterval());
-		trigger.setLifetime(this.adminServerProperties.getMonitor().getInfoLifetime());
-		return trigger;
+		return new InfoUpdateTrigger(infoUpdater, events, this.adminServerProperties.getMonitor().getInfoInterval(),
+				this.adminServerProperties.getMonitor().getInfoLifetime(),
+				this.adminServerProperties.getMonitor().getInfoMaxBackoff());
 	}
 
 	@Bean

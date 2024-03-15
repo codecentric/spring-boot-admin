@@ -16,6 +16,7 @@
     ],
     "skipLibCheck": true,
     "noEmit": true,
+    "types": ["vitest/globals"],
     "paths": {
       "@/*": [
         "./src/main/frontend/*"
@@ -27,7 +28,7 @@
     "**/*.d.ts",
     "**/*.tsx",
     "**/*.vue",
-    "vite.config.ts"
+    "vite.config.mts"
   ],
   "references": [
     {

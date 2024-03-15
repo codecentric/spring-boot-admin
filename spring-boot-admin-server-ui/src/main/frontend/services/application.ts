@@ -20,7 +20,7 @@ import { Observable, concat, from, ignoreElements } from 'rxjs';
 import axios, { redirectOn401 } from '../utils/axios';
 import waitForPolyfill from '../utils/eventsource-polyfill';
 import uri from '../utils/uri';
-import Instance from './instance';
+import Instance, { DOWN_STATES, UNKNOWN_STATES, UP_STATES } from './instance';
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -45,6 +45,35 @@ export const convertBody = (responses) =>
     }
     return res;
   });
+
+export const getStatusInfo = (applications: Application[]) => {
+  const instances = applications.flatMap(
+    (application) => application.instances,
+  );
+
+  const upCount = instances.filter((instance) =>
+    UP_STATES.includes(instance.statusInfo.status),
+  ).length;
+
+  const downCount = instances.filter((instance) =>
+    DOWN_STATES.includes(instance.statusInfo.status),
+  ).length;
+
+  const unknownCount = instances.filter((instance) =>
+    UNKNOWN_STATES.includes(instance.statusInfo.status),
+  ).length;
+
+  return {
+    upCount,
+    downCount,
+    unknownCount,
+    allUp: upCount === instances.length,
+    allDown: downCount === instances.length,
+    allUnknown: unknownCount === instances.length,
+    someUnknown: unknownCount > 0 && unknownCount < instances.length,
+    someDown: downCount > 0 && downCount < instances.length,
+  };
+};
 
 class Application {
   public readonly name: string;
@@ -187,6 +216,12 @@ class Application {
 
   async clearCaches() {
     return this.axios.delete(uri`actuator/caches`);
+  }
+
+  async clearCache(name, cacheManager) {
+    return this.axios.delete(uri`actuator/caches/${name}`, {
+      params: { cacheManager: cacheManager },
+    });
   }
 
   shutdown() {

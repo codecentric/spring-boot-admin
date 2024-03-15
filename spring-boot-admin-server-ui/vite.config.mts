@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
-import visualizer from 'rollup-plugin-visualizer';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
     define: {
       __VUE_PROD_DEVTOOLS__: process.env.NODE_ENV === 'development',
       __PROJECT_VERSION__: JSON.stringify(
-        `${process.env.PROJECT_VERSION || '0.0.0'}`
+        `${process.env.PROJECT_VERSION || '0.0.0'}`,
       ),
     },
     plugins: [
@@ -42,12 +42,13 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       root: __dirname,
+      globals: true,
       environment: 'jsdom',
       setupFiles: [resolve(frontendDir, 'tests/setup.ts')],
       include: [
         resolve(
           frontendDir,
-          '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'
+          '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
         ),
       ],
     },

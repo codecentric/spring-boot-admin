@@ -37,7 +37,7 @@ const isInstanceActuatorRequest = (url: string) =>
 class Instance {
   public readonly id: string;
   public registration: Registration;
-  public endpoints: any[];
+  public endpoints: any[] = [];
   public tags: { [key: string]: string }[];
   public statusTimestamp: string;
   public buildVersion: string;
@@ -428,7 +428,7 @@ class Instance {
 
 export default Instance;
 
-type Registration = {
+export type Registration = {
   name: string;
   managementUrl?: string;
   healthUrl: string;
@@ -438,6 +438,17 @@ type Registration = {
 };
 
 type StatusInfo = {
-  status: string;
+  status:
+    | 'UNKNOWN'
+    | 'OUT_OF_SERVICE'
+    | 'UP'
+    | 'DOWN'
+    | 'OFFLINE'
+    | 'RESTRICTED'
+    | string;
   details: { [key: string]: string };
 };
+
+export const DOWN_STATES = ['OUT_OF_SERVICE', 'DOWN', 'OFFLINE', 'RESTRICTED'];
+export const UP_STATES = ['UP'];
+export const UNKNOWN_STATES = ['UNKNOWN'];
