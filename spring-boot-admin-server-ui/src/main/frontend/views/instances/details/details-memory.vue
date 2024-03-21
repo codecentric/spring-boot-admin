@@ -124,7 +124,7 @@ export default {
       };
     },
     createSubscription() {
-      return timer(0, 1000)
+      return timer(0, sbaConfig.uiSettings.pollTimer.memory)
         .pipe(
           concatMap(this.fetchMetrics),
           retryWhen((err) => {
