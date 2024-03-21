@@ -36,19 +36,19 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.2.3</spring-boot.version>
+        <spring-boot.version>3.2.4</spring-boot.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
         <wiremock.version>3.0.1</wiremock.version>
         <hazelcast-tests.version>5.3.6</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
-        <awaitility.version>4.2.0</awaitility.version>
+        <awaitility.version>4.2.1</awaitility.version>
         <testcontainers.version>1.19.7</testcontainers.version>
         <eureka-client.version>3.1.1</eureka-client.version>
         <jetty.version>12.0.7</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.5.0</build-helper-maven-plugin.version>
-        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <versions-maven-plugin.version>2.16.2
         </versions-maven-plugin.version> <!-- because of https://github.com/mojohaus/versions/issues/855 -->
         <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>
@@ -64,14 +64,14 @@
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
-        <maven-gpg-plugin.version>3.2.0</maven-gpg-plugin.version>
+        <maven-gpg-plugin.version>3.2.1</maven-gpg-plugin.version>
         <frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
         <asciidoctor-maven-plugin.version>3.0.0</asciidoctor-maven-plugin.version>
         <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
-        <checkstyle.version>10.14.1</checkstyle.version>
+        <checkstyle.version>10.14.2</checkstyle.version>
         <spring-javaformat-checkstyle.version>0.0.41</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
         <node.version>v18.16.0</node.version>
