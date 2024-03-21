@@ -7,11 +7,13 @@ import infoEndpoint from '@/mocks/instance/info';
 import jolokiaEndpoint from '@/mocks/instance/jolokia';
 import liquibaseEndpoints from '@/mocks/instance/liquibase';
 import mappingsEndpoint from '@/mocks/instance/mappings';
+import metricsEntpoints from '@/mocks/instance/metrics';
 
 const handler = [
   ...infoEndpoint,
   ...healthEndpoint,
   ...mappingsEndpoint,
+  ...metricsEntpoints,
   ...liquibaseEndpoints,
   ...flywayEndpoints,
   ...auditEventsEndpoint,
