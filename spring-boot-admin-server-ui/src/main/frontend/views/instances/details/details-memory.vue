@@ -40,7 +40,6 @@
             class="font-bold"
             v-text="$t('instances.details.memory.used')"
           />
-          asdasd
           <p
             aria-labelledby="metrics.memory.used"
             v-text="prettyBytes(current.used)"
