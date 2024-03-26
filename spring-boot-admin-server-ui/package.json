@@ -25,7 +25,7 @@
     "@headlessui/vue": "1.7.19",
     "@stekoe/vue-toast-notificationcenter": "https://github.com/SteKoe/vue-toast-notificationcenter/archive/refs/tags/1.0.0-RC5.tar.gz",
     "@tailwindcss/forms": "0.5.7",
-    "@tailwindcss/typography": "0.5.10",
+    "@tailwindcss/typography": "0.5.11",
     "ansi_up": "6.0.2",
     "autolinker": "4.0.0",
     "axios": "1.6.8",
