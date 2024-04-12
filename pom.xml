@@ -75,8 +75,8 @@
         <checkstyle.version>10.15.0</checkstyle.version>
         <spring-javaformat-checkstyle.version>0.0.41</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
-        <node.version>v18.16.0</node.version>
-        <npm.version>9.5.1</npm.version>
+        <node.version>v18.20.2</node.version>
+        <npm.version>10.5.2</npm.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
