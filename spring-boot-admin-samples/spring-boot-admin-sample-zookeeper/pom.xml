@@ -68,7 +68,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>de.codecentric.boot.admin.SpringBootAdminZookeeperApplication</mainClass>
+                    <mainClass>de.codecentric.boot.admin.sample.SpringBootAdminZookeeperApplication</mainClass>
                     <addResources>false</addResources>
                 </configuration>
             </plugin>

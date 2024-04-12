@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin;
+package de.codecentric.boot.admin.sample;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,24 +33,23 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
-@Configuration(proxyBeanMethods = false)
-@EnableAutoConfiguration
+@SpringBootApplication
 @EnableDiscoveryClient
 @EnableAdminServer
-public class SpringBootAdminConsulApplication {
+public class SpringBootAdminZookeeperApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringBootAdminConsulApplication.class, args);
+		SpringApplication.run(SpringBootAdminZookeeperApplication.class, args);
 	}
 
 	@Profile("insecure")
 	@Configuration(proxyBeanMethods = false)
 	public static class SecurityPermitAllConfig {
 
-		private final String adminContextPath;
+		private final AdminServerProperties adminServer;
 
-		public SecurityPermitAllConfig(AdminServerProperties adminServerProperties) {
-			this.adminContextPath = adminServerProperties.getContextPath();
+		public SecurityPermitAllConfig(AdminServerProperties adminServer) {
+			this.adminServer = adminServer;
 		}
 
 		@Bean
@@ -58,10 +57,11 @@ public class SpringBootAdminConsulApplication {
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests.anyRequest().permitAll())
 				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 					.ignoringRequestMatchers(
-							new AntPathRequestMatcher(this.adminContextPath + "/instances", HttpMethod.POST.toString()),
-							new AntPathRequestMatcher(this.adminContextPath + "/instances/*",
+							new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
 									HttpMethod.DELETE.toString()),
-							new AntPathRequestMatcher(this.adminContextPath + "/actuator/**")));
+							new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
+
 			return http.build();
 		}
 
@@ -71,35 +71,35 @@ public class SpringBootAdminConsulApplication {
 	@Configuration(proxyBeanMethods = false)
 	public static class SecuritySecureConfig {
 
-		private final String adminContextPath;
+		private final AdminServerProperties adminServer;
 
-		public SecuritySecureConfig(AdminServerProperties adminServerProperties) {
-			this.adminContextPath = adminServerProperties.getContextPath();
+		public SecuritySecureConfig(AdminServerProperties adminServer) {
+			this.adminServer = adminServer;
 		}
 
 		@Bean
 		protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 			SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
 			successHandler.setTargetUrlParameter("redirectTo");
-			successHandler.setDefaultTargetUrl(this.adminContextPath + "/");
+			successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-				.requestMatchers(new AntPathRequestMatcher(this.adminContextPath + "/assets/**"))
+				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**")))
 				.permitAll()
-				.requestMatchers(new AntPathRequestMatcher(this.adminContextPath + "/login"))
+				.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login")))
 				.permitAll()
 				.anyRequest()
 				.authenticated())
-				.formLogin((formLogin) -> formLogin.loginPage(this.adminContextPath + "/login")
+				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
 					.successHandler(successHandler))
-				.logout((logout) -> logout.logoutUrl(this.adminContextPath + "/logout"))
+				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
 				.httpBasic(Customizer.withDefaults())
 				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 					.ignoringRequestMatchers(
-							new AntPathRequestMatcher(this.adminContextPath + "/instances", HttpMethod.POST.toString()),
-							new AntPathRequestMatcher(this.adminContextPath + "/instances/*",
+							new AntPathRequestMatcher(this.adminServer.path("/instances"), HttpMethod.POST.toString()),
+							new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
 									HttpMethod.DELETE.toString()),
-							new AntPathRequestMatcher(this.adminContextPath + "/actuator/**")));
+							new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
 
 			return http.build();
 		}
