@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin;
+package de.codecentric.boot.admin.sample;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
@@ -34,8 +34,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
-@Configuration(proxyBeanMethods = false)
-@EnableAutoConfiguration
+@SpringBootApplication
 @EnableAdminServer
 public class SpringBootAdminWarApplication extends SpringBootServletInitializer {
 
