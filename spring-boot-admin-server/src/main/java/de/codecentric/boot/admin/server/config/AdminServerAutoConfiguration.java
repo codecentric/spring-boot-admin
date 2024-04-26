@@ -16,6 +16,9 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import java.time.Duration;
+
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -56,6 +59,7 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 @EnableConfigurationProperties(AdminServerProperties.class)
 @ImportAutoConfiguration({ AdminServerInstanceWebClientConfiguration.class, AdminServerWebConfiguration.class })
 @AutoConfigureAfter({ WebClientAutoConfiguration.class })
+@Slf4j
 @Lazy(false)
 public class AdminServerAutoConfiguration {
 
@@ -95,10 +99,19 @@ public class AdminServerAutoConfiguration {
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
-		return new StatusUpdateTrigger(statusUpdater, events,
-				this.adminServerProperties.getMonitor().getStatusInterval(),
-				this.adminServerProperties.getMonitor().getStatusLifetime(),
-				this.adminServerProperties.getMonitor().getStatusMaxBackoff());
+		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
+
+		Duration defaultTimeout = monitorProperties.getDefaultTimeout();
+		Duration statusInterval = monitorProperties.getStatusInterval();
+
+		if (defaultTimeout.compareTo(statusInterval) > 0) {
+			log.warn(
+					"Default timeout ({}) is larger than status interval ({}), hence status interval will be used as timeout.",
+					defaultTimeout, statusInterval);
+		}
+
+		return new StatusUpdateTrigger(statusUpdater, events, monitorProperties.getStatusInterval(),
+				monitorProperties.getStatusLifetime(), monitorProperties.getStatusMaxBackoff());
 	}
 
 	@Bean
