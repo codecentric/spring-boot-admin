@@ -4,8 +4,8 @@
   "description": "Spring Boot Admin UI",
   "scripts": {
     "build": "vite build --emptyOutDir --sourcemap",
-    "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
-    "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --mode development",
+    "build:dev": "cross-env NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
+    "build:watch": "cross-env NODE_ENV=development vite build --emptyOutDir --watch --mode development",
     "dev": "vite",
     "test": "vitest run --silent",
     "test:watch": "vitest",
@@ -61,6 +61,7 @@
     "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
+    "cross-env": "7.0.3",
     "@babel/core": "7.24.4",
     "@babel/eslint-parser": "7.24.1",
     "@babel/plugin-transform-runtime": "7.24.3",

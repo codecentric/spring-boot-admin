@@ -36,7 +36,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.2.5</spring-boot.version>
+        <spring-boot.version>3.3.0-RC1</spring-boot.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <wiremock.version>3.0.1</wiremock.version>
         <hazelcast-tests.version>5.4.0</hazelcast-tests.version>
