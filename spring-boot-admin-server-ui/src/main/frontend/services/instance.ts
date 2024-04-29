@@ -417,6 +417,12 @@ class Instance {
     });
   }
 
+  async fetchSboms() {
+    return this.axios.get(uri`actuator/sbom`, {
+      headers: {Accept: 'application/json'},
+    });
+  }
+
   shutdown() {
     return this.axios.post(uri`actuator/shutdown`);
   }
