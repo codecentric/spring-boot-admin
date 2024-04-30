@@ -1,10 +1,8 @@
 <template>
   <sba-instance-section :error="error" :loading="!hasLoaded">
-    <template v-for="sbom in sboms" :key="sbom">
-      <sba-panel :seamless="true" :title="sbom">
-        <!-- TODO: Add visualization for dependencies -->
-      </sba-panel>
-    </template>
+        <template v-for="sbomId in sboms" :key="sbomId">
+          <sbom-list :instance="instance" :sbomId="sbomId"/>
+        </template>
   </sba-instance-section>
 </template>
 <script>
@@ -12,18 +10,14 @@ import Application from "@/services/application";
 import Instance from "@/services/instance";
 import SbaInstanceSection from "@/views/instances/shell/sba-instance-section.vue";
 import {VIEW_GROUP} from "@/views/ViewGroup";
-import SbaPanel from "@/components/sba-panel.vue";
+import SbomList from "@/views/instances/dependencies/SbomList.vue";
 
 export default {
   components: {
-    SbaPanel,
+    SbomList,
     SbaInstanceSection
   },
   props: {
-    application: {
-      type: Application,
-      default: () => ({}),
-    },
     instance: {
       type: Instance,
       required: true,
@@ -35,16 +29,16 @@ export default {
     sboms: [],
   }),
   created() {
-    this.fetchSboms();
+    this.fetchSbomIds();
   },
   methods: {
-    async fetchSboms() {
+    async fetchSbomIds() {
       this.error = null;
       try {
-        const res = await this.instance.fetchSboms();
+        const res = await this.instance.fetchSbomIds();
         this.sboms = res.data.ids;
       } catch (error) {
-        console.warn('Fetching mappings failed:', error);
+        console.warn('Fetching sbom ids failed:', error);
         this.error = error;
       }
       this.hasLoaded = true;
@@ -55,7 +49,7 @@ export default {
       name: 'instances/dependencies',
       parent: 'instances',
       path: 'dependencies',
-      label: 'instances.sboms.label',
+      label: 'instances.dependencies.label',
       group: VIEW_GROUP.INSIGHTS,
       component: this,
       isEnabled: ({ instance }) => instance.hasEndpoint('sbom'),

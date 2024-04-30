@@ -1,7 +1,17 @@
 {
   "instances": {
-    "sboms": {
-      "label": "Abhängigkeiten"
+    "dependencies": {
+      "label": "Abhängigkeiten",
+      "list": {
+        "header": {
+          "group": "Gruppe",
+          "name": "Name",
+          "version": "Version",
+          "publisher": "Veröffentlicht von",
+          "description": "Beschreibung",
+          "licenses": "Lizenzen"
+        }
+      }
     }
   }
 }
