@@ -80,8 +80,6 @@
   </sba-instance-section>
 </template>
 <script>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-
 import Instance from '@/services/instance';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
