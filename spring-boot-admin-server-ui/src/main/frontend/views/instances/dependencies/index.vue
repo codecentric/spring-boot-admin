@@ -26,9 +26,11 @@ import SbaInstanceSection from "@/views/instances/shell/sba-instance-section.vue
 import {VIEW_GROUP} from "@/views/ViewGroup";
 import SbomList from "@/views/instances/dependencies/SbomList.vue";
 import SbaStickySubnav from "@/components/sba-sticky-subnav.vue";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 export default {
   components: {
+    FontAwesomeIcon,
     SbaStickySubnav,
     SbomList,
     SbaInstanceSection
