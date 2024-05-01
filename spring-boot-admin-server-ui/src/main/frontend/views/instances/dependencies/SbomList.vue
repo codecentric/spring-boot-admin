@@ -6,44 +6,23 @@
         <table class="table table-full table-sm">
           <thead>
           <tr>
-            <th class="table-header-clickable" @click="toggleSort('group')">{{ $t('instances.dependencies.list.header.group') }}
-              <font-awesome-icon v-if="sortedBy['group']"
-                icon="chevron-down"
-                :class="{
-                    '-rotate-180': sortedBy['group'] === 'DESC',
+            <template v-for="column in columns">
+              <template v-if="column.sortable">
+                <th class="table-header-clickable" @click="toggleSort(column.property)">
+                  {{ $t(`instances.dependencies.list.header.${column.property}`) }}
+                  <font-awesome-icon v-if="sortedBy[column.property]"
+                                     icon="chevron-down"
+                                     :class="{
+                    '-rotate-180': sortedBy[column.property] === 'DESC',
                     'transition-[transform]': true,
                   }"
-              />
-            </th>
-            <th class="table-header-clickable" @click="toggleSort('name')">{{ $t('instances.dependencies.list.header.name') }}
-              <font-awesome-icon v-if="sortedBy['name']"
-                                 icon="chevron-down"
-                                 :class="{
-                    '-rotate-180': sortedBy['name'] === 'DESC',
-                    'transition-[transform]': true,
-                  }"
-              />
-            </th>
-            <th class="table-header-clickable" @click="toggleSort('version')">{{ $t('instances.dependencies.list.header.version') }}
-              <font-awesome-icon v-if="sortedBy['version']"
-                                 icon="chevron-down"
-                                 :class="{
-                    '-rotate-180': sortedBy['version'] === 'DESC',
-                    'transition-[transform]': true,
-                  }"
-              />
-            </th>
-            <th>{{ $t('instances.dependencies.list.header.licenses') }}</th>
-            <th class="table-header-clickable" @click="toggleSort('publisher')">{{ $t('instances.dependencies.list.header.publisher') }}
-              <font-awesome-icon v-if="sortedBy['publisher']"
-                                 icon="chevron-down"
-                                 :class="{
-                    '-rotate-180': sortedBy['publisher'] === 'DESC',
-                    'transition-[transform]': true,
-                  }"
-              />
-            </th>
-            <th>{{ $t('instances.dependencies.list.header.description') }}</th>
+                  />
+                </th>
+              </template>
+              <template v-else>
+                <th>{{ $t(`instances.dependencies.list.header.${column.property}`) }}</th>
+              </template>
+            </template>
           </tr>
           </thead>
           <tbody>
@@ -52,15 +31,18 @@
               <td>{{ component.group }}</td>
               <td>{{ component.name }}</td>
               <td>{{ component.version }}</td>
-              <td class="is-breakable">
-                <ul>
-                  <template v-for="licenseItem in component.licenses">
-                    <li>{{ licenseItem.license.id }}</li>
+              <td>
+                <dl v-if="component.licenses" class="divide-y divide-gray-200">
+                  <template v-for="licenseItem in component.licenses.filter(license => license.license).map(license => license.license)">
+                    <dt v-if="licenseItem.url">
+                      <a :href="licenseItem.url">{{ licenseItem.id ? licenseItem.id : licenseItem.name }}</a>
+                    </dt>
+                    <dt v-else>{{ licenseItem.id ? licenseItem.id : licenseItem.name }}</dt>
                   </template>
-                </ul>
+                </dl>
               </td>
-              <td class="is-breakable">{{ component.publisher }}</td>
-              <td class="is-breakable">{{ component.description }}</td>
+              <td>{{ component.publisher }}</td>
+              <td>{{ component.description }}</td>
             </tr>
           </template>
           </tbody>
@@ -72,19 +54,12 @@
 <script>
 import Instance from "@/services/instance";
 import SbaInstanceSection from "@/views/instances/shell/sba-instance-section.vue";
-import TreeTable from "@/views/instances/startup/tree-table.vue";
-import SbaKeyValueTable from "@/components/sba-key-value-table.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import SbaStickySubnav from "@/components/sba-sticky-subnav.vue";
-import {compareBy} from "@/utils/collections";
 
 export default {
   name: 'sbom-list',
   components: {
-    SbaStickySubnav,
     FontAwesomeIcon,
-    SbaKeyValueTable,
-    TreeTable,
     SbaInstanceSection
   },
   props: {
@@ -109,7 +84,33 @@ export default {
       group: 'ASC',
       name: 'ASC',
       version: 'ASC'
-    }
+    },
+    columns: [
+      {
+        property: "group",
+        sortable: true
+      },
+      {
+        property: "name",
+        sortable: true
+      },
+      {
+        property: "version",
+        sortable: true
+      },
+      {
+        property: "licenses",
+        sortable: false
+      },
+      {
+        property: "publisher",
+        sortable: true
+      },
+      {
+        property: "description",
+        sortable: false
+      },
+    ]
   }),
   computed: {
     filterResultString() {
@@ -174,7 +175,7 @@ export default {
         || (component.group && component.group.match(regex))
         || (component.version && component.version.match(regex))
         || (component.publisher && component.publisher.match(regex))
-        || (component.licenses && component.licenses.some((license) => (license.license.id && license.license.id.match(regex))));
+        || (component.licenses && component.licenses.some((license) => (license.license && JSON.stringify(license.license).match(regex))));
     },
     async fetchSbom(sbomId) {
       this.error = null;
