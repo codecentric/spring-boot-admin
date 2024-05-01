@@ -1,50 +1,78 @@
 <template>
-
   <sba-instance-section :error="error" :loading="!hasLoaded">
-    <sba-panel :header-sticks-below="'#subnavigation'" :title="`${sbomId} (${filterResultString})`" :key="sbomId">
+    <sba-panel
+      :key="sbomId"
+      :header-sticks-below="'#subnavigation'"
+      :title="`${sbomId} (${filterResultString})`"
+    >
       <div class="-mx-4 -my-3">
         <table class="table table-full table-sm">
           <thead>
-          <tr>
-            <template v-for="column in columns">
-              <template v-if="column.sortable">
-                <th class="table-header-clickable" @click="toggleSort(column.property)">
-                  {{ $t(`instances.dependencies.list.header.${column.property}`) }}
-                  <font-awesome-icon v-if="sortedBy[column.property]"
-                                     icon="chevron-down"
-                                     :class="{
-                    '-rotate-180': sortedBy[column.property] === 'DESC',
-                    'transition-[transform]': true,
-                  }"
-                  />
-                </th>
+            <tr>
+              <template v-for="column in columns">
+                <template v-if="column.sortable">
+                  <th
+                    class="table-header-clickable"
+                    @click="toggleSort(column.property)"
+                  >
+                    {{
+                      $t(
+                        `instances.dependencies.list.header.${column.property}`,
+                      )
+                    }}
+                    <font-awesome-icon
+                      v-if="sortedBy[column.property]"
+                      icon="chevron-down"
+                      :class="{
+                        '-rotate-180': sortedBy[column.property] === 'DESC',
+                        'transition-[transform]': true,
+                      }"
+                    />
+                  </th>
+                </template>
+                <template v-else>
+                  <th>
+                    {{
+                      $t(
+                        `instances.dependencies.list.header.${column.property}`,
+                      )
+                    }}
+                  </th>
+                </template>
               </template>
-              <template v-else>
-                <th>{{ $t(`instances.dependencies.list.header.${column.property}`) }}</th>
-              </template>
-            </template>
-          </tr>
+            </tr>
           </thead>
           <tbody>
-          <template v-for="component in filteredAndSortedComponents">
-            <tr>
-              <td>{{ component.group }}</td>
-              <td>{{ component.name }}</td>
-              <td>{{ component.version }}</td>
-              <td>
-                <dl v-if="component.licenses" class="divide-y divide-gray-200">
-                  <template v-for="licenseItem in component.licenses.filter(license => license.license).map(license => license.license)">
-                    <dt v-if="licenseItem.url">
-                      <a :href="licenseItem.url">{{ licenseItem.id ? licenseItem.id : licenseItem.name }}</a>
-                    </dt>
-                    <dt v-else>{{ licenseItem.id ? licenseItem.id : licenseItem.name }}</dt>
-                  </template>
-                </dl>
-              </td>
-              <td>{{ component.publisher }}</td>
-              <td>{{ component.description }}</td>
-            </tr>
-          </template>
+            <template v-for="component in filteredAndSortedComponents">
+              <tr>
+                <td>{{ component.group }}</td>
+                <td>{{ component.name }}</td>
+                <td>{{ component.version }}</td>
+                <td>
+                  <dl
+                    v-if="component.licenses"
+                    class="divide-y divide-gray-200"
+                  >
+                    <template
+                      v-for="licenseItem in component.licenses
+                        .filter((license) => license.license)
+                        .map((license) => license.license)"
+                    >
+                      <dt v-if="licenseItem.url">
+                        <a :href="licenseItem.url">{{
+                          licenseItem.id ? licenseItem.id : licenseItem.name
+                        }}</a>
+                      </dt>
+                      <dt v-else>
+                        {{ licenseItem.id ? licenseItem.id : licenseItem.name }}
+                      </dt>
+                    </template>
+                  </dl>
+                </td>
+                <td>{{ component.publisher }}</td>
+                <td>{{ component.description }}</td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
@@ -52,15 +80,17 @@
   </sba-instance-section>
 </template>
 <script>
-import Instance from "@/services/instance";
-import SbaInstanceSection from "@/views/instances/shell/sba-instance-section.vue";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+import Instance from '@/services/instance';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
 export default {
-  name: 'sbom-list',
+  name: 'SbomList',
   components: {
     FontAwesomeIcon,
-    SbaInstanceSection
+    SbaInstanceSection,
   },
   props: {
     instance: {
@@ -74,7 +104,7 @@ export default {
     filter: {
       type: String,
       required: true,
-    }
+    },
   },
   data: () => ({
     hasLoaded: false,
@@ -83,34 +113,34 @@ export default {
     sortedBy: {
       group: 'ASC',
       name: 'ASC',
-      version: 'ASC'
+      version: 'ASC',
     },
     columns: [
       {
-        property: "group",
-        sortable: true
+        property: 'group',
+        sortable: true,
       },
       {
-        property: "name",
-        sortable: true
+        property: 'name',
+        sortable: true,
       },
       {
-        property: "version",
-        sortable: true
+        property: 'version',
+        sortable: true,
       },
       {
-        property: "licenses",
-        sortable: false
+        property: 'licenses',
+        sortable: false,
       },
       {
-        property: "publisher",
-        sortable: true
+        property: 'publisher',
+        sortable: true,
       },
       {
-        property: "description",
-        sortable: false
+        property: 'description',
+        sortable: false,
       },
-    ]
+    ],
   }),
   computed: {
     filterResultString() {
@@ -148,13 +178,13 @@ export default {
       }
       return components.sort((a, b) => {
         for (const property in sortFunctions) {
-          const compareResult = sortFunctions[property](a,b);
+          const compareResult = sortFunctions[property](a, b);
           if (compareResult !== 0) {
             return compareResult;
           }
         }
         return 0;
-      })
+      });
     },
     toggleSort(field) {
       if (this.sortedBy[field] && this.sortedBy[field] === 'DESC') {
@@ -171,11 +201,15 @@ export default {
       }
       const regex = new RegExp(this.filter, 'i');
       return (component) =>
-        (component.name && component.name.match(regex))
-        || (component.group && component.group.match(regex))
-        || (component.version && component.version.match(regex))
-        || (component.publisher && component.publisher.match(regex))
-        || (component.licenses && component.licenses.some((license) => (license.license && JSON.stringify(license.license).match(regex))));
+        (component.name && component.name.match(regex)) ||
+        (component.group && component.group.match(regex)) ||
+        (component.version && component.version.match(regex)) ||
+        (component.publisher && component.publisher.match(regex)) ||
+        (component.licenses &&
+          component.licenses.some(
+            (license) =>
+              license.license && JSON.stringify(license.license).match(regex),
+          ));
     },
     async fetchSbom(sbomId) {
       this.error = null;
@@ -187,9 +221,9 @@ export default {
         this.error = error;
       }
       this.hasLoaded = true;
-    }
+    },
   },
-}
+};
 </script>
 <style lang="scss" scoped>
 .table-header-clickable {

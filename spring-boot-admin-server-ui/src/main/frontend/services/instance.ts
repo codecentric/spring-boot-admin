@@ -419,13 +419,13 @@ class Instance {
 
   async fetchSbomIds() {
     return this.axios.get(uri`actuator/sbom`, {
-      headers: {Accept: 'application/json'},
+      headers: { Accept: 'application/json' },
     });
   }
 
   async fetchSbom(id) {
     return this.axios.get(uri`actuator/sbom/${id}`, {
-      headers: {Accept: '*/*'},
+      headers: { Accept: '*/*' },
     });
   }
 
