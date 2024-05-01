@@ -1,8 +1,22 @@
 <template>
   <sba-instance-section :error="error" :loading="!hasLoaded">
-        <template v-for="sbomId in sboms" :key="sbomId">
-          <sbom-list :instance="instance" :sbomId="sbomId"/>
-        </template>
+    <template #before>
+      <sba-sticky-subnav>
+        <sba-input
+          v-model="filter"
+          :placeholder="$t('term.filter')"
+          name="filter"
+          type="search"
+        >
+          <template #prepend>
+            <font-awesome-icon icon="filter"/>
+          </template>
+        </sba-input>
+      </sba-sticky-subnav>
+    </template>
+    <template v-for="sbomId in sboms" :key="sbomId">
+      <sbom-list :instance="instance" :sbomId="sbomId" :filter="filter" />
+    </template>
   </sba-instance-section>
 </template>
 <script>
@@ -11,9 +25,11 @@ import Instance from "@/services/instance";
 import SbaInstanceSection from "@/views/instances/shell/sba-instance-section.vue";
 import {VIEW_GROUP} from "@/views/ViewGroup";
 import SbomList from "@/views/instances/dependencies/SbomList.vue";
+import SbaStickySubnav from "@/components/sba-sticky-subnav.vue";
 
 export default {
   components: {
+    SbaStickySubnav,
     SbomList,
     SbaInstanceSection
   },
@@ -27,6 +43,7 @@ export default {
     hasLoaded: false,
     error: null,
     sboms: [],
+    filter: '',
   }),
   created() {
     this.fetchSbomIds();
@@ -44,7 +61,7 @@ export default {
       this.hasLoaded = true;
     }
   },
-  install({ viewRegistry }) {
+  install({viewRegistry}) {
     viewRegistry.addView({
       name: 'instances/dependencies',
       parent: 'instances',
@@ -52,7 +69,7 @@ export default {
       label: 'instances.dependencies.label',
       group: VIEW_GROUP.INSIGHTS,
       component: this,
-      isEnabled: ({ instance }) => instance.hasEndpoint('sbom'),
+      isEnabled: ({instance}) => instance.hasEndpoint('sbom'),
     });
   },
 };
