@@ -7,7 +7,7 @@
     >
       <div class="-mx-4 -my-3">
         <table class="table table-full table-sm">
-          <thead>
+          <thead data-testid="sbom-table-header">
             <tr>
               <template v-for="column in columns">
                 <template v-if="column.sortable">
@@ -42,7 +42,7 @@
               </template>
             </tr>
           </thead>
-          <tbody>
+          <tbody data-testid="sbom-table-body">
             <template v-for="component in filteredAndSortedComponents">
               <tr>
                 <td>{{ component.group }}</td>
@@ -226,5 +226,9 @@ export default {
 <style lang="scss" scoped>
 .table-header-clickable {
   cursor: pointer;
+}
+
+dt > a:hover {
+  text-decoration: underline;
 }
 </style>
