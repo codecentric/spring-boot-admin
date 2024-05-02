@@ -6,6 +6,8 @@ import Application from '@/services/application';
 import {render} from '@/test-utils';
 import Dependencies from '@/views/instances/dependencies/index.vue';
 import userEvent from '@testing-library/user-event';
+import {server} from "@/mocks/server";
+import {http, HttpResponse} from "msw";
 
 describe('Dependencies', () => {
 
@@ -174,6 +176,150 @@ describe('Dependencies', () => {
           tbody.children.length
         ).toBe(4);
       });
+    });
+  });
+
+  describe('sort correctly', () => {
+    beforeEach(() => {
+      server.use(
+        http.get('/instances/:instanceId/actuator/sbom', () => {
+          return HttpResponse.json({
+            ids: [
+              'application'
+            ]
+          });
+        }),
+        http.get('/instances/:instanceId/actuator/sbom/application', () => {
+          return HttpResponse.json({
+            components: [
+              {
+                publisher: 'CCC',
+                group: 'c.cccc.ccc',
+                name: 'ccc',
+                version: '3.0.0',
+                description: 'C description',
+                licenses: [
+                  {
+                    license: {
+                      id: 'C',
+                    },
+                  },
+                ],
+              },
+              {
+                publisher: 'AAA',
+                group: 'a.aaaa.aaa',
+                name: 'aaa',
+                version: '1.0.0',
+                description: 'A description',
+                licenses: [
+                  {
+                    license: {
+                      id: 'Apache-2.0',
+                    },
+                  },
+                ],
+              },
+              {
+                publisher: 'BBB',
+                group: 'b.bbbb.bbb',
+                name: 'bbb',
+                version: '2.0.0',
+                description: 'B description',
+                licenses: [
+                  {
+                    license: {
+                      id: 'BSD',
+                    },
+                  },
+                ],
+              },
+            ]
+          });
+        }),
+      );
+    });
+
+    const resetDefaultSort = async () => {
+      for (const header of (await screen.findAllByTestId('sbom-table-header'))) {
+        const tableHeaderColumns = header.children[0].children;
+        await userEvent.click(tableHeaderColumns[GROUP_TABLE_COLUMN_INDEX]);
+        await userEvent.click(tableHeaderColumns[GROUP_TABLE_COLUMN_INDEX]);
+        await userEvent.click(tableHeaderColumns[NAME_TABLE_COLUMN_INDEX]);
+        await userEvent.click(tableHeaderColumns[NAME_TABLE_COLUMN_INDEX]);
+        await userEvent.click(tableHeaderColumns[VERSION_TABLE_COLUMN_INDEX]);
+        await userEvent.click(tableHeaderColumns[VERSION_TABLE_COLUMN_INDEX]);
+      }
+
+      expect(await screen.queryByTestId('sorted-icon-group-ASC')).not.toBeInTheDocument();
+      expect(await screen.queryByTestId('sorted-icon-name-ASC')).not.toBeInTheDocument();
+      expect(await screen.queryByTestId('sorted-icon-version-ASC')).not.toBeInTheDocument();
+    };
+
+    it('initial sort by group, name and version', async () => {
+      expect((await screen.findAllByTestId('sorted-icon-group-ASC'))[0]).toBeVisible();
+      expect((await screen.findAllByTestId('sorted-icon-name-ASC'))[0]).toBeVisible();
+      expect((await screen.findAllByTestId('sorted-icon-version-ASC'))[0]).toBeVisible();
+
+      const dependencyRows = await screen.findAllByTestId('sbom-table-body-row');
+      expect(dependencyRows[0].children[GROUP_TABLE_COLUMN_INDEX].textContent).toContain('a.aaaa.aaa');
+      expect(dependencyRows[0].children[NAME_TABLE_COLUMN_INDEX].textContent).toContain('aaa');
+      expect(dependencyRows[0].children[VERSION_TABLE_COLUMN_INDEX].textContent).toContain('1.0.0');
+
+      expect(dependencyRows[1].children[GROUP_TABLE_COLUMN_INDEX].textContent).toContain('b.bbbb.bbb');
+      expect(dependencyRows[1].children[NAME_TABLE_COLUMN_INDEX].textContent).toContain('bbb');
+      expect(dependencyRows[1].children[VERSION_TABLE_COLUMN_INDEX].textContent).toContain('2.0.0');
+
+      expect(dependencyRows[2].children[GROUP_TABLE_COLUMN_INDEX].textContent).toContain('c.cccc.ccc');
+      expect(dependencyRows[2].children[NAME_TABLE_COLUMN_INDEX].textContent).toContain('ccc');
+      expect(dependencyRows[2].children[VERSION_TABLE_COLUMN_INDEX].textContent).toContain('3.0.0');
+    });
+
+    it.each`
+    property       | tableColumnIndex                 | expectedValues
+    ${'group'}     | ${GROUP_TABLE_COLUMN_INDEX}      | ${['a.aaaa.aaa', 'b.bbbb.bbb', 'c.cccc.ccc']}
+    ${'name'}      | ${NAME_TABLE_COLUMN_INDEX}       | ${['aaa', 'bbb', 'ccc']}
+    ${'version'}   | ${VERSION_TABLE_COLUMN_INDEX}    | ${['1.0.0', '2.0.0', '3.0.0']}
+    ${'publisher'} | ${PUBLISHER_TABLE_COLUMN_INDEX}  | ${['AAA', 'BBB', 'CCC']}
+    `(`by $property ASC`, async ({property, tableColumnIndex, expectedValues}) => {
+      await resetDefaultSort();
+
+      // activate sort ASC
+      const tableHeaderColumns = (await screen.findAllByTestId('sbom-table-header'))[0].children[0].children;
+      await userEvent.click(tableHeaderColumns[tableColumnIndex]);
+
+      expect((await screen.findAllByTestId(`sorted-icon-${property}-ASC`))[0]).toBeVisible();
+
+      // check sort
+      const dependencyRows = await screen.findAllByTestId('sbom-table-body-row');
+
+      expect(dependencyRows[0].children[tableColumnIndex].textContent).toContain(expectedValues[0]);
+      expect(dependencyRows[1].children[tableColumnIndex].textContent).toContain(expectedValues[1]);
+      expect(dependencyRows[2].children[tableColumnIndex].textContent).toContain(expectedValues[2]);
+    });
+
+    it.each`
+    property       | tableColumnIndex                 | expectedValues
+    ${'group'}     | ${GROUP_TABLE_COLUMN_INDEX}      | ${['a.aaaa.aaa', 'b.bbbb.bbb', 'c.cccc.ccc'].reverse()}
+    ${'name'}      | ${NAME_TABLE_COLUMN_INDEX}       | ${['aaa', 'bbb', 'ccc'].reverse()}
+    ${'version'}   | ${VERSION_TABLE_COLUMN_INDEX}    | ${['1.0.0', '2.0.0', '3.0.0'].reverse()}
+    ${'publisher'} | ${PUBLISHER_TABLE_COLUMN_INDEX}  | ${['AAA', 'BBB', 'CCC'].reverse()}
+    `(`by $property DESC`, async ({property, tableColumnIndex, expectedValues}) => {
+      await resetDefaultSort();
+
+      // activate sort DESC
+      const tableHeaderColumns = (await screen.findAllByTestId('sbom-table-header'))[0].children[0].children;
+      await userEvent.click(tableHeaderColumns[tableColumnIndex]);
+      await userEvent.click(tableHeaderColumns[tableColumnIndex]);
+
+      expect((await screen.findAllByTestId(`sorted-icon-${property}-DESC`))[0]).toBeVisible();
+
+      // check sort
+      const dependencyRows = await screen.findAllByTestId('sbom-table-body-row');
+
+      expect(dependencyRows[0].children[tableColumnIndex].textContent).toContain(expectedValues[0]);
+      expect(dependencyRows[1].children[tableColumnIndex].textContent).toContain(expectedValues[1]);
+      expect(dependencyRows[2].children[tableColumnIndex].textContent).toContain(expectedValues[2]);
     });
   });
 });

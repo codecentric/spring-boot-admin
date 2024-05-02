@@ -21,6 +21,7 @@
                       )
                     }}
                     <font-awesome-icon
+                      :data-testid="`sorted-icon-${column.property}-${sortedBy[column.property]}`"
                       v-if="sortedBy[column.property]"
                       icon="chevron-down"
                       :class="{
@@ -44,7 +45,7 @@
           </thead>
           <tbody data-testid="sbom-table-body">
             <template v-for="component in filteredAndSortedComponents">
-              <tr>
+              <tr data-testid="sbom-table-body-row">
                 <td>{{ component.group }}</td>
                 <td>{{ component.name }}</td>
                 <td>{{ component.version }}</td>
