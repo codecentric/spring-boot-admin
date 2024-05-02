@@ -19,12 +19,6 @@ management:
       exposure:
         include: "*"
   endpoint:
-    sbom:
-      application:
-        location: file:bom.json
-      additional:
-        system:
-          location: file:bom.json
     refresh:
       enabled: true
     restart:
@@ -45,7 +39,7 @@ spring:
       client:
         url: http://localhost:8080
         instance:
-          service-host-type: ip
+          service-host-type: HOST_NAME
           metadata:
             tags:
               environment: test
@@ -57,8 +51,6 @@ spring:
               de-service-test-6: A large content
             kubectl.kubernetes.io/last-applied-configuration: '{"name":"jvm.threads.peak","description":"The peak live thread count since the Java virtual machine started or peak was reset","baseUnit":"threads","measurements":[{"statistic":"VALUE","value":64.0}],"availableTags":[]}'
           prefer-ip: true
-          management-base-url: http://localhost:8080
-          service-base-url: http://localhost:8080
   config:
     import: optional:configserver:http://localhost:8888/
   jmx:
