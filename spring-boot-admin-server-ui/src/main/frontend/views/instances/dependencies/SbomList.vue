@@ -9,42 +9,38 @@
         <table class="table table-full table-sm">
           <thead data-testid="sbom-table-header">
             <tr>
-              <template v-for="column in columns">
-                <template v-if="column.sortable">
-                  <th
-                    class="table-header-clickable"
-                    @click="toggleSort(column.property)"
-                  >
-                    {{
-                      $t(
-                        `instances.dependencies.list.header.${column.property}`,
-                      )
-                    }}
-                    <font-awesome-icon
-                      :data-testid="`sorted-icon-${column.property}-${sortedBy[column.property]}`"
-                      v-if="sortedBy[column.property]"
-                      icon="chevron-down"
-                      :class="{
-                        '-rotate-180': sortedBy[column.property] === 'DESC',
-                        'transition-[transform]': true,
-                      }"
-                    />
-                  </th>
-                </template>
-                <template v-else>
-                  <th>
-                    {{
-                      $t(
-                        `instances.dependencies.list.header.${column.property}`,
-                      )
-                    }}
-                  </th>
-                </template>
+              <template v-for="column in columns" :key="column.property">
+                <th
+                  v-if="column.sortable"
+                  class="table-header-clickable"
+                  @click="toggleSort(column.property)"
+                >
+                  {{
+                    $t(`instances.dependencies.list.header.${column.property}`)
+                  }}
+                  <font-awesome-icon
+                    v-if="sortedBy[column.property]"
+                    :data-testid="`sorted-icon-${column.property}-${sortedBy[column.property]}`"
+                    icon="chevron-down"
+                    :class="{
+                      '-rotate-180': sortedBy[column.property] === 'DESC',
+                      'transition-[transform]': true,
+                    }"
+                  />
+                </th>
+                <th v-else>
+                  {{
+                    $t(`instances.dependencies.list.header.${column.property}`)
+                  }}
+                </th>
               </template>
             </tr>
           </thead>
           <tbody data-testid="sbom-table-body">
-            <template v-for="component in filteredAndSortedComponents">
+            <template
+              v-for="component in filteredAndSortedComponents"
+              :key="`${component.group}:${component.name}:${component.version}`"
+            >
               <tr data-testid="sbom-table-body-row">
                 <td>{{ component.group }}</td>
                 <td>{{ component.name }}</td>
@@ -58,6 +54,7 @@
                       v-for="licenseItem in component.licenses
                         .filter((license) => license.license)
                         .map((license) => license.license)"
+                      :key="licenseItem.id ? licenseItem.id : licenseItem.name"
                     >
                       <dt v-if="licenseItem.url">
                         <a :href="licenseItem.url">{{
@@ -81,9 +78,10 @@
   </sba-instance-section>
 </template>
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 import Instance from '@/services/instance';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
-import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
 export default {
   name: 'SbomList',
