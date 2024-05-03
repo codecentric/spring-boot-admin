@@ -92,7 +92,7 @@
     "eslint-plugin-vue": "^9.10.0",
     "jsdom": "^24.0.0",
     "msw": "2.2.14",
-    "msw-storybook-addon": "2.0.0",
+    "msw-storybook-addon": "2.0.1",
     "postcss": "8.4.38",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "5.12.0",
