@@ -45,7 +45,7 @@ npm run test
 Repeated tests with watching the files:
 
 ```shell
-npm run watch:test
+npm run test:watch
 ```
 
 ## Run Storybook
