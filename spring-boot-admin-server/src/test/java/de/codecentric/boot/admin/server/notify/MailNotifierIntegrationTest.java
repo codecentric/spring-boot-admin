@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.notify;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 
 import org.assertj.core.api.WithAssertions;
@@ -49,7 +48,6 @@ class MailNotifierIntegrationTest implements WithAssertions {
 	@Test
 	void httpProtocolIsNotAllowed() {
 		assertThatThrownBy(() -> {
-			URL resource = getClass().getClassLoader().getResource(".");
 			mailNotifier.setTemplate(
 					"https://raw.githubusercontent.com/codecentric/spring-boot-admin/gh-pages/vulnerable-file.html");
 			mailNotifier.getBody(new Context());
@@ -57,11 +55,21 @@ class MailNotifierIntegrationTest implements WithAssertions {
 	}
 
 	@Test
-	void classpathProtocolIsAllowed() throws IOException {
+	void classpathProtocolIsAllowed() {
+		assertThatNoException().isThrownBy(() -> {
+			mailNotifier.setTemplate("/de/codecentric/boot/admin/server/notify/allowed-file.html");
+			mailNotifier.getBody(new Context());
+		});
+	}
+
+	@Test
+	void callToReflectionUtilsAreNotAllwed() {
 		assertThatThrownBy(() -> {
 			mailNotifier.setTemplate("/de/codecentric/boot/admin/server/notify/vulnerable-file.html");
-			String body = mailNotifier.getBody(new Context());
-		}).rootCause().hasMessageContaining("error=2, No such file or directory");
+			mailNotifier.getBody(new Context());
+		}).rootCause()
+			.hasMessageContaining(
+					"Access is forbidden for type 'org.springframework.util.ReflectionUtils' in this expression context.");
 	}
 
 	@EnableAdminServer

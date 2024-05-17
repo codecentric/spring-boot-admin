@@ -8,11 +8,12 @@ declare global {
   type ApplicationStream = {
     data: any;
   } & MessageEvent;
+
   interface Window {
     SBA: SBASettings;
   }
 
-  type JSExtension = {
+  type Extension = {
     resourcePath: string;
     resourceLocation: string;
   };
@@ -79,7 +80,10 @@ declare global {
       name: string;
       [key: string]: any;
     };
-    extensions: JSExtension[];
+    extensions: {
+      js: Extension[];
+      css: Extension[];
+    };
     csrf: {
       headerName: string;
       parameterName: string;

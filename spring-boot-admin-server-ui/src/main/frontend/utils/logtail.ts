@@ -29,7 +29,7 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
           })
           .catch((error) => observer.error(error));
       }).pipe(
-        catchError((error) => of({ data: '', status: error.response.status }))
+        catchError((error) => of({ data: '', status: error.response.status })),
       );
     }),
     concatMap((response) => {
@@ -76,6 +76,6 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
             addendum,
           })
         : EMPTY;
-    })
+    }),
   );
 };

@@ -151,7 +151,7 @@ export default {
       this.isLoading = true;
       const response = await this.instance.fetchAuditevents(this.filter);
       const converted = response.data.events.map(
-        (event) => new Auditevent(event)
+        (event) => new Auditevent(event),
       );
       converted.reverse();
       this.isLoading = false;
@@ -168,10 +168,10 @@ export default {
               debounceTime(250),
               tap({
                 next: () => (this.events = []),
-              })
-            )
+              }),
+            ),
           ),
-          concatMap(this.fetchAuditevents)
+          concatMap(this.fetchAuditevents),
         )
         .subscribe({
           next: (events) => {
@@ -186,7 +186,7 @@ export default {
     addEvents(events) {
       this.events = uniqBy(
         this.events ? events.concat(this.events) : events,
-        (event) => event.key
+        (event) => event.key,
       );
     },
   },

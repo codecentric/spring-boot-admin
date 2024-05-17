@@ -26,7 +26,7 @@ describe('autolink should', () => {
   it('return string with anchor tag for the hyperlink', () => {
     const str = 'Please visit http://example.com.';
     expect(autolink(str)).toBe(
-      'Please visit <a href="http://example.com" target="_blank" rel="noopener noreferrer">http://example.com</a>.'
+      'Please visit <a href="http://example.com" target="_blank" rel="noopener noreferrer">http://example.com</a>.',
     );
   });
 
@@ -41,7 +41,7 @@ describe('autolink should', () => {
       },
     });
     expect(customAutolink(str)).toBe(
-      'Please visit <a href="http://extraordinary.com/very/very/log/hyperlink" target="_blank" rel="noopener noreferrer" title="http://extraordinary.com/very/very/log/hyperlink">extraordinary.com/very&hellip;rlink</a>.'
+      'Please visit <a href="http://extraordinary.com/very/very/log/hyperlink" target="_blank" rel="noopener noreferrer" title="http://extraordinary.com/very/very/log/hyperlink">extraordinary.com/very&hellip;rlink</a>.',
     );
   });
 
@@ -49,7 +49,7 @@ describe('autolink should', () => {
     const str =
       '{"name":"John Smith","links":[{"rel":"random-link1","href":"https://localhost:8000/api/123/query?action=do_something&age=21","hreflang":null,"media":null,"title":null,"type":null,"deprecation":null}]}';
     expect(autolink(str)).toBe(
-      '{"name":"John Smith","links":[{"rel":"random-link1","href":"<a href="https://localhost:8000/api/123/query?action=do_something&age=21" target="_blank" rel="noopener noreferrer">https://localhost:8000/api/123/query?action=do_something&age=21</a>","hreflang":null,"media":null,"title":null,"type":null,"deprecation":null}]}'
+      '{"name":"John Smith","links":[{"rel":"random-link1","href":"<a href="https://localhost:8000/api/123/query?action=do_something&age=21" target="_blank" rel="noopener noreferrer">https://localhost:8000/api/123/query?action=do_something&age=21</a>","hreflang":null,"media":null,"title":null,"type":null,"deprecation":null}]}',
     );
   });
 });

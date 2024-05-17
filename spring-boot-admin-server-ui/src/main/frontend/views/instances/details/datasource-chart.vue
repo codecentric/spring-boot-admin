@@ -97,7 +97,7 @@ export default {
           d3
             .line()
             .x((d) => x(d.timestamp))
-            .y((d) => y(d.max))
+            .y((d) => y(d.max)),
         );
       max.exit().remove();
 
@@ -116,7 +116,7 @@ export default {
             .area()
             .x((d) => x(d.timestamp))
             .y0(y(0))
-            .y1((d) => y(d.active))
+            .y1((d) => y(d.active)),
         );
       active.exit().remove();
 
@@ -125,7 +125,7 @@ export default {
         d3
           .axisBottom(x)
           .ticks(5)
-          .tickFormat((d) => moment(d).format('HH:mm:ss'))
+          .tickFormat((d) => moment(d).format('HH:mm:ss')),
       );
 
       this.yAxis.call(d3.axisLeft(y).ticks(5));

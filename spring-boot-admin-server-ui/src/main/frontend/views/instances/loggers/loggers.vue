@@ -184,7 +184,7 @@ export default {
         : this.loggerConfig.loggers;
       addLoggerCreationEntryIfLoggerNotPresent(
         this.filter.name,
-        filteredLoggers
+        filteredLoggers,
       );
       return filteredLoggers;
     },
@@ -202,9 +202,9 @@ export default {
       from(this.loggersService.configureLogger(logger.name, level))
         .pipe(
           listen(
-            (status) => (this.loggersStatus[logger.name] = { level, status })
+            (status) => (this.loggersStatus[logger.name] = { level, status }),
           ),
-          finalize(() => this.fetchLoggers())
+          finalize(() => this.fetchLoggers()),
         )
         .subscribe({
           error: (error) =>
@@ -234,14 +234,14 @@ export default {
 
       if (this.filter.configuredOnly) {
         filterFn = addToFilter(filterFn, (logger) =>
-          logger.level.some((l) => Boolean(l.configuredLevel))
+          logger.level.some((l) => Boolean(l.configuredLevel)),
         );
       }
 
       if (this.filter.name) {
         const normalizedFilter = this.filter.name.toLowerCase();
         filterFn = addToFilter(filterFn, (logger) =>
-          logger.name.toLowerCase().includes(normalizedFilter)
+          logger.name.toLowerCase().includes(normalizedFilter),
         );
       }
 

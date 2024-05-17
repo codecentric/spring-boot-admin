@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import AnsiUp from 'ansi_up';
+import { AnsiUp } from 'ansi_up/ansi_up';
 import { chunk } from 'lodash-es';
 import prettyBytes from 'pretty-bytes';
 import { debounceTime, fromEvent } from 'rxjs';
@@ -146,7 +146,7 @@ export default {
     this.scrollSubcription = fromEvent(window, 'scroll')
       .pipe(
         debounceTime(25),
-        map((event) => event.target.scrollingElement.scrollTop)
+        map((event) => event.target.scrollingElement.scrollTop),
       )
       .subscribe((scrollTop) => {
         this.atTop = scrollTop === 0;
@@ -173,11 +173,11 @@ export default {
         .streamLogfile(sbaConfig.uiSettings.pollTimer.logfile)
         .pipe(
           tap(
-            (part) => (this.skippedBytes = this.skippedBytes || part.skipped)
+            (part) => (this.skippedBytes = this.skippedBytes || part.skipped),
           ),
           concatMap((part) => chunk(part.addendum.split(/\r?\n/), 250)),
           map((lines) => of(lines, animationFrameScheduler)),
-          concatAll()
+          concatAll(),
         )
         .subscribe({
           next: (lines) => {

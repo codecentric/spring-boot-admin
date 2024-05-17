@@ -78,11 +78,11 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 		return (response) -> {
 			if (!response.statusCode().is2xxSuccessful()) {
 				log.debug("Querying actuator-index for instance {} on '{}' failed with status {}.", instance.getId(),
-						managementUrl, response.rawStatusCode());
+						managementUrl, response.statusCode().value());
 				return response.releaseBody().then(Mono.empty());
 			}
 
-			if (!response.headers().contentType().filter(this.apiMediaTypeHandler::isApiMediaType).isPresent()) {
+			if (response.headers().contentType().filter(this.apiMediaTypeHandler::isApiMediaType).isEmpty()) {
 				log.debug("Querying actuator-index for instance {} on '{}' failed with incompatible Content-Type '{}'.",
 						instance.getId(), managementUrl,
 						response.headers().contentType().map(Objects::toString).orElse("(missing)"));

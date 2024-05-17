@@ -190,7 +190,7 @@ export default {
     listedEvents() {
       return this.filterEvents(this.events).slice(
         this.indexStart,
-        this.indexEnd
+        this.indexEnd,
       );
     },
     newEventsCount() {
@@ -260,7 +260,7 @@ export default {
       return uniq(
         Object.entries(this.instanceNames)
           .filter(([, name]) => application === name)
-          .map(([instanceId]) => instanceId)
+          .map(([instanceId]) => instanceId),
       );
     },
     showNewEvents() {

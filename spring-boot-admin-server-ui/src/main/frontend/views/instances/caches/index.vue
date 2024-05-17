@@ -23,6 +23,7 @@
             :action-fn="clearCaches"
             :instance-count="application.instances.length"
             :show-info="false"
+            @scope-changed="changeScope"
           >
             <template #default="slotProps">
               <span
@@ -68,6 +69,7 @@
         :application="application"
         :caches="filteredCaches"
         :instance="instance"
+        :scope="scope"
         :is-loading="isLoading"
       />
     </sba-panel>
@@ -76,6 +78,8 @@
 
 <script>
 import { flatMap, isEmpty } from 'lodash-es';
+
+import { ActionScope } from '@/components/ActionScope';
 
 import Application from '@/services/application';
 import Instance from '@/services/instance';
@@ -94,7 +98,7 @@ const flattenCaches = (cacheData) => {
         cacheManager: cacheManagerName,
         name: cacheName,
         key: `${cacheManagerName}:${cacheName}`,
-      }))
+      })),
   );
   return mappend.sort((c1, c2) => c1.key.localeCompare(c2.key));
 };
@@ -116,6 +120,7 @@ export default {
     error: null,
     caches: [],
     filter: '',
+    scope: ActionScope.INSTANCE,
   }),
   computed: {
     filteredCaches() {
@@ -156,6 +161,9 @@ export default {
       }
 
       return filterFn;
+    },
+    changeScope(scope) {
+      this.scope = scope;
     },
   },
   install({ viewRegistry }) {

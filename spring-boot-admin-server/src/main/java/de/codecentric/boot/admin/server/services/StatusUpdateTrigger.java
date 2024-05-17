@@ -37,10 +37,12 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	private final IntervalCheck intervalCheck;
 
-	public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher) {
+	public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher, Duration updateInterval,
+			Duration statusLifetime, Duration maxBackoff) {
 		super(publisher, InstanceEvent.class);
 		this.statusUpdater = statusUpdater;
-		this.intervalCheck = new IntervalCheck("status", this::updateStatus);
+		this.intervalCheck = new IntervalCheck("status", this::updateStatus, updateInterval, statusLifetime,
+				maxBackoff);
 	}
 
 	@Override
@@ -52,10 +54,13 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 	}
 
 	protected Mono<Void> updateStatus(InstanceId instanceId) {
-		return this.statusUpdater.updateStatus(instanceId).onErrorResume((e) -> {
-			log.warn("Unexpected error while updating status for {}", instanceId, e);
-			return Mono.empty();
-		}).doFinally((s) -> this.intervalCheck.markAsChecked(instanceId));
+		return this.statusUpdater.timeout(this.intervalCheck.getInterval())
+			.updateStatus(instanceId)
+			.onErrorResume((e) -> {
+				log.warn("Unexpected error while updating status for {}", instanceId, e);
+				return Mono.empty();
+			})
+			.doFinally((s) -> this.intervalCheck.markAsChecked(instanceId));
 	}
 
 	@Override

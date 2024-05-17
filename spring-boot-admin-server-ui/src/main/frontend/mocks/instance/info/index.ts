@@ -1,8 +1,8 @@
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 const infoEndpoint = [
-  rest.get('/instances/:instanceId/actuator/info', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
+  http.get('/instances/:instanceId/actuator/info', () => {
+    return HttpResponse.json({});
   }),
 ];
 

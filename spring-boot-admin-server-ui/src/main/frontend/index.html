@@ -14,52 +14,46 @@
   ~ limitations under the License.
   -->
 
-<!DOCTYPE html>
-<html class='h-full'>
-<head>
-  <base href='/' th:href='${baseUrl}' />
-  <meta charset='utf-8' />
-  <title th:text='${uiSettings.title}'>Spring Boot Admin</title>
-  <link
-    rel='shortcut icon'
-    th:href='${uiSettings.favicon}'
-    type='image/png'
-  />
-  <meta content='width=device-width, initial-scale=1' name='viewport' />
-  <meta content='IE=edge,chrome=1' http-equiv='X-UA-Compatible' />
-  <meta content='telephone=no,email=no' name='format-detection' />
-  <meta
-    content='#42d3a5'
-    name='theme-color'
-    th:content='${uiSettings.theme.color}'
-  />
+<!doctype html>
+<html class="h-full">
+  <head>
+    <base href="/" th:href="${baseUrl}" />
+    <meta charset="utf-8" />
+    <title th:text="${uiSettings.title}">Spring Boot Admin</title>
+    <link
+      rel="shortcut icon"
+      th:href="${uiSettings.favicon}"
+      type="image/png"
+    />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+    <meta content="telephone=no,email=no" name="format-detection" />
+    <meta
+      content="#42d3a5"
+      name="theme-color"
+      th:content="${uiSettings.theme.color}"
+    />
 
-  <link href='./index.css' rel='stylesheet' />
-  <link href='/variables.css' rel='stylesheet' />
+    <link href="./index.css" rel="stylesheet" />
+    <link href="/variables.css" rel="stylesheet" />
 
-  <link
-    as='style'
-    rel='preload'
-    th:each='cssExtension : ${cssExtensions}'
-    th:href="'extensions/' + ${cssExtension.resourcePath}"
-  />
+    <link
+      as="style"
+      rel="preload"
+      th:each="cssExtension : ${cssExtensions}"
+      th:href="'extensions/' + ${cssExtension.resourcePath}"
+    />
+    <script lang="javascript" src="sba-settings.js"></script>
+    <link
+      as="script"
+      rel="preload"
+      th:each="jsExtension : ${jsExtensions}"
+      th:href="'extensions/' + ${jsExtension.resourcePath}"
+    />
+  </head>
+  <body class="h-full">
+    <div id="app"></div>
 
-  <link
-    rel='stylesheet'
-    th:each='cssExtension : ${cssExtensions}'
-    th:href="'extensions/' + ${cssExtension.resourcePath}"
-  />
-  <script lang='javascript' src='sba-settings.js'></script>
-  <link
-    as='script'
-    rel='prefetch'
-    th:each='jsExtension : ${jsExtensions}'
-    th:src="'extensions/' + ${jsExtension.resourcePath}"
-  />
-</head>
-<body class='h-full'>
-<div id='app'></div>
-
-<script src='./index.ts' type='module'></script>
-</body>
+    <script src="./index.ts" type="module"></script>
+  </body>
 </html>

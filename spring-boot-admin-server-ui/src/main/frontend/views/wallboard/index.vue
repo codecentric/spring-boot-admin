@@ -16,25 +16,28 @@
 
 <template>
   <section class="wallboard section">
-    <div class="flex gap-2 justify-end absolute w-full md:w-[28rem] top-14 right-0 bg-black/20 py-3 px-4 rounded-bl">
+    <div
+      class="flex gap-2 justify-end absolute w-full md:w-[28rem] top-14 right-0 bg-black/20 py-3 px-4 rounded-bl"
+    >
       <sba-input
+        v-model="routerState.termFilter"
         class="flex-1"
-        v-model="termFilter"
         :placeholder="$t('term.filter')"
         name="filter"
         type="search"
       >
         <template #prepend>
-          <font-awesome-icon icon="filter"/>
+          <font-awesome-icon icon="filter" />
         </template>
       </sba-input>
 
       <select
-        v-if="healthStatus.length > 1"
-        v-model="statusFilter"
+        v-if="healthStatus.size > 1"
+        v-model="routerState.statusFilter"
+        aria-label="status-filter"
         class="relative focus:z-10 focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded"
       >
-        <option selected value="none" v-text="$t('term.all')"/>
+        <option selected value="none" v-text="$t('term.all')" />
         <optgroup :label="t('health.label')">
           <option
             v-for="status in healthStatus"
@@ -54,16 +57,18 @@
       severity="WARN"
     />
 
-    <sba-loading-spinner
-      v-if="!applicationsInitialized"
-    />
+    <sba-loading-spinner v-if="!applicationsInitialized" />
 
     <template v-if="applicationsInitialized">
-      <div class="flex w-full h-full items-center text-center text-white text-xl"
-           v-if="termFilter.length > 0 && applications.length === 0"
-           v-text="t('term.no_results_for_term', {
-             term: termFilter
-           })"/>
+      <div
+        v-if="routerState.termFilter.length > 0 && applications.length === 0"
+        class="flex w-full h-full items-center text-center text-white text-xl"
+        v-text="
+          t('term.no_results_for_term', {
+            term: routerState.termFilter,
+          })
+        "
+      />
       <hex-mesh
         v-if="applicationsInitialized"
         :class-for-item="classForApplication"
@@ -72,12 +77,12 @@
       >
         <template #item="{ item: application }">
           <div :key="application.name" class="hex__body application">
-            <div class="application__status-indicator"/>
+            <div class="application__status-indicator" />
             <div class="application__header application__time-ago is-muted">
-              <sba-time-ago :date="application.statusTimestamp"/>
+              <sba-time-ago :date="application.statusTimestamp" />
             </div>
             <div class="application__body">
-              <h1 class="application__name" v-text="application.name"/>
+              <h1 class="application__name" v-text="application.name" />
               <p
                 class="application__instances is-muted"
                 v-text="
@@ -96,48 +101,56 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
+import classNames from 'classnames';
 import Fuse from 'fuse.js';
-import {computed, ref} from 'vue';
-import {useI18n} from 'vue-i18n';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import {HealthStatus} from '@/HealthStatus';
-import {useApplicationStore} from '@/composables/useApplicationStore';
-import hexMesh from '@/views/wallboard/hex-mesh';
+import { HealthStatus } from '@/HealthStatus';
+import { useApplicationStore } from '@/composables/useApplicationStore';
+import Application from '@/services/application';
+import { useRouterState } from '@/utils/useRouterState';
+import hexMesh from '@/views/wallboard/hex-mesh.vue';
 
 export default {
-  components: {hexMesh},
+  components: { hexMesh },
   setup() {
-    const {t} = useI18n();
-    const termFilter = ref('');
-    const statusFilter = ref('none');
+    const { t } = useI18n();
 
-    const {applications, applicationsInitialized, error} =
+    const routerState = useRouterState({
+      termFilter: '',
+      wordWrap: true,
+      statusFilter: 'none',
+    });
+
+    const { applications, applicationsInitialized, error } =
       useApplicationStore();
 
     const fuse = computed(
       () =>
-        new Fuse(applications.value, {
+        new Fuse<Application>(applications.value, {
           includeScore: true,
           useExtendedSearch: true,
-          threshold: 0.25,
+          threshold: 0.4,
           keys: ['name', 'buildVersion', 'instances.name', 'instances.id'],
-        })
+        }),
     );
 
     const filteredApplications = computed(() => {
-      function filterByTerm() {
-        if (termFilter.value.length > 0) {
-          return fuse.value.search(termFilter.value).map((sr) => sr.item);
+      function filterByTerm(): Application[] {
+        if (routerState.termFilter.length > 0) {
+          return fuse.value.search(routerState.termFilter).map((sr) => sr.item);
         } else {
           return applications.value;
         }
       }
 
-      function filterByStatus(result) {
-        if (statusFilter.value !== 'none') {
+      function filterByStatus(result: Application[]) {
+        if (routerState.statusFilter !== 'none') {
           return result.filter(
-            (application) => application.status === statusFilter.value
+            (application: Application) =>
+              application.status === routerState.statusFilter,
           );
         }
 
@@ -151,7 +164,9 @@ export default {
     });
 
     const healthStatus = computed(() => {
-      return applications.value.map((application) => application.status);
+      return new Set(
+        applications.value.map((application) => application.status),
+      );
     });
 
     return {
@@ -159,13 +174,13 @@ export default {
       applicationsInitialized,
       error,
       t,
-      termFilter,
-      statusFilter,
       healthStatus,
+      routerState,
     };
   },
   methods: {
-    classForApplication(application) {
+    classNames,
+    classForApplication(application: Application) {
       if (!application) {
         return null;
       }
@@ -189,21 +204,21 @@ export default {
       }
       return '';
     },
-    select(application) {
+    select(application: Application) {
       if (application.instances.length === 1) {
         this.$router.push({
           name: 'instances/details',
-          params: {instanceId: application.instances[0].id},
+          params: { instanceId: application.instances[0].id },
         });
       } else {
         this.$router.push({
           name: 'applications',
-          params: {selected: application.name},
+          params: { selected: application.name },
         });
       }
     },
   },
-  install({viewRegistry}) {
+  install({ viewRegistry }) {
     viewRegistry.addView({
       path: '/wallboard',
       name: 'wallboard',

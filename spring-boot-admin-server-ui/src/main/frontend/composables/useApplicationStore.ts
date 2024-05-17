@@ -1,9 +1,11 @@
-import { ref } from 'vue';
+import { Ref, ref } from 'vue';
 
 import ApplicationStore from '../store.js';
 
+import Application from '@/services/application';
+
 let applicationStore: ApplicationStore | null = null;
-const applications = ref([]);
+const applications: Ref<Application[]> = ref([]);
 const applicationsInitialized = ref(false);
 const error = ref(null);
 
@@ -14,7 +16,14 @@ export function createApplicationStore() {
   return applicationStore;
 }
 
-export function useApplicationStore() {
+type ApplicationStoreValue = {
+  applications: Ref<Application[]>;
+  applicationsInitialized: Ref<boolean>;
+  error: Ref<any>;
+  applicationStore: ApplicationStore;
+};
+
+export function useApplicationStore(): ApplicationStoreValue {
   applicationStore.addEventListener('connected', () => {
     applicationsInitialized.value = true;
     error.value = null;

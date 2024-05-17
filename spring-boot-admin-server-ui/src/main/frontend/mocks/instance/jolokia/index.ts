@@ -1,26 +1,23 @@
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 import { jolokiaList } from './data';
 
 import { jolokiaRead } from '@/mocks/instance/jolokia/data.read';
 
 const jolokiaEndpoint = [
-  rest.get('/instances/:instanceId/actuator/jolokia/list', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(jolokiaList));
+  http.get('/instances/:instanceId/actuator/jolokia/list', () => {
+    return HttpResponse.json(jolokiaList);
   }),
-  rest.post(
-    '/instances/:instanceId/actuator/jolokia',
-    async (req, res, ctx) => {
-      try {
-        const body = await req.json();
-        if (body.type === 'read') {
-          return res(ctx.status(200), ctx.json(jolokiaRead));
-        }
-      } catch (e) {
-        console.error(e);
+  http.post('/instances/:instanceId/actuator/jolokia', async () => {
+    try {
+      const body = { type: 'read' };
+      if (body.type === 'read') {
+        return HttpResponse.json(jolokiaRead);
       }
+    } catch (e) {
+      console.error(e);
     }
-  ),
+  }),
 ];
 
 export default jolokiaEndpoint;

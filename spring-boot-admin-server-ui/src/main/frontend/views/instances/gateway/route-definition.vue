@@ -104,7 +104,9 @@ export default {
   margin: 1.25em;
   background-color: #fff;
   border-radius: 6px;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 .route-definition-container {
   display: flex;

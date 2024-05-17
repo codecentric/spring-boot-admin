@@ -10,7 +10,7 @@ A Spring Security configuration for your server could look like this:
 
 [source,java,indent=ß]
 ----
-include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/SecuritySecureConfig.java[tags=configuration-spring-security]
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/sample/SecuritySecureConfig.java[tags=configuration-spring-security]
 ----
 <1> Grants public access to all static assets and the login page.
 <2> Every other request must be authenticated.

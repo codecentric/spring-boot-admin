@@ -189,7 +189,7 @@ export default {
                 types: {},
               },
             ],
-            [(m) => m.name]
+            [(m) => m.name],
           );
         }
       }
@@ -197,7 +197,7 @@ export default {
     loadMetrics() {
       if (window.localStorage) {
         let persistedMetrics = localStorage.getItem(
-          `applications/${this.instance.registration.name}/metrics`
+          `applications/${this.instance.registration.name}/metrics`,
         );
         if (persistedMetrics) {
           return JSON.parse(persistedMetrics);
@@ -209,7 +209,7 @@ export default {
       if (window.localStorage) {
         localStorage.setItem(
           `applications/${this.instance.registration.name}/metrics`,
-          JSON.stringify(value)
+          JSON.stringify(value),
         );
       }
     },
@@ -223,7 +223,7 @@ export default {
           this.selectedMetric = this.availableMetrics[0];
         } else {
           this.error = new Error(
-            this.$t('instances.metrics.metrics_not_supported_spring_boot_1')
+            this.$t('instances.metrics.metrics_not_supported_spring_boot_1'),
           );
           this.isOldMetrics = true;
         }
@@ -244,7 +244,7 @@ export default {
         this.selectedTags = {};
         if (this.availableTags) {
           this.availableTags.forEach(
-            (t) => (this.selectedTags[t.tag] = undefined)
+            (t) => (this.selectedTags[t.tag] = undefined),
           );
         }
       } catch (error) {

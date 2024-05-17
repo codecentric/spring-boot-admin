@@ -24,6 +24,9 @@
       "health": {
         "title": "Health"
       },
+      "health_group": {
+        "title": "Health Group"
+      },
       "info": {
         "no_info_provided": "No info provided.",
         "title": "Info"

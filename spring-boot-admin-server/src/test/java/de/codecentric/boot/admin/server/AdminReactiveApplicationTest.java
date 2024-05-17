@@ -57,7 +57,9 @@ public class AdminReactiveApplicationTest extends AbstractAdminApplicationTest {
 
 		@Bean
 		public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-			return http.authorizeExchange().anyExchange().permitAll().and().csrf().disable().build();
+			return http.authorizeExchange((authorizeExchange) -> authorizeExchange.anyExchange().permitAll())
+				.csrf(ServerHttpSecurity.CsrfSpec::disable)
+				.build();
 		}
 
 	}

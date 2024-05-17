@@ -89,7 +89,7 @@ export default {
     },
     hexPath() {
       return `${this.point(0)} ${this.point(1)} ${this.point(2)} ${this.point(
-        3
+        3,
       )} ${this.point(4)} ${this.point(5)}`;
     },
     hexHeight() {
@@ -146,7 +146,7 @@ export default {
         const layout = calcLayout(
           this.itemCount,
           boundingClientRect.width,
-          boundingClientRect.height
+          boundingClientRect.height,
         );
         this.cols = layout.cols;
         this.rows = layout.rows;

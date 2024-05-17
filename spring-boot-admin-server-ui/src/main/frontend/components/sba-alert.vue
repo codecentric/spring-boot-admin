@@ -64,7 +64,6 @@ export default defineComponent({
     severity: {
       type: String,
       default: Severity.ERROR,
-      required: true,
     },
   },
   data() {

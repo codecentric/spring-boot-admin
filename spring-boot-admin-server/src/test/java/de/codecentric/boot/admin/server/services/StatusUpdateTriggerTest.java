@@ -56,8 +56,10 @@ public class StatusUpdateTriggerTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 		when(this.updater.updateStatus(any(InstanceId.class))).thenReturn(Mono.empty());
+		when(this.updater.timeout(any())).thenReturn(this.updater);
 
-		this.trigger = new StatusUpdateTrigger(this.updater, this.events.flux());
+		this.trigger = new StatusUpdateTrigger(this.updater, this.events.flux(), Duration.ofSeconds(10),
+			Duration.ofSeconds(10), Duration.ofSeconds(60));
 		this.trigger.start();
 		await().until(this.events::wasSubscribed);
 	}

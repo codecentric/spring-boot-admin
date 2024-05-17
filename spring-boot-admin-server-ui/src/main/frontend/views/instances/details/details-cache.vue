@@ -137,7 +137,7 @@ export default {
           this.shouldFetchCacheHits = false;
           console.warn(
             `Fetching cache ${this.cacheName} hits failed - error is ignored`,
-            error
+            error,
           );
           return undefined;
         }
@@ -155,7 +155,7 @@ export default {
           this.shouldFetchCacheMisses = false;
           console.warn(
             `Fetching cache ${this.cacheName} misses failed - error is ignored`,
-            error
+            error,
           );
           return undefined;
         }
@@ -172,7 +172,7 @@ export default {
           this.shouldFetchCacheSize = false;
           console.warn(
             `Fetching cache ${this.cacheName} size failed - error is ignored`,
-            error
+            error,
           );
           return undefined;
         }
@@ -184,7 +184,7 @@ export default {
           concatMap(this.fetchMetrics),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
-          })
+          }),
         )
         .subscribe({
           next: (data) => {
@@ -196,7 +196,7 @@ export default {
             this.hasLoaded = true;
             console.warn(
               `Fetching cache ${this.cacheName} metrics failed:`,
-              error
+              error,
             );
             this.error = error;
           },

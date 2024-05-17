@@ -117,12 +117,12 @@ export default {
             ...jobList.groups[group].jobs.map((name) =>
               this.instance
                 .fetchQuartzJob(group, name)
-                .then((response) => response.data)
-            )
+                .then((response) => response.data),
+            ),
           );
         }
         this.jobDetails = (await Promise.allSettled(promises)).map(
-          (result) => result.value
+          (result) => result.value,
         );
       } catch (error) {
         console.warn('Fetching Quartz Jobs failed:', error);
@@ -143,12 +143,12 @@ export default {
             ...groupList.groups[group].triggers.map((name) =>
               this.instance
                 .fetchQuartzTrigger(group, name)
-                .then((response) => response.data)
-            )
+                .then((response) => response.data),
+            ),
           );
         }
         this.triggerDetails = (await Promise.allSettled(promises)).map(
-          (result) => result.value
+          (result) => result.value,
         );
       } catch (error) {
         console.warn('Fetching Quartz Triggers failed:', error);

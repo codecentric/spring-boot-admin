@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.cloud.config;
 
 import com.netflix.discovery.EurekaClient;
+import io.kubernetes.client.openapi.apis.CoreV1Api;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;
@@ -42,7 +43,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class AdminServerDiscoveryAutoConfigurationTest {
+class AdminServerDiscoveryAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(UtilAutoConfiguration.class,
@@ -51,14 +52,14 @@ public class AdminServerDiscoveryAutoConfigurationTest {
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
-	public void defaultServiceInstanceConverter() {
+	void defaultServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
 			.run((context) -> assertThat(context.getBean(ServiceInstanceConverter.class))
 				.isInstanceOf(DefaultServiceInstanceConverter.class));
 	}
 
 	@Test
-	public void eurekaServiceInstanceConverter() {
+	void eurekaServiceInstanceConverter() {
 		this.contextRunner.withBean(EurekaClient.class, () -> mock(EurekaClient.class))
 			.withBean(DiscoveryClient.class, () -> mock(DiscoveryClient.class))
 			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
@@ -66,15 +67,16 @@ public class AdminServerDiscoveryAutoConfigurationTest {
 	}
 
 	@Test
-	public void officialKubernetesServiceInstanceConverter() {
+	void officialKubernetesServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(KubernetesDiscoveryPropertiesConfiguration.class)
+			.withBean(CoreV1Api.class, () -> mock(CoreV1Api.class))
 			.withBean(KubernetesInformerDiscoveryClient.class, () -> mock(KubernetesInformerDiscoveryClient.class))
 			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
 				.isInstanceOf(KubernetesServiceInstanceConverter.class));
 	}
 
 	@Test
-	public void fabric8KubernetesServiceInstanceConverter() {
+	void fabric8KubernetesServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(KubernetesDiscoveryPropertiesConfiguration.class)
 			.withBean(KubernetesDiscoveryClient.class, () -> mock(KubernetesDiscoveryClient.class))
 			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
@@ -82,7 +84,7 @@ public class AdminServerDiscoveryAutoConfigurationTest {
 	}
 
 	@Test
-	public void customServiceInstanceConverter() {
+	void customServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
 			.withBean(CustomServiceInstanceConverter.class)
 			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)

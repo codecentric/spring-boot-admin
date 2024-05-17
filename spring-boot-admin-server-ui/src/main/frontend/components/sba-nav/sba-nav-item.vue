@@ -18,6 +18,9 @@
 </template>
 
 <script lang="ts" setup>
+import { PropType } from 'vue';
+import { RouteLocationRaw } from 'vue-router';
+
 defineProps({
   href: {
     type: String,
@@ -28,7 +31,7 @@ defineProps({
     default: '_blank',
   },
   to: {
-    type: String,
+    type: Object as PropType<RouteLocationRaw>,
     default: null,
   },
 });

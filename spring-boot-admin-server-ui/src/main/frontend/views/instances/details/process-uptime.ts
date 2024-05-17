@@ -37,7 +37,7 @@ export default {
       }
       const duration = moment.duration(this.value + this.offset);
       return `${Math.floor(
-        duration.asDays()
+        duration.asDays(),
       )}d ${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s`;
     },
   },

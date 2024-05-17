@@ -35,10 +35,14 @@ const isInstanceActuatorRequest = (url: string) =>
   url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
 
 class Instance {
-  private readonly id: string;
+  public readonly id: string;
+  public registration: Registration;
+  public endpoints: any[] = [];
+  public tags: { [key: string]: string }[];
+  public statusTimestamp: string;
+  public buildVersion: string;
+  public statusInfo: StatusInfo;
   private readonly axios: AxiosInstance;
-  private registration: any;
-  private endpoints: any[];
 
   constructor({ id, ...instance }) {
     Object.assign(this, instance);
@@ -52,8 +56,8 @@ class Instance {
       (response) => response,
       redirectOn401(
         (error) =>
-          !isInstanceActuatorRequest(error.config.baseURL + error.config.url)
-      )
+          !isInstanceActuatorRequest(error.config.baseURL + error.config.url),
+      ),
     );
     registerErrorToastInterceptor(this.axios);
   }
@@ -82,7 +86,7 @@ class Instance {
         return () => {
           eventSource.close();
         };
-      })
+      }),
     );
   }
 
@@ -163,6 +167,12 @@ class Instance {
     return await this.axios.get(uri`actuator/health`, { validateStatus: null });
   }
 
+  async fetchHealthGroup(groupName: string) {
+    return await this.axios.get(uri`actuator/health/${groupName}`, {
+      validateStatus: null,
+    });
+  }
+
   async fetchEnv(name) {
     return this.axios.get(uri`actuator/env/${name || ''}`);
   }
@@ -188,7 +198,7 @@ class Instance {
       { name, value },
       {
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
   }
 
@@ -254,7 +264,7 @@ class Instance {
       level === null ? {} : { configuredLevel: level },
       {
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
   }
 
@@ -323,7 +333,7 @@ class Instance {
   streamLogfile(interval) {
     return logtail(
       (opt) => this.axios.get(uri`actuator/logfile`, opt),
-      interval
+      interval,
     );
   }
 
@@ -407,6 +417,18 @@ class Instance {
     });
   }
 
+  async fetchSbomIds() {
+    return this.axios.get(uri`actuator/sbom`, {
+      headers: { Accept: 'application/json' },
+    });
+  }
+
+  async fetchSbom(id) {
+    return this.axios.get(uri`actuator/sbom/${id}`, {
+      headers: { Accept: '*/*' },
+    });
+  }
+
   shutdown() {
     return this.axios.post(uri`actuator/shutdown`);
   }
@@ -417,3 +439,28 @@ class Instance {
 }
 
 export default Instance;
+
+export type Registration = {
+  name: string;
+  managementUrl?: string;
+  healthUrl: string;
+  serviceUrl?: string;
+  source: string;
+  metadata?: { [key: string]: string }[];
+};
+
+type StatusInfo = {
+  status:
+    | 'UNKNOWN'
+    | 'OUT_OF_SERVICE'
+    | 'UP'
+    | 'DOWN'
+    | 'OFFLINE'
+    | 'RESTRICTED'
+    | string;
+  details: { [key: string]: string };
+};
+
+export const DOWN_STATES = ['OUT_OF_SERVICE', 'DOWN', 'OFFLINE', 'RESTRICTED'];
+export const UP_STATES = ['UP'];
+export const UNKNOWN_STATES = ['UNKNOWN'];

@@ -58,7 +58,7 @@ describe('redirectOn401', () => {
     }
 
     expect(window.location.assign).toBeCalledWith(
-      'login?redirectTo=http%3A%2F%2Fexample.com%2F&error=401'
+      'login?redirectTo=http%3A%2F%2Fexample.com%2F&error=401',
     );
   });
 

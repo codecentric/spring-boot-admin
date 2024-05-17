@@ -1,10 +1,10 @@
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 import { liquibase } from './data.js';
 
 const liquibaseEndpoints = [
-  rest.get('/instances/:instanceId/actuator/liquibase', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(liquibase));
+  http.get('/instances/:instanceId/actuator/liquibase', () => {
+    return HttpResponse.json(liquibase);
   }),
 ];
 

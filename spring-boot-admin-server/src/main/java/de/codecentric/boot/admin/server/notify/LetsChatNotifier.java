@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.notify;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +33,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -93,7 +93,7 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		// Let's Chat requiers the token as basic username, the password can be an
 		// arbitrary string.
-		String auth = Base64Utils
+		String auth = Base64.getEncoder()
 			.encodeToString(String.format("%s:%s", token, username).getBytes(StandardCharsets.UTF_8));
 		headers.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
 		return Mono.fromRunnable(() -> restTemplate.exchange(createUrl(), HttpMethod.POST,

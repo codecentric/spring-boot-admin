@@ -160,7 +160,7 @@ export default {
         .pipe(
           map((session) => session.id),
           concatMap(this._deleteSession),
-          listen((status) => (this.deletingAll = status))
+          listen((status) => (this.deletingAll = status)),
         )
         .subscribe({
           complete: () => {
@@ -185,7 +185,7 @@ export default {
           error: (error) => {
             console.warn(`Deleting session ${sessionId} failed:`, error);
           },
-        })
+        }),
       );
     },
   },

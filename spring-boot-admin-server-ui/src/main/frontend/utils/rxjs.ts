@@ -53,7 +53,7 @@ export const listen =
     let handle = null;
     return source.pipe(
       doOnSubscribe(
-        () => (handle = setTimeout(() => cb('executing'), execDelay))
+        () => (handle = setTimeout(() => cb('executing'), execDelay)),
       ),
       tap({
         complete: () => {
@@ -65,6 +65,6 @@ export const listen =
           handle && clearTimeout(handle);
           cb('failed');
         },
-      })
+      }),
     );
   };

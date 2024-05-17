@@ -1,5 +1,5 @@
 import { waitFor } from '@testing-library/vue';
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 import { ReplaySubject } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -22,9 +22,9 @@ describe('store.js', () => {
 
   beforeEach(() => {
     server.use(
-      rest.get('/applications', (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json([]));
-      })
+      http.get('/applications', () => {
+        return HttpResponse.json([]);
+      }),
     );
 
     changedListener = vi.fn();

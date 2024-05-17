@@ -20,7 +20,7 @@
     <section>
       <sba-sticky-subnav>
         <div class="container mx-auto flex">
-          <application-stats />
+          <ApplicationStats />
           <ApplicationNotificationCenter
             v-if="hasNotificationFiltersSupport"
             :notification-filters="notificationFilters"
@@ -28,7 +28,7 @@
           />
           <div class="flex-1">
             <sba-input
-              v-model="filter"
+              v-model="routerState.q"
               :placeholder="t('term.filter')"
               name="filter"
               type="search"
@@ -56,50 +56,104 @@
           />
         </sba-panel>
 
-        <application-status-hero v-if="applicationsInitialized" />
+        <ApplicationStatusHero v-if="applicationsInitialized" />
 
         <template v-if="applicationsInitialized">
-          <TransitionGroup>
+          <sba-panel
+            v-if="hasActiveFilter && grouped.length === 0"
+            class="text-center"
+          >
+            {{ t('filter.no_results') }}
+          </sba-panel>
+
+          <template v-else>
+            <div v-if="groupNames.length > 1" class="text-right mb-6">
+              <sba-button-group>
+                <sba-button @click="() => setGroupingFunction('application')">
+                  <font-awesome-icon icon="list" />
+                </sba-button>
+                <sba-button @click="() => setGroupingFunction('group')">
+                  <font-awesome-icon icon="expand" />
+                </sba-button>
+              </sba-button-group>
+            </div>
+
             <sba-panel
-              v-if="hasActiveFilter && statusGroups.length === 0"
-              class="text-center"
-            >
-              {{ t('filter.no_results') }}
-            </sba-panel>
-            <sba-panel
-              v-for="group in statusGroups"
-              v-else
-              :key="group.status"
+              v-for="group in grouped"
+              :id="group.name"
+              :key="group.name"
+              v-on-clickaway="(event: Event) => deselect(event, group.name)"
               :seamless="true"
-              :title="t('term.applications_tc', group.applications.length)"
+              :title="t(group.name)"
+              :subtitle="
+                t('term.instances_tc', { count: group.instances?.length ?? 0 })
+              "
               class="application-group"
+              :aria-expanded="isExpanded(group.name)"
+              @title-click="
+                () => {
+                  select(group.name);
+                  toggleGroup(group.name);
+                }
+              "
             >
-              <template #title>
-                <sba-status-badge :status="group.statusKey" />
+              <template #prefix>
+                <font-awesome-icon
+                  icon="chevron-down"
+                  :class="{
+                    '-rotate-90': !isExpanded(group.name),
+                    'mr-2 transition-[transform]': true,
+                  }"
+                />
+                <sba-status-badge
+                  v-if="isGroupedByApplication"
+                  class="mr-2"
+                  :status="
+                    applicationStore.findApplicationByInstanceId(
+                      group.instances[0].id,
+                    )?.status
+                  "
+                />
               </template>
 
-              <applications-list-item
-                v-for="application in group.applications"
-                :key="application.name"
-                :application="application"
-                :has-notification-filters-support="
-                  hasNotificationFiltersSupport
-                "
-                :is-expanded="selected === application.name || Boolean(filter)"
-                :notification-filters="notificationFilters"
-                @deselect="deselect"
-                @restart="restart"
-                @select="select"
-                @shutdown="shutdown"
-                @unregister="unregister"
-                @toggle-notification-filter-settings="
-                  toggleNotificationFilterSettings
-                "
-              />
+              <template v-if="singleVersionInGroup(group)" #version>
+                <span v-text="group.instances[0].buildVersion" />
+              </template>
+
+              <template v-if="isGroupedByApplication" #actions>
+                <ApplicationListItemAction
+                  :has-notification-filters-support="
+                    hasNotificationFiltersSupport
+                  "
+                  :item="
+                    applicationStore.findApplicationByInstanceId(
+                      group.instances[0].id,
+                    )
+                  "
+                  @filter-settings="toggleNotificationFilterSettings"
+                />
+              </template>
+
+              <template v-if="isExpanded(group.name)" #default>
+                <InstancesList :instances="group.instances">
+                  <template #actions="{ instance }">
+                    <ApplicationListItemAction
+                      :has-notification-filters-support="
+                        hasNotificationFiltersSupport
+                      "
+                      :item="instance"
+                      class="md:hidden"
+                      @filter-settings="toggleNotificationFilterSettings"
+                    />
+                  </template>
+                </InstancesList>
+              </template>
             </sba-panel>
-          </TransitionGroup>
-          <notification-filter-settings
+          </template>
+
+          <NotificationFilterSettings
             v-if="showNotificationFilterSettingsObject"
+            v-on-clickaway="() => toggleNotificationFilterSettings(null)"
             v-popper="
               `nf-settings-${
                 showNotificationFilterSettingsObject.id ||
@@ -117,32 +171,47 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { groupBy, sortBy, transform } from 'lodash-es';
-import { computed, defineComponent, ref, watch } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { RouteLocationRaw, useRoute, useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
-import SbaStickySubnav from '@/components/sba-sticky-subnav';
-import SbaWave from '@/components/sba-wave';
+import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
+import SbaWave from '@/components/sba-wave.vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
-import Popper from '@/directives/popper';
-import subscribing from '@/mixins/subscribing';
 import Application from '@/services/application';
+import Instance from '@/services/instance';
 import NotificationFilter from '@/services/notification-filter';
 import { anyValueMatches } from '@/utils/collections';
-import { Subject, concatMap, mergeWith, timer } from '@/utils/rxjs';
-import ApplicationNotificationCenter from '@/views/applications/application-notification-center';
-import ApplicationStats from '@/views/applications/application-stats';
-import ApplicationStatusHero from '@/views/applications/application-status-hero';
-import ApplicationsListItem from '@/views/applications/applications-list-item';
-import handle from '@/views/applications/handle';
-import NotificationFilterSettings from '@/views/applications/notification-filter-settings';
+import { concatMap, mergeWith, Subject, timer } from '@/utils/rxjs';
+import { useRouterState } from '@/utils/useRouterState';
+import { useSubscription } from '@/utils/useSubscription';
+import ApplicationListItemAction from '@/views/applications/ApplicationListItemAction.vue';
+import ApplicationNotificationCenter from '@/views/applications/ApplicationNotificationCenter.vue';
+import ApplicationStats from '@/views/applications/ApplicationStats.vue';
+import ApplicationStatusHero from '@/views/applications/ApplicationStatusHero.vue';
+import InstancesList from '@/views/applications/InstancesList.vue';
+import NotificationFilterSettings from '@/views/applications/NotificationFilterSettings.vue';
 
-const instanceMatchesFilter = (term, instance) => {
-  const predicate = (value) => String(value).toLowerCase().includes(term);
+const props = defineProps({
+  error: {
+    type: Error,
+    default: null,
+  },
+  selected: {
+    type: String,
+    default: null,
+  },
+});
+
+const instanceMatchesFilter = (term: string, instance: Instance) => {
+  const predicate = (value: string | number) =>
+    String(value).toLowerCase().includes(term);
+
   return (
     anyValueMatches(instance.registration, predicate) ||
     anyValueMatches(instance.buildVersion, predicate) ||
@@ -153,283 +222,236 @@ const instanceMatchesFilter = (term, instance) => {
 
 type NotificationFilterSettingsObject = { id: string; name: string };
 
-export default defineComponent({
-  directives: { Popper },
-  components: {
-    ApplicationNotificationCenter,
-    SbaWave,
-    ApplicationStatusHero,
-    SbaStickySubnav,
-    ApplicationStats,
-    ApplicationsListItem,
-    NotificationFilterSettings,
-  },
-  mixins: [subscribing],
-  props: {
-    error: {
-      type: Error,
-      default: null,
-    },
-    selected: {
-      type: String,
-      default: null,
-    },
-  },
-  setup: function (props) {
-    const { t } = useI18n();
-    const router = useRouter();
-    const route = useRoute();
-    const { applications, applicationsInitialized } = useApplicationStore();
-    const notificationCenter = useNotificationCenter({});
-    const filter = ref(route.query.q?.toString());
+type InstancesListType = {
+  name?: string;
+  statusKey?: string;
+  status?: string;
+  instances?: Instance[];
+  applications?: Application[];
+};
 
-    watch(filter, (q) => {
-      let to = {
-        name: 'applications',
-        params: { selected: props.selected },
-      } as RouteLocationRaw;
+const groupingFunctions = {
+  application: (instance: Instance) => instance.registration.name,
+  group: (instance: Instance) =>
+    instance.registration.metadata?.['group'] ?? 'term.no_group',
+};
 
-      if (q?.length > 0) {
-        to = {
-          ...to,
-          query: { q },
-        } as RouteLocationRaw;
-      }
+const { t } = useI18n();
+const router = useRouter();
+const route = useRoute();
+const { applications, applicationsInitialized, applicationStore } =
+  useApplicationStore();
+const notificationCenter = useNotificationCenter({});
+const expandedGroups = ref([props.selected]);
+const groupingFunction = ref(groupingFunctions.application);
 
-      router.replace(to);
-    });
+const routerState = useRouterState({
+  q: '',
+});
+const hasActiveFilter = computed(() => {
+  return routerState.q?.length > 0;
+});
+const notificationFilterSubject = new Subject();
+const hasNotificationFiltersSupport = NotificationFilter.isSupported();
+const notificationFilters = ref([]);
 
-    const hasActiveFilter = computed(() => {
-      return filter.value?.length > 0;
-    });
+useSubscription(
+  timer(0, 60000)
+    .pipe(
+      mergeWith(notificationFilterSubject),
+      concatMap(fetchNotificationFilters),
+    )
+    .subscribe({
+      next: (data) => {
+        notificationFilters.value = data;
+      },
+      error: (error) => {
+        console.warn('Fetching notification filters failed with error:', error);
+        notificationCenter.error(
+          t('applications.fetching_notification_filters_failed'),
+        );
+      },
+    }),
+);
 
-    return {
-      applications,
-      applicationsInitialized,
-      errors: ref([]),
-      filter,
-      hasActiveFilter,
-      hasNotificationFiltersSupport: ref(false),
-      notificationCenter,
-      notificationFilterSubject: new Subject(),
-      notificationFilters: ref([]),
-      palette: ref({}),
-      router,
-      showNotificationFilterSettingsObject: ref(
-        null as unknown as NotificationFilterSettingsObject
-      ),
-      t,
-    };
-  },
-  computed: {
-    statusGroups() {
-      const filteredApplications = this.filterInstances(this.applications);
-      const applicationsByStatus = groupBy(
-        filteredApplications,
-        (application) => application.status
-      );
-      const list = transform(
-        applicationsByStatus,
-        (result, applications, status: string) => {
-          const statusKey = status.replace(/[^\w]/gi, '').toLowerCase();
-          result.push({
-            statusKey,
-            status: status,
-            applications: sortBy(applications, [
-              (application) => application.name,
-            ]),
-          });
-        },
-        []
-      );
-      return sortBy(list, [(item) => item.status]);
-    },
-  },
-  watch: {
-    selected: {
-      immediate: true,
-      handler: 'scrollIntoView',
-    },
-  },
-  mounted() {
-    this.hasNotificationFiltersSupport = NotificationFilter.isSupported();
-  },
-  methods: {
-    select(name) {
-      this.router.replace({
-        name: 'applications',
-        params: { selected: name },
+async function fetchNotificationFilters() {
+  if (hasNotificationFiltersSupport) {
+    const response = await NotificationFilter.getFilters();
+    return response.data;
+  }
+  return [];
+}
+
+const groupNames = computed(() => {
+  return [
+    ...new Set(
+      applications.value
+        .flatMap((application: Application) => application.instances)
+        .map(
+          (instance: Instance) =>
+            instance.registration.metadata?.['group'] ?? 'Ungrouped',
+        ),
+    ),
+  ];
+});
+
+const grouped = computed(() => {
+  const filteredApplications = filterInstances(applications.value);
+
+  const instances = filteredApplications.flatMap(
+    (application: Application) => application.instances,
+  );
+
+  const grouped = groupBy<Instance>(instances, groupingFunction.value);
+
+  const list = transform<Instance[], InstancesListType[]>(
+    grouped,
+    (result, instances, name) => {
+      result.push({
+        name,
+        instances: sortBy(instances, [
+          (instance) => instance.registration.name,
+        ]),
       });
     },
-    deselect(event, expectedSelected) {
-      if (event && event.target instanceof HTMLAnchorElement) {
-        return;
-      }
-      this.toggleNotificationFilterSettings(null);
-      if (this.selected === expectedSelected || !expectedSelected) {
-        this.router.replace({ name: 'applications' });
-      }
-    },
-    async scrollIntoView(id, behavior) {
-      if (id) {
-        await this.$nextTick();
-        const el = document.getElementById(id);
-        if (el) {
-          const top = el.getBoundingClientRect().top + window.scrollY - 100;
-          window.scroll({
-            top,
-            left: window.scrollX,
-            behavior: behavior || 'smooth',
-          });
-        }
-      }
-    },
-    async unregister(item) {
-      this.toggleNotificationFilterSettings(null);
-      try {
-        await item.unregister();
-        const message =
-          item instanceof Application
-            ? 'applications.unregister_successful'
-            : 'instances.unregister_successful';
-        this.notificationCenter.success(
-          this.t(message, { name: item.id || item.name })
-        );
-      } catch (error) {
-        const message =
-          item instanceof Application
-            ? 'applications.unregister_failed'
-            : 'instances.unregister_failed';
-        this.notificationCenter.error(
-          this.t(message, {
-            name: item.id || item.name,
-            error: error.response.status,
-          })
-        );
-      }
-    },
-    async shutdown(item) {
-      try {
-        await item.shutdown();
-        const message =
-          item instanceof Application
-            ? 'applications.shutdown_successful'
-            : 'instances.shutdown_successful';
-        this.notificationCenter.success(
-          this.t(message, { name: item.id || item.name })
-        );
-      } catch (error) {
-        const message =
-          item instanceof Application
-            ? 'applications.shutdown_failed'
-            : 'instances.shutdown_failed';
-        this.notificationCenter.error(
-          this.t(message, {
-            name: item.id || item.name,
-            error: error.response.status,
-          })
-        );
-      }
-    },
-    async restart(item) {
-      try {
-        await item.restart();
-        const message =
-          item instanceof Application
-            ? 'applications.restarted'
-            : 'instances.restarted';
-        this.notificationCenter.success(
-          this.t(message, { name: item.id || item.name })
-        );
-      } catch (error) {
-        const message =
-          item instanceof Application
-            ? 'applications.restart_failed'
-            : 'instances.restart_failed';
-        this.notificationCenter.error(
-          this.t(message, {
-            name: item.id || item.name,
-            error: error.response.status,
-          })
-        );
-      }
-    },
-    createSubscription() {
-      return timer(0, 60000)
-        .pipe(
-          mergeWith(this.notificationFilterSubject),
-          concatMap(this.fetchNotificationFilters)
-        )
-        .subscribe({
-          next: (data) => {
-            this.notificationFilters = data;
-          },
-          error: (error) => {
-            console.warn(
-              'Fetching notification filters failed with error:',
-              error
-            );
-            this.notificationCenter.error(
-              this.t('applications.fetching_notification_filters_failed')
-            );
-          },
-        });
-    },
-    async fetchNotificationFilters() {
-      if (this.hasNotificationFiltersSupport) {
-        const response = await NotificationFilter.getFilters();
-        return response.data;
-      }
-      return [];
-    },
-    async addFilter({ object, ttl }) {
-      try {
-        const response = await NotificationFilter.addFilter(object, ttl);
-        let notificationFilter = response.data;
-        this.notificationFilterSubject.next(notificationFilter);
-        this.notificationCenter.success(
-          `${this.t('applications.notifications_suppressed_for', {
-            name:
-              notificationFilter.applicationName ||
-              notificationFilter.instanceId,
-          })} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`
-        );
-      } catch (error) {
-        console.warn('Adding notification filter failed:', error);
-      } finally {
-        this.toggleNotificationFilterSettings(null);
-      }
-    },
-    async removeFilter(activeFilter) {
-      try {
-        await activeFilter.delete();
-        this.notificationFilterSubject.next(activeFilter.id);
-        this.notificationCenter.success(
-          this.t('applications.notification_filter.removed')
-        );
-      } catch (error) {
-        console.warn('Deleting notification filter failed:', error);
-      } finally {
-        this.toggleNotificationFilterSettings(null);
-      }
-    },
-    toggleNotificationFilterSettings(obj) {
-      this.showNotificationFilterSettingsObject = obj ? obj : null;
-    },
-    filterInstances(applications) {
-      if (!this.filter) {
-        return applications;
-      }
+    [],
+  );
 
-      return applications
-        .map((application) =>
-          application.filterInstances((i) =>
-            instanceMatchesFilter(this.filter.toLowerCase(), i)
-          )
-        )
-        .filter((application) => application.instances.length > 0);
-    },
-  },
+  return sortBy(list, [(item) => getApplicationStatus(item)]);
+});
+
+function getApplicationStatus(item: InstancesListType): string {
+  return applicationStore.findApplicationByInstanceId(item.instances[0].id)
+    ?.status;
+}
+
+function filterInstances(applications: Application[]) {
+  if (!routerState.q) {
+    return applications;
+  }
+
+  return applications
+    .map((application) =>
+      application.filterInstances((i) =>
+        instanceMatchesFilter(routerState.q.toLowerCase(), i),
+      ),
+    )
+    .filter((application) => application.instances.length > 0);
+}
+
+const isGroupedByApplication = computed(() => {
+  return groupingFunction.value === groupingFunctions.application;
+});
+
+const singleVersionInGroup = (group) => {
+  return (
+    group.length === 1 ||
+    group.instances.filter(
+      (instance) => group.instances[0].buildVersion !== instance.buildVersion,
+    ).length === 0
+  );
+};
+
+if (props.selected) {
+  scrollIntoView(props.selected);
+}
+
+async function scrollIntoView(id) {
+  if (id) {
+    await nextTick();
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+        inline: 'nearest',
+      });
+    }
+  }
+}
+
+const showNotificationFilterSettingsObject = ref(
+  null as unknown as NotificationFilterSettingsObject,
+);
+const setGroupingFunction = (key: keyof typeof groupingFunctions) => {
+  groupingFunction.value = groupingFunctions[key];
+  expandedGroups.value = [];
+};
+
+function isExpanded(name: string) {
+  return expandedGroups.value.includes(name);
+}
+
+function toggleGroup(name: string) {
+  if (expandedGroups.value.includes(name)) {
+    expandedGroups.value = expandedGroups.value.filter((n) => n !== name);
+  } else {
+    expandedGroups.value = [...expandedGroups.value, name];
+  }
+}
+
+function select(name: string) {
+  router.push({
+    name: 'applications',
+    params: { selected: name },
+    query: { ...route.query },
+  });
+}
+
+function deselect(event: Event, expectedSelected: string) {
+  if (event && event.target instanceof HTMLAnchorElement) {
+    return;
+  }
+  toggleNotificationFilterSettings(null);
+  if (!expectedSelected || props.selected === expectedSelected) {
+    router.push({ name: 'applications' });
+  }
+}
+
+async function addFilter({ object, ttl }) {
+  try {
+    const response = await NotificationFilter.addFilter(object, ttl);
+    let notificationFilter = response.data;
+    notificationFilterSubject.next(notificationFilter);
+    notificationCenter.success(
+      `${t('applications.notifications_suppressed_for', {
+        name:
+          notificationFilter.applicationName || notificationFilter.instanceId,
+      })} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`,
+    );
+  } catch (error) {
+    console.warn('Adding notification filter failed:', error);
+  } finally {
+    toggleNotificationFilterSettings(null);
+  }
+}
+
+async function removeFilter(activeFilter) {
+  try {
+    await activeFilter.delete();
+    notificationFilterSubject.next(activeFilter.id);
+    notificationCenter.success(t('applications.notification_filter.removed'));
+  } catch (error) {
+    console.warn('Deleting notification filter failed:', error);
+  } finally {
+    toggleNotificationFilterSettings(null);
+  }
+}
+
+function toggleNotificationFilterSettings(obj) {
+  showNotificationFilterSettingsObject.value = obj ? obj : null;
+}
+</script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { directive as onClickaway } from 'vue3-click-away';
+
+import Popper from '@/directives/popper';
+import handle from '@/views/applications/handle.vue';
+
+export default defineComponent({
+  directives: { Popper, onClickaway },
   install({ viewRegistry }) {
     viewRegistry.addView({
       path: '/applications/:selected?',
