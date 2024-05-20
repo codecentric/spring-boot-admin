@@ -6,6 +6,12 @@
 }
 
 .featureSvg {
-  height: 200px;
-  width: 200px;
+  --featureSvgSize: 150px;
+  margin: 2rem;
+  height: var(--featureSvgSize);
+  width: var(--featureSvgSize);
+}
+
+.justifyCenter {
+  justify-content: center;
 }

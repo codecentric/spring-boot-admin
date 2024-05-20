@@ -1,70 +1,89 @@
-import clsx from 'clsx';
-import Heading from '@theme/Heading';
-import styles from './styles.module.css';
+import clsx from "clsx";
+import Heading from "@theme/Heading";
+import styles from "./styles.module.css";
 
 type FeatureItem = {
   title: string;
-  Svg: React.ComponentType<React.ComponentProps<'svg'>>;
+  Svg: React.ComponentType<React.ComponentProps<"svg">>;
   description: JSX.Element;
 };
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: "Monitoring",
+    Svg: require("./Monitoring.svg").default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Get a fast impression of your Spring Boot's service status and check metrics,
+        logs, and more.
       </>
-    ),
+    )
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: "Logging",
+    Svg: require("./Logging.svg").default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Access your application's log files and view them in the browser.
+        Switch log levels without restarting your application.
       </>
-    ),
+    )
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: "Memory-Insights",
+    Svg: require("./MemoryInsights.svg").default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Extend or customize your website layout by implementing your own plugins.
       </>
-    ),
+    )
   },
+  {
+    title: "Open Source",
+    Svg: require("./OpenSource.svg").default,
+    description: (
+      <>
+        Build apon the shoulders of giants: We believe in open source. Spring Boot Admin is free to use and
+        build on top Spring Boot's Actuator endpoints.
+      </>
+    )
+  },
+  {
+    title: "Customization",
+    Svg: require("./Cusromization.svg").default,
+    description: (
+      <>
+        Extend or customize your website layout by implementing your own plugins.
+      </>
+    )
+  }
 ];
 
-function Feature({title, Svg, description}: FeatureItem) {
-  return (
-    <div className={clsx('col col--4')}>
-      <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
-      </div>
-      <div className="text--center padding-horiz--md">
-        <Heading as="h3">{title}</Heading>
-        <p>{description}</p>
-      </div>
-    </div>
-  );
-}
 
 export default function HomepageFeatures(): JSX.Element {
   return (
     <section className={styles.features}>
-      <div className="container">
-        <div className="row">
+      <div className='container'>
+        <div className={clsx("row", styles.justifyCenter)}>
           {FeatureList.map((props, idx) => (
             <Feature key={idx} {...props} />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function Feature({ title, Svg, description }: FeatureItem) {
+  return (
+    <div className={clsx("col col--4")}>
+      <div className='text--center'>
+        <Svg className={styles.featureSvg} role='img' />
+      </div>
+      <div className='text--center padding-horiz--md'>
+        <Heading as='h2'>{title}</Heading>
+        <p>{description}</p>
+      </div>
+    </div>
   );
 }

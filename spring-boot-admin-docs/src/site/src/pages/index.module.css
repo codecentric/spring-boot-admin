@@ -4,20 +4,31 @@
  */
 
 .heroBanner {
-  padding: 4rem 0;
+  padding: 8rem 0;
   text-align: center;
   position: relative;
   overflow: hidden;
+  height: 40rem;
+  color: #fff;
+
+  transition: height 0.5s ease-in-out;
+
+  background-image: url("/img/hero.jpg");
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
 }
 
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
+    height: 20rem;
   }
 }
 
 .buttons {
   display: flex;
+  gap: .5rem;
   align-items: center;
   justify-content: center;
 }

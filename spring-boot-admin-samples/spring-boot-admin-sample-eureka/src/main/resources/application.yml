@@ -5,7 +5,7 @@ spring:
     active:
       - secure
 
-eureka:
+eureka: #<1>
   instance:
     leaseRenewalIntervalInSeconds: 10
     health-check-url-path: /actuator/health
@@ -20,7 +20,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "*" #<2>
   endpoint:
     health:
       show-details: ALWAYS
