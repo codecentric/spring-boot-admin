@@ -28,7 +28,7 @@
     "@tailwindcss/typography": "0.5.13",
     "ansi_up": "6.0.2",
     "autolinker": "4.0.0",
-    "axios": "1.7.0",
+    "axios": "1.7.1",
     "chart.js": "4.4.3",
     "chartjs-adapter-moment": "1.0.1",
     "classnames": "2.5.1",
