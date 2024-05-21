@@ -67,10 +67,10 @@ const config: Config = {
     },
     algolia: {
       // The application ID provided by Algolia
-      appId: 'YOUR_APP_ID',
+      appId: 'GUDRYGX7B3',
       // Public API key: it is safe to commit it
-      apiKey: 'YOUR_SEARCH_API_KEY',
-      indexName: 'YOUR_INDEX_NAME',
+      apiKey: '97d8206755fc8cf80c3b435ac87573ca',
+      indexName: 'spring-boot-admin',
       // Optional: see doc section below
       contextualSearch: true,
       // Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
@@ -81,9 +81,10 @@ const config: Config = {
         to: '/',
       },
       // Optional: Algolia search parameters
-      searchParameters: {},
+      searchParameters: {
+      },
       // Optional: path for search page that enabled by default (`false` to disable it)
-      searchPagePath: 'search',
+      searchPagePath: false,
       // Optional: whether the insights feature is enabled or not on Docsearch (`false` by default)
       insights: false,
     },
