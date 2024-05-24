@@ -22,6 +22,7 @@
               autocomplete="username"
               name="username"
               type="text"
+              autofocus
             />
             <sba-input
               :label="t('login.placeholder.password')"

@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin;
+package de.codecentric.boot.admin.sample;
 
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@Endpoint(id = "custom")
-public class CustomEndpoint {
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = { SpringBootAdminZookeeperApplication.class },
+		properties = { "spring.cloud.zookeeper.enabled=false" })
+public class SpringBootAdminZookeeperApplicationTest {
 
-	@ReadOperation
-	public String invoke() {
-		return "Hello World!";
+	@Test
+	public void contextLoads() {
 	}
 
 }

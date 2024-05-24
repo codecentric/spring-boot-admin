@@ -85,6 +85,11 @@
                         <artifactId>docs-maven-skin</artifactId>
                         <version>${site.skin.version}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctor-converter-doxia-module</artifactId>
+                        <version>${asciidoctor-converter-doxia-module.version}</version>
+                    </dependency>
                 </dependencies>
             </plugin>
         </plugins>

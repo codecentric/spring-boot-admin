@@ -43,7 +43,7 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | 1m
 
 | spring.boot.admin.monitor.default-timeout
-| Default timeout when making requests. Individual values for specific endpoints can be overridden using `spring.boot.admin.monitor.timeout.*`.
+| Default timeout when making requests. Individual values for specific endpoints can be overridden using `spring.boot.admin.monitor.timeout.*`. However, for interval based tasks like `statusUpdate` (i.e. HealthCheck) there are some limitations: the `default-timeout` cannot be longer than the interval. If so, the specified value of the interval is used as timeout.
 | 10,000
 
 | spring.boot.admin.monitor.timeout.*

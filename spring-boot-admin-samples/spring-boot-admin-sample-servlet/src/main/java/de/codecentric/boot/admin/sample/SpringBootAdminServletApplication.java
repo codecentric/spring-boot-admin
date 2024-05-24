@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin;
+package de.codecentric.boot.admin.sample;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +23,12 @@ import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -43,10 +41,8 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunction;
 
-@Configuration(proxyBeanMethods = false)
-@EnableAutoConfiguration
+@SpringBootApplication
 @EnableAdminServer
-@Import({ SecurityPermitAllConfig.class, SecuritySecureConfig.class, NotifierConfig.class })
 @Lazy(false)
 @EnableCaching
 public class SpringBootAdminServletApplication {

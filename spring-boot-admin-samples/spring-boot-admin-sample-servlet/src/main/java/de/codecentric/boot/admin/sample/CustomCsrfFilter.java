@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin;
+package de.codecentric.boot.admin.sample;
 
 import java.io.IOException;
 

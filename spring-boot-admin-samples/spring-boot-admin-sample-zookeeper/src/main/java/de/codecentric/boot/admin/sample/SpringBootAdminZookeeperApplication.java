@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin;
+package de.codecentric.boot.admin.sample;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -34,18 +33,13 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
-@Configuration(proxyBeanMethods = false)
-@EnableAutoConfiguration
+@SpringBootApplication
+@EnableDiscoveryClient
 @EnableAdminServer
-public class SpringBootAdminWarApplication extends SpringBootServletInitializer {
+public class SpringBootAdminZookeeperApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringBootAdminWarApplication.class, args);
-	}
-
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application;
+		SpringApplication.run(SpringBootAdminZookeeperApplication.class, args);
 	}
 
 	@Profile("insecure")
@@ -59,7 +53,7 @@ public class SpringBootAdminWarApplication extends SpringBootServletInitializer 
 		}
 
 		@Bean
-		public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests.anyRequest().permitAll())
 				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 					.ignoringRequestMatchers(
@@ -67,6 +61,7 @@ public class SpringBootAdminWarApplication extends SpringBootServletInitializer 
 							new AntPathRequestMatcher(this.adminServer.path("/instances/*"),
 									HttpMethod.DELETE.toString()),
 							new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
+
 			return http.build();
 		}
 
@@ -95,7 +90,6 @@ public class SpringBootAdminWarApplication extends SpringBootServletInitializer 
 				.permitAll()
 				.anyRequest()
 				.authenticated())
-
 				.formLogin((formLogin) -> formLogin.loginPage(this.adminServer.path("/login"))
 					.successHandler(successHandler))
 				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))

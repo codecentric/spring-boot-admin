@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package de.codecentric.boot.admin;
+package de.codecentric.boot.admin.sample;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = { SpringBootAdminServletApplication.class })
-public class SpringBootAdminServletApplicationTest {
+@Endpoint(id = "custom")
+public class CustomEndpoint {
 
-	@Test
-	public void contextLoads() {
+	@ReadOperation
+	public String invoke() {
+		return "Hello World!";
 	}
 
 }
