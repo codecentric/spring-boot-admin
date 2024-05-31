@@ -14,11 +14,9 @@ In the Spring Boot Admin Server App, the Spring Boot Admin's version matches the
 
 | Spring Boot Version | Spring Boot Admin |
 |---------------------|-------------------|
-| 2.6                 | 2.6.Y             |
 | 2.7                 | 2.7.Y             |
 | 3.0                 | 3.0.Y             |
-| 3.1                 | 3.1.Y             |
-| 3.2                 | 3.2.Y             |
+| ...                 | ...               |
 | 3.3                 | 3.3.Y             |
 
 Nevertheless, it is possible to monitor any version of a Spring Boot service independently of the underlying Spring Boot version in the service.
