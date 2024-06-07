@@ -19,13 +19,13 @@ jobs:
 
       - name: free disk space
         run: |
-          du -h -d 1
+          du -h -d 1 /home/runner
           df -h
           sudo swapoff -a
           sudo rm -f /swapfile
           sudo apt clean
           docker rmi $(docker image ls -aq)
-          du -h -d 1
+          du -h -d 1 /home/runner
           df -h
 
       - uses: actions/checkout@v4
