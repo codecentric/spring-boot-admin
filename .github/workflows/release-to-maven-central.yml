@@ -19,6 +19,15 @@ jobs:
     steps:
       - run: echo "Will start a Maven Central upload with version ${{ github.event.inputs.releaseversion }}"
 
+      - name: free disk space
+        run: |
+          df -h
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          docker rmi $(docker image ls -aq)
+          df -h
+
       - uses: actions/checkout@v4
 
       - name: Set up settings.xml for Maven Central Repository
@@ -79,6 +88,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: free disk space
+        run: |
+          df -h
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          docker rmi $(docker image ls -aq)
+          df -h
 
       - name: Generate changelog
         id: changelog

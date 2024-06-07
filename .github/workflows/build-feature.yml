@@ -6,16 +6,25 @@ on:
       - master
       - 1.*
       - 2.*
+  pull_request:
 
 jobs:
   build:
-
     strategy:
       matrix:
         os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
     steps:
+
+      - name: free disk space
+        run: |
+          df -h
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt clean
+          docker rmi $(docker image ls -aq)
+          df -h
 
       - uses: actions/checkout@v4
 
