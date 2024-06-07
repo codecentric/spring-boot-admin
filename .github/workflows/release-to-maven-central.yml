@@ -21,7 +21,6 @@ jobs:
 
       - name: free disk space
         run: |
-          echo "Start free disk space"
           df -h
           sudo swapoff -a
           sudo rm -f /swapfile
@@ -92,7 +91,6 @@ jobs:
 
       - name: free disk space
         run: |
-          echo "Start free disk space"
           df -h
           sudo swapoff -a
           sudo rm -f /swapfile
