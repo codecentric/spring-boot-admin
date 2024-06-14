@@ -59,7 +59,7 @@ public class StatusUpdateTriggerTest {
 		when(this.updater.timeout(any())).thenReturn(this.updater);
 
 		this.trigger = new StatusUpdateTrigger(this.updater, this.events.flux(), Duration.ofSeconds(10),
-			Duration.ofSeconds(10), Duration.ofSeconds(60));
+				Duration.ofSeconds(10), Duration.ofSeconds(60));
 		this.trigger.start();
 		await().until(this.events::wasSubscribed);
 	}
@@ -140,7 +140,7 @@ public class StatusUpdateTriggerTest {
 	public void should_continue_update_after_error() throws InterruptedException {
 		// when status-change event is emitted and an error is emitted
 		when(this.updater.updateStatus(any())).thenReturn(Mono.error(IllegalStateException::new))
-				.thenReturn(Mono.empty());
+			.thenReturn(Mono.empty());
 
 		this.events.next(new InstanceRegistrationUpdatedEvent(this.instance.getId(), this.instance.getVersion(),
 				this.instance.getRegistration()));

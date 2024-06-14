@@ -100,12 +100,12 @@ public class EndpointDetectionTriggerTest {
 	public void should_continue_detection_after_error() throws InterruptedException {
 		// when status-change event is emitted and an error is emitted
 		when(this.detector.detectEndpoints(any())).thenReturn(Mono.error(IllegalStateException::new))
-				.thenReturn(Mono.empty());
+			.thenReturn(Mono.empty());
 
 		this.events.next(
 				new InstanceStatusChangedEvent(this.instance.getId(), this.instance.getVersion(), StatusInfo.ofDown()));
-		this.events.next(
-				new InstanceStatusChangedEvent(this.instance.getId(), this.instance.getVersion(), StatusInfo.ofUp()));
+		this.events
+			.next(new InstanceStatusChangedEvent(this.instance.getId(), this.instance.getVersion(), StatusInfo.ofUp()));
 
 		// then should update
 		verify(this.detector, times(2)).detectEndpoints(this.instance.getId());
