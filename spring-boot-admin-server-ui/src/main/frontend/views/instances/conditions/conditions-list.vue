@@ -25,15 +25,19 @@
           :key="conditionalBean.name"
           class="flex items-center"
           :class="{
-            'bg-gray-50': index % 2 === 0,
-            'px-3 py-2': true,
+            'bg-gray-50':
+              index % 2 === 0 || showDetails[conditionalBean.name] === true,
+            'px-3 pt-2': showDetails[conditionalBean.name] === true,
+            'px-4 py-3': showDetails[conditionalBean.name] !== true,
           }"
-          @click="toggle(conditionalBean.name)"
         >
           <div class="flex-1 sm:break-all">
             <h4
-              class="font-bold"
+              :class="{
+                'font-bold': showDetails[conditionalBean.name] === true,
+              }"
               :title="conditionalBean.name"
+              @click="toggle(conditionalBean.name)"
               v-text="conditionalBean.name"
             />
             <template v-if="showDetails[conditionalBean.name] === true">
