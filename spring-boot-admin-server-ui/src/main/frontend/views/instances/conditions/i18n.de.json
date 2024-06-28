@@ -1,7 +1,11 @@
 {
   "instances": {
     "conditions": {
-      "label": "Conditions"
+      "label": "Conditions",
+      "positive-matches": "Übereinstimmungen",
+      "negative-matches": "Keine Übereinstimmungen",
+      "condition": "Bedingung",
+      "message": "Hinweis"
     }
   }
 }
