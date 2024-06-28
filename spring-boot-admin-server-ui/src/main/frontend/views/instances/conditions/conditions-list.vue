@@ -26,26 +26,45 @@
           class="flex items-center"
           :class="{
             'bg-gray-50': index % 2 === 0,
-            'px-3 pt-2': true,
+            'px-3 py-2': true,
           }"
           @click="toggle(conditionalBean.name)"
         >
           <div class="flex-1 sm:break-all">
-            <div
+            <h4
               class="font-bold"
               :title="conditionalBean.name"
               v-text="conditionalBean.name"
             />
-            <template
-              v-for="matchedCondition in conditionalBean.matched"
-              :key="matchedCondition.condition"
-            >
-              <div
-                v-if="showDetails[conditionalBean.name] === true"
-                class="py-2 m-1 border rounded"
+            <template v-if="showDetails[conditionalBean.name] === true">
+              <h5
+                v-if="
+                  conditionalBean.matched.length &&
+                  conditionalBean.notMatched.length
+                "
+                class="px-2 py-1"
               >
-                <conditions-list-details :condition="matchedCondition" />
-              </div>
+                {{ $t('instances.conditions.matched') }}
+              </h5>
+              <template
+                v-for="matchedCondition in conditionalBean.matched"
+                :key="matchedCondition.condition"
+              >
+                <div class="py-2 m-1 border rounded">
+                  <conditions-list-details :condition="matchedCondition" />
+                </div>
+              </template>
+              <h5 v-if="conditionalBean.notMatched.length" class="px-2 py-1">
+                {{ $t('instances.conditions.not-matched') }}
+              </h5>
+              <template
+                v-for="notMatchedCondition in conditionalBean.notMatched"
+                :key="notMatchedCondition.condition"
+              >
+                <div class="py-2 m-1 border rounded">
+                  <conditions-list-details :condition="notMatchedCondition" />
+                </div>
+              </template>
             </template>
           </div>
         </div>

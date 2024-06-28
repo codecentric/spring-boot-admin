@@ -1,11 +1,13 @@
 {
   "instances": {
     "conditions": {
-      "label": "Conditions",
+      "label": "Bedingungen",
       "positive-matches": "Übereinstimmungen",
       "negative-matches": "Keine Übereinstimmungen",
       "condition": "Bedingung",
-      "message": "Hinweis"
+      "message": "Hinweis",
+      "not-matched": "Nicht übereinstimmend",
+      "matched": "Übereinstimmend"
     }
   }
 }
