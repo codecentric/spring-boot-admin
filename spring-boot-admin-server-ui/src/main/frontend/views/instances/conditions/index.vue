@@ -34,10 +34,30 @@
       </sba-sticky-subnav>
     </template>
 
-    <template v-for="context in contexts" :key="context.name">
-      <sba-panel :header-sticks-below="'#subnavigation'" :title="context.name">
-        <div>{{ context.positiveMatches }}</div>
-        <div>{{ context.negativeMatches }}</div>
+    <template v-for="context in filteredContexts" :key="context.name">
+      <sba-panel
+        :id="`${context.name}-context`"
+        :header-sticks-below="'#subnavigation'"
+        :title="context.name"
+      >
+        <sba-panel
+          v-if="context.positiveMatches.length"
+          :title="'Positive Matches'"
+        >
+          <conditions-list
+            :key="`${context.name}-positiveMatches`"
+            :conditional-beans="context.positiveMatches"
+          />
+        </sba-panel>
+        <sba-panel
+          v-if="context.negativeMatches.length"
+          :title="'Negative Matches'"
+        >
+          <conditions-list
+            :key="`${context.name}-negativeMatches`"
+            :conditional-beans="context.negativeMatches"
+          />
+        </sba-panel>
       </sba-panel>
     </template>
   </sba-instance-section>
@@ -49,6 +69,7 @@ import { isEmpty } from 'lodash-es';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
 import { VIEW_GROUP } from '@/views/ViewGroup';
+import ConditionsList from '@/views/instances/conditions/conditions-list.vue';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 class ConditionalBean {
@@ -107,7 +128,7 @@ const mapContexts = (conditionsData) => {
 };
 
 export default {
-  components: { SbaInstanceSection },
+  components: { ConditionsList, SbaInstanceSection },
   props: {
     instance: {
       type: Instance,
@@ -122,20 +143,37 @@ export default {
   }),
   computed: {
     filterResultString() {
-      const totalBeans = this.contexts.reduce((count, ctx) => {
-        return count + ctx.beans?.length;
+      const totalPositiveMatches = this.contexts.reduce((count, ctx) => {
+        return count + ctx.positiveMatches?.length;
       }, 0);
-      const filteredBeansLength = this.filteredContexts.reduce((count, ctx) => {
-        return count + ctx.beans?.length;
+      const totalNegativeMatches = this.contexts.reduce((count, ctx) => {
+        return count + ctx.negativeMatches?.length;
       }, 0);
+      const filteredPositiveMatches = this.filteredContexts.reduce(
+        (count, ctx) => {
+          return count + ctx.positiveMatches?.length;
+        },
+        0,
+      );
+      const filteredNegativeMatches = this.filteredContexts.reduce(
+        (count, ctx) => {
+          return count + ctx.negativeMatches?.length;
+        },
+        0,
+      );
 
-      return `${filteredBeansLength}/${totalBeans}`;
+      return `${filteredPositiveMatches + filteredNegativeMatches}/${totalPositiveMatches + totalNegativeMatches}`;
     },
     filteredContexts() {
       const filterFn = this.getFilterFn();
       return this.contexts.map((ctx) => ({
         ...ctx,
-        beans: ctx.beans.filter(filterFn).sort(compareBy((bean) => bean.name)),
+        positiveMatches: ctx.positiveMatches
+          .filter(filterFn)
+          .sort(compareBy((conditionalBean) => conditionalBean.name)),
+        negativeMatches: ctx.negativeMatches
+          .filter(filterFn)
+          .sort(compareBy((conditionalBean) => conditionalBean.name)),
       }));
     },
   },
@@ -148,9 +186,7 @@ export default {
         return () => true;
       }
       const regex = new RegExp(this.filter, 'i');
-      return (bean) =>
-        bean.name.match(regex) ||
-        (bean.aliases && bean.aliases.some((alias) => alias.match(regex)));
+      return (conditionalBean) => conditionalBean.name.match(regex);
     },
     async fetchConditions() {
       this.error = null;
