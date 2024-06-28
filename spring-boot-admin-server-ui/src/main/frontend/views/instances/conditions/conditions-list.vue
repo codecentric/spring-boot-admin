@@ -26,8 +26,9 @@
           class="flex items-center"
           :class="{
             'bg-gray-50': index % 2 === 0,
-            'px-3 py-2': true,
+            'px-3 pt-2': true,
           }"
+          @click="toggle(conditionalBean.name)"
         >
           <div class="flex-1 sm:break-all">
             <div
@@ -35,6 +36,17 @@
               :title="conditionalBean.name"
               v-text="conditionalBean.name"
             />
+            <template
+              v-for="matchedCondition in conditionalBean.matched"
+              :key="matchedCondition.condition"
+            >
+              <div
+                v-if="showDetails[conditionalBean.name] === true"
+                class="py-2 m-1 border rounded"
+              >
+                <conditions-list-details :condition="matchedCondition" />
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -43,11 +55,34 @@
 </template>
 
 <script>
+import ConditionsListDetails from '@/views/instances/conditions/conditions-list-details.vue';
+
 export default {
+  components: { ConditionsListDetails },
   props: {
     conditionalBeans: {
       type: Array,
       default: () => [],
+    },
+  },
+  data() {
+    return {
+      showDetails: {},
+    };
+  },
+  methods: {
+    toggle(name) {
+      if (this.showDetails[name]) {
+        this.showDetails = {
+          ...this.showDetails,
+          [name]: null,
+        };
+      } else {
+        this.showDetails = {
+          ...this.showDetails,
+          [name]: true,
+        };
+      }
     },
   },
 };

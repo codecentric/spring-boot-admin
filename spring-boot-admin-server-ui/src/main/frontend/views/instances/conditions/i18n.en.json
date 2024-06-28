@@ -1,7 +1,11 @@
 {
   "instances": {
     "conditions": {
-      "label": "Conditions"
+      "label": "Conditions",
+      "positive-matches": "Positive matches",
+      "negative-matches": "Negative matches",
+      "condition": "Condition",
+      "message": "Message"
     }
   }
 }

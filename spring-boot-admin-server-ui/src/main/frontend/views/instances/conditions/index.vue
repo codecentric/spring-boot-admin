@@ -42,7 +42,7 @@
       >
         <sba-panel
           v-if="context.positiveMatches.length"
-          :title="'Positive Matches'"
+          :title="$t('instances.conditions.positive-matches')"
         >
           <conditions-list
             :key="`${context.name}-positiveMatches`"
@@ -51,7 +51,7 @@
         </sba-panel>
         <sba-panel
           v-if="context.negativeMatches.length"
-          :title="'Negative Matches'"
+          :title="$t('instances.conditions.negative-matches')"
         >
           <conditions-list
             :key="`${context.name}-negativeMatches`"
