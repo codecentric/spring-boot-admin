@@ -66,6 +66,8 @@
 <script>
 import { isEmpty } from 'lodash-es';
 
+import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
+
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
 import { VIEW_GROUP } from '@/views/ViewGroup';
@@ -128,7 +130,7 @@ const mapContexts = (conditionsData) => {
 };
 
 export default {
-  components: { ConditionsList, SbaInstanceSection },
+  components: { SbaStickySubnav, ConditionsList, SbaInstanceSection },
   props: {
     instance: {
       type: Instance,
