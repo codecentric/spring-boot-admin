@@ -64,6 +64,7 @@
 </template>
 
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { isEmpty } from 'lodash-es';
 
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
@@ -130,7 +131,12 @@ const mapContexts = (conditionsData) => {
 };
 
 export default {
-  components: { SbaStickySubnav, ConditionsList, SbaInstanceSection },
+  components: {
+    FontAwesomeIcon,
+    SbaStickySubnav,
+    ConditionsList,
+    SbaInstanceSection,
+  },
   props: {
     instance: {
       type: Instance,
@@ -145,26 +151,19 @@ export default {
   }),
   computed: {
     filterResultString() {
-      const totalPositiveMatches = this.contexts.reduce((count, ctx) => {
-        return count + ctx.positiveMatches?.length;
+      const totalMatches = this.contexts.reduce((count, ctx) => {
+        return (
+          count + ctx.positiveMatches?.length + ctx.negativeMatches?.length
+        );
       }, 0);
-      const totalNegativeMatches = this.contexts.reduce((count, ctx) => {
-        return count + ctx.negativeMatches?.length;
-      }, 0);
-      const filteredPositiveMatches = this.filteredContexts.reduce(
-        (count, ctx) => {
-          return count + ctx.positiveMatches?.length;
-        },
-        0,
-      );
-      const filteredNegativeMatches = this.filteredContexts.reduce(
-        (count, ctx) => {
-          return count + ctx.negativeMatches?.length;
-        },
-        0,
-      );
 
-      return `${filteredPositiveMatches + filteredNegativeMatches}/${totalPositiveMatches + totalNegativeMatches}`;
+      const filteredMatches = this.filteredContexts.reduce((count, ctx) => {
+        return (
+          count + ctx.positiveMatches?.length + ctx.negativeMatches?.length
+        );
+      }, 0);
+
+      return `${filteredMatches}/${totalMatches}`;
     },
     filteredContexts() {
       const filterFn = this.getFilterFn();
