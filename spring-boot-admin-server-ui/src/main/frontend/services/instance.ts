@@ -280,6 +280,10 @@ class Instance {
     return this.axios.get(uri`actuator/beans`);
   }
 
+  async fetchConditions() {
+    return this.axios.get(uri`actuator/conditions`);
+  }
+
   async fetchThreaddump() {
     return this.axios.get(uri`actuator/threaddump`);
   }
