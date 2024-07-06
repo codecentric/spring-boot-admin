@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vite build --emptyOutDir --sourcemap",
     "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
-    "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --mode development",
+    "build:watch": "NODE_ENV=development vite build --emptyOutDir --sourcemap --watch --mode development",
     "dev": "vite",
     "test": "vitest run --silent",
     "test:watch": "vitest",
@@ -32,6 +32,7 @@
     "chart.js": "4.4.3",
     "chartjs-adapter-moment": "1.0.1",
     "classnames": "2.5.1",
+    "d3": "^7.9.0",
     "d3-array": "3.2.4",
     "d3-axis": "3.0.0",
     "d3-brush": "3.0.0",

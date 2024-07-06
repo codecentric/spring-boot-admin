@@ -115,3 +115,8 @@ spring:
             enabled: false
 # end::customization-view-settings[]
 
+management:
+  endpoint:
+    sbom:
+      application:
+        location: classpath:bom.json
