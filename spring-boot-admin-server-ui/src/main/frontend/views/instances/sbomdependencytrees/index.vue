@@ -43,6 +43,7 @@
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+import SbaInput from '@/components/sba-input';
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 
 import Instance from '@/services/instance';
@@ -56,6 +57,7 @@ export default {
     FontAwesomeIcon,
     SbaStickySubnav,
     SbaInstanceSection,
+    SbaInput,
   },
   props: {
     instance: {

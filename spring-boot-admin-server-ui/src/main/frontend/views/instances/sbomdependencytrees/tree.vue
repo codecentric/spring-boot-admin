@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import { debounce } from 'lodash-es';
+import { ref } from 'vue';
 
 import Instance from '@/services/instance';
 import {
@@ -27,9 +28,17 @@ export default {
       default: '',
     },
   },
+  setup() {
+    const treeContainer = ref(null);
+
+    return {
+      treeContainer,
+    };
+  },
   data: () => ({
     error: null,
     dependencies: [],
+    rootNode: null,
   }),
   watch: {
     filter: {
@@ -89,13 +98,16 @@ export default {
         ),
       }));
     },
-    renderTree(sbomDependencies) {
+    renderTree(
+      sbomDependencies,
+      initFolding = this.filter.trim().length === 0,
+    ) {
       const treeData: DependencyTreeData = this.normalizeData(sbomDependencies);
 
-      return createDependencyTree(
-        this.$refs.treeContainer,
+      this.rootNode = createDependencyTree(
+        this.treeContainer,
         this.filterTree(treeData),
-        this.$el.getBoundingClientRect().width,
+        initFolding,
       );
     },
     filterTree(treeData: DependencyTreeData): DependencyTreeData | null {

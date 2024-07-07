@@ -1,5 +1,8 @@
 import * as d3 from 'd3';
 
+const margin = { top: 20, bottom: 20, left: 10 };
+const maxItemsInFrame = 4;
+
 const extractGroupId = (dependency: string): string => {
   const match = dependency.match(/^(.*?)\//);
   return match?.[1] ?? dependency;
@@ -18,13 +21,16 @@ export type DependencyTreeData = {
 export const createDependencyTree = (
   treeContainer: HTMLElement,
   treeData: DependencyTreeData,
-  elementsWidth: number,
-): void => {
+  initFolding: boolean = true,
+) => {
   // Clear any previous SVG
   d3.select(treeContainer).select('svg').remove();
 
-  const margin = { top: 20, bottom: 20, left: 10 };
-  const maxItemsInFrame = 5;
+  if (!treeData) {
+    return;
+  }
+
+  const elementsWidth = treeContainer.getBoundingClientRect().width;
   const width = elementsWidth * 4;
   const dx = 48;
   const dy = width / 4 / maxItemsInFrame;
@@ -45,16 +51,13 @@ export const createDependencyTree = (
     .attr('width', width)
     .attr('height', dx)
     .attr('viewBox', [-margin.left, -margin.top, width, dx])
-    .attr(
-      'style',
-      'white-space: pre-wrap; height: auto; font: 14px sans-serif; user-select: none;',
-    );
+    .attr('style', 'font-size: .75rem;');
 
   d3.select(treeContainer)
     .append('div')
     .attr('id', 'tooltip')
     .attr('class', 'bg-sba-100 rounded')
-    .attr('style', 'position: absolute; opacity: 0;');
+    .attr('style', 'position: absolute; opacity: 0; font-size: 0.85rem;');
 
   const gLink = svg
     .append('g')
@@ -111,8 +114,10 @@ export const createDependencyTree = (
     nodeEnter
       .append('rect')
       .attr('width', elementsWidth / (maxItemsInFrame + 1))
-      .attr('height', 40)
-      .attr('y', '-1.5em')
+      .attr('height', '2.5rem')
+      .attr('y', '-1.25rem')
+      .attr('rx', 6)
+      .attr('ry', 6)
       .attr('stroke-width', 1)
       .attr('fill-opacity', 0.8)
       .style('fill', (d) => (d._children ? '#91E8E0' : '#d0f7df'));
@@ -124,15 +129,14 @@ export const createDependencyTree = (
 
     nodeEnter
       .append('text')
-      .attr('dy', (d) => (d.parent ? '-.25em' : '.35em'))
+      .attr('dy', (d) => (d.parent ? '-.25rem' : '.35rem'))
       .attr('x', 12)
       .attr('text-anchor', 'start')
-      .text((d) => extractGroupId(d.data.name))
-      .attr('paint-order', 'stroke');
+      .text((d) => extractGroupId(d.data.name));
 
     nodeEnter
       .append('text')
-      .attr('dy', '.75em')
+      .attr('dy', '.75rem')
       .attr('x', 12)
       .attr('text-anchor', 'start')
       .text((d) => (d.parent ? extractArtifactId(d.data.name) : null));
@@ -143,7 +147,10 @@ export const createDependencyTree = (
           .transition()
           .duration(300)
           .style('opacity', 1)
-          .text(d.data.name);
+          .text(d.data.name)
+          .transition()
+          .duration(5000)
+          .style('opacity', 0);
       })
       .on('mouseout', () => {
         d3.select('#tooltip').style('opacity', 0);
@@ -207,9 +214,15 @@ export const createDependencyTree = (
   root.y0 = 0;
   root.descendants().forEach((d, i) => {
     d.id = i;
+
     d._children = d.children;
-    if (d.depth >= 2) d.children = null;
+
+    if (initFolding && d.depth >= 2) {
+      d.children = null;
+    }
   });
 
   update(root);
+
+  return root;
 };
