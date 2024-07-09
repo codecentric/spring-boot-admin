@@ -82,9 +82,8 @@ export const createDependencyTree = (
   }
 
   const elementsWidth = treeContainer.getBoundingClientRect().width;
-  const width = elementsWidth * 4;
   const dx = 48;
-  const dy = width / 4 / maxItemsInFrame;
+  const dy = elementsWidth / maxItemsInFrame;
 
   const root: MyHierarchyNode = d3.hierarchy(treeData);
   const treeLayout: TreeLayout<DependencyTreeData> = d3
@@ -96,9 +95,9 @@ export const createDependencyTree = (
   const svg: Selection<SVGGElement, unknown, null, undefined> = d3
     .select(treeContainer)
     .append('svg')
-    .attr('width', width)
+    .attr('width', elementsWidth)
     .attr('height', dx)
-    .attr('viewBox', [-margin.left, -margin.top, width, dx])
+    .attr('viewBox', [-margin.left, -margin.top, elementsWidth, dx])
     .attr('style', 'font-size: .75rem;');
 
   d3.select(treeContainer)
@@ -139,8 +138,7 @@ const initRootAndDescendants = (
   tree: D3DependencyTree,
   initFolding: boolean,
 ): void => {
-  const dy = tree.treeContainer.getBoundingClientRect().width / maxItemsInFrame;
-  tree.root.x0 = dy / 2;
+  tree.root.x0 = tree.treeContainer.getBoundingClientRect().width / 2;
   tree.root.y0 = 0;
   tree.root.descendants().forEach((d: MyHierarchyNode, i: number) => {
     d.id = '' + i;
@@ -164,24 +162,32 @@ const updateDependencyTree = (
 
   treeLayout(root);
 
-  const [left, right] = nodes.reduce(
-    ([left, right], node) => [
+  const [left, right, leftWidth, rightWidth] = nodes.reduce(
+    ([left, right, leftWidth, rightWidth], node) => [
       node.x < left.x ? node : left,
       node.x > right.x ? node : right,
+      node.y < leftWidth.y ? node : leftWidth,
+      node.y > rightWidth.y ? node : rightWidth,
     ],
-    [root, root],
+    [root, root, root, root],
   );
 
   const height = right.x - left.x + margin.top + margin.bottom;
 
   const treeContainerWidth =
     dependencyTree.treeContainer.getBoundingClientRect().width;
-  const width = treeContainerWidth * 4;
+
+  const width =
+    rightWidth.y -
+    leftWidth.y +
+    margin.left +
+    treeContainerWidth / maxItemsInFrame;
 
   svg
     .transition()
     .duration(300)
     .attr('height', height)
+    .attr('width', width)
     .attr(
       'viewBox',
       `${-margin.left}, ${left.x - margin.top}, ${width}, ${height}`,
