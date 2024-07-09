@@ -10,6 +10,7 @@ import Instance from '@/services/instance';
 import {
   DependencyTreeData,
   createDependencyTree,
+  rerenderDependencyTree,
 } from '@/views/instances/sbomdependencytrees/dependencyTree';
 
 export default {
@@ -44,7 +45,11 @@ export default {
     filter: {
       deep: true,
       handler: debounce(function () {
-        this.renderTree(this.dependencies);
+        if (!this.filter.trim()) {
+          this.renderTree(this.dependencies);
+        } else {
+          this.updateTree();
+        }
       }, 1000),
     },
   },
@@ -98,16 +103,19 @@ export default {
         ),
       }));
     },
-    renderTree(
-      sbomDependencies,
-      initFolding = this.filter.trim().length === 0,
-    ) {
+    renderTree(sbomDependencies) {
       const treeData: DependencyTreeData = this.normalizeData(sbomDependencies);
 
       this.rootNode = createDependencyTree(
         this.treeContainer,
         this.filterTree(treeData),
-        initFolding,
+        !this.filter.trim(),
+      );
+    },
+    updateTree() {
+      rerenderDependencyTree(
+        this.rootNode,
+        this.filterTree(this.normalizeData(this.dependencies)),
       );
     },
     filterTree(treeData: DependencyTreeData): DependencyTreeData | null {
