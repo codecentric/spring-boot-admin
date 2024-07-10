@@ -3,7 +3,6 @@
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash-es';
 import { ref } from 'vue';
 
 import Instance from '@/services/instance';
@@ -42,21 +41,33 @@ export default {
     rootNode: null,
   }),
   watch: {
-    filter: {
-      deep: true,
-      handler: debounce(function () {
-        if (!this.filter.trim()) {
-          this.renderTree(this.dependencies);
-        } else {
-          this.updateTree();
-        }
-      }, 1000),
-    },
+    filter: 'debounceRerender',
   },
   created() {
     this.fetchSbomDependencies(this.sbomId);
   },
   methods: {
+    debounceRerender(newVal) {
+      this.debounce(function () {
+        if (!newVal.trim()) {
+          this.renderTree(this.dependencies);
+        } else {
+          this.updateTree();
+        }
+      }, 1000);
+    },
+    // lodash debounce won't work with multiple invocations of the same function on different dependencyTrees
+    debounce(func, wait) {
+      let timeout;
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const context = this,
+        args = arguments;
+      clearTimeout(timeout);
+      timeout = setTimeout(function () {
+        timeout = null;
+        func.apply(context, args);
+      }, wait);
+    },
     async fetchSbomDependencies(sbomId) {
       this.error = null;
       try {

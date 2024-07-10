@@ -30,13 +30,14 @@
         </sba-input>
       </sba-sticky-subnav>
     </template>
-    <template v-for="sbomId in sboms" :key="sbomId">
-      <tree-graph
-        :instance="instance"
-        :sbom-id="sbomId"
-        :filter="filter"
-      ></tree-graph>
-    </template>
+
+    <tree-graph
+      v-for="sbomId in sboms"
+      :key="sbomId"
+      :instance="instance"
+      :sbom-id="sbomId"
+      :filter="filter"
+    ></tree-graph>
   </sba-instance-section>
 </template>
 
