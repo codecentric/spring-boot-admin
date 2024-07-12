@@ -23,29 +23,43 @@
     <tbody>
       <!-- Condition -->
       <tr v-if="condition.condition">
-        <th class="label" v-text="$t('instances.conditions.condition')" />
-        <td class="value" v-text="condition.condition" />
+        <th
+          :id="`conditions-label-${id}`"
+          class="label"
+          v-text="$t('instances.conditions.condition')"
+        />
+        <td
+          :aria-labelledby="`conditions-label-${id}`"
+          class="value"
+          v-text="condition.condition"
+        />
       </tr>
 
       <!-- Message -->
       <tr v-if="condition.message">
-        <th class="label" v-text="$t('instances.conditions.message')" />
-        <td class="value" v-text="condition.message" />
+        <th
+          :id="`message-label-${id}`"
+          class="label"
+          v-text="$t('instances.conditions.message')"
+        />
+        <td
+          :aria-labelledby="`message-label-${id}`"
+          class="value"
+          v-text="condition.message"
+        />
       </tr>
     </tbody>
   </table>
 </template>
 
-<script>
-export default {
-  name: 'ConditionsListDetails',
-  props: {
-    condition: {
-      type: Object,
-      required: true,
-    },
-  },
-};
+<script setup lang="ts">
+defineProps<{
+  condition: {
+    condition: string;
+    message: string;
+  };
+}>();
+const id = Math.floor(Math.random() * 1_000_000);
 </script>
 
 <style>
