@@ -49,7 +49,7 @@
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <versions-maven-plugin.version>2.17.0
+        <versions-maven-plugin.version>2.17.1
         </versions-maven-plugin.version> <!-- because of https://github.com/mojohaus/versions/issues/855 -->
         <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
         <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
