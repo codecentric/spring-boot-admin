@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vite build --emptyOutDir --sourcemap",
     "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
-    "build:watch": "NODE_ENV=development vite build --emptyOutDir --watch --mode development",
+    "build:watch": "NODE_ENV=development vite build --emptyOutDir --sourcemap --watch --mode development",
     "dev": "vite",
     "test": "vitest run --silent",
     "test:watch": "vitest",
