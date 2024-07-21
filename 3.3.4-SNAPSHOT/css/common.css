@@ -1,0 +1,10 @@
+/*!
+ * Licensed under the MIT License (http://www.opensource.org/licenses/mit-license.php)
+ */
+/*!
+ * General-use styles, meant to be applied to all the pages on the site.
+ */
+
+body {
+  min-height: 100vh; 
+}
