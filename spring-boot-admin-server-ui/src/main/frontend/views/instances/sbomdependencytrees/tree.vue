@@ -28,7 +28,7 @@ import {
   rerenderDependencyTree,
 } from '@/views/instances/sbomdependencytrees/dependencyTree';
 
-type Guenther = {
+type SbomDependency = {
   ref: string;
   dependsOn?: string[];
 };
@@ -75,7 +75,7 @@ export default {
     };
 
     const normalizeData = (
-      sbomDependencies: Guenther[],
+      sbomDependencies: SbomDependency[],
     ): DependencyTreeData => {
       const rootNode = {
         name: `SBOM id '${props.sbomId}'`,
@@ -134,7 +134,9 @@ export default {
       return null;
     };
 
-    const renderTree = async (sbomDependencies: Guenther[]): Promise<void> => {
+    const renderTree = async (
+      sbomDependencies: SbomDependency[],
+    ): Promise<void> => {
       const treeData: DependencyTreeData = normalizeData(sbomDependencies);
       rootNode.value = await createDependencyTree(
         treeContainer.value!,
