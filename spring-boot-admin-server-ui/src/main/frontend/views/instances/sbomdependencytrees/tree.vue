@@ -36,6 +36,7 @@ export default {
     };
   },
   data: () => ({
+    timeout: 0,
     error: null,
     dependencies: [],
     rootNode: null,
@@ -50,27 +51,30 @@ export default {
     this.fetchSbomDependencies(this.sbomId);
   },
   methods: {
-    async rerenderOrUpdateTree(newVal) {
-      if (!newVal.trim()) {
-        await this.renderTree(this.dependencies);
-      } else {
-        await this.updateTree();
+    async rerenderOrUpdateTree(newVal, oldVal) {
+      if (this.dependencies.length > 0) {
+        if (!newVal.trim() || newVal === oldVal) {
+          await this.renderTree(this.dependencies);
+        } else {
+          await this.updateTree();
+        }
       }
     },
     // lodash debounce won't work with multiple invocations of the same function on different dependencyTrees
-    async debounceRerender(newVal) {
-      let timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(async () => {
-        await this.rerenderOrUpdateTree(newVal);
-      }, 1000);
+    async debounceRerender(newVal, oldVal) {
+      if (oldVal !== newVal) {
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(async () => {
+          await this.rerenderOrUpdateTree(newVal, oldVal);
+        }, 1000);
+      }
     },
     async fetchSbomDependencies(sbomId) {
       this.error = null;
       try {
         const res = await this.instance.fetchSbom(sbomId);
         this.dependencies = res.data.dependencies;
-        this.renderTree(this.dependencies);
+        await this.renderTree(this.dependencies);
       } catch (error) {
         console.warn('Fetching sbom failed:', error);
         this.error = error;

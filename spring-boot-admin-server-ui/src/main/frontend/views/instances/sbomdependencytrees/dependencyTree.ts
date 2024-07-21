@@ -11,11 +11,11 @@ const margin = { top: 20, bottom: 20, left: 10 };
 const maxItemsInFrame = 4;
 
 const extractGroupId = (dependency: string): string => {
-  return dependency.match(/^(.*?)\//)?.[1] ?? dependency;
+  return dependency?.match(/^(.*?)\//)?.[1] ?? dependency;
 };
 
 const extractArtifactId = (dependency: string): string => {
-  return dependency.match(/^[^/]+\/([^@]+)@?.*$/)?.[1] ?? dependency;
+  return dependency?.match(/^[^/]+\/([^@]+)@?.*$/)?.[1] ?? dependency;
 };
 
 type MyHierarchyNode = Omit<
@@ -70,6 +70,23 @@ export type DependencyTreeData = {
   children?: DependencyTreeData[];
 };
 
+function createGlobalLinkAndNode(
+  svg: Selection<SVGGElement, unknown, null, undefined>,
+) {
+  const gLink: Selection<SVGGElement, unknown, null, undefined> = svg
+    .append('g')
+    .attr('fill', 'none')
+    .attr('stroke', '#999')
+    .attr('stroke-opacity', 0.4)
+    .attr('stroke-width', 2);
+
+  const gNode: Selection<SVGGElement, unknown, null, undefined> = svg
+    .append('g')
+    .attr('cursor', 'pointer')
+    .attr('pointer-events', 'all');
+  return { gLink, gNode };
+}
+
 export const createDependencyTree = async (
   treeContainer: HTMLElement,
   treeData: DependencyTreeData,
@@ -95,6 +112,7 @@ export const createDependencyTree = async (
   const svg: Selection<SVGGElement, unknown, null, undefined> = d3
     .select(treeContainer)
     .append('svg')
+    .attr('data-testid', 'treecontainer-svg')
     .attr('width', elementsWidth)
     .attr('height', dx)
     .attr('viewBox', [-margin.left, -margin.top, elementsWidth, dx])
@@ -106,17 +124,7 @@ export const createDependencyTree = async (
     .attr('class', 'bg-sba-100 rounded')
     .attr('style', 'position: absolute; opacity: 0; font-size: 0.85rem;');
 
-  const gLink: Selection<SVGGElement, unknown, null, undefined> = svg
-    .append('g')
-    .attr('fill', 'none')
-    .attr('stroke', '#999')
-    .attr('stroke-opacity', 0.4)
-    .attr('stroke-width', 2);
-
-  const gNode: Selection<SVGGElement, unknown, null, undefined> = svg
-    .append('g')
-    .attr('cursor', 'pointer')
-    .attr('pointer-events', 'all');
+  const { gLink, gNode } = createGlobalLinkAndNode(svg);
 
   const d3DependencyTree: D3DependencyTree = {
     treeContainer,
@@ -198,7 +206,13 @@ const updateDependencyTree = async (
     );
 
   if (removeNodes) {
-    gNode.selectAll<SVGGElement, typeof root>('g').remove();
+    if (!source.children) {
+      svg.attr('style', 'visibility: hidden');
+    } else {
+      svg.attr('style', 'font-size: .75rem;');
+    }
+
+    gNode.selectAll<SVGGElement, any>('g').remove();
   }
 
   const subGNodeSelection: Selection<
@@ -244,7 +258,11 @@ const updateDependencyTree = async (
     .attr('dy', (d) => (d.parent ? '-.25rem' : '.35rem'))
     .attr('x', 12)
     .attr('text-anchor', 'start')
-    .text((d) => extractGroupId(d.data.name));
+    .text((d) =>
+      d !== null && d !== undefined && d.data !== undefined && d.data.name
+        ? extractGroupId(d.data.name)
+        : '',
+    );
 
   nodeEnter
     .append('text')
@@ -324,10 +342,10 @@ export const rerenderDependencyTree = async (
   dependencyTree: D3DependencyTree,
   data: DependencyTreeData,
 ): Promise<void> => {
-  const root: MyHierarchyNode = d3.hierarchy(data);
+  dependencyTree.root = d3.hierarchy(
+    data?.children ? data : {},
+  ) as MyHierarchyNode;
 
-  dependencyTree.root = root;
   initRootAndDescendants(dependencyTree, false);
-
-  await updateDependencyTree(dependencyTree, root, true);
+  await updateDependencyTree(dependencyTree, dependencyTree.root, true);
 };
