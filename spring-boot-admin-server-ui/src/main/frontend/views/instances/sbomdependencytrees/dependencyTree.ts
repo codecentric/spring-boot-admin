@@ -70,11 +70,11 @@ export type DependencyTreeData = {
   children?: DependencyTreeData[];
 };
 
-export const createDependencyTree = (
+export const createDependencyTree = async (
   treeContainer: HTMLElement,
   treeData: DependencyTreeData,
   initFolding: boolean = true,
-): D3DependencyTree => {
+): Promise<D3DependencyTree> => {
   d3.select(treeContainer).select('svg').remove();
 
   if (!treeData) {
@@ -129,7 +129,7 @@ export const createDependencyTree = (
 
   initRootAndDescendants(d3DependencyTree, initFolding);
 
-  updateDependencyTree(d3DependencyTree, root);
+  await updateDependencyTree(d3DependencyTree, root);
 
   return d3DependencyTree;
 };
@@ -151,11 +151,11 @@ const initRootAndDescendants = (
   });
 };
 
-const updateDependencyTree = (
+const updateDependencyTree = async (
   dependencyTree: D3DependencyTree,
   source: MyHierarchyNode,
   removeNodes: boolean = false,
-): void => {
+): Promise<void> => {
   const { root, treeLayout, svg, gNode, gLink } = dependencyTree;
   const nodes: MyHierarchyNode[] = root.descendants().reverse();
   const links: Array<MyHierarchyLink> = root.links();
@@ -320,14 +320,14 @@ const updateDependencyTree = (
   });
 };
 
-export const rerenderDependencyTree = (
+export const rerenderDependencyTree = async (
   dependencyTree: D3DependencyTree,
   data: DependencyTreeData,
-): void => {
+): Promise<void> => {
   const root: MyHierarchyNode = d3.hierarchy(data);
 
   dependencyTree.root = root;
   initRootAndDescendants(dependencyTree, false);
 
-  updateDependencyTree(dependencyTree, root, true);
+  await updateDependencyTree(dependencyTree, root, true);
 };

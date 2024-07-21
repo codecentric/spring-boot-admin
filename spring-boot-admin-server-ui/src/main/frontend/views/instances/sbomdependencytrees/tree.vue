@@ -41,32 +41,29 @@ export default {
     rootNode: null,
   }),
   watch: {
-    filter: 'debounceRerender',
+    filter: {
+      handler: 'debounceRerender',
+      immediate: true,
+    },
   },
   created() {
     this.fetchSbomDependencies(this.sbomId);
   },
   methods: {
-    debounceRerender(newVal) {
-      this.debounce(function () {
-        if (!newVal.trim()) {
-          this.renderTree(this.dependencies);
-        } else {
-          this.updateTree();
-        }
-      }, 1000);
+    async rerenderOrUpdateTree(newVal) {
+      if (!newVal.trim()) {
+        await this.renderTree(this.dependencies);
+      } else {
+        await this.updateTree();
+      }
     },
     // lodash debounce won't work with multiple invocations of the same function on different dependencyTrees
-    debounce(func, wait) {
+    async debounceRerender(newVal) {
       let timeout;
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      const context = this,
-        args = arguments;
       clearTimeout(timeout);
-      timeout = setTimeout(function () {
-        timeout = null;
-        func.apply(context, args);
-      }, wait);
+      timeout = setTimeout(async () => {
+        await this.rerenderOrUpdateTree(newVal);
+      }, 1000);
     },
     async fetchSbomDependencies(sbomId) {
       this.error = null;
@@ -114,17 +111,17 @@ export default {
         ),
       }));
     },
-    renderTree(sbomDependencies) {
+    async renderTree(sbomDependencies) {
       const treeData: DependencyTreeData = this.normalizeData(sbomDependencies);
 
-      this.rootNode = createDependencyTree(
+      this.rootNode = await createDependencyTree(
         this.treeContainer,
         this.filterTree(treeData),
         !this.filter.trim(),
       );
     },
-    updateTree() {
-      rerenderDependencyTree(
+    async updateTree() {
+      await rerenderDependencyTree(
         this.rootNode,
         this.filterTree(this.normalizeData(this.dependencies)),
       );
