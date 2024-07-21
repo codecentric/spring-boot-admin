@@ -1,9 +1,25 @@
+<!--
+  - Copyright 2014-2024 the original author or authors.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
   <div ref="treeContainer" class="x-scroller"></div>
 </template>
 
 <script lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 import Instance from '@/services/instance';
 import {
@@ -11,6 +27,11 @@ import {
   createDependencyTree,
   rerenderDependencyTree,
 } from '@/views/instances/sbomdependencytrees/dependencyTree';
+
+type Guenther = {
+  ref: string;
+  dependsOn?: string[];
+};
 
 export default {
   name: 'TreeGraph',
@@ -28,121 +49,76 @@ export default {
       default: '',
     },
   },
-  setup() {
-    const treeContainer = ref(null);
+  setup(props) {
+    const treeContainer = ref<HTMLElement | null>(null);
+    const dependencies = ref([]);
+    const rootNode = ref(null);
+    const error = ref(null);
+    let timeout: number | null = null;
 
-    return {
-      treeContainer,
+    const normalizeNodeName = (name: string): string =>
+      name.replace(/^[^\/]*\//, '').replace(/\?.*$/, '');
+
+    const retrieveChildren = (
+      dependsOn: string[],
+    ): DependencyTreeData[] | undefined => {
+      if (!dependsOn.length) return undefined;
+
+      return dependsOn.map((item) => ({
+        name: normalizeNodeName(item),
+        children: retrieveChildren(
+          dependencies.value
+            .filter((node) => node.ref === item && node.dependsOn.length)
+            .flatMap((node) => node.dependsOn),
+        ),
+      }));
     };
-  },
-  data: () => ({
-    timeout: 0,
-    error: null,
-    dependencies: [],
-    rootNode: null,
-  }),
-  watch: {
-    filter: {
-      handler: 'debounceRerender',
-      immediate: true,
-    },
-  },
-  created() {
-    this.fetchSbomDependencies(this.sbomId);
-  },
-  methods: {
-    async rerenderOrUpdateTree(newVal, oldVal) {
-      if (this.dependencies.length > 0) {
-        if (!newVal.trim() || newVal === oldVal) {
-          await this.renderTree(this.dependencies);
-        } else {
-          await this.updateTree();
-        }
-      }
-    },
-    // lodash debounce won't work with multiple invocations of the same function on different dependencyTrees
-    async debounceRerender(newVal, oldVal) {
-      if (oldVal !== newVal) {
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(async () => {
-          await this.rerenderOrUpdateTree(newVal, oldVal);
-        }, 1000);
-      }
-    },
-    async fetchSbomDependencies(sbomId) {
-      this.error = null;
-      try {
-        const res = await this.instance.fetchSbom(sbomId);
-        this.dependencies = res.data.dependencies;
-        await this.renderTree(this.dependencies);
-      } catch (error) {
-        console.warn('Fetching sbom failed:', error);
-        this.error = error;
-      }
-    },
-    normalizeNodeName(name) {
-      return name.replace(/^[^\/]*\//, '').replace(/\?.*$/, '');
-    },
-    normalizeData(sbomDependencies): DependencyTreeData {
+
+    const normalizeData = (
+      sbomDependencies: Guenther[],
+    ): DependencyTreeData => {
       const rootNode = {
-        name: `SBOM id '${this.sbomId}'`,
+        name: `SBOM id '${props.sbomId}'`,
         dependsOn: [sbomDependencies[0]],
       };
 
       const children = rootNode.dependsOn.map((item) => ({
-        name: this.normalizeNodeName(item.ref),
-        children: this.retrieveChildren(item.dependsOn),
+        name: normalizeNodeName(item.ref),
+        children: retrieveChildren(item.dependsOn),
       }));
 
       return {
         name: rootNode.name,
         children,
       };
-    },
-    retrieveChildren(dependsOn) {
-      if (!dependsOn.length) {
-        return undefined;
+    };
+
+    const fetchSbomDependencies = async (sbomId: string): Promise<void> => {
+      error.value = null;
+      try {
+        const res = await props.instance.fetchSbom(sbomId);
+        dependencies.value = res.data.dependencies;
+        await renderTree(dependencies.value);
+      } catch (err) {
+        console.warn('Fetching sbom failed:', err);
+        error.value = err;
       }
+    };
 
-      return dependsOn.map((item) => ({
-        name: this.normalizeNodeName(item),
-        children: this.retrieveChildren(
-          this.dependencies
-            .filter((node) => {
-              return node.ref === item && node.dependsOn.length;
-            })
-            .flatMap((node) => node.dependsOn),
-        ),
-      }));
-    },
-    async renderTree(sbomDependencies) {
-      const treeData: DependencyTreeData = this.normalizeData(sbomDependencies);
-
-      this.rootNode = await createDependencyTree(
-        this.treeContainer,
-        this.filterTree(treeData),
-        !this.filter.trim(),
-      );
-    },
-    async updateTree() {
-      await rerenderDependencyTree(
-        this.rootNode,
-        this.filterTree(this.normalizeData(this.dependencies)),
-      );
-    },
-    filterTree(treeData: DependencyTreeData): DependencyTreeData | null {
-      if (!this.filter || this.filter.trim() === '') {
+    const filterTree = (
+      treeData: DependencyTreeData,
+    ): DependencyTreeData | null => {
+      if (!props.filter || props.filter.trim() === '') {
         return treeData;
       }
 
-      const filterLowerCase = this.filter.trim().toLowerCase();
+      const filterLowerCase = props.filter.trim().toLowerCase();
       const matchesCurrentNode = treeData.name
         .toLowerCase()
         .includes(filterLowerCase);
 
-      // Recursively filter the children
       const filteredChildren = treeData.children
-        ?.map((child) => this.filterTree(child))
+        ?.map((child) => filterTree(child))
         .filter((child) => child !== null) as DependencyTreeData[];
 
       if (
@@ -156,15 +132,56 @@ export default {
       }
 
       return null;
-    },
-    nodeContainsAnyChildWithName(child, name) {
-      if (child.children) {
-        return child.children.some((child) =>
-          this.nodeContainsAnyChildWithName(child, name),
-        );
+    };
+
+    const renderTree = async (sbomDependencies: Guenther[]): Promise<void> => {
+      const treeData: DependencyTreeData = normalizeData(sbomDependencies);
+      rootNode.value = await createDependencyTree(
+        treeContainer.value!,
+        filterTree(treeData),
+        !props.filter.trim(),
+      );
+    };
+
+    const updateTree = async (): Promise<void> => {
+      await rerenderDependencyTree(
+        rootNode.value,
+        filterTree(normalizeData(dependencies.value)),
+      );
+    };
+
+    const rerenderOrUpdateTree = async (
+      newVal: string,
+      oldVal: string,
+    ): Promise<void> => {
+      if (dependencies.value.length > 0) {
+        if (!newVal.trim() || newVal === oldVal) {
+          await renderTree(dependencies.value);
+        } else {
+          await updateTree();
+        }
       }
-      return child.name.toLowerCase().includes(name);
-    },
+    };
+
+    const debounceRerender = (newVal: string, oldVal: string): void => {
+      if (oldVal !== newVal && treeContainer.value !== null) {
+        clearTimeout(timeout!);
+        timeout = window.setTimeout(async () => {
+          await rerenderOrUpdateTree(newVal, oldVal);
+        }, 1000);
+      }
+    };
+
+    onMounted(() => {
+      fetchSbomDependencies(props.sbomId);
+    });
+
+    watch(() => props.filter, debounceRerender, { immediate: true });
+
+    return {
+      treeContainer,
+      error,
+    };
   },
 };
 </script>

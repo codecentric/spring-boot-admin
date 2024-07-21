@@ -8,124 +8,132 @@ import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 import TreeGraph from '@/views/instances/sbomdependencytrees/tree.vue';
 
-describe(
-  'TreeGraph',
-  () => {
-    const application = new Application(applications[0]);
-    const instance: Instance = application.instances[0];
+const setUnknownFilter = async (
+  dependencyTree: RenderResult,
+  instance: Instance,
+): Promise<void> => {
+  expect(await screen.findAllByText(/SBOM id 'application'/)).toBeDefined();
+  expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
 
-    let dependencyTree: RenderResult;
+  await dependencyTree.rerender({
+    sbomId: 'application',
+    instance: instance,
+    filter: 'unknowndependencyfilter',
+  });
 
-    beforeEach(async () => {
-      dependencyTree = render(TreeGraph, {
-        props: {
-          sbomId: 'application',
-          instance: instance,
-        },
-      });
+  await waitFor(
+    () => {
+      expect(screen.getByTestId('treecontainer-svg')).not.toBeVisible();
+    },
+    { timeout: 1100 },
+  );
+};
+
+describe('TreeGraph', () => {
+  const application = new Application(applications[0]);
+  const instance: Instance = application.instances[0];
+
+  let dependencyTree: RenderResult;
+
+  const renderComponent = async (filter = '') => {
+    dependencyTree = render(TreeGraph, {
+      props: {
+        sbomId: 'application',
+        instance: instance,
+        filter,
+      },
     });
+    await waitFor(() =>
+      expect(screen.getByTestId('treecontainer-svg')).toBeInTheDocument(),
+    );
+  };
 
-    it('renders correctly with given props', async () => {
+  beforeEach(async () => {
+    await renderComponent();
+  });
+
+  it('renders correctly with given props', async () => {
+    const expectedTexts = [
+      'spring-boot-admin-sample-servlet',
+      'spring-boot-admin-sample-custom-ui',
+      'spring-boot-admin-starter-server',
+      'spring-cloud-starter-config',
+      'org.hsqldb',
+    ];
+
+    for (const text of expectedTexts) {
       expect(
-        await screen.findAllByText(/spring-boot-admin-sample-servlet/),
-      ).toBeDefined();
-      expect(
-        await screen.findAllByText(/spring-boot-admin-sample-custom-ui/),
-      ).toBeDefined();
-      expect(
-        await screen.findAllByText(/spring-boot-admin-starter-server/),
-      ).toBeDefined();
-      expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
+        await screen.findByText(new RegExp(text, 'i')),
+      ).toBeInTheDocument();
+    }
+
+    expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
+  });
+
+  it('filters the tree by filter prop', async () => {
+    expect(await screen.findAllByText(/spring-session-jdbc/)).toBeDefined();
+    await dependencyTree.rerender({
+      sbomId: 'application',
+      instance: instance,
+      filter: 'webmvc',
     });
 
-    it('filters the tree by filter prop', async () => {
-      expect(await screen.findAllByText(/spring-session-jdbc/)).toBeDefined();
+    await waitFor(
+      () => {
+        expect(
+          screen.queryByText(/spring-session-jdbc/i),
+        ).not.toBeInTheDocument();
+        expect(screen.queryByText(/spring-webmvc/i)).toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
+  });
 
-      await dependencyTree.rerender({
-        sbomId: 'application',
-        instance: instance,
-        filter: 'webmvc',
-      });
+  it("shows empty tree if filter doesn't apply to dependencies in tree", async () => {
+    expect(await screen.findAllByText(/SBOM id 'application'/)).toBeDefined();
 
-      await waitFor(
-        async () => {
-          expect(
-            screen.queryByText(/spring-session-jdbc/),
-          ).not.toBeInTheDocument();
-          expect(screen.queryByText(/spring-webmvc/)).toBeInTheDocument();
-        },
-        { timeout: 2000 },
-      );
+    await dependencyTree.rerender({
+      sbomId: 'application',
+      instance: instance,
+      filter: 'unknowndependencyfilter',
     });
 
-    it("shows empty tree if filter doesn't apply to dependencies in tree", async () => {
-      expect(await screen.findAllByText(/SBOM id 'application'/)).toBeDefined();
+    await waitFor(
+      () => {
+        expect(
+          screen.queryByText(/SBOM id 'application'/i),
+        ).not.toBeInTheDocument();
+      },
+      { timeout: 1100 },
+    );
+  });
 
-      await dependencyTree.rerender({
-        sbomId: 'application',
-        instance: instance,
-        filter: 'unknowndependencyfilter',
-      });
+  it('should hide svg if no dependencies found for filter', async () => {
+    await setUnknownFilter(dependencyTree, instance);
 
-      await waitFor(
-        async () => {
-          expect(
-            screen.queryByText(/SBOM id 'application'/),
-          ).not.toBeInTheDocument();
-        },
-        { timeout: 2000 },
-      );
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('treecontainer-svg')).not.toBeVisible();
+      },
+      { timeout: 1100 },
+    );
+  });
+
+  it('should toggle svg visibility if dependencies found for filter', async () => {
+    await setUnknownFilter(dependencyTree, instance);
+
+    await dependencyTree.rerender({
+      sbomId: 'application',
+      instance: instance,
+      filter: 'webmvc',
     });
 
-    it('should hide svg if no dependencies found for filter', async () => {
-      expect(await screen.findAllByText(/SBOM id 'application'/)).toBeDefined();
-      expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
-
-      await dependencyTree.rerender({
-        sbomId: 'application',
-        instance: instance,
-        filter: 'unknowndependencyfilter',
-      });
-
-      await waitFor(
-        () => {
-          expect(screen.getByTestId('treecontainer-svg')).not.toBeVisible();
-        },
-        { timeout: 2000 },
-      );
-    });
-
-    it('should toggle svg visibility if dependencies found for filter', async () => {
-      expect(await screen.findAllByText(/SBOM id 'application'/)).toBeDefined();
-      expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
-
-      await dependencyTree.rerender({
-        sbomId: 'application',
-        instance: instance,
-        filter: 'unknowndependencyfilter',
-      });
-
-      await waitFor(
-        () => {
-          expect(screen.getByTestId('treecontainer-svg')).not.toBeVisible();
-        },
-        { timeout: 2000 },
-      );
-
-      await dependencyTree.rerender({
-        sbomId: 'application',
-        instance: instance,
-        filter: 'webmvc',
-      });
-
-      await waitFor(
-        () => {
-          expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
-          expect(screen.queryByText(/spring-webmvc/)).toBeInTheDocument();
-        },
-        { timeout: 2000 },
-      );
-    });
-  },
-  { timeout: 60000 },
-);
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
+        expect(screen.queryByText(/spring-webmvc/i)).toBeInTheDocument();
+      },
+      { timeout: 2000 },
+    );
+  });
+});

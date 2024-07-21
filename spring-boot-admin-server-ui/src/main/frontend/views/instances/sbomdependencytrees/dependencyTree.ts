@@ -1,25 +1,39 @@
+/**
+ * Copyright 2014-2024 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import * as d3 from 'd3';
-import {
-  BaseType,
-  HierarchyNode,
-  HierarchyPointNode,
-  Selection,
-  TreeLayout,
-} from 'd3';
+import { HierarchyNode, HierarchyPointNode, Selection, TreeLayout } from 'd3';
 
-const margin = { top: 20, bottom: 20, left: 10 };
-const maxItemsInFrame = 4;
+const MARGIN = { top: 20, bottom: 20, left: 10 };
+const MAX_ITEMS_IN_FRAME = 4;
 
-const extractGroupId = (dependency: string): string => {
-  return dependency?.match(/^(.*?)\//)?.[1] ?? dependency;
+const extractGroupId = (dependency: string): string =>
+  dependency?.match(/^(.*?)\//)?.[1] ?? dependency;
+
+const extractArtifactId = (dependency: string): string =>
+  dependency?.match(/^[^/]+\/([^@]+)@?.*$/)?.[1] ?? dependency;
+
+export type DependencyTreeData = {
+  name: string;
+  children?: DependencyTreeData[];
 };
 
-const extractArtifactId = (dependency: string): string => {
-  return dependency?.match(/^[^/]+\/([^@]+)@?.*$/)?.[1] ?? dependency;
-};
+type HierarchyNodeData = HierarchyNode<DependencyTreeData>;
 
 type MyHierarchyNode = Omit<
-  HierarchyNode<DependencyTreeData>,
+  HierarchyNodeData,
   'id' | 'descendants' | 'children' | 'links' | 'ancestors' | 'leaves' | 'data'
 > & {
   new (data: DependencyTreeData): MyHierarchyNode;
@@ -49,14 +63,7 @@ type MyHierarchyPointLink = {
   target: MyHierarchyPointNode;
 };
 
-const linkNodesHorizontal = (hierarchyLink: MyHierarchyLink) => {
-  return d3
-    .linkHorizontal<MyHierarchyLink, MyHierarchyPointNode>()
-    .x((d) => d.y)
-    .y((d) => d.x)(hierarchyLink);
-};
-
-export type D3DependencyTree = {
+type D3DependencyTree = {
   treeContainer: HTMLElement;
   root: MyHierarchyNode;
   treeLayout: TreeLayout<DependencyTreeData>;
@@ -65,81 +72,29 @@ export type D3DependencyTree = {
   gLink: Selection<SVGGElement, unknown, null, undefined>;
 };
 
-export type DependencyTreeData = {
-  name: string;
-  children?: DependencyTreeData[];
-};
+// Utility Functions
+const linkNodesHorizontal = (hierarchyLink: MyHierarchyLink) =>
+  d3
+    .linkHorizontal<MyHierarchyLink, MyHierarchyPointNode>()
+    .x((d) => d.y)
+    .y((d) => d.x)(hierarchyLink);
 
-function createGlobalLinkAndNode(
+const createGlobalLinkAndNode = (
   svg: Selection<SVGGElement, unknown, null, undefined>,
-) {
-  const gLink: Selection<SVGGElement, unknown, null, undefined> = svg
+) => {
+  const gLink = svg
     .append('g')
     .attr('fill', 'none')
     .attr('stroke', '#999')
     .attr('stroke-opacity', 0.4)
     .attr('stroke-width', 2);
 
-  const gNode: Selection<SVGGElement, unknown, null, undefined> = svg
+  const gNode = svg
     .append('g')
     .attr('cursor', 'pointer')
     .attr('pointer-events', 'all');
+
   return { gLink, gNode };
-}
-
-export const createDependencyTree = async (
-  treeContainer: HTMLElement,
-  treeData: DependencyTreeData,
-  initFolding: boolean = true,
-): Promise<D3DependencyTree> => {
-  d3.select(treeContainer).select('svg').remove();
-
-  if (!treeData) {
-    return;
-  }
-
-  const elementsWidth = treeContainer.getBoundingClientRect().width;
-  const dx = 48;
-  const dy = elementsWidth / maxItemsInFrame;
-
-  const root: MyHierarchyNode = d3.hierarchy(treeData);
-  const treeLayout: TreeLayout<DependencyTreeData> = d3
-    .tree<DependencyTreeData>()
-    .nodeSize([dx, dy]);
-
-  root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
-
-  const svg: Selection<SVGGElement, unknown, null, undefined> = d3
-    .select(treeContainer)
-    .append('svg')
-    .attr('data-testid', 'treecontainer-svg')
-    .attr('width', elementsWidth)
-    .attr('height', dx)
-    .attr('viewBox', [-margin.left, -margin.top, elementsWidth, dx])
-    .attr('style', 'font-size: .75rem;');
-
-  d3.select(treeContainer)
-    .append('div')
-    .attr('id', 'tooltip')
-    .attr('class', 'bg-sba-100 rounded')
-    .attr('style', 'position: absolute; opacity: 0; font-size: 0.85rem;');
-
-  const { gLink, gNode } = createGlobalLinkAndNode(svg);
-
-  const d3DependencyTree: D3DependencyTree = {
-    treeContainer,
-    gNode,
-    root,
-    svg,
-    treeLayout,
-    gLink,
-  };
-
-  initRootAndDescendants(d3DependencyTree, initFolding);
-
-  await updateDependencyTree(d3DependencyTree, root);
-
-  return d3DependencyTree;
 };
 
 const initRootAndDescendants = (
@@ -148,9 +103,8 @@ const initRootAndDescendants = (
 ): void => {
   tree.root.x0 = tree.treeContainer.getBoundingClientRect().width / 2;
   tree.root.y0 = 0;
-  tree.root.descendants().forEach((d: MyHierarchyNode, i: number) => {
+  tree.root.descendants().forEach((d, i) => {
     d.id = '' + i;
-
     d._children = d.children;
 
     if (initFolding && d.depth >= 2) {
@@ -162,11 +116,11 @@ const initRootAndDescendants = (
 const updateDependencyTree = async (
   dependencyTree: D3DependencyTree,
   source: MyHierarchyNode,
-  removeNodes: boolean = false,
+  removeNodes = false,
 ): Promise<void> => {
   const { root, treeLayout, svg, gNode, gLink } = dependencyTree;
-  const nodes: MyHierarchyNode[] = root.descendants().reverse();
-  const links: Array<MyHierarchyLink> = root.links();
+  const nodes = root.descendants().reverse();
+  const links = root.links();
 
   treeLayout(root);
 
@@ -180,16 +134,14 @@ const updateDependencyTree = async (
     [root, root, root, root],
   );
 
-  const height = right.x - left.x + margin.top + margin.bottom;
-
+  const height = right.x - left.x + MARGIN.top + MARGIN.bottom;
   const treeContainerWidth =
     dependencyTree.treeContainer.getBoundingClientRect().width;
-
   const width =
     rightWidth.y -
     leftWidth.y +
-    margin.left +
-    treeContainerWidth / maxItemsInFrame;
+    MARGIN.left +
+    treeContainerWidth / MAX_ITEMS_IN_FRAME;
 
   svg
     .transition()
@@ -198,7 +150,7 @@ const updateDependencyTree = async (
     .attr('width', width)
     .attr(
       'viewBox',
-      `${-margin.left}, ${left.x - margin.top}, ${width}, ${height}`,
+      `${-MARGIN.left}, ${left.x - MARGIN.top}, ${width}, ${height}`,
     )
     .tween(
       'resize',
@@ -215,31 +167,23 @@ const updateDependencyTree = async (
     gNode.selectAll<SVGGElement, any>('g').remove();
   }
 
-  const subGNodeSelection: Selection<
-    SVGGElement,
-    MyHierarchyNode,
-    SVGGElement,
-    unknown
-  > = gNode.selectAll<SVGGElement, typeof root>('g').data(nodes, (d) => d.id);
+  const subGNodeSelection = gNode
+    .selectAll<SVGGElement, typeof root>('g')
+    .data(nodes, (d) => d.id);
 
-  const nodeEnter: Selection<
-    SVGGElement,
-    MyHierarchyNode,
-    SVGGElement,
-    MyHierarchyNode
-  > = subGNodeSelection
+  const nodeEnter = subGNodeSelection
     .enter()
     .append('g')
     .attr('transform', () => `translate(${source.y0},${source.x0})`)
     .attr('fill-opacity', 0)
-    .on('click', (event, d: MyHierarchyNode) => {
+    .on('click', (event, d) => {
       d.children = d.children ? null : d._children;
       updateDependencyTree(dependencyTree, d, false);
     });
 
   nodeEnter
     .append('rect')
-    .attr('width', treeContainerWidth / (maxItemsInFrame + 1))
+    .attr('width', treeContainerWidth / (MAX_ITEMS_IN_FRAME + 1))
     .attr('height', '2.5rem')
     .attr('y', '-1.25rem')
     .attr('rx', 6)
@@ -259,9 +203,7 @@ const updateDependencyTree = async (
     .attr('x', 12)
     .attr('text-anchor', 'start')
     .text((d) =>
-      d !== null && d !== undefined && d.data !== undefined && d.data.name
-        ? extractGroupId(d.data.name)
-        : '',
+      d && d.data && d.data.name ? extractGroupId(d.data.name) : '',
     );
 
   nodeEnter
@@ -272,7 +214,7 @@ const updateDependencyTree = async (
     .text((d) => (d.parent ? extractArtifactId(d.data.name) : null));
 
   nodeEnter
-    .on('mouseover', (event, d: HierarchyNode<DependencyTreeData>) => {
+    .on('mouseover', (event, d) => {
       d3.select('#tooltip')
         .transition()
         .duration(300)
@@ -308,16 +250,11 @@ const updateDependencyTree = async (
     .attr('fill-opacity', 0)
     .attr('stroke-opacity', 0);
 
-  const link: Selection<BaseType, MyHierarchyLink, SVGGElement, unknown> = gLink
+  const link = gLink
     .selectAll('path')
     .data(links, (d: MyHierarchyLink) => d.target.id);
 
-  const linkEnter: Selection<
-    SVGGElement,
-    MyHierarchyLink,
-    SVGGElement,
-    unknown
-  > = link.enter().append('path').attr('d', linkNodesHorizontal);
+  const linkEnter = link.enter().append('path').attr('d', linkNodesHorizontal);
 
   link
     .merge(linkEnter)
@@ -336,6 +273,56 @@ const updateDependencyTree = async (
     d.x0 = d.x;
     d.y0 = d.y;
   });
+};
+
+export const createDependencyTree = async (
+  treeContainer: HTMLElement,
+  treeData: DependencyTreeData,
+  initFolding = true,
+): Promise<D3DependencyTree> => {
+  d3.select(treeContainer).select('svg').remove();
+
+  if (!treeData) return;
+
+  const elementsWidth = treeContainer.getBoundingClientRect().width;
+  const dx = 48;
+  const dy = elementsWidth / MAX_ITEMS_IN_FRAME;
+
+  const root = d3.hierarchy(treeData) as MyHierarchyNode;
+  const treeLayout = d3.tree<DependencyTreeData>().nodeSize([dx, dy]);
+
+  root.sort((a, b) => d3.ascending(a.data.name, b.data.name));
+
+  const svg = d3
+    .select(treeContainer)
+    .append('svg')
+    .attr('data-testid', 'treecontainer-svg')
+    .attr('width', elementsWidth)
+    .attr('height', dx)
+    .attr('viewBox', [-MARGIN.left, -MARGIN.top, elementsWidth, dx])
+    .attr('style', 'font-size: .75rem;');
+
+  d3.select(treeContainer)
+    .append('div')
+    .attr('id', 'tooltip')
+    .attr('class', 'bg-sba-100 rounded')
+    .attr('style', 'position: absolute; opacity: 0; font-size: 0.85rem;');
+
+  const { gLink, gNode } = createGlobalLinkAndNode(svg);
+
+  const d3DependencyTree: D3DependencyTree = {
+    treeContainer,
+    gNode,
+    root,
+    svg,
+    treeLayout,
+    gLink,
+  };
+
+  initRootAndDescendants(d3DependencyTree, initFolding);
+  await updateDependencyTree(d3DependencyTree, root);
+
+  return d3DependencyTree;
 };
 
 export const rerenderDependencyTree = async (
