@@ -93,7 +93,7 @@
     "jsdom": "^24.0.0",
     "msw": "2.3.4",
     "msw-storybook-addon": "2.0.3",
-    "postcss": "8.4.39",
+    "postcss": "8.4.40",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "5.12.0",
     "sass": "^1.57.1",
