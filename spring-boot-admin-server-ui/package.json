@@ -62,10 +62,10 @@
   },
   "devDependencies": {
     "@babel/core": "7.24.9",
-    "@babel/eslint-parser": "7.24.8",
+    "@babel/eslint-parser": "7.25.0",
     "@babel/plugin-transform-runtime": "7.24.7",
-    "@babel/preset-env": "7.24.8",
-    "@babel/runtime": "7.24.8",
+    "@babel/preset-env": "7.25.0",
+    "@babel/runtime": "7.25.0",
     "@storybook/addon-actions": "8.2.6",
     "@storybook/addon-essentials": "8.2.6",
     "@storybook/addon-links": "8.2.6",
