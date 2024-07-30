@@ -63,7 +63,7 @@ type MyHierarchyPointLink = {
   target: MyHierarchyPointNode;
 };
 
-type D3DependencyTree = {
+export type D3DependencyTree = {
   treeContainer: HTMLElement;
   root: MyHierarchyNode;
   treeLayout: TreeLayout<DependencyTreeData>;
@@ -107,7 +107,7 @@ const initRootAndDescendants = (
     d.id = '' + i;
     d._children = d.children;
 
-    if (initFolding && d.depth >= 2) {
+    if (initFolding && d.depth >= 1) {
       d.children = null;
     }
   });
@@ -145,7 +145,6 @@ const updateDependencyTree = async (
 
   svg
     .transition()
-    .duration(300)
     .attr('height', height)
     .attr('width', width)
     .attr(
@@ -199,7 +198,7 @@ const updateDependencyTree = async (
 
   nodeEnter
     .append('text')
-    .attr('dy', (d) => (d.parent ? '-.25rem' : '.35rem'))
+    .attr('dy', () => '-.25rem')
     .attr('x', 12)
     .attr('text-anchor', 'start')
     .text((d) =>
@@ -211,21 +210,14 @@ const updateDependencyTree = async (
     .attr('dy', '.75rem')
     .attr('x', 12)
     .attr('text-anchor', 'start')
-    .text((d) => (d.parent ? extractArtifactId(d.data.name) : null));
+    .text((d) => extractArtifactId(d.data.name));
 
   nodeEnter
     .on('mouseover', (event, d) => {
-      d3.select('#tooltip')
-        .transition()
-        .duration(300)
-        .style('opacity', 1)
-        .text(d.data.name)
-        .transition()
-        .duration(5000)
-        .style('opacity', 0);
+      d3.select('#tooltip').transition().style('opacity', 1).text(d.data.name);
     })
     .on('mouseout', () => {
-      d3.select('#tooltip').style('opacity', 0);
+      d3.select('#tooltip').transition().style('opacity', 0);
     })
     .on('mousemove', (event) => {
       d3.select('#tooltip')
@@ -236,7 +228,6 @@ const updateDependencyTree = async (
   subGNodeSelection
     .merge(nodeEnter)
     .transition()
-    .duration(300)
     .attr('transform', (d) => `translate(${d.y},${d.x})`)
     .attr('fill-opacity', 1)
     .attr('stroke-opacity', 1);
@@ -244,7 +235,6 @@ const updateDependencyTree = async (
   subGNodeSelection
     .exit()
     .transition()
-    .duration(300)
     .remove()
     .attr('transform', () => `translate(${source.y},${source.x})`)
     .attr('fill-opacity', 0)
@@ -256,18 +246,9 @@ const updateDependencyTree = async (
 
   const linkEnter = link.enter().append('path').attr('d', linkNodesHorizontal);
 
-  link
-    .merge(linkEnter)
-    .transition()
-    .duration(300)
-    .attr('d', linkNodesHorizontal);
+  link.merge(linkEnter).transition().attr('d', linkNodesHorizontal);
 
-  link
-    .exit()
-    .transition()
-    .duration(300)
-    .remove()
-    .attr('d', linkNodesHorizontal);
+  link.exit().transition().remove().attr('d', linkNodesHorizontal);
 
   root.eachBefore((d: MyHierarchyNode) => {
     d.x0 = d.x;

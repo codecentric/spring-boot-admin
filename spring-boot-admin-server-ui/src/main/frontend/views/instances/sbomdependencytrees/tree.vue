@@ -15,26 +15,35 @@
   -->
 
 <template>
-  <div ref="treeContainer" class="x-scroller"></div>
+  <sba-instance-section :error="error" :loading="isLoading">
+    <sba-panel :title="sbomId">
+      <div ref="treeContainer" class="x-scroller"></div>
+    </sba-panel>
+  </sba-instance-section>
 </template>
 
 <script lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { debounce } from 'lodash';
+import { computed, onMounted, ref, watch } from 'vue';
+
+import SbaPanel from '@/components/sba-panel.vue';
 
 import Instance from '@/services/instance';
 import {
-  DependencyTreeData,
+  D3DependencyTree,
   createDependencyTree,
   rerenderDependencyTree,
 } from '@/views/instances/sbomdependencytrees/dependencyTree';
-
-type SbomDependency = {
-  ref: string;
-  dependsOn?: string[];
-};
+import {
+  SbomDependency,
+  filterTree,
+  normalizeData,
+} from '@/views/instances/sbomdependencytrees/sbomUtils';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
 
 export default {
   name: 'TreeGraph',
+  components: { SbaInstanceSection, SbaPanel },
   props: {
     sbomId: {
       type: String,
@@ -51,105 +60,42 @@ export default {
   },
   setup(props) {
     const treeContainer = ref<HTMLElement | null>(null);
-    const dependencies = ref([]);
-    const rootNode = ref(null);
-    const error = ref(null);
-    let timeout: number | null = null;
+    const dependencies = ref<SbomDependency[]>([]);
+    const rootNode = ref<D3DependencyTree | null>(null);
+    const error = ref<string | null>(null);
+    const isLoading = ref<boolean | null>(false);
 
-    const normalizeNodeName = (name: string): string =>
-      name.replace(/^[^\/]*\//, '').replace(/\?.*$/, '');
-
-    const retrieveChildren = (
-      dependsOn: string[],
-    ): DependencyTreeData[] | undefined => {
-      if (!dependsOn.length) return undefined;
-
-      return dependsOn.map((item) => ({
-        name: normalizeNodeName(item),
-        children: retrieveChildren(
-          dependencies.value
-            .filter((node) => node.ref === item && node.dependsOn.length)
-            .flatMap((node) => node.dependsOn),
-        ),
-      }));
-    };
-
-    const normalizeData = (
-      sbomDependencies: SbomDependency[],
-    ): DependencyTreeData => {
-      const rootNode = {
-        name: `SBOM id '${props.sbomId}'`,
-        dependsOn: [sbomDependencies[0]],
-      };
-
-      const children = rootNode.dependsOn.map((item) => ({
-        name: normalizeNodeName(item.ref),
-        children: retrieveChildren(item.dependsOn),
-      }));
-
-      return {
-        name: rootNode.name,
-        children,
-      };
-    };
+    const normalizedData = computed(() => normalizeData(dependencies.value));
+    const filteredData = computed(() =>
+      filterTree(normalizedData.value, props.filter),
+    );
 
     const fetchSbomDependencies = async (sbomId: string): Promise<void> => {
       error.value = null;
+      isLoading.value = true;
       try {
         const res = await props.instance.fetchSbom(sbomId);
         dependencies.value = res.data.dependencies;
-        await renderTree(dependencies.value);
+        await renderTree();
       } catch (err) {
         console.warn('Fetching sbom failed:', err);
         error.value = err;
+      } finally {
+        isLoading.value = false;
       }
     };
 
-    const filterTree = (
-      treeData: DependencyTreeData,
-    ): DependencyTreeData | null => {
-      if (!props.filter || props.filter.trim() === '') {
-        return treeData;
-      }
-
-      const filterLowerCase = props.filter.trim().toLowerCase();
-      const matchesCurrentNode = treeData.name
-        .toLowerCase()
-        .includes(filterLowerCase);
-
-      const filteredChildren = treeData.children
-        ?.map((child) => filterTree(child))
-        .filter((child) => child !== null) as DependencyTreeData[];
-
-      if (
-        matchesCurrentNode ||
-        (filteredChildren && filteredChildren.length > 0)
-      ) {
-        return {
-          ...treeData,
-          children: filteredChildren,
-        };
-      }
-
-      return null;
-    };
-
-    const renderTree = async (
-      sbomDependencies: SbomDependency[],
-    ): Promise<void> => {
-      const treeData: DependencyTreeData = normalizeData(sbomDependencies);
+    const renderTree = async (): Promise<void> => {
       rootNode.value = await createDependencyTree(
         treeContainer.value!,
-        filterTree(treeData),
-        !props.filter.trim(),
+        filteredData.value,
       );
     };
 
     const updateTree = async (): Promise<void> => {
-      await rerenderDependencyTree(
-        rootNode.value,
-        filterTree(normalizeData(dependencies.value)),
-      );
+      isLoading.value = true;
+      await rerenderDependencyTree(rootNode.value, filteredData.value);
+      isLoading.value = false;
     };
 
     const rerenderOrUpdateTree = async (
@@ -158,31 +104,33 @@ export default {
     ): Promise<void> => {
       if (dependencies.value.length > 0) {
         if (!newVal.trim() || newVal === oldVal) {
-          await renderTree(dependencies.value);
+          await renderTree();
         } else {
           await updateTree();
         }
       }
     };
 
-    const debounceRerender = (newVal: string, oldVal: string): void => {
-      if (oldVal !== newVal && treeContainer.value !== null) {
-        clearTimeout(timeout!);
-        timeout = window.setTimeout(async () => {
-          await rerenderOrUpdateTree(newVal, oldVal);
-        }, 1000);
-      }
-    };
+    const debouncedRerenderOrUpdateTree = debounce(rerenderOrUpdateTree, 1000);
+
+    watch(
+      () => props.filter,
+      (newVal, oldVal) => {
+        if (newVal !== oldVal && treeContainer.value !== null) {
+          debouncedRerenderOrUpdateTree(newVal, oldVal);
+        }
+      },
+      { immediate: true },
+    );
 
     onMounted(() => {
       fetchSbomDependencies(props.sbomId);
     });
 
-    watch(() => props.filter, debounceRerender, { immediate: true });
-
     return {
       treeContainer,
       error,
+      isLoading,
     };
   },
 };
