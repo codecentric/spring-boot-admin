@@ -70,7 +70,8 @@ export default {
       parent: 'instances',
       path: 'dependencies',
       label: 'instances.dependencies.label',
-      group: VIEW_GROUP.INSIGHTS,
+      group: VIEW_GROUP.DEPENDENCIES,
+      order: 1,
       component: this,
       isEnabled: ({ instance }) => instance.hasEndpoint('sbom'),
     });

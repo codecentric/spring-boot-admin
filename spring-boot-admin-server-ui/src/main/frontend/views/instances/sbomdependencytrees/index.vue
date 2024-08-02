@@ -96,9 +96,9 @@ export default {
       parent: 'instances',
       path: 'sbom',
       label: 'instances.sbom.label',
-      group: VIEW_GROUP.INSIGHTS,
+      group: VIEW_GROUP.DEPENDENCIES,
       component: this,
-      order: 120,
+      order: 2,
       isEnabled: ({ instance }) => instance.hasEndpoint('sbom'),
     });
   },
