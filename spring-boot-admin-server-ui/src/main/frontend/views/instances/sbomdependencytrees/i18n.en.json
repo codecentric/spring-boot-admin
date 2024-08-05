@@ -1,0 +1,7 @@
+{
+  "instances": {
+    "sbom": {
+      "label": "Dependency trees"
+    }
+  }
+}

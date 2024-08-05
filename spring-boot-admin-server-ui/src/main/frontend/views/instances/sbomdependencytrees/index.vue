@@ -1,3 +1,19 @@
+<!--
+  - Copyright 2014-2024 the original author or authors.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
   <sba-instance-section :error="error" :loading="!hasLoaded">
     <template #before>
@@ -14,27 +30,35 @@
         </sba-input>
       </sba-sticky-subnav>
     </template>
-    <template v-for="sbomId in sboms" :key="sbomId">
-      <sbom-list :instance="instance" :sbom-id="sbomId" :filter="filter" />
-    </template>
+
+    <tree-graph
+      v-for="sbomId in sboms"
+      :key="sbomId"
+      :instance="instance"
+      :sbom-id="sbomId"
+      :filter="filter"
+    ></tree-graph>
   </sba-instance-section>
 </template>
+
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+import SbaInput from '@/components/sba-input';
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 
 import Instance from '@/services/instance';
 import { VIEW_GROUP } from '@/views/ViewGroup';
-import SbomList from '@/views/instances/dependencies/SbomList.vue';
-import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
+import TreeGraph from '@/views/instances/sbomdependencytrees/tree.vue';
+import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
   components: {
+    TreeGraph,
     FontAwesomeIcon,
     SbaStickySubnav,
-    SbomList,
     SbaInstanceSection,
+    SbaInput,
   },
   props: {
     instance: {
@@ -45,14 +69,16 @@ export default {
   data: () => ({
     hasLoaded: false,
     error: null,
+    contexts: [],
     sboms: [],
     filter: '',
   }),
+  computed: {},
   created() {
-    this.fetchSbomIds();
+    this.fetchSboms();
   },
   methods: {
-    async fetchSbomIds() {
+    async fetchSboms() {
       this.error = null;
       try {
         const res = await this.instance.fetchSbomIds();
@@ -66,13 +92,13 @@ export default {
   },
   install({ viewRegistry }) {
     viewRegistry.addView({
-      name: 'instances/dependencies',
+      name: 'instances/sbom',
       parent: 'instances',
-      path: 'dependencies',
-      label: 'instances.dependencies.label',
+      path: 'sbom',
+      label: 'instances.sbom.label',
       group: VIEW_GROUP.DEPENDENCIES,
-      order: 1,
       component: this,
+      order: 2,
       isEnabled: ({ instance }) => instance.hasEndpoint('sbom'),
     });
   },
