@@ -19,6 +19,11 @@ package de.codecentric.boot.admin.server.services;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 
 /**
+ * Interface that is applied to InstanceRegistry and returns Instances
+ * matching the filter, only. Default implementation is to return all instances.
+ *
+ * @see de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration#instanceFilter()
+ *
  * @author dzahbarov
  */
 @FunctionalInterface
