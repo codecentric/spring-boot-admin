@@ -16,6 +16,12 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 public class InstanceFilterDefault implements InstanceFilter {
 
+	@Override
+	public boolean filter(Instance instance) {
+		return true;
+	}
 }
