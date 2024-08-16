@@ -24,4 +24,5 @@ public class InstanceFilterDefault implements InstanceFilter {
 	public boolean filter(Instance instance) {
 		return true;
 	}
+
 }

@@ -23,5 +23,7 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
  */
 @FunctionalInterface
 public interface InstanceFilter {
+
 	boolean filter(Instance instance);
+
 }
