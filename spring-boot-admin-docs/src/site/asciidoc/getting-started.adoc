@@ -32,8 +32,7 @@ Since Spring Boot Admin relies on Spring Boot, you have to set up a Spring Boot 
 +
 [source,java]
 ----
-@Configuration
-@EnableAutoConfiguration
+@SpringBootApplication
 @EnableAdminServer
 public class SpringBootAdminApplication {
     public static void main(String[] args) {

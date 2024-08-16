@@ -25,43 +25,70 @@
       <div v-if="current" class="flex w-full">
         <div v-if="current.metaspace" class="flex-1 text-center">
           <p
+            id="metrics.metaspace"
             class="font-bold"
             v-text="$t('instances.details.memory.metaspace')"
           />
-          <p v-text="prettyBytes(current.metaspace)" />
+          <p
+            aria-labelledby="metrics.metaspace"
+            v-text="prettyBytes(current.metaspace)"
+          />
         </div>
         <div class="flex-1 text-center">
-          <p class="font-bold" v-text="$t('instances.details.memory.used')" />
-          <p v-text="prettyBytes(current.used)" />
+          <p
+            id="metrics.memory.used"
+            class="font-bold"
+            v-text="$t('instances.details.memory.used')"
+          />
+          <p
+            aria-labelledby="metrics.memory.used"
+            v-text="prettyBytes(current.used)"
+          />
         </div>
         <div class="flex-1 text-center">
-          <p class="font-bold" v-text="$t('instances.details.memory.size')" />
-          <p v-text="prettyBytes(current.committed)" />
+          <p
+            id="metrics.memory.size"
+            class="font-bold"
+            v-text="$t('instances.details.memory.size')"
+          />
+          <p
+            aria-labelledby="metrics.memory.size"
+            v-text="prettyBytes(current.committed)"
+          />
         </div>
         <div v-if="current.max >= 0" class="flex-1 text-center">
-          <p class="font-bold" v-text="$t('instances.details.memory.max')" />
-          <p v-text="prettyBytes(current.max)" />
+          <p
+            id="metrics.memory.max"
+            class="font-bold"
+            v-text="$t('instances.details.memory.max')"
+          />
+          <p
+            aria-labelledby="metrics.memory.max"
+            v-text="prettyBytes(current.max)"
+          />
         </div>
       </div>
 
-      <mem-chart v-if="chartData.length > 0" :data="chartData" />
+      <MemChart v-if="chartData.length > 0" :data="chartData" />
     </div>
   </sba-panel>
 </template>
 
-<script>
+<script lang="ts">
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
 import { concatMap, delay, retryWhen, timer } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { defineComponent } from 'vue';
 
 import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
-import memChart from '@/views/instances/details/mem-chart';
+import MemChart from '@/views/instances/details/mem-chart.vue';
 
-export default {
+export default defineComponent({
   name: 'DetailsMemory',
-  components: { memChart },
+  components: { MemChart },
   mixins: [subscribing],
   props: {
     instance: {
@@ -124,7 +151,7 @@ export default {
       };
     },
     createSubscription() {
-      return timer(0, 1000)
+      return timer(0, sbaConfig.uiSettings.pollTimer.memory)
         .pipe(
           concatMap(this.fetchMetrics),
           retryWhen((err) => {
@@ -145,7 +172,7 @@ export default {
         });
     },
   },
-};
+});
 </script>
 
 <style lang="css">

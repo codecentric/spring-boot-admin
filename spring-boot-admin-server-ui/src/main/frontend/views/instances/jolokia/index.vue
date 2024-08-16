@@ -228,8 +228,8 @@ export default {
             ? mBean.attr
               ? 'attributes'
               : mBean.op
-              ? 'operations'
-              : null
+                ? 'operations'
+                : null
             : null),
       };
       this.$router.replace({

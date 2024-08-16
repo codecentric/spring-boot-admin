@@ -28,9 +28,9 @@ export default {
       }
     },
     unsubscribe() {
-      if (this.subscription) {
+      if (this.subscription && !this.subscription.closed) {
         try {
-          !this.subscription.closed && this.subscription.unsubscribe();
+          this.subscription.unsubscribe();
         } finally {
           this.subscription = null;
         }

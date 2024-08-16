@@ -280,6 +280,10 @@ class Instance {
     return this.axios.get(uri`actuator/beans`);
   }
 
+  async fetchConditions() {
+    return this.axios.get(uri`actuator/conditions`);
+  }
+
   async fetchThreaddump() {
     return this.axios.get(uri`actuator/threaddump`);
   }
@@ -417,6 +421,18 @@ class Instance {
     });
   }
 
+  async fetchSbomIds() {
+    return this.axios.get(uri`actuator/sbom`, {
+      headers: { Accept: 'application/json' },
+    });
+  }
+
+  async fetchSbom(id) {
+    return this.axios.get(uri`actuator/sbom/${id}`, {
+      headers: { Accept: '*/*' },
+    });
+  }
+
   shutdown() {
     return this.axios.post(uri`actuator/shutdown`);
   }
@@ -438,6 +454,17 @@ export type Registration = {
 };
 
 type StatusInfo = {
-  status: string;
+  status:
+    | 'UNKNOWN'
+    | 'OUT_OF_SERVICE'
+    | 'UP'
+    | 'DOWN'
+    | 'OFFLINE'
+    | 'RESTRICTED'
+    | string;
   details: { [key: string]: string };
 };
+
+export const DOWN_STATES = ['OUT_OF_SERVICE', 'DOWN', 'OFFLINE', 'RESTRICTED'];
+export const UP_STATES = ['UP'];
+export const UNKNOWN_STATES = ['UNKNOWN'];

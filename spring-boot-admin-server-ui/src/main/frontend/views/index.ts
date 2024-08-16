@@ -19,8 +19,9 @@ const isStorybook = Object.prototype.hasOwnProperty.call(window, 'STORIES');
 const views = [];
 
 if (!isStorybook) {
-  const context: Record<string, any> = import.meta.globEager(
+  const context: Record<string, any> = import.meta.glob(
     './**/index.(js|vue|ts)',
+    { eager: true },
   );
   Object.keys(context)
     .filter((key) => {

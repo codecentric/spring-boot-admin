@@ -153,7 +153,7 @@ export default {
         try {
           const o = JSON.parse(this.result);
           return JSON.stringify(o, undefined, 4);
-        } catch (e) {
+        } catch {
           return this.result;
         }
       } else if (typeof result === 'object') {

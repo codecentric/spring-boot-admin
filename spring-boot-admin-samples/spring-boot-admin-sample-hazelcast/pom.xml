@@ -72,7 +72,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>de.codecentric.boot.admin.SpringBootAdminHazelcastApplication</mainClass>
+                    <mainClass>de.codecentric.boot.admin.sample.SpringBootAdminHazelcastApplication</mainClass>
                     <addResources>false</addResources>
                 </configuration>
             </plugin>

@@ -22,6 +22,7 @@
       class="!rounded-r-none relative focus:z-10"
       :instance-count="instanceCount"
       :show-info="showInfo"
+      @update:model-value="emitScopeChanged"
     />
     <sba-confirm-button
       class="inline-flex focus:z-10"
@@ -98,6 +99,7 @@ export default {
       default: true,
     },
   },
+  emits: ['scopeChanged'],
   data() {
     return {
       status: null,
@@ -120,6 +122,9 @@ export default {
           finalize(() => this.resetRefreshState()),
         )
         .subscribe();
+    },
+    emitScopeChanged(scope) {
+      this.$emit('scopeChanged', scope);
     },
   },
 };

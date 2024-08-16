@@ -17,7 +17,8 @@
 package de.codecentric.boot.admin.server.config;
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
-
+import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -58,6 +59,7 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 @EnableConfigurationProperties(AdminServerProperties.class)
 @ImportAutoConfiguration({ AdminServerInstanceWebClientConfiguration.class, AdminServerWebConfiguration.class })
 @AutoConfigureAfter({ WebClientAutoConfiguration.class })
+@Slf4j
 @Lazy(false)
 public class AdminServerAutoConfiguration {
 
@@ -103,10 +105,19 @@ public class AdminServerAutoConfiguration {
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
-		StatusUpdateTrigger trigger = new StatusUpdateTrigger(statusUpdater, events);
-		trigger.setInterval(this.adminServerProperties.getMonitor().getStatusInterval());
-		trigger.setLifetime(this.adminServerProperties.getMonitor().getStatusLifetime());
-		return trigger;
+		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
+
+		Duration defaultTimeout = monitorProperties.getDefaultTimeout();
+		Duration statusInterval = monitorProperties.getStatusInterval();
+
+		if (defaultTimeout.compareTo(statusInterval) > 0) {
+			log.warn(
+					"Default timeout ({}) is larger than status interval ({}), hence status interval will be used as timeout.",
+					defaultTimeout, statusInterval);
+		}
+
+		return new StatusUpdateTrigger(statusUpdater, events, monitorProperties.getStatusInterval(),
+				monitorProperties.getStatusLifetime(), monitorProperties.getStatusMaxBackoff());
 	}
 
 	@Bean
@@ -137,10 +148,9 @@ public class AdminServerAutoConfiguration {
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> events) {
-		InfoUpdateTrigger trigger = new InfoUpdateTrigger(infoUpdater, events);
-		trigger.setInterval(this.adminServerProperties.getMonitor().getInfoInterval());
-		trigger.setLifetime(this.adminServerProperties.getMonitor().getInfoLifetime());
-		return trigger;
+		return new InfoUpdateTrigger(infoUpdater, events, this.adminServerProperties.getMonitor().getInfoInterval(),
+				this.adminServerProperties.getMonitor().getInfoLifetime(),
+				this.adminServerProperties.getMonitor().getInfoMaxBackoff());
 	}
 
 	@Bean

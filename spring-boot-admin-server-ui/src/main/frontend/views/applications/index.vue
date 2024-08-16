@@ -116,6 +116,10 @@
                 />
               </template>
 
+              <template v-if="singleVersionInGroup(group)" #version>
+                <span v-text="group.instances[0].buildVersion" />
+              </template>
+
               <template v-if="isGroupedByApplication" #actions>
                 <ApplicationListItemAction
                   :has-notification-filters-support="
@@ -173,7 +177,7 @@ import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { groupBy, sortBy, transform } from 'lodash-es';
 import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 import SbaWave from '@/components/sba-wave.vue';
@@ -234,6 +238,7 @@ const groupingFunctions = {
 
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();
 const { applications, applicationsInitialized, applicationStore } =
   useApplicationStore();
 const notificationCenter = useNotificationCenter({});
@@ -312,8 +317,13 @@ const grouped = computed(() => {
     [],
   );
 
-  return sortBy(list, [(item) => item.status]);
+  return sortBy(list, [(item) => getApplicationStatus(item)]);
 });
+
+function getApplicationStatus(item: InstancesListType): string {
+  return applicationStore.findApplicationByInstanceId(item.instances[0].id)
+    ?.status;
+}
 
 function filterInstances(applications: Application[]) {
   if (!routerState.q) {
@@ -332,6 +342,15 @@ function filterInstances(applications: Application[]) {
 const isGroupedByApplication = computed(() => {
   return groupingFunction.value === groupingFunctions.application;
 });
+
+const singleVersionInGroup = (group) => {
+  return (
+    group.length === 1 ||
+    group.instances.filter(
+      (instance) => group.instances[0].buildVersion !== instance.buildVersion,
+    ).length === 0
+  );
+};
 
 if (props.selected) {
   scrollIntoView(props.selected);
@@ -372,9 +391,10 @@ function toggleGroup(name: string) {
 }
 
 function select(name: string) {
-  router.replace({
+  router.push({
     name: 'applications',
     params: { selected: name },
+    query: { ...route.query },
   });
 }
 
@@ -384,7 +404,7 @@ function deselect(event: Event, expectedSelected: string) {
   }
   toggleNotificationFilterSettings(null);
   if (!expectedSelected || props.selected === expectedSelected) {
-    router.replace({ name: 'applications' });
+    router.push({ name: 'applications' });
   }
 }
 

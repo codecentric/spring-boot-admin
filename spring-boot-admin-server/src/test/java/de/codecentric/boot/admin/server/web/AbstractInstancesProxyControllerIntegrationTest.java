@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.http.Fault;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -70,6 +71,8 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 
 	private String instanceId;
 
+	private ConfigurableApplicationContext context;
+
 	@BeforeAll
 	public static void setUp() {
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(600));
@@ -91,13 +94,17 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	}
 
 	protected void setUpClient(ConfigurableApplicationContext context) {
-		int localPort = context.getEnvironment().getProperty("local.server.port", Integer.class, 0);
-		this.client = WebTestClient.bindToServer()
-			.baseUrl("http://localhost:" + localPort)
-			.responseTimeout(Duration.ofSeconds(10))
-			.build();
-
+		this.context = context;
+		this.client = createWebTestClientBuilder().build();
 		this.instanceId = registerInstance("/instance1");
+	}
+
+	@NotNull
+	private WebTestClient.Builder createWebTestClientBuilder() {
+		int localPort = this.context.getEnvironment().getProperty("local.server.port", Integer.class, 0);
+		return WebTestClient.bindToServer()
+			.baseUrl("http://localhost:" + localPort)
+			.responseTimeout(Duration.ofSeconds(10));
 	}
 
 	@Test
@@ -199,7 +206,9 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	}
 
 	@Test
-	public void should_forward_requests_to_mutliple_instances() {
+	public void should_forward_requests_to_multiple_instances() {
+		this.client = createWebTestClientBuilder().responseTimeout(Duration.ofSeconds(30)).build();
+
 		String instance2Id = registerInstance("/instance2");
 
 		this.client.get()
