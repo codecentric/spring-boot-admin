@@ -16,8 +16,8 @@
 
 package de.codecentric.boot.admin.server.config;
 
-import de.codecentric.boot.admin.server.services.InstanceFilter;
 import java.time.Duration;
+
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -44,6 +44,8 @@ import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdater;
+import de.codecentric.boot.admin.server.services.InstanceFilter;
+import de.codecentric.boot.admin.server.services.InstanceFilterDefault;
 import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.services.StatusUpdateTrigger;
@@ -72,7 +74,7 @@ public class AdminServerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public InstanceFilter instanceFilter() {
-		return new InstanceFilter();
+		return new InstanceFilterDefault();
 	}
 
 	@Bean

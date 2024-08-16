@@ -16,15 +16,6 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-
-/**
- * @author dzahbarov
- */
-public interface InstanceFilter {
-
-	default boolean filter(Instance instance) {
-		return true;
-	}
+public class InstanceFilterDefault implements InstanceFilter {
 
 }

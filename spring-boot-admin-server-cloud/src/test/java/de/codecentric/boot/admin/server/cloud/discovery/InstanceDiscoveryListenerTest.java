@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import de.codecentric.boot.admin.server.services.InstanceFilter;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -39,6 +37,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
+import de.codecentric.boot.admin.server.services.InstanceFilterDefault;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
 import static java.util.Arrays.asList;
@@ -64,7 +63,8 @@ public class InstanceDiscoveryListenerTest {
 	public void setup() {
 		this.discovery = mock(DiscoveryClient.class);
 		InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
-		this.registry = spy(new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator(), new InstanceFilter()));
+		this.registry = spy(
+				new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator(), new InstanceFilterDefault()));
 		this.listener = new InstanceDiscoveryListener(this.discovery, this.registry, repository);
 	}
 
