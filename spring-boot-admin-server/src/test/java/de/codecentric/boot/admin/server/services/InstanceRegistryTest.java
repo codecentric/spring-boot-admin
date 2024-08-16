@@ -48,7 +48,10 @@ public class InstanceRegistryTest {
 	public void setUp() {
 		repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
 		idGenerator = new HashingInstanceUrlIdGenerator();
-		registry = new InstanceRegistry(repository, idGenerator, new TestInstanceFilter());
+		registry = new InstanceRegistry(repository, idGenerator, (instance) -> {
+			Map<String, String> metadata = instance.getRegistration().getMetadata();
+			return !metadata.containsKey("displayed") || !metadata.get("displayed").equals("false");
+		});
 	}
 
 	@Test
@@ -132,16 +135,6 @@ public class InstanceRegistryTest {
 			.consumeRecordedWith(
 					(applications) -> assertThat(applications.stream().map(Instance::getId)).containsExactly(id1))
 			.verifyComplete();
-	}
-
-	private static final class TestInstanceFilter implements InstanceFilter {
-
-		@Override
-		public boolean filter(Instance instance) {
-			Map<String, String> metadata = instance.getRegistration().getMetadata();
-			return !metadata.containsKey("displayed") || !metadata.get("displayed").equals("false");
-		}
-
 	}
 
 }

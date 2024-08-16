@@ -37,7 +37,6 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
-import de.codecentric.boot.admin.server.services.InstanceFilterDefault;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
 import static java.util.Arrays.asList;
@@ -63,8 +62,7 @@ public class InstanceDiscoveryListenerTest {
 	public void setup() {
 		this.discovery = mock(DiscoveryClient.class);
 		InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
-		this.registry = spy(
-				new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator(), new InstanceFilterDefault()));
+		this.registry = spy(new InstanceRegistry(repository, new HashingInstanceUrlIdGenerator(), instance -> true));
 		this.listener = new InstanceDiscoveryListener(this.discovery, this.registry, repository);
 	}
 
