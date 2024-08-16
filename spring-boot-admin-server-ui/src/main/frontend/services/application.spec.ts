@@ -54,13 +54,15 @@ describe('convertBody', () => {
 
   it('should not convert non-json body', () => {
     expect(
-      convertBody([{ body: 'foobar', contentType: 'text/plain' }])
+      convertBody([{ body: 'foobar', contentType: 'text/plain' }]),
     ).toEqual([{ body: 'foobar', contentType: 'text/plain' }]);
   });
 
   it('should convert json body', () => {
     expect(
-      convertBody([{ body: '{"foo": "bar"}', contentType: 'application/json' }])
+      convertBody([
+        { body: '{"foo": "bar"}', contentType: 'application/json' },
+      ]),
     ).toEqual([{ body: { foo: 'bar' }, contentType: 'application/json' }]);
   });
 });

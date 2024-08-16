@@ -20,7 +20,7 @@ import { Observable, concat, from, ignoreElements } from 'rxjs';
 import axios, { redirectOn401 } from '../utils/axios';
 import waitForPolyfill from '../utils/eventsource-polyfill';
 import uri from '../utils/uri';
-import Instance from './instance';
+import Instance, { DOWN_STATES, UNKNOWN_STATES, UP_STATES } from './instance';
 
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
@@ -46,10 +46,40 @@ export const convertBody = (responses) =>
     return res;
   });
 
+export const getStatusInfo = (applications: Application[]) => {
+  const instances = applications.flatMap(
+    (application) => application.instances,
+  );
+
+  const upCount = instances.filter((instance) =>
+    UP_STATES.includes(instance.statusInfo.status),
+  ).length;
+
+  const downCount = instances.filter((instance) =>
+    DOWN_STATES.includes(instance.statusInfo.status),
+  ).length;
+
+  const unknownCount = instances.filter((instance) =>
+    UNKNOWN_STATES.includes(instance.statusInfo.status),
+  ).length;
+
+  return {
+    upCount,
+    downCount,
+    unknownCount,
+    allUp: upCount === instances.length,
+    allDown: downCount === instances.length,
+    allUnknown: unknownCount === instances.length,
+    someUnknown: unknownCount > 0 && unknownCount < instances.length,
+    someDown: downCount > 0 && downCount < instances.length,
+  };
+};
+
 class Application {
   public readonly name: string;
+  public readonly group: string;
   public readonly instances: Instance[];
-  public readonly buildVersion? = {} as {value: string};
+  public readonly buildVersion? = {} as { value: string };
   public readonly status: string;
   public readonly statusTimestamp: string;
 
@@ -66,13 +96,13 @@ class Application {
     });
     this.axios.interceptors.response.use(
       (response) => response,
-      redirectOn401()
+      redirectOn401(),
     );
     this.instances = sortBy(
       instances.map(
         (i) => new Instance(i),
-        [(instance) => instance.registration.healthUrl]
-      )
+        [(instance) => instance.registration.healthUrl],
+      ),
     );
   }
 
@@ -108,7 +138,7 @@ class Application {
 
         eventSource.onerror = (err) => observer.error(err);
         return () => eventSource.close();
-      })
+      }),
     );
   }
 
@@ -151,7 +181,7 @@ class Application {
         await this.axios.get(uri`actuator/loggers`, {
           headers: { Accept: actuatorMimeTypes.join(',') },
         })
-      ).data
+      ).data,
     );
     return { responses };
   }
@@ -161,7 +191,7 @@ class Application {
       await this.axios.post(
         uri`actuator/loggers/${name}`,
         level === null ? {} : { configuredLevel: level },
-        { headers: { 'Content-Type': 'application/json' } }
+        { headers: { 'Content-Type': 'application/json' } },
       )
     ).data;
     return { responses };
@@ -173,7 +203,7 @@ class Application {
       { name, value },
       {
         headers: { 'Content-Type': 'application/json' },
-      }
+      },
     );
   }
 
@@ -187,6 +217,12 @@ class Application {
 
   async clearCaches() {
     return this.axios.delete(uri`actuator/caches`);
+  }
+
+  async clearCache(name, cacheManager) {
+    return this.axios.delete(uri`actuator/caches/${name}`, {
+      params: { cacheManager: cacheManager },
+    });
   }
 
   shutdown() {

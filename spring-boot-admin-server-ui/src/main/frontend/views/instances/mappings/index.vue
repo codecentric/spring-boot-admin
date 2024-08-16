@@ -104,7 +104,7 @@ export default {
         const res = await this.instance.fetchMappings();
         if (
           res.headers['content-type'].includes(
-            'application/vnd.spring-boot.actuator.v2'
+            'application/vnd.spring-boot.actuator.v2',
           )
         ) {
           this.contexts = res.data.contexts;

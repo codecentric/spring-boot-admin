@@ -22,8 +22,8 @@ describe('shortenClassname', () => {
     expect(
       shortenClassname(
         'de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration',
-        40
-      )
+        40,
+      ),
     ).toBe('d.c.b.a.s.config.AdminServerAutoConfiguration');
   });
 
@@ -31,16 +31,16 @@ describe('shortenClassname', () => {
     expect(
       shortenClassname(
         'de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration',
-        300
-      )
+        300,
+      ),
     ).toBe(
-      'de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration'
+      'de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration',
     );
   });
 
   it('should not shorten when no package is present', () => {
     expect(shortenClassname('AdminServerAutoConfiguration', 1)).toBe(
-      'AdminServerAutoConfiguration'
+      'AdminServerAutoConfiguration',
     );
   });
 });

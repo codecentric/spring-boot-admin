@@ -33,5 +33,7 @@ spring:
     admin:
       client:
         url: http://localhost:8080
-        instance:
-          service-base-url: http://localhost:8080
+      ui:
+        external-views:
+          - label: 'Is it Christmas yet?'
+            url: https://isitchristmas.com/

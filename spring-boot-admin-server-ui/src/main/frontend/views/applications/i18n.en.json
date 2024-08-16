@@ -8,6 +8,10 @@
       "restart": "Restart"
     },
     "all_up": "all up",
+    "all_down": "all down",
+    "all_unknown": "all in unknown state",
+    "some_unknown": "some instances are in unknown state",
+    "some_down": "some instances are down",
     "applications": "Applications",
     "fetching_notification_filters_failed": "Fetching notification filters failed.",
     "notification_filter": {
@@ -15,7 +19,6 @@
       "removed": "Notification filter removed."
     },
     "instances": "Instances",
-    "instances_down": "Some instances are down",
     "loading_applications": "Loading applications...",
     "no_applications_registered": "No applications registered.",
     "notifications_suppressed_for": "Notifications on <code>{name}</code> are suppressed for",

@@ -22,6 +22,10 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | Time interval to check the status of instances.
 | 10,000ms
 
+| spring.boot.admin.monitor.status-max-backoff
+| The maximal backoff for status check retries (retry after error has exponential backoff, minimum backoff is 1 second).
+| 60,000ms
+
 | spring.boot.admin.monitor.status-lifetime
 | Lifetime of status. The status won't be updated as long the last status isn't expired.
 | 10,000ms
@@ -30,12 +34,16 @@ In addition when the reverse proxy terminates the https connection, it may be ne
 | Time interval to check the info of instances.
 | 1m
 
+| spring.boot.admin.monitor.info-max-backoff
+| The maximal backoff for info check retries (retry after error has exponential backoff, minimum backoff is 1 second).
+| 10m
+
 | spring.boot.admin.monitor.info-lifetime
 | Lifetime of info. The info won't be updated as long the last info isn't expired.
 | 1m
 
 | spring.boot.admin.monitor.default-timeout
-| Default timeout when making requests. Individual values for specific endpoints can be overridden using `spring.boot.admin.monitor.timeout.*`.
+| Default timeout when making requests. Individual values for specific endpoints can be overridden using `spring.boot.admin.monitor.timeout.*`. However, for interval based tasks like `statusUpdate` (i.e. HealthCheck) there are some limitations: the `default-timeout` cannot be longer than the interval. If so, the specified value of the interval is used as timeout.
 | 10,000
 
 | spring.boot.admin.monitor.timeout.*

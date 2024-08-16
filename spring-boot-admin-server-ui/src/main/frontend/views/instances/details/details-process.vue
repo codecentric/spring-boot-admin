@@ -133,7 +133,7 @@ export default {
           concatMap(this.fetchCpuLoadMetrics),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
-          })
+          }),
         )
         .subscribe({
           next: (data) => {

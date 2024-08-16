@@ -6,22 +6,26 @@ In order to show basic functionalities, the server itself is registered as a cli
 
 ## Build project
 
-Make sure to use a GraalVM with a v17-BaseJDK to build the project (e.g. 22.3.1.r17-grl).
-
+Make sure to use a GraalVM with a v17-BaseJDK to build the project (e.g. GraalVM Oracle 17.0.8).
+If you're using sdkman:
+```bash
+sdk install java 17.0.8-graal
 ```
-$ mvn -Pnative native:compile
+Build the application with the `native` profile:
+```bash
+mvn -Pnative native:compile
 ```
 The native application will now be build in the target folder.
-```
-$ cd target
-$ ./spring-boot-admin-sample-servlet-graalvm
+```bash
+cd target
+./spring-boot-admin-sample-servlet-graalvm
 ```
 You should now be able to access Spring Boot Admin locally under http://localhost:8080/
 
 ## Build an OCI image that can be run with Docker
 
-```
-$ mvn spring-boot:build-image -Pnative -Dspring-boot.build-image.imageName=spring-boot-admin-sample-servlet-graalvm:latest
+```bash
+mvn spring-boot:build-image -Pnative -Dspring-boot.build-image.imageName=spring-boot-admin-sample-servlet-graalvm:latest
 ```
 Depending on your OS, you might want to change the builder in your `pom.xml`.
 
@@ -31,8 +35,8 @@ In most other cases `<builder>paketobuildpacks/builder:tiny</builder>` should do
 
 ## Running the example
 
-```
-$ docker run --rm -p 8080:8080 docker.io/library/spring-boot-admin-sample-servlet-graalvm:latest
+```bash
+docker run --rm -p 8080:8080 docker.io/library/spring-boot-admin-sample-servlet-graalvm:latest
 ```
 You should now be able to access Spring Boot Admin locally under http://localhost:8080/
 

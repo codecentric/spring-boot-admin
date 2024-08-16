@@ -88,7 +88,7 @@ export default {
                 entry.changedProperties
                   .map((property) => '<li>' + property + '</li>')
                   .join('') +
-                '</ul>'
+                '</ul>',
             )
             .join('') +
           '</ul>'
@@ -115,7 +115,7 @@ export default {
           changedProperties: JSON.parse(entry.body),
         }));
         this.isModalOpen = this.refreshedProperties.some(
-          (props) => props.changedProperties.length > 0
+          (props) => props.changedProperties.length > 0,
         );
       });
     },

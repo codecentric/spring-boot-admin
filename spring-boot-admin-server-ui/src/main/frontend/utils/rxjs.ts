@@ -53,18 +53,18 @@ export const listen =
     let handle = null;
     return source.pipe(
       doOnSubscribe(
-        () => (handle = setTimeout(() => cb('executing'), execDelay))
+        () => (handle = setTimeout(() => cb('executing'), execDelay)),
       ),
       tap({
         complete: () => {
-          handle && clearTimeout(handle);
+          clearTimeout(handle);
           cb('completed');
         },
         error: (error) => {
           console.warn('Operation failed:', error);
-          handle && clearTimeout(handle);
+          clearTimeout(handle);
           cb('failed');
         },
-      })
+      }),
     );
   };

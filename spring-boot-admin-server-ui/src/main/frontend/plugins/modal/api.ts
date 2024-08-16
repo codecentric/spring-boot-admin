@@ -32,7 +32,7 @@ export const useModal = (globalProps = {}) => {
           {
             innerHTML: body,
           },
-          []
+          [],
         );
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -45,7 +45,7 @@ export const useModal = (globalProps = {}) => {
               labelCancel: t('term.cancel'),
             }),
           body: bodyFn,
-        }
+        },
       );
 
       return new Promise((resolve) => {

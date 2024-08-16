@@ -33,6 +33,10 @@
     "fetch_failed": "Fetching of data failed.",
     "float": "Float",
     "filter": "Filter",
+    "group_by": {
+      "group": "Group by group",
+      "application": "Group by application"
+    },
     "hours": "{count} hour | {count} hours",
     "instance": "Instance",
     "instances": "Instances",
@@ -61,11 +65,11 @@
   "health": {
     "label": "Health status",
     "status": {
-      "DOWN":  "down",
+      "DOWN": "down",
       "UP": "up",
-      "RESTRICTED":  "restricted",
+      "RESTRICTED": "restricted",
       "UNKNOWN": "unknown",
-      "OUT_OF_SERVICE":  "out of service",
+      "OUT_OF_SERVICE": "out of service",
       "OFFLINE": "offline"
     }
   }

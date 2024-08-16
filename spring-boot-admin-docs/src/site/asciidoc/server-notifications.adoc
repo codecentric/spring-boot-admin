@@ -196,7 +196,7 @@ To enable https://www.hipchat.com/[Hipchat] notifications you need to create an 
 
 [[slack-notifications]]
 === Slack Notifications ===
-To enable https://slack.com/[Slack] notifications you need to add a incoming Webhook under custom integrations on your Slack
+To enable https://slack.com/[Slack] notifications you need to add an incoming Webhook under custom integrations on your Slack
 account and configure it appropriately.
 
 .Slack notifications configuration options
@@ -216,15 +216,15 @@ account and configure it appropriately.
 |
 
 | spring.boot.admin.notify.slack.channel
-| Optional channel name (without # at the beginning). If different than channel in Slack Webhooks settings
+| Optional channel name (without # at the beginning). If different from channel in Slack Webhooks settings
 |
 
 | spring.boot.admin.notify.slack.icon
-| Optional icon name (without surrounding colons). If different than icon in Slack Webhooks settings
+| Optional icon name (without surrounding colons). If different from icon in Slack Webhooks settings
 |
 
 | spring.boot.admin.notify.slack.username
-| Optional username to send notification if different than in Slack Webhooks settings
+| Optional username to send notification if different from in Slack Webhooks settings
 | `Spring Boot Admin`
 
 | spring.boot.admin.notify.slack.message
@@ -275,7 +275,7 @@ To enable https://sdelements.github.io/lets-chat/[Let's Chat] notifications you 
 
 [[ms-teams-notifications]]
 === Microsoft Teams Notifications ===
-To enable Microsoft Teams notifications you need to setup a connector webhook url and set the appropriate configuration property.
+To enable Microsoft Teams notifications you need to set up a connector webhook url and set the appropriate configuration property.
 
 .Microsoft Teams notifications configuration options
 |===
@@ -348,7 +348,7 @@ To enable https://telegram.org/[Telegram] notifications you need to create and a
 | `false`
 
 | spring.boot.admin.notify.telegram.parse_mode
-| The parsing mode for the sent message. Currently ``HTML'` and `'Markdown'` are supported.
+| The parsing mode for the sent message. Currently, ``HTML'` and `'Markdown'` are supported.
 | `'HTML'`
 
 | spring.boot.admin.notify.telegram.message
@@ -356,6 +356,34 @@ To enable https://telegram.org/[Telegram] notifications you need to create and a
 | `+++"&lt;strong&gt;#{instance.registration.name}&lt;/strong&gt;/#{instance.id} is &lt;strong&gt;#{event.statusInfo.status}&lt;/strong&gt;"+++`
 |===
 
+[[webex-notifications]]
+=== Webex Notifications ===
+To enable https://www.webex.com/[Webex] notifications, you need to set the appropriate configuration properties for `auth-token` and `room-id`.
+
+.Webex notifications configuration options
+|===
+| Property name |Description |Default value
+
+| spring.boot.admin.notify.webex.enabled
+| Enable Webex notifications
+| `true`
+
+| spring.boot.admin.notify.webex.url
+| The Webex server url to send the notifications to.
+| "https://webexapis.com/v1/messages"
+
+| spring.boot.admin.notify.webex.auth-token
+| The authentication token for your Webex account (e.g. `123456-ascbhuwbtzzk-abtabhixta-788654`).
+|
+
+| spring.boot.admin.notify.webex.room-id
+| Unique identifier for the target room in Webex.
+|
+
+| spring.boot.admin.notify.webex.message
+| Text to send. SpEL-expressions are supported. By default, messages will be sent as Markdown, so you can include Markdown formatting.
+| `+++"*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*"+++`
+|===
 
 [[discord-notifications]]
 === Discord Notifications ===
@@ -421,9 +449,9 @@ All Notifiers which are using a `RestTemplate` can be configured to use a proxy.
 === Notification Reminder ===
 The `RemindingNotifier` sends reminders for down/offline applications, it delegates the sending of notifications to another notifier.
 
-By default a reminder is triggered when a registered application changes to `DOWN` or `OFFLINE`. You can alter this behaviour via `setReminderStatuses()`. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.
+By default, a reminder is triggered when a registered application changes to `DOWN` or `OFFLINE`. You can alter this behaviour via `setReminderStatuses()`. The reminder ends when either the status changes to a non-triggering status or the regarding application gets deregistered.
 
-By default the reminders are sent every 10 minutes, to change this use `setReminderPeriod()`. The `RemindingNotifier` itself doesn't start the background thread to send the reminders, you need to take care of this as shown in the given example below;
+By default, the reminders are sent every 10 minutes, to change this use `setReminderPeriod()`. The `RemindingNotifier` itself doesn't start the background thread to send the reminders, you need to take care of this as shown in the given example below;
 
 .How to configure reminders
 [source,java]
@@ -452,13 +480,27 @@ public class NotifierConfiguration {
 The `FilteringNotifier` allows you to filter certain notification based on rules you can add/remove at runtime. It delegates the sending of notifications to another notifier.
 
 If you add a `FilteringNotifier` to your `ApplicationContext` a RESTful interface on `notifications/filter` gets available.
+The restful interface provides the following methods for getting, adding, and deleting notification filters:
 
-This notifier is useful if you don't want receive notifications when deploying your applications. Before stopping the application you can add an (expiring) filter either via a `POST` request.
+* `GET notifications/filter`
+** Returns a list of all registered notification filters. Each containing the attributes `id`, `applicationName`, `expiry`, and `expired`.
+
+* `POST notifications/filters?instanceId=<yourInstanceId>&applicationName=<yourApplicationName>&ttl=<yourInstant>`
+** Posts a new notification filter for the application/instance of the given `instanceId` or `applicationName`. Either `instanceId` or `applicationName` must be set. The parameter `ttl` is optional and represents the expiration of the filter as an instant (the number of seconds from the epoch of `1970-01-01T00:00:00Z`).
+
+* `DELETE notifications/filters/{id}`
+** Deletes the notification filter with the requested id from the filters.
+
+You may as well access all notification filter configurations via the main applications view inside SBA client, as seen in the screenshot below.
+
+image::images/notification-filter.png[Sample notification filters]
+
+A `FilteringNotifier` might be useful, for instance, if you don't want to receive notifications when deploying your applications. Before stopping the application, you can add an (expiring) filter via a `POST` request.
 
 .How to configure filtering
 [source,java,indent=0]
 ----
-include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/NotifierConfig.java[tags=configuration-filtering-notifier]
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/sample/NotifierConfig.java[tags=configuration-filtering-notifier]
 ----
 <1> Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
 <2> Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.

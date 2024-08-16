@@ -26,6 +26,10 @@
     "fetching_data": "Lade Daten...",
     "fetch_failed": "Abruf der Daten fehlgeschlagen.",
     "float": "Float",
+    "group_by": {
+      "group": "Nach Gruppen gruppieren",
+      "application": "Nach Applikationen gruppieren"
+    },
     "hours": "{count} Stunde | {count} Stunden",
     "instance": "Instanz",
     "instances": "Instanzen",
@@ -54,11 +58,11 @@
   "health": {
     "label": "Zustand",
     "status": {
-      "DOWN":  "down",
+      "DOWN": "down",
       "UP": "up",
-      "RESTRICTED":  "eingeschränkt",
+      "RESTRICTED": "eingeschränkt",
       "UNKNOWN": "unbekannt",
-      "OUT_OF_SERVICE":  "außer Betrieb",
+      "OUT_OF_SERVICE": "außer Betrieb",
       "OFFLINE": "offline"
     }
   }

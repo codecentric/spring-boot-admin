@@ -30,7 +30,7 @@ import Application from './services/application.js';
 
 export const findInstance = (
   applications: Application[],
-  instanceId: string
+  instanceId: string,
 ) => {
   for (const application of applications) {
     const instance = application.findInstance(instanceId);
@@ -43,10 +43,10 @@ export const findInstance = (
 
 export const findApplicationForInstance = (
   applications: Application[],
-  instanceId: string
+  instanceId: string,
 ) => {
   return applications.find((application) =>
-    Boolean(application.findInstance(instanceId))
+    Boolean(application.findInstance(instanceId)),
   );
 };
 
@@ -93,7 +93,7 @@ export default class ApplicationStore {
     }
     const list = defer(() => Application.list()).pipe(
       tap(() => this._dispatchEvent('connected')),
-      concatMap((message) => message.data)
+      concatMap((message) => message.data),
     );
 
     const stream = Application.getStream().pipe(map((message) => message.data));
@@ -103,11 +103,11 @@ export default class ApplicationStore {
         retryWhen((errors) =>
           errors.pipe(
             tap((error) => this._dispatchEvent('error', error)),
-            delay(5000)
-          )
+            delay(5000),
+          ),
         ),
         bufferTime(250),
-        filter((a) => a.length > 0)
+        filter((a) => a.length > 0),
       )
       .subscribe({
         next: (applications) => this.updateApplications(applications),
@@ -135,9 +135,9 @@ export default class ApplicationStore {
   }
 
   stop() {
-    if (this.subscription) {
+    if (this.subscription && !this.subscription.closed) {
       try {
-        !this.subscription.closed && this.subscription.unsubscribe();
+        this.subscription.unsubscribe();
       } finally {
         this.subscription = null;
       }

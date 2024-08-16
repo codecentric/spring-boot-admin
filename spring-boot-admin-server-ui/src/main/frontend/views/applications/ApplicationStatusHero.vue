@@ -2,19 +2,56 @@
   <sba-panel>
     <template v-if="applicationsCount > 0">
       <div class="flex flex-row md:flex-col items-center justify-center">
-        <template v-if="downCount === 0">
+        <template v-if="statusInfo.allUp">
           <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
           <div class="text-center">
             <h1 class="font-bold text-2xl" v-text="$t('applications.all_up')" />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
         </template>
-        <template v-else>
+        <template v-else-if="statusInfo.allDown">
+          <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
+          <div class="text-center">
+            <h1
+              class="font-bold text-2xl"
+              v-text="$t('applications.all_down')"
+            />
+            <p class="text-gray-400" v-text="lastUpdate" />
+          </div>
+        </template>
+        <template v-if="statusInfo.allUnknown">
+          <font-awesome-icon
+            icon="question-circle"
+            class="text-gray-300 icon"
+          />
+          <div class="text-center">
+            <h1
+              class="font-bold text-2xl"
+              v-text="$t('applications.all_unknown')"
+            />
+            <p class="text-gray-400" v-text="lastUpdate" />
+          </div>
+        </template>
+        <template v-else-if="someInstancesDown">
           <font-awesome-icon icon="minus-circle" class="text-red-500 icon" />
           <div class="text-center">
             <h1
               class="font-bold text-2xl"
-              v-text="$t('applications.instances_down')"
+              v-text="$t('applications.some_down')"
+            />
+            <p class="text-gray-400" v-text="lastUpdate" />
+          </div>
+        </template>
+
+        <template v-else-if="someInstancesUnknown">
+          <font-awesome-icon
+            icon="question-circle"
+            class="text-gray-300 icon"
+          />
+          <div class="text-center">
+            <h1
+              class="font-bold text-2xl"
+              v-text="$t('applications.some_unknown')"
             />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
@@ -37,7 +74,10 @@
 </template>
 
 <script>
+import { computed } from 'vue';
+
 import { useApplicationStore } from '@/composables/useApplicationStore';
+import { getStatusInfo } from '@/services/application';
 
 const options = {
   year: 'numeric',
@@ -51,7 +91,10 @@ const options = {
 export default {
   setup() {
     const { applications } = useApplicationStore();
-    return { applications };
+
+    const statusInfo = computed(() => getStatusInfo(applications.value));
+
+    return { applications, statusInfo };
   },
   data() {
     return {
@@ -60,12 +103,18 @@ export default {
     };
   },
   computed: {
-    downCount() {
+    someInstancesDown() {
+      return this.statusInfo.someDown;
+    },
+    someInstancesUnknown() {
+      return this.statusInfo.someUnknown;
+    },
+    notUpCount() {
       return this.applications.reduce((current, next) => {
         return (
           current +
           next.instances.filter(
-            (instance) => instance.statusInfo.status !== 'UP'
+            (instance) => instance.statusInfo.status !== 'UP',
           ).length
         );
       }, 0);
@@ -76,13 +125,8 @@ export default {
     instancesCount() {
       return this.applications.reduce(
         (current, next) => current + next.instances.length,
-        0
+        0,
       );
-    },
-  },
-  watch: {
-    downCount() {
-      this.updateLastUpdateTime();
     },
   },
   beforeMount() {

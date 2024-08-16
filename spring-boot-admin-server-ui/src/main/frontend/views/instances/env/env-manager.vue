@@ -152,7 +152,7 @@ export default {
         this.propertySources
           .map((ps) => (ps.properties ? Object.keys(ps.properties) : []))
           .reduce((result, names) => result.concat(names))
-          .sort()
+          .sort(),
       );
     },
     managerPropertySource() {
@@ -171,14 +171,14 @@ export default {
     hasChangedProperty() {
       return (
         this.managedProperties.findIndex(
-          (property) => property.input !== property.value
+          (property) => property.input !== property.value,
         ) >= 0
       );
     },
     hasErrorProperty() {
       return (
         this.managedProperties.findIndex(
-          (property) => property.validation !== null
+          (property) => property.validation !== null,
         ) >= 0
       );
     },
@@ -231,7 +231,7 @@ export default {
       from(this.managedProperties)
         .pipe(
           filter(
-            (property) => !!property.name && property.input !== property.value
+            (property) => !!property.name && property.input !== property.value,
           ),
           listen((status) => (this.updateStatus = status)),
           concatMap((property) => {
@@ -245,9 +245,9 @@ export default {
 
             return from(target.setEnv(property.name, property.input)).pipe(
               listen((status) => (property.status = status)),
-              listen((status) => (this.updateStatus = status))
+              listen((status) => (this.updateStatus = status)),
             );
-          })
+          }),
         )
         .subscribe({
           complete: () => {
@@ -288,7 +288,7 @@ export default {
     updateManagedProperties(manager) {
       Object.entries(manager.properties).forEach(([name, property]) => {
         const managedProperty = this.managedProperties.find(
-          (property) => property.name === name
+          (property) => property.name === name,
         );
         if (managedProperty) {
           managedProperty.value = property.value;

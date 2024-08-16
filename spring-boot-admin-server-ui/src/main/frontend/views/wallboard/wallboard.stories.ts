@@ -1,9 +1,11 @@
+import { vueRouter } from 'storybook-vue3-router';
+
 import Application from '../../services/application.js';
 import Wallboard from './index.vue';
 
 import { HealthStatus } from '@/HealthStatus';
 import { useApplicationStore } from '@/composables/useApplicationStore';
-import { applications } from '@/mocks/applications/data';
+import Instance from '@/services/instance';
 
 export default {
   component: Wallboard,
@@ -16,42 +18,34 @@ const Template = (args) => ({
     const { applicationStore } = useApplicationStore();
     applicationStore._dispatchEvent(
       'changed',
-      shuffle([...healthStatus, ...healthStatus]).map((healthStatus) => {
-        const application = new Application(applications[0]);
-        application.statusTimestamp = Date.now();
-        application.name = healthStatus;
-        application.status = healthStatus;
-        return application;
-      })
+      Object.keys(HealthStatus).map((status) => {
+        return new Application({
+          status: status,
+          statusTimestamp: '2023-05-02',
+          name: `controller${status}`,
+          group: 'group-' + Math.floor(Math.random() * 10),
+          buildVersion: '1.2.3',
+          instances: [new Instance({ id: '123' })],
+        });
+      }),
     );
     return { args };
   },
-  template: '<Wallboard v-bind="args" />',
+  template: '<Wallboard />',
 });
 
 export const Default = {
   render: Template,
-
-  args: {
-    applications: shuffle([...healthStatus, ...healthStatus]).map(
-      (healthStatus) => {
-        const application = new Application(applications[0]);
-        application.statusTimestamp = Date.now();
-        application.name = healthStatus;
-        application.status = healthStatus;
-        return application;
-      }
+  decorators: [
+    vueRouter(
+      [
+        {
+          name: 'wallboard',
+          path: '/',
+          component: Template,
+        },
+      ],
+      { initialRoute: '/' },
     ),
-    applicationsInitialized: true,
-  },
+  ],
 };
-
-const healthStatus = Object.keys(HealthStatus);
-
-function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}

@@ -226,11 +226,11 @@ export default {
     actuatorPath() {
       if (
         this.instance.registration.managementUrl.includes(
-          this.instance.registration.serviceUrl
+          this.instance.registration.serviceUrl,
         )
       ) {
         const appendix = this.instance.registration.managementUrl.substring(
-          this.instance.registration.serviceUrl.length
+          this.instance.registration.serviceUrl.length,
         );
         if (appendix.length > 0) {
           return appendix.startsWith('/') ? appendix : `/${appendix}`;
@@ -248,7 +248,7 @@ export default {
     },
     listedExchanges() {
       const exchanges = this.filterExchanges(
-        this.exchanges.slice(this.listOffset)
+        this.exchanges.slice(this.listOffset),
       );
       if (!this.selection) {
         return exchanges;
@@ -257,7 +257,7 @@ export default {
       return exchanges.filter(
         (exchange) =>
           !exchange.timestamp.isBefore(start) &&
-          !exchange.timestamp.isAfter(end)
+          !exchange.timestamp.isAfter(end),
       );
     },
     lastTimestamp() {
@@ -295,7 +295,7 @@ export default {
           concatMap(this.fetchHttpExchanges),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(2));
-          })
+          }),
         )
         .subscribe({
           next: (exchanges) => {
@@ -305,7 +305,7 @@ export default {
             }
             this.exchanges = [...exchanges, ...this.exchanges].slice(
               0,
-              this.limit
+              this.limit,
             );
           },
           error: (error) => {
@@ -320,13 +320,13 @@ export default {
       if (this.actuatorPath !== null && this.filter.excludeActuator) {
         filterFn = addToFilter(
           filterFn,
-          (exchange) => !exchange.request.uri.includes(this.actuatorPath)
+          (exchange) => !exchange.request.uri.includes(this.actuatorPath),
         );
       }
       if (this.filter.uri) {
         const normalizedFilter = this.filter.uri.toLowerCase();
         filterFn = addToFilter(filterFn, (exchange) =>
-          exchange.request.uri.toLowerCase().includes(normalizedFilter)
+          exchange.request.uri.toLowerCase().includes(normalizedFilter),
         );
       }
       if (!this.filter.showSuccess) {
@@ -335,13 +335,13 @@ export default {
       if (!this.filter.showClientErrors) {
         filterFn = addToFilter(
           filterFn,
-          (exchange) => !exchange.isClientError()
+          (exchange) => !exchange.isClientError(),
         );
       }
       if (!this.filter.showServerErrors) {
         filterFn = addToFilter(
           filterFn,
-          (exchange) => !exchange.isServerError()
+          (exchange) => !exchange.isServerError(),
         );
       }
       return filterFn ? exchanges.filter(filterFn) : exchanges;

@@ -86,7 +86,7 @@ const mapLocale = (locale) => {
       locale,
       label,
     };
-  } catch (e) {
+  } catch {
     return {
       locale,
       label: locale,

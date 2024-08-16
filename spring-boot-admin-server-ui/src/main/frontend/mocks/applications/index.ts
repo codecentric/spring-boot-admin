@@ -1,9 +1,9 @@
-import { rest } from 'msw';
+import { http } from 'msw';
 
 import { applications } from './data.js';
 
 const applicationsEndpoint = [
-  rest.get('/applications', (req, res, ctx) => {
+  http.get('/applications', () => {
     return res(ctx.status(404), ctx.json(applications));
   }),
 ];

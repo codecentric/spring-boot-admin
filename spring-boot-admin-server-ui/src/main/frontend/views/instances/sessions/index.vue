@@ -105,7 +105,7 @@ export default {
             acc.value = value;
             return acc;
           },
-          { type: 'username', value: '' }
+          { type: 'username', value: '' },
         );
       },
     },
@@ -165,7 +165,7 @@ export default {
     },
     async fetchSessionsByUsername() {
       const response = await this.instance.fetchSessionsByUsername(
-        this.filter.value
+        this.filter.value,
       );
       return response.data.sessions.map((session) => new Session(session));
     },

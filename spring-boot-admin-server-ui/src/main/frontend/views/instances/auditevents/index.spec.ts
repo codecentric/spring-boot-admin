@@ -27,7 +27,7 @@ describe('Auditevents', () => {
 
   it('fetches data when filter for Principal is changed', async () => {
     const input = await screen.findByPlaceholderText(
-      'instances.auditevents.principal'
+      'instances.auditevents.principal',
     );
     await userEvent.type(input, 'Abc');
 
@@ -39,7 +39,7 @@ describe('Auditevents', () => {
 
   it('fetches data when filter for Type is changed', async () => {
     const input = await screen.findByPlaceholderText(
-      'instances.auditevents.type'
+      'instances.auditevents.type',
     );
     await userEvent.type(input, 'AUTHENTICATION_FAILURE');
 
@@ -59,7 +59,7 @@ describe('Auditevents', () => {
                 'content-type': 'application/vnd.spring-boot.actuator.v2',
               },
             },
-          })
+          }),
         ),
       },
     });
