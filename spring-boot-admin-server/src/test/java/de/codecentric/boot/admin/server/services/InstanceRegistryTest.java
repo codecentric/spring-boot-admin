@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.services;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ public class InstanceRegistryTest {
 	public void setUp() {
 		repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
 		idGenerator = new HashingInstanceUrlIdGenerator();
-		registry = new InstanceRegistry(repository, idGenerator);
+		registry = new InstanceRegistry(repository, idGenerator, new TestInstanceFilter());
 	}
 
 	@Test
@@ -116,6 +117,31 @@ public class InstanceRegistryTest {
 					(applications) -> assertThat(applications.stream().map(Instance::getId)).doesNotContain(id3)
 						.containsExactlyInAnyOrder(id1, id2))
 			.verifyComplete();
+	}
+
+	@Test
+	public void findByNameAndFilter() {
+		InstanceId id1 = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
+		registry
+			.register(Registration.create("abc", "http://localhost:8081/health").metadata("displayed", "false").build())
+			.block();
+
+		StepVerifier.create(registry.getInstances("abc"))
+			.recordWith(ArrayList::new)
+			.thenConsumeWhile((a) -> true)
+			.consumeRecordedWith(
+					(applications) -> assertThat(applications.stream().map(Instance::getId)).containsExactly(id1))
+			.verifyComplete();
+	}
+
+	private static class TestInstanceFilter extends InstanceFilter {
+
+		@Override
+		public boolean filter(Instance instance) {
+			Map<String, String> metadata = instance.getRegistration().getMetadata();
+			return !metadata.containsKey("displayed") || !metadata.get("displayed").equals("false");
+		}
+
 	}
 
 }
