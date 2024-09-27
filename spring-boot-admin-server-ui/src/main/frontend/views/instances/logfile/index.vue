@@ -157,9 +157,9 @@ export default {
       });
   },
   beforeUnmount() {
-    if (this.scrollSubcription) {
+    if (this.scrollSubcription && !this.scrollSubcription.closed) {
       try {
-        !this.scrollSubcription.closed && this.scrollSubcription.unsubscribe();
+        this.scrollSubcription.unsubscribe();
       } finally {
         this.scrollSubcription = null;
       }

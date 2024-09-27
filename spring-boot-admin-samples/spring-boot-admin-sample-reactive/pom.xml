@@ -67,7 +67,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>de.codecentric.boot.admin.SpringBootAdminReactiveApplication</mainClass>
+                    <mainClass>de.codecentric.boot.admin.sample.SpringBootAdminReactiveApplication</mainClass>
                     <addResources>false</addResources>
                 </configuration>
             </plugin>

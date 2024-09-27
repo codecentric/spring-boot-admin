@@ -21,9 +21,11 @@ import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.annotation.Configuration;
 
 import de.codecentric.boot.admin.client.registration.Application;
+import de.codecentric.boot.admin.client.registration.DefaultApplicationFactory;
 
 @Configuration
 public class ClientRuntimeHints implements RuntimeHintsRegistrar {
@@ -42,7 +44,9 @@ public class ClientRuntimeHints implements RuntimeHintsRegistrar {
 					MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS)
 			.registerConstructor(Application.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
 			.registerMethod(Application.Builder.class.getMethod("build"), ExecutableMode.INVOKE)
-			.registerMethod(Application.class.getMethod("builder"), ExecutableMode.INVOKE);
+			.registerMethod(Application.class.getMethod("builder"), ExecutableMode.INVOKE)
+			.registerMethod(DefaultApplicationFactory.class.getMethod("onWebServerInitialized",
+					WebServerInitializedEvent.class), ExecutableMode.INVOKE);
 	}
 
 }

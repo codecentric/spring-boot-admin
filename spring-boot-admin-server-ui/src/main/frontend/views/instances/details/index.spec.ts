@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/vue';
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 
 import DetailsView from './index.vue';
@@ -16,8 +16,8 @@ describe('InstanceDetails', () => {
       const instance = application.instances[0];
 
       server.use(
-        rest.get('/instances/:instanceId/actuator/metrics', (req, res, ctx) => {
-          return res(ctx.status(404), ctx.json({}));
+        http.get('/instances/:instanceId/actuator/metrics', () => {
+          return HttpResponse.json({});
         }),
       );
 

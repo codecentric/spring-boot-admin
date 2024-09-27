@@ -16,7 +16,7 @@ include::{samples-dir}/spring-boot-admin-sample-hazelcast/pom.xml[tags=dependenc
 +
 [source,java,indent=0]
 ----
-include::{samples-dir}/spring-boot-admin-sample-hazelcast/src/main/java/de/codecentric/boot/admin/SpringBootAdminHazelcastApplication.java[tags=application-hazelcast]
+include::{samples-dir}/spring-boot-admin-sample-hazelcast/src/main/java/de/codecentric/boot/admin/sample/SpringBootAdminHazelcastApplication.java[tags=application-hazelcast]
 ----
 
 .Hazelcast configuration options

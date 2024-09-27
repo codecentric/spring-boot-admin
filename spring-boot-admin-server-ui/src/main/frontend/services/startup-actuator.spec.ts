@@ -17,14 +17,15 @@ import { cloneDeep } from 'lodash-es';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { StartupActuatorService } from './startup-actuator';
+import fixture from './startup-actuator.fixture.spec.json';
 
 describe('StartupActuatorService', () => {
-  let data = {};
-  let events = {};
+  let data: any = {};
+  let events: any = {};
 
   beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    data = cloneDeep(require('./startup-actuator.fixture.spec.json'));
+    data = cloneDeep(fixture);
     events = data.timeline.events;
   });
 

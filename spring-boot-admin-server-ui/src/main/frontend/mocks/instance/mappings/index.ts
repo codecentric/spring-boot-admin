@@ -1,10 +1,10 @@
-import { rest } from 'msw';
+import { HttpResponse, http } from 'msw';
 
 import { mappings } from './data';
 
 const mappingsEndpoint = [
-  rest.get('/instances/:instanceId/actuator/mappings', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(mappings));
+  http.get('/instances/:instanceId/actuator/mappings', () => {
+    return HttpResponse.json(mappings);
   }),
 ];
 

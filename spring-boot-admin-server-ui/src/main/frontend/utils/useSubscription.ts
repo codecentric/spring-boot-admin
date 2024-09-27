@@ -23,9 +23,9 @@ import { onBeforeUnmount } from 'vue';
  */
 export const useSubscription = (subscription: Subscription) => {
   onBeforeUnmount(() => {
-    if (subscription) {
+    if (subscription && !subscription.closed) {
       try {
-        !subscription.closed && subscription.unsubscribe();
+        subscription.unsubscribe();
       } finally {
         subscription = null;
       }

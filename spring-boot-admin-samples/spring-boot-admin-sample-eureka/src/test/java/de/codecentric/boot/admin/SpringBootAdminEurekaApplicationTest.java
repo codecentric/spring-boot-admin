@@ -23,10 +23,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { SpringBootAdminEurekaApplication.class })
-public class SpringBootAdminEurekaApplicationTest {
+class SpringBootAdminEurekaApplicationTest {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 	}
 
 }

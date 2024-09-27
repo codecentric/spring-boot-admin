@@ -39,6 +39,7 @@ import de.codecentric.boot.admin.server.web.AdminController;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @AdminController
 public class UiController {
@@ -182,7 +183,9 @@ public class UiController {
 
 		public ExternalView(String label, String url, Integer order, boolean iframe, List<ExternalView> children) {
 			Assert.hasText(label, "'label' must not be empty");
-			Assert.hasText(url, "'url' must not be empty");
+			if (isEmpty(children)) {
+				Assert.hasText(url, "'url' must not be empty");
+			}
 			this.label = label;
 			this.url = url;
 			this.order = order;

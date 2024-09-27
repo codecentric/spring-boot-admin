@@ -28,7 +28,7 @@
     "**/*.d.ts",
     "**/*.tsx",
     "**/*.vue",
-    "vite.config.ts"
+    "vite.config.mts"
   ],
   "references": [
     {

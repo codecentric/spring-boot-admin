@@ -6,5 +6,5 @@ You can add your own Notifiers by adding Spring Beans which implement the `Notif
 
 [source,java,indent=0]
 ----
-include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/CustomNotifier.java[tags=customization-notifiers]
+include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/java/de/codecentric/boot/admin/sample/CustomNotifier.java[tags=customization-notifiers]
 ----
