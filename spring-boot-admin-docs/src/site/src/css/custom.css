@@ -29,6 +29,11 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
+.button--white {
+  background-color: var(--ifm-color-white);
+  color: var(--ifm-color-black);
+}
+
 td p:last-of-type {
   margin-bottom: 0;
 }

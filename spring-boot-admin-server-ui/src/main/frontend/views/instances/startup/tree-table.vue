@@ -28,7 +28,7 @@
     </div>
     <ul v-if="tree">
       <tree-item
-        v-for="(eventNode, index) in tree.getRoots()"
+        v-for="(eventNode, index) in filteredTree"
         :key="index"
         :item="eventNode"
         :expand="expandedNodes"
@@ -39,12 +39,57 @@
 </template>
 
 <script>
+import orderBy from 'lodash/orderBy';
+
 import { StartupActuatorEventTree } from '@/services/startup-activator-tree';
 import TreeItem from '@/views/instances/startup/tree-item';
+
+const filterProperty = (needle) => (property, name) => {
+  if ('tags' == name && property && property.length > 0) {
+    return property.find((x) => findByFilter(needle, x));
+  }
+  return (
+    name.toString().toLowerCase().includes(needle) ||
+    (property && property.toString().toLowerCase().includes(needle))
+  );
+};
+
+const findByFilter = (needle, properties, keys) => {
+  if (!properties) {
+    return false;
+  }
+  const fn1 = filterProperty(needle);
+  if (!keys) {
+    keys = Object.keys(properties);
+  }
+  return keys.find((key) => {
+    return fn1(properties[key], key);
+  });
+};
+
+const filterResults = (needle) => (startupEvent) => {
+  if (!startupEvent || !startupEvent.startupStep) {
+    return null;
+  }
+  if (typeof needle == 'function') {
+    return needle(startupEvent) ? startupEvent : null;
+  }
+  var ret =
+    findByFilter(needle, startupEvent, ['name']) ||
+    findByFilter(needle, startupEvent.startupStep, ['name', 'tags']);
+  if (ret) {
+    return startupEvent;
+  }
+  return null;
+};
 
 export default {
   components: { TreeItem },
   props: {
+    filter: {
+      type: String,
+      default: '',
+    },
     tree: {
       type: StartupActuatorEventTree,
       required: true,
@@ -55,14 +100,37 @@ export default {
       default: null,
     },
   },
-  emits: ['change'],
+  emits: ['change', 'after-filter-action'],
   data: () => ({
     expandedNodes: new Set(),
     isExpanded: false,
+    resultSize: '',
   }),
   computed: {
     treeSize() {
       return new Set(this.tree.getEvents()).size;
+    },
+    filteredTree() {
+      if (!this.tree) {
+        return [];
+      }
+      if (!this.filter) {
+        return this.tree.getRoots();
+      }
+      var xfilter;
+      if (/^[0-9.]+$/.test(this.filter)) {
+        const timeLimt = parseFloat(this.filter);
+        xfilter = function (x) {
+          return x.duration >= timeLimt;
+        };
+      } else {
+        xfilter = this.filter.toLowerCase();
+      }
+      const results = this.tree
+        .getEvents()
+        .map(filterResults(xfilter))
+        .filter((ps) => ps && Object.keys(ps.startupStep).length > 0);
+      return orderBy(results, (o) => -o.duration);
     },
   },
   watch: {
@@ -73,6 +141,12 @@ export default {
       this.$emit('change', {
         expandedNodes: this.expandedNodes,
       });
+    },
+    filteredTree: {
+      deep: true,
+      handler: function (newVal) {
+        this.$emit('after-filter-action', newVal.length);
+      },
     },
   },
   created() {

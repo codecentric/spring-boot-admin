@@ -57,12 +57,12 @@ export const listen =
       ),
       tap({
         complete: () => {
-          handle && clearTimeout(handle);
+          clearTimeout(handle);
           cb('completed');
         },
         error: (error) => {
           console.warn('Operation failed:', error);
-          handle && clearTimeout(handle);
+          clearTimeout(handle);
           cb('failed');
         },
       }),

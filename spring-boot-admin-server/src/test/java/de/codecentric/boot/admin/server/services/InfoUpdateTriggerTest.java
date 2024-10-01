@@ -60,8 +60,8 @@ public class InfoUpdateTriggerTest {
 	public void setUp() throws Exception {
 		when(this.updater.updateInfo(any(InstanceId.class))).thenReturn(Mono.empty());
 
-		this.trigger = new InfoUpdateTrigger(this.updater, this.events.flux(), Duration.ofMinutes(5), Duration.ofMinutes(1),
-			Duration.ofMinutes(10));
+		this.trigger = new InfoUpdateTrigger(this.updater, this.events.flux(), Duration.ofMinutes(5),
+				Duration.ofMinutes(1), Duration.ofMinutes(10));
 		this.trigger.start();
 		await().until(this.events::wasSubscribed);
 	}
@@ -152,12 +152,12 @@ public class InfoUpdateTriggerTest {
 	public void should_continue_update_after_error() throws InterruptedException {
 		// when status-change event is emitted and an error is emitted
 		when(this.updater.updateInfo(any())).thenReturn(Mono.error(IllegalStateException::new))
-				.thenReturn(Mono.empty());
+			.thenReturn(Mono.empty());
 
 		this.events.next(
 				new InstanceStatusChangedEvent(this.instance.getId(), this.instance.getVersion(), StatusInfo.ofDown()));
-		this.events.next(
-				new InstanceStatusChangedEvent(this.instance.getId(), this.instance.getVersion(), StatusInfo.ofUp()));
+		this.events
+			.next(new InstanceStatusChangedEvent(this.instance.getId(), this.instance.getVersion(), StatusInfo.ofUp()));
 
 		// then should update
 		verify(this.updater, times(2)).updateInfo(this.instance.getId());
