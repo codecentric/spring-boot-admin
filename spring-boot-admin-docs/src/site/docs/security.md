@@ -6,7 +6,7 @@ Since there are several approaches on solving authentication and authorization i
 
 A Spring Security configuration for your server could look like this:
 
-```java
+```java title="SecuritySecureConfig.java"
 @Configuration(proxyBeanMethods = false)
 public class SecuritySecureConfig {
 
@@ -83,9 +83,7 @@ public class SecuritySecureConfig {
 
 In case you use the Spring Boot Admin Client, it needs the credentials for accessing the server:
 
-application.yml
-
-```yaml
+```yaml title="application.yml"
 spring.boot.admin.client:
    username: sba-client
    password: s3cret
@@ -119,9 +117,7 @@ When using this approach the SBA Server decides whether or not the user can acce
 
 ### SBA Client
 
-application.yml
-
-```yaml
+```yaml title="application.yml"
 spring.boot.admin.client:
     url: http://localhost:8080
     instance:
@@ -146,9 +142,7 @@ If your clients provide credentials via metadata (i.e., via service annotations)
 
 You can provide a default username and password by setting `spring.boot.admin.instance-auth.default-user-name` and `spring.boot.admin.instance-auth.default-user-password`. Optionally you can provide credentials for specific services (by name) using the `spring.boot.admin.instance-auth.service-map.*.user-name` pattern, replacing `*` with the service name.
 
-application.yml
-
-```yaml
+```yaml title="application.yml"
 spring.boot.admin:
   instance-auth:
     enabled: true
@@ -164,10 +158,7 @@ spring.boot.admin:
 ```
 
 ### Eureka
-
-application.yml
-
-```yaml
+```yaml title="application.yml"
 eureka:
   instance:
     metadata-map:
@@ -176,10 +167,7 @@ eureka:
 ```
 
 ### Consul
-
-application.yml
-
-```yaml
+```yaml title="application.yml"
 spring.cloud.consul:
   discovery:
     metadata:
@@ -195,7 +183,7 @@ Consul does not allow dots (".") in metadata keys, use dashes instead.
 
 Some of the actuator endpoints (e.g. `/loggers`) support POST requests. When using Spring Security you need to ignore the actuator endpoints for CSRF-Protection as the Spring Boot Admin Server currently lacks support.
 
-```java
+```java title="SecuritySecureConfig.java"
 @Bean
 protected SecurityFilterChain filterChain(HttpSecurity http) {
     return http.csrf(c -> c.ignoringRequestMatchers("/actuator/**")).build();
@@ -206,7 +194,7 @@ protected SecurityFilterChain filterChain(HttpSecurity http) {
 
 SBA Server can also use client certificates to authenticate when accessing the actuator endpoints. If a custom configured `ClientHttpConnector` bean is present, Spring Boot will automatically configure a `WebClient.Builder` using it, which will be used by Spring Boot Admin.
 
-```java
+```java title="CustomHttpClientConfig.java"
 @Bean
 public ClientHttpConnector customHttpClient() {
     SslContextBuilder sslContext = SslContextBuilder.forClient();

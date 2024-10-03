@@ -9,7 +9,7 @@ The following steps uses Flask, but other web frameworks are supported as well. 
 pip install pyctuator  
 ```
 2. Enable pyctuator by pointing it to your Flask app and letting it know where Spring Boot Admin is running:  
-```python  
+```python title="app.py"
 import os  
 from flask import Flask  
 from pyctuator.pyctuator import Pyctuator  

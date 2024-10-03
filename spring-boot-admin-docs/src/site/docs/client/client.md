@@ -6,9 +6,7 @@ For **Spring Boot** applications the easiest way to show the version, is to use 
 
 For **non-Spring Boot** applications you can either add a `version` or `build.version` to the registration metadata and the version will show up in the application list.
 
-pom.xml
-
-```xml
+```xml title="pom.xml"
 <build>
     <plugins>
         <plugin>
@@ -28,9 +26,7 @@ pom.xml
 
 To generate the build-info in a gradle project, add the following snippet to your `build.gradle`:
 
-build.gradle
-
-```groovy
+```groovy title="build.gradle"
 springBoot {
     buildInfo()
 }
@@ -42,9 +38,7 @@ ATTENTION: Spring Boot 3 does currently not support Jolokia, so this will not wo
 
 To interact with JMX-beans in the admin UI you have to include [Jolokia](https://jolokia.org/) in your application. As Jolokia is servlet based there is no support for reactive applications. In case you are using the `spring-boot-admin-starter-client` it will be pulled in for you, if not add Jolokia to your dependencies. With Spring Boot 2.2.0 you might want to set `spring.jmx.enabled=true` if you want to expose Spring beans via JMX.
 
-pom.xml
-
-```xml
+```xml title="pom.xml"
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-core</artifactId>
@@ -61,9 +55,7 @@ ANSI color-escapes are also supported. You need to set a custom file log pattern
 
 To enforce the use of ANSI-colored output, set `spring.output.ansi.enabled=ALWAYS`. Otherwise Spring tries to detect if ANSI-colored output is available and might disable it.
 
-application.properties
-
-```properties
+```properties title="application.properties"
 logging.file.name=/var/log/sample-boot-application.log (1)
 logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx (2)
 ```
@@ -75,9 +67,7 @@ logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${P
 
 `Tags` are a way to add visual markers per instance, they will appear in the application list as well as in the instance view. By default, no tags are added to instances, and it’s up to the client to specify the desired tags by adding the information to the metadata or info endpoint.
 
-application.properties
-
-```properties
+```properties title="application.properties"
 #using the metadata
 spring.boot.admin.client.instance.metadata.tags.environment=test
 

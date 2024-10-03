@@ -126,7 +126,7 @@ By default, the reminders are sent every 10 minutes, to change this use `setRemi
 
 How to configure reminders
 
-```java
+```java title="NotifierConfiguration.java"
 @Configuration
 public class NotifierConfiguration {
     @Autowired
@@ -167,7 +167,7 @@ A `FilteringNotifier` might be useful, for instance, if you don’t want to rece
 
 How to configure filtering
 
-```java
+```java title="NotifierConfig.java"
 @Configuration(proxyBeanMethods = false)
 public class NotifierConfig {
 

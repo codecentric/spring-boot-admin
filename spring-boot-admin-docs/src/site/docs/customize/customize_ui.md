@@ -8,7 +8,7 @@ Links will be opened in a new window/tab (i.e. `target="_blank"`) having no acce
 
 To add a simple link to an external page, use the following snippet.
 
-```yaml
+```yaml title="application.yml"
 spring:
   boot:
     admin:
@@ -27,7 +27,7 @@ spring:
 
 To aggregate links below a single element, dropdowns can be configured as follows.
 
-```yaml
+```yaml title="application.yml"
 spring:
   boot:
     admin:
@@ -45,7 +45,7 @@ spring:
 
 ### Dropdown as link having links as children
 
-```yaml
+```yaml title="application.yml"
 spring:
   boot:
     admin:
@@ -73,7 +73,7 @@ The JavaScript-Bundle and CSS-Stylesheet must be placed on the classpath at `/ME
 
 The custom extension registers itself by calling:
 
-```javascript
+```javascript title="custom-ui.js"
 SBA.use({
   install({ viewRegistry, i18n }) {
     viewRegistry.addView({
@@ -116,7 +116,7 @@ Groups are used in instance sidebar to aggregate multiple views into a collapsib
 
 In order to override or set icons for (custom) groups you can use the `SBA.viewRegistry.setGroupIcon` function as follows:
 
-```javascript
+```javascript title="custom-ui.js"
 SBA.viewRegistry.setGroupIcon(
   "custom", //(1)
   `<svg xmlns='http://www.w3.org/2000/svg'
@@ -133,7 +133,7 @@ SBA.viewRegistry.setGroupIcon(
 
 Here is a simple top level view just listing all registered applications:
 
-```html
+```html title="custom-ui.vue"
 <template>
   <div class="m-4">
     <template v-for="application in applications" :key="application.name">
@@ -186,7 +186,7 @@ And this is how you register the top-level view.
 
 ##### Example
 
-```javascript
+```javascript title="custom-ui.js"
 SBA.viewRegistry.addView({
   name: "customSub",
   parent: "custom", // (1)
@@ -203,7 +203,7 @@ SBA.viewRegistry.addView({
 
 The `routes.txt` config with the added route:
 
-```text
+```text title="routes.txt"
 /custom/**
 /customSub/**
 ```
@@ -212,7 +212,7 @@ The `routes.txt` config with the added route:
 
 Here is a view to show a custom endpoint:
 
-```html
+```html title="custom-ui.vue"
 <template>
   <div class="custom">
     <p>Instance: <span v-text="instance.id" /></p>
@@ -253,7 +253,7 @@ export default {
 
 Registering the instance view works like for the top-level view with some additional properties:
 
-```javascript
+```javascript title="custom-ui.js"
 SBA.viewRegistry.addView({
   name: "instances/custom",
   parent: "instances", // (1)
@@ -287,7 +287,7 @@ You can set custom information in the header (i.e. displaying staging informatio
 
 You can provide a custom color theme to the application by overwriting the following properties:
 
-```yaml
+```yaml title="application.yml"
 spring:
   boot:
     admin:
@@ -340,7 +340,7 @@ To filter languages to a subset of all supported languages:
 
 You can very simply hide views in the navbar:
 
-```yaml
+```yaml title="application.yml"
 spring:
   boot:
     admin:

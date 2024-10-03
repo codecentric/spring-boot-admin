@@ -19,7 +19,7 @@ In this example we're using the servlet web starter.
 1. Add Spring Boot Admin Server starter as dependency:
 
 __pom.xml__
-```xml
+```xml title="pom.xml"
 <dependency>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin-starter-server</artifactId>
@@ -31,7 +31,7 @@ __pom.xml__
 </dependency>
 ```
 2. Pull in the Spring Boot Admin Server configuration via adding `@EnableAdminServer` to your configuration:
-```java
+```java title="SpringBootAdminApplication.java"
 @SpringBootApplication
 @EnableAdminServer
 public class SpringBootAdminApplication {
@@ -58,8 +58,7 @@ To register your application at the SBA Server, you can either include the SBA C
 Each application that wants to register has to include the Spring Boot Admin Client. In order to secure the endpoints, also add the `spring-boot-starter-security`.
 
 1. Add spring-boot-admin-starter-client to your dependencies:
-pom.xml 
-```xml
+```xml title="pom.xml"
 <dependency>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin-starter-client</artifactId>
@@ -71,8 +70,7 @@ pom.xml
 </dependency>
 ```
 2. Enable the SBA Client by configuring the URL of the Spring Boot Admin Server:
-application.properties
-```properties
+```properties title="application.properties"
 spring.boot.admin.client.url=http://localhost:8080  #(1)
 management.endpoints.web.exposure.include=*  #(2)
 management.info.env.enabled=true #(3)
@@ -80,8 +78,9 @@ management.info.env.enabled=true #(3)
    1. The URL of the Spring Boot Admin Server to register at.
    2. As with Spring Boot 2 most of the endpoints aren’t exposed via http by default, we expose all of them. For production you should carefully choose which endpoints to expose.
    3. Since Spring Boot 2.6, env info contributor is disabled by default. Hence, we have to enable it.
+
 3. Make the actuator endpoints accessible:
-```java
+```java title="SecurityPermitAllConfig.java"
 @Configuration
 public static class SecurityPermitAllConfig {
     @Bean
@@ -103,14 +102,14 @@ Also, have a look at the [Spring Cloud documentation](http://projects.spring.io/
 
 1. Add spring-cloud-starter-eureka to your dependencies:
 pom.xml
-```xml
+```xml title="pom.xml"
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 </dependency>
 ```
 2. Enable discovery by adding `@EnableDiscoveryClient` to your configuration:
-```java
+```java title="SpringBootAdminApplication.java"
 @Configuration
 @EnableAutoConfiguration
 @EnableDiscoveryClient
@@ -123,8 +122,7 @@ public class SpringBootAdminApplication {
 }
 ```
 3. Tell the Eureka client where to find the service registry:
-application.yml
-```yml
+```yml title="application.yml"
 spring:
   application:
     name: spring-boot-admin-sample-eureka

@@ -6,18 +6,14 @@ The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover
 
 Spring Cloud provides a `SimpleDiscoveryClient`. It allows you to specify client applications via static configuration:
 
-pom.xml
-
-```xml
+```xml title="pom.xml"
 <dependency>
     <groupId>org.springframework.cloud</groupId>
     <artifactId>spring-cloud-starter</artifactId>
 </dependency>
 ```
 
-application.yml
-
-```yml
+```yaml title="application.yml"
 spring:
   cloud:
     discovery:
@@ -75,9 +71,7 @@ __Discovery configuration options__
 
 If you are deploying your applications to CloudFoundry then `vcap.application.application_id` and `vcap.application.instance_index` **_must_** be added to the metadata for proper registration of applications with Spring Boot Admin Server. Here is a sample configuration for Eureka:
 
-application.yml
-
-```yml
+```yml title="application.yml"
 eureka:
   instance:
     hostname: ${vcap.application.uris[0]}

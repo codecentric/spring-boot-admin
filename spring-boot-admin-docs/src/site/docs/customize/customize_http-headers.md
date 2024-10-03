@@ -2,7 +2,7 @@
 
 In case you need to inject custom HTTP headers into the requests made to the monitored application’s actuator endpoints you can easily add a `HttpHeadersProvider`:
 
-```java
+```java title="CustomHttpHeadersProvider.java"
 @Bean
 public HttpHeadersProvider customHttpHeadersProvider() {
     return (instance) -> {

@@ -2,7 +2,7 @@
 
 You can intercept and modify requests and responses made to the monitored application’s actuator endpoints by implementing the `InstanceExchangeFilterFunction` interface. This can be useful for auditing or adding some extra security checks.
 
-```java
+```java title="CustomHttpInterceptor.java"
 @Bean
 public InstanceExchangeFilterFunction auditLog() {
     return (instance, request, next) -> next.exchange(request).doOnSubscribe((s) -> {
