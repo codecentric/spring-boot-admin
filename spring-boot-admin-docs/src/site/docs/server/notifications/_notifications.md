@@ -201,8 +201,9 @@ public class NotifierConfig {
 1. Add the `FilteringNotifier` bean using a delegate (e.g. `MailNotifier` when configured)
 2. Add the `RemindingNotifier` as primary bean using the `FilteringNotifier` as delegate.
 
-| Tip | This example combines the reminding and filtering notifiers. This allows you to get notifications after the deployed application hasn’t restarted in a certain amount of time (until the filter expires). |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+:::tip
+This example combines the reminding and filtering notifiers. This allows you to get notifications after the deployed application hasn’t restarted in a certain amount of time (until the filter expires).
+:::
 
 ### DingTalk Notifications
 

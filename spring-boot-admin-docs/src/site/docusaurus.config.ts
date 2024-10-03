@@ -1,17 +1,21 @@
+import 'dotenv/config';
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
+const globalVariables = {
+  VERSION: process.env.VERSION,
+}
+
 const config: Config = {
-  title: "My Site",
-  tagline: "Dinosaurs are cool",
-  favicon: "img/favicon.ico",
-  url: "https://your-docusaurus-site.example.com",
-  baseUrl: "/",
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
-  onBrokenLinks: "warn",
-  onBrokenMarkdownLinks: "warn",
+  title: 'Spring Boot Admin',
+  favicon: 'img/favicon.png',
+  url: 'https://docs.spring-boot-admin.com/',
+  baseUrl: '/',
+  organizationName: 'codecentric',
+  projectName: 'spring-boot-admin',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
   i18n: {
     defaultLocale: "en",
     locales: ["en"]
@@ -33,13 +37,19 @@ const config: Config = {
           onInlineAuthors: "warn",
           onUntruncatedBlogPosts: "warn"
         },
-        theme: {
-          customCss: "./src/css/custom.css"
-        }
       } satisfies Preset.Options
     ]
   ],
+  markdown: {
+    preprocessor: ({fileContent}) => {
+      let content = fileContent;
+      for (const variable in globalVariables) {
+        content = content.replaceAll('@'+variable+'@', globalVariables[variable]);
+      }
 
+      return content
+    },
+  },
   themeConfig: {
     image: "img/social-card.jpg",
     tableOfContents: {

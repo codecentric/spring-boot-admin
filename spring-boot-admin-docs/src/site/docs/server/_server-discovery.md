@@ -41,11 +41,13 @@ Spring Boot Admin supports all other implementations of Spring Cloud’s `Discov
 
 The information from the service registry are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration.
 
-| Tip | You can modify how the information from the registry is used to register the application by using SBA Server configuration options and instance metadata. The values from the metadata takes precedence over the server config. If the plenty of options don’t fit your needs you can provide your own ServiceInstanceConverter. |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+:::tip
+You can modify how the information from the registry is used to register the application by using SBA Server configuration options and instance metadata. The values from the metadata takes precedence over the server config. If the plenty of options don’t fit your needs you can provide your own ServiceInstanceConverter.
+:::
 
-| Note | When using Eureka, the healthCheckUrl known to Eureka is used for health-checking, which can be set on your client using eureka.instance.healthCheckUrl. |
-| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+:::tip
+When using Eureka, the healthCheckUrl known to Eureka is used for health-checking, which can be set on your client using eureka.instance.healthCheckUrl.
+:::
 
 __Instance metadata options__
 | Key                     | Value                                                                                                                            | Default value                                                                  |

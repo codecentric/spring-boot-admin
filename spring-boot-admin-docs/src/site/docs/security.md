@@ -93,24 +93,29 @@ spring.boot.admin.client:
 
 For a complete sample look at [spring-boot-admin-sample-servlet](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples/spring-boot-admin-sample-servlet/).
 
-| Note | If you protect the /instances endpoint don’t forget to configure the username and password on your SBA-Client using spring.boot.admin.client.username and spring.boot.admin.client.password. |
-| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+:::note
+If you protect the /instances endpoint don’t forget to configure the username and password on your SBA-Client using spring.boot.admin.client.username and spring.boot.admin.client.password.
+:::
 
 ## Securing Client Actuator Endpoints
 
 When the actuator endpoints are secured using HTTP Basic authentication the SBA Server needs credentials to access them. You can submit the credentials in the metadata when registering the application. The `BasicAuthHttpHeaderProvider` then uses this metadata to add the `Authorization` header to access your application’s actuator endpoints. You can provide your own `HttpHeadersProvider` to alter the behaviour (e.g. add some decryption) or add extra headers.
 
-| Note | The SBA Server masks certain metadata in the HTTP interface to prevent leaking of sensitive information. |
-| ---- | -------------------------------------------------------------------------------------------------------- |
+:::note
+The SBA Server masks certain metadata in the HTTP interface to prevent leaking of sensitive information.
+:::
 
-| Warning | You should configure HTTPS for your SBA Server or (service registry) when submitting credentials via the metadata. |
-| ------- | ------------------------------------------------------------------------------------------------------------------ |
+:::warning
+You should configure HTTPS for your SBA Server or (service registry) when transferring credentials via the metadata.
+:::
 
-| Warning | When using Spring Cloud Discovery, you must be aware that anybody who can query your service registry can obtain the credentials. |
-| ------- | --------------------------------------------------------------------------------------------------------------------------------- |
+:::warning
+When using Spring Cloud Discovery, you must be aware that anybody who can query your service registry can obtain the credentials.
+:::
 
-| Tip | When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in [joshiste/spring-boot-admin-samples](https://github.com/joshiste/spring-boot-admin-samples). |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+:::tip
+When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in [joshiste/spring-boot-admin-samples](https://github.com/joshiste/spring-boot-admin-samples).
+:::
 
 ### SBA Client
 
@@ -129,13 +134,15 @@ spring.boot.admin.client:
 
 You can specify credentials via configuration properties in your admin server.
 
-| Tip | You can use this in conjuction with [spring-cloud-kubernetes](https://cloud.spring.io/spring-cloud-kubernetes/1.1.x/reference/html/#secrets-propertysource) to pull credentials from [secrets](https://kubernetes.io/docs/concepts/configuration/secret/). |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+:::tip
+You can use this in conjuction with [spring-cloud-kubernetes](https://cloud.spring.io/spring-cloud-kubernetes/1.1.x/reference/html/#secrets-propertysource) to pull credentials from [secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
+:::
 
 To enable pulling credentials from properties the `spring.boot.admin.instance-auth.enabled` property must be `true` (default).
 
-| Note | If your clients provide credentials via metadata (i.e., via service annotations), that metadata will be used instead of the properites. |
-| ---- | --------------------------------------------------------------------------------------------------------------------------------------- |
+:::note
+If your clients provide credentials via metadata (i.e., via service annotations), that metadata will be used instead of the properites.
+:::
 
 You can provide a default username and password by setting `spring.boot.admin.instance-auth.default-user-name` and `spring.boot.admin.instance-auth.default-user-password`. Optionally you can provide credentials for specific services (by name) using the `spring.boot.admin.instance-auth.service-map.*.user-name` pattern, replacing `*` with the service name.
 
@@ -180,8 +187,9 @@ spring.cloud.consul:
         user-password: ${spring.security.user.password}
 ```
 
-| Warning | Consul does not allow dots (".") in metadata keys, use dashes instead. |
-| ------- | ---------------------------------------------------------------------- |
+:::warning
+Consul does not allow dots (".") in metadata keys, use dashes instead.
+:::
 
 ## CSRF on Actuator Endpoints
 

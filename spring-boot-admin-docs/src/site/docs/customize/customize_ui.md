@@ -178,8 +178,9 @@ export default {
 
 1. By destructuring `applications` of `SBA.useApplicationStore()`, you have reactive access to registered applications.
 
-| Tip | There are some helpful methods on the application and instances object available. Have a look at [application.ts](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/services/application.ts) and [instance.ts](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/services/instance.ts) |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+:::tip
+There are some helpful methods on the application and instances object available. Have a look at [application.ts](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/services/application.ts) and [instance.ts](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-server-ui/src/main/frontend/services/instance.ts)
+:::
 
 And this is how you register the top-level view.
 
@@ -271,8 +272,9 @@ SBA.viewRegistry.addView({
 2. You can group views by assigning them to a group.
 3. If you add a `isEnabled` callback you can figure out dynamically if the view should be show for the particular instance.
 
-| Note | You can override default views by putting the same group and name as the one you want to override. |
-| ---- | -------------------------------------------------------------------------------------------------- |
+:::note
+You can override default views by putting the same group and name as the one you want to override.
+:::
 
 ### Customizing Header Logo and Title
 
