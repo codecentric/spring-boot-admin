@@ -5,26 +5,25 @@ You can add your own Notifiers by adding Spring Beans which implement the `Notif
 ```java
 public class CustomNotifier extends AbstractEventNotifier {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
 
-	public CustomNotifier(InstanceRepository repository) {
-		super(repository);
-	}
+    public CustomNotifier(InstanceRepository repository) {
+        super(repository);
+    }
 
-	@Override
-	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-		return Mono.fromRunnable(() -> {
-			if (event instanceof InstanceStatusChangedEvent) {
-				LOGGER.info("Instance {} ({}) is {}", instance.getRegistration().getName(), event.getInstance(),
-						((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
-			}
-			else {
-				LOGGER.info("Instance {} ({}) {}", instance.getRegistration().getName(), event.getInstance(),
-						event.getType());
-			}
-		});
-	}
-
+    @Override
+    protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+        return Mono.fromRunnable(() -> {
+            if (event instanceof InstanceStatusChangedEvent) {
+                LOGGER.info("Instance {} ({}) is {}", instance.getRegistration().getName(), event.getInstance(),
+                        ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
+            }
+            else {
+                LOGGER.info("Instance {} ({}) {}", instance.getRegistration().getName(), event.getInstance(),
+                        event.getType());
+            }
+        });
+    }
 }
 ```
 
@@ -34,7 +33,7 @@ public class CustomNotifier extends AbstractEventNotifier {
 
 To enable [Hipchat](https://www.hipchat.com/) notifications you need to create an API token on your Hipchat account and set the appropriate configuration properties.
 
-__Table 1\. Hipchat notifications configuration options__
+__Hipchat notifications configuration options__
 | Property name                                   | Description                                                                                                               | Default value                                                                                                                                                        |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | spring.boot.admin.notify.hipchat.enabled        | Enable Hipchat notifications                                                                                              | true                                                                                                                                                                 |
@@ -49,7 +48,7 @@ __Table 1\. Hipchat notifications configuration options__
 
 To enable [Slack](https://slack.com/) notifications you need to add an incoming Webhook under custom integrations on your Slack account and configure it appropriately.
 
-__Table 2\. Slack notifications configuration options__
+__Slack notifications configuration options__
 | Property name                                 | Description                                                                                                               | Default value                                                                                                    |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | spring.boot.admin.notify.slack.enabled        | Enable Slack notifications                                                                                                | true                                                                                                             |
@@ -64,7 +63,7 @@ __Table 2\. Slack notifications configuration options__
 
 To enable [Let’s Chat](https://sdelements.github.io/lets-chat/) notifications you need to add the host url and add the API token and username from Let’s Chat
 
-__Table 3\. Let’s Chat notifications configuration options__
+__Let’s Chat notifications configuration options__
 | Property name                                    | Description                                                                                                               | Default value                                                                                                    |
 | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | spring.boot.admin.notify.letschat.enabled        | Enable let´s Chat notifications                                                                                           | true                                                                                                             |
@@ -79,7 +78,7 @@ __Table 3\. Let’s Chat notifications configuration options__
 
 To enable Microsoft Teams notifications you need to set up a connector webhook url and set the appropriate configuration property.
 
-__Table 4\. Microsoft Teams notifications configuration options__
+__Microsoft Teams notifications configuration options__
 | Property name                                                  | Description                                                                                                       | Default value                                                                                                                                                |
 | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | spring.boot.admin.notify.ms-teams.enabled                      | Enable Microsoft Teams notifications                                                                              | true                                                                                                                                                         |
@@ -97,7 +96,7 @@ __Table 4\. Microsoft Teams notifications configuration options__
 
 To enable [Telegram](https://telegram.org/) notifications you need to create and authorize a telegram bot and set the appropriate configuration properties for auth-token and chat-id.
 
-__Table 5\. Telegram notifications configuration options__
+__Telegram notifications configuration options__
 | Property name                                    | Description                                                                                               | Default value                                                                                                                                                        |
 | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | spring.boot.admin.notify.telegram.enabled        | Enable Telegram notifications                                                                             | true                                                                                                                                                                 |
@@ -111,7 +110,7 @@ __Table 5\. Telegram notifications configuration options__
 
 To enable [Webex](https://www.webex.com/) notifications, you need to set the appropriate configuration properties for `auth-token` and `room-id`.
 
-__Table 6\. Webex notifications configuration options__
+__Webex notifications configuration options__
 | Property name                             | Description                                                                                                                          | Default value                                                                                                    |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | spring.boot.admin.notify.webex.enabled    | Enable Webex notifications                                                                                                           | true                                                                                                             |
@@ -124,7 +123,7 @@ __Table 6\. Webex notifications configuration options__
 
 To enable Discord notifications you need to create a webhook and set the appropriate configuration property.
 
-__Table 7\. Discord notifications configuration options__
+__Discord notifications configuration options__
 | Property name                                | Description                                           | Default value                                                                                                    |
 | -------------------------------------------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | spring.boot.admin.notify.discord.enabled     | Enable Discord notifications                          | true                                                                                                             |
@@ -138,7 +137,7 @@ __Table 7\. Discord notifications configuration options__
 
 All Notifiers which are using a `RestTemplate` can be configured to use a proxy.
 
-__Table 8\. Notification Proxy configuration options__
+__Notification Proxy configuration options__
 | Property name                           | Description                                           | Default value |
 | --------------------------------------- | ----------------------------------------------------- | ------------- |
 | spring.boot.admin.notify.proxy.host     | The proxy host                                        |               |
@@ -201,29 +200,29 @@ How to configure filtering
 @Configuration(proxyBeanMethods = false)
 public class NotifierConfig {
 
-	private final InstanceRepository repository;
+    private final InstanceRepository repository;
 
-	private final ObjectProvider<List<Notifier>> otherNotifiers;
+    private final ObjectProvider<List<Notifier>> otherNotifiers;
 
-	public NotifierConfig(InstanceRepository repository, ObjectProvider<List<Notifier>> otherNotifiers) {
-		this.repository = repository;
-		this.otherNotifiers = otherNotifiers;
-	}
+    public NotifierConfig(InstanceRepository repository, ObjectProvider<List<Notifier>> otherNotifiers) {
+        this.repository = repository;
+        this.otherNotifiers = otherNotifiers;
+    }
 
-	@Bean
-	public FilteringNotifier filteringNotifier() { // (1)
-		CompositeNotifier delegate = new CompositeNotifier(this.otherNotifiers.getIfAvailable(Collections::emptyList));
-		return new FilteringNotifier(delegate, this.repository);
-	}
+    @Bean
+    public FilteringNotifier filteringNotifier() { // (1)
+        CompositeNotifier delegate = new CompositeNotifier(this.otherNotifiers.getIfAvailable(Collections::emptyList));
+        return new FilteringNotifier(delegate, this.repository);
+    }
 
-	@Primary
-	@Bean(initMethod = "start", destroyMethod = "stop")
-	public RemindingNotifier remindingNotifier() { // (2)
-		RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), this.repository);
-		notifier.setReminderPeriod(Duration.ofMinutes(10));
-		notifier.setCheckReminderInverval(Duration.ofSeconds(10));
-		return notifier;
-	}
+    @Primary
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    public RemindingNotifier remindingNotifier() { // (2)
+        RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), this.repository);
+        notifier.setReminderPeriod(Duration.ofMinutes(10));
+        notifier.setCheckReminderInverval(Duration.ofSeconds(10));
+        return notifier;
+    }
 
 }
 ```
@@ -238,7 +237,7 @@ public class NotifierConfig {
 
 To enable [DingTalk](https://www.dingtalk.com/) notifications you need to create and authorize a dingtalk bot and set the appropriate configuration properties for webhookUrl and secret.
 
-__Table 9\. DingTalk notifications configuration options__
+__DingTalk notifications configuration options__
 | Property name                                 | Description                                            | Default value                                                                                               |
 | --------------------------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
 | spring.boot.admin.notify.dingtalk.enabled     | Enable DingTalk notifications.                         | true                                                                                                        |

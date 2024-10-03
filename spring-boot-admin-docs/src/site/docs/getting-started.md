@@ -46,7 +46,7 @@ public class SpringBootAdminApplication {
 
 ## Registering Client Applications
 
-To register your application at the SBA Server, you can either include the SBA Client or use [Spring Cloud Discovery](https://spring.io/projects/spring-cloud) (e.g. Eureka, Consul, …​). There is also a [simple option using a static configuration on the SBA Server side](server.html#spring-cloud-discovery-static-config).
+To register your application at the SBA Server, you can either include the SBA Client or use [Spring Cloud Discovery](https://spring.io/projects/spring-cloud) (e.g. Eureka, Consul, …​). There is also a [simple option using a static configuration on the SBA Server side](server/server#spring-cloud-discovery-static-config).
 
 ### Spring Boot Admin Client
 
@@ -86,7 +86,7 @@ public static class SecurityPermitAllConfig {
     }  
 }  
 ```  
-   1. For the sake of brevity we’re disabling the security for now. Have a look at the [security section](security.html#securing-spring-boot-admin) on how to deal with secured endpoints.
+   1. For the sake of brevity we’re disabling the security for now. Have a look at the [security section](security#%5Fsecurity) on how to deal with secured endpoints.
 
 ### Spring Cloud Discovery
 

@@ -1,4 +1,4 @@
-# Use of SNAPSHOT-Versions
+# Use SNAPSHOT-Versions
 
 If you want to use a snapshot version of Spring Boot Admin Server you most likely need to include the spring and sonatype snapshot repositories:
 

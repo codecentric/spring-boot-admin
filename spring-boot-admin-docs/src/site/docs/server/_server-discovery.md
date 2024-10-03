@@ -35,7 +35,7 @@ spring:
 
 ### Other DiscoveryClients
 
-Spring Boot Admin supports all other implementations of Spring Cloud’s `DiscoveryClient` ([Eureka](https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/), [Zookeeper](https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery), [Consul](https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery), [Kubernetes](https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes), …​). You need to add it to the Spring Boot Admin Server and configure it properly. An [example setup using Eureka](/docs/getting-started.html#discover-clients-via-spring-cloud-discovery) is shown above.
+Spring Boot Admin supports all other implementations of Spring Cloud’s `DiscoveryClient` ([Eureka](https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/), [Zookeeper](https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery), [Consul](https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery), [Kubernetes](https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes), …​). You need to add it to the Spring Boot Admin Server and configure it properly. An [example setup using Eureka](/docs/getting-started#discover-clients-via-spring-cloud-discovery) is shown above.
 
 ### Converting ServiceInstances
 
@@ -47,7 +47,7 @@ The information from the service registry are converted by the `ServiceInstanceC
 | Note | When using Eureka, the healthCheckUrl known to Eureka is used for health-checking, which can be set on your client using eureka.instance.healthCheckUrl. |
 | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
-__Table 1\. Instance metadata options__
+__Instance metadata options__
 | Key                     | Value                                                                                                                            | Default value                                                                  |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | user.nameuser.password  | Credentials being used to access the endpoints.                                                                                  |                                                                                |
@@ -58,7 +58,7 @@ __Table 1\. Instance metadata options__
 | health.path             | The path is appended to the service URL and will be used for the health-checking. Ignored by the EurekaServiceInstanceConverter. | &#36;&#123;spring.boot.admin.discovery.converter.health-endpoint&#125;         |
 | group                   | The group is used to group services in the UI by the group name instead of application name.                                     |                                                                                |
 
-__Table 2\. Discovery configuration options__
+__Discovery configuration options__
 | Property name                                                 | Description                                                                                                                                       | Default value |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
 | spring.boot.admin.discovery.enabled                           | Enables the DiscoveryClient-support for the admin server.                                                                                         | true          |

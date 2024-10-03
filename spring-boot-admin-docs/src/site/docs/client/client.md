@@ -32,7 +32,7 @@ build.gradle
 
 ```groovy
 springBoot {
-	buildInfo()
+    buildInfo()
 }
 ```
 

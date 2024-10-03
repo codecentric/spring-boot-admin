@@ -12,8 +12,8 @@ The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover
 
 Spring Cloud provides a `SimpleDiscoveryClient`. It allows you to specify client applications via static configuration:
 
-pom.xml
 
+__pom.xml__
 ```xml
 <dependency>
     <groupId>org.springframework.cloud</groupId>
@@ -21,8 +21,7 @@ pom.xml
 </dependency>
 ```
 
-application.yml
-
+__application.yml__
 ```yml
 spring:
   cloud:
@@ -41,7 +40,7 @@ spring:
 
 ### Other DiscoveryClients
 
-Spring Boot Admin supports all other implementations of Spring Cloud’s `DiscoveryClient` ([Eureka](https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/), [Zookeeper](https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery), [Consul](https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery), [Kubernetes](https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes), …​). You need to add it to the Spring Boot Admin Server and configure it properly. An [example setup using Eureka](/docs/getting-started.html#discover-clients-via-spring-cloud-discovery) is shown above.
+Spring Boot Admin supports all other implementations of Spring Cloud’s `DiscoveryClient` ([Eureka](https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/), [Zookeeper](https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery), [Consul](https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery), [Kubernetes](https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes), …​). You need to add it to the Spring Boot Admin Server and configure it properly. An [example setup using Eureka](/docs/getting-started#discover-clients-via-spring-cloud-discovery) is shown above.
 
 ### Converting ServiceInstances
 
@@ -53,7 +52,7 @@ The information from the service registry are converted by the `ServiceInstanceC
 | Note | When using Eureka, the healthCheckUrl known to Eureka is used for health-checking, which can be set on your client using eureka.instance.healthCheckUrl. |
 | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
-__Table 1\. Instance metadata options__
+__Instance metadata options__
 | Key                     | Value                                                                                                                            | Default value                                                                  |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | user.nameuser.password  | Credentials being used to access the endpoints.                                                                                  |                                                                                |
@@ -64,7 +63,7 @@ __Table 1\. Instance metadata options__
 | health.path             | The path is appended to the service URL and will be used for the health-checking. Ignored by the EurekaServiceInstanceConverter. | &#36;&#123;spring.boot.admin.discovery.converter.health-endpoint&#125;         |
 | group                   | The group is used to group services in the UI by the group name instead of application name.                                     |                                                                                |
 
-__Table 2\. Discovery configuration options__
+__Discovery configuration options__
 | Property name                                                 | Description                                                                                                                                       | Default value |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
 | spring.boot.admin.discovery.enabled                           | Enables the DiscoveryClient-support for the admin server.                                                                                         | true          |
@@ -107,36 +106,36 @@ pom.xml
 ```java  
 @Bean  
 public Config hazelcastConfig() {  
-	// This map is used to store the events.  
-	// It should be configured to reliably hold all the data,  
-	// Spring Boot Admin will compact the events, if there are too many  
-	MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)  
-		.setBackupCount(1)  
-		.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));  
-	// This map is used to deduplicate the notifications.  
-	// If data in this map gets lost it should not be a big issue as it will atmost  
-	// lead to  
-	// the same notification to be sent by multiple instances  
-	MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)  
-		.setInMemoryFormat(InMemoryFormat.OBJECT)  
-		.setBackupCount(1)  
-		.setEvictionConfig(  
-				new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setMaxSizePolicy(MaxSizePolicy.PER_NODE))  
-		.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));  
-	Config config = new Config();  
-	config.addMapConfig(eventStoreMap);  
-	config.addMapConfig(sentNotificationsMap);  
-	config.setProperty("hazelcast.jmx", "true");  
-	// WARNING: This setups a local cluster, you change it to fit your needs.  
-	config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);  
-	TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();  
-	tcpIpConfig.setEnabled(true);  
-	tcpIpConfig.setMembers(singletonList("127.0.0.1"));  
-	return config;  
+    // This map is used to store the events.  
+    // It should be configured to reliably hold all the data,  
+    // Spring Boot Admin will compact the events, if there are too many  
+    MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)  
+        .setBackupCount(1)  
+        .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));  
+    // This map is used to deduplicate the notifications.  
+    // If data in this map gets lost it should not be a big issue as it will atmost  
+    // lead to  
+    // the same notification to be sent by multiple instances  
+    MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)  
+        .setInMemoryFormat(InMemoryFormat.OBJECT)  
+        .setBackupCount(1)  
+        .setEvictionConfig(  
+                new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setMaxSizePolicy(MaxSizePolicy.PER_NODE))  
+        .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));  
+    Config config = new Config();  
+    config.addMapConfig(eventStoreMap);  
+    config.addMapConfig(sentNotificationsMap);  
+    config.setProperty("hazelcast.jmx", "true");  
+    // WARNING: This setups a local cluster, you change it to fit your needs.  
+    config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);  
+    TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();  
+    tcpIpConfig.setEnabled(true);  
+    tcpIpConfig.setMembers(singletonList("127.0.0.1"));  
+    return config;  
 }  
 ```
 
-__Table 3\. Hazelcast configuration options__
+__Hazelcast configuration options__
 | Property name                                  | Description                                                      | Default value                          |
 | ---------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------- |
 | spring.boot.admin.hazelcast.enabled            | Enables the Hazelcast support                                    | true                                   |

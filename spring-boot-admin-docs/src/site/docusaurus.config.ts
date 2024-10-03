@@ -1,171 +1,142 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
-import type * as Preset from '@docusaurus/preset-classic';
-import { processAdocs } from "./utils/adoc.loader";
-import remarkDefList from 'remark-deflist';
-
-processAdocs()
+import { themes as prismThemes } from "prism-react-renderer";
+import type { Config } from "@docusaurus/types";
+import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
-  title: 'Spring Boot Admin',
-  tagline: 'Monitor your Spring Boot services with ease! <br/>An open source monitoring tool build by developers for developers.',
-  favicon: 'img/favicon.png',
-
-  // Set the production url of your site here
-  url: 'https://docs.spring-boot-admin.com/',
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'codecentric', // Usually your GitHub org/user name.
-  projectName: 'spring-boot-admin', // Usually your repo name.
-
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
-
-  // Even if you don't use internationalization, you can use this field to set
-  // useful metadata like html lang. For example, if your site is Chinese, you
-  // may want to replace "en" with "zh-Hans".
+  title: "My Site",
+  tagline: "Dinosaurs are cool",
+  favicon: "img/favicon.ico",
+  url: "https://your-docusaurus-site.example.com",
+  baseUrl: "/",
+  organizationName: "facebook", // Usually your GitHub org/user name.
+  projectName: "docusaurus", // Usually your repo name.
+  onBrokenLinks: "warn",
+  onBrokenMarkdownLinks: "warn",
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: "en",
+    locales: ["en"]
   },
-
   presets: [
     [
-      'classic',
+      "classic",
       {
         docs: {
-          sidebarPath: './sidebars.ts',
-          remarkPlugins: [
-            remarkDefList,
-          ],
+          sidebarPath: "./sidebars.ts",
         },
         blog: {
-          remarkPlugins: [
-            remarkDefList,
-          ],
-        },
-        pages: {
-          remarkPlugins: [
-            remarkDefList,
-          ],
+          showReadingTime: true,
+          feedOptions: {
+            type: ["rss", "atom"],
+            xslt: true
+          },
+          onInlineTags: "warn",
+          onInlineAuthors: "warn",
+          onUntruncatedBlogPosts: "warn"
         },
         theme: {
-          customCss: './src/css/custom.css',
-        },
-      } satisfies Preset.Options,
-    ],
+          customCss: "./src/css/custom.css"
+        }
+      } satisfies Preset.Options
+    ]
   ],
+
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/social-card.jpg',
+    image: "img/social-card.jpg",
     tableOfContents: {
       minHeadingLevel: 2,
-      maxHeadingLevel: 5,
+      maxHeadingLevel: 5
     },
     algolia: {
-      // The application ID provided by Algolia
-      appId: 'GUDRYGX7B3',
-      // Public API key: it is safe to commit it
-      apiKey: '97d8206755fc8cf80c3b435ac87573ca',
-      indexName: 'spring-boot-admin',
-      // Optional: see doc section below
+      appId: "GUDRYGX7B3",
+      apiKey: "97d8206755fc8cf80c3b435ac87573ca",
+      indexName: "spring-boot-admin",
       contextualSearch: true,
-      // Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
-      //externalUrlRegex: 'external\\.com|domain\\.com',
-      // Optional: Replace parts of the item URLs from Algolia. Useful when using the same search index for multiple deployments using a different baseUrl. You can use regexp or string in the `from` param. For example: localhost:3000 vs myCompany.com/docs
       replaceSearchResultPathname: {
-        from: '/docs/', // or as RegExp: /\/docs\//
-        to: '/',
+        from: "/docs/",
+        to: "/"
       },
-      // Optional: Algolia search parameters
-      searchParameters: {
-      },
-      // Optional: path for search page that enabled by default (`false` to disable it)
+      searchParameters: {},
       searchPagePath: false,
-      // Optional: whether the insights feature is enabled or not on Docsearch (`false` by default)
-      insights: false,
+      insights: false
     },
     navbar: {
-      title: 'Spring Boot Admin',
+      title: "Spring Boot Admin",
       logo: {
-        alt: 'Spring Boot logo with pulse line in front of it',
-        src: 'img/logo.png',
+        alt: "Spring Boot logo with pulse line in front of it",
+        src: "img/logo.png"
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'Documentation',
+          type: "docSidebar",
+          sidebarId: "tutorialSidebar",
+          position: "left",
+          label: "Documentation"
         },
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'FAQ',
-          href: '/faq',
+          type: "docSidebar",
+          sidebarId: "tutorialSidebar",
+          position: "left",
+          label: "FAQ",
+          href: "/faq"
         },
         {
-          href: 'https://github.com/codecentric/spring-boot-admin',
-          label: 'GitHub',
-          position: 'right',
-        },
-      ],
+          href: "https://github.com/codecentric/spring-boot-admin",
+          label: "GitHub",
+          position: "right"
+        }
+      ]
     },
     footer: {
-      style: 'dark',
+      style: "dark",
       links: [
         {
-          title: 'Docs',
+          title: "Docs",
           items: [
             {
-              label: 'Getting started',
-              to: '/docs/getting-started',
+              label: "Getting started",
+              to: "/docs/getting-started"
             },
             {
-              label: 'FAQ',
-              to: '/faq',
-            },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/spring-boot-admin',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/codecentric/spring-boot-admin',
-            },
-            {
-              label: 'Impressum',
-              to: '/impressum',
-            },
-            {
-              label: 'Privacy',
-              to: '/privacy',
+              label: "FAQ",
+              to: "/faq"
             }
-          ],
+          ]
         },
+        {
+          title: "Community",
+          items: [
+            {
+              label: "Stack Overflow",
+              href: "https://stackoverflow.com/questions/tagged/spring-boot-admin"
+            }
+          ]
+        },
+        {
+          title: "More",
+          items: [
+            {
+              label: "GitHub",
+              href: "https://github.com/codecentric/spring-boot-admin"
+            },
+            {
+              label: "Impressum",
+              to: "/impressum"
+            },
+            {
+              label: "Privacy",
+              to: "/privacy"
+            }
+          ]
+        }
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} codecentric`,
+      copyright: `Copyright © ${new Date().getFullYear()} codecentric`
     },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-      additionalLanguages: ['java'],
-    },
-  } satisfies Preset.ThemeConfig,
+      additionalLanguages: ["java"]
+    }
+  } satisfies Preset.ThemeConfig
 };
 
 export default config;
