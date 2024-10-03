@@ -1,3 +1,8 @@
+---
+sidebar_custom_props:
+  icon: 'notifications'
+--- 
+
 # Notifications
 
 You can add your own Notifiers by adding Spring Beans which implement the `Notifier` interface, at best by extending`AbstractEventNotifier` or `AbstractStatusChangeNotifier`.

@@ -1,3 +1,8 @@
+---
+sidebar_custom_props:
+  icon: 'features'
+---
+
 # Client features
 
 ## Show Version in Application List

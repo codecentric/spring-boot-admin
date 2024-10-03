@@ -1,3 +1,8 @@
+---
+sidebar_custom_props:
+  icon: 'notifications'
+---
+
 ## Notification
 
 ### Hipchat Notifications

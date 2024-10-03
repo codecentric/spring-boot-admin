@@ -1,3 +1,8 @@
+---
+sidebar_custom_props:
+  icon: 'properties'
+---
+
 # Properties
 
 | Property name                                               | Description                                                                                                                                                                                                                                                                                                                                                                                                       | Default value                                                                                                                                                                |

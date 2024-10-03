@@ -1,3 +1,8 @@
+---
+sidebar_custom_props:
+  icon: 'http'
+---
+
 # HTTP interceptors
 
 You can intercept and modify requests and responses made to the monitored application’s actuator endpoints by implementing the `InstanceExchangeFilterFunction` interface. This can be useful for auditing or adding some extra security checks.

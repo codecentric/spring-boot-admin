@@ -1,3 +1,8 @@
+---
+sidebar_custom_props:
+  icon: 'ui'
+---
+
 # UI
 
 ## Linking / Embedding External Pages in Navbar

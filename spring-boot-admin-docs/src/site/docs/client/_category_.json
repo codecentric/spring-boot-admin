@@ -1,8 +1,4 @@
 {
   "position": 2,
-  "label": "Client",
-  "link": {
-    "type": "generated-index",
-    "title": "Client"
-  }
+  "label": "Spring Boot Admin Client"
 }

@@ -1,3 +1,8 @@
+---
+sidebar_custom_props:
+  icon: 'properties'
+---
+
 # Properties
 
 __Spring Boot Admin Client configuration options__

@@ -1,3 +1,8 @@
+---
+sidebar_custom_props:
+  icon: 'python'
+---
+
 # Pyctuator
 
 You can easily integrate Spring Boot Admin with [Flask](https://flask.palletsprojects.com) or [FastAPI](https://fastapi.tiangolo.com/) Python applications using the [Pyctuator](https://github.com/SolarEdgeTech/pyctuator) project.

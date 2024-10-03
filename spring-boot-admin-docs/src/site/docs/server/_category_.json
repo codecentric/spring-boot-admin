@@ -1,8 +1,4 @@
 {
   "position": 1,
-  "label": "Server",
-  "link": {
-    "type": "generated-index",
-    "title": "Server"
-  }
+  "label": "Spring Boot Admin Server"
 }

@@ -89,7 +89,7 @@ project, which adds security.
 
 To register your application at the server, you can either include the Spring Boot Admin Client or
 use [Spring Cloud Discovery](https://spring.io/projects/spring-cloud) (e.g. Eureka, Consul, …​). There is also
-an [option to use static configuration on server side](server/server#spring-cloud-discovery-static-config).
+an [option to use static configuration on server side](server/index#spring-cloud-discovery-static-config).
 
 #### Using Spring Boot Admin Client
 
@@ -209,7 +209,7 @@ There is also a [basic example](https://github.com/codecentric/spring-boot-admin
 
 :::tip
 You can include the Spring Boot Admin Server to your Eureka server as well. Setup everything as described above and set
-`spring.boot.admin.context-path` to something different than `/` so that the Spring Boot Admin Server UI won’t clash
+`spring.boot.admin.context-path` to something different from `/` so that the Spring Boot Admin Server UI won’t clash
 with
 Eureka’s one.
 :::

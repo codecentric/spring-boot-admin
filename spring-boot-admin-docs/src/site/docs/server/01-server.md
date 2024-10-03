@@ -1,3 +1,8 @@
+---
+sidebar_custom_props:
+  icon: 'server'
+---
+
 # Server
 
 ## Running Behind a Front-end Proxy Server
