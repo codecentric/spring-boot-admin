@@ -1,4 +1,4 @@
-# Security
+# Foster Security
 
 ## Securing Spring Boot Admin Server
 

@@ -1,5 +1,5 @@
 import { Redirect } from "@docusaurus/router";
 
 export default function Home() {
-  return <Redirect to='/docs/getting-started' />;
+  return <Redirect to='/docs/index' />;
 }

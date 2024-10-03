@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Getting started
+# Installation and Setup
 
 ## Overview
 
@@ -89,7 +89,7 @@ project, which adds security.
 
 To register your application at the server, you can either include the Spring Boot Admin Client or
 use [Spring Cloud Discovery](https://spring.io/projects/spring-cloud) (e.g. Eureka, Consul, …​). There is also
-an [option to use static configuration on server side](server/index#spring-cloud-discovery-static-config).
+an [option to use static configuration on server side](../server#spring-cloud-discovery-static-config).
 
 #### Using Spring Boot Admin Client
 

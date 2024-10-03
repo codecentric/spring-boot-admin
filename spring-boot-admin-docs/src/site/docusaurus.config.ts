@@ -24,6 +24,9 @@ const config: Config = {
     [
       "classic",
       {
+        theme: {
+          customCss: ['./src/css/custom.css'],
+        },
         docs: {
           sidebarPath: "./sidebars.ts",
         },
@@ -139,7 +142,7 @@ const config: Config = {
           ]
         }
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} codecentric`
+      copyright: `© ${new Date().getFullYear()} <a href="https://www.codecentric.de/" target='_blank'>codecentric AG</a>`
     },
     prism: {
       theme: prismThemes.github,
