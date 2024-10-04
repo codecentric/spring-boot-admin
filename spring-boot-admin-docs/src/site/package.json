@@ -5,7 +5,8 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "build": "docusaurus build"
+    "build": "docusaurus build",
+    "build:prod": "npm run build && mv ./build ../../target/generated-docs"
   },
   "dependencies": {
     "@docusaurus/core": "^3.5.2",

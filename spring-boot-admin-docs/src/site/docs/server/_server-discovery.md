@@ -31,7 +31,7 @@ spring:
 
 ### Other DiscoveryClients
 
-Spring Boot Admin supports all other implementations of Spring Cloud’s `DiscoveryClient` ([Eureka](https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/), [Zookeeper](https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery), [Consul](https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery), [Kubernetes](https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes), …​). You need to add it to the Spring Boot Admin Server and configure it properly. An [example setup using Eureka](/docs/getting-started#discover-clients-via-spring-cloud-discovery) is shown above.
+Spring Boot Admin supports all other implementations of Spring Cloud’s `DiscoveryClient` ([Eureka](https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/), [Zookeeper](https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery), [Consul](https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery), [Kubernetes](https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes), …​). You need to add it to the Spring Boot Admin Server and configure it properly. An [example setup using Eureka](/docs/index#discover-clients-via-spring-cloud-discovery) is shown above.
 
 ### Converting ServiceInstances
 

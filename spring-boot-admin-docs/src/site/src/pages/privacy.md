@@ -1,4 +1,4 @@
-= Datenschutzerklärung nach der DSGVO
+# Datenschutzerklärung nach der DSGVO
 
 ## Name und Anschrift der Verantwortlichen
 
