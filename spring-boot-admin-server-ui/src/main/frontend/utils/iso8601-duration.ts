@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export * from 'iso8601-duration';
+export { parse } from 'iso8601-duration';
 
 /**
  * Convert ISO8601 duration object to milliseconds
