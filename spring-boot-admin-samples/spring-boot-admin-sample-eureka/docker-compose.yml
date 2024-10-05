@@ -98,7 +98,7 @@ services:
       - AUTH=no
 
   rabbit:
-    image: "rabbitmq:3"
+    image: "rabbitmq:4"
     container_name: rabbit
     ports:
      - "5672:5672"
