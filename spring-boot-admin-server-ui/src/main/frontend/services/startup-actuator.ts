@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { parse } from 'iso8601-duration';
+
 import { StartupActuatorEventTree } from '@/services/startup-activator-tree';
-import { parse, toMilliseconds } from '@/utils/iso8601-duration';
+import { toMilliseconds } from '@/utils/iso8601-duration';
 
 const regex = new RegExp('([^=\\s]*)=\\[([^\\]]*)\\]', 'gi');
 
