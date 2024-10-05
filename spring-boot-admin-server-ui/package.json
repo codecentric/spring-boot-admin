@@ -72,7 +72,7 @@
     "@storybook/addon-essentials": "8.3.5",
     "@storybook/addon-links": "8.3.5",
     "@storybook/addon-mdx-gfm": "^8.0.0",
-    "@storybook/vue3": "8.3.4",
+    "@storybook/vue3": "8.3.5",
     "@storybook/vue3-vite": "^8.0.0",
     "@testing-library/jest-dom": "6.5.0",
     "@testing-library/user-event": "14.5.2",
