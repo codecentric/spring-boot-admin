@@ -95,25 +95,12 @@ describe('InstanceLoggers', () => {
       groups: [
         {
           name: 'sba',
-          members: [
+          level: [
             {
-              name: 'de.codecentric.boot.admin.client',
-              level: [
-                {
-                  configuredLevel: 'INFO',
-                  effectiveLevel: 'INFO',
-                  instanceId: 'test-1',
-                },
-              ],
-            },
-            {
-              name: 'de.codecentric.boot.admin.server',
-              level: [
-                {
-                  configuredLevel: 'INFO',
-                  effectiveLevel: 'INFO',
-                  instanceId: 'test-1',
-                },
+              instanceId: 'test-1',
+              members: [
+                'de.codecentric.boot.admin.client',
+                'de.codecentric.boot.admin.server',
               ],
             },
           ],
