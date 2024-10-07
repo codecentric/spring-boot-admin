@@ -64,13 +64,18 @@ export default {
   methods: {
     hasEffectiveLevel(level) {
       return this.value.some((l) => {
-        return l.effectiveLevel === level || l.members
-          ? this.hasConfiguredLevel(level)
-          : false;
+        if (this.isLoggingGroup(l)) {
+          return this.hasConfiguredLevel(level);
+        } else {
+          return l.effectiveLevel === level;
+        }
       });
     },
     hasConfiguredLevel(level) {
       return this.value.some((l) => l.configuredLevel === level);
+    },
+    isLoggingGroup(logger) {
+      return !!logger.members;
     },
     selectLevel(level) {
       this.$emit('input', level);
