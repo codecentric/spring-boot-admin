@@ -15,6 +15,8 @@
  */
 import { flatMap, groupBy, union } from 'lodash-es';
 
+import Instance from '@/services/instance';
+
 const convertLoggers = function (loggers, instanceId) {
   return Object.entries(loggers).map(([name, config]) => ({
     name,
@@ -23,16 +25,19 @@ const convertLoggers = function (loggers, instanceId) {
 };
 
 export class InstanceLoggers {
-  constructor(instance) {
+  private readonly instance: Instance;
+
+  constructor(instance: Instance) {
     this.instance = instance;
   }
 
   async fetchLoggers() {
-    const loggerConfig = (await this.instance.fetchLoggers()).data;
+    const { data: loggerConfig } = await this.instance.fetchLoggers();
     return {
       errors: [],
       levels: loggerConfig.levels,
       loggers: convertLoggers(loggerConfig.loggers, this.instance.id),
+      groups: convertLoggers(loggerConfig.groups, this.instance.id),
     };
   }
 
@@ -52,7 +57,7 @@ export class ApplicationLoggers {
     let loggers;
 
     try {
-      const responses = (await this.application.fetchLoggers()).responses;
+      const { responses } = await this.application.fetchLoggers();
       const successful = responses.filter(
         (r) => r.body && r.status >= 200 && r.status < 299,
       );

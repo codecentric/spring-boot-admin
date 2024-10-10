@@ -121,7 +121,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <phase>verify</phase>
+                        <phase>test</phase>
                         <configuration>
                             <arguments>run test</arguments>
                         </configuration>

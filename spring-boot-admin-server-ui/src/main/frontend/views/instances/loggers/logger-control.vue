@@ -63,7 +63,11 @@ export default {
   },
   methods: {
     hasEffectiveLevel(level) {
-      return this.value.some((l) => l.effectiveLevel === level);
+      return this.value.some((l) => {
+        return l.effectiveLevel === level || l.members
+          ? this.hasConfiguredLevel(level)
+          : false;
+      });
     },
     hasConfiguredLevel(level) {
       return this.value.some((l) => l.configuredLevel === level);

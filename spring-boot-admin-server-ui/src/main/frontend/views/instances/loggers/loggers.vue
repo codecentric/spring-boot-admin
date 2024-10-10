@@ -20,11 +20,10 @@
       <sba-sticky-subnav>
         <div class="flex gap-2">
           <sba-toggle-scope-button
-            v-if="instanceCount >= 1"
+            v-if="instanceCount > 1"
             v-model="scope"
             :instance-count="instanceCount"
             :show-info="false"
-            @update:model-value="$emit('changeScope', $event)"
           />
 
           <div class="flex-1">
@@ -60,7 +59,7 @@
                 <label
                   class="font-medium text-gray-700"
                   for="classOnly"
-                  v-text="$t('instances.loggers.filter.class_only')"
+                  v-text="t('instances.loggers.filter.class_only')"
                 />
               </div>
             </div>
@@ -79,7 +78,7 @@
                 <label
                   class="font-medium text-gray-700"
                   for="configuredOnly"
-                  v-text="$t('instances.loggers.filter.configured')"
+                  v-text="t('instances.loggers.filter.configured')"
                 />
               </div>
             </div>
@@ -89,12 +88,27 @@
       </sba-sticky-subnav>
     </template>
 
-    <sba-panel>
+    <sba-panel
+      v-if="loggerConfig.groups"
+      :title="t('instances.loggers.group.label')"
+    >
+      <loggers-list
+        :infinite-scroll="false"
+        :levels="loggerConfig.levels"
+        :loggers="loggerConfig.groups"
+        :loggers-status="loggersStatus"
+        @configure-logger="
+          ({ logger, level }) => configureLogger(logger, level)
+        "
+      />
+    </sba-panel>
+
+    <sba-panel :title="t('instances.loggers.label')">
       <div v-if="failedInstances > 0" class="message is-warning">
         <div class="message-body">
           <sba-alert
             :title="
-              $t('instances.loggers.fetch_failed_some_instances', {
+              t('instances.loggers.fetch_failed_some_instances', {
                 failed: failedInstances,
                 count: instanceCount,
               })
@@ -116,13 +130,23 @@
   </sba-instance-section>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, reactive, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { ActionScope } from '@/components/ActionScope';
 import SbaAlert from '@/components/sba-alert';
+import SbaToggleScopeButton from '@/components/sba-toggle-scope-button.vue';
 
 import { finalize, from, listen } from '@/utils/rxjs';
 import LoggersList from '@/views/instances/loggers/loggers-list';
+import {
+  ApplicationLoggers,
+  InstanceLoggers,
+} from '@/views/instances/loggers/service';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
+
+const { t } = useI18n();
 
 const isClassName = (name) => /\.[A-Z]/.test(name);
 
@@ -147,106 +171,101 @@ const addLoggerCreationEntryIfLoggerNotPresent = (nameFilter, loggers) => {
   }
 };
 
-export default {
-  components: { SbaAlert, SbaInstanceSection, LoggersList },
-  props: {
-    instanceCount: {
-      type: Number,
-      required: true,
-    },
-    loggersService: {
-      type: Object,
-      required: true,
-    },
-  },
-  emits: ['changeScope'],
-  data() {
-    return {
-      hasLoaded: false,
-      error: null,
-      failedInstances: 0,
-      loggerConfig: { loggers: [], levels: [] },
-      filter: {
-        name: '',
-        classOnly: false,
-        configuredOnly: false,
-      },
-      loggersStatus: {},
-      scope:
-        this.instanceCount > 1 ? ActionScope.APPLICATION : ActionScope.INSTANCE,
-    };
-  },
-  computed: {
-    filteredLoggers() {
-      const filterFn = this.getFilterFn();
-      const filteredLoggers = filterFn
-        ? this.loggerConfig.loggers.filter(filterFn)
-        : this.loggerConfig.loggers;
-      addLoggerCreationEntryIfLoggerNotPresent(
-        this.filter.name,
-        filteredLoggers,
-      );
-      return filteredLoggers;
-    },
-  },
-  watch: {
-    loggersService: {
-      immediate: true,
-      handler() {
-        return this.fetchLoggers();
-      },
-    },
-  },
-  methods: {
-    configureLogger(logger, level) {
-      from(this.loggersService.configureLogger(logger.name, level))
-        .pipe(
-          listen(
-            (status) => (this.loggersStatus[logger.name] = { level, status }),
-          ),
-          finalize(() => this.fetchLoggers()),
-        )
-        .subscribe({
-          error: (error) =>
-            console.warn(`Configuring logger '${logger.name}' failed:`, error),
-        });
-    },
-    async fetchLoggers() {
-      this.error = null;
-      this.failedInstances = 0;
-      try {
-        const { errors, ...loggerConfig } =
-          await this.loggersService.fetchLoggers();
-        this.loggerConfig = Object.freeze(loggerConfig);
-        this.failedInstances = errors.length;
-      } catch (error) {
-        console.warn('Fetching loggers failed:', error);
-        this.error = error;
-      }
-      this.hasLoaded = true;
-    },
-    getFilterFn() {
-      let filterFn = null;
+const { loggersService, instanceCount = 0 } = defineProps<{
+  instanceCount: number;
+  loggersService: InstanceLoggers | ApplicationLoggers;
+}>();
 
-      if (this.filter.classOnly) {
-        filterFn = addToFilter(filterFn, (logger) => isClassName(logger.name));
-      }
+const emit = defineEmits<{
+  (
+    e: 'changeScope',
+    scope: ActionScope.APPLICATION | ActionScope.INSTANCE,
+  ): void;
+}>();
 
-      if (this.filter.configuredOnly) {
-        filterFn = addToFilter(filterFn, (logger) =>
-          logger.level.some((l) => Boolean(l.configuredLevel)),
-        );
-      }
+const hasLoaded = ref(false);
+const error = ref(null);
+const failedInstances = ref(0);
+const loggerConfig = ref({ loggers: [], levels: [], groups: [] });
+const loggersStatus = ref({});
+const filter = reactive({
+  name: '',
+  classOnly: false,
+  configuredOnly: false,
+});
+const scope = ref(ActionScope.APPLICATION);
 
-      if (this.filter.name) {
-        const normalizedFilter = this.filter.name.toLowerCase();
-        filterFn = addToFilter(filterFn, (logger) =>
-          logger.name.toLowerCase().includes(normalizedFilter),
-        );
-      }
+const filteredLoggers = computed(() => {
+  const filterFn = getFilterFn();
+  const filteredLoggers = filterFn
+    ? loggerConfig.value.loggers.filter(filterFn)
+    : loggerConfig.value.loggers;
+  addLoggerCreationEntryIfLoggerNotPresent(filter.name, filteredLoggers);
+  return filteredLoggers;
+});
 
-      return filterFn;
-    },
+watch(scope, (scope) => {
+  emit('changeScope', scope);
+});
+
+watch(
+  () => loggersService,
+  () => {
+    if (loggersService) {
+      fetchLoggers();
+    }
   },
-};
+  { immediate: true },
+);
+
+function configureLogger(logger, level) {
+  from(loggersService.configureLogger(logger.name, level))
+    .pipe(
+      listen(
+        (status) => (loggersStatus.value[logger.name] = { level, status }),
+      ),
+      finalize(() => fetchLoggers()),
+    )
+    .subscribe({
+      error: (error) =>
+        console.warn(`Configuring logger '${logger.name}' failed:`, error),
+    });
+}
+
+async function fetchLoggers() {
+  error.value = null;
+  failedInstances.value = 0;
+  try {
+    let { errors, ...rest } = await loggersService.fetchLoggers();
+    loggerConfig.value = Object.freeze(rest);
+    failedInstances.value = errors.length;
+  } catch (e) {
+    console.warn('Fetching loggers failed:', e);
+    error.value = e;
+  }
+  hasLoaded.value = true;
+}
+
+function getFilterFn() {
+  let filterFn = null;
+
+  if (filter.classOnly) {
+    filterFn = addToFilter(filterFn, (logger) => isClassName(logger.name));
+  }
+
+  if (filter.configuredOnly) {
+    filterFn = addToFilter(filterFn, (logger) =>
+      logger.level.some((l) => Boolean(l.configuredLevel)),
+    );
+  }
+
+  if (filter.name) {
+    const normalizedFilter = filter.name.toLowerCase();
+    filterFn = addToFilter(filterFn, (logger) =>
+      logger.name.toLowerCase().includes(normalizedFilter),
+    );
+  }
+
+  return filterFn;
+}
 </script>

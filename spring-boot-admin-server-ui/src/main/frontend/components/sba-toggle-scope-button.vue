@@ -15,14 +15,14 @@
   -->
 
 <template>
-  <div>
+  <div class="flex">
     <sba-button
-      v-if="instanceCount <= 1 || modelValue === APPLICATION"
+      v-if="instanceCount <= 1 || modelValue === ActionScope.APPLICATION"
       :class="classNames"
       :title="$t('term.affects_all_instances', { count: instanceCount })"
       class="w-full"
       size="sm"
-      @click="toggleScope(ActionScope.INSTANCE)"
+      @click="() => (modelValue = ActionScope.INSTANCE)"
     >
       <span v-text="$t('term.application')" />
     </sba-button>
@@ -32,14 +32,14 @@
       :title="$t('term.affects_this_instance_only')"
       class="w-full"
       size="sm"
-      @click="toggleScope(ActionScope.APPLICATION)"
+      @click="() => (modelValue = ActionScope.APPLICATION)"
     >
       <span v-text="$t('term.instance')" />
     </sba-button>
 
     <p v-if="showInfo" class="text-center text-xs pt-1 truncate">
       <span
-        v-if="modelValue === APPLICATION"
+        v-if="modelValue === ActionScope.APPLICATION"
         v-text="$t('term.affects_all_instances', { count: instanceCount })"
       />
       <span v-else v-text="$t('term.affects_this_instance_only')" />
@@ -47,40 +47,18 @@
   </div>
 </template>
 
-<script>
+<script lang="ts" setup>
 import { ActionScope } from '@/components/ActionScope';
-import SbaButton from '@/components/sba-button';
+import SbaButton from '@/components/sba-button.vue';
 
-export default {
-  name: 'SbaToggleScopeButton',
-  components: { SbaButton },
-  props: {
-    modelValue: {
-      type: String,
-      required: true,
-    },
-    instanceCount: {
-      type: Number,
-      required: true,
-    },
-    showInfo: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  emits: ['update:modelValue'],
-  data() {
-    return {
-      ActionScope,
-      APPLICATION: ActionScope.APPLICATION,
-      INSTANCE: ActionScope.INSTANCE,
-      classNames: [],
-    };
-  },
-  methods: {
-    toggleScope(newScope) {
-      this.$emit('update:modelValue', newScope);
-    },
-  },
-};
+const modelValue = defineModel({
+  type: String,
+  default: ActionScope.APPLICATION,
+});
+
+const { instanceCount, showInfo = true } = defineProps<{
+  instanceCount: number;
+  showInfo: boolean;
+  classNames?: string | string[] | Record<string, boolean>;
+}>();
 </script>
