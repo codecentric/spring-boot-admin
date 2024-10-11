@@ -89,7 +89,7 @@ import 'v3-infinite-loading/lib/style.css';
 
 import SbaLoggerControl from '@/views/instances/loggers/logger-control';
 
-const { loggers = [], infiniteScroll = true } = defineProps<{
+const { loggers, infiniteScroll = true } = defineProps<{
   levels: string[];
   loggers: any[];
   loggersStatus: Record<string, any>;
