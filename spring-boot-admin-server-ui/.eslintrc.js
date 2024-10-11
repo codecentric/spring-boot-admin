@@ -30,7 +30,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.ts'],
+      files: ['*.ts', '*.vue'],
       rules: {
         'no-undef': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
