@@ -29,7 +29,7 @@
     "ansi_up": "6.0.2",
     "autolinker": "4.0.0",
     "axios": "1.7.7",
-    "chart.js": "4.4.4",
+    "chart.js": "4.4.5",
     "chartjs-adapter-moment": "1.0.1",
     "classnames": "2.5.1",
     "d3": "^7.9.0",
