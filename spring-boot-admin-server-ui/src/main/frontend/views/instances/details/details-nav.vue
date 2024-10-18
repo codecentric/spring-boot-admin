@@ -10,6 +10,7 @@
       <div class="flex-1 text-right">
         <sba-button-group>
           <sba-button
+            v-if="instance.showUrl()"
             :title="instance.registration.serviceUrl"
             class="border-gray-400 ml-1"
             @click="openLink(instance.registration.serviceUrl)"
@@ -31,6 +32,7 @@
           </sba-button>
 
           <sba-button
+            v-if="instance.showUrl()"
             :title="instance.registration.managementUrl"
             class="border-gray-400 ml-1"
             @click="openLink(instance.registration.managementUrl)"
@@ -52,6 +54,7 @@
           </sba-button>
 
           <sba-button
+            v-if="instance.showUrl()"
             :title="instance.registration.healthUrl"
             class="border-gray-400 ml-1"
             @click="openLink(instance.registration.healthUrl)"
