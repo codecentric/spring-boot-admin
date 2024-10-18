@@ -151,6 +151,7 @@ public class UiController {
 		private final Boolean enableToasts;
 
 		private final Boolean showInstanceUrl;
+
 	}
 
 	@lombok.Data
