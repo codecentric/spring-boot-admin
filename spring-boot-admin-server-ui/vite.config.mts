@@ -31,10 +31,7 @@ export default defineConfig(({ mode }) => {
       viteStaticCopy({
         targets: [
           {
-            src: [
-              'src/main/frontend/sba-settings.js',
-              'src/main/frontend/assets/',
-            ],
+            src: ['sba-settings.js', 'assets/'],
             dest: outDir,
           },
         ],
