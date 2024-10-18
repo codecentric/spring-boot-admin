@@ -64,3 +64,7 @@ export const getCurrentUser = () => {
 };
 
 export default mergedConfig;
+
+export const useSbaConfig = () => {
+  return mergedConfig;
+};
