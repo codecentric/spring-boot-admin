@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.client.registration;
 
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
@@ -77,7 +78,12 @@ public class DefaultApplicationRegistrator implements ApplicationRegistrator {
 
 	protected boolean register(Application application, String adminUrl, boolean firstAttempt) {
 		try {
-			String id = this.registrationClient.register(adminUrl, application);
+			Optional<String> response = this.registrationClient.register(adminUrl, application);
+			if (response.isEmpty()) {
+				LOGGER.debug("Request was no successful");
+				return false;
+			}
+			String id = response.get();
 			if (this.registeredId.compareAndSet(null, id)) {
 				LOGGER.info("Application registered itself as {}", id);
 			}
