@@ -37,7 +37,7 @@ describe('Navbar', function () {
     });
 
     render(Navbar);
-    screen.logTestingPlaygroundURL();
+
     expect(screen.getByTestId('usermenu')).toBeVisible();
     expect(screen.getByText('mail@example.org')).toBeVisible();
   });
