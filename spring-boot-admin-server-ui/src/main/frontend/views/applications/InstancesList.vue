@@ -85,6 +85,10 @@
 import { PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
+import SbaStatus from '@/components/sba-status.vue';
+import SbaTag from '@/components/sba-tag.vue';
+import SbaTags from '@/components/sba-tags.vue';
+
 import Instance from '@/services/instance';
 
 const router = useRouter();

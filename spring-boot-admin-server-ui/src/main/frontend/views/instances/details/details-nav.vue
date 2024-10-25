@@ -82,6 +82,8 @@
 
 <script>
 import SbaButtonGroup from '@/components/sba-button-group';
+import SbaButton from '@/components/sba-button.vue';
+import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 
 import Application from '@/services/application';
 import Instance from '@/services/instance';
@@ -89,7 +91,7 @@ import InstanceSwitcher from '@/views/instances/details/instance-switcher';
 
 export default {
   name: 'DetailsNav',
-  components: { SbaButtonGroup, InstanceSwitcher },
+  components: { SbaButton, SbaStickySubnav, SbaButtonGroup, InstanceSwitcher },
   props: {
     application: {
       type: Application,
