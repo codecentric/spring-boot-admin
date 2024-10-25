@@ -20,6 +20,7 @@ jobs:
       - run: echo "Will start a Maven Central upload with version ${{ github.event.inputs.releaseversion }}"
 
       - name: free disk space
+        continue-on-error: true
         run: |
           df -h
           sudo swapoff -a
@@ -65,7 +66,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Deploy Asciidoc docs output to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.3
+        uses: JamesIves/github-pages-deploy-action@v4.6.8
         with:
           branch: gh-pages # The branch the action should deploy to.
           folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
@@ -73,7 +74,7 @@ jobs:
           clean: true # Automatically remove deleted files from the deploy branch
 
       - name: Deploy Asciidoc docs output to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.3
+        uses: JamesIves/github-pages-deploy-action@v4.6.8
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages # The branch the action should deploy to.
@@ -90,6 +91,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: free disk space
+        continue-on-error: true
         run: |
           df -h
           sudo swapoff -a

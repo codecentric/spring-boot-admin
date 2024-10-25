@@ -123,6 +123,7 @@
 </template>
 
 <script lang="ts">
+import classNames from 'classnames';
 import Fuse from 'fuse.js';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -140,7 +141,9 @@ export default {
 
     const routerState = useRouterState({
       termFilter: '',
+      wordWrap: true,
       sortBy: 'name',
+      statusFilter: 'none',
     });
 
     const { applications, applicationsInitialized, error } =
@@ -212,6 +215,7 @@ export default {
     };
   },
   methods: {
+    classNames,
     classForApplication(application: Application) {
       if (!application) {
         return null;

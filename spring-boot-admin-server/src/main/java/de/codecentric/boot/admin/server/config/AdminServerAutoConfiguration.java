@@ -44,6 +44,7 @@ import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdater;
+import de.codecentric.boot.admin.server.services.InstanceFilter;
 import de.codecentric.boot.admin.server.services.InstanceIdGenerator;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.services.StatusUpdateTrigger;
@@ -71,9 +72,15 @@ public class AdminServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	public InstanceFilter instanceFilter() {
+		return (instance) -> true;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public InstanceRegistry instanceRegistry(InstanceRepository instanceRepository,
-			InstanceIdGenerator instanceIdGenerator) {
-		return new InstanceRegistry(instanceRepository, instanceIdGenerator);
+			InstanceIdGenerator instanceIdGenerator, InstanceFilter instanceFilter) {
+		return new InstanceRegistry(instanceRepository, instanceIdGenerator, instanceFilter);
 	}
 
 	@Bean

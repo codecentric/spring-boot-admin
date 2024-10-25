@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.services;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,10 @@ public class InstanceRegistryTest {
 	public void setUp() {
 		repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
 		idGenerator = new HashingInstanceUrlIdGenerator();
-		registry = new InstanceRegistry(repository, idGenerator);
+		registry = new InstanceRegistry(repository, idGenerator, (instance) -> {
+			Map<String, String> metadata = instance.getRegistration().getMetadata();
+			return !metadata.containsKey("displayed") || !metadata.get("displayed").equals("false");
+		});
 	}
 
 	@Test
@@ -115,6 +119,21 @@ public class InstanceRegistryTest {
 			.consumeRecordedWith(
 					(applications) -> assertThat(applications.stream().map(Instance::getId)).doesNotContain(id3)
 						.containsExactlyInAnyOrder(id1, id2))
+			.verifyComplete();
+	}
+
+	@Test
+	public void findByNameAndFilter() {
+		InstanceId id1 = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
+		registry
+			.register(Registration.create("abc", "http://localhost:8081/health").metadata("displayed", "false").build())
+			.block();
+
+		StepVerifier.create(registry.getInstances("abc"))
+			.recordWith(ArrayList::new)
+			.thenConsumeWhile((a) -> true)
+			.consumeRecordedWith(
+					(applications) -> assertThat(applications.stream().map(Instance::getId)).containsExactly(id1))
 			.verifyComplete();
 	}
 

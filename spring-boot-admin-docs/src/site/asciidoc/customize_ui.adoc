@@ -216,3 +216,19 @@ You can very simply hide views in the navbar:
 ----
 include::{samples-dir}/spring-boot-admin-sample-servlet/src/main/resources/application.yml[tags=customization-view-settings]
 ----
+
+== Hide Service URL ==
+To hide service URLs in Spring Boot Admin UI entirely, set the following property in your Server's configuration:
+
+|===
+| Property name | Default | Usage
+
+| `spring.boot.admin.ui.hide-instance-url`
+| `false`
+| Set to `true` to hide service URLs as well as actions that require them in UI (e.g. jump to /health or /actuator).
+
+|===
+
+If you want to hide the URL for specific instances oncly, you can set the `hide-url` property in the instance metadata while registering a service.
+When using Spring Boot Admin Client you can set the property `spring.boot.admin.client.metadata.hide-url=true` in the corresponding config file.
+The value set in `metadata` does not have any effect, when the URLs are disabled in Server.

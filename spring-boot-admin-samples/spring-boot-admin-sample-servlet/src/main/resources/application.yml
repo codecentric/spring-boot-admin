@@ -12,6 +12,10 @@ logging:
     name: "target/boot-admin-sample-servlet.log"
   pattern:
     file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  group:
+    Spring Boot Admin:
+      - de.codecentric.boot.admin.server
+      - de.codecentric.boot.admin.client
 
 management:
   endpoints:
@@ -50,7 +54,6 @@ spring:
               de-service-test-5: A large content
               de-service-test-6: A large content
             kubectl.kubernetes.io/last-applied-configuration: '{"name":"jvm.threads.peak","description":"The peak live thread count since the Java virtual machine started or peak was reset","baseUnit":"threads","measurements":[{"statistic":"VALUE","value":64.0}],"availableTags":[]}'
-          prefer-ip: true
   config:
     import: optional:configserver:http://localhost:8888/
   jmx:

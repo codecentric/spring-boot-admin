@@ -30,7 +30,7 @@
     </parent>
 
     <properties>
-        <site.skin.version>2.3.2</site.skin.version>
+        <site.skin.version>2.3.3</site.skin.version>
     </properties>
 
     <build>
@@ -100,7 +100,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.6.2</version>
+                <version>3.8.0</version>
             </plugin>
         </plugins>
     </reporting>

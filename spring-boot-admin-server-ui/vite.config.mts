@@ -39,6 +39,11 @@ export default defineConfig(({ mode }) => {
     ],
     css: {
       postcss,
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+        },
+      },
     },
     test: {
       root: __dirname,
