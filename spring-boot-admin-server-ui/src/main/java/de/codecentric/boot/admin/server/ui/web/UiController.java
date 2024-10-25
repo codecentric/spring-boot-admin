@@ -150,7 +150,7 @@ public class UiController {
 
 		private final Boolean enableToasts;
 
-		private final Boolean showInstanceUrl;
+		private final Boolean hideInstanceUrl;
 
 	}
 
