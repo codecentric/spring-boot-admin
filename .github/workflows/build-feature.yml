@@ -18,6 +18,7 @@ jobs:
     steps:
 
       - name: free disk space
+        continue-on-error: true
         run: |
           df -h
           sudo swapoff -a

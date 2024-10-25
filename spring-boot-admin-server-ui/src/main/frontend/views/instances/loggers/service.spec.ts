@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { HttpResponse, http } from 'msw';
 import { describe, expect, it, vi } from 'vitest';
 
 import { ApplicationLoggers, InstanceLoggers } from './service';
 
+import { server } from '@/mocks/server';
+import Instance from '@/services/instance';
+
 describe('InstanceLoggers', () => {
-  const instance = {
-    id: 'test-1',
-    fetchLoggers: vi.fn(),
-    configureLogger: vi.fn(),
-  };
+  const instance = new Instance({ id: 'test-1' });
+  instance.configureLogger = vi.fn();
+
   const service = new InstanceLoggers(instance);
 
   it('should configure loggers', () => {
@@ -31,9 +33,17 @@ describe('InstanceLoggers', () => {
   });
 
   it('should fetch loggers', async () => {
-    instance.fetchLoggers.mockReturnValue(
-      Promise.resolve({
-        data: {
+    server.use(
+      http.get('*/loggers', async () => {
+        return HttpResponse.json({
+          groups: {
+            sba: {
+              members: [
+                'de.codecentric.boot.admin.client',
+                'de.codecentric.boot.admin.server',
+              ],
+            },
+          },
           levels: ['TRACE', 'INFO', 'FATAL'],
           loggers: {
             ROOT: {
@@ -45,7 +55,13 @@ describe('InstanceLoggers', () => {
               effectiveLevel: 'INFO',
             },
           },
-        },
+        });
+      }),
+      http.get('*/loggers/*', async () => {
+        return HttpResponse.json({
+          configuredLevel: 'INFO',
+          effectiveLevel: 'INFO',
+        });
       }),
     );
 
@@ -72,6 +88,20 @@ describe('InstanceLoggers', () => {
               instanceId: 'test-1',
               configuredLevel: null,
               effectiveLevel: 'INFO',
+            },
+          ],
+        },
+      ],
+      groups: [
+        {
+          name: 'sba',
+          level: [
+            {
+              instanceId: 'test-1',
+              members: [
+                'de.codecentric.boot.admin.client',
+                'de.codecentric.boot.admin.server',
+              ],
             },
           ],
         },

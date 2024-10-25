@@ -20,6 +20,7 @@ jobs:
       - run: echo "Will start a Maven Central upload with version ${{ github.event.inputs.releaseversion }}"
 
       - name: free disk space
+        continue-on-error: true
         run: |
           df -h
           sudo swapoff -a
@@ -90,6 +91,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: free disk space
+        continue-on-error: true
         run: |
           df -h
           sudo swapoff -a

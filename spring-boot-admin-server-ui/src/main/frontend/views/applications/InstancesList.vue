@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2018 the original author or authors.
+  - Copyright 2014-2024 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -30,25 +30,39 @@
         />
       </div>
       <div class="flex-auto xl:flex-1 xl:w-1/4 truncate">
-        <a
-          :href="
-            instance.registration.serviceUrl || instance.registration.healthUrl
-          "
-          @click.stop
-          v-text="
-            instance.registration.serviceUrl || instance.registration.healthUrl
-          "
-        />
-        <sba-tag
-          v-if="instance.registration.metadata?.['group']"
-          class="ml-2"
-          :value="instance.registration.metadata?.['group']"
-          small
-        />
-        <br />
-        <span class="text-sm italic" v-text="instance.id" />
+        <template v-if="instance.showUrl()">
+          <a
+            :href="
+              instance.registration.serviceUrl ||
+              instance.registration.healthUrl
+            "
+            @click.stop
+            v-text="
+              instance.registration.serviceUrl ||
+              instance.registration.healthUrl
+            "
+          />
+          <sba-tag
+            v-if="instance.registration.metadata?.['group']"
+            class="ml-2"
+            :value="instance.registration.metadata?.['group']"
+            small
+          />
+          <br />
+          <span class="text-sm italic" v-text="instance.id" />
+        </template>
+        <template v-else>
+          <span v-text="instance.id"></span>
+          <sba-tag
+            v-if="instance.registration.metadata?.['group']"
+            class="ml-2"
+            :value="instance.registration.metadata?.['group']"
+            small
+          />
+        </template>
       </div>
       <div
+        v-if="Array.isArray(instance.tags)"
         class="hidden xl:block w-1/4"
         :class="{
           'overflow-x-scroll': Object.keys(instance.tags ?? {}).length > 0,
@@ -70,6 +84,10 @@
 <script lang="ts" setup>
 import { PropType } from 'vue';
 import { useRouter } from 'vue-router';
+
+import SbaStatus from '@/components/sba-status.vue';
+import SbaTag from '@/components/sba-tag.vue';
+import SbaTags from '@/components/sba-tags.vue';
 
 import Instance from '@/services/instance';
 

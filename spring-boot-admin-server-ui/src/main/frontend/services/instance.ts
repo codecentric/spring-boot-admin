@@ -25,6 +25,8 @@ import waitForPolyfill from '../utils/eventsource-polyfill';
 import logtail from '../utils/logtail';
 import uri from '../utils/uri';
 
+import { useSbaConfig } from '@/sba-config';
+
 const actuatorMimeTypes = [
   'application/vnd.spring-boot.actuator.v2+json',
   'application/vnd.spring-boot.actuator.v1+json',
@@ -115,6 +117,16 @@ class Instance {
         ...mBean,
       })),
     }));
+  }
+
+  showUrl() {
+    const sbaConfig = useSbaConfig();
+    if (sbaConfig.uiSettings.hideInstanceUrl) {
+      return false;
+    }
+
+    const hideUrlMetadata = this.registration.metadata?.['hide-url'];
+    return hideUrlMetadata !== 'true';
   }
 
   getId() {
