@@ -96,7 +96,6 @@
                     </execution>
                     <execution>
                         <id>npm-build</id>
-                        <phase>prepare-package</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>

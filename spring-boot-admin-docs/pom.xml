@@ -54,7 +54,7 @@
                     </execution>
                     <execution>
                         <id>npm-install</id>
-                        <phase>prepare-package</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>

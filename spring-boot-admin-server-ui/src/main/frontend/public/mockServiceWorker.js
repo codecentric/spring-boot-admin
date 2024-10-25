@@ -8,8 +8,8 @@
  * - Please do NOT serve this file on production.
  */
 
-const PACKAGE_VERSION = '2.4.9'
-const INTEGRITY_CHECKSUM = '26357c79639bfa20d64c0efca2a87423'
+const PACKAGE_VERSION = '2.5.1'
+const INTEGRITY_CHECKSUM = '07a8241b182f8a246a7cd39894799a9e'
 const IS_MOCKED_RESPONSE = Symbol('isMockedResponse')
 const activeClientIds = new Set()
 
@@ -62,7 +62,12 @@ self.addEventListener('message', async function (event) {
 
       sendToClient(client, {
         type: 'MOCKING_ENABLED',
-        payload: true,
+        payload: {
+          client: {
+            id: client.id,
+            frameType: client.frameType,
+          },
+        },
       })
       break
     }
@@ -154,6 +159,10 @@ async function handleRequest(event, requestId) {
 // communicate with during the response resolving phase.
 async function resolveMainClient(event) {
   const client = await self.clients.get(event.clientId)
+
+  if (activeClientIds.has(event.clientId)) {
+    return client
+  }
 
   if (client?.frameType === 'top-level') {
     return client
