@@ -18,17 +18,16 @@ import { merge } from 'lodash-es';
 const brand =
   '<img src="assets/img/icon-spring-boot-admin.svg">Spring Boot Admin';
 
-const DEFAULT_CONFIG = {
+const DEFAULT_CONFIG: SBASettings = {
   uiSettings: {
+    title: 'Spring Boot Admin',
     brand,
     theme: {
       backgroundEnabled: true,
       color: '#42d3a5',
     },
-    notifications: {
-      enabled: true,
-    },
     rememberMeEnabled: true,
+    enableToasts: false,
     externalViews: [] as ExternalView[],
     favicon: 'assets/img/favicon.png',
     faviconDanger: 'assets/img/favicon-danger.png',
@@ -45,9 +44,10 @@ const DEFAULT_CONFIG = {
       threads: 2500,
       logfile: 1000,
     },
+    hideInstanceUrl: false,
   },
   user: null,
-  extensions: [],
+  extensions: {},
   csrf: {
     parameterName: '_csrf',
     headerName: 'X-XSRF-TOKEN',
@@ -57,10 +57,14 @@ const DEFAULT_CONFIG = {
   },
 };
 
-const mergedConfig = merge(DEFAULT_CONFIG, window.SBA);
+const mergedConfig = merge(DEFAULT_CONFIG, window.SBA) as SBASettings;
 
 export const getCurrentUser = () => {
   return mergedConfig.user;
 };
 
 export default mergedConfig;
+
+export const useSbaConfig = () => {
+  return mergedConfig;
+};
