@@ -68,6 +68,8 @@
         <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
         <asciidoctor-maven-plugin.version>3.1.0</asciidoctor-maven-plugin.version>
+        <asciidoctor-converter-doxia-module.version>3.1.0</asciidoctor-converter-doxia-module.version>
+        <asciidoctor-maven-plugin.version>3.1.0</asciidoctor-maven-plugin.version>
         <asciidoctor-converter-doxia-module.version>3.0.0</asciidoctor-converter-doxia-module.version>
         <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
