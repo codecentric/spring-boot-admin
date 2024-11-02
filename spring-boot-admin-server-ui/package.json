@@ -80,7 +80,6 @@
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/d3": "^7.4.3",
     "@types/lodash-es": "^4.17.7",
-    "@types/testing-library__jest-dom": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitejs/plugin-vue": "5.1.4",
