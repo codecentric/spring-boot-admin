@@ -44,7 +44,7 @@
         <awaitility.version>4.2.2</awaitility.version>
         <testcontainers.version>1.20.3</testcontainers.version>
         <eureka-client.version>3.1.1</eureka-client.version>
-        <jetty.version>12.0.14</jetty.version>
+        <jetty.version>12.0.15</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
