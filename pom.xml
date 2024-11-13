@@ -75,8 +75,8 @@
         <checkstyle.version>10.18.2</checkstyle.version>
         <spring-javaformat-checkstyle.version>0.0.43</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
-        <node.version>v18.20.2</node.version>
-        <npm.version>10.5.2</npm.version>
+        <node.version>v20.18.0</node.version>
+        <npm.version>10.8.2</npm.version>
         <jolokia-support-spring.version>2.1.1</jolokia-support-spring.version>
     </properties>
     <modules>
