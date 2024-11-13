@@ -38,7 +38,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>${maven-site-plugin.version}</version>
+                <!--
+                    Due to changes in Doxia (see https://cwiki.apache.org/confluence/display/MAVEN/Towards+Doxia+2.0.0+Stack),
+                    we have to use a fixed version here, as our site skin does not work with the latest version.
+                -->
+                <version>3.12.1</version>
                 <executions>
                     <execution>
                         <id>output-html</id>
