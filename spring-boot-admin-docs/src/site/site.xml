@@ -7,7 +7,7 @@
     <skin>
         <groupId>com.bernardomg.maven.skins</groupId>
         <artifactId>docs-maven-skin</artifactId>
-        <version>2.3.2</version>
+        <version>2.3.3</version>
     </skin>
 
     <custom>

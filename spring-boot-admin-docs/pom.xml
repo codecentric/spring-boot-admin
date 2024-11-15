@@ -60,7 +60,6 @@
                     <generateReports>false</generateReports>
                     <generateSitemap>false</generateSitemap>
                     <relativizeDecorationLinks>false</relativizeDecorationLinks>
-                    <locales>en</locales>
                     <inputEncoding>UTF-8</inputEncoding>
                     <outputEncoding>UTF-8</outputEncoding>
                     <asciidoc>
@@ -79,11 +78,6 @@
                     </asciidoc>
                 </configuration>
                 <dependencies>
-                    <dependency>
-                        <groupId>org.asciidoctor</groupId>
-                        <artifactId>asciidoctor-maven-plugin</artifactId>
-                        <version>${asciidoctor-maven-plugin.version}</version>
-                    </dependency>
                     <dependency>
                         <groupId>com.bernardomg.maven.skins</groupId>
                         <artifactId>docs-maven-skin</artifactId>
