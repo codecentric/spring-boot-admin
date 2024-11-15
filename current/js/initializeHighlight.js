@@ -11,4 +11,4 @@
  * Initializes highlight.js when the document loads.
  */
 // Uses the default initialization
-hljs.initHighlightingOnLoad();
+hljs.highlightAll();
