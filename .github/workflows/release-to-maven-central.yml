@@ -146,7 +146,7 @@ jobs:
       - name: Commit new SNAPSHOT version
         uses: stefanzweifel/git-auto-commit-action@v5
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           commit_message: "chore: update to next SNAPSHOT version"
 
