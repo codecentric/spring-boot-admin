@@ -26,7 +26,7 @@
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
-        <revision>3.3.7-SNAPSHOT</revision>
+        <revision>3.4.0-SNAPSHOT</revision>
         <java.version>17</java.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -36,10 +36,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.3.5</spring-boot.version>
-        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-boot.version>3.4.0</spring-boot.version>
+        <spring-cloud.version>2024.0.0-RC1</spring-cloud.version>
         <wiremock.version>3.0.1</wiremock.version>
-        <hazelcast-tests.version>5.4.0</hazelcast-tests.version>
+        <hazelcast-tests.version>5.5.0</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.2.2</awaitility.version>
         <testcontainers.version>1.20.4</testcontainers.version>
