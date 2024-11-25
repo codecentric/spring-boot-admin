@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.client.config;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -106,8 +108,8 @@ public class SpringBootAdminClientAutoConfigurationTest {
 
 				Integer connectTimeout = (Integer) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
 				assertThat(connectTimeout).isEqualTo(1337);
-				Integer readTimeout = (Integer) ReflectionTestUtils.getField(requestFactory, "readTimeout");
-				assertThat(readTimeout).isEqualTo(42);
+				Duration readTimeout = (Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+				assertThat(readTimeout).isEqualTo(Duration.ofMillis(42));
 			});
 	}
 
