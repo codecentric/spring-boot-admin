@@ -62,7 +62,6 @@
         </template>
       </div>
       <div
-        v-if="Array.isArray(instance.tags)"
         class="hidden xl:block w-1/4"
         :class="{
           'overflow-x-scroll': Object.keys(instance.tags ?? {}).length > 0,
