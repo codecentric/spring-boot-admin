@@ -77,6 +77,7 @@ export const getStatusInfo = (applications: Application[]) => {
 
 class Application {
   public readonly name: string;
+  public readonly group: string;
   public readonly instances: Instance[];
   public readonly buildVersion? = {} as { value: string };
   public readonly status: string;
