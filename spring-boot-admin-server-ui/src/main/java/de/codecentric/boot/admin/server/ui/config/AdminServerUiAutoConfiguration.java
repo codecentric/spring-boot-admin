@@ -258,9 +258,11 @@ public class AdminServerUiAutoConfiguration {
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 					.scan(this.adminUi.getExtensionResourceLocations());
-				List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
+				List<String> routesIncludes = Stream
+					.concat(DEFAULT_UI_ROUTES.stream(), Stream.concat(extensionRoutes.stream(), Stream.of("/")))
 					.map(this.adminServer::path)
 					.collect(Collectors.toList());
+
 				List<String> routesExcludes = Stream
 					.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
 					.map(this.adminServer::path)
