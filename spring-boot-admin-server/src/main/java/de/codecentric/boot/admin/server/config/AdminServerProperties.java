@@ -37,7 +37,7 @@ public class AdminServerProperties {
 
 	/**
 	 * The context-path prefixes the path where the Admin Servers static assets and api
-	 * should be served. Relative to the Dispatcher-Servlet.
+	 * should be served, relative to the Dispatcher-Servlet.
 	 */
 	private String contextPath = "";
 
