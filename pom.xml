@@ -37,7 +37,7 @@
 
         <!-- used dependencies versions -->
         <spring-boot.version>3.4.0</spring-boot.version>
-        <spring-cloud.version>2024.0.0-RC1</spring-cloud.version>
+        <spring-cloud.version>2024.0.0</spring-cloud.version>
         <wiremock.version>3.0.1</wiremock.version>
         <hazelcast-tests.version>5.5.0</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
