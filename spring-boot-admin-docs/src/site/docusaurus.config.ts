@@ -11,7 +11,7 @@ const config: Config = {
   title: 'Spring Boot Admin',
   favicon: 'img/favicon.png',
   url: 'https://docs.spring-boot-admin.com/',
-  baseUrl: '/',
+  baseUrl: process.env.VERSION ? `/${process.env.VERSION}/` : '/',
   organizationName: 'codecentric',
   projectName: 'spring-boot-admin',
   onBrokenLinks: 'throw',
