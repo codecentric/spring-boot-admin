@@ -12,6 +12,10 @@
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "matchPackageNames": ["org.apache.maven.plugins:maven-site-plugin"],
+      "enabled": false
     }
   ]
 }

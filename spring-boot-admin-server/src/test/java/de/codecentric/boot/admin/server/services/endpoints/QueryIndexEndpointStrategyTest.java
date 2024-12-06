@@ -18,6 +18,8 @@ package de.codecentric.boot.admin.server.services.endpoints;
 
 import java.time.Duration;
 
+import javax.net.ssl.SSLException;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.http.Fault;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -57,9 +59,9 @@ import static java.util.Collections.singletonMap;
 
 public class QueryIndexEndpointStrategyTest {
 
-	public WireMockServer wireMock = new WireMockServer(wireMockConfig().dynamicPort().dynamicHttpsPort());
-
 	private final ApiMediaTypeHandler apiMediaTypeHandler = new ApiMediaTypeHandler();
+
+	public WireMockServer wireMock = new WireMockServer(wireMockConfig().dynamicPort().dynamicHttpsPort());
 
 	private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
 		.webClient(WebClient.builder().clientConnector(httpConnector()))
@@ -260,8 +262,16 @@ public class QueryIndexEndpointStrategyTest {
 	}
 
 	private ReactorClientHttpConnector httpConnector() {
-		SslContextBuilder sslCtx = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE);
-		HttpClient client = HttpClient.create().secure((ssl) -> ssl.sslContext(sslCtx));
+		HttpClient client = HttpClient.create().secure((ssl) -> {
+			try {
+				SslContextBuilder sslCtx = SslContextBuilder.forClient()
+					.trustManager(InsecureTrustManagerFactory.INSTANCE);
+				ssl.sslContext(sslCtx.build());
+			}
+			catch (SSLException ex) {
+				throw new RuntimeException(ex);
+			}
+		});
 		return new ReactorClientHttpConnector(client);
 	}
 

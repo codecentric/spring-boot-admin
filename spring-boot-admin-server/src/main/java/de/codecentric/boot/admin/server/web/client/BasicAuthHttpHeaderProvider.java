@@ -17,12 +17,12 @@
 package de.codecentric.boot.admin.server.web.client;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -86,7 +86,7 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 	}
 
 	protected String encode(String username, String password) {
-		String token = Base64Utils.encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
+		String token = base64Encode((username + ":" + password).getBytes(StandardCharsets.UTF_8));
 		return "Basic " + token;
 	}
 
@@ -99,6 +99,14 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 			}
 		}
 		return null;
+	}
+
+	private static String base64Encode(byte[] src) {
+		if (src.length == 0) {
+			return "";
+		}
+		byte[] dest = Base64.getEncoder().encode(src);
+		return new String(dest, StandardCharsets.UTF_8);
 	}
 
 	@lombok.Data

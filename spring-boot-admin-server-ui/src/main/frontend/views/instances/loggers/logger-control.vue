@@ -97,6 +97,8 @@ export default {
           level === 'WARN' && this.hasEffectiveLevel('WARN'),
         'is-active is-light':
           level === 'ERROR' && this.hasEffectiveLevel('ERROR'),
+        'is-active is-extra-light':
+          level === 'FATAL' && this.hasEffectiveLevel('FATAL'),
         'is-active is-black': level === 'OFF' && this.hasEffectiveLevel('OFF'),
         'is-loading': this.getStatusForLevel(level) === 'executing',
       };

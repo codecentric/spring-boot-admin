@@ -26,7 +26,7 @@
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
     <properties>
-        <revision>3.3.5-SNAPSHOT</revision>
+        <revision>3.4.2-SNAPSHOT</revision>
         <java.version>17</java.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -36,48 +36,50 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.3.5</spring-boot.version>
-        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-boot.version>3.4.0</spring-boot.version>
+        <spring-cloud.version>2024.0.0</spring-cloud.version>
         <wiremock.version>3.0.1</wiremock.version>
-        <hazelcast-tests.version>5.4.0</hazelcast-tests.version>
+        <hazelcast-tests.version>5.5.0</hazelcast-tests.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
         <awaitility.version>4.2.2</awaitility.version>
-        <testcontainers.version>1.20.3</testcontainers.version>
+        <testcontainers.version>1.20.4</testcontainers.version>
         <eureka-client.version>3.1.1</eureka-client.version>
-        <jetty.version>12.0.14</jetty.version>
+        <jetty.version>12.0.15</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <versions-maven-plugin.version>2.17.1
+        <versions-maven-plugin.version>2.18.0
         </versions-maven-plugin.version> <!-- because of https://github.com/mojohaus/versions/issues/855 -->
         <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
         <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
         <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version>
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
-        <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.5.1</maven-failsafe-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
         <maven-install-plugin.version>3.1.3</maven-install-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.10.1</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.11.1</maven-javadoc-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
         <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
         <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
         <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
-        <asciidoctor-maven-plugin.version>3.0.0</asciidoctor-maven-plugin.version>
-        <asciidoctor-converter-doxia-module.version>3.0.0</asciidoctor-converter-doxia-module.version>
+        <asciidoctor-maven-plugin.version>3.1.0</asciidoctor-maven-plugin.version>
+        <asciidoctor-converter-doxia-module.version>3.1.0</asciidoctor-converter-doxia-module.version>
+        <asciidoctor-maven-plugin.version>3.1.1</asciidoctor-maven-plugin.version>
+        <asciidoctor-converter-doxia-module.version>3.1.1</asciidoctor-converter-doxia-module.version>
         <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>10.18.2</checkstyle.version>
+        <checkstyle.version>10.20.2</checkstyle.version>
         <spring-javaformat-checkstyle.version>0.0.43</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
-        <node.version>v20.18.0</node.version>
-        <npm.version>10.8.2</npm.version>
-        <jolokia-support-spring.version>2.1.1</jolokia-support-spring.version>
+        <node.version>v18.20.2</node.version>
+        <npm.version>10.5.2</npm.version>
+        <jolokia-support-spring.version>2.1.2</jolokia-support-spring.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
