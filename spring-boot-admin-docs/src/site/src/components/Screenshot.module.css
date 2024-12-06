@@ -1,0 +1,19 @@
+.screenshot {
+    position: relative;
+}
+
+.screenshot__description {
+    font-size: .9rem;
+    position: absolute;
+    text-align: center;
+    bottom: 2.4rem;
+    z-index: 1;
+    width: 90%;
+    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.3);
+    color: #fff;
+    border-radius: 6px;
+    padding: 5px 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
