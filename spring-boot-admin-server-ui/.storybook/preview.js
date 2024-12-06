@@ -42,3 +42,7 @@ export const parameters = {
 };
 
 export const decorators = [mswDecorator];
+
+export default {
+  tags: ['autodocs'],
+};

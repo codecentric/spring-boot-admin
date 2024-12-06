@@ -51,8 +51,6 @@
     "pretty-bytes": "6.1.1",
     "qs": "^6.13.0",
     "random-string": "0.2.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
     "resize-observer-polyfill": "1.5.1",
     "rxjs": "7.8.1",
     "uuid": "11.0.3",
@@ -68,12 +66,13 @@
     "@babel/plugin-transform-runtime": "7.25.9",
     "@babel/preset-env": "7.26.0",
     "@babel/runtime": "7.26.0",
-    "@storybook/addon-actions": "8.4.6",
-    "@storybook/addon-essentials": "8.4.6",
-    "@storybook/addon-links": "8.4.6",
-    "@storybook/addon-mdx-gfm": "^8.0.0",
-    "@storybook/vue3": "8.4.6",
-    "@storybook/vue3-vite": "^8.0.0",
+    "@storybook/addon-actions": "^8.4.7",
+    "@storybook/addon-docs": "^8.4.7",
+    "@storybook/addon-essentials": "^8.4.7",
+    "@storybook/addon-links": "^8.4.7",
+    "@storybook/addon-mdx-gfm": "^8.4.7",
+    "@storybook/vue3": "^8.4.7",
+    "@storybook/vue3-vite": "^8.4.7",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/user-event": "14.5.2",
     "@testing-library/vue": "8.1.0",
@@ -100,7 +99,8 @@
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "5.12.0",
     "sass": "^1.57.1",
-    "storybook": "8.4.6",
+    "storybook": "^8.4.7",
+    "storybook-vue3-router": "^5.0.0",
     "tailwindcss": "3.4.16",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
@@ -124,5 +124,6 @@
       "./src/main/frontend/public",
       "src/main/frontend/public"
     ]
-  }
+  },
+  "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab"
 }
