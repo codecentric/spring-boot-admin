@@ -61,13 +61,9 @@ const config: Config = {
     },
     algolia: {
       appId: "GUDRYGX7B3",
-      apiKey: "97d8206755fc8cf80c3b435ac87573ca",
+      apiKey: "d6ff502875993f3160598cbd257cc532",
       indexName: "spring-boot-admin",
       contextualSearch: true,
-      replaceSearchResultPathname: {
-        from: "/docs/",
-        to: "/"
-      },
       searchParameters: {},
       searchPagePath: false,
       insights: false
