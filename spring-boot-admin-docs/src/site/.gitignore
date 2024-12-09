@@ -16,3 +16,5 @@
 .env.production.local
 
 npm-debug.log*
+
+current/index.html
