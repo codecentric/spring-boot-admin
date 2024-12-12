@@ -74,7 +74,7 @@
         <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>10.20.2</checkstyle.version>
+        <checkstyle.version>10.21.0</checkstyle.version>
         <spring-javaformat-checkstyle.version>0.0.43</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <node.version>v22.12.0</node.version>
