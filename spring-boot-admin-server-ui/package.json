@@ -117,7 +117,7 @@
   ],
   "engines": {
     "node": "22.12.0",
-    "npm": "10.9.2"
+    "npm": "11.0.0"
   },
   "msw": {
     "workerDirectory": [
