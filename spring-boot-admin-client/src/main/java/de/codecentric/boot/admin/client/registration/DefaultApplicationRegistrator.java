@@ -90,11 +90,11 @@ public class DefaultApplicationRegistrator implements ApplicationRegistrator {
 			if (firstAttempt) {
 				LOGGER.warn(
 						"Failed to register application as {} at spring-boot-admin ({}): {}. Further attempts are logged on DEBUG level",
-						application, this.adminUrls, ex.getMessage());
+						application, this.adminUrls, ex.getMessage(), ex);
 			}
 			else {
 				LOGGER.debug("Failed to register application as {} at spring-boot-admin ({}): {}", application,
-						this.adminUrls, ex.getMessage());
+						this.adminUrls, ex.getMessage(), ex);
 			}
 			return false;
 		}
