@@ -160,6 +160,7 @@ public class SpringBootAdminClientAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(RestClient.Builder.class)
+	@ConditionalOnMissingBean(RestTemplateBuilder.class)
 	public static class RestClientRegistrationClientConfig {
 
 		@Bean
