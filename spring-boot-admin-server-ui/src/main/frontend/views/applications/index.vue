@@ -1,5 +1,5 @@
 <!--
-  - Copyright 2014-2019 the original author or authors.
+  - Copyright 2014-2024 the original author or authors.
   -
   - Licensed under the Apache License, Version 2.0 (the "License");
   - you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@
       <sba-sticky-subnav>
         <div class="container mx-auto flex">
           <ApplicationStats />
+          <sba-confirm-button class="mr-1" @click="refreshContext">
+            <font-awesome-icon :icon="'rotate-left'" />
+          </sba-confirm-button>
           <ApplicationNotificationCenter
             v-if="hasNotificationFiltersSupport"
             :notification-filters="notificationFilters"
@@ -196,6 +199,9 @@ import ApplicationStats from '@/views/applications/ApplicationStats.vue';
 import ApplicationStatusHero from '@/views/applications/ApplicationStatusHero.vue';
 import InstancesList from '@/views/applications/InstancesList.vue';
 import NotificationFilterSettings from '@/views/applications/NotificationFilterSettings.vue';
+import SbaButton from '@/components/sba-button.vue';
+import SbaConfirmButton from '@/components/sba-confirm-button.vue';
+import axios from '@/utils/axios';
 
 const props = defineProps({
   error: {
@@ -319,6 +325,12 @@ const grouped = computed(() => {
 
   return sortBy(list, [(item) => getApplicationStatus(item)]);
 });
+
+const refreshContext = () => {
+  axios.post('/applications').then(() => {
+    notificationCenter.success(t('applications.refreshed'));
+  });
+};
 
 function getApplicationStatus(item: InstancesListType): string {
   return applicationStore.findApplicationByInstanceId(item.instances[0].id)

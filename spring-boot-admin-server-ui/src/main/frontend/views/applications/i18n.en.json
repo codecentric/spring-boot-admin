@@ -32,6 +32,7 @@
     "offline": "offline",
     "shutdown": "Shutdown application <code>{name}</code>?",
     "shutdown_successful": "Successfully shutdown application {name}.",
+    "refreshed": "Applications refreshed.",
     "restart": "Restart application <code>{name}</code>?",
     "restarted": "Successfully restarted application <code>{name}</code>.",
     "unregister": "Deregister application <code>{name}</code>?",
