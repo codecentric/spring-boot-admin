@@ -35,10 +35,17 @@ export default {
   },
   methods: {
     async refreshInstance() {
-      await this.instance.busRefreshContext().then(() => {
-        notificationCenter.success(this.t('instances.env.bus_refresh_success'));
-        this.$emit('refresh', true);
-      });
+      await this.instance
+        .busRefreshContext()
+        .then(() => {
+          notificationCenter.success(
+            this.t('instances.env.bus_refresh_success'),
+          );
+          this.$emit('refresh', true);
+        })
+        .catch(() => {
+          notificationCenter.error(this.t('instances.env.bus_refresh_failure'));
+        });
     },
   },
 };

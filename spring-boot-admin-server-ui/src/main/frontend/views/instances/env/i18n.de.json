@@ -7,6 +7,7 @@
       "context_refresh": "Kontext neu laden",
       "bus_refresh": "Spring Cloud Bus-refresh",
       "bus_refresh_success": "Spring Cloud Bus Refresh erfolgreich!",
+      "bus_refresh_failure": "Fehlgeschlagen: Konnte Spring Cloud Bus Refresh nicht ausführen!",
       "bus_refresh_title": "Sendet eine Refresh Message an den konfigurierten Spring Cloud Bus, der eine Refresh Message an alle verbundenen Nodes sendet",
       "context_refresh_failed": "Fehlgeschlagen",
       "context_refreshed": "Erfolreich!",
