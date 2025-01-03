@@ -218,6 +218,10 @@ class Instance {
     return this.axios.post(uri`actuator/refresh`);
   }
 
+  async busRefreshContext() {
+    return this.axios.post(uri`actuator/busrefresh`);
+  }
+
   async fetchLiquibase() {
     return this.axios.get(uri`actuator/liquibase`);
   }

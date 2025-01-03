@@ -3,6 +3,7 @@
     class="btn relative"
     :class="cssClasses"
     :disabled="disabled === true"
+    :title="title"
     @click="$emit('click', $event)"
   >
     <slot />
@@ -13,6 +14,10 @@
 export default {
   name: 'SbaButton',
   props: {
+    title: {
+      type: String,
+      default: '',
+    },
     size: {
       type: String,
       default: 'sm',
