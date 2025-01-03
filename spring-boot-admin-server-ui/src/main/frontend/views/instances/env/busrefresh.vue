@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     async refreshInstance() {
-      await this.instance
+      this.instance
         .busRefreshContext()
         .then(() => {
           notificationCenter.success(
