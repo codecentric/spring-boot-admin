@@ -6,7 +6,7 @@
       "active_profile": "Profile",
       "context_refresh": "Refresh context",
       "bus_refresh": "Spring Cloud Bus-refresh",
-      "bus_refresh_title": "Reloads each application’s configuration, as though they had all been pinged on their /refresh endpoint",
+      "bus_refresh_title": "Sends a refresh message to the configured Spring Cloud Bus which broadcasts a refresh to all nodes listening",
       "context_refresh_failed": "Failed",
       "context_refreshed": "Context refreshed",
       "context_reset": "Reset",

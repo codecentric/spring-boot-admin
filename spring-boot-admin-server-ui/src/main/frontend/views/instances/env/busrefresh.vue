@@ -1,6 +1,6 @@
 <template>
   <sba-confirm-button
-    :title="$t('bus_refresh_title')"
+    :title="$t('instances.env.bus_refresh_title')"
     class="inline-flex focus:z-10"
     @click="refreshInstance"
   >
