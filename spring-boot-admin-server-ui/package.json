@@ -88,7 +88,7 @@
     "autoprefixer": "10.4.20",
     "babel-loader": "9.2.1",
     "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-storybook": "0.11.2",
     "eslint-plugin-vue": "^9.10.0",
