@@ -75,7 +75,7 @@
     "@storybook/vue3": "8.5.0",
     "@storybook/vue3-vite": "^8.0.0",
     "@testing-library/jest-dom": "6.6.3",
-    "@testing-library/user-event": "14.5.2",
+    "@testing-library/user-event": "14.6.0",
     "@testing-library/vue": "8.1.0",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/d3": "^7.4.3",
