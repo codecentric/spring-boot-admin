@@ -18,7 +18,10 @@ package de.codecentric.boot.admin.client.config;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -42,8 +45,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
 
 import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
@@ -163,6 +168,12 @@ public class SpringBootAdminClientAutoConfiguration {
 			if (client.getUsername() != null && client.getPassword() != null) {
 				webClient = webClient.filter(basicAuthentication(client.getUsername(), client.getPassword()));
 			}
+			HttpClient httpClient = HttpClient.create()
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
+						Long.valueOf(client.getConnectTimeout().toMillis()).intValue())
+				.doOnConnected(conn -> conn
+					.addHandlerLast(new ReadTimeoutHandler(client.getReadTimeout().toMillis(), TimeUnit.MILLISECONDS)));
+			webClient.clientConnector(new ReactorClientHttpConnector(httpClient));
 			return new ReactiveRegistrationClient(webClient.build(), client.getReadTimeout());
 		}
 

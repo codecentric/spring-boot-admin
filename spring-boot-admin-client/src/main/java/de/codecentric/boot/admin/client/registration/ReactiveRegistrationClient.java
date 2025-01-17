@@ -19,13 +19,21 @@ package de.codecentric.boot.admin.client.registration;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
+import io.netty.channel.ConnectTimeoutException;
+import io.netty.handler.timeout.ReadTimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 public class ReactiveRegistrationClient implements RegistrationClient {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReactiveRegistrationClient.class);
 
 	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
 	};
@@ -40,16 +48,19 @@ public class ReactiveRegistrationClient implements RegistrationClient {
 	}
 
 	@Override
-	public String register(String adminUrl, Application application) {
-		Map<String, Object> response = this.webclient.post()
+	public Optional<String> register(String adminUrl, Application application) {
+		return this.webclient.post()
 			.uri(adminUrl)
 			.headers(this::setRequestHeaders)
 			.bodyValue(application)
 			.retrieve()
 			.bodyToMono(RESPONSE_TYPE)
-			.timeout(this.timeout)
-			.block();
-		return response.get("id").toString();
+			.onErrorMap(WebClientRequestException.class, Throwable::getCause)
+			.doOnError(ConnectTimeoutException.class, e -> LOGGER.debug("Connection timeout"))
+			.doOnError(ReadTimeoutException.class, e -> LOGGER.debug("Request time out"))
+			.map(t -> t.get("id"))
+			.map(Object::toString)
+			.blockOptional();
 	}
 
 	@Override

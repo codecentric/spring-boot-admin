@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.client.registration;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -39,10 +40,10 @@ public class BlockingRegistrationClient implements RegistrationClient {
 	}
 
 	@Override
-	public String register(String adminUrl, Application application) {
+	public Optional<String> register(String adminUrl, Application application) {
 		ResponseEntity<Map<String, Object>> response = this.restTemplate.exchange(adminUrl, HttpMethod.POST,
 				new HttpEntity<>(application, this.createRequestHeaders()), RESPONSE_TYPE);
-		return response.getBody().get("id").toString();
+		return Optional.ofNullable(response.getBody()).map(body -> body.get("id")).map(Object::toString);
 	}
 
 	@Override

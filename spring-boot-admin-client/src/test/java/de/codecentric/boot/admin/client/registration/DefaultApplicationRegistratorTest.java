@@ -19,6 +19,8 @@ package de.codecentric.boot.admin.client.registration;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClientException;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -44,7 +46,7 @@ public class DefaultApplicationRegistratorTest {
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				true);
 
-		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn(Optional.of("-id-"));
 		assertThat(registrator.register()).isTrue();
 		assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
 	}
@@ -70,7 +72,8 @@ public class DefaultApplicationRegistratorTest {
 
 		when(this.registrationClient.register("http://sba:8080/instances", this.application))
 			.thenThrow(new RestClientException("Error"));
-		when(this.registrationClient.register("http://sba2:8080/instances", this.application)).thenReturn("-id-");
+		when(this.registrationClient.register("http://sba2:8080/instances", this.application))
+			.thenReturn(Optional.of("-id-"));
 
 		assertThat(registrator.register()).isTrue();
 		assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
@@ -82,7 +85,7 @@ public class DefaultApplicationRegistratorTest {
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				true);
 
-		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn(Optional.of("-id-"));
 
 		registrator.register();
 		registrator.deregister();
@@ -108,7 +111,7 @@ public class DefaultApplicationRegistratorTest {
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				true);
 
-		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn(Optional.of("-id-"));
 		doThrow(new RestClientException("Error")).when(this.registrationClient)
 			.deregister("http://sba:8080/instances", "-id-");
 
@@ -126,7 +129,7 @@ public class DefaultApplicationRegistratorTest {
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				false);
 
-		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn(Optional.of("-id-"));
 
 		assertThat(registrator.register()).isTrue();
 		assertThat(registrator.getRegisteredId()).isEqualTo("-id-");
@@ -141,7 +144,7 @@ public class DefaultApplicationRegistratorTest {
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				false);
 
-		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+		when(this.registrationClient.register(any(), eq(this.application))).thenReturn(Optional.of("-id-"));
 
 		registrator.register();
 		registrator.deregister();

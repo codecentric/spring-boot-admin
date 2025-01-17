@@ -24,6 +24,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.created;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
@@ -72,7 +74,7 @@ public abstract class AbstractRegistrationClientTest {
 		this.wireMock.stubFor(post(urlEqualTo("/instances")).willReturn(response));
 
 		assertThat(this.registrationClient.register(this.wireMock.url("/instances"), this.application))
-			.isEqualTo("-id-");
+			.isEqualTo(Optional.of("-id-"));
 
 		RequestPatternBuilder expectedRequest = postRequestedFor(urlEqualTo("/instances"))
 			.withHeader("Accept", equalTo("application/json"))

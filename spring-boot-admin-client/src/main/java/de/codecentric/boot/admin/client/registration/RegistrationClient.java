@@ -16,9 +16,11 @@
 
 package de.codecentric.boot.admin.client.registration;
 
+import java.util.Optional;
+
 public interface RegistrationClient {
 
-	String register(String adminUrl, Application self);
+	Optional<String> register(String adminUrl, Application self);
 
 	void deregister(String adminUrl, String id);
 
