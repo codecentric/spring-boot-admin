@@ -106,7 +106,7 @@
     "typescript": "^5.0.3",
     "vite": "6.0.7",
     "vite-plugin-static-copy": "2.2.0",
-    "vitest": "3.0.1",
+    "vitest": "3.0.2",
     "vue-eslint-parser": "^9.1.0",
     "vue-loader": "17.4.2"
   },
