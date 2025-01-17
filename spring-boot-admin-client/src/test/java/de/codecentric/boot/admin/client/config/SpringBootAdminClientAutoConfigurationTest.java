@@ -22,6 +22,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.http.client.HttpClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
@@ -34,6 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
@@ -105,6 +109,32 @@ public class SpringBootAdminClientAutoConfigurationTest {
 				assertThat(restTemplate).isNotNull();
 
 				ClientHttpRequestFactory requestFactory = restTemplate.getRequestFactory();
+
+				Integer connectTimeout = (Integer) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+				assertThat(connectTimeout).isEqualTo(1337);
+				Duration readTimeout = (Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+				assertThat(readTimeout).isEqualTo(Duration.ofMillis(42));
+			});
+	}
+
+	@Test
+	public void restClientRegistrationClientInBlockingEnvironment() {
+		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner().withConfiguration(
+				AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+						DispatcherServletAutoConfiguration.class, HttpClientAutoConfiguration.class,
+						RestClientAutoConfiguration.class, SpringBootAdminClientAutoConfiguration.class));
+
+		webApplicationContextRunner
+			.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
+					"spring.boot.admin.client.connectTimeout=1337", "spring.boot.admin.client.readTimeout=42")
+			.withInitializer(new ConditionEvaluationReportLoggingListener())
+			.run((context) -> {
+				RegistrationClient registrationClient = context.getBean(RegistrationClient.class);
+				RestClient restClient = (RestClient) ReflectionTestUtils.getField(registrationClient, "restClient");
+				assertThat(restClient).isNotNull();
+
+				ClientHttpRequestFactory requestFactory = (ClientHttpRequestFactory) ReflectionTestUtils
+					.getField(restClient, "clientRequestFactory");
 
 				Integer connectTimeout = (Integer) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
 				assertThat(connectTimeout).isEqualTo(1337);
