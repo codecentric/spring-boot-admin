@@ -15,7 +15,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "5.2.1",
     "@vue-macros/reactivity-transform": "^1.0.0",
-    "vite": "6.0.10",
+    "vite": "6.0.11",
     "vite-plugin-static-copy": "^2.0.0"
   },
   "browserslist": [
