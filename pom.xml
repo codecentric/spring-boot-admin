@@ -78,7 +78,7 @@
         <spring-javaformat-checkstyle.version>0.0.43</spring-javaformat-checkstyle.version>
         <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
         <node.version>v22.12.0</node.version>
-        <jolokia-support-spring.version>2.1.2</jolokia-support-spring.version>
+        <jolokia-support-spring.version>2.2.1</jolokia-support-spring.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
