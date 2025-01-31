@@ -90,7 +90,7 @@ describe('Mappings', () => {
     const instance = new Instance({ id: 4711 });
     instance.fetchMappings = vi.fn().mockReturnValue({
       headers: {
-        'content-type': 'application/vnd.spring-boot.actuator.v2',
+        'content-type': 'application/vnd.spring-boot.actuator.v2+json',
       },
       data,
     });
