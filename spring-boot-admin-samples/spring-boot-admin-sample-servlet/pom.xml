@@ -125,7 +125,6 @@
                 <configuration>
                     <mainClass>de.codecentric.boot.admin.sample.SpringBootAdminServletApplication</mainClass>
                     <addResources>false</addResources>
-                    <executable>true</executable>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,4 +1,4 @@
-name: release-to-maven-central
+name: Release To Maven Central
 
 on:
   workflow_dispatch:
@@ -39,12 +39,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          server-id: oss.sonatype.org
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
           cache: 'maven'
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Cache node modules
         uses: actions/cache@v4
