@@ -35,6 +35,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
+          server-id: oss.sonatype.org
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -51,6 +56,15 @@ jobs:
       - name: Build with Maven
         run: |
           mvn -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
+
+      - name: Publish SNAPSHOT package
+        run: mvn -B deploy --no-transfer-progress -P central-deploy -DskipTests=true
+        env:
+          #TODO: This is a workaround for NEXUS-27902 which uses XStream that fails on JVM >16
+          JDK_JAVA_OPTIONS: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED"
+          MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - uses: codecov/codecov-action@v5
         with:
