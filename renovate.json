@@ -2,11 +2,15 @@
   "extends": [
     "config:recommended"
   ],
+  "labels": [
+    "bot",
+    "dependencies"
+  ],
   "packageRules": [
     {
       "matchPackageNames": [
         "!/^de\\.codecentric\\.boot\\.admin/"
-      ]
+      ],
     },
     {
       "description": "Automatically merge minor and patch-level updates when checks pass, creates a PR otherwise",
