@@ -10,7 +10,7 @@
         return l.protocol + "//" + l.hostname + (l.port ? ":" + l.port : "") +
           [
             "",
-            "3.4.1",
+            "3.4.2-SNAPSHOT",
             l.pathname.split("/").slice(2)
           ].join("/")
           +
@@ -54,7 +54,7 @@
           line-height: 60px;
           font-size: 60px;
           font-weight: 100;
-          margin: 0px 0 50px 0;
+          margin: 0 0 50px 0;
           text-shadow: 0 1px 0 #fff;
       }
 
@@ -74,25 +74,6 @@
           display: table-cell;
           font-weight: bold;
           width: 1%;
-      }
-
-      .logo {
-          display: inline-block;
-          margin-top: 35px;
-      }
-
-      .logo-img-2x {
-          display: none;
-      }
-
-      @media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and ( min--moz-device-pixel-ratio: 2), only screen and ( -o-min-device-pixel-ratio: 2/1), only screen and ( min-device-pixel-ratio: 2), only screen and ( min-resolution: 192dpi), only screen and ( min-resolution: 2dppx) {
-          .logo-img-1x {
-              display: none;
-          }
-
-          .logo-img-2x {
-              display: inline-block;
-          }
       }
 
       #suggestions {
