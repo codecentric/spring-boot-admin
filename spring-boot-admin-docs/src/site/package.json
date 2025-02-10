@@ -7,7 +7,7 @@
     "start": "docusaurus start",
     "build:current-version-redirect": "sed \"s/@@VERSION@@/$VERSION/g\" current/index.template.html > current/index.html && sed \"s/@@VERSION@@/$VERSION/g\" current/404.template.html > current/404.html",
     "build": "docusaurus build",
-    "build:prod": "npm run build && npm run build:current-version-redirect && mv ./build ../../target/generated-docs"
+    "build:prod": "npm run build && npm run build:current-version-redirect && rm -rf ../../target/generated-docs && mv ./build ../../target/generated-docs"
   },
   "dependencies": {
     "@docusaurus/core": "^3.6.3",
