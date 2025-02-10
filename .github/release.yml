@@ -1,0 +1,20 @@
+changelog:
+  categories:
+    - title: Features
+      labels:
+        - '*'
+      exclude:
+        labels:
+          - fix
+          - breaking-change
+          - dependencies
+          - bot
+    - title: Bug Fixes
+      labels:
+        - fix
+    - title: Breaking Changes
+      labels:
+        - breaking-change
+    - title: Dependencies
+      labels:
+        - dependencies
