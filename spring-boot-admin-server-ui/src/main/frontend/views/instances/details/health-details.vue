@@ -29,7 +29,7 @@
       class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
       :aria-labelledby="'health-detail__' + name"
     >
-      <sba-status-badge :status="health.status" />
+      <sba-status-badge v-if="health.status" :status="health.status" />
 
       <dl v-if="details && details.length > 0" class="grid grid-cols-2 mt-2">
         <template v-for="detail in details" :key="detail.name">
@@ -92,16 +92,16 @@ export default {
   },
   computed: {
     details() {
-      if (this.health.details) {
-        return Object.entries(this.health.details)
+      if (this.health.details || this.health.components) {
+        return Object.entries(this.health.details || this.health.components)
           .filter(([, value]) => !isChildHealth(value))
           .map(([name, value]) => ({ name, value }));
       }
       return [];
     },
     childHealth() {
-      if (this.health.details) {
-        return Object.entries(this.health.details)
+      if (this.health.details || this.health.components) {
+        return Object.entries(this.health.details || this.health.components)
           .filter(([, value]) => isChildHealth(value))
           .map(([name, value]) => ({ name, value }));
       }

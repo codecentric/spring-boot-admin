@@ -1,5 +1,9 @@
 <template>
-  <span :class="classNames('status-badge', healthStatus)" v-text="status" />
+  <span
+    role="status"
+    :class="classNames('status-badge', healthStatus)"
+    v-text="status"
+  />
 </template>
 
 <script>
