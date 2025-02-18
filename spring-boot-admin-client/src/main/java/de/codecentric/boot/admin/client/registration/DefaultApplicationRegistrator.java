@@ -20,9 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class DefaultApplicationRegistrator implements ApplicationRegistrator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRegistrator.class);
