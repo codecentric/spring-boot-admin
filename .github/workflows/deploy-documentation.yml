@@ -50,7 +50,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy documentation to GitHub Pages for version ${{ github.event.inputs.releaseversion }}
-        uses: JamesIves/github-pages-deploy-action@v4.7.2
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
           branch: gh-pages
           folder: spring-boot-admin-docs/target/generated-docs
@@ -58,7 +58,7 @@ jobs:
           clean: true
 
       - name: Deploy redirect for /current to /${{ github.event.inputs.releaseversion }}
-        uses: JamesIves/github-pages-deploy-action@v4.7.2
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages
@@ -67,7 +67,7 @@ jobs:
           clean: true
 
       - name: Deploy deeplink redirect for /current/* to /${{ github.event.inputs.releaseversion }}/*
-        uses: JamesIves/github-pages-deploy-action@v4.7.2
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages
