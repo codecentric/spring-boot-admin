@@ -104,7 +104,7 @@
     "sass": "^1.57.1",
     "storybook": "8.5.8",
     "storybook-vue3-router": "^5.0.0",
-    "tailwindcss": "4.0.7",
+    "tailwindcss": "4.0.8",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
     "vite": "6.1.1",
