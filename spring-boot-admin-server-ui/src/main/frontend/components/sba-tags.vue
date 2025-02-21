@@ -22,26 +22,12 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import classNames from 'classnames';
 
-export default {
-  props: {
-    tags: {
-      type: Object,
-      required: true,
-    },
-    small: {
-      type: Boolean,
-      default: false,
-    },
-    wrap: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  methods: {
-    classNames: classNames,
-  },
-};
+defineProps<{
+  tags: Record<string, string | number>;
+  small: boolean;
+  wrap: boolean;
+}>();
 </script>

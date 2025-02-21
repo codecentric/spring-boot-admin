@@ -231,6 +231,8 @@ export default {
 </script>
 
 <style>
+@reference "@/index.css";
+
 .wallboard {
   background-color: #4a4a4a;
   height: calc(100vh - 52px);

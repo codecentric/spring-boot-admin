@@ -139,6 +139,8 @@ export default {
 };
 </script>
 <style lang="css">
+@reference "@/index.css";
+
 .routes td,
 .routes th {
   vertical-align: middle;

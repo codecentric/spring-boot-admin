@@ -23,7 +23,7 @@
         class="block text-sm font-medium text-gray-700"
         v-text="label"
       />
-      <div class="flex rounded shadow-sm" :class="{ 'mt-1': hasLabel }">
+      <div class="flex rounded shadow" :class="{ 'mt-1': hasLabel }">
         <span
           v-if="$slots.prepend"
           class="inline-flex items-center px-3 rounded-l border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm"
@@ -36,7 +36,7 @@
           :name="name"
           :value="modelValue"
           :autocomplete="autocomplete"
-          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none sm:text-sm bg-opacity-40 backdrop-blur-sm"
+          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none sm:text-sm backdrop-blur-sm"
           :class="classNames(inputFieldClassNames, inputClass)"
           @input="handleInput"
         >

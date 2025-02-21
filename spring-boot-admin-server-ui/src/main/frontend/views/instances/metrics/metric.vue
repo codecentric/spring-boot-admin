@@ -28,7 +28,7 @@
             v-text="statistic"
           />
 
-          <div class="relative rounded-md shadow-sm">
+          <div class="relative rounded-md shadow">
             <select
               :value="statisticTypes[statistic]"
               class="focus:ring-indigo-500 focus:border-indigo-500 block w-full text-sm border-gray-300 rounded-md"

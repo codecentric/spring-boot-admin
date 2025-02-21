@@ -17,14 +17,14 @@
 <template>
   <div
     :id="$attrs.id"
-    class="shadow-sm border rounded break-inside-avoid mb-6"
+    class="shadow-xs border border-gray-100 rounded break-inside-avoid mb-6"
     :aria-expanded="$attrs.ariaExpanded"
   >
     <header
       v-if="hasTitle"
       ref="header"
       v-sticks-below="headerSticksBelow"
-      class="rounded-t flex justify-between px-4 pt-5 pb-5 border-b sm:px-6 items-center bg-white transition-all"
+      class="rounded-t flex justify-between px-4 pt-5 pb-5 sm:px-6 items-center bg-white transition-all border-b border-gray-100"
     >
       <h3 class="text-lg leading-6 font-medium text-gray-900">
         <button class="flex items-center" @click="$emit('title-click')">
@@ -58,15 +58,19 @@
         'rounded-t': !hasTitle,
         'rounded-b': !('footer' in $slots),
       }"
-      class="border-gray-200 px-4 py-3 bg-white"
+      class="px-4 py-3 bg-white"
     >
       <div :class="{ '-mx-4 -my-3': seamless }">
-        <sba-loading-spinner v-if="loading" class="" size="sm" />
+        <sba-loading-spinner
+          v-if="loading"
+          class="flex justify-center"
+          size="sm"
+        />
         <slot v-if="!loading" />
       </div>
     </div>
     <footer v-if="'footer' in $slots">
-      <div class="px-4 py-3 border-t bg-gray-50">
+      <div class="px-4 py-3 border-t border-t-gray-200 bg-gray-50">
         <slot name="footer" />
       </div>
     </footer>
@@ -144,9 +148,9 @@ export default {
       const header = this.$refs.header;
       const boundingClientRect = header.getBoundingClientRect();
       if (boundingClientRect.top <= this.headerTopValue) {
-        header.classList.add('!rounded-none', '!py-2');
+        header.classList.add('rounded-none!', 'py-2!');
       } else {
-        header.classList.remove('!rounded-none', '!py-2');
+        header.classList.remove('rounded-none!', 'py-2!');
       }
     },
   },

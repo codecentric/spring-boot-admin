@@ -45,6 +45,8 @@ export default {
 </script>
 
 <style>
+@reference "@/index.css";
+
 .formatted {
   white-space: break-spaces;
   word-break: break-word;

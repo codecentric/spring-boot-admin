@@ -64,18 +64,3 @@ export const SuccessButton = {
     class: 'is-success',
   },
 };
-
-const SizeTemplate = () => {
-  return {
-    components: { SbaButton },
-    template: `
-      <sba-button size="xs">button xs</sba-button>
-      <sba-button size="sm">button sm</sba-button>
-      <sba-button size="base">button base</sba-button>
-    `,
-  };
-};
-
-export const ButtonSizes = {
-  render: SizeTemplate,
-};

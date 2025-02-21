@@ -50,6 +50,8 @@ function toggleNavigation() {
 </script>
 
 <style scoped>
+@reference "@/index.css";
+
 .sba-navbar {
   @apply bg-black fixed flex flex-wrap justify-start mx-auto top-0 w-full z-50 items-center px-4 py-2 text-white;
   @apply sm:px-6;

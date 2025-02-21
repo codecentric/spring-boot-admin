@@ -207,6 +207,8 @@ export default {
 </script>
 
 <style lang="css">
+@reference "@/index.css";
+
 .datasource-current {
   margin-bottom: 0 !important;
 }

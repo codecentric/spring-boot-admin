@@ -85,6 +85,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitejs/plugin-vue": "5.2.1",
+    "@vitejs/plugin-vue-jsx": "^4.1.1",
     "@vue/eslint-config-typescript": "^14.0.0",
     "@vue/test-utils": "2.4.6",
     "autoprefixer": "10.4.20",
@@ -102,6 +103,7 @@
     "rollup-plugin-visualizer": "5.14.0",
     "sass": "^1.57.1",
     "storybook": "8.5.8",
+    "storybook-vue3-router": "^5.0.0",
     "tailwindcss": "4.0.7",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
@@ -127,5 +129,6 @@
   },
   "overrides": {
     "esbuild": "0.25.0"
-  }
+  },
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
 }

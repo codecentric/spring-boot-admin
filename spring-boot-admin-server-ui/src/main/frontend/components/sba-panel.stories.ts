@@ -1,9 +1,14 @@
+import type { Meta, StoryObj } from '@storybook/vue3';
+
 import SbaPanel from './sba-panel.vue';
 
-export default {
+const meta: Meta<typeof SbaPanel> = {
   component: SbaPanel,
   title: 'Components/Panel',
 };
+export default meta;
+
+type Story = StoryObj<typeof SbaPanel>;
 
 const Template = (args) => {
   return {
@@ -32,7 +37,7 @@ const Template = (args) => {
   };
 };
 
-export const WithTitle = {
+export const WithTitle: Story = {
   render: Template,
 
   args: {

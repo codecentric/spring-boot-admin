@@ -63,6 +63,8 @@ const handleClick = () => {
 </script>
 
 <style>
+@reference "@/index.css";
+
 .sba-navbar-toggle {
   @apply ml-auto inline-flex bg-gray-800 items-center justify-center p-2 rounded-md text-gray-400;
   @apply xl:hidden;
