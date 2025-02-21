@@ -111,3 +111,4 @@ export default {
 </script>
 
 <style scoped></style>
+@reference "@/index.css";

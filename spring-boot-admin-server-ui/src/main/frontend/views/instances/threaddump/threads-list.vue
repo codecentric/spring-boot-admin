@@ -200,6 +200,8 @@ export default {
 };
 </script>
 <style lang="css">
+@reference "@/index.css";
+
 .threads {
   table-layout: fixed;
 }

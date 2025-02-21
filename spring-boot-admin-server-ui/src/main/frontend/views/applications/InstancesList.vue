@@ -116,6 +116,8 @@ const showDetails = (instance: Instance) => {
 </script>
 
 <style lang="css">
+@reference "@/index.css";
+
 .instances-list td {
   vertical-align: middle;
 }

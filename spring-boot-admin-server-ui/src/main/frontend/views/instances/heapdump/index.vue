@@ -27,7 +27,7 @@
       </sba-sticky-subnav>
     </template>
     <div
-      class="m-auto flex relative items-center gap-2 py-3 pl-4 pr-10 leading-normal text-red-700 bg-red-100 rounded-lg shadow mb-3 backdrop-filter backdrop-blur-sm bg-opacity-80"
+      class="m-auto flex relative items-center gap-2 py-3 pl-4 pr-10 leading-normal text-red-700 bg-red-100/80 rounded-lg shadow mb-3 backdrop-filter backdrop-blur-sm"
       role="alert"
     >
       <div>
@@ -88,6 +88,8 @@ export default {
 </script>
 
 <style lang="css">
+@reference "@/index.css";
+
 .heapdump {
   display: flex;
   justify-content: space-around;

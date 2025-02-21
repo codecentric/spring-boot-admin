@@ -149,6 +149,8 @@ export default {
 </script>
 
 <style>
+@reference "@/index.css";
+
 .control.has-inline-text {
   line-height: 2.25em;
 }

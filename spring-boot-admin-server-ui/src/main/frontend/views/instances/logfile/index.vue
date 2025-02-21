@@ -230,6 +230,8 @@ export default {
 </script>
 
 <style lang="css">
+@reference "@/index.css";
+
 .log-viewer pre {
   padding: 0 0.75em;
   margin-bottom: 1px;

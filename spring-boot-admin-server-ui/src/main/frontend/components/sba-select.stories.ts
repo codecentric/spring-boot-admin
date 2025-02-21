@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { Meta, StoryObj } from '@storybook/vue3';
+
 import SbaSelect from './sba-select.vue';
 
-export default {
+const meta: Meta<typeof SbaSelect> = {
   component: SbaSelect,
   title: 'Components/Form/Select',
 };
+export default meta;
+
+type Story = StoryObj<typeof SbaSelect>;
 
 const Template = (args) => {
   return {
@@ -35,7 +40,7 @@ const Template = (args) => {
   };
 };
 
-export const SimpleSelect = {
+export const SimpleSelect: Story = {
   render: Template,
 
   args: {

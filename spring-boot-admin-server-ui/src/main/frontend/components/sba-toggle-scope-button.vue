@@ -15,16 +15,21 @@
   -->
 
 <template>
-  <div class="flex">
+  <div class="items-center gap-2 pr-2">
     <sba-button
       v-if="instanceCount <= 1 || modelValue === ActionScope.APPLICATION"
       :class="classNames"
       :title="$t('term.affects_all_instances', { count: instanceCount })"
-      class="w-full"
+      class="w-full relative"
       size="sm"
       @click="() => (modelValue = ActionScope.INSTANCE)"
     >
       <span v-text="$t('term.application')" />
+      <div
+        className="absolute top-0 right-0 -mt-1 -mr-1 text-xs bg-primary-500 text-white rounded-full w-4 h-4 flex items-center justify-center"
+      >
+        {{ instanceCount }}
+      </div>
     </sba-button>
     <sba-button
       v-else

@@ -12,6 +12,8 @@ defineProps({
 </script>
 
 <style>
+@reference "@/index.css";
+
 .brand {
   @apply flex items-center text-white mr-4;
 }

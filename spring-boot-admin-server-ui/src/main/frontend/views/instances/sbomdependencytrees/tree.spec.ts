@@ -50,6 +50,7 @@ describe('TreeGraph', () => {
   };
 
   beforeEach(async () => {
+    SVGTransformList.prototype.consolidate = vi.fn();
     vi.useFakeTimers();
     await renderComponent();
   });

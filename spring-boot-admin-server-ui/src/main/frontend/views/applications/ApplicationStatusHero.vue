@@ -141,6 +141,8 @@ export default {
 </script>
 
 <style scoped>
+@reference "@/index.css";
+
 .icon {
   @apply text-9xl pr-4 md:pb-4 md:pr-0;
 }

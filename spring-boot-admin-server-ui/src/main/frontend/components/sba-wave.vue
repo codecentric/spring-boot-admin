@@ -80,6 +80,8 @@ export default {
 </script>
 
 <style scoped>
+@reference "@/index.css";
+
 .bg-wave {
   @apply w-full h-40 fixed;
   z-index: -10;

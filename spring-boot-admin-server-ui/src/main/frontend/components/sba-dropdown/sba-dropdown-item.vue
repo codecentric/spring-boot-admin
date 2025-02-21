@@ -78,6 +78,8 @@ const onClick = ($event, close) => {
 </script>
 
 <style scoped>
+@reference "@/index.css";
+
 .sba-dropdown-item {
   @apply flex w-full items-center rounded-md px-2 py-2 hover:bg-sba-700 hover:text-white;
 }

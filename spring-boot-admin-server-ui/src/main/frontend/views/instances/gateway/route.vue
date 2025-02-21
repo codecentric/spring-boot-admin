@@ -72,6 +72,8 @@ export default {
 </script>
 
 <style lang="css">
+@reference "@/index.css";
+
 .route {
   display: block;
   min-width: 12em;

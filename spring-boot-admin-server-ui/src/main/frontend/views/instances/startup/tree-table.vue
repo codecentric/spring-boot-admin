@@ -171,6 +171,8 @@ export default {
 </script>
 
 <style lang="css">
+@reference "@/index.css";
+
 .text-right {
   @apply justify-end;
 }
