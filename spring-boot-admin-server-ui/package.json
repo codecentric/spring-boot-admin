@@ -74,6 +74,8 @@
     "@storybook/addon-mdx-gfm": "^8.0.0",
     "@storybook/vue3": "8.5.8",
     "@storybook/vue3-vite": "^8.0.0",
+    "@tailwindcss/postcss": "^4.0.7",
+    "@tailwindcss/vite": "^4.0.7",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/user-event": "14.6.1",
     "@testing-library/vue": "8.1.0",
@@ -92,11 +94,10 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-storybook": "0.11.3",
     "eslint-plugin-vue": "^9.10.0",
-    "happy-dom": "^14.12.3",
+    "happy-dom": "^17.1.1",
     "jsdom": "^26.0.0",
     "msw": "2.7.1",
     "msw-storybook-addon": "2.0.4",
-    "postcss": "8.5.3",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "5.14.0",
     "sass": "^1.57.1",
@@ -116,8 +117,7 @@
     "not ie <= 8"
   ],
   "engines": {
-    "node": "22.14.0",
-    "npm": "11.1.0"
+    "node": "22.14.0"
   },
   "msw": {
     "workerDirectory": [
