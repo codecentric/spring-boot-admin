@@ -6,5 +6,5 @@ You can set `spring.boot.admin.context-path` to alter the path where the UI and 
 
 ## Can I change or reload Spring Boot properties at runtime?
 Yes, you can refresh the entire environment or set/update individual properties for both single instances as well as for the entire application.
-Note, however, that the Spring Boot application needs to have https://docs.spring.io/spring-cloud-commons/docs/current/reference/html/#endpoints[Spring Cloud Commons] and `management.endpoint.env.post.enabled=true` in place.
+Note, however, that the Spring Boot application needs to have [Spring Cloud Commons](https://docs.spring.io/spring-cloud-commons/docs/current/reference/html/#endpoints) and `management.endpoint.env.post.enabled=true` in place.
 Also check the details of `@RefreshScope` https://docs.spring.io/spring-cloud-commons/docs/current/reference/html/#refresh-scope.
