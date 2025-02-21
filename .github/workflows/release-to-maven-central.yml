@@ -123,46 +123,11 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.releaseversion }}
-          release_name: ${{ github.event.inputs.releaseversion }}
-          body: |
-            Grab the new version from Maven central https://repo1.maven.org/maven2/de/codecentric/
-
-            Current docs at https://codecentric.github.io/spring-boot-admin/${{ github.event.inputs.releaseversion }}/
-
-            ### Things that changed in this release
-            ${{ steps.changelog.outputs.changelog }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: ${{ contains(github.event.inputs.releaseversion, '-') }}
-
-  set-next-snapshot-version:
-    needs: publish-github-release
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set new SNAPSHOT version
-        run: >
-          mvn versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" && \
-            mvn  versions:set -DnextSnapshot && \
-            VERSION=$(mvn exec:exec -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive -q) && \
-            mvn versions:revert && \
-            mvn versions:set-property -Dproperty=revision  -DnewVersion="$VERSION" &&
-            mvn versions:commit
-
-      - name: Commit new SNAPSHOT version
-        uses: stefanzweifel/git-auto-commit-action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          commit_message: "chore: update to next SNAPSHOT version"
 
 
