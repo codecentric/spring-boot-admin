@@ -76,7 +76,7 @@ spring:
             enabled: false
 ```
 
-## Hide Service URL ==
+## Hide Service URL
 
 To hide service URLs in Spring Boot Admin UI entirely, set the following property in your Server's configuration:
 
