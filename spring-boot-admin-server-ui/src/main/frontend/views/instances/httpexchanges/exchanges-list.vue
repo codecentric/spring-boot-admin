@@ -190,8 +190,6 @@ export default {
 </script>
 
 <style lang="css">
-@reference "@/index.css";
-
 .httpexchanges {
   table-layout: fixed;
 }

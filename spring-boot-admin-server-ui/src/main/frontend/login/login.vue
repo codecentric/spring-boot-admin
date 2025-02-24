@@ -112,8 +112,6 @@ const logout = computed(() => {
 </script>
 
 <style scoped>
-@reference "@/login.css";
-
 .bg-wave--login {
   @apply z-0 absolute left-0;
   min-width: 100%;

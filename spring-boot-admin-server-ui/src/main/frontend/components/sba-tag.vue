@@ -2,9 +2,9 @@
   <span
     :class="{
       'py-1 border border-gray-300 bg-white': !small,
-      'py-1 border border-gray-200 text-xs bg-white': small,
+      'py-1 border text-xs bg-white': small,
     }"
-    class="inline-flex leading-none rounded shadow-xs text-sm overflow-hidden"
+    class="inline-flex leading-none rounded shadow-sm text-sm overflow-hidden"
   >
     <span
       v-if="label"

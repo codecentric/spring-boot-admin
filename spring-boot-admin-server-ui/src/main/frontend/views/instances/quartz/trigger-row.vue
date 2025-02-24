@@ -65,8 +65,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-@reference "@/index.css";
-
 .icon {
   width: 7px;
   height: 6px;

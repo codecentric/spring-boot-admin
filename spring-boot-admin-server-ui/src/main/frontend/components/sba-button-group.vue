@@ -4,9 +4,7 @@
   </div>
 </template>
 
-<style>
-@reference "@/index.css";
-
+<style type="text/css">
 .btn-group {
   @apply inline-flex z-0 relative -space-x-px;
 }
@@ -17,14 +15,14 @@
 }
 
 .btn-group button:first-child:not(:last-child) {
-  @apply rounded-r-none!;
+  @apply rounded-r-none !important;
 }
 
 .btn-group button:not(:first-child):not(:last-child) {
-  @apply rounded-none!;
+  @apply rounded-none !important;
 }
 
 .btn-group button:last-child:not(:first-child) {
-  @apply rounded-l-none!;
+  @apply rounded-l-none !important;
 }
 </style>

@@ -135,8 +135,6 @@ export default {
 </script>
 
 <style lang="css">
-@reference "@/index.css";
-
 .datasource-chart__svg {
   height: 159px;
   width: 100%;

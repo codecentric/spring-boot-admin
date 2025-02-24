@@ -230,9 +230,7 @@ export default {
 };
 </script>
 
-<style>
-@reference "@/index.css";
-
+<style lang="postcss">
 .wallboard {
   background-color: #4a4a4a;
   height: calc(100vh - 52px);

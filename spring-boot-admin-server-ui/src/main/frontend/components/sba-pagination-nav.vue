@@ -17,7 +17,7 @@
 <template>
   <div>
     <sba-button-group
-      class="relative z-0 btn-group rounded shadow -space-x-px"
+      class="relative z-0 btn-group rounded shadow-sm -space-x-px"
       aria-label="Pagination"
     >
       <sba-button :disabled="modelValue <= 1" @click="goPrev()">
@@ -140,10 +140,8 @@ export default {
 </script>
 
 <style scoped>
-@reference "@/index.css";
-
 .is-active {
-  @apply bg-indigo-50 border border-indigo-500 z-10!;
+  @apply bg-indigo-50 border border-indigo-500 z-10 !important;
   @apply font-extrabold;
 }
 </style>

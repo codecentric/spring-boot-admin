@@ -13,9 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import "tailwindcss";
+
 @import './toast-theme.css';
-@import './public/variables.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
   font-family:
@@ -32,6 +35,8 @@ body {
     Helvetica,
     Arial,
     sans-serif;
+
+  @apply text-base;
 }
 
 #app {

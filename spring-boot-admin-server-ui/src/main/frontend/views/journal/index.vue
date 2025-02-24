@@ -306,8 +306,6 @@ export default {
 </script>
 
 <style scoped>
-@reference "@/index.css";
-
 .label {
   white-space: nowrap;
 }

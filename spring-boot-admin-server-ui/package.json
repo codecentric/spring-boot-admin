@@ -74,8 +74,6 @@
     "@storybook/addon-mdx-gfm": "^8.0.0",
     "@storybook/vue3": "8.5.8",
     "@storybook/vue3-vite": "^8.0.0",
-    "@tailwindcss/postcss": "^4.0.7",
-    "@tailwindcss/vite": "^4.0.7",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/user-event": "14.6.1",
     "@testing-library/vue": "8.1.0",
@@ -85,7 +83,6 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitejs/plugin-vue": "5.2.1",
-    "@vitejs/plugin-vue-jsx": "^4.1.1",
     "@vue/eslint-config-typescript": "^14.0.0",
     "@vue/test-utils": "2.4.6",
     "autoprefixer": "10.4.20",
@@ -95,16 +92,17 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-storybook": "0.11.3",
     "eslint-plugin-vue": "^9.10.0",
-    "happy-dom": "^17.1.1",
+    "happy-dom": "^14.12.3",
     "jsdom": "^26.0.0",
     "msw": "2.7.1",
     "msw-storybook-addon": "2.0.4",
+    "postcss": "8.5.3",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "5.14.0",
     "sass": "^1.57.1",
     "storybook": "8.5.8",
     "storybook-vue3-router": "^5.0.0",
-    "tailwindcss": "4.0.8",
+    "tailwindcss": "3.4.17",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
     "vite": "6.1.1",
@@ -119,7 +117,8 @@
     "not ie <= 8"
   ],
   "engines": {
-    "node": "22.14.0"
+    "node": "22.14.0",
+    "npm": "11.1.0"
   },
   "msw": {
     "workerDirectory": [

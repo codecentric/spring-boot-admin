@@ -21,10 +21,16 @@ export default {
 };
 
 const Template = (args) => {
-  return <sba-checkbox {...args} />;
+  return {
+    components: { SbaCheckbox },
+    setup() {
+      return { args };
+    },
+    template: '<sba-checkbox v-bind="args" />{{args}}',
+  };
 };
 
-export const WithLabel = {
+export const OneButton = {
   render: Template,
 
   args: {

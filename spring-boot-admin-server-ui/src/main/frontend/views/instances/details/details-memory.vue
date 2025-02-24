@@ -176,8 +176,6 @@ export default defineComponent({
 </script>
 
 <style lang="css">
-@reference "@/index.css";
-
 .memory-current {
   margin-bottom: 0 !important;
 }

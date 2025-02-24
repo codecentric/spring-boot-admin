@@ -354,8 +354,6 @@ export default {
 </script>
 
 <style lang="css">
-@reference "@/index.css";
-
 .exchange-chart__svg {
   height: 200px;
   width: 100%;

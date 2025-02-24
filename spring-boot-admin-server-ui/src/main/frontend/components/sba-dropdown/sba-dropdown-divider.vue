@@ -3,8 +3,6 @@
 </template>
 
 <style scoped>
-@reference "@/index.css";
-
 .sba-dropdown-divider {
   height: 0;
   margin: 0.25rem 0;

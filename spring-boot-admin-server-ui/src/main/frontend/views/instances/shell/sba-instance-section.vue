@@ -71,8 +71,6 @@ export default {
 </script>
 
 <style scoped>
-@reference "@/index.css";
-
 .loading-spinner-wrapper {
   @apply absolute w-full h-screen flex flex-col z-50 top-0 left-0 justify-center items-center opacity-0;
 
@@ -89,11 +87,11 @@ export default {
 
 @keyframes show {
   from {
-    opacity: 0;
+    @apply opacity-0;
   }
 
   to {
-    opacity: 1;
+    @apply opacity-100;
   }
 }
 </style>

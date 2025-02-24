@@ -348,8 +348,6 @@ export default {
 };
 </script>
 <style lang="css">
-@reference "@/index.css";
-
 .httptraces__limit {
   width: 5em;
 }

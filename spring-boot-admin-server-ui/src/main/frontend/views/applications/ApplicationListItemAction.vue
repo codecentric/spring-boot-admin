@@ -98,14 +98,12 @@ if (props.item instanceof Application) {
 </script>
 
 <style scoped>
-@reference "@/index.css";
-
 .application-list-item__header__actions {
   @apply hidden lg:inline-flex p-1 bg-black/5 rounded-lg;
 }
 
 .btn-shutdown,
 .btn-unregister {
-  @apply ml-1!;
+  @apply ml-1 !important;
 }
 </style>

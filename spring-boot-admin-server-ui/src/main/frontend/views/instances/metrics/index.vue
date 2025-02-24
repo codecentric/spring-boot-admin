@@ -25,7 +25,7 @@
               for="metric"
               v-text="$t('instances.metrics.label')"
             />
-            <div class="mt-1 relative rounded-md shadow">
+            <div class="mt-1 relative rounded-md shadow-sm">
               <select
                 id="metric"
                 v-model="selectedMetric"
@@ -48,7 +48,7 @@
                 for="metric2"
                 >{{ tag.tag }}</label
               >
-              <div class="mt-1 relative rounded-md shadow">
+              <div class="mt-1 relative rounded-md shadow-sm">
                 <select
                   id="metric2"
                   v-model="selectedTags[tag.tag]"

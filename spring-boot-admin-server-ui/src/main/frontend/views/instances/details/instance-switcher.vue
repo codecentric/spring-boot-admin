@@ -42,7 +42,7 @@
         class="absolute -ml-2 mt-3 transform px-2 w-screen max-w-md"
       >
         <div
-          class="rounded-lg shadow-lg ring-1 ring-black/5 overflow-hidden overflow-y-auto max-h-32 md:max-h-96"
+          class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden overflow-y-auto max-h-32 md:max-h-96"
         >
           <div class="relative grid gap-4 bg-white p-4">
             <a
@@ -109,4 +109,3 @@ export default {
 </script>
 
 <style scoped></style>
-@reference "@/index.css";

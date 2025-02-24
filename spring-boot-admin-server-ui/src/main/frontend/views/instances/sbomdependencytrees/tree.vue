@@ -137,8 +137,6 @@ export default {
 </script>
 
 <style scoped>
-@reference "@/index.css";
-
 .x-scroller {
   overflow-x: scroll;
 }

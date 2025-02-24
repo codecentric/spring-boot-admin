@@ -65,8 +65,6 @@ export default {
 </script>
 
 <style>
-@reference "@/index.css";
-
 .label {
   @apply text-gray-500 text-sm text-right px-2 align-top w-40;
 }

@@ -38,8 +38,6 @@ const { applications } = useApplicationStore();
 </script>
 
 <style scoped>
-@reference "@/index.css";
-
 .sba-container {
   @apply pt-14 h-full;
 }

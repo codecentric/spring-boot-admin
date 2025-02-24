@@ -23,7 +23,7 @@
         class="block text-sm font-medium text-gray-700"
         v-text="label"
       />
-      <div :class="{ 'mt-1': hasLabel }" class="flex rounded shadow">
+      <div :class="{ 'mt-1': hasLabel }" class="flex rounded shadow-sm">
         <!-- PREPEND -->
         <label
           v-if="$slots.prepend"
@@ -54,7 +54,7 @@
           :type="type"
           :value="modelValue"
           :aria-label="label || placeholder"
-          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none bg-white/40 backdrop-blur-sm"
+          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none bg-opacity-40 backdrop-blur-sm"
           @input="handleInput"
         />
         <!-- APPEND -->

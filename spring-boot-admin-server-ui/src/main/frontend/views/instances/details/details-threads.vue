@@ -108,8 +108,6 @@ export default {
 </script>
 
 <style lang="css">
-@reference "@/index.css";
-
 .threads-current {
   margin-bottom: 0 !important;
 }

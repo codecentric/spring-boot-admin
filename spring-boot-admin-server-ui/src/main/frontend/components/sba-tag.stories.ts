@@ -21,7 +21,14 @@ export default {
   },
 };
 
-const Template = (args) => <sba-tag {...args} />;
+const Template = (args) => ({
+  components: { SbaTag },
+  setup() {
+    return { args };
+  },
+
+  template: '<sba-tag v-bind="args" />',
+});
 
 export const Tag = {
   render: Template,

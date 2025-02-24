@@ -4,7 +4,6 @@
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Node",
-    "jsx": "preserve",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "paths": {

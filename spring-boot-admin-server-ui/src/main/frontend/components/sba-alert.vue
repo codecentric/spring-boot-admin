@@ -18,7 +18,7 @@
   <div
     v-if="hasError"
     :class="classNames(alertClass, borderClassNames)"
-    class="rounded-b px-4 py-3 shadow backdrop-filter backdrop-blur-xs my-3"
+    class="rounded-b px-4 py-3 shadow-sm backdrop-filter backdrop-blur-xs bg-opacity-80 my-3"
     role="alert"
   >
     <div class="flex">
@@ -70,13 +70,13 @@ export default defineComponent({
     return {
       classNames,
       alertClass: {
-        'bg-red-100/80 border-red-400 text-red-700':
+        'bg-red-100 border-red-400 text-red-700':
           this.severity.toUpperCase() === Severity.ERROR,
-        'bg-orange-100/80 border-orange-500 text-orange-700':
+        'bg-orange-100 border-orange-500 text-orange-700':
           this.severity.toUpperCase() === Severity.WARN,
-        'bg-blue-100/80 border-blue-500 text-blue-900':
+        'bg-blue-100 border-blue-500 text-blue-900':
           this.severity.toUpperCase() === Severity.INFO,
-        'bg-teal-100/80 border-teal-500 text-teal-900':
+        'bg-teal-100 border-teal-500 text-teal-900':
           this.severity.toUpperCase() === Severity.SUCCESS,
       },
       textColor: {

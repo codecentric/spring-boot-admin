@@ -20,7 +20,7 @@
       v-for="(conditionalBean, index) in conditionalBeans"
       :key="conditionalBean.name"
     >
-      <div class="m-1 border rounded shadow">
+      <div class="m-1 border rounded shadow-sm">
         <div
           :key="conditionalBean.name"
           class="flex items-center"

@@ -1,14 +1,9 @@
-import { Meta, StoryObj } from '@storybook/vue3';
-
 import SbaStatus from './sba-status.vue';
 
-const meta: Meta<typeof SbaStatus> = {
+export default {
   component: SbaStatus,
   title: 'Components/Status',
 };
-export default meta;
-
-type Story = StoryObj<typeof SbaStatus>;
 
 const Template = (args) => ({
   components: { SbaStatus },
@@ -31,7 +26,7 @@ export const StatusUp = {
   },
 };
 
-export const StatusRestricted: Story = {
+export const StatusRestricted = {
   render: Template,
 
   args: {
@@ -40,7 +35,7 @@ export const StatusRestricted: Story = {
   },
 };
 
-export const StatusOos: Story = {
+export const StatusOos = {
   render: Template,
 
   args: {
@@ -49,7 +44,7 @@ export const StatusOos: Story = {
   },
 };
 
-export const StatusDown: Story = {
+export const StatusDown = {
   render: Template,
 
   args: {
@@ -58,7 +53,7 @@ export const StatusDown: Story = {
   },
 };
 
-export const StatusOffline: Story = {
+export const StatusOffline = {
   render: Template,
 
   args: {
@@ -67,7 +62,7 @@ export const StatusOffline: Story = {
   },
 };
 
-export const StatusUnknown: Story = {
+export const StatusUnknown = {
   render: Template,
 
   args: {

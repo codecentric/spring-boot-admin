@@ -1,6 +1,4 @@
-const vueJsx = require('@vitejs/plugin-vue-jsx').default;
 const { mergeConfig } = require('vite');
-
 const path = require('path');
 const frontend = path.resolve(__dirname, '../src/main/frontend/');
 module.exports = {
@@ -20,7 +18,6 @@ module.exports = {
   },
   async viteFinal(config) {
     config.plugins = config.plugins.filter((p) => p.name !== 'vue-docgen');
-    config.plugins.push(vueJsx());
     return mergeConfig(config, {
       resolve: {
         alias: {

@@ -30,8 +30,6 @@ export default {
 </script>
 
 <style scoped>
-@reference "@/index.css";
-
 .status-badge {
   @apply bg-gray-200 text-black text-xs inline-flex items-center uppercase  rounded overflow-hidden px-3 py-1;
 }

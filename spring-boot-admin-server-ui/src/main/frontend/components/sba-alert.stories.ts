@@ -20,7 +20,13 @@ export default {
   title: 'Components/Alert',
 };
 
-const Template = (args) => <sba-alert {...args} />;
+const Template = (args) => ({
+  components: { SbaAlert },
+  setup() {
+    return { args };
+  },
+  template: '<sba-alert v-bind="args" />',
+});
 
 export const AlertError = {
   render: Template,

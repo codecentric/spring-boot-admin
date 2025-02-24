@@ -1,0 +1,20 @@
+import { DocsContainer, Meta } from '@storybook/addon-docs';
+
+<Meta
+  title="Spring Boot Admin Frontend Library"
+  parameters={{
+    docs: {
+      container: ({ children, context }) => (
+        <DocsContainer context={context}>
+          <div className="prose">{children}</div>
+        </DocsContainer>
+      ),
+    },
+  }}
+/>
+
+# Spring Boot Admin Frontend Library
+
+This library provides a set of Vue components to build the Spring Boot Admin UI.
+Its use is restricted to the Spring Boot Admin UI and not intended for general use.
+Therefor the components are not published to npm.

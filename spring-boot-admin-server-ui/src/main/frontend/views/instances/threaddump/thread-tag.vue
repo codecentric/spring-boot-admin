@@ -34,8 +34,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-@reference "@/index.css";
-
 .thread-tag--runnable {
   color: black !important;
   background-color: #48c78e !important;

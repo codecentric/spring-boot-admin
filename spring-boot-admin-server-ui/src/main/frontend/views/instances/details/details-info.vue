@@ -88,8 +88,6 @@ export default {
 </script>
 
 <style lang="css">
-@reference "@/index.css";
-
 .info {
   overflow: auto;
 }

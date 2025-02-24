@@ -38,15 +38,11 @@ defineProps({
 </script>
 
 <style scoped>
-@reference "@/index.css";
-
 .sba-nav-item {
   @apply px-3 py-2 rounded lg:self-center hover:bg-sba-700;
 }
 </style>
 <style>
-@reference "@/index.css";
-
 .sba-nav-item.is-active {
   @apply bg-sba-700;
 }
