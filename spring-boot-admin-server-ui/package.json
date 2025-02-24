@@ -94,7 +94,7 @@
     "eslint-plugin-vue": "^9.10.0",
     "happy-dom": "^14.12.3",
     "jsdom": "^26.0.0",
-    "msw": "2.7.1",
+    "msw": "2.7.3",
     "msw-storybook-addon": "2.0.4",
     "postcss": "8.5.3",
     "prettier": "^3.0.3",
