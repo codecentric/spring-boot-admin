@@ -91,15 +91,15 @@ export default {
   methods: {
     async fetchMetrics() {
       const responseActive = this.instance.fetchMetric(
-        'data.source.active.connections',
+        'jdbc.connections.active',
         { name: this.dataSource },
       );
       const responseMin = this.instance.fetchMetric(
-        'data.source.min.connections',
+        'jdbc.connections.min',
         { name: this.dataSource },
       );
       const responseMax = this.instance.fetchMetric(
-        'data.source.max.connections',
+        'jdbc.connections.max',
         { name: this.dataSource },
       );
 
