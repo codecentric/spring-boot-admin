@@ -81,6 +81,18 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "RegistrationApplicationListener{" +
+			"registrator=" + registrator +
+			", taskScheduler=" + taskScheduler +
+			", autoDeregister=" + autoDeregister +
+			", autoRegister=" + autoRegister +
+			", registerPeriod=" + registerPeriod +
+			", scheduledTask=" + scheduledTask +
+			'}';
+	}
+
 	@EventListener
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public void onClosedContext(ContextClosedEvent event) {
