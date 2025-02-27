@@ -63,11 +63,6 @@
     "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
-    "@babel/core": "7.26.9",
-    "@babel/eslint-parser": "7.26.8",
-    "@babel/plugin-transform-runtime": "7.26.9",
-    "@babel/preset-env": "7.26.9",
-    "@babel/runtime": "7.26.9",
     "@storybook/addon-actions": "8.6.3",
     "@storybook/addon-essentials": "8.6.3",
     "@storybook/addon-links": "8.6.3",
@@ -86,7 +81,7 @@
     "@vue/eslint-config-typescript": "^14.0.0",
     "@vue/test-utils": "2.4.6",
     "autoprefixer": "10.4.20",
-    "babel-loader": "9.2.1",
+    "babel-loader": "10.0.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-prettier": "^5.0.0",
@@ -112,13 +107,10 @@
     "vue-loader": "17.4.2"
   },
   "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
+    "> .5%, last 2 versions"
   ],
   "engines": {
-    "node": "22.14.0",
-    "npm": "11.1.0"
+    "node": "22.14.0"
   },
   "msw": {
     "workerDirectory": [
