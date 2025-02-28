@@ -28,7 +28,7 @@
     "react-dom": "^18.3.1",
     "react-multi-carousel": "^2.8.5",
     "remark-deflist": "^1.0.0",
-    "typescript": "~5.7.2"
+    "typescript": "~5.8.0"
   },
   "browserslist": {
     "development": [
