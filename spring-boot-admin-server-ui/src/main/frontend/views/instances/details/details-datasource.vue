@@ -94,14 +94,12 @@ export default {
         'jdbc.connections.active',
         { name: this.dataSource },
       );
-      const responseMin = this.instance.fetchMetric(
-        'jdbc.connections.min',
-        { name: this.dataSource },
-      );
-      const responseMax = this.instance.fetchMetric(
-        'jdbc.connections.max',
-        { name: this.dataSource },
-      );
+      const responseMin = this.instance.fetchMetric('jdbc.connections.min', {
+        name: this.dataSource,
+      });
+      const responseMax = this.instance.fetchMetric('jdbc.connections.max', {
+        name: this.dataSource,
+      });
 
       return {
         active: (await responseActive).data.measurements[0].value,
