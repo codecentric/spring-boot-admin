@@ -58,7 +58,7 @@ const modelValue = defineModel({
 
 const { instanceCount, showInfo = true } = defineProps<{
   instanceCount: number;
-  showInfo: boolean;
+  showInfo?: boolean;
   classNames?: string | string[] | Record<string, boolean>;
 }>();
 </script>
