@@ -172,7 +172,7 @@ const addLoggerCreationEntryIfLoggerNotPresent = (nameFilter, loggers) => {
 };
 
 const { loggersService, instanceCount = 0 } = defineProps<{
-  instanceCount: number;
+  instanceCount?: number;
   loggersService: InstanceLoggers | ApplicationLoggers;
 }>();
 
