@@ -21,41 +21,46 @@
       $t('instances.details.datasource.title', { dataSource: dataSource })
     "
   >
-    <div>
-      <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
+    <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
-      <div v-if="current" class="level datasource-current">
-        <div class="level-item has-text-centered">
-          <div>
-            <p
-              class="heading has-bullet has-bullet-info"
-              v-text="$t('instances.details.datasource.active_connections')"
-            />
-            <p v-text="current.active" />
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p
-              class="heading"
-              v-text="$t('instances.details.datasource.min_connections')"
-            />
-            <p v-text="current.min" />
-          </div>
-        </div>
-        <div class="level-item has-text-centered">
-          <div>
-            <p
-              class="heading"
-              v-text="$t('instances.details.datasource.max_connections')"
-            />
-            <p v-if="current.max >= 0" v-text="current.max" />
-            <p v-else v-text="$t('instances.details.datasource.unlimited')" />
-          </div>
-        </div>
-      </div>
-      <datasource-chart v-if="chartData.length > 0" :data="chartData" />
-    </div>
+    <dl
+      v-if="current"
+      class="px-4 py-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6"
+    >
+      <dt
+        class="text-sm font-medium text-gray-500 sm:col-span-4"
+        v-text="$t('instances.details.datasource.active_connections')"
+      />
+      <dd
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+        v-text="current.active"
+      />
+
+      <dt
+        class="text-sm font-medium text-gray-500 sm:col-span-4"
+        v-text="$t('instances.details.datasource.min_connections')"
+      />
+      <dd
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+        v-text="current.min"
+      />
+
+      <dt
+        class="text-sm font-medium text-gray-500 sm:col-span-4"
+        v-text="$t('instances.details.datasource.max_connections')"
+      />
+      <dd
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+        v-if="current.max >= 0"
+        v-text="current.max"
+      />
+      <dd
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+        v-else
+        v-text="$t('instances.details.datasource.unlimited')"
+      />
+    </dl>
+    <datasource-chart v-if="chartData.length > 0" :data="chartData" />
   </sba-panel>
 </template>
 
