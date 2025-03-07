@@ -49,7 +49,7 @@ export default {
   methods: {
     async fetchDataSources() {
       const response = await this.instance.fetchMetric(
-        'data.source.active.connections',
+        'jdbc.connections.active',
       );
       return response.data.availableTags.filter((tag) => tag.tag === 'name')[0]
         .values;
