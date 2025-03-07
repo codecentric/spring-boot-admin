@@ -16,55 +16,44 @@
 
 <template>
   <sba-panel v-if="hasLoaded" :title="`Cache: ${cacheName}`">
-    <div>
-      <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
-
-      <div v-if="current" class="level cache-current">
-        <div
-          v-if="current.hit !== undefined"
-          class="level-item has-text-centered"
-        >
-          <div>
-            <p
-              class="heading has-bullet has-bullet-info"
-              v-text="$t('instances.details.cache.hits')"
-            />
-            <p v-text="current.hit" />
-          </div>
-        </div>
-        <div
-          v-if="current.miss !== undefined"
-          class="level-item has-text-centered"
-        >
-          <div>
-            <p
-              class="heading has-bullet has-bullet-warning"
-              v-text="$t('instances.details.cache.misses')"
-            />
-            <p v-text="current.miss" />
-          </div>
-        </div>
-        <div v-if="ratio !== undefined" class="level-item has-text-centered">
-          <div>
-            <p
-              class="heading"
-              v-text="$t('instances.details.cache.hit_ratio')"
-            />
-            <p v-text="ratio" />
-          </div>
-        </div>
-        <div
-          v-if="current.size !== undefined"
-          class="level-item has-text-centered"
-        >
-          <div>
-            <p class="heading" v-text="$t('instances.details.cache.size')" />
-            <p v-text="current.size" />
-          </div>
-        </div>
-      </div>
-      <cache-chart v-if="chartData.length > 0" :data="chartData" />
-    </div>
+    <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
+    <dl
+      v-if="current"
+      class="px-4 py-3 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6"
+    >
+      <template v-if="current.hit !== undefined">
+        <dt
+          class="text-sm font-medium text-gray-500 sm:col-span-4"
+          v-text="$t('instances.details.cache.hits')"
+        />
+        <dd
+          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+          v-text="current.hit"
+        />
+      </template>
+      <template v-if="current.miss !== undefined">
+        <dt
+          class="text-sm font-medium text-gray-500 sm:col-span-4"
+          v-text="$t('instances.details.cache.misses')"
+        />
+        <dd
+          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+          v-text="current.miss"
+        />
+      </template>
+      <template v-if="ratio !== undefined">
+        <dt
+          class="sm:col-span-4"
+          v-text="$t('instances.details.cache.hit_ratio')"
+        />
+        <dd v-text="ratio" />
+      </template>
+      <template v-if="current.size !== undefined">
+        <dt class="sm:col-span-4" v-text="$t('instances.details.cache.size')" />
+        <dd v-text="current.size" />
+      </template>
+    </dl>
+    <cache-chart v-if="chartData.length > 0" :data="chartData" />
   </sba-panel>
 </template>
 
@@ -205,9 +194,3 @@ export default {
   },
 };
 </script>
-
-<style lang="css">
-.datasource-current {
-  margin-bottom: 0 !important;
-}
-</style>
