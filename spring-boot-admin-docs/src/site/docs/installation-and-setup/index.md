@@ -131,7 +131,7 @@ When you start your monitored application now, it will register itself at the Sp
 app in the web interface of Spring Boot Admin.
 
 :::info
-It is possible to add `sprinb-boot-admin-client` as well as `spring-boot-admin-server` to the same application. This
+It is possible to add `spring-boot-admin-client` as well as `spring-boot-admin-server` to the same application. This
 allows you to monitor the Spring Boot Admin Server itself. To get a more realistic setup, you should run the Spring Boot
 Admin Server and clients in separate applications.
 :::
@@ -212,4 +212,16 @@ You can include the Spring Boot Admin Server to your Eureka server as well. Setu
 `spring.boot.admin.context-path` to something different from `/` so that the Spring Boot Admin Server UI won’t clash
 with
 Eureka’s one.
+:::
+
+### Docker Images
+Since Spring Boot Admin can be run in a vast variety of environments, we neither provide nor maintain any Docker images.
+However, you can easily create your own Docker image by adding a Dockerfile to your project and add the configuration that fits your needs.
+Even though we don't provide Docker images, we have a some example in our Docker Hub repository at [https://hub.docker.com/r/codecentric/spring-boot-admin](https://hub.docker.com/r/codecentric/spring-boot-admin).
+
+:::info
+We do not offer any support for these images. 
+They are provided as-is and are not maintained by the Spring Boot Admin team.
+Neither do we guarantee that they are up-to-date nor secure.
+As stated in the preambles, we recommend to create your own Docker image.
 :::
