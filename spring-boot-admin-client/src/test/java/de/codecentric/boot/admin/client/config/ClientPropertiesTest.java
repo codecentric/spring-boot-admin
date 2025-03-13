@@ -53,7 +53,7 @@ public class ClientPropertiesTest {
 	}
 
 	@Test
-	public void should_return_all_admiUrls() {
+	public void should_return_all_adminUrls() {
 		ClientProperties clientProperties = new ClientProperties();
 		clientProperties.setApiPath("register");
 		clientProperties.setUrl(new String[] { "http://first", "http://second" });

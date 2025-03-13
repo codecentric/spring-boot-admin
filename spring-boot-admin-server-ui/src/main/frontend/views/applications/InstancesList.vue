@@ -31,25 +31,25 @@
       </div>
       <div class="flex-auto xl:flex-1 xl:w-1/4 truncate">
         <template v-if="instance.showUrl()">
-        <a
-          :href="
+          <a
+            :href="
               instance.registration.serviceUrl ||
               instance.registration.healthUrl
-          "
-          @click.stop
-          v-text="
+            "
+            @click.stop
+            v-text="
               instance.registration.serviceUrl ||
               instance.registration.healthUrl
-          "
-        />
-        <sba-tag
-          v-if="instance.registration.metadata?.['group']"
-          class="ml-2"
-          :value="instance.registration.metadata?.['group']"
-          small
-        />
-        <br />
-        <span class="text-sm italic" v-text="instance.id" />
+            "
+          />
+          <sba-tag
+            v-if="instance.registration.metadata?.['group']"
+            class="ml-2"
+            :value="instance.registration.metadata?.['group']"
+            small
+          />
+          <br />
+          <span class="text-sm italic" v-text="instance.id" />
         </template>
         <template v-else>
           <span v-text="instance.id"></span>
@@ -62,7 +62,7 @@
         </template>
       </div>
       <div
-       v-if="Array.isArray(instance.tags)" class="hidden xl:block w-1/4"
+        class="hidden xl:block w-1/4"
         :class="{
           'overflow-x-scroll': Object.keys(instance.tags ?? {}).length > 0,
         }"

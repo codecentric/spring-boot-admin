@@ -1,4 +1,4 @@
-name: release-to-maven-central
+name: Release To Maven Central
 
 on:
   workflow_dispatch:
@@ -12,6 +12,9 @@ on:
         required: true
         type: boolean
         default: false
+
+env:
+  VERSION: ${{ github.event.inputs.releaseversion }}
 
 jobs:
   publish-central-and-pages:
@@ -36,12 +39,16 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          server-id: oss.sonatype.org
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
           cache: 'maven'
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Cache node modules
         uses: actions/cache@v4
@@ -65,23 +72,31 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
-      - name: Deploy Asciidoc docs output to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.8
+      - name: Deploy documentation to GitHub Pages for version ${{ github.event.inputs.releaseversion }}
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          branch: gh-pages
+          folder: spring-boot-admin-docs/target/generated-docs
           target-folder: ${{ github.event.inputs.releaseversion }}
-          clean: true # Automatically remove deleted files from the deploy branch
+          clean: true
 
-      - name: Deploy Asciidoc docs output to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.6.8
+      - name: Deploy redirect for /current to /${{ github.event.inputs.releaseversion }}
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          branch: gh-pages
+          folder: spring-boot-admin-docs/target/generated-docs/current
           target-folder: /current
-          clean: true # Automatically remove deleted files from the deploy branch
+          clean: true
 
+      - name: Deploy deeplink redirect for /current/* to /${{ github.event.inputs.releaseversion }}/*
+        uses: JamesIves/github-pages-deploy-action@v4.7.3
+        if: github.event.inputs.copyDocsToCurrent == 'true'
+        with:
+          branch: gh-pages
+          folder: spring-boot-admin-docs/target/generated-docs/current
+          target-folder: /
+          clean: false
 
   publish-github-release:
     needs: publish-central-and-pages
@@ -108,46 +123,11 @@ jobs:
 
       - name: Create GitHub Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.releaseversion }}
-          release_name: ${{ github.event.inputs.releaseversion }}
-          body: |
-            Grab the new version from Maven central https://repo1.maven.org/maven2/de/codecentric/
-
-            Current docs at https://codecentric.github.io/spring-boot-admin/${{ github.event.inputs.releaseversion }}/
-
-            ### Things that changed in this release
-            ${{ steps.changelog.outputs.changelog }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: ${{ contains(github.event.inputs.releaseversion, '-') }}
-
-  set-next-snapshot-version:
-    needs: publish-github-release
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set new SNAPSHOT version
-        run: >
-          mvn versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" && \
-            mvn  versions:set -DnextSnapshot && \
-            VERSION=$(mvn exec:exec -Dexec.executable='echo' -Dexec.args='${project.version}' --non-recursive -q) && \
-            mvn versions:revert && \
-            mvn versions:set-property -Dproperty=revision  -DnewVersion="$VERSION" &&
-            mvn versions:commit
-
-      - name: Commit new SNAPSHOT version
-        uses: stefanzweifel/git-auto-commit-action@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          commit_message: "chore: update to next SNAPSHOT version"
 
 

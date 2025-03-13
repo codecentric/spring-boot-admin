@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,21 @@ import java.time.Duration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Application;
 import de.codecentric.boot.admin.server.services.ApplicationRegistry;
+import de.codecentric.boot.admin.server.web.client.RefreshInstancesEvent;
 
 /**
  * REST controller for controlling registration of managed instances.
@@ -49,13 +52,21 @@ public class ApplicationsController {
 
 	private final ApplicationRegistry registry;
 
-	public ApplicationsController(ApplicationRegistry registry) {
+	private final ApplicationEventPublisher publisher;
+
+	public ApplicationsController(ApplicationRegistry registry, ApplicationEventPublisher publisher) {
 		this.registry = registry;
+		this.publisher = publisher;
 	}
 
 	@GetMapping(path = "/applications", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Flux<Application> applications() {
 		return registry.getApplications();
+	}
+
+	@PostMapping(path = "/applications", produces = MediaType.APPLICATION_JSON_VALUE)
+	public void refreshApplications() {
+		publisher.publishEvent(new RefreshInstancesEvent(this));
 	}
 
 	@GetMapping(path = "/applications/{name}", produces = MediaType.APPLICATION_JSON_VALUE)

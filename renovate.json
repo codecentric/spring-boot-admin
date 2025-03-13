@@ -1,17 +1,33 @@
 {
   "extends": [
-    "config:base"
+    "config:recommended"
+  ],
+  "labels": [
+    "bot",
+    "dependencies"
   ],
   "packageRules": [
     {
-      "excludePackagePatterns": ["^de\\.codecentric\\.boot\\.admin"]
+      "matchPackageNames": [
+        "!/^de\\.codecentric\\.boot\\.admin/"
+      ],
     },
     {
       "description": "Automatically merge minor and patch-level updates when checks pass, creates a PR otherwise",
-      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "matchPackageNames": [
+        "org.apache.maven.plugins:maven-site-plugin"
+      ],
+      "enabled": false
     }
   ]
 }

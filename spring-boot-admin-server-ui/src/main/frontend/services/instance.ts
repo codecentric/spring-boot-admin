@@ -26,12 +26,7 @@ import logtail from '../utils/logtail';
 import uri from '../utils/uri';
 
 import { useSbaConfig } from '@/sba-config';
-
-const actuatorMimeTypes = [
-  'application/vnd.spring-boot.actuator.v2+json',
-  'application/vnd.spring-boot.actuator.v1+json',
-  'application/json',
-].join(',');
+import { actuatorMimeTypes } from '@/services/spring-mime-types';
 
 const isInstanceActuatorRequest = (url: string) =>
   url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
@@ -52,7 +47,7 @@ class Instance {
     this.axios = axios.create({
       withCredentials: true,
       baseURL: uri`instances/${this.id}`,
-      headers: { Accept: actuatorMimeTypes },
+      headers: { Accept: actuatorMimeTypes.join(',') },
     });
     this.axios.interceptors.response.use(
       (response) => response,
@@ -216,6 +211,10 @@ class Instance {
 
   async refreshContext() {
     return this.axios.post(uri`actuator/refresh`);
+  }
+
+  async busRefreshContext() {
+    return this.axios.post(uri`actuator/busrefresh`);
   }
 
   async fetchLiquibase() {

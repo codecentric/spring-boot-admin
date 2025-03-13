@@ -172,7 +172,7 @@ const addLoggerCreationEntryIfLoggerNotPresent = (nameFilter, loggers) => {
 };
 
 const { loggersService, instanceCount = 0 } = defineProps<{
-  instanceCount: number;
+  instanceCount?: number;
   loggersService: InstanceLoggers | ApplicationLoggers;
 }>();
 
@@ -200,9 +200,7 @@ const filteredLoggers = computed(() => {
   const filteredLoggers = filterFn
     ? loggerConfig.value.loggers.filter(filterFn)
     : loggerConfig.value.loggers;
-  addLoggerCreationEntryIfLoggerNotPresent(filter.name,
-        filteredLoggers,
-      );
+  addLoggerCreationEntryIfLoggerNotPresent(filter.name, filteredLoggers);
   return filteredLoggers;
 });
 
@@ -257,14 +255,14 @@ function getFilterFn() {
 
   if (filter.configuredOnly) {
     filterFn = addToFilter(filterFn, (logger) =>
-          logger.level.some((l) => Boolean(l.configuredLevel)),
+      logger.level.some((l) => Boolean(l.configuredLevel)),
     );
   }
 
   if (filter.name) {
     const normalizedFilter = filter.name.toLowerCase();
     filterFn = addToFilter(filterFn, (logger) =>
-          logger.name.toLowerCase().includes(normalizedFilter),
+      logger.name.toLowerCase().includes(normalizedFilter),
     );
   }
 

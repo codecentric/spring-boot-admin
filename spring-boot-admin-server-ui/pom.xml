@@ -121,7 +121,7 @@
                         <goals>
                             <goal>npm</goal>
                         </goals>
-                        <phase>verify</phase>
+                        <phase>test</phase>
                         <configuration>
                             <arguments>run test</arguments>
                         </configuration>
@@ -132,7 +132,7 @@
                 <!-- Delete some node_modules due to a bug in npm optionalDependencies -->
                 <!-- see bug in npm https://github.com/npm/cli/issues/4828 -->
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.4.0</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <id>auto-clean</id>

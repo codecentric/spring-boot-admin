@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.ui.config;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -204,10 +206,13 @@ public class AdminServerUiAutoConfiguration {
 			public void addResourceHandlers(org.springframework.web.reactive.config.ResourceHandlerRegistry registry) {
 				registry.addResourceHandler(this.adminServer.path("/**"))
 					.addResourceLocations(this.adminUi.getResourceLocations())
-					.setCacheControl(this.adminUi.getCache().toCacheControl());
+					.setCacheControl(this.adminUi.getCache().toCacheControl())
+					.setMediaTypes(Map.of("js", new MediaType("application", "javascript")));
+
 				registry.addResourceHandler(this.adminServer.path("/extensions/**"))
 					.addResourceLocations(this.adminUi.getExtensionResourceLocations())
-					.setCacheControl(this.adminUi.getCache().toCacheControl());
+					.setCacheControl(this.adminUi.getCache().toCacheControl())
+					.setMediaTypes(Map.of("js", new MediaType("application", "javascript")));
 			}
 
 			@Bean
@@ -253,9 +258,11 @@ public class AdminServerUiAutoConfiguration {
 
 				List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 					.scan(this.adminUi.getExtensionResourceLocations());
-				List<String> routesIncludes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
+				List<String> routesIncludes = Stream
+					.concat(DEFAULT_UI_ROUTES.stream(), Stream.concat(extensionRoutes.stream(), Stream.of("/")))
 					.map(this.adminServer::path)
 					.collect(Collectors.toList());
+
 				List<String> routesExcludes = Stream
 					.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
 					.map(this.adminServer::path)

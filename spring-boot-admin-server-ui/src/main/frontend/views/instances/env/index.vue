@@ -26,6 +26,9 @@
               @refresh="fetchEnv"
             />
           </div>
+          <div v-if="instance.hasEndpoint('busrefresh')" class="mr-1">
+            <busrefresh :instance="instance" @refresh="fetchEnv" />
+          </div>
           <div class="flex-1">
             <sba-input
               v-model="filter"
@@ -111,6 +114,7 @@ import { pickBy } from 'lodash-es';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { VIEW_GROUP } from '@/views/ViewGroup';
+import Busrefresh from '@/views/instances/env/busrefresh.vue';
 import sbaEnvManager from '@/views/instances/env/env-manager';
 import refresh from '@/views/instances/env/refresh';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
@@ -134,7 +138,7 @@ const filterPropertySource = (needle) => (propertySource) => {
 };
 
 export default {
-  components: { SbaInstanceSection, sbaEnvManager, refresh },
+  components: { Busrefresh, SbaInstanceSection, sbaEnvManager, refresh },
   props: {
     instance: {
       type: Instance,

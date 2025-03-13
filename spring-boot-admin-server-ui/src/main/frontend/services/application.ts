@@ -22,13 +22,12 @@ import waitForPolyfill from '../utils/eventsource-polyfill';
 import uri from '../utils/uri';
 import Instance, { DOWN_STATES, UNKNOWN_STATES, UP_STATES } from './instance';
 
-const actuatorMimeTypes = [
-  'application/vnd.spring-boot.actuator.v2+json',
-  'application/vnd.spring-boot.actuator.v1+json',
-  'application/json',
-];
+import { actuatorMimeTypes } from '@/services/spring-mime-types';
 
-export const hasMatchingContentType = (contentType, compatibleContentTypes) =>
+export const hasMatchingContentType = (
+  contentType: string,
+  compatibleContentTypes: Array<string>,
+) =>
   Boolean(contentType) &&
   compatibleContentTypes.includes(contentType.replace(/;.*$/, ''));
 

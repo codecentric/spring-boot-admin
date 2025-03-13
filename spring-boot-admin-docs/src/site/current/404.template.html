@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <title>Page not found · GitHub Pages</title>
+  <script type='text/javascript'>
+    function getRedirectUrl() {
+      const l = window.location;
+      if (l.pathname.includes("/current")) {
+        return l.protocol + "//" + l.hostname + (l.port ? ":" + l.port : "") +
+          [
+            "",
+            "@@VERSION@@",
+            l.pathname.split("/").slice(2)
+          ].join("/")
+          +
+          l.hash;
+      }
+    }
+
+    const redirectUrl = getRedirectUrl();
+    if (redirectUrl) {
+      window.location.replace(redirectUrl);
+    }
+  </script>
+
+  <style type="text/css" media="screen">
+      body {
+          background-color: #f1f1f1;
+          margin: 0;
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+
+      .container {
+          margin: 50px auto 40px auto;
+          width: 600px;
+          text-align: center;
+      }
+
+      a {
+          color: #4183c4;
+          text-decoration: none;
+      }
+
+      a:hover {
+          text-decoration: underline;
+      }
+
+      h1 {
+          width: 800px;
+          position: relative;
+          left: -100px;
+          letter-spacing: -1px;
+          line-height: 60px;
+          font-size: 60px;
+          font-weight: 100;
+          margin: 0 0 50px 0;
+          text-shadow: 0 1px 0 #fff;
+      }
+
+      p {
+          color: rgba(0, 0, 0, 0.5);
+          margin: 20px 0;
+          line-height: 1.6;
+      }
+
+      ul {
+          list-style: none;
+          margin: 25px 0;
+          padding: 0;
+      }
+
+      li {
+          display: table-cell;
+          font-weight: bold;
+          width: 1%;
+      }
+
+      #suggestions {
+          margin-top: 35px;
+          color: #ccc;
+      }
+
+      #suggestions a {
+          color: #666666;
+          font-weight: 200;
+          font-size: 14px;
+          margin: 0 10px;
+      }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>404</h1>
+  <p><strong>There isn't a GitHub Pages site here.</strong></p>
+
+  <p>
+    Did you mean to visit <a href="//docs.spring-boot-admin.com/">docs.spring-boot-admin.com</a>?
+    Please note that this site belongs to a GitHub user and is
+    <strong>not an official GitHub site</strong>.
+  </p>
+
+  <div id="suggestions">
+    <a href="https://github.com/codecentric/spring-boot-admin">@codecentric/spring-boot-admin</a> —
+    <a href="https://www.codecentric.de">codecentric</a> —
+    <a href="https://github.com/codecentric/spring-boot-admin/issues">Issues</a>
+  </div>
+</div>
+</body>
+</html>

@@ -117,7 +117,7 @@ export default {
       return this.hasMetric('cache.gets');
     },
     hasDatasources() {
-      return this.hasMetric('data.source.active.connections');
+      return this.hasMetric('jdbc.connections.active');
     },
     hasGc() {
       return this.hasMetric('jvm.gc.pause');

@@ -18,6 +18,7 @@
   <sba-button
     v-on-clickaway="abort"
     :class="{ 'is-success': confirm }"
+    :title="title"
     @click="click"
   >
     <slot v-if="confirm" name="confirm">
@@ -32,6 +33,12 @@ import { directive as onClickaway } from 'vue3-click-away';
 
 export default {
   directives: { onClickaway },
+  props: {
+    title: {
+      type: String,
+      default: '',
+    },
+  },
   emits: ['click'],
   data() {
     return {

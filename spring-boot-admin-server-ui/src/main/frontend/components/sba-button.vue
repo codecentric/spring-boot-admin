@@ -3,6 +3,7 @@
     class="btn relative"
     :class="cssClasses"
     :disabled="disabled === true"
+    :title="title"
     @click="$emit('click', $event)"
   >
     <slot />
@@ -13,6 +14,10 @@
 export default {
   name: 'SbaButton',
   props: {
+    title: {
+      type: String,
+      default: '',
+    },
     size: {
       type: String,
       default: 'sm',
@@ -61,7 +66,7 @@ export default {
 }
 
 .btn.is-warning {
-  @apply focus:outline-none text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-yellow-300 font-medium text-sm;
+  @apply focus:outline-none text-gray-700 bg-yellow-400 hover:bg-yellow-500 focus:ring-yellow-300 font-medium text-sm;
 }
 
 .btn.is-info {
@@ -74,10 +79,18 @@ export default {
 
 .btn.is-light {
   @apply text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100  focus:ring-gray-200 font-medium  text-sm;
+
+  &.is-active {
+    @apply bg-gray-300;
+  }
 }
 
-.btn.is-light.is-active {
-  @apply bg-gray-300;
+.btn.is-extra-light {
+  @apply text-white bg-gray-500 hover:bg-gray-400 focus:outline-none focus:ring-gray-300 font-medium  text-sm;
+
+  &.is-active {
+    @apply bg-gray-400;
+  }
 }
 
 .btn.is-black {

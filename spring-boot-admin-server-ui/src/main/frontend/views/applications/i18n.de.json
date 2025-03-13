@@ -28,6 +28,7 @@
     "status": "Status",
     "label": "Anwendungen",
     "shutdown": "Möchten Sie die Anwendung <code>{name}</code> herunterfahren?",
+    "refreshed": "Anwendungen wurden aktualisiert.",
     "restart": "Möchten Sie Anwendung <code>{name}</code> neu starten?",
     "restarted": "Die Anwendung wurde neu gestartet.",
     "unregister": "Möchten Sie die Anwendung <code>{name}</code> deregistrieren?",

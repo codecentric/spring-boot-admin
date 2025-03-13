@@ -1,0 +1,45 @@
+{
+  "name": "site",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start",
+    "build:current-version-redirect": "mkdir -p build/current/ && sed \"s/@@VERSION@@/$VERSION/g\" current/index.template.html > build/current/index.html && sed \"s/@@VERSION@@/$VERSION/g\" current/404.template.html > build/current/404.html",
+    "build": "docusaurus build",
+    "build:prod": "npm run build && npm run build:current-version-redirect && mv ./build ../../target/generated-docs"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.6.3",
+    "@docusaurus/module-type-aliases": "^3.6.3",
+    "@docusaurus/preset-classic": "^3.6.3",
+    "@docusaurus/tsconfig": "^3.6.3",
+    "@docusaurus/types": "^3.6.3",
+    "@iconify/react": "^5.0.2",
+    "@mdx-js/react": "^3.1.0",
+    "asciidoctor": "^3.0.4",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
+    "glob": "^11.0.0",
+    "lodash.merge": "^4.6.2",
+    "node-html-markdown": "^1.3.0",
+    "prism-react-renderer": "^2.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-multi-carousel": "^2.8.5",
+    "remark-deflist": "^1.0.0",
+    "typescript": "~5.8.0"
+  },
+  "browserslist": {
+    "development": [
+      "last 3 chrome version",
+      "last 3 firefox version",
+      "last 5 safari version"
+    ],
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ]
+  }
+}

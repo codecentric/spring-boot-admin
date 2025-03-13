@@ -17,18 +17,18 @@ describe('Dependencies', () => {
   const PUBLISHER_TABLE_COLUMN_INDEX = 4;
   const DESCRIPTION_TABLE_COLUMN_INDEX = 5;
 
-  beforeEach(async () => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
-
-    render(Dependencies, {
-      props: {
-        instance,
-      },
-    });
-  });
+  const application = new Application(applications[0]);
+  const instance = application.instances[0];
 
   describe('Render correctly', () => {
+    beforeEach(() => {
+      render(Dependencies, {
+        props: {
+          instance,
+        },
+      });
+    });
+
     it('both sbom ids', async () => {
       expect(await screen.findByText(/application \(63\/63\)/)).toBeVisible();
 
@@ -95,6 +95,14 @@ describe('Dependencies', () => {
   });
 
   describe('filter correctly', () => {
+    beforeEach(() => {
+      render(Dependencies, {
+        props: {
+          instance,
+        },
+      });
+    });
+
     it('for dependency name', async () => {
       const filterInput = screen.getByLabelText('Filter');
       await userEvent.type(filterInput, 'log4j-api');
@@ -218,6 +226,12 @@ describe('Dependencies', () => {
           });
         }),
       );
+
+      render(Dependencies, {
+        props: {
+          instance,
+        },
+      });
     });
 
     const resetDefaultSort = async () => {
