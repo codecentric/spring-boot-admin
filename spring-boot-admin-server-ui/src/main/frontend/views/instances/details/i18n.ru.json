@@ -11,7 +11,7 @@
         "active_connections": "Активные подключения",
         "min_connections": "Минимальные подключения",
         "max_connections": "Максимальные подключения",
-        "title": "Datasource: {datasource}",
+        "title": "Datasource: {dataSource}",
         "unlimited": "неограниченный"
       },
       "gc": {

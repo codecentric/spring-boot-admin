@@ -11,7 +11,7 @@
         "active_connections": "活動連接數",
         "min_connections": "最小連接數",
         "max_connections": "最大連接數",
-        "title": "資料來源: {datasource}",
+        "title": "資料來源: {dataSource}",
         "unlimited": "unlimited"
       },
       "gc": {

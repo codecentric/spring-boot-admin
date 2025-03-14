@@ -12,7 +12,7 @@
         "active_connections": "Active connections",
         "min_connections": "Min connections",
         "max_connections": "Max connections",
-        "title": "Datasource: {datasource}",
+        "title": "Datasource: {dataSource}",
         "unlimited": "unlimited"
       },
       "gc": {

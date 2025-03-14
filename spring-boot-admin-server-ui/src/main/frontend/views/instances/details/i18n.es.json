@@ -13,7 +13,7 @@
         "active_connections": "Conexiones activas",
         "min_connections": "Conexiones Min",
         "max_connections": "Conexiones Max ",
-        "title": "Fuente de datos: {datasource}",
+        "title": "Fuente de datos: {dataSource}",
         "unlimited": "Sin límites"
       },
       "gc": {

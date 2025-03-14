@@ -11,7 +11,7 @@
         "active_connections": "활성 커넥션",
         "min_connections": "최소 커넥션",
         "max_connections": "최대 커넥션",
-        "title": "데이터소스: {datasource}",
+        "title": "데이터소스: {dataSource}",
         "unlimited": "무제한"
       },
       "gc": {
