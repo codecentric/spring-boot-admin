@@ -34,7 +34,10 @@ export default {
   },
   data: () => ({}),
   watch: {
-    data: 'drawChart',
+    data: {
+      handler: 'drawChart',
+      deep: true,
+    },
   },
   mounted() {
     const margin = {
