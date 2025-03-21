@@ -91,7 +91,7 @@ public class AdminServerProperties {
 	public static class MonitorProperties {
 
 		/**
-		 * Time interval to check the status of instances.
+		 * Time interval to check the status of instances, must be greater than 1 second.
 		 */
 		@DurationUnit(ChronoUnit.MILLIS)
 		private Duration statusInterval = Duration.ofMillis(10_000L);
