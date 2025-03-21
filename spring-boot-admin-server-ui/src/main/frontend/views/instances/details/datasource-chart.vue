@@ -33,7 +33,10 @@ export default {
     },
   },
   watch: {
-    data: 'drawChart',
+    data: {
+      handler: 'drawChart',
+      deep: true,
+    },
   },
   mounted() {
     const margin = {
