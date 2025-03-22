@@ -63,11 +63,11 @@
     "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "8.6.7",
+    "@storybook/addon-actions": "8.6.8",
     "@storybook/addon-essentials": "8.6.7",
     "@storybook/addon-links": "8.6.7",
     "@storybook/addon-mdx-gfm": "^8.0.0",
-    "@storybook/vue3": "8.6.7",
+    "@storybook/vue3": "8.6.8",
     "@storybook/vue3-vite": "^8.0.0",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/user-event": "14.6.1",
