@@ -205,9 +205,16 @@ export default {
 }
 .threads__thread-name {
   width: 250px;
+  max-width: 750px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.threads__thread-name:hover {
+  height: auto;
+  overflow: visible;
+  white-space: normal;
 }
 
 .threads__timeline {
