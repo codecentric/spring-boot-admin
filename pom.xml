@@ -66,7 +66,7 @@
         <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
         <maven-gpg-plugin.version>3.2.7</maven-gpg-plugin.version>
         <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
         <asciidoctor-maven-plugin.version>3.1.0</asciidoctor-maven-plugin.version>
         <asciidoctor-converter-doxia-module.version>3.1.0</asciidoctor-converter-doxia-module.version>
         <asciidoctor-maven-plugin.version>3.2.0</asciidoctor-maven-plugin.version>
