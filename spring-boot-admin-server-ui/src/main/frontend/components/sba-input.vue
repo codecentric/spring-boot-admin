@@ -54,6 +54,7 @@
           :type="type"
           :value="modelValue"
           :aria-label="label || placeholder"
+          :autofocus="autofocus"
           class="focus:z-10 p-2 relative flex-1 block w-full rounded-none bg-opacity-40 backdrop-blur-sm"
           @input="handleInput"
         />
@@ -131,6 +132,10 @@ export default {
     },
     autocomplete: {
       type: String,
+      default: undefined,
+    },
+    autofocus: {
+      type: Boolean,
       default: undefined,
     },
   },
