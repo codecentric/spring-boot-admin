@@ -43,10 +43,13 @@
       </template>
       <template v-if="ratio !== undefined">
         <dt
-          class="sm:col-span-4"
+          class="text-sm font-medium text-gray-500 sm:col-span-4"
           v-text="$t('instances.details.cache.hit_ratio')"
         />
-        <dd v-text="ratio" />
+        <dd
+          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+          v-text="ratio"
+        />
       </template>
       <template v-if="current.size !== undefined">
         <dt class="sm:col-span-4" v-text="$t('instances.details.cache.size')" />
@@ -91,7 +94,10 @@ export default {
   }),
   computed: {
     ratio() {
-      if (Number.isFinite(this.current.hit) && Number.isFinite(this.current)) {
+      if (
+        Number.isFinite(this.current.hit) &&
+        Number.isFinite(this.current.miss)
+      ) {
         const total = this.current.hit + this.current.miss;
         return total > 0
           ? ((this.current.hit / total) * 100).toFixed(2) + '%'
@@ -179,7 +185,22 @@ export default {
           next: (data) => {
             this.hasLoaded = true;
             this.current = data;
-            this.chartData.push({ ...data, timestamp: moment().valueOf() });
+            let hitsPerInterval = 0;
+            let missesPerInterval = 0;
+            let totalPerInterval = 0;
+            if (this.chartData.length > 0) {
+              const lastChartData = this.chartData[this.chartData.length - 1];
+              hitsPerInterval = data.hit - lastChartData.hit;
+              missesPerInterval = data.miss - lastChartData.miss;
+              totalPerInterval = data.total - lastChartData.total;
+            }
+            this.chartData.push({
+              ...data,
+              timestamp: moment().valueOf(),
+              hitsPerInterval,
+              missesPerInterval,
+              totalPerInterval,
+            });
           },
           error: (error) => {
             this.hasLoaded = true;
