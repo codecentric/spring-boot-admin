@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/vue';
+import { shallowMount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
 
 import Mappings from './index.vue';
@@ -75,6 +76,39 @@ describe('Mappings', () => {
       screen.getByRole('cell', { name: 'webMvcMetricsFilter' }),
     );
     expect(element).toBeVisible();
+  });
+
+  it.each`
+    contentType
+    ${'application/vnd.spring-boot.actuator.v2+json'}
+    ${'application/vnd.spring-boot.actuator.v3+json'}
+    ${'application/vnd.spring-boot.actuator.v2+json;charset=UTF-8'}
+    ${'application/vnd.spring-boot.actuator.v3+json;charset=UTF-8'}
+  `('should accept allowed content type headers', ({ contentType }) => {
+    const wrapper = shallowMount(Mappings, {
+      props: {
+        instance: createInstanceWithMappingsData(mappings),
+      },
+    });
+
+    expect(wrapper.vm.isSupportedContextType(contentType)).toBe(true);
+  });
+
+  it.each`
+    contentType
+    ${'application/vnd.spring-boot.actuator.v+json'}
+    ${'application/vnd.spring-boot.actuator.v34+json'}
+    ${'invalid'}
+    ${null}
+    ${undefined}
+  `('should reject content type headers', ({ contentType }) => {
+    const wrapper = shallowMount(Mappings, {
+      props: {
+        instance: createInstanceWithMappingsData(mappings),
+      },
+    });
+
+    expect(wrapper.vm.isSupportedContextType(contentType)).toBe(false);
   });
 
   // Helpers

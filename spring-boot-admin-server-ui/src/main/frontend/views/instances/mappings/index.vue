@@ -98,15 +98,21 @@ export default {
     hasServletFilters(context) {
       return context?.mappings?.servletFilters !== undefined;
     },
+    isSupportedContextType(contentType) {
+      const supportedContentTypes = [
+        'application/vnd.spring-boot.actuator.v3+json',
+        'application/vnd.spring-boot.actuator.v2+json',
+      ];
+
+      return !!supportedContentTypes.find((supportedContentType) =>
+        (contentType || '').includes(supportedContentType),
+      );
+    },
     async fetchMappings() {
       this.error = null;
       try {
         const res = await this.instance.fetchMappings();
-        const supportedContentTypes = [
-          'application/vnd.spring-boot.actuator.v3+json',
-          'application/vnd.spring-boot.actuator.v2+json',
-        ];
-        if (supportedContentTypes.includes(res.headers['content-type'])) {
+        if (this.isSupportedContextType(res.headers['content-type'])) {
           this.contexts = res.data.contexts;
         } else {
           this.isOldMetrics = true;
