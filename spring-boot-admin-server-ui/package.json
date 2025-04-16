@@ -100,7 +100,7 @@
     "tailwindcss": "3.4.17",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
-    "vite": "6.2.6",
+    "vite": "6.3.0",
     "vite-plugin-static-copy": "2.3.1",
     "vitest": "3.1.1",
     "vue-eslint-parser": "^10.0.0",
