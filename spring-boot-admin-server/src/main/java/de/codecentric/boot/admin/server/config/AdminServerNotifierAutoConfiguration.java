@@ -74,6 +74,7 @@ import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.web.NotificationFilterController;
 
 @Configuration(proxyBeanMethods = false)
+@Conditional(SpringBootAdminServerEnabledCondition.class)
 @EnableConfigurationProperties(NotifierProxyProperties.class)
 @AutoConfigureAfter({ MailSenderAutoConfiguration.class })
 public class AdminServerNotifierAutoConfiguration {
