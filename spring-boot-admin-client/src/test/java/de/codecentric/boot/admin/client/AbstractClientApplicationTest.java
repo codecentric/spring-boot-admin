@@ -81,6 +81,24 @@ public abstract class AbstractClientApplicationTest {
 		wireMock.verify(request);
 	}
 
+	@Test
+	public void test_context_with_snake_case() throws InterruptedException, UnknownHostException {
+		cdl.await();
+		Thread.sleep(2500);
+		String hostName = InetAddress.getLocalHost().getCanonicalHostName();
+		String serviceHost = "http://" + hostName + ":" + getServerPort();
+		String managementHost = "http://" + hostName + ":" + getManagementPort();
+		RequestPatternBuilder request = postRequestedFor(urlEqualTo("/instances"));
+		request.withHeader("Content-Type", equalTo("application/json"))
+			.withRequestBody(matchingJsonPath("$.name", equalTo("Test-Client")))
+			.withRequestBody(matchingJsonPath("$.health_url", equalTo(managementHost + "/mgmt/health")))
+			.withRequestBody(matchingJsonPath("$.management_url", equalTo(managementHost + "/mgmt")))
+			.withRequestBody(matchingJsonPath("$.service_url", equalTo(serviceHost + "/")))
+			.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
+
+		wireMock.verify(request);
+	}
+
 	protected abstract int getServerPort();
 
 	protected abstract int getManagementPort();
