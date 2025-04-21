@@ -17,15 +17,19 @@
 package de.codecentric.boot.admin.server.utils.jackson;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
+
+import org.springframework.util.ObjectUtils;
 
 public class RegistrationDeserializer extends StdDeserializer<Registration> {
 
@@ -38,6 +42,7 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 	@Override
 	public Registration deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 		JsonNode node = p.readValueAsTree();
+		Map<String, String> normalizedKvPair = getNormalizedKvPair(node);
 		Registration.Builder builder = Registration.builder();
 
 		if (node.hasNonNull("name")) {
@@ -48,14 +53,14 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 			builder.healthUrl(url.replaceFirst("/+$", "") + "/health").managementUrl(url);
 		}
 		else {
-			if (node.hasNonNull("healthUrl")) {
-				builder.healthUrl(node.get("healthUrl").asText());
+			if (!ObjectUtils.isEmpty(normalizedKvPair.get("healthurl"))) {
+				builder.healthUrl(normalizedKvPair.get("healthurl"));
 			}
-			if (node.hasNonNull("managementUrl")) {
-				builder.managementUrl(node.get("managementUrl").asText());
+			if (!ObjectUtils.isEmpty(normalizedKvPair.get("managementurl"))) {
+				builder.managementUrl(normalizedKvPair.get("managementurl"));
 			}
-			if (node.hasNonNull("serviceUrl")) {
-				builder.serviceUrl(node.get("serviceUrl").asText());
+			if (!ObjectUtils.isEmpty(normalizedKvPair.get("serviceurl"))) {
+				builder.serviceUrl(normalizedKvPair.get("serviceurl"));
 			}
 		}
 
@@ -72,6 +77,23 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 		}
 
 		return builder.build();
+	}
+
+	private Map<String, String> getNormalizedKvPair(JsonNode jn) throws IOException {
+		Map<String, String> normalizedKvPair = new HashMap<>();
+		JsonParser jp = jn.traverse();
+		while(!jp.isClosed()) {
+			if(jp.nextToken() == JsonToken.FIELD_NAME) {
+				String fieldName = jp.currentName();
+				if(!ObjectUtils.isEmpty(fieldName)) {
+					JsonToken jsonValueToken = jp.nextValue();
+					if(jsonValueToken == JsonToken.VALUE_STRING) {
+						normalizedKvPair.putIfAbsent(fieldName.replaceAll("[_-]", "").toLowerCase(), jp.getValueAsString());
+					}
+				}
+			}
+		}
+		return normalizedKvPair;
 	}
 
 }
