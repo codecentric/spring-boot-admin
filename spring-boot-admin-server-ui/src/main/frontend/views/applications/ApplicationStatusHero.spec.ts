@@ -28,19 +28,19 @@ describe('ApplicationStatusHero', () => {
   });
 
   it.each`
-    instance1Status | instance2Status | expectedMessage
-    ${'UP'}         | ${'UP'}         | ${'all up'}
-    ${'OFFLINE'}    | ${'OFFLINE'}    | ${'all down'}
-    ${'UNKNOWN'}    | ${'UNKNOWN'}    | ${'all in unknown state'}
-    ${'UP'}         | ${'UNKNOWN'}    | ${'some instances are in unknown state'}
-    ${'UP'}         | ${'DOWN'}       | ${'some instances are down'}
-    ${'UP'}         | ${'OFFLINE'}    | ${'some instances are down'}
-    ${'DOWN'}       | ${'UNKNOWN'}    | ${'some instances are down'}
-    ${'DOWN'}       | ${'OFFLINE'}    | ${'all down'}
-    ${'OFFLINE'}    | ${'UP'}         | ${'some instances are down'}
+    instance1Status | instance2Status | expectedMessage                          | expectedIcon
+    ${'UP'}         | ${'UP'}         | ${'all up'}                              | ${'check-circle'}
+    ${'OFFLINE'}    | ${'OFFLINE'}    | ${'all down'}                            | ${'minus-circle'}
+    ${'UNKNOWN'}    | ${'UNKNOWN'}    | ${'all in unknown state'}                | ${'question-circle'}
+    ${'UP'}         | ${'UNKNOWN'}    | ${'some instances are in unknown state'} | ${'question-circle'}
+    ${'UP'}         | ${'DOWN'}       | ${'some instances are down'}             | ${'minus-circle'}
+    ${'UP'}         | ${'OFFLINE'}    | ${'some instances are down'}             | ${'minus-circle'}
+    ${'DOWN'}       | ${'UNKNOWN'}    | ${'some instances are down'}             | ${'minus-circle'}
+    ${'DOWN'}       | ${'OFFLINE'}    | ${'all down'}                            | ${'minus-circle'}
+    ${'OFFLINE'}    | ${'UP'}         | ${'some instances are down'}             | ${'minus-circle'}
   `(
     '`$expectedMessage` is shown when `$instance1Status` and `$instance2Status`',
-    ({ instance1Status, instance2Status, expectedMessage }) => {
+    ({ instance1Status, instance2Status, expectedMessage, expectedIcon }) => {
       applications.value = [
         new Application({
           name: 'Test Application',
@@ -58,8 +58,17 @@ describe('ApplicationStatusHero', () => {
         }),
       ];
 
-      render(ApplicationStatusHero);
+      render(ApplicationStatusHero, {
+        global: {
+          stubs: {
+            'font-awesome-icon': {
+              template: '<svg data-testid="icon" />',
+            },
+          },
+        },
+      });
 
+      expect(screen.getByTestId('icon')).toHaveAttribute('icon', expectedIcon);
       expect(screen.getByText(expectedMessage)).toBeVisible();
     },
   );

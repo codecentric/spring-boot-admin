@@ -10,7 +10,7 @@
           </div>
         </template>
         <template v-else-if="statusInfo.allDown">
-          <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
+          <font-awesome-icon icon="minus-circle" class="text-red-500 icon" />
           <div class="text-center">
             <h1
               class="font-bold text-2xl"
