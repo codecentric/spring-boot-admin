@@ -26,10 +26,9 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.springframework.util.ObjectUtils;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
-
-import org.springframework.util.ObjectUtils;
 
 public class RegistrationDeserializer extends StdDeserializer<Registration> {
 
@@ -82,13 +81,14 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 	private Map<String, String> getNormalizedKvPair(JsonNode jn) throws IOException {
 		Map<String, String> normalizedKvPair = new HashMap<>();
 		JsonParser jp = jn.traverse();
-		while(!jp.isClosed()) {
-			if(jp.nextToken() == JsonToken.FIELD_NAME) {
+		while (!jp.isClosed()) {
+			if (jp.nextToken() == JsonToken.FIELD_NAME) {
 				String fieldName = jp.currentName();
-				if(!ObjectUtils.isEmpty(fieldName)) {
+				if (!ObjectUtils.isEmpty(fieldName)) {
 					JsonToken jsonValueToken = jp.nextValue();
-					if(jsonValueToken == JsonToken.VALUE_STRING) {
-						normalizedKvPair.putIfAbsent(fieldName.replaceAll("[_-]", "").toLowerCase(), jp.getValueAsString());
+					if (jsonValueToken == JsonToken.VALUE_STRING) {
+						normalizedKvPair.putIfAbsent(fieldName.replaceAll("[_-]", "").toLowerCase(),
+								jp.getValueAsString());
 					}
 				}
 			}
