@@ -33,16 +33,16 @@ public class ClientServletApplicationTest extends AbstractClientApplicationTest 
 
 		SpringApplication application = new SpringApplication(TestClientApplication.class);
 		application.setWebApplicationType(WebApplicationType.SERVLET);
-		if(testInfo.getDisplayName().equalsIgnoreCase("test_context_with_snake_case()")) {
+		if (testInfo.getDisplayName().equalsIgnoreCase("test_context_with_snake_case()")) {
 			instance = application.run("--spring.application.name=Test-Client", "--server.port=0",
-				"--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
-				"--spring.boot.admin.client.url=" + wireMock.url("/"),
-				"--spring.jackson.property-naming-strategy=SNAKE_CASE");
+					"--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
+					"--spring.boot.admin.client.url=" + wireMock.url("/"),
+					"--spring.jackson.property-naming-strategy=SNAKE_CASE");
 		}
 		else {
 			instance = application.run("--spring.application.name=Test-Client", "--server.port=0",
-				"--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
-				"--spring.boot.admin.client.url=" + wireMock.url("/"));
+					"--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
+					"--spring.boot.admin.client.url=" + wireMock.url("/"));
 		}
 	}
 
