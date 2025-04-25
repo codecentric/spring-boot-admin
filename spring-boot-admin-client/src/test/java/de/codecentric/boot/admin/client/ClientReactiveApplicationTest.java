@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.client;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -27,15 +28,22 @@ public class ClientReactiveApplicationTest extends AbstractClientApplicationTest
 	private ConfigurableApplicationContext instance;
 
 	@BeforeEach
-	@Override
-	public void setUp() throws Exception {
+	public void setUp(TestInfo testInfo) throws Exception {
 		super.setUp();
 
 		SpringApplication application = new SpringApplication(TestClientApplication.class);
 		application.setWebApplicationType(WebApplicationType.REACTIVE);
-		instance = application.run("--spring.application.name=Test-Client", "--server.port=0",
-				"--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
-				"--spring.boot.admin.client.url=" + wireMock.url("/"));
+		if (testInfo.getDisplayName().equalsIgnoreCase("test_context_with_snake_case()")) {
+			instance = application.run("--spring.application.name=Test-Client", "--server.port=0",
+					"--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
+					"--spring.boot.admin.client.url=" + wireMock.url("/"),
+					"--spring.jackson.property-naming-strategy=SNAKE_CASE");
+		}
+		else {
+			instance = application.run("--spring.application.name=Test-Client", "--server.port=0",
+					"--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
+					"--spring.boot.admin.client.url=" + wireMock.url("/"));
+		}
 	}
 
 	@AfterEach
