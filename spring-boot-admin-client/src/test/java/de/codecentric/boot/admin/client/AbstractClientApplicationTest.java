@@ -50,7 +50,8 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 
 public abstract class AbstractClientApplicationTest {
 
-	private final WireMockServer wireMock = new WireMockServer(options().dynamicPort().notifier(new ConsoleNotifier(true)));
+	private final WireMockServer wireMock = new WireMockServer(
+			options().dynamicPort().notifier(new ConsoleNotifier(true)));
 
 	private SpringApplication application;
 
