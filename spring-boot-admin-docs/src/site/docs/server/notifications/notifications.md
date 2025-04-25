@@ -34,13 +34,54 @@ public class CustomNotifier extends AbstractEventNotifier {
 
 ## Notification
 
+### Mail Notifications
+
+Mail notifications will be delivered as HTML emails rendered using https://www.thymeleaf.org/[Thymeleaf] templates.
+To enable Mail notifications, configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
+
+<figure>
+  ![mail-notification.png](mail-notification.png)
+  <figcaption>Sample Mail Notification with default template</figcaption>
+</figure>
+
+:::info
+To prevent disclosure of sensitive information, the default mail template doesn’t show any metadata of the instance. If
+you want to you show some of the metadata you can use a custom template.
+:::
+
+```xml title="Add spring-boot-starter-mail to your dependencies"
+
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-mail</artifactId>
+</dependency>
+```
+
+```properties title="application.properties"
+spring.mail.host=smtp.example.com
+spring.boot.admin.notify.mail.to=admin@example.com
+```
+
+__Mail notifications configuration options__
+
+| Property name                                       | Description                                                                                                               | Default value                                                         |
+|-----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| spring.boot.admin.notify.mail.enabled               | Enable mail notifications                                                                                                 | true                                                                  |
+| spring.boot.admin.notify.mail.ignore-changes        | Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed. | UNKNOWN:UP                                                            |
+| spring.boot.admin.notify.mail.template              | Resource path to the Thymeleaf template used for rendering.                                                               | classpath:/META-INF/spring-boot-admin-server/mail/status-changed.html |
+| spring.boot.admin.notify.mail.to                    | Comma-delimited list of mail recipients                                                                                   | root@localhost                                                        |
+| spring.boot.admin.notify.mail.cc                    | Comma-delimited list of carbon-copy recipients                                                                            |                                                                       |
+| spring.boot.admin.notify.mail.from                  | Mail sender                                                                                                               | Spring Boot Admin &lt;noreply@localhost&gt;                           |
+| spring.boot.admin.notify.mail.additional-properties | Additional properties which can be accessed from the template                                                             |                                                                       |
+
 ### Hipchat Notifications
 
 To enable [Hipchat](https://www.hipchat.com/) notifications you need to create an API token on your Hipchat account and set the appropriate configuration properties.
 
 __Hipchat notifications configuration options__
+
 | Property name                                   | Description                                                                                                               | Default value                                                                                                                                                        |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | spring.boot.admin.notify.hipchat.enabled        | Enable Hipchat notifications                                                                                              | true                                                                                                                                                                 |
 | spring.boot.admin.notify.hipchat.ignore-changes | Comma-delimited list of status changes to be ignored. Format: "&lt;from-status&gt;:&lt;to-status&gt;". Wildcards allowed. | "UNKNOWN:UP"                                                                                                                                                         |
 | spring.boot.admin.notify.hipchat.url            | The HipChat REST API (V2) URL                                                                                             |                                                                                                                                                                      |
