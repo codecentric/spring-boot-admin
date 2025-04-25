@@ -30,8 +30,6 @@ import org.springframework.util.ObjectUtils;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
-import org.springframework.util.ObjectUtils;
-
 public class RegistrationDeserializer extends StdDeserializer<Registration> {
 
 	private static final long serialVersionUID = 1L;
