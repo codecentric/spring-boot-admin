@@ -26,11 +26,7 @@
 
       <div class="flex flex-col">
         <template v-if="hasCronData">
-          <div>
-            <h3
-              class="leading-6 font-bold text-gray-900"
-              v-text="$t('instances.scheduledtasks.cron.title')"
-            />
+          <sba-panel :title="$t('instances.scheduledtasks.cron.title')">
             <table class="table w-full">
               <thead>
                 <tr>
@@ -48,15 +44,11 @@
                 </tr>
               </tbody>
             </table>
-          </div>
+          </sba-panel>
         </template>
 
         <template v-if="hasFixedDelayData">
-          <div>
-            <h3
-              class="leading-6 font-medium text-gray-900"
-              v-text="$t('instances.scheduledtasks.fixed_delay.title')"
-            />
+          <sba-panel :title="$t('instances.scheduledtasks.fixed_delay.title')">
             <table class="table w-full">
               <thead>
                 <tr>
@@ -85,15 +77,11 @@
                 </tr>
               </tbody>
             </table>
-          </div>
+          </sba-panel>
         </template>
 
         <template v-if="hasFixedRateData">
-          <div>
-            <h3
-              class="leading-6 font-medium text-gray-900"
-              v-text="$t('instances.scheduledtasks.fixed_rate.title')"
-            />
+          <sba-panel :title="$t('instances.scheduledtasks.fixed_rate.title')">
             <table class="table w-full">
               <thead>
                 <tr>
@@ -122,7 +110,7 @@
                 </tr>
               </tbody>
             </table>
-          </div>
+          </sba-panel>
         </template>
       </div>
     </sba-panel>
@@ -134,16 +122,10 @@ import SbaPanel from '@/components/sba-panel.vue';
 
 import Instance from '@/services/instance';
 import { VIEW_GROUP } from '@/views/ViewGroup';
-import detailsHealth from '@/views/instances/details/details-health.vue';
-import detailsInfo from '@/views/instances/details/details-info.vue';
-import detailsMetadata from '@/views/instances/details/details-metadata.vue';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
   components: {
-    detailsInfo,
-    detailsHealth,
-    detailsMetadata,
     SbaPanel,
     SbaInstanceSection,
   },
