@@ -1,87 +1,65 @@
-import { shallowMount } from '@vue/test-utils';
+import { screen, waitFor } from '@testing-library/vue';
 import { describe, expect, it } from 'vitest';
 
+import { render } from '@/test-utils';
 import ScheduledTaskExecutions from '@/views/instances/scheduledtasks/scheduled-task-executions.vue';
-
-const SbaFormattedObjStub = {
-  name: 'SbaFormattedObj',
-  props: ['value'],
-  template: '<div class="formatted-obj">{{ value }}</div>',
-};
 
 describe('ScheduledTaskExecutions', () => {
   const baseTask = {
     nextExecution: { time: '2024-06-01T12:00:00Z' },
-    lastExecution: { time: '2024-05-31T12:00:00Z', status: 'Success' },
+    lastExecution: { time: '2024-05-31T12:00:00Z', status: 'SUCCESS' },
   };
 
-  it('renders nextExecution time in SbaFormattedObj', () => {
-    const wrapper = shallowMount(ScheduledTaskExecutions, {
-      propsData: { task: baseTask },
-      stubs: { SbaFormattedObj: SbaFormattedObjStub },
+  it('renders nextExecution time', async () => {
+    render(ScheduledTaskExecutions, {
+      props: { task: baseTask },
     });
-    const nextExec = wrapper.findAllComponents(SbaFormattedObjStub).at(0);
-    expect(nextExec.exists()).toBe(true);
-    expect(nextExec.props('value')).toBe(baseTask.nextExecution.time);
+    const nextExec = await screen.findByText('2024-06-01T12:00:00Z');
+    expect(nextExec).toBeVisible();
   });
 
-  it('renders lastExecution time and status when lastExecution exists', () => {
-    const wrapper = shallowMount(ScheduledTaskExecutions, {
-      propsData: { task: baseTask },
-      stubs: { SbaFormattedObj: SbaFormattedObjStub },
+  it('renders lastExecution time and status when lastExecution exists', async () => {
+    render(ScheduledTaskExecutions, {
+      props: { task: baseTask },
     });
-    const formattedObjs = wrapper.findAllComponents(SbaFormattedObjStub);
-    expect(formattedObjs.length).toBe(2);
-    expect(formattedObjs.at(1).props('value')).toBe(
-      baseTask.lastExecution.time,
-    );
 
-    const statusSpan = wrapper.find('span[role="status"]');
-    expect(statusSpan.exists()).toBe(true);
-    expect(statusSpan.text()).toBe(baseTask.lastExecution.status);
-    expect(statusSpan.classes()).toContain('status-badge');
-    expect(statusSpan.classes()).toContain(
-      baseTask.lastExecution.status.toLowerCase(),
-    );
+    const lastExec = await screen.findByText('2024-05-31T12:00:00Z');
+    expect(lastExec).toBeVisible();
+
+    const statusBadge = await screen.findByRole('status');
+    expect(statusBadge.textContent).toBe('SUCCESS');
+    expect(statusBadge.className).toBe('status-badge success');
   });
 
-  it('does not render lastExecution time or status if lastExecution is missing', () => {
+  it('does not render lastExecution time or status if lastExecution is missing', async () => {
     const task = { nextExecution: { time: '2024-06-01T12:00:00Z' } };
-    const wrapper = shallowMount(ScheduledTaskExecutions, {
-      propsData: { task },
-      stubs: { SbaFormattedObj: SbaFormattedObjStub },
+    render(ScheduledTaskExecutions, {
+      props: { task },
     });
-    const formattedObjs = wrapper.findAllComponents(SbaFormattedObjStub);
-    expect(formattedObjs.length).toBe(1);
-    expect(formattedObjs.at(0).props('value')).toBe(task.nextExecution.time);
 
-    const statusSpan = wrapper.find('span[role="status"]');
-    expect(statusSpan.exists()).toBe(false);
+    const nextExec = await screen.findByText('2024-06-01T12:00:00Z');
+    expect(nextExec).toBeVisible();
+
+    await waitFor(() =>
+      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('lastExecution')).not.toBeInTheDocument(),
+    );
   });
 
-  it('applies classNames with lowercase status', () => {
+  it('applies classNames with lowercase status', async () => {
     const task = {
       nextExecution: { time: '2024-06-01T12:00:00Z' },
       lastExecution: { time: '2024-05-31T12:00:00Z', status: 'ERROR' },
     };
-    const wrapper = shallowMount(ScheduledTaskExecutions, {
-      propsData: { task },
-      stubs: { SbaFormattedObj: SbaFormattedObjStub },
+    render(ScheduledTaskExecutions, {
+      props: { task },
     });
-    const statusSpan = wrapper.find('span[role="status"]');
-    expect(statusSpan.exists()).toBe(true);
-    expect(statusSpan.classes()).toContain('status-badge');
-    expect(statusSpan.classes()).toContain('error');
-    expect(statusSpan.text()).toBe('ERROR');
-  });
 
-  it('renders correctly with minimal valid task', () => {
-    const task = { nextExecution: { time: '2024-06-01T12:00:00Z' } };
-    const wrapper = shallowMount(ScheduledTaskExecutions, {
-      propsData: { task },
-      stubs: { SbaFormattedObj: SbaFormattedObjStub },
-    });
-    expect(wrapper.exists()).toBe(true);
-    expect(wrapper.findAllComponents(SbaFormattedObjStub).length).toBe(1);
+    const statusBadge = await screen.findByRole('status');
+    expect(statusBadge.textContent).toBe('ERROR');
+    expect(statusBadge.className).toBe('status-badge error');
   });
 });

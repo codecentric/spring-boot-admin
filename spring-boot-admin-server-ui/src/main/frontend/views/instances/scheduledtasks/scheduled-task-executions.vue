@@ -8,6 +8,7 @@
   <td class="font-mono text-sm">
     <sba-formatted-obj
       v-if="task.lastExecution"
+      data-testid="lastExecution"
       :value="task.lastExecution.time"
     />
   </td>
