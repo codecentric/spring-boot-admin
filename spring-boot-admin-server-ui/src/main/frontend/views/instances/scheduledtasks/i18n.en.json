@@ -3,32 +3,26 @@
     "scheduledtasks": {
       "label": "Scheduled Tasks",
       "no_scheduledtasks": "No scheduled tasks present.",
+      "last_execution": "Last Execution",
+      "last_execution_status": "Last Execution State",
+      "next_execution": "Next Execution",
       "cron": {
         "expression": "Expression",
         "runnable": "Runnable",
-        "title": "Cron",
-        "last_execution": "Last Execution",
-        "last_execution_status": "Last Execution State",
-        "next_execution": "Next Execution"
+        "title": "Cron"
       },
 
       "fixed_delay": {
         "initial_delay_ms": "Initial Delay (ms)",
         "interval_ms": "Interval (ms)",
         "runnable": "Runnable",
-        "title": "Fixed Delay",
-        "last_execution": "Last Execution",
-        "last_execution_status": "Last Execution State",
-        "next_execution": "Next Execution"
+        "title": "Fixed Delay"
       },
       "fixed_rate": {
         "initial_delay_ms": "Initial Delay (ms)",
         "interval_ms": "Interval (ms)",
         "runnable": "Runnable",
-        "title": "Fixed Rate",
-        "last_execution": "Last Execution",
-        "last_execution_status": "Last Execution State",
-        "next_execution": "Next Execution"
+        "title": "Fixed Rate"
       }
     }
   }

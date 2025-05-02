@@ -1,6 +1,9 @@
 <template>
   <td class="font-mono text-sm">
-    <sba-formatted-obj :value="task.nextExecution.time" />
+    <sba-formatted-obj
+      v-if="task.nextExecution"
+      :value="task.nextExecution.time"
+    />
   </td>
   <td class="font-mono text-sm">
     <sba-formatted-obj

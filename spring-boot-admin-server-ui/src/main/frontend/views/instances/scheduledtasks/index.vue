@@ -35,15 +35,11 @@
                     v-text="$t('instances.scheduledtasks.cron.runnable')"
                   />
                   <th v-text="$t('instances.scheduledtasks.cron.expression')" />
-                  <th
-                    v-text="$t('instances.scheduledtasks.cron.next_execution')"
-                  />
-                  <th
-                    v-text="$t('instances.scheduledtasks.cron.last_execution')"
-                  />
+                  <th v-text="$t('instances.scheduledtasks.next_execution')" />
+                  <th v-text="$t('instances.scheduledtasks.last_execution')" />
                   <th
                     v-text="
-                      $t('instances.scheduledtasks.cron.last_execution_status')
+                      $t('instances.scheduledtasks.last_execution_status')
                     "
                   />
                 </tr>
@@ -79,21 +75,11 @@
                       $t('instances.scheduledtasks.fixed_delay.interval_ms')
                     "
                   />
+                  <th v-text="$t('instances.scheduledtasks.next_execution')" />
+                  <th v-text="$t('instances.scheduledtasks.last_execution')" />
                   <th
                     v-text="
-                      $t('instances.scheduledtasks.fixed_delay.next_execution')
-                    "
-                  />
-                  <th
-                    v-text="
-                      $t('instances.scheduledtasks.fixed_delay.last_execution')
-                    "
-                  />
-                  <th
-                    v-text="
-                      $t(
-                        'instances.scheduledtasks.fixed_delay.last_execution_status',
-                      )
+                      $t('instances.scheduledtasks.last_execution_status')
                     "
                   />
                 </tr>
@@ -130,21 +116,11 @@
                       $t('instances.scheduledtasks.fixed_delay.interval_ms')
                     "
                   />
+                  <th v-text="$t('instances.scheduledtasks.next_execution')" />
+                  <th v-text="$t('instances.scheduledtasks.last_execution')" />
                   <th
                     v-text="
-                      $t('instances.scheduledtasks.fixed_delay.next_execution')
-                    "
-                  />
-                  <th
-                    v-text="
-                      $t('instances.scheduledtasks.fixed_delay.last_execution')
-                    "
-                  />
-                  <th
-                    v-text="
-                      $t(
-                        'instances.scheduledtasks.fixed_delay.last_execution_status',
-                      )
+                      $t('instances.scheduledtasks.last_execution_status')
                     "
                   />
                 </tr>
