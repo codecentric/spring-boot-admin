@@ -9,7 +9,7 @@ const SbaFormattedObjStub = {
   template: '<div class="formatted-obj">{{ value }}</div>',
 };
 
-describe('ScheduledTaskExecutions.vue', () => {
+describe('ScheduledTaskExecutions', () => {
   const baseTask = {
     nextExecution: { time: '2024-06-01T12:00:00Z' },
     lastExecution: { time: '2024-05-31T12:00:00Z', status: 'Success' },

@@ -15,17 +15,13 @@
     <span
       v-if="task.lastExecution"
       role="status"
-      :class="
-        classNames('status-badge', task.lastExecution.status.toLowerCase())
-      "
+      :class="`status-badge ${task.lastExecution.status.toLowerCase()}`"
       v-text="task.lastExecution.status"
     />
   </td>
 </template>
 
 <script>
-import classNames from 'classnames';
-
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
 
 export default {
@@ -36,9 +32,6 @@ export default {
       type: Object,
       required: true,
     },
-  },
-  methods: {
-    classNames,
   },
 };
 </script>
