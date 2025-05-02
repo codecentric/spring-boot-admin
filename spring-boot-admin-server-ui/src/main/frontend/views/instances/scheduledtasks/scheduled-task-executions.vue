@@ -1,4 +1,3 @@
-<!-- ScheduledTaskStatus.vue -->
 <template>
   <td class="font-mono text-sm">
     <sba-formatted-obj :value="task.nextExecution.time" />
