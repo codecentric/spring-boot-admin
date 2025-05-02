@@ -35,12 +35,24 @@
                     v-text="$t('instances.scheduledtasks.cron.runnable')"
                   />
                   <th v-text="$t('instances.scheduledtasks.cron.expression')" />
+                  <th
+                    v-text="$t('instances.scheduledtasks.cron.next_execution')"
+                  />
+                  <th
+                    v-text="$t('instances.scheduledtasks.cron.last_execution')"
+                  />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.cron.last_execution_status')
+                    "
+                  />
                 </tr>
               </thead>
               <tbody v-for="task in cron" :key="task.runnable.target">
                 <tr>
                   <td v-text="task.runnable.target" />
                   <td class="font-mono text-sm" v-text="task.expression" />
+                  <scheduled-task-executions :task="task" />
                 </tr>
               </tbody>
             </table>
@@ -67,6 +79,23 @@
                       $t('instances.scheduledtasks.fixed_delay.interval_ms')
                     "
                   />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.fixed_delay.next_execution')
+                    "
+                  />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.fixed_delay.last_execution')
+                    "
+                  />
+                  <th
+                    v-text="
+                      $t(
+                        'instances.scheduledtasks.fixed_delay.last_execution_status',
+                      )
+                    "
+                  />
                 </tr>
               </thead>
               <tbody v-for="task in fixedDelay" :key="task.runnable.target">
@@ -74,6 +103,7 @@
                   <td v-text="task.runnable.target" />
                   <td v-text="task.initialDelay" />
                   <td v-text="task.interval" />
+                  <scheduled-task-executions :task="task" />
                 </tr>
               </tbody>
             </table>
@@ -100,6 +130,23 @@
                       $t('instances.scheduledtasks.fixed_delay.interval_ms')
                     "
                   />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.fixed_delay.next_execution')
+                    "
+                  />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.fixed_delay.last_execution')
+                    "
+                  />
+                  <th
+                    v-text="
+                      $t(
+                        'instances.scheduledtasks.fixed_delay.last_execution_status',
+                      )
+                    "
+                  />
                 </tr>
               </thead>
               <tbody v-for="task in fixedRate" :key="task.runnable.target">
@@ -107,6 +154,7 @@
                   <td v-text="task.runnable.target" />
                   <td v-text="task.initialDelay" />
                   <td v-text="task.interval" />
+                  <scheduled-task-executions :task="task" />
                 </tr>
               </tbody>
             </table>
@@ -122,10 +170,12 @@ import SbaPanel from '@/components/sba-panel.vue';
 
 import Instance from '@/services/instance';
 import { VIEW_GROUP } from '@/views/ViewGroup';
+import ScheduledTaskExecutions from '@/views/instances/scheduledtasks/scheduled-task-executions.vue';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
   components: {
+    ScheduledTaskExecutions,
     SbaPanel,
     SbaInstanceSection,
   },

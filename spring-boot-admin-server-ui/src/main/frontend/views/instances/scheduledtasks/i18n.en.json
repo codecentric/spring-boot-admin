@@ -6,20 +6,29 @@
       "cron": {
         "expression": "Expression",
         "runnable": "Runnable",
-        "title": "Cron"
+        "title": "Cron",
+        "last_execution": "Last Execution",
+        "last_execution_status": "Last Execution State",
+        "next_execution": "Next Execution"
       },
 
       "fixed_delay": {
         "initial_delay_ms": "Initial Delay (ms)",
         "interval_ms": "Interval (ms)",
         "runnable": "Runnable",
-        "title": "Fixed Delay"
+        "title": "Fixed Delay",
+        "last_execution": "Last Execution",
+        "last_execution_status": "Last Execution State",
+        "next_execution": "Next Execution"
       },
       "fixed_rate": {
         "initial_delay_ms": "Initial Delay (ms)",
         "interval_ms": "Interval (ms)",
         "runnable": "Runnable",
-        "title": "Fixed Rate"
+        "title": "Fixed Rate",
+        "last_execution": "Last Execution",
+        "last_execution_status": "Last Execution State",
+        "next_execution": "Next Execution"
       }
     }
   }
