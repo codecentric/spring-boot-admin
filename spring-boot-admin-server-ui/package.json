@@ -27,7 +27,7 @@
     "@tailwindcss/forms": "0.5.10",
     "@tailwindcss/typography": "0.5.16",
     "ansi_up": "6.0.5",
-    "autolinker": "4.1.0",
+    "autolinker": "4.1.5",
     "axios": "1.9.0",
     "chart.js": "4.4.9",
     "chartjs-adapter-moment": "1.0.1",
@@ -59,7 +59,7 @@
     "v3-infinite-loading": "1.3.2",
     "vue": "3.5.13",
     "vue-i18n": "11.1.3",
-    "vue-router": "4.5.0",
+    "vue-router": "4.5.1",
     "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
@@ -100,7 +100,7 @@
     "tailwindcss": "3.4.17",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
-    "vite": "6.3.3",
+    "vite": "6.3.4",
     "vite-plugin-static-copy": "2.3.1",
     "vitest": "3.1.2",
     "vue-eslint-parser": "^10.0.0",

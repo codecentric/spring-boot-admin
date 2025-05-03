@@ -44,7 +44,7 @@
         <awaitility.version>4.3.0</awaitility.version>
         <testcontainers.version>1.21.0</testcontainers.version>
         <eureka-client.version>3.1.1</eureka-client.version>
-        <jetty.version>12.0.19</jetty.version>
+        <jetty.version>12.0.20</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
@@ -74,11 +74,11 @@
         <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
         <flatten-maven-plugin.version>1.7.0</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>10.23.0</checkstyle.version>
+        <checkstyle.version>10.23.1</checkstyle.version>
         <spring-javaformat-checkstyle.version>0.0.43</spring-javaformat-checkstyle.version>
         <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
         <node.version>v22.12.0</node.version>
-        <jolokia-support-spring.version>2.2.8</jolokia-support-spring.version>
+        <jolokia-support-spring.version>2.2.9</jolokia-support-spring.version>
     </properties>
     <modules>
         <module>spring-boot-admin-server</module>
