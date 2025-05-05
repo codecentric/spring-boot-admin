@@ -24,101 +24,137 @@
         />
       </div>
 
-      <template v-if="hasCronData">
-        <table class="table-auto w-full">
-          <thead>
-            <tr>
-              <th
-                class="text-left"
-                v-text="$t('instances.scheduledtasks.cron.runnable')"
-              />
-              <th v-text="$t('instances.scheduledtasks.cron.expression')" />
-            </tr>
-          </thead>
-          <tbody v-for="task in cron" :key="task.runnable.target">
-            <tr>
-              <td v-text="task.runnable.target" />
-              <td
-                class="font-mono text-center text-sm"
-                v-text="task.expression"
-              />
-            </tr>
-          </tbody>
-        </table>
-      </template>
+      <div class="flex flex-col">
+        <template v-if="hasCronData">
+          <sba-panel :title="$t('instances.scheduledtasks.cron.title')">
+            <table class="table w-full">
+              <thead>
+                <tr>
+                  <th
+                    class="text-left"
+                    v-text="$t('instances.scheduledtasks.cron.runnable')"
+                  />
+                  <th v-text="$t('instances.scheduledtasks.cron.expression')" />
+                  <th v-text="$t('instances.scheduledtasks.next_execution')" />
+                  <th v-text="$t('instances.scheduledtasks.last_execution')" />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.last_execution_status')
+                    "
+                  />
+                </tr>
+              </thead>
+              <tbody v-for="task in cron" :key="task.runnable.target">
+                <tr>
+                  <td v-text="task.runnable.target" />
+                  <td class="font-mono text-sm" v-text="task.expression" />
+                  <scheduled-task-executions :task="task" />
+                </tr>
+              </tbody>
+            </table>
+          </sba-panel>
+        </template>
 
-      <template v-if="hasFixedDelayData">
-        <h3
-          class="title"
-          v-text="$t('instances.scheduledtasks.fixed_delay.title')"
-        />
-        <table class="metrics table is-fullwidth">
-          <thead>
-            <tr>
-              <th
-                v-text="$t('instances.scheduledtasks.fixed_delay.runnable')"
-              />
-              <th
-                v-text="
-                  $t('instances.scheduledtasks.fixed_delay.initial_delay_ms')
-                "
-              />
-              <th
-                v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')"
-              />
-            </tr>
-          </thead>
-          <tbody v-for="task in fixedDelay" :key="task.runnable.target">
-            <tr>
-              <td v-text="task.runnable.target" />
-              <td v-text="task.initialDelay" />
-              <td v-text="task.interval" />
-            </tr>
-          </tbody>
-        </table>
-      </template>
+        <template v-if="hasFixedDelayData">
+          <sba-panel :title="$t('instances.scheduledtasks.fixed_delay.title')">
+            <table class="table w-full">
+              <thead>
+                <tr>
+                  <th
+                    v-text="$t('instances.scheduledtasks.fixed_delay.runnable')"
+                  />
+                  <th
+                    v-text="
+                      $t(
+                        'instances.scheduledtasks.fixed_delay.initial_delay_ms',
+                      )
+                    "
+                  />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.fixed_delay.interval_ms')
+                    "
+                  />
+                  <th v-text="$t('instances.scheduledtasks.next_execution')" />
+                  <th v-text="$t('instances.scheduledtasks.last_execution')" />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.last_execution_status')
+                    "
+                  />
+                </tr>
+              </thead>
+              <tbody v-for="task in fixedDelay" :key="task.runnable.target">
+                <tr>
+                  <td v-text="task.runnable.target" />
+                  <td v-text="task.initialDelay" />
+                  <td v-text="task.interval" />
+                  <scheduled-task-executions :task="task" />
+                </tr>
+              </tbody>
+            </table>
+          </sba-panel>
+        </template>
 
-      <template v-if="hasFixedRateData">
-        <h3
-          class="title"
-          v-text="$t('instances.scheduledtasks.fixed_rate.title')"
-        />
-        <table class="metrics table is-fullwidth">
-          <thead>
-            <tr>
-              <th
-                v-text="$t('instances.scheduledtasks.fixed_delay.runnable')"
-              />
-              <th
-                v-text="
-                  $t('instances.scheduledtasks.fixed_delay.initial_delay_ms')
-                "
-              />
-              <th
-                v-text="$t('instances.scheduledtasks.fixed_delay.interval_ms')"
-              />
-            </tr>
-          </thead>
-          <tbody v-for="task in fixedRate" :key="task.runnable.target">
-            <tr>
-              <td v-text="task.runnable.target" />
-              <td v-text="task.initialDelay" />
-              <td v-text="task.interval" />
-            </tr>
-          </tbody>
-        </table>
-      </template>
+        <template v-if="hasFixedRateData">
+          <sba-panel :title="$t('instances.scheduledtasks.fixed_rate.title')">
+            <table class="table w-full">
+              <thead>
+                <tr>
+                  <th
+                    v-text="$t('instances.scheduledtasks.fixed_delay.runnable')"
+                  />
+                  <th
+                    v-text="
+                      $t(
+                        'instances.scheduledtasks.fixed_delay.initial_delay_ms',
+                      )
+                    "
+                  />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.fixed_delay.interval_ms')
+                    "
+                  />
+                  <th v-text="$t('instances.scheduledtasks.next_execution')" />
+                  <th v-text="$t('instances.scheduledtasks.last_execution')" />
+                  <th
+                    v-text="
+                      $t('instances.scheduledtasks.last_execution_status')
+                    "
+                  />
+                </tr>
+              </thead>
+              <tbody v-for="task in fixedRate" :key="task.runnable.target">
+                <tr>
+                  <td v-text="task.runnable.target" />
+                  <td v-text="task.initialDelay" />
+                  <td v-text="task.interval" />
+                  <scheduled-task-executions :task="task" />
+                </tr>
+              </tbody>
+            </table>
+          </sba-panel>
+        </template>
+      </div>
     </sba-panel>
   </sba-instance-section>
 </template>
 
 <script>
+import SbaPanel from '@/components/sba-panel.vue';
+
 import Instance from '@/services/instance';
 import { VIEW_GROUP } from '@/views/ViewGroup';
+import ScheduledTaskExecutions from '@/views/instances/scheduledtasks/scheduled-task-executions.vue';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
-  components: { SbaInstanceSection },
+  components: {
+    ScheduledTaskExecutions,
+    SbaPanel,
+    SbaInstanceSection,
+  },
   props: {
     instance: {
       type: Instance,

@@ -3,6 +3,9 @@
     "scheduledtasks": {
       "label": "Scheduled Tasks",
       "no_scheduledtasks": "No scheduled tasks present.",
+      "last_execution": "Last Execution",
+      "last_execution_status": "Last Execution State",
+      "next_execution": "Next Execution",
       "cron": {
         "expression": "Expression",
         "runnable": "Runnable",
