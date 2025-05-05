@@ -17,8 +17,9 @@
 <template>
   <div>
     <details-cache
-      v-for="cache in caches"
+      v-for="(cache, index) in caches"
       :key="cache"
+      :index="index"
       :cache-name="cache"
       :instance="instance"
     />
