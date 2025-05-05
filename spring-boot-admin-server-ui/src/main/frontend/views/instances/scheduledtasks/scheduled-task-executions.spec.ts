@@ -27,8 +27,8 @@ describe('ScheduledTaskExecutions', () => {
     expect(lastExec).toBeVisible();
 
     const statusBadge = await screen.findByRole('status');
-    expect(statusBadge.textContent).toBe('SUCCESS');
-    expect(statusBadge.className).toBe('status-badge success');
+    expect(statusBadge).toHaveTextContent('SUCCESS');
+    expect(statusBadge).toHaveClass('status-badge success');
   });
 
   it('does not render lastExecution time or status if lastExecution is missing', async () => {
