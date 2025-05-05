@@ -23,34 +23,50 @@
     >
       <template v-if="current.hit !== undefined">
         <dt
+          :id="`metrics.cache.${index}.hits`"
           class="text-sm font-medium text-gray-500 sm:col-span-4"
           v-text="$t('instances.details.cache.hits')"
         />
         <dd
+          :aria-labelledby="`metrics.cache.${index}.hits`"
           class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
           v-text="current.hit"
         />
       </template>
       <template v-if="current.miss !== undefined">
         <dt
+          :id="`metrics.cache.${index}.misses`"
           class="text-sm font-medium text-gray-500 sm:col-span-4"
           v-text="$t('instances.details.cache.misses')"
         />
         <dd
+          :aria-labelledby="`metrics.cache.${index}.misses`"
           class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
           v-text="current.miss"
         />
       </template>
       <template v-if="ratio !== undefined">
         <dt
-          class="sm:col-span-4"
+          :id="`metrics.cache.${index}.ratio`"
+          class="text-sm font-medium text-gray-500 sm:col-span-4"
           v-text="$t('instances.details.cache.hit_ratio')"
         />
-        <dd v-text="ratio" />
+        <dd
+          :aria-labelledby="`metrics.cache.${index}.ratio`"
+          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+          v-text="ratio"
+        />
       </template>
       <template v-if="current.size !== undefined">
-        <dt class="sm:col-span-4" v-text="$t('instances.details.cache.size')" />
-        <dd v-text="current.size" />
+        <dt
+          :id="`metrics.cache.${index}.size`"
+          class="sm:col-span-4"
+          v-text="$t('instances.details.cache.size')"
+        />
+        <dd
+          :aria-labelledby="`metrics.cache.${index}.size`"
+          v-text="current.size"
+        />
       </template>
     </dl>
     <cache-chart v-if="chartData.length > 0" :data="chartData" />
@@ -61,14 +77,17 @@
 import moment from 'moment';
 import { take } from 'rxjs/operators';
 
+import sbaAlert from '@/components/sba-alert.vue';
+import sbaPanel from '@/components/sba-panel.vue';
+
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
-import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import { concatMap, delay, map, retryWhen, timer } from '@/utils/rxjs';
 import cacheChart from '@/views/instances/details/cache-chart';
 
 export default {
-  components: { cacheChart },
+  components: { sbaAlert, sbaPanel, cacheChart },
   mixins: [subscribing],
   props: {
     instance: {
@@ -77,6 +96,10 @@ export default {
     },
     cacheName: {
       type: String,
+      required: true,
+    },
+    index: {
+      type: Number,
       required: true,
     },
   },
@@ -91,7 +114,10 @@ export default {
   }),
   computed: {
     ratio() {
-      if (Number.isFinite(this.current.hit) && Number.isFinite(this.current)) {
+      if (
+        Number.isFinite(this.current.hit) &&
+        Number.isFinite(this.current.miss)
+      ) {
         const total = this.current.hit + this.current.miss;
         return total > 0
           ? ((this.current.hit / total) * 100).toFixed(2) + '%'
@@ -167,10 +193,25 @@ export default {
         }
       }
     },
+    calculateMetricsPerInterval(data) {
+      let hitsPerInterval = 0;
+      let missesPerInterval = 0;
+      let totalPerInterval = 0;
+
+      if (this.chartData.length > 0) {
+        const previousChartData = this.chartData[this.chartData.length - 1];
+        hitsPerInterval = data.hit - previousChartData.hit;
+        missesPerInterval = data.miss - previousChartData.miss;
+        totalPerInterval = data.total - previousChartData.total;
+      }
+
+      return { ...data, hitsPerInterval, missesPerInterval, totalPerInterval };
+    },
     createSubscription() {
       return timer(0, sbaConfig.uiSettings.pollTimer.cache)
         .pipe(
           concatMap(this.fetchMetrics),
+          map(this.calculateMetricsPerInterval),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
           }),
