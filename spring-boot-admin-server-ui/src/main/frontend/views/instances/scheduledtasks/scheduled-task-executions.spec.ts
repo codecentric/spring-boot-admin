@@ -59,7 +59,7 @@ describe('ScheduledTaskExecutions', () => {
     });
 
     const statusBadge = await screen.findByRole('status');
-    expect(statusBadge.textContent).toBe('ERROR');
-    expect(statusBadge.className).toBe('status-badge error');
+    expect(statusBadge).toHaveTextContent('ERROR');
+    expect(statusBadge).toHaveClass('status-badge error');
   });
 });
