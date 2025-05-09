@@ -48,7 +48,7 @@
     "mitt": "^3.0.0",
     "moment": "2.30.1",
     "popper.js": "1.16.1",
-    "pretty-bytes": "6.1.1",
+    "pretty-bytes": "7.0.0",
     "qs": "^6.13.0",
     "random-string": "0.2.0",
     "react": "18.3.1",
