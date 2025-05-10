@@ -16,7 +16,7 @@
     "@vitejs/plugin-vue": "5.2.4",
     "@vue-macros/reactivity-transform": "^1.0.0",
     "vite": "6.3.5",
-    "vite-plugin-static-copy": "^2.0.0"
+    "vite-plugin-static-copy": "^3.0.0"
   },
   "browserslist": [
     "> 1%",
