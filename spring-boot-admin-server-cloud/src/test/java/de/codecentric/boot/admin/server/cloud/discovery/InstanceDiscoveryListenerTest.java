@@ -92,6 +92,18 @@ public class InstanceDiscoveryListenerTest {
 	}
 
 	@Test
+	public void should_not_register_instance_when_serviceId_is_ignored_caseInsensitive() {
+		when(this.discovery.getServices()).thenReturn(singletonList("service"));
+		when(this.discovery.getInstances("service"))
+			.thenReturn(singletonList(new DefaultServiceInstance("test-1", "service", "localhost", 80, false)));
+
+		this.listener.setIgnoredServices(singleton("SERVICE"));
+		this.listener.onInstanceRegistered(new InstanceRegisteredEvent<>(new Object(), null));
+
+		StepVerifier.create(this.registry.getInstances()).verifyComplete();
+	}
+
+	@Test
 	public void should_not_register_instance_when_instanceMetadata_is_ignored() {
 		when(this.discovery.getServices()).thenReturn(singletonList("service"));
 		when(this.discovery.getInstances("service")).thenReturn(singletonList(new DefaultServiceInstance("test-1",

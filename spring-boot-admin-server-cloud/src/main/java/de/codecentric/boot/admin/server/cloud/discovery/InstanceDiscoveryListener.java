@@ -160,7 +160,8 @@ public class InstanceDiscoveryListener {
 	}
 
 	protected boolean matchesPattern(String serviceId, Set<String> patterns) {
-		return patterns.stream().anyMatch((pattern) -> PatternMatchUtils.simpleMatch(pattern, serviceId));
+		return patterns.stream()
+			.anyMatch((pattern) -> PatternMatchUtils.simpleMatch(pattern.toLowerCase(), serviceId.toLowerCase()));
 	}
 
 	protected boolean shouldRegisterInstanceBasedOnMetadata(ServiceInstance instance) {
