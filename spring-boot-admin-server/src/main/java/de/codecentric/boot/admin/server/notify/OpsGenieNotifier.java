@@ -166,8 +166,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		return instance.getRegistration().getName() + "_" + instance.getId();
 	}
 
-	@Nullable
-	protected String getMessage(InstanceEvent event, Instance instance) {
+	@Nullable protected String getMessage(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -185,8 +184,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 				((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
 	}
 
-	@Nullable
-	public String getApiKey() {
+	@Nullable public String getApiKey() {
 		return apiKey;
 	}
 
@@ -206,8 +204,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	@Nullable
-	public String getActions() {
+	@Nullable public String getActions() {
 		return actions;
 	}
 
@@ -215,8 +212,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.actions = actions;
 	}
 
-	@Nullable
-	public String getSource() {
+	@Nullable public String getSource() {
 		return source;
 	}
 
@@ -224,8 +220,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.source = source;
 	}
 
-	@Nullable
-	public String getTags() {
+	@Nullable public String getTags() {
 		return tags;
 	}
 
@@ -233,8 +228,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.tags = tags;
 	}
 
-	@Nullable
-	public String getEntity() {
+	@Nullable public String getEntity() {
 		return entity;
 	}
 
@@ -242,8 +236,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.entity = entity;
 	}
 
-	@Nullable
-	public String getUser() {
+	@Nullable public String getUser() {
 		return user;
 	}
 

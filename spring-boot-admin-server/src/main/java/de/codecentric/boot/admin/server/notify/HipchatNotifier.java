@@ -115,8 +115,7 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		return notify;
 	}
 
-	@Nullable
-	protected String getMessage(InstanceEvent event, Instance instance) {
+	@Nullable protected String getMessage(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -138,8 +137,7 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		}
 	}
 
-	@Nullable
-	public URI getUrl() {
+	@Nullable public URI getUrl() {
 		return url;
 	}
 
@@ -147,8 +145,7 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		this.url = url;
 	}
 
-	@Nullable
-	public String getAuthToken() {
+	@Nullable public String getAuthToken() {
 		return authToken;
 	}
 
@@ -156,8 +153,7 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		this.authToken = authToken;
 	}
 
-	@Nullable
-	public String getRoomId() {
+	@Nullable public String getRoomId() {
 		return roomId;
 	}
 
