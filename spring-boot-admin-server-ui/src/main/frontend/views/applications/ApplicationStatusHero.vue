@@ -73,8 +73,8 @@
   </sba-panel>
 </template>
 
-<script>
-import { computed } from 'vue';
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import { getStatusInfo } from '@/services/application';
@@ -87,57 +87,35 @@ const options = {
   minute: 'numeric',
   second: 'numeric',
 };
+const { applications } = useApplicationStore();
 
-export default {
-  setup() {
-    const { applications } = useApplicationStore();
+const userLocale = navigator.languages
+  ? navigator.languages[0]
+  : navigator.language;
+const dateTimeFormat = new Intl.DateTimeFormat(userLocale, options);
 
-    const statusInfo = computed(() => getStatusInfo(applications.value));
+const lastUpdate = ref(dateTimeFormat.format(new Date()));
 
-    return { applications, statusInfo };
-  },
-  data() {
-    return {
-      lastUpdate: new Date(),
-      dateTimeFormat: new Intl.DateTimeFormat(this.$i18n.locale, options),
-    };
-  },
-  computed: {
-    someInstancesDown() {
-      return this.statusInfo.someDown;
-    },
-    someInstancesUnknown() {
-      return this.statusInfo.someUnknown;
-    },
-    notUpCount() {
-      return this.applications.reduce((current, next) => {
-        return (
-          current +
-          next.instances.filter(
-            (instance) => instance.statusInfo.status !== 'UP',
-          ).length
-        );
-      }, 0);
-    },
-    applicationsCount() {
-      return this.applications.length;
-    },
-    instancesCount() {
-      return this.applications.reduce(
-        (current, next) => current + next.instances.length,
-        0,
-      );
-    },
-  },
-  beforeMount() {
-    this.updateLastUpdateTime();
-  },
-  methods: {
-    updateLastUpdateTime() {
-      this.lastUpdate = this.dateTimeFormat.format(new Date());
-    },
-  },
-};
+const statusInfo = computed(() => {
+  return getStatusInfo(applications.value);
+});
+
+watch(statusInfo, (newVal) => {
+  console.log('statusInfoWatcher', newVal);
+  lastUpdate.value = dateTimeFormat.format(new Date());
+});
+
+const applicationsCount = computed(() => {
+  return applications.value.length;
+});
+
+const someInstancesDown = computed(() => {
+  return statusInfo.value.someDown;
+});
+
+const someInstancesUnknown = computed(() => {
+  return statusInfo.value.someUnknown;
+});
 </script>
 
 <style scoped>
