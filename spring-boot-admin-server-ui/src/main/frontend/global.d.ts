@@ -125,6 +125,7 @@ declare global {
   }
 
   interface LinkView {
+    name: string;
     href?: string;
     label: string;
     order?: number;
