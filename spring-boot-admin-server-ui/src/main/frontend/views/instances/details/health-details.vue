@@ -35,12 +35,8 @@
         <template v-for="detail in details" :key="detail.name">
           <dt class="font-medium" v-text="detail.name" />
           <dd
-            v-if="name === 'diskSpace'"
-            v-text="
-              typeof detail.value === 'number'
-                ? prettyBytes(detail.value)
-                : detail.value
-            "
+            v-if="name === 'diskSpace' && typeof detail.value === 'number'"
+            v-text="prettyBytes(detail.value)"
           />
           <dd v-else-if="typeof detail.value === 'object'">
             <pre
