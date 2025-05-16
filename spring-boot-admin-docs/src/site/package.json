@@ -15,7 +15,7 @@
     "@docusaurus/preset-classic": "^3.6.3",
     "@docusaurus/tsconfig": "^3.6.3",
     "@docusaurus/types": "^3.6.3",
-    "@iconify/react": "^5.0.2",
+    "@iconify/react": "^6.0.0",
     "@mdx-js/react": "^3.1.0",
     "asciidoctor": "^3.0.4",
     "clsx": "^2.1.1",
