@@ -101,8 +101,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
 		filters.put(filter.getId(), filter);
 	}
 
-	@Nullable
-	public NotificationFilter removeFilter(String id) {
+	@Nullable public NotificationFilter removeFilter(String id) {
 		LOGGER.debug("Removed filter with id '{}'", id);
 		return filters.remove(id);
 	}

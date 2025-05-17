@@ -111,8 +111,7 @@ public class DiscordNotifier extends AbstractStatusChangeNotifier {
 		return new HttpEntity<>(body, headers);
 	}
 
-	@Nullable
-	protected String createContent(InstanceEvent event, Instance instance) {
+	@Nullable protected String createContent(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -124,8 +123,7 @@ public class DiscordNotifier extends AbstractStatusChangeNotifier {
 		return message.getValue(context, String.class);
 	}
 
-	@Nullable
-	public URI getWebhookUrl() {
+	@Nullable public URI getWebhookUrl() {
 		return webhookUrl;
 	}
 
@@ -141,8 +139,7 @@ public class DiscordNotifier extends AbstractStatusChangeNotifier {
 		this.tts = tts;
 	}
 
-	@Nullable
-	public String getUsername() {
+	@Nullable public String getUsername() {
 		return username;
 	}
 
@@ -150,8 +147,7 @@ public class DiscordNotifier extends AbstractStatusChangeNotifier {
 		this.username = username;
 	}
 
-	@Nullable
-	public String getAvatarUrl() {
+	@Nullable public String getAvatarUrl() {
 		return avatarUrl;
 	}
 

@@ -136,8 +136,7 @@ public class WebexNotifier extends AbstractStatusChangeNotifier {
 	 * @param instance the instance associated with the event
 	 * @return the text for the event and instance, or null if not available
 	 */
-	@Nullable
-	protected String getText(InstanceEvent event, Instance instance) {
+	@Nullable protected String getText(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -162,8 +161,7 @@ public class WebexNotifier extends AbstractStatusChangeNotifier {
 		this.url = url;
 	}
 
-	@Nullable
-	public String getAuthToken() {
+	@Nullable public String getAuthToken() {
 		return authToken;
 	}
 
@@ -171,8 +169,7 @@ public class WebexNotifier extends AbstractStatusChangeNotifier {
 		this.authToken = authToken;
 	}
 
-	@Nullable
-	public String getRoomId() {
+	@Nullable public String getRoomId() {
 		return roomId;
 	}
 

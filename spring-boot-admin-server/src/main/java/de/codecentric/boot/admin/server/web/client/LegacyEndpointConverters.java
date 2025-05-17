@@ -500,8 +500,7 @@ public final class LegacyEndpointConverters {
 		return conditionsMap;
 	}
 
-	@Nullable
-	private static Instant getInstant(Object o) {
+	@Nullable private static Instant getInstant(Object o) {
 		try {
 			if (o instanceof String) {
 				return OffsetDateTime.parse((String) o, TIMESTAMP_PATTERN).toInstant();
