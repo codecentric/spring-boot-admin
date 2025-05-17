@@ -26,7 +26,7 @@
     "@stekoe/vue-toast-notificationcenter": "https://github.com/SteKoe/vue-toast-notificationcenter/archive/refs/tags/1.0.0-RC5.tar.gz",
     "@tailwindcss/forms": "0.5.10",
     "@tailwindcss/typography": "0.5.16",
-    "ansi_up": "6.0.5",
+    "ansi_up": "6.0.6",
     "autolinker": "4.1.5",
     "axios": "1.9.0",
     "chart.js": "4.4.9",
