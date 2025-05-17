@@ -56,7 +56,11 @@ const modelValue = defineModel({
   default: ActionScope.APPLICATION,
 });
 
-const { instanceCount, showInfo = true } = defineProps<{
+const {
+  instanceCount,
+  showInfo = true,
+  classNames = '',
+} = defineProps<{
   instanceCount: number;
   showInfo?: boolean;
   classNames?: string | string[] | Record<string, boolean>;
