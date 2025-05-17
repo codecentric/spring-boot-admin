@@ -100,8 +100,7 @@ const statusInfo = computed(() => {
   return getStatusInfo(applications.value);
 });
 
-watch(statusInfo, (newVal) => {
-  console.log('statusInfoWatcher', newVal);
+watch(statusInfo, () => {
   lastUpdate.value = dateTimeFormat.format(new Date());
 });
 

@@ -50,13 +50,13 @@
         v-text="$t('instances.details.datasource.max_connections')"
       />
       <dd
-        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
         v-if="current.max >= 0"
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
         v-text="current.max"
       />
       <dd
-        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
         v-else
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
         v-text="$t('instances.details.datasource.unlimited')"
       />
     </dl>
