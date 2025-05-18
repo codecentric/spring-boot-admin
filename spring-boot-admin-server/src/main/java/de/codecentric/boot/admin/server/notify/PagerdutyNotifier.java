@@ -126,8 +126,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		return result;
 	}
 
-	@Nullable
-	protected String getDescription(InstanceEvent event, Instance instance) {
+	@Nullable protected String getDescription(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -156,8 +155,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		this.url = url;
 	}
 
-	@Nullable
-	public String getClient() {
+	@Nullable public String getClient() {
 		return client;
 	}
 
@@ -165,8 +163,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		this.client = client;
 	}
 
-	@Nullable
-	public URI getClientUrl() {
+	@Nullable public URI getClientUrl() {
 		return clientUrl;
 	}
 
@@ -174,8 +171,7 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		this.clientUrl = clientUrl;
 	}
 
-	@Nullable
-	public String getServiceKey() {
+	@Nullable public String getServiceKey() {
 		return serviceKey;
 	}
 

@@ -122,8 +122,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		return new HttpEntity<>(messageJson, headers);
 	}
 
-	@Nullable
-	protected String getText(InstanceEvent event, Instance instance) {
+	@Nullable protected String getText(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -146,8 +145,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		}
 	}
 
-	@Nullable
-	public URI getWebhookUrl() {
+	@Nullable public URI getWebhookUrl() {
 		return webhookUrl;
 	}
 
@@ -155,8 +153,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		this.webhookUrl = webhookUrl;
 	}
 
-	@Nullable
-	public String getChannel() {
+	@Nullable public String getChannel() {
 		return channel;
 	}
 
@@ -164,8 +161,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		this.channel = channel;
 	}
 
-	@Nullable
-	public String getIcon() {
+	@Nullable public String getIcon() {
 		return icon;
 	}
 
@@ -173,8 +169,7 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		this.icon = icon;
 	}
 
-	@Nullable
-	public String getUsername() {
+	@Nullable public String getUsername() {
 		return username;
 	}
 

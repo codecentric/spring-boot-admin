@@ -226,8 +226,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 			.build();
 	}
 
-	@Nullable
-	public URI getWebhookUrl() {
+	@Nullable public URI getWebhookUrl() {
 		return webhookUrl;
 	}
 

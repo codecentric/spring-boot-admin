@@ -150,8 +150,7 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
 		this.template = template;
 	}
 
-	@Nullable
-	public String getBaseUrl() {
+	@Nullable public String getBaseUrl() {
 		return baseUrl;
 	}
 
