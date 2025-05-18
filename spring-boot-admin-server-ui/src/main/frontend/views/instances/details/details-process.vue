@@ -19,7 +19,7 @@
     <div>
       <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
       <div v-else class="-mx-4 -my-3">
-        <sba-key-value-table :map="tableData">
+        <sba-key-value-table :map="tableData" skipNullValues>
           <template #uptime="value">
             <process-uptime :value="value.value" />
           </template>
