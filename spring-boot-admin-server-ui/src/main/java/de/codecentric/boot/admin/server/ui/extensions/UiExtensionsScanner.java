@@ -69,8 +69,7 @@ public class UiExtensionsScanner {
 		return location.replace("classpath:", "classpath*:");
 	}
 
-	@Nullable
-	private String getResourcePath(String location, Resource resource) throws IOException {
+	@Nullable private String getResourcePath(String location, Resource resource) throws IOException {
 		String locationWithoutPrefix = location.replaceFirst("^[^:]+:", "");
 		Matcher m = Pattern.compile(Pattern.quote(locationWithoutPrefix) + "(.+)$")
 			.matcher(resource.getURI().toString());

@@ -107,8 +107,7 @@ public class ApplicationRegistry {
 		});
 	}
 
-	@Nullable
-	protected BuildVersion getBuildVersion(List<Instance> instances) {
+	@Nullable protected BuildVersion getBuildVersion(List<Instance> instances) {
 		List<BuildVersion> versions = instances.stream()
 			.map(Instance::getBuildVersion)
 			.filter(Objects::nonNull)

@@ -101,8 +101,7 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
 		return parameters;
 	}
 
-	@Nullable
-	protected String getText(InstanceEvent event, Instance instance) {
+	@Nullable protected String getText(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -127,8 +126,7 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
 		this.apiUrl = apiUrl;
 	}
 
-	@Nullable
-	public String getChatId() {
+	@Nullable public String getChatId() {
 		return chatId;
 	}
 
@@ -136,8 +134,7 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
 		this.chatId = chatId;
 	}
 
-	@Nullable
-	public String getAuthToken() {
+	@Nullable public String getAuthToken() {
 		return authToken;
 	}
 
