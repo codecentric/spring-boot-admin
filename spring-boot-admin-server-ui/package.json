@@ -110,7 +110,7 @@
     "> .5%, last 2 versions"
   ],
   "engines": {
-    "node": "22.15.1"
+    "node": "22.16.0"
   },
   "msw": {
     "workerDirectory": [
