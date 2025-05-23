@@ -36,5 +36,16 @@
     "time": "Temps",
     "unsuppress": "Désinscription",
     "username": "Identifiant"
+  },
+  "time_short": {
+    "unknown": "unknown",
+    "milliseconds": "{count}ms",
+    "seconds": "{count}s",
+    "minutes": "{count}min",
+    "hours": "{count}h",
+    "days": "{count}j",
+    "weeks": "{count}sem",
+    "months": "{count}m",
+    "years": "{count}a"
   }
 }

@@ -61,5 +61,16 @@
       "OUT_OF_SERVICE": "außer Betrieb",
       "OFFLINE": "offline"
     }
+  },
+  "time_short": {
+    "unknown": "unbekannt",
+    "milliseconds": "{count}ms",
+    "seconds": "{count}s",
+    "minutes": "{count}min",
+    "hours": "{count}h",
+    "days": "{count}d",
+    "weeks": "{count}Wo",
+    "months": "{count}Mo",
+    "years": "{count}a"
   }
 }

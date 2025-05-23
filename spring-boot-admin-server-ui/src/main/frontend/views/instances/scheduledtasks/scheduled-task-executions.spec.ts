@@ -1,10 +1,25 @@
 import { screen, waitFor } from '@testing-library/vue';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { render } from '@/test-utils';
 import ScheduledTaskExecutions from '@/views/instances/scheduledtasks/scheduled-task-executions.vue';
 
 describe('ScheduledTaskExecutions', () => {
+  const originalFormat = Intl.DateTimeFormat;
+
+  beforeEach(() => {
+    Intl.DateTimeFormat = function (locale, options) {
+      return new originalFormat(locale, {
+        ...options,
+        timeZone: 'Europe/Berlin',
+      });
+    } as any;
+  });
+
+  afterEach(() => {
+    Intl.DateTimeFormat = originalFormat;
+  });
+
   const baseTask = {
     nextExecution: { time: '2024-06-01T12:00:00Z' },
     lastExecution: { time: '2024-05-31T12:00:00Z', status: 'SUCCESS' },
@@ -14,7 +29,7 @@ describe('ScheduledTaskExecutions', () => {
     render(ScheduledTaskExecutions, {
       props: { task: baseTask },
     });
-    const nextExec = await screen.findByText('2024-06-01T12:00:00Z');
+    const nextExec = await screen.findByText('Jun 1, 2024, 2:00:00 PM');
     expect(nextExec).toBeVisible();
   });
 
@@ -23,7 +38,7 @@ describe('ScheduledTaskExecutions', () => {
       props: { task: baseTask },
     });
 
-    const lastExec = await screen.findByText('2024-05-31T12:00:00Z');
+    const lastExec = await screen.findByText('Jun 1, 2024, 2:00:00 PM');
     expect(lastExec).toBeVisible();
 
     const statusBadge = await screen.findByRole('status');
@@ -37,7 +52,7 @@ describe('ScheduledTaskExecutions', () => {
       props: { task },
     });
 
-    const nextExec = await screen.findByText('2024-06-01T12:00:00Z');
+    const nextExec = await screen.findByText('Jun 1, 2024, 2:00:00 PM');
     expect(nextExec).toBeVisible();
 
     await waitFor(() =>

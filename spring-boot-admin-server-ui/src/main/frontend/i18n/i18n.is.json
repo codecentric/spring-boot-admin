@@ -36,5 +36,16 @@
     "time": "Tími",
     "unsuppress": "Endurvekja",
     "username": "Notandanafn"
+  },
+  "time_short": {
+    "unknown": "óþekkt",
+    "milliseconds": "{count}ms",
+    "seconds": "{count}sek",
+    "minutes": "{count}mín",
+    "hours": "{count}klst",
+    "days": "{count}dag",
+    "weeks": "{count}vika",
+    "months": "{count}mán",
+    "years": "{count}ár"
   }
 }

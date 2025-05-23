@@ -2,14 +2,14 @@
   <td class="font-mono text-sm">
     <sba-formatted-obj
       v-if="task.nextExecution"
-      :value="task.nextExecution.time"
+      :value="formatDateTime(task.nextExecution.time)"
     />
   </td>
   <td class="font-mono text-sm">
     <sba-formatted-obj
       v-if="task.lastExecution"
       data-testid="lastExecution"
-      :value="task.lastExecution.time"
+      :value="formatDateTime(task.lastExecution.time)"
     />
   </td>
   <td class="font-mono text-sm">
@@ -22,19 +22,19 @@
   </td>
 </template>
 
-<script>
+<script setup lang="ts">
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
 
-export default {
-  name: 'ScheduledTaskExecutions',
-  components: { SbaFormattedObj },
-  props: {
-    task: {
-      type: Object,
-      required: true,
-    },
+import { usePrettyTime } from '@/utils/prettyTime';
+
+defineProps({
+  task: {
+    type: Object,
+    required: true,
   },
-};
+});
+
+const { formatDateTime } = usePrettyTime();
 </script>
 
 <style scoped>

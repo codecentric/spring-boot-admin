@@ -44,5 +44,16 @@
     "go_to_previous_page": "Página anterior",
     "go_to_page_n": "Ir a página {page}",
     "go_to_next_page": "Página siguiente"
+  },
+  "time_short": {
+    "unknown": "unknown",
+    "milliseconds": "{count}ms",
+    "seconds": "{count}s",
+    "minutes": "{count}min",
+    "hours": "{count}h",
+    "days": "{count}d",
+    "weeks": "{count}sem",
+    "months": "{count}mes",
+    "years": "{count}a"
   }
 }
