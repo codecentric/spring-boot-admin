@@ -113,7 +113,8 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		return messageJson;
 	}
 
-	@Nullable protected String getText(InstanceEvent event, Instance instance) {
+	@Nullable
+	protected String getText(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -129,7 +130,8 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	@Nullable public URI getUrl() {
+	@Nullable
+	public URI getUrl() {
 		return url;
 	}
 
@@ -145,7 +147,8 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		this.username = username;
 	}
 
-	@Nullable public String getRoom() {
+	@Nullable
+	public String getRoom() {
 		return room;
 	}
 
@@ -153,7 +156,8 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 		this.room = room;
 	}
 
-	@Nullable public String getToken() {
+	@Nullable
+	public String getToken() {
 		return token;
 	}
 

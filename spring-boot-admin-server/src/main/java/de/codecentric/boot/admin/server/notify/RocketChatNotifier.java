@@ -111,7 +111,8 @@ public class RocketChatNotifier extends AbstractStatusChangeNotifier {
 		return messageJson;
 	}
 
-	@Nullable protected String getText(InstanceEvent event, Instance instance) {
+	@Nullable
+	protected String getText(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("roomId", roomId);
 		root.put("event", event);
@@ -128,7 +129,8 @@ public class RocketChatNotifier extends AbstractStatusChangeNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	@Nullable public String getUrl() {
+	@Nullable
+	public String getUrl() {
 		return url;
 	}
 
@@ -136,7 +138,8 @@ public class RocketChatNotifier extends AbstractStatusChangeNotifier {
 		this.url = url;
 	}
 
-	@Nullable public String getRoomId() {
+	@Nullable
+	public String getRoomId() {
 		return roomId;
 	}
 
@@ -144,7 +147,8 @@ public class RocketChatNotifier extends AbstractStatusChangeNotifier {
 		this.roomId = roomId;
 	}
 
-	@Nullable public String getToken() {
+	@Nullable
+	public String getToken() {
 		return token;
 	}
 
@@ -152,7 +156,8 @@ public class RocketChatNotifier extends AbstractStatusChangeNotifier {
 		this.token = token;
 	}
 
-	@Nullable public String getUserId() {
+	@Nullable
+	public String getUserId() {
 		return userId;
 	}
 
