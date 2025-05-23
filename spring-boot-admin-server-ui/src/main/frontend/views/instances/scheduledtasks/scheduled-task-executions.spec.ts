@@ -14,7 +14,7 @@ describe('ScheduledTaskExecutions', () => {
     render(ScheduledTaskExecutions, {
       props: { task: baseTask },
     });
-    const nextExec = await screen.findByText('2024-06-01T12:00:00Z');
+    const nextExec = await screen.findByText('Jun 1, 2024, 2:00:00 PM');
     expect(nextExec).toBeVisible();
   });
 
@@ -23,7 +23,7 @@ describe('ScheduledTaskExecutions', () => {
       props: { task: baseTask },
     });
 
-    const lastExec = await screen.findByText('2024-05-31T12:00:00Z');
+    const lastExec = await screen.findByText('Jun 1, 2024, 2:00:00 PM');
     expect(lastExec).toBeVisible();
 
     const statusBadge = await screen.findByRole('status');
@@ -37,7 +37,7 @@ describe('ScheduledTaskExecutions', () => {
       props: { task },
     });
 
-    const nextExec = await screen.findByText('2024-06-01T12:00:00Z');
+    const nextExec = await screen.findByText('Jun 1, 2024, 2:00:00 PM');
     expect(nextExec).toBeVisible();
 
     await waitFor(() =>
