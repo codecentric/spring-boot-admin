@@ -36,5 +36,16 @@
     "time": "Время",
     "unsuppress": "Включить",
     "username": "Имя пользователя"
+  },
+  "time_short": {
+    "unknown": "неизвестно",
+    "milliseconds": "{count}мс",
+    "seconds": "{count}с",
+    "minutes": "{count}мин",
+    "hours": "{count}ч",
+    "days": "{count}д",
+    "weeks": "{count}нед",
+    "months": "{count}мес",
+    "years": "{count}г"
   }
 }

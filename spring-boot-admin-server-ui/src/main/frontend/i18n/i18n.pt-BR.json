@@ -36,5 +36,16 @@
     "time": "Tempo",
     "unsuppress": "Exibir",
     "username": "Nome do usuário"
+  },
+  "time_short": {
+    "unknown": "desconhecido",
+    "milliseconds": "{count}ms",
+    "seconds": "{count}s",
+    "minutes": "{count}min",
+    "hours": "{count}h",
+    "days": "{count}d",
+    "weeks": "{count}sem",
+    "months": "{count}mês",
+    "years": "{count}a"
   }
 }

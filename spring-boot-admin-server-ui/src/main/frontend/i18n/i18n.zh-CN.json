@@ -36,5 +36,16 @@
     "time": "时间",
     "unsuppress": "Unsuppress",
     "username": "用户名"
+  },
+  "time_short": {
+    "unknown": "未知",
+    "milliseconds": "{count}毫秒",
+    "seconds": "{count}秒",
+    "minutes": "{count}分",
+    "hours": "{count}小时",
+    "days": "{count}天",
+    "weeks": "{count}周",
+    "months": "{count}月",
+    "years": "{count}年"
   }
 }

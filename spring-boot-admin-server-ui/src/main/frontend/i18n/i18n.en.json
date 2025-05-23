@@ -73,11 +73,11 @@
     "unknown": "unknown",
     "milliseconds": "{count}ms",
     "seconds": "{count}s",
-    "minutes": "{count}m",
+    "minutes": "{count}min",
     "hours": "{count}h",
     "days": "{count}d",
-    "weeks": "{count}w",
-    "months": "{count}mth",
-    "years": "{count} ys"
+    "weeks": "{count}wk",
+    "months": "{count}mo",
+    "years": "{count}y"
   }
 }
