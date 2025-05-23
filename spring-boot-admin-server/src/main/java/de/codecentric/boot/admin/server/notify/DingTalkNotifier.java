@@ -136,7 +136,8 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		this.webhookUrl = webhookUrl;
 	}
 
-	@Nullable public String getSecret() {
+	@Nullable
+	public String getSecret() {
 		return secret;
 	}
 

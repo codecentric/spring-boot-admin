@@ -52,7 +52,8 @@ public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> 
 		gen.writeEndObject();
 	}
 
-	@Nullable private String sanitize(String key, @Nullable String value) {
+	@Nullable
+	private String sanitize(String key, @Nullable String value) {
 		if (value == null) {
 			return null;
 		}

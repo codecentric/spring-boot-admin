@@ -43,7 +43,8 @@ public final class BuildVersion implements Serializable, Comparable<BuildVersion
 		return new BuildVersion(s);
 	}
 
-	@Nullable public static BuildVersion from(Map<String, ?> map) {
+	@Nullable
+	public static BuildVersion from(Map<String, ?> map) {
 		if (map.isEmpty()) {
 			return null;
 		}

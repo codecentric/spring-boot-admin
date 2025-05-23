@@ -43,7 +43,8 @@ public abstract class ExpiringNotificationFilter extends AbstractNotificationFil
 
 	protected abstract boolean doFilter(InstanceEvent event, Instance instance);
 
-	@Nullable public Instant getExpiry() {
+	@Nullable
+	public Instant getExpiry() {
 		return expiry;
 	}
 
