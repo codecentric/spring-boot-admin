@@ -123,4 +123,21 @@ public class RegistrationDeserializerTest {
 		assertThat(json).contains("humptydumpty");
 	}
 
+	@Test
+	void test_snake_case() throws Exception {
+		String json = new JSONObject().put("name", "test")
+			.put("management_url", "http://test")
+			.put("health_url", "http://health")
+			.put("service_url", "http://service")
+			.put("metadata", new JSONObject().put("labels", "foo,bar"))
+			.toString();
+		Registration value = objectMapper.readValue(json, Registration.class);
+		assertThat(value.getName()).isEqualTo("test");
+		assertThat(value.getManagementUrl()).isEqualTo("http://test");
+		assertThat(value.getHealthUrl()).isEqualTo("http://health");
+		assertThat(value.getServiceUrl()).isEqualTo("http://service");
+		assertThat(value.getMetadata()).isEqualTo(singletonMap("labels", "foo,bar"));
+
+	}
+
 }
