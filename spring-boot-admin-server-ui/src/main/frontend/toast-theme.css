@@ -4,3 +4,7 @@
   z-index: 100;
   padding: 4em 1em;
 }
+
+.v-toast__text {
+  overflow: hidden;
+}
