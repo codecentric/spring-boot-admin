@@ -17,16 +17,13 @@
 package de.codecentric.boot.admin.server.utils.jackson;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import org.springframework.util.ObjectUtils;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
@@ -41,26 +38,18 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 	@Override
 	public Registration deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 		JsonNode node = p.readValueAsTree();
-		Map<String, String> normalizedKvPair = getNormalizedKvPair(node);
 		Registration.Builder builder = Registration.builder();
 
-		if (node.hasNonNull("name")) {
-			builder.name(node.get("name").asText());
-		}
+		builder.name(firstNonNullAsText(node, "name"));
+
 		if (node.hasNonNull("url")) {
-			String url = node.get("url").asText();
+			String url = firstNonNullAsText(node, "url");
 			builder.healthUrl(url.replaceFirst("/+$", "") + "/health").managementUrl(url);
 		}
 		else {
-			if (!ObjectUtils.isEmpty(normalizedKvPair.get("healthurl"))) {
-				builder.healthUrl(normalizedKvPair.get("healthurl"));
-			}
-			if (!ObjectUtils.isEmpty(normalizedKvPair.get("managementurl"))) {
-				builder.managementUrl(normalizedKvPair.get("managementurl"));
-			}
-			if (!ObjectUtils.isEmpty(normalizedKvPair.get("serviceurl"))) {
-				builder.serviceUrl(normalizedKvPair.get("serviceurl"));
-			}
+			builder.healthUrl(firstNonNullAsText(node, "healthUrl", "health_url"));
+			builder.managementUrl(firstNonNullAsText(node, "managementUrl", "management_url"));
+			builder.serviceUrl(firstNonNullAsText(node, "serviceUrl", "service_url"));
 		}
 
 		if (node.has("metadata")) {
@@ -71,29 +60,18 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 			}
 		}
 
-		if (node.hasNonNull("source")) {
-			builder.source(node.get("source").asText());
-		}
+		builder.source(firstNonNullAsText(node, "source"));
 
 		return builder.build();
 	}
 
-	private Map<String, String> getNormalizedKvPair(JsonNode jn) throws IOException {
-		Map<String, String> normalizedKvPair = new HashMap<>();
-		JsonParser jp = jn.traverse();
-		while (!jp.isClosed()) {
-			if (jp.nextToken() == JsonToken.FIELD_NAME) {
-				String fieldName = jp.currentName();
-				if (!ObjectUtils.isEmpty(fieldName)) {
-					JsonToken jsonValueToken = jp.nextValue();
-					if (jsonValueToken == JsonToken.VALUE_STRING) {
-						normalizedKvPair.putIfAbsent(fieldName.replaceAll("[_-]", "").toLowerCase(),
-								jp.getValueAsString());
-					}
-				}
+	private String firstNonNullAsText(JsonNode node, String... fieldNames) {
+		for (String fieldName : fieldNames) {
+			if (node.hasNonNull(fieldName)) {
+				return node.get(fieldName).asText();
 			}
 		}
-		return normalizedKvPair;
+		return null;
 	}
 
 }
