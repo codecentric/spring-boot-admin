@@ -1,10 +1,25 @@
 import { screen, waitFor } from '@testing-library/vue';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { render } from '@/test-utils';
 import ScheduledTaskExecutions from '@/views/instances/scheduledtasks/scheduled-task-executions.vue';
 
 describe('ScheduledTaskExecutions', () => {
+  const originalFormat = Intl.DateTimeFormat;
+
+  beforeEach(() => {
+    Intl.DateTimeFormat = function (locale, options) {
+      return new originalFormat(locale, {
+        ...options,
+        timeZone: 'Europe/Berlin',
+      });
+    } as any;
+  });
+
+  afterEach(() => {
+    Intl.DateTimeFormat = originalFormat;
+  });
+
   const baseTask = {
     nextExecution: { time: '2024-06-01T12:00:00Z' },
     lastExecution: { time: '2024-05-31T12:00:00Z', status: 'SUCCESS' },
