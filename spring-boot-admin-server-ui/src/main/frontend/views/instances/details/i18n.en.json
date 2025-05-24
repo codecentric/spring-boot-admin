@@ -46,6 +46,8 @@
       "process": {
         "cpus": "CPUs",
         "pid": "PID",
+        "parent_pid": "Parent PID",
+        "owner": "Owner",
         "process_cpu_usage": "Process CPU Usage",
         "system_cpu_usage": "System CPU Usage",
         "title": "Process",

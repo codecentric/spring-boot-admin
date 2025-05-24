@@ -5,6 +5,7 @@
       "cache": {
         "hit_ratio": "Hit ratio",
         "hits": "Hits",
+        "misses": "Échecs",
         "size": "Taille"
       },
       "datasource": {
@@ -23,6 +24,9 @@
       "health": {
         "title": "État"
       },
+      "health_group": {
+        "title": "Groupe d'État"
+      },
       "info": {
         "no_info_provided": "Aucune infos fournies.",
         "title": "Info"
@@ -32,7 +36,8 @@
         "metaspace": "Métaspace",
         "size": "Taille",
         "title": "Memoire",
-        "used": "Utilisé"
+        "used": "Utilisé",
+        "committed": "Engagé"
       },
       "metadata": {
         "no_data_provided": "Aucune métadonnées fournies.",
@@ -41,6 +46,8 @@
       "process": {
         "cpus": "CPUs",
         "pid": "PID",
+        "parent_pid": "PID Parent",
+        "owner": "Propriétaire",
         "process_cpu_usage": "Usage processus du CPU",
         "system_cpu_usage": "Usage Système du CPU",
         "title": "Processus",
