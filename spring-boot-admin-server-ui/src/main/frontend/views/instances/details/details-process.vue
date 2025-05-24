@@ -29,148 +29,214 @@
   </sba-panel>
 </template>
 
-<script>
+<script setup lang="ts">
 import { take } from 'rxjs/operators';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
 import processUptime from '@/views/instances/details/process-uptime';
 import { toMillis } from '@/views/instances/metrics/metric';
 
-export default {
-  components: { processUptime },
-  mixins: [subscribing],
-  props: {
-    instance: {
-      type: Instance,
-      required: true,
+// Typdefinitionen
+interface UptimeData {
+  value: number | null;
+  baseUnit: string | null;
+}
+
+interface MetricResponse {
+  measurements: Array<{ value: number }>;
+  baseUnit: string;
+}
+
+interface CpuLoadMetrics {
+  processCpuLoad: number | null;
+  systemCpuLoad: number | null;
+}
+
+interface TableData {
+  label: string;
+  value: number | string | null;
+}
+
+interface TableDataMap {
+  [key: string]: TableData;
+}
+
+// Props Definition
+const props = defineProps<{
+  instance: Instance;
+}>();
+
+const { t, locale } = useI18n();
+
+// Reaktive Zustandsvariablen
+const hasLoaded = ref<boolean>(false);
+const error = ref<Error | null>(null);
+
+const pid = ref<number | null>(null);
+const parentPid = ref<number | null>(null);
+const owner = ref<string | null>(null);
+const uptime = ref<UptimeData>({ value: null, baseUnit: null });
+const systemCpuLoad = ref<number | null>(null);
+const processCpuLoad = ref<number | null>(null);
+const systemCpuCount = ref<number | null>(null);
+
+// Berechnete Eigenschaften
+const tableData = computed<TableDataMap>(() => {
+  const formatNumber = Intl.NumberFormat(locale.value, {
+    maximumFractionDigits: 2,
+  });
+
+  return {
+    pid: {
+      label: t('instances.details.process.pid'),
+      value: pid.value,
     },
-  },
-  data: () => ({
-    hasLoaded: false,
-    error: null,
-    pid: null,
-    uptime: { value: null, baseUnit: null },
-    systemCpuLoad: null,
-    processCpuLoad: null,
-    systemCpuCount: null,
-  }),
-  computed: {
-    tableData() {
-      return {
-        pid: {
-          label: this.$t('instances.details.process.pid'),
-          value: this.pid,
-        },
-        uptime: {
-          label: this.$t('instances.details.process.uptime'),
-          value: toMillis(this.uptime.value, this.uptime.baseUnit),
-        },
-        processCpuLoad: {
-          label: this.$t('instances.details.process.process_cpu_usage'),
-          value: this.processCpuLoad?.toFixed(2),
-        },
-        systemCpuLoad: {
-          label: this.$t('instances.details.process.system_cpu_usage'),
-          value: this.systemCpuLoad?.toFixed(2),
-        },
-        cpus: {
-          label: this.$t('instances.details.process.cpus'),
-          value: this.systemCpuCount,
-        },
-      };
+    parentPid: {
+      label: t('instances.details.process.parent_pid'),
+      value: parentPid.value,
     },
-  },
-  created() {
-    this.fetchPid();
-    this.fetchUptime();
-    this.fetchCpuCount();
-  },
-  methods: {
-    toMillis,
-    async fetchUptime() {
-      try {
-        const response = await this.fetchMetric('process.uptime');
-        this.uptime = {
-          value: response.measurements[0].value,
-          baseUnit: response.baseUnit,
-        };
-      } catch (error) {
-        this.error = error;
-        console.warn('Fetching Uptime failed:', error);
-      } finally {
-        this.hasLoaded = true;
-      }
+    owner: {
+      label: t('instances.details.process.owner'),
+      value: owner.value,
     },
-    async fetchPid() {
-      if (this.instance.hasEndpoint('env')) {
-        try {
-          const response = await this.instance.fetchEnv('PID');
-          this.pid = response.data.property.value;
-        } catch (error) {
-          console.warn('Fetching PID failed:', error);
-        } finally {
-          this.hasLoaded = true;
-        }
-      }
+    uptime: {
+      label: t('instances.details.process.uptime'),
+      value: toMillis(uptime.value.value, uptime.value.baseUnit),
     },
-    async fetchCpuCount() {
-      try {
-        this.systemCpuCount = (
-          await this.fetchMetric('system.cpu.count')
-        ).measurements[0].value;
-      } catch (error) {
-        console.warn('Fetching Cpu Count failed:', error);
-      } finally {
-        this.hasLoaded = true;
-      }
+    processCpuLoad: {
+      label: t('instances.details.process.process_cpu_usage'),
+      value: isNaN(processCpuLoad.value)
+        ? '-'
+        : `${formatNumber.format(processCpuLoad.value * 100)}%`,
     },
-    createSubscription() {
-      return timer(0, sbaConfig.uiSettings.pollTimer.process)
-        .pipe(
-          concatMap(this.fetchCpuLoadMetrics),
-          retryWhen((err) => {
-            return err.pipe(delay(1000), take(5));
-          }),
-        )
-        .subscribe({
-          next: (data) => {
-            this.processCpuLoad = data.processCpuLoad;
-            this.systemCpuLoad = data.systemCpuLoad;
-          },
-          error: (error) => {
-            this.hasLoaded = true;
-            console.warn('Fetching CPU Usage metrics failed:', error);
-            this.error = error;
-          },
-        });
+    systemCpuLoad: {
+      label: t('instances.details.process.system_cpu_usage'),
+      value: isNaN(systemCpuLoad.value)
+        ? '-'
+        : `${formatNumber.format(systemCpuLoad.value * 100)}%`,
     },
-    async fetchCpuLoadMetrics() {
-      const fetchProcessCpuLoad = this.fetchMetric('process.cpu.usage');
-      const fetchSystemCpuLoad = this.fetchMetric('system.cpu.usage');
-      let processCpuLoad;
-      let systemCpuLoad;
-      try {
-        processCpuLoad = (await fetchProcessCpuLoad).measurements[0].value;
-      } catch (error) {
-        console.warn('Fetching Process CPU Load failed:', error);
-      }
-      try {
-        systemCpuLoad = (await fetchSystemCpuLoad).measurements[0].value;
-      } catch (error) {
-        console.warn('Fetching Sytem CPU Load failed:', error);
-      }
-      return {
-        processCpuLoad,
-        systemCpuLoad,
-      };
+    cpus: {
+      label: t('instances.details.process.cpus'),
+      value: systemCpuCount.value,
     },
-    async fetchMetric(name) {
-      const response = await this.instance.fetchMetric(name);
-      return response.data;
-    },
-  },
+  };
+});
+
+// Hilfsfunktionen
+const fetchMetric = async (name: string): Promise<MetricResponse> => {
+  const response = await props.instance.fetchMetric(name);
+  return response.data;
 };
+
+const fetchUptime = async (): Promise<void> => {
+  try {
+    const response = await fetchMetric('process.uptime');
+    uptime.value = {
+      value: response.measurements[0].value,
+      baseUnit: response.baseUnit,
+    };
+  } catch (err) {
+    error.value = err instanceof Error ? err : new Error('Unknown error');
+    console.warn('Fetching Uptime failed:', err);
+  }
+};
+
+const fetchPid = async (): Promise<void> => {
+  if (props.instance.hasEndpoint('env')) {
+    try {
+      const response = await props.instance.fetchEnv('PID');
+      pid.value = response.data.property.value;
+    } catch (err) {
+      console.warn('Fetching PID failed:', err);
+    }
+  }
+};
+
+const fetchCpuCount = async (): Promise<void> => {
+  try {
+    const response = await fetchMetric('system.cpu.count');
+    systemCpuCount.value = response.measurements[0].value;
+  } catch (err) {
+    console.warn('Fetching Cpu Count failed:', err);
+  }
+};
+
+const fetchProcessInfo = async (): Promise<void> => {
+  try {
+    const response = await props.instance.fetchInfo();
+    const processInfo = response.data.process;
+    if (processInfo) {
+      pid.value = processInfo.pid;
+      parentPid.value = processInfo.parentPid;
+      owner.value = processInfo.owner;
+    }
+  } catch (err) {
+    console.warn('Fetching Process Info failed:', err);
+  }
+};
+
+const fetchCpuLoadMetrics = async (): Promise<CpuLoadMetrics> => {
+  const fetchProcessCpuLoad = fetchMetric('process.cpu.usage');
+  const fetchSystemCpuLoad = fetchMetric('system.cpu.usage');
+
+  let processCpuLoadValue: number | null = null;
+  let systemCpuLoadValue: number | null = null;
+
+  try {
+    const response = await fetchProcessCpuLoad;
+    processCpuLoadValue = response.measurements[0].value;
+  } catch (err) {
+    console.warn('Fetching Process CPU Load failed:', err);
+  }
+
+  try {
+    const response = await fetchSystemCpuLoad;
+    systemCpuLoadValue = response.measurements[0].value;
+  } catch (err) {
+    console.warn('Fetching System CPU Load failed:', err);
+  }
+
+  return {
+    processCpuLoad: processCpuLoadValue,
+    systemCpuLoad: systemCpuLoadValue,
+  };
+};
+
+onMounted(async () => {
+  try {
+    await Promise.allSettled([
+      fetchPid(),
+      fetchUptime(),
+      fetchCpuCount(),
+      fetchProcessInfo(),
+    ]);
+  } finally {
+    hasLoaded.value = true;
+  }
+
+  const subscription = timer(0, sbaConfig.uiSettings.pollTimer.process)
+    .pipe(
+      concatMap(fetchCpuLoadMetrics),
+      retryWhen((err) => err.pipe(delay(1000, take(5)))),
+    )
+    .subscribe({
+      next: (data: CpuLoadMetrics) => {
+        processCpuLoad.value = data.processCpuLoad;
+        systemCpuLoad.value = data.systemCpuLoad;
+      },
+      error: (err: Error) => {
+        hasLoaded.value = true;
+        console.warn('Fetching CPU Usage metrics failed:', err);
+        error.value = rr;
+      },
+    });
+
+  onUnmounted(() => {
+    subscription.unsubscribe();
+  });
+});
 </script>

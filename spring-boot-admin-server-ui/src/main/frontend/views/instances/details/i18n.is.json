@@ -24,6 +24,9 @@
       "health": {
         "title": "Staða"
       },
+      "health_group": {
+        "title": "Stöðuhópur"
+      },
       "info": {
         "no_info_provided": "Engar upplýsingar eru í boði.",
         "title": "Upplýsingar"
@@ -33,7 +36,8 @@
         "metaspace": "Metaspace",
         "size": "Stærð",
         "title": "Geymir",
-        "used": "I notkun"
+        "used": "I notkun",
+        "committed": "Skuldbundið"
       },
       "metadata": {
         "no_data_provided": "Engin lysigögn i boði.",
@@ -42,6 +46,8 @@
       "process": {
         "cpus": "CPUs",
         "pid": "PID",
+        "parent_pid": "Foreldri PID",
+        "owner": "Eigandi",
         "process_cpu_usage": "CPU notkun (%)",
         "system_cpu_usage": "Kerfi notkun (%)",
         "title": "Ferli",
