@@ -25,6 +25,9 @@
       "health": {
         "title": "Salud"
       },
+      "health_group": {
+        "title": "Grupo de Salud"
+      },
       "info": {
         "no_info_provided": "No hay información provista.",
         "title": "Info"
@@ -34,7 +37,8 @@
         "metaspace": "Metaspace",
         "size": "Tamaño",
         "title": "Memoria",
-        "used": "Usada"
+        "used": "Usada",
+        "committed": "Comprometida"
       },
       "metadata": {
         "no_data_provided": "No hay metadatos provistos.",
@@ -42,8 +46,9 @@
       },
       "process": {
         "cpus": "CPUs",
-
         "pid": "PID",
+        "parent_pid": "PID Padre",
+        "owner": "Propietario",
         "process_cpu_usage": "Uso CPU proceso",
         "system_cpu_usage": "Uso CPU sistema",
         "title": "Proceso",

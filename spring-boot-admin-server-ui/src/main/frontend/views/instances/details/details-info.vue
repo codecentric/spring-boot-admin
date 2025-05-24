@@ -22,8 +22,8 @@
       class="border-l-4"
       :title="$t('term.fetch_failed')"
     />
-    <div v-else class="content info">
-      <table v-if="!isEmptyInfo" class="table">
+    <div v-else class="content info -mx-4 -my-3">
+      <table v-if="!isEmptyInfo" class="table table-full table-striped">
         <tr v-for="(value, key) in info" :key="key">
           <td class="info__key" v-text="key" />
           <td>
