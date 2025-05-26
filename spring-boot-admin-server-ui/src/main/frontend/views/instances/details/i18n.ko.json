@@ -5,6 +5,7 @@
       "cache": {
         "hit_ratio": "히트율",
         "hits": "히트",
+        "misses": "미스",
         "size": "사이즈"
       },
       "datasource": {
@@ -23,6 +24,9 @@
       "health": {
         "title": "상태"
       },
+      "health_group": {
+        "title": "상태 그룹"
+      },
       "info": {
         "no_info_provided": "정보가 제공되지 않습니다.",
         "title": "정보"
@@ -32,7 +36,8 @@
         "metaspace": "메타스페이스",
         "size": "사이즈",
         "title": "메모리",
-        "used": "사용됨"
+        "used": "사용됨",
+        "committed": "커밋됨"
       },
       "metadata": {
         "no_data_provided": "메타데이터가 제공되지 않습니다.",
@@ -41,6 +46,8 @@
       "process": {
         "cpus": "CPU",
         "pid": "PID",
+        "parent_pid": "부모 PID",
+        "owner": "소유자",
         "process_cpu_usage": "프로세스 CPU 사용량",
         "system_cpu_usage": "시스템 CPU 사용량",
         "title": "프로세스",

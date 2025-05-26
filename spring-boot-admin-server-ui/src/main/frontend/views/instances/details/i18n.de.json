@@ -24,6 +24,9 @@
       "health": {
         "title": "Zustand"
       },
+      "health_group": {
+        "title": "Zustandsgruppe"
+      },
       "info": {
         "no_info_provided": "Keine Informationen verfügbar.",
         "title": "Info"
@@ -33,7 +36,8 @@
         "metaspace": "Metaspace",
         "size": "Größe",
         "title": "Speicher",
-        "used": "In Verwendung"
+        "used": "In Verwendung",
+        "committed": "Zugesichert"
       },
       "metadata": {
         "no_data_provided": "Keine Metadaten vorhanden",
@@ -42,6 +46,8 @@
       "process": {
         "cpus": "CPUs",
         "pid": "PID",
+        "parent_pid": "Eltern-PID",
+        "owner": "Besitzer",
         "process_cpu_usage": "CPU-Auslastung (%)",
         "system_cpu_usage": "System-Auslastung (%)",
         "title": "Prozess",

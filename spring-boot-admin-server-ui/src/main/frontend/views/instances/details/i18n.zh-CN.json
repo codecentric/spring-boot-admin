@@ -5,6 +5,7 @@
       "cache": {
         "hit_ratio": "命中率",
         "hits": "命中次数",
+        "misses": "未命中",
         "size": "粒度"
       },
       "datasource": {
@@ -23,6 +24,9 @@
       "health": {
         "title": "健康"
       },
+      "health_group": {
+        "title": "健康组"
+      },
       "info": {
         "no_info_provided": "未提供任何信息。",
         "title": "信息"
@@ -32,7 +36,8 @@
         "metaspace": "初始空间",
         "size": "当前可用",
         "title": "内存",
-        "used": "已用"
+        "used": "已用",
+        "committed": "已提交"
       },
       "metadata": {
         "no_data_provided": "未提供元数据。",
@@ -41,6 +46,8 @@
       "process": {
         "cpus": "CPU核心数",
         "pid": "进程ID",
+        "parent_pid": "父进程ID",
+        "owner": "所有者",
         "process_cpu_usage": "进程CPU使用率",
         "system_cpu_usage": "系统CPU使用率",
         "title": "进程",
