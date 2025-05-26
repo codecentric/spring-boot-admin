@@ -13,7 +13,7 @@
     "build-storybook": "storybook build",
     "lint": "eslint --ext .js,.ts,.vue src/main/frontend",
     "lint:fix": "eslint --ext .js,.ts,.vue --fix src/main/frontend",
-    "format": "prettier src/main/frontend",
+    "format": "prettier src/main/frontend --check",
     "format:fix": "prettier src/main/frontend --write"
   },
   "dependencies": {

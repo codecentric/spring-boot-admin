@@ -27,7 +27,7 @@ const { map, skipNullValues = false } = defineProps<{
 
 const filteredMap = computed(() => {
   return Object.entries(map)
-    .filter(([_, value]) => {
+    .filter(([, value]) => {
       if (skipNullValues) {
         return value && value.value !== null;
       }
