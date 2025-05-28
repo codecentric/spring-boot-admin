@@ -2,7 +2,7 @@
   "instances": {
     "quartz": {
       "label": "Quartz",
-      "no_data": "사용 가능한 석영 정보가 없습니다."
+      "no_data": "사용 가능한 Quartz 정보가 없습니다."
     }
   }
 }

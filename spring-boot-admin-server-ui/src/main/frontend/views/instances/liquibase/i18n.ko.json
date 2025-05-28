@@ -1,7 +1,7 @@
 {
   "instances": {
     "liquibase": {
-      "label": "리퀴베이스",
+      "label": "Liquibase",
       "author": "작성자",
       "changelog": "변경이력",
       "checksum": "체크섬",

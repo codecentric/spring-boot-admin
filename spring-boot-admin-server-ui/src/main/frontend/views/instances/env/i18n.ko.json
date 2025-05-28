@@ -15,9 +15,9 @@
       "context_updated": "갱신됨",
       "no_properties": "프로퍼티 없음",
       "title": "환경 관리자",
-      "refresh": "Refresh environment",
-      "application": "Application",
-      "instance": "Instance"
+      "refresh": "환경 새로고침",
+      "application": "애플리케이션",
+      "instance": "인스턴스"
     }
   }
 }
