@@ -79,7 +79,7 @@
         >
           <td
             class="httptraces__trace-timestamp"
-            v-text="trace.timestamp.format('L HH:mm:ss.SSS')"
+            v-text="formatDate(trace.timestamp)"
           />
           <td class="httptraces__trace-method" v-text="trace.request.method" />
           <td class="httptraces__trace-uri" v-text="trace.request.uri" />
@@ -148,6 +148,8 @@
 <script>
 import prettyBytes from 'pretty-bytes';
 
+import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
+
 export default {
   props: {
     newTracesCount: {
@@ -160,6 +162,13 @@ export default {
     },
   },
   emits: ['show-new-traces'],
+  setup() {
+    const { formatDateTime } = useDateTimeFormatter();
+
+    return {
+      formatDate: formatDateTime,
+    };
+  },
   data: () => ({
     showDetails: {},
   }),

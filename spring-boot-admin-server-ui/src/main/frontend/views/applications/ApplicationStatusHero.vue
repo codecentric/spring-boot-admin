@@ -77,31 +77,21 @@
 import { computed, ref, watch } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
+import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import { getStatusInfo } from '@/services/application';
 
-const options = {
-  year: 'numeric',
-  month: 'numeric',
-  day: 'numeric',
-  hour: 'numeric',
-  minute: 'numeric',
-  second: 'numeric',
-};
 const { applications } = useApplicationStore();
 
-const userLocale = navigator.languages
-  ? navigator.languages[0]
-  : navigator.language;
-const dateTimeFormat = new Intl.DateTimeFormat(userLocale, options);
+const { formatDateTime } = useDateTimeFormatter();
 
-const lastUpdate = ref(dateTimeFormat.format(new Date()));
+const lastUpdate = ref(formatDateTime(new Date()));
 
 const statusInfo = computed(() => {
   return getStatusInfo(applications.value);
 });
 
 watch(statusInfo, () => {
-  lastUpdate.value = dateTimeFormat.format(new Date());
+  lastUpdate.value = formatDateTime(new Date());
 });
 
 const applicationsCount = computed(() => {

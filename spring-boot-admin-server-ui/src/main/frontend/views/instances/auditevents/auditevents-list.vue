@@ -36,7 +36,7 @@
               : (showDetails[event.key] = true)
           "
         >
-          <td v-text="event.timestamp.format('L HH:mm:ss.SSS')" />
+          <td v-text="formatDate(event.timestamp)" />
           <td>
             <span
               class="tag"
@@ -100,6 +100,7 @@
 <script>
 import prettyBytes from 'pretty-bytes';
 
+import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import Instance from '@/services/instance';
 
 export default {
@@ -116,6 +117,13 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  setup() {
+    const { formatDateTime } = useDateTimeFormatter();
+
+    return {
+      formatDate: formatDateTime,
+    };
   },
   data: () => ({
     showDetails: {},

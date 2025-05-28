@@ -101,7 +101,7 @@
                   {{ event.instance }}
                 </router-link>
               </td>
-              <td v-text="event.timestamp.format('L HH:mm:ss.SSS')" />
+              <td v-text="formatDate(event.timestamp)" />
               <td>
                 <span v-text="event.type" />
                 <span
@@ -134,10 +134,10 @@
 
 <script>
 import { isEqual, uniq } from 'lodash-es';
-import moment from 'moment';
 
 import SbaAlert from '@/components/sba-alert';
 
+import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
@@ -147,7 +147,7 @@ class InstanceEvent {
     this.instance = instance;
     this.version = version;
     this.type = type;
-    this.timestamp = moment(timestamp);
+    this.timestamp = new Date(timestamp);
     this.payload = payload;
   }
 
@@ -165,6 +165,13 @@ InstanceEvent.ENDPOINTS_DETECTED = 'ENDPOINTS_DETECTED';
 export default {
   components: { SbaAlert },
   mixins: [subscribing],
+  setup() {
+    const { formatDateTime } = useDateTimeFormatter();
+
+    return {
+      formatDate: formatDateTime,
+    };
+  },
   data: () => ({
     Event,
     events: [],

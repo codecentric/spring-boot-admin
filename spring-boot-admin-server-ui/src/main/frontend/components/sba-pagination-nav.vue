@@ -53,7 +53,7 @@
       <sba-button :disabled="modelValue >= pageCount" @click="goNext">
         <span class="sr-only" v-text="$t('term.go_to_next_page')" />
         <font-awesome-icon
-          class="h-5 w-10"
+          class="h-5 w-5"
           :icon="['fas', 'angle-double-right']"
         />
       </sba-button>

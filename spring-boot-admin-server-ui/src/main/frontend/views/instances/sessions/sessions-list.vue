@@ -64,8 +64,8 @@
           {{ session.id }}
         </router-link>
       </td>
-      <td v-text="session.creationTime.format('L HH:mm:ss.SSS')" />
-      <td v-text="session.lastAccessedTime.format('L HH:mm:ss.SSS')" />
+      <td v-text="formatDate(session.creationTime)" />
+      <td v-text="formatDate(session.lastAccessedTime)" />
       <td>
         <span
           v-if="session.expired"
@@ -130,6 +130,7 @@
 <script>
 import prettyBytes from 'pretty-bytes';
 
+import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import Instance from '@/services/instance';
 import { concatMap, from, listen, map, of, tap } from '@/utils/rxjs';
 
@@ -149,6 +150,13 @@ export default {
     },
   },
   emits: ['deleted'],
+  setup() {
+    const { formatDateTime } = useDateTimeFormatter();
+
+    return {
+      formatDate: formatDateTime,
+    };
+  },
   data: () => ({
     deletingAll: null,
     deleting: {},
