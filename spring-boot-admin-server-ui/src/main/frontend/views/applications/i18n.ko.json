@@ -1,10 +1,25 @@
 {
   "applications": {
-    "all_up": "전체 정상",
+    "actions": {
+      "journal": "일지",
+      "notification_filters": "알림 필터",
+      "unregister": "등록 해제",
+      "shutdown": "종료",
+      "restart": "재시작"
+    },
+    "all_up": "전체 인스턴스 가동중",
+    "all_down": "전체 인스턴스 중단됨",
+    "all_unknown": "전체 인스턴스 상태 불명",
+    "some_unknown": "일부 인스턴스 상태 불명",
+    "some_down": "일부 인스턴스 중단됨",
     "applications": "애플리케이션",
+    "fetching_notification_filters_failed": "알림 필터를 가져오지 못하였습니다.",
+    "notification_filter": {
+      "none": "설정된 알림 필터가 없습니다.",
+      "removed": "알림 필터가 제거되었습니다."
+    },
     "instances": "인스턴스",
-    "some_down": "인스턴스 종료",
-    "loading_applications": "애플리케이션 로딩..",
+    "loading_applications": "애플리케이션 불러오는 중...",
     "no_applications_registered": "등록된 애플리케이션이 없습니다.",
     "notifications_suppressed_for": "<code>{name}</code>에 대한 알림이 억제됩니다.",
     "restricted": "제한됨",
@@ -12,14 +27,32 @@
     "suppress_notifications_on": "<code>{name}</code>에 대한 알림",
     "status": "상태",
     "label": "애플리케이션",
-    "up": "정상",
-    "shutdown": "Shutdown application <code>{name}</code>?",
-    "restart": "Restart application <code>{name}</code>?",
-    "restarted": "Successfully restarted application <code>{name}</code>"
+    "up": "가동",
+    "down": "중단",
+    "offline": "오프라인",
+    "shutdown": "<code>{name}</code> 애플리케이션을 종료할까요?",
+    "shutdown_successful": "{name} 애플리케이션을 종료하였습니다.",
+    "refreshed": "애플리케이션 새로고침됨",
+    "restart": "<code>{name}</code> 애플리케이션을 재시작할까요?",
+    "restarted": "<code>{name}</code> 애플리케이션을 재시작하였습니다.",
+    "unregister": "<<code>{name}</code> 애플리케이션 등록을 해제할까요?",
+    "unregister_successful": "<code>{name}</code> 애플리케이션 등록을 해제하였습니다.",
+    "unregister_failed": "<code>{name}</code> 애플리케이션 등록을 해제하지 못하였습니다. ({error})"
   },
   "instances": {
-    "shutdown": "Shutdown instance <code>{name}</code>?",
-    "restart": "Restart instance <code>{name}</code>?",
-    "restarted": "Successfully restarted instance"
+    "shutdown": "<code>{name}</code> 인스턴스를 종료할까요?",
+    "shutdown_successful": "{name} 인스턴스를 종료하였습니다.",
+    "shutdown_failed": "{name} 인스턴스를 종료하지 못하였습니다.",
+    "restart": "<code>{name}</code> 인스턴스를 재시작할까요?",
+    "restarted": "{name} 인스턴스를 재시작하였습니다.",
+    "unregister": "<code>{name}</code> 인스턴스 등록을 해제할까요?",
+    "unregister_successful": "<code>{name}</code> 인스턴스 등록을 해제하였습니다.",
+    "unregister_failed": "<code>{name}</code> 인스턴스 등록을 해제하지 못하였습니다. ({error})"
+  },
+  "notification_filter_center": {
+    "description": "다음 애플리케이션 또는 인스턴스에 대한 알림이 억제됩니다."
+  },
+  "filter": {
+    "no_results": "필터에 일치하는 결과가 없습니다."
   }
 }

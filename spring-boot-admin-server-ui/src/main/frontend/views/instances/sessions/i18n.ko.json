@@ -8,7 +8,7 @@
       "expiry": "만기",
 
       "last_accessed_at": "마지막 접근시간",
-      "loading_sessions": "세션 로딩...",
+      "loading_sessions": "세션 불러오는 중...",
       "max_inactive_interval": "최대 비활성<br>간격",
       "no_sessions_found": "세션이 없습니다.",
       "session_id": "세션 Id",

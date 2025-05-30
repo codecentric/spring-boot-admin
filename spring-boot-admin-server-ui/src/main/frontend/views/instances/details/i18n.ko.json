@@ -19,7 +19,7 @@
         "count": "횟수",
         "time_spent_max": "최대 소요 시간",
         "time_spent_total": "전체 소요 시간",
-        "title": "가비지 컬렉션 유휴시간"
+        "title": "가비지 컬렉션"
       },
       "health": {
         "title": "상태"
