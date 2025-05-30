@@ -78,7 +78,7 @@ class Auditevent {
   constructor({ timestamp, ...event }) {
     Object.assign(this, event);
     this.zonedTimestamp = timestamp;
-    this.timestamp = moment(timestamp);
+    this.timestamp = new Date(timestamp);
   }
 
   get key() {
@@ -145,7 +145,7 @@ export default {
       return value.format(moment.HTML5_FMT.DATETIME_LOCAL);
     },
     parseDate(value) {
-      return moment(value, moment.HTML5_FMT.DATETIME_LOCAL, true);
+      return moment(value, moment.HTML5_FMT.DATETIME_LOCAL, true).toDate();
     },
     async fetchAuditevents() {
       this.isLoading = true;
