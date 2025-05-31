@@ -51,7 +51,7 @@
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <versions-maven-plugin.version>2.18.0
         </versions-maven-plugin.version> <!-- because of https://github.com/mojohaus/versions/issues/855 -->
-        <maven-clean-plugin.version>3.4.1</maven-clean-plugin.version>
+        <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
         <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
         <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
