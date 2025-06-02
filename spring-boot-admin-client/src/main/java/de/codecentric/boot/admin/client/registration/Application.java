@@ -53,8 +53,8 @@ public class Application {
 		this.metadata = new HashMap<>(metadata);
 	}
 
-	public static Builder create(String name) {
-		return Application.builder().name(name);
+	public static Builder create(String names) {
+		return Application.builder().name(names);
 	}
 
 	public Map<String, String> getMetadata() {
