@@ -103,7 +103,7 @@
     "typescript": "^5.0.3",
     "vite": "6.3.5",
     "vite-plugin-static-copy": "3.0.0",
-    "vitest": "3.2.0",
+    "vitest": "3.2.1",
     "vue-eslint-parser": "^10.0.0",
     "vue-loader": "17.4.2"
   },
