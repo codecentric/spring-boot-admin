@@ -94,7 +94,7 @@
     "msw-storybook-addon": "2.0.5",
     "postcss": "8.5.4",
     "prettier": "^3.0.3",
-    "rollup-plugin-visualizer": "6.0.1",
+    "rollup-plugin-visualizer": "6.0.3",
     "sass": "^1.57.1",
     "storybook": "9.0.5",
     "storybook-vue3-router": "^5.0.0",
