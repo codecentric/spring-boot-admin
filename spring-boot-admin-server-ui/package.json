@@ -86,7 +86,7 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-storybook": "9.0.6",
+    "eslint-plugin-storybook": "9.0.7",
     "eslint-plugin-vue": "^10.0.0",
     "happy-dom": "^14.12.3",
     "jsdom": "^26.0.0",
