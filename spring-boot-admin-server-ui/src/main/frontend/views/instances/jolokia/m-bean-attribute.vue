@@ -49,11 +49,10 @@
         <textarea
           :id="`${name}-textarea`"
           :name="name"
-          :value="jsonValue"
           readonly
           disabled
           class="flex-1 m-bean-attribute--text"
-        />
+        >{{ jsonValue }}</textarea>
       </div>
       <div class="py-2">
         <div class="text-xs text-gray-500" v-text="descriptor.desc"></div>
