@@ -39,6 +39,26 @@
         </button>
       </template>
     </sba-input>
+    <div v-else class="flex-1">
+      <label
+        :for="`${name}-textarea`"
+        class="block text-sm font-medium text-gray-700"
+        v-text="name"
+      ></label>
+      <div class="mt-1 flex">
+        <textarea
+          :id="`${name}-textarea`"
+          :name="name"
+          :value="jsonValue"
+          readonly
+          disabled
+          class="flex-1 m-bean-attribute--text"
+        />
+      </div>
+      <div class="py-2">
+        <div class="text-xs text-gray-500" v-text="descriptor.desc"></div>
+      </div>
+    </div>
 
     <sba-button-group v-if="editing">
       <sba-button @click="cancel">
@@ -128,3 +148,12 @@ export default {
   },
 };
 </script>
+
+<style lang="css" scoped>
+.m-bean-attribute--text {
+  resize: vertical;
+  min-height: 120px;
+  cursor: not-allowed;
+  @apply rounded shadow-sm border-gray-300;
+}
+</style>
