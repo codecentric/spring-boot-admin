@@ -115,4 +115,18 @@ public class IntervalCheck {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "IntervalCheck{" +
+			"name='" + name + '\'' +
+			", lastChecked=" + lastChecked +
+			", checkFn=" + checkFn +
+			", maxBackoff=" + maxBackoff +
+			", interval=" + interval +
+			", minRetention=" + minRetention +
+			", subscription=" + subscription +
+			", scheduler=" + scheduler +
+			'}';
+	}
+
 }
