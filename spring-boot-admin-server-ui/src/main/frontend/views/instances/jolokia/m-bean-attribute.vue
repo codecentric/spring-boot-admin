@@ -48,11 +48,12 @@
       <div class="mt-1 flex">
         <textarea
           :id="`${name}-textarea`"
+          v-model="jsonValue"
           :name="name"
           readonly
           disabled
           class="flex-1 m-bean-attribute--text"
-        >{{ jsonValue }}</textarea>
+        />
       </div>
       <div class="py-2">
         <div class="text-xs text-gray-500" v-text="descriptor.desc"></div>
