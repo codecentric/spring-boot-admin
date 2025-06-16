@@ -30,6 +30,7 @@
 </template>
 
 <script setup lang="ts">
+import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -206,6 +207,7 @@ const fetchCpuLoadMetrics = async (): Promise<CpuLoadMetrics> => {
   };
 };
 
+let subscription: Subscription;
 onMounted(async () => {
   try {
     await Promise.allSettled([
@@ -218,7 +220,7 @@ onMounted(async () => {
     hasLoaded.value = true;
   }
 
-  const subscription = timer(0, sbaConfig.uiSettings.pollTimer.process)
+  subscription = timer(0, sbaConfig.uiSettings.pollTimer.process)
     .pipe(
       concatMap(fetchCpuLoadMetrics),
       retryWhen((err) => err.pipe(delay(1000, take(5)))),
@@ -231,12 +233,12 @@ onMounted(async () => {
       error: (err: Error) => {
         hasLoaded.value = true;
         console.warn('Fetching CPU Usage metrics failed:', err);
-        error.value = rr;
+        error.value = err;
       },
     });
+});
 
-  onUnmounted(() => {
-    subscription.unsubscribe();
-  });
+onUnmounted(() => {
+  subscription.unsubscribe();
 });
 </script>
