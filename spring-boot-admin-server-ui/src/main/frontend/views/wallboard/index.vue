@@ -47,6 +47,25 @@
           />
         </optgroup>
       </select>
+
+      <div v-if="groupNames.length > 1" class="text-right rounded h-full">
+        <sba-button-group>
+          <sba-button
+            size="base"
+            :title="t('term.group_by.application')"
+            @click="() => (routerState.sortBy = 'name')"
+          >
+            <font-awesome-icon icon="list" />
+          </sba-button>
+          <sba-button
+            size="base"
+            :title="t('term.group_by.group')"
+            @click="() => (routerState.sortBy = 'group')"
+          >
+            <font-awesome-icon icon="expand" />
+          </sba-button>
+        </sba-button-group>
+      </div>
     </div>
 
     <sba-alert
@@ -77,6 +96,7 @@
       >
         <template #item="{ item: application }">
           <div :key="application.name" class="hex__body application">
+            <div class="application__group" v-text="application.group" />
             <div class="application__status-indicator" />
             <div class="application__header application__time-ago is-muted">
               <sba-time-ago :date="application.statusTimestamp" />
@@ -84,6 +104,7 @@
             <div class="application__body">
               <h1 class="application__name" v-text="application.name" />
               <p
+                v-if="application.instances"
                 class="application__instances is-muted"
                 v-text="
                   t('wallboard.instances_count', application.instances.length)
@@ -121,11 +142,25 @@ export default {
     const routerState = useRouterState({
       termFilter: '',
       wordWrap: true,
+      sortBy: 'name',
       statusFilter: 'none',
     });
 
     const { applications, applicationsInitialized, error } =
       useApplicationStore();
+
+    const groupNames = computed(() => {
+      return [
+        ...new Set<string>(
+          applications.value
+            .flatMap((application) => application.instances)
+            .map(
+              (instance) =>
+                instance.registration?.metadata?.['group'] ?? 'Ungrouped',
+            ),
+        ),
+      ];
+    });
 
     const fuse = computed(
       () =>
@@ -160,7 +195,7 @@ export default {
       let result = filterByTerm();
       result = filterByStatus(result);
 
-      return result;
+      return sortApplicationsBy(result, routerState.sortBy);
     });
 
     const healthStatus = computed(() => {
@@ -176,6 +211,7 @@ export default {
       t,
       healthStatus,
       routerState,
+      groupNames,
     };
   },
   methods: {
@@ -184,6 +220,7 @@ export default {
       if (!application) {
         return null;
       }
+
       if (application.status === HealthStatus.UP) {
         return 'up';
       }
@@ -199,13 +236,11 @@ export default {
       if (application.status === HealthStatus.OFFLINE) {
         return 'down';
       }
-      if (application.status === HealthStatus.UNKNOWN) {
-        return 'unknown';
-      }
-      return '';
+
+      return 'unknown';
     },
     select(application: Application) {
-      if (application.instances.length === 1) {
+      if (application.instances?.length === 1) {
         this.$router.push({
           name: 'instances/details',
           params: { instanceId: application.instances[0].id },
@@ -228,6 +263,31 @@ export default {
     });
   },
 };
+
+function sortApplicationsBy(
+  applications: Application[],
+  sortingCriterion: string,
+) {
+  const items = applications.flatMap((application: Application) => {
+    if (sortingCriterion === 'group') {
+      return application.instances.map((instance) => ({
+        ...instance,
+        status: application.status,
+        name: application.name,
+        group: instance.registration?.metadata?.['group'] ?? 'Ungrouped',
+      }));
+    } else {
+      return [application];
+    }
+  });
+  return items.sort((a: Application, b: Application) => {
+    if (sortingCriterion === 'group') {
+      return a.group.localeCompare(b.group);
+    } else {
+      return a.name.localeCompare(b.name);
+    }
+  });
+}
 </script>
 
 <style lang="postcss">
@@ -271,6 +331,18 @@ export default {
 .wallboard .application__footer {
   width: 90%;
   margin-top: 0.5em;
+}
+
+.wallboard .application__group {
+  position: absolute;
+  top: 15%;
+  left: 0;
+  font-size: 40%;
+  transform: rotate(-30deg);
+  text-align: center;
+  width: 55%;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 
 .up > polygon {
