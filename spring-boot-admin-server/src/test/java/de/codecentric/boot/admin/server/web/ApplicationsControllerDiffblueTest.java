@@ -61,7 +61,6 @@ import reactor.test.StepVerifier.FirstStep;
 
 @ContextConfiguration(classes = { ApplicationsController.class })
 @DisabledInAotMode
-@RunWith(MockitoJUnitRunner.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ApplicationsControllerDiffblueTest {
 

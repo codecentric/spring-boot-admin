@@ -53,7 +53,6 @@ import reactor.test.StepVerifier.FirstStep;
 @ContextConfiguration(classes = { AdminServerWebConfiguration.class, AdminServerProperties.class,
 		InstanceRegistry.class, ApplicationRegistry.class, InstanceEventPublisher.class })
 @DisabledInAotMode
-@RunWith(MockitoJUnitRunner.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class AdminServerWebConfigurationDiffblueTest {
 
