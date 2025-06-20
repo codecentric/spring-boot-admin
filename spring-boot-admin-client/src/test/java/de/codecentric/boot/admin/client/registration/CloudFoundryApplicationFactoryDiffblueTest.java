@@ -23,104 +23,107 @@ import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.util.unit.DataSize;
 
 class CloudFoundryApplicationFactoryDiffblueTest {
-  /**
-   * Test {@link CloudFoundryApplicationFactory#getServiceBaseUrl()}.
-   * <ul>
-   *   <li>Then return {@code https://example.org/example}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link CloudFoundryApplicationFactory#getServiceBaseUrl()}
-   */
-  @Test
-  @DisplayName("Test getServiceBaseUrl(); then return 'https://example.org/example'")
-  @Tag("MaintainedByDiffblue")
-  void testGetServiceBaseUrl_thenReturnHttpsExampleOrgExample() {
-    // Arrange
-    InstanceProperties instance = new InstanceProperties();
-    instance.setHealthUrl("https://example.org/example");
-    instance.setManagementBaseUrl("https://example.org/example");
-    instance.setManagementUrl("https://example.org/example");
-    instance.setMetadata(new HashMap<>());
-    instance.setName("Name");
-    instance.setPreferIp(true);
-    instance.setServiceBaseUrl("https://example.org/example");
-    instance.setServiceHostType(ServiceHostType.IP);
-    instance.setServicePath("Service Path");
-    instance.setServiceUrl("https://example.org/example");
 
-    Ssl ssl = new Ssl();
-    ssl.setBundle("Bundle");
-    ssl.setCertificate("Certificate");
-    ssl.setCertificatePrivateKey("Certificate Private Key");
-    ssl.setCiphers(new String[]{"Ciphers"});
-    ssl.setClientAuth(ClientAuth.NONE);
-    ssl.setEnabled(true);
-    ssl.setEnabledProtocols(new String[]{"Enabled Protocols"});
-    ssl.setKeyAlias("Key Alias");
-    ssl.setKeyPassword("iloveyou");
-    ssl.setKeyStore("Key Store");
-    ssl.setKeyStorePassword("iloveyou");
-    ssl.setKeyStoreProvider("Key Store Provider");
-    ssl.setKeyStoreType("Key Store Type");
-    ssl.setProtocol("Protocol");
-    ssl.setServerNameBundles(new ArrayList<>());
-    ssl.setTrustCertificate("Trust Certificate");
-    ssl.setTrustCertificatePrivateKey("Trust Certificate Private Key");
-    ssl.setTrustStore("Trust Store");
-    ssl.setTrustStorePassword("iloveyou");
-    ssl.setTrustStoreProvider("Trust Store Provider");
-    ssl.setTrustStoreType("Trust Store Type");
+	/**
+	 * Test {@link CloudFoundryApplicationFactory#getServiceBaseUrl()}.
+	 * <ul>
+	 * <li>Then return {@code https://example.org/example}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link CloudFoundryApplicationFactory#getServiceBaseUrl()}
+	 */
+	@Test
+	@DisplayName("Test getServiceBaseUrl(); then return 'https://example.org/example'")
+	@Tag("MaintainedByDiffblue")
+	void testGetServiceBaseUrl_thenReturnHttpsExampleOrgExample() {
+		// Arrange
+		InstanceProperties instance = new InstanceProperties();
+		instance.setHealthUrl("https://example.org/example");
+		instance.setManagementBaseUrl("https://example.org/example");
+		instance.setManagementUrl("https://example.org/example");
+		instance.setMetadata(new HashMap<>());
+		instance.setName("Name");
+		instance.setPreferIp(true);
+		instance.setServiceBaseUrl("https://example.org/example");
+		instance.setServiceHostType(ServiceHostType.IP);
+		instance.setServicePath("Service Path");
+		instance.setServiceUrl("https://example.org/example");
 
-    ManagementServerProperties management = new ManagementServerProperties();
-    management.setAddress(mock(InetAddress.class));
-    management.setBasePath("Base Path");
-    management.setPort(8080);
-    management.setSsl(ssl);
+		Ssl ssl = new Ssl();
+		ssl.setBundle("Bundle");
+		ssl.setCertificate("Certificate");
+		ssl.setCertificatePrivateKey("Certificate Private Key");
+		ssl.setCiphers(new String[] { "Ciphers" });
+		ssl.setClientAuth(ClientAuth.NONE);
+		ssl.setEnabled(true);
+		ssl.setEnabledProtocols(new String[] { "Enabled Protocols" });
+		ssl.setKeyAlias("Key Alias");
+		ssl.setKeyPassword("iloveyou");
+		ssl.setKeyStore("Key Store");
+		ssl.setKeyStorePassword("iloveyou");
+		ssl.setKeyStoreProvider("Key Store Provider");
+		ssl.setKeyStoreType("Key Store Type");
+		ssl.setProtocol("Protocol");
+		ssl.setServerNameBundles(new ArrayList<>());
+		ssl.setTrustCertificate("Trust Certificate");
+		ssl.setTrustCertificatePrivateKey("Trust Certificate Private Key");
+		ssl.setTrustStore("Trust Store");
+		ssl.setTrustStorePassword("iloveyou");
+		ssl.setTrustStoreProvider("Trust Store Provider");
+		ssl.setTrustStoreType("Trust Store Type");
 
-    Ssl ssl2 = new Ssl();
-    ssl2.setBundle("Bundle");
-    ssl2.setCertificate("Certificate");
-    ssl2.setCertificatePrivateKey("Certificate Private Key");
-    ssl2.setCiphers(new String[]{"Ciphers"});
-    ssl2.setClientAuth(ClientAuth.NONE);
-    ssl2.setEnabled(true);
-    ssl2.setEnabledProtocols(new String[]{"Enabled Protocols"});
-    ssl2.setKeyAlias("Key Alias");
-    ssl2.setKeyPassword("iloveyou");
-    ssl2.setKeyStore("Key Store");
-    ssl2.setKeyStorePassword("iloveyou");
-    ssl2.setKeyStoreProvider("Key Store Provider");
-    ssl2.setKeyStoreType("Key Store Type");
-    ssl2.setProtocol("Protocol");
-    ssl2.setServerNameBundles(new ArrayList<>());
-    ssl2.setTrustCertificate("Trust Certificate");
-    ssl2.setTrustCertificatePrivateKey("Trust Certificate Private Key");
-    ssl2.setTrustStore("Trust Store");
-    ssl2.setTrustStorePassword("iloveyou");
-    ssl2.setTrustStoreProvider("Trust Store Provider");
-    ssl2.setTrustStoreType("Trust Store Type");
+		ManagementServerProperties management = new ManagementServerProperties();
+		management.setAddress(mock(InetAddress.class));
+		management.setBasePath("Base Path");
+		management.setPort(8080);
+		management.setSsl(ssl);
 
-    ServerProperties server = new ServerProperties();
-    server.setAddress(mock(InetAddress.class));
-    server.setForwardHeadersStrategy(ForwardHeadersStrategy.NATIVE);
-    server.setMaxHttpRequestHeaderSize(DataSize.ofBytes(1L));
-    server.setPort(8080);
-    server.setServerHeader("Server Header");
-    server.setShutdown(Shutdown.GRACEFUL);
-    server.setSsl(ssl2);
+		Ssl ssl2 = new Ssl();
+		ssl2.setBundle("Bundle");
+		ssl2.setCertificate("Certificate");
+		ssl2.setCertificatePrivateKey("Certificate Private Key");
+		ssl2.setCiphers(new String[] { "Ciphers" });
+		ssl2.setClientAuth(ClientAuth.NONE);
+		ssl2.setEnabled(true);
+		ssl2.setEnabledProtocols(new String[] { "Enabled Protocols" });
+		ssl2.setKeyAlias("Key Alias");
+		ssl2.setKeyPassword("iloveyou");
+		ssl2.setKeyStore("Key Store");
+		ssl2.setKeyStorePassword("iloveyou");
+		ssl2.setKeyStoreProvider("Key Store Provider");
+		ssl2.setKeyStoreType("Key Store Type");
+		ssl2.setProtocol("Protocol");
+		ssl2.setServerNameBundles(new ArrayList<>());
+		ssl2.setTrustCertificate("Trust Certificate");
+		ssl2.setTrustCertificatePrivateKey("Trust Certificate Private Key");
+		ssl2.setTrustStore("Trust Store");
+		ssl2.setTrustStorePassword("iloveyou");
+		ssl2.setTrustStoreProvider("Trust Store Provider");
+		ssl2.setTrustStoreType("Trust Store Type");
 
-    WebEndpointProperties webEndpoint = new WebEndpointProperties();
-    webEndpoint.setBasePath("");
+		ServerProperties server = new ServerProperties();
+		server.setAddress(mock(InetAddress.class));
+		server.setForwardHeadersStrategy(ForwardHeadersStrategy.NATIVE);
+		server.setMaxHttpRequestHeaderSize(DataSize.ofBytes(1L));
+		server.setPort(8080);
+		server.setServerHeader("Server Header");
+		server.setShutdown(Shutdown.GRACEFUL);
+		server.setSsl(ssl2);
 
-    CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
-    cfApplicationProperties.setApplicationId("42");
-    cfApplicationProperties.setInstanceIndex("Instance Index");
-    cfApplicationProperties.setUris(new ArrayList<>());
+		WebEndpointProperties webEndpoint = new WebEndpointProperties();
+		webEndpoint.setBasePath("");
 
-    // Act and Assert
-    assertEquals("https://example.org/example",
-        new CloudFoundryApplicationFactory(instance, management, server,
-            new PathMappedEndpoints("Base Path", new ArrayList<>()), webEndpoint, mock(MetadataContributor.class),
-            cfApplicationProperties).getServiceBaseUrl());
-  }
+		CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
+		cfApplicationProperties.setApplicationId("42");
+		cfApplicationProperties.setInstanceIndex("Instance Index");
+		cfApplicationProperties.setUris(new ArrayList<>());
+
+		// Act and Assert
+		assertEquals("https://example.org/example",
+				new CloudFoundryApplicationFactory(instance, management, server,
+						new PathMappedEndpoints("Base Path", new ArrayList<>()), webEndpoint,
+						mock(MetadataContributor.class), cfApplicationProperties)
+					.getServiceBaseUrl());
+	}
+
 }

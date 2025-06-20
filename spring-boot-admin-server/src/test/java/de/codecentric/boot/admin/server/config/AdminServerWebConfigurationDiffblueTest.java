@@ -50,223 +50,236 @@ import org.springframework.web.util.pattern.PathPatternParser;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
-@ContextConfiguration(classes = {AdminServerWebConfiguration.class, AdminServerProperties.class, InstanceRegistry.class,
-    ApplicationRegistry.class, InstanceEventPublisher.class})
+@ContextConfiguration(classes = { AdminServerWebConfiguration.class, AdminServerProperties.class,
+		InstanceRegistry.class, ApplicationRegistry.class, InstanceEventPublisher.class })
 @DisabledInAotMode
 @RunWith(MockitoJUnitRunner.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class AdminServerWebConfigurationDiffblueTest {
-  @Autowired
-  private AdminServerProperties adminServerProperties;
 
-  @Autowired
-  private AdminServerWebConfiguration adminServerWebConfiguration;
+	@Autowired
+	private AdminServerProperties adminServerProperties;
 
-  @MockitoBean
-  private InstanceEventStore instanceEventStore;
+	@Autowired
+	private AdminServerWebConfiguration adminServerWebConfiguration;
 
-  @MockitoBean
-  private InstanceFilter instanceFilter;
+	@MockitoBean
+	private InstanceEventStore instanceEventStore;
 
-  @MockitoBean
-  private InstanceIdGenerator instanceIdGenerator;
+	@MockitoBean
+	private InstanceFilter instanceFilter;
 
-  @MockitoBean
-  private InstanceRepository instanceRepository;
+	@MockitoBean
+	private InstanceIdGenerator instanceIdGenerator;
 
-  /**
-   * Test {@link AdminServerWebConfiguration#adminJacksonModule()}.
-   * <p>
-   * Method under test: {@link AdminServerWebConfiguration#adminJacksonModule()}
-   */
-  @Test
-  public void testAdminJacksonModule() {
-    // Arrange and Act
-    SimpleModule actualAdminJacksonModuleResult = adminServerWebConfiguration.adminJacksonModule();
+	@MockitoBean
+	private InstanceRepository instanceRepository;
 
-    // Assert
-    assertTrue(actualAdminJacksonModuleResult instanceof AdminServerModule);
-    Iterable<? extends Module> dependencies = actualAdminJacksonModuleResult.getDependencies();
-    assertTrue(dependencies instanceof List);
-    Version versionResult = actualAdminJacksonModuleResult.version();
-    assertEquals("", versionResult.getArtifactId());
-    assertEquals("", versionResult.getGroupId());
-    assertEquals("//0.0.0", versionResult.toFullString());
-    assertEquals("de.codecentric.boot.admin.server.utils.jackson.AdminServerModule",
-        actualAdminJacksonModuleResult.getModuleName());
-    assertEquals("de.codecentric.boot.admin.server.utils.jackson.AdminServerModule",
-        actualAdminJacksonModuleResult.getTypeId());
-    assertEquals(0, versionResult.getMajorVersion());
-    assertEquals(0, versionResult.getMinorVersion());
-    assertEquals(0, versionResult.getPatchLevel());
-    assertFalse(versionResult.isSnapshot());
-    assertTrue(versionResult.isUknownVersion());
-    assertTrue(versionResult.isUnknownVersion());
-    assertTrue(((List<? extends Module>) dependencies).isEmpty());
-  }
+	/**
+	 * Test {@link AdminServerWebConfiguration#adminJacksonModule()}.
+	 * <p>
+	 * Method under test: {@link AdminServerWebConfiguration#adminJacksonModule()}
+	 */
+	@Test
+	public void testAdminJacksonModule() {
+		// Arrange and Act
+		SimpleModule actualAdminJacksonModuleResult = adminServerWebConfiguration.adminJacksonModule();
 
-  /**
-   * Test {@link AdminServerWebConfiguration#instancesController(InstanceRegistry, InstanceEventStore)}.
-   * <p>
-   * Method under test: {@link AdminServerWebConfiguration#instancesController(InstanceRegistry, InstanceEventStore)}
-   */
-  @Test
-  public void testInstancesController() throws AssertionError {
-    // Arrange
-    InstanceRegistry instanceRegistry = new InstanceRegistry(
-        new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(InstanceIdGenerator.class),
-        mock(InstanceFilter.class));
+		// Assert
+		assertTrue(actualAdminJacksonModuleResult instanceof AdminServerModule);
+		Iterable<? extends Module> dependencies = actualAdminJacksonModuleResult.getDependencies();
+		assertTrue(dependencies instanceof List);
+		Version versionResult = actualAdminJacksonModuleResult.version();
+		assertEquals("", versionResult.getArtifactId());
+		assertEquals("", versionResult.getGroupId());
+		assertEquals("//0.0.0", versionResult.toFullString());
+		assertEquals("de.codecentric.boot.admin.server.utils.jackson.AdminServerModule",
+				actualAdminJacksonModuleResult.getModuleName());
+		assertEquals("de.codecentric.boot.admin.server.utils.jackson.AdminServerModule",
+				actualAdminJacksonModuleResult.getTypeId());
+		assertEquals(0, versionResult.getMajorVersion());
+		assertEquals(0, versionResult.getMinorVersion());
+		assertEquals(0, versionResult.getPatchLevel());
+		assertFalse(versionResult.isSnapshot());
+		assertTrue(versionResult.isUknownVersion());
+		assertTrue(versionResult.isUnknownVersion());
+		assertTrue(((List<? extends Module>) dependencies).isEmpty());
+	}
 
-    // Act and Assert
-    FirstStep<InstanceEvent> createResult = StepVerifier
-        .create(adminServerWebConfiguration.instancesController(instanceRegistry, new InMemoryEventStore()).events());
-    createResult.expectComplete().verify();
-  }
+	/**
+	 * Test
+	 * {@link AdminServerWebConfiguration#instancesController(InstanceRegistry, InstanceEventStore)}.
+	 * <p>
+	 * Method under test:
+	 * {@link AdminServerWebConfiguration#instancesController(InstanceRegistry, InstanceEventStore)}
+	 */
+	@Test
+	public void testInstancesController() throws AssertionError {
+		// Arrange
+		InstanceRegistry instanceRegistry = new InstanceRegistry(
+				new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(InstanceIdGenerator.class),
+				mock(InstanceFilter.class));
 
-  /**
-   * Test {@link AdminServerWebConfiguration#applicationsController(ApplicationRegistry, ApplicationEventPublisher)}.
-   * <p>
-   * Method under test: {@link AdminServerWebConfiguration#applicationsController(ApplicationRegistry, ApplicationEventPublisher)}
-   */
-  @Test
-  public void testApplicationsController() throws AssertionError {
-    // Arrange, Act and Assert
-    FirstStep<Application> createResult = StepVerifier.create(
-        adminServerWebConfiguration
-            .applicationsController(
-                new ApplicationRegistry(
-                    new InstanceRegistry(new EventsourcingInstanceRepository(new InMemoryEventStore()),
-                        mock(InstanceIdGenerator.class), mock(InstanceFilter.class)),
-                    mock(InstanceEventPublisher.class)),
-                mock(ApplicationEventPublisher.class))
-            .applications());
-    createResult.expectComplete().verify();
-  }
+		// Act and Assert
+		FirstStep<InstanceEvent> createResult = StepVerifier.create(
+				adminServerWebConfiguration.instancesController(instanceRegistry, new InMemoryEventStore()).events());
+		createResult.expectComplete().verify();
+	}
 
-  /**
-   * Test ReactiveRestApiConfiguration {@link ReactiveRestApiConfiguration#adminHandlerMapping(RequestedContentTypeResolver)}.
-   * <p>
-   * Method under test: {@link ReactiveRestApiConfiguration#adminHandlerMapping(RequestedContentTypeResolver)}
-   */
-  @Test
-  public void testReactiveRestApiConfigurationAdminHandlerMapping() throws IllegalStateException {
-    // Arrange
-    RequestedContentTypeResolver webFluxContentTypeResolver = mock(RequestedContentTypeResolver.class);
+	/**
+	 * Test
+	 * {@link AdminServerWebConfiguration#applicationsController(ApplicationRegistry, ApplicationEventPublisher)}.
+	 * <p>
+	 * Method under test:
+	 * {@link AdminServerWebConfiguration#applicationsController(ApplicationRegistry, ApplicationEventPublisher)}
+	 */
+	@Test
+	public void testApplicationsController() throws AssertionError {
+		// Arrange, Act and Assert
+		FirstStep<Application> createResult = StepVerifier
+			.create(adminServerWebConfiguration
+				.applicationsController(new ApplicationRegistry(
+						new InstanceRegistry(new EventsourcingInstanceRepository(new InMemoryEventStore()),
+								mock(InstanceIdGenerator.class), mock(InstanceFilter.class)),
+						mock(InstanceEventPublisher.class)), mock(ApplicationEventPublisher.class))
+				.applications());
+		createResult.expectComplete().verify();
+	}
 
-    // Act
-    RequestMappingHandlerMapping actualAdminHandlerMappingResult = new ReactiveRestApiConfiguration(
-        new AdminServerProperties()).adminHandlerMapping(webFluxContentTypeResolver);
+	/**
+	 * Test ReactiveRestApiConfiguration
+	 * {@link ReactiveRestApiConfiguration#adminHandlerMapping(RequestedContentTypeResolver)}.
+	 * <p>
+	 * Method under test:
+	 * {@link ReactiveRestApiConfiguration#adminHandlerMapping(RequestedContentTypeResolver)}
+	 */
+	@Test
+	public void testReactiveRestApiConfigurationAdminHandlerMapping() throws IllegalStateException {
+		// Arrange
+		RequestedContentTypeResolver webFluxContentTypeResolver = mock(RequestedContentTypeResolver.class);
 
-    // Assert
-    assertTrue(actualAdminHandlerMappingResult instanceof AdminControllerHandlerMapping);
-    assertTrue(actualAdminHandlerMappingResult.getCorsProcessor() instanceof DefaultCorsProcessor);
-    PathPatternParser pathPatternParser = actualAdminHandlerMappingResult.getPathPatternParser();
-    assertEquals('/', pathPatternParser.getPathOptions().separator());
-    assertNull(actualAdminHandlerMappingResult.getApplicationContext());
-    assertEquals(0, actualAdminHandlerMappingResult.getOrder());
-    assertFalse(pathPatternParser.isMatchOptionalTrailingSeparator());
-    assertTrue(actualAdminHandlerMappingResult.getHandlerMethods().isEmpty());
-    assertTrue(actualAdminHandlerMappingResult.getPathPrefixes().isEmpty());
-    assertTrue(pathPatternParser.isCaseSensitive());
-    assertSame(webFluxContentTypeResolver, actualAdminHandlerMappingResult.getContentTypeResolver());
-  }
+		// Act
+		RequestMappingHandlerMapping actualAdminHandlerMappingResult = new ReactiveRestApiConfiguration(
+				new AdminServerProperties())
+			.adminHandlerMapping(webFluxContentTypeResolver);
 
-  /**
-   * Test ReactiveRestApiConfiguration {@link ReactiveRestApiConfiguration#instancesProxyController(InstanceRegistry, Builder)}.
-   * <ul>
-   *   <li>Then calls {@link Builder#build()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ReactiveRestApiConfiguration#instancesProxyController(InstanceRegistry, Builder)}
-   */
-  @Test
-  public void testReactiveRestApiConfigurationInstancesProxyController_thenCallsBuild() {
-    // Arrange
-    ReactiveRestApiConfiguration reactiveRestApiConfiguration = new ReactiveRestApiConfiguration(
-        new AdminServerProperties());
-    InstanceRegistry instanceRegistry = new InstanceRegistry(
-        new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(InstanceIdGenerator.class),
-        mock(InstanceFilter.class));
+		// Assert
+		assertTrue(actualAdminHandlerMappingResult instanceof AdminControllerHandlerMapping);
+		assertTrue(actualAdminHandlerMappingResult.getCorsProcessor() instanceof DefaultCorsProcessor);
+		PathPatternParser pathPatternParser = actualAdminHandlerMappingResult.getPathPatternParser();
+		assertEquals('/', pathPatternParser.getPathOptions().separator());
+		assertNull(actualAdminHandlerMappingResult.getApplicationContext());
+		assertEquals(0, actualAdminHandlerMappingResult.getOrder());
+		assertFalse(pathPatternParser.isMatchOptionalTrailingSeparator());
+		assertTrue(actualAdminHandlerMappingResult.getHandlerMethods().isEmpty());
+		assertTrue(actualAdminHandlerMappingResult.getPathPrefixes().isEmpty());
+		assertTrue(pathPatternParser.isCaseSensitive());
+		assertSame(webFluxContentTypeResolver, actualAdminHandlerMappingResult.getContentTypeResolver());
+	}
 
-    WebClient.Builder builder = mock(WebClient.Builder.class);
-    when(builder.build()).thenReturn(mock(WebClient.class));
-    InstanceWebClient buildResult = InstanceWebClient.builder().webClient(builder).build();
-    Builder instanceWebClientBuilder = mock(Builder.class);
-    when(instanceWebClientBuilder.build()).thenReturn(buildResult);
+	/**
+	 * Test ReactiveRestApiConfiguration
+	 * {@link ReactiveRestApiConfiguration#instancesProxyController(InstanceRegistry, Builder)}.
+	 * <ul>
+	 * <li>Then calls {@link Builder#build()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link ReactiveRestApiConfiguration#instancesProxyController(InstanceRegistry, Builder)}
+	 */
+	@Test
+	public void testReactiveRestApiConfigurationInstancesProxyController_thenCallsBuild() {
+		// Arrange
+		ReactiveRestApiConfiguration reactiveRestApiConfiguration = new ReactiveRestApiConfiguration(
+				new AdminServerProperties());
+		InstanceRegistry instanceRegistry = new InstanceRegistry(
+				new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(InstanceIdGenerator.class),
+				mock(InstanceFilter.class));
 
-    // Act
-    reactiveRestApiConfiguration.instancesProxyController(instanceRegistry, instanceWebClientBuilder);
+		WebClient.Builder builder = mock(WebClient.Builder.class);
+		when(builder.build()).thenReturn(mock(WebClient.class));
+		InstanceWebClient buildResult = InstanceWebClient.builder().webClient(builder).build();
+		Builder instanceWebClientBuilder = mock(Builder.class);
+		when(instanceWebClientBuilder.build()).thenReturn(buildResult);
 
-    // Assert
-    verify(instanceWebClientBuilder).build();
-    verify(builder).build();
-  }
+		// Act
+		reactiveRestApiConfiguration.instancesProxyController(instanceRegistry, instanceWebClientBuilder);
 
-  /**
-   * Test ServletRestApiConfiguration {@link ServletRestApiConfiguration#adminHandlerMapping(ContentNegotiationManager)}.
-   * <p>
-   * Method under test: {@link ServletRestApiConfiguration#adminHandlerMapping(ContentNegotiationManager)}
-   */
-  @Test
-  public void testServletRestApiConfigurationAdminHandlerMapping() {
-    // Arrange
-    ServletRestApiConfiguration servletRestApiConfiguration = new ServletRestApiConfiguration(
-        new AdminServerProperties());
-    ContentNegotiationManager contentNegotiationManager = new ContentNegotiationManager();
+		// Assert
+		verify(instanceWebClientBuilder).build();
+		verify(builder).build();
+	}
 
-    // Act
-    org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping actualAdminHandlerMappingResult = servletRestApiConfiguration
-        .adminHandlerMapping(contentNegotiationManager);
+	/**
+	 * Test ServletRestApiConfiguration
+	 * {@link ServletRestApiConfiguration#adminHandlerMapping(ContentNegotiationManager)}.
+	 * <p>
+	 * Method under test:
+	 * {@link ServletRestApiConfiguration#adminHandlerMapping(ContentNegotiationManager)}
+	 */
+	@Test
+	public void testServletRestApiConfigurationAdminHandlerMapping() {
+		// Arrange
+		ServletRestApiConfiguration servletRestApiConfiguration = new ServletRestApiConfiguration(
+				new AdminServerProperties());
+		ContentNegotiationManager contentNegotiationManager = new ContentNegotiationManager();
 
-    // Assert
-    assertTrue(
-        actualAdminHandlerMappingResult instanceof de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping);
-    assertTrue(actualAdminHandlerMappingResult.getPathMatcher() instanceof AntPathMatcher);
-    assertTrue(actualAdminHandlerMappingResult
-        .getCorsProcessor() instanceof org.springframework.web.cors.DefaultCorsProcessor);
-    assertTrue(actualAdminHandlerMappingResult
-        .getNamingStrategy() instanceof RequestMappingInfoHandlerMethodMappingNamingStrategy);
-    assertNull(actualAdminHandlerMappingResult.getDefaultHandler());
-    assertNull(actualAdminHandlerMappingResult.getFileExtensions());
-    assertNull(actualAdminHandlerMappingResult.getCorsConfigurationSource());
-    assertNull(actualAdminHandlerMappingResult.getAdaptedInterceptors());
-    assertEquals(0, actualAdminHandlerMappingResult.getOrder());
-    assertFalse(actualAdminHandlerMappingResult.useRegisteredSuffixPatternMatch());
-    assertFalse(actualAdminHandlerMappingResult.useSuffixPatternMatch());
-    assertFalse(actualAdminHandlerMappingResult.useTrailingSlashMatch());
-    assertTrue(actualAdminHandlerMappingResult.getHandlerMethods().isEmpty());
-    assertTrue(actualAdminHandlerMappingResult.getPathPrefixes().isEmpty());
-    assertSame(contentNegotiationManager, actualAdminHandlerMappingResult.getContentNegotiationManager());
-  }
+		// Act
+		org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping actualAdminHandlerMappingResult = servletRestApiConfiguration
+			.adminHandlerMapping(contentNegotiationManager);
 
-  /**
-   * Test ServletRestApiConfiguration {@link ServletRestApiConfiguration#instancesProxyController(InstanceRegistry, Builder)}.
-   * <ul>
-   *   <li>Then calls {@link Builder#build()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ServletRestApiConfiguration#instancesProxyController(InstanceRegistry, Builder)}
-   */
-  @Test
-  public void testServletRestApiConfigurationInstancesProxyController_thenCallsBuild() {
-    // Arrange
-    ServletRestApiConfiguration servletRestApiConfiguration = new ServletRestApiConfiguration(
-        new AdminServerProperties());
-    InstanceRegistry instanceRegistry = new InstanceRegistry(
-        new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(InstanceIdGenerator.class),
-        mock(InstanceFilter.class));
+		// Assert
+		assertTrue(
+				actualAdminHandlerMappingResult instanceof de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping);
+		assertTrue(actualAdminHandlerMappingResult.getPathMatcher() instanceof AntPathMatcher);
+		assertTrue(actualAdminHandlerMappingResult
+			.getCorsProcessor() instanceof org.springframework.web.cors.DefaultCorsProcessor);
+		assertTrue(actualAdminHandlerMappingResult
+			.getNamingStrategy() instanceof RequestMappingInfoHandlerMethodMappingNamingStrategy);
+		assertNull(actualAdminHandlerMappingResult.getDefaultHandler());
+		assertNull(actualAdminHandlerMappingResult.getFileExtensions());
+		assertNull(actualAdminHandlerMappingResult.getCorsConfigurationSource());
+		assertNull(actualAdminHandlerMappingResult.getAdaptedInterceptors());
+		assertEquals(0, actualAdminHandlerMappingResult.getOrder());
+		assertFalse(actualAdminHandlerMappingResult.useRegisteredSuffixPatternMatch());
+		assertFalse(actualAdminHandlerMappingResult.useSuffixPatternMatch());
+		assertFalse(actualAdminHandlerMappingResult.useTrailingSlashMatch());
+		assertTrue(actualAdminHandlerMappingResult.getHandlerMethods().isEmpty());
+		assertTrue(actualAdminHandlerMappingResult.getPathPrefixes().isEmpty());
+		assertSame(contentNegotiationManager, actualAdminHandlerMappingResult.getContentNegotiationManager());
+	}
 
-    WebClient.Builder builder = mock(WebClient.Builder.class);
-    when(builder.build()).thenReturn(mock(WebClient.class));
-    InstanceWebClient buildResult = InstanceWebClient.builder().webClient(builder).build();
-    Builder instanceWebClientBuilder = mock(Builder.class);
-    when(instanceWebClientBuilder.build()).thenReturn(buildResult);
+	/**
+	 * Test ServletRestApiConfiguration
+	 * {@link ServletRestApiConfiguration#instancesProxyController(InstanceRegistry, Builder)}.
+	 * <ul>
+	 * <li>Then calls {@link Builder#build()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link ServletRestApiConfiguration#instancesProxyController(InstanceRegistry, Builder)}
+	 */
+	@Test
+	public void testServletRestApiConfigurationInstancesProxyController_thenCallsBuild() {
+		// Arrange
+		ServletRestApiConfiguration servletRestApiConfiguration = new ServletRestApiConfiguration(
+				new AdminServerProperties());
+		InstanceRegistry instanceRegistry = new InstanceRegistry(
+				new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(InstanceIdGenerator.class),
+				mock(InstanceFilter.class));
 
-    // Act
-    servletRestApiConfiguration.instancesProxyController(instanceRegistry, instanceWebClientBuilder);
+		WebClient.Builder builder = mock(WebClient.Builder.class);
+		when(builder.build()).thenReturn(mock(WebClient.class));
+		InstanceWebClient buildResult = InstanceWebClient.builder().webClient(builder).build();
+		Builder instanceWebClientBuilder = mock(Builder.class);
+		when(instanceWebClientBuilder.build()).thenReturn(buildResult);
 
-    // Assert
-    verify(instanceWebClientBuilder).build();
-    verify(builder).build();
-  }
+		// Act
+		servletRestApiConfiguration.instancesProxyController(instanceRegistry, instanceWebClientBuilder);
+
+		// Assert
+		verify(instanceWebClientBuilder).build();
+		verify(builder).build();
+	}
+
 }

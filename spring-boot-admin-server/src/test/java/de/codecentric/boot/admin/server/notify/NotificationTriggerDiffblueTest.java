@@ -24,86 +24,88 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@ContextConfiguration(classes = {NotificationTrigger.class})
+@ContextConfiguration(classes = { NotificationTrigger.class })
 @DisabledInAotMode
 @RunWith(SpringJUnit4ClassRunner.class)
 public class NotificationTriggerDiffblueTest {
-  @Autowired
-  private NotificationTrigger notificationTrigger;
 
-  @MockitoBean
-  private Notifier notifier;
+	@Autowired
+	private NotificationTrigger notificationTrigger;
 
-  @MockitoBean
-  private Publisher<InstanceEvent> publisher;
+	@MockitoBean
+	private Notifier notifier;
 
-  /**
-   * Test {@link NotificationTrigger#sendNotifications(InstanceEvent)}.
-   * <p>
-   * Method under test: {@link NotificationTrigger#sendNotifications(InstanceEvent)}
-   */
-  @Test
-  public void testSendNotifications() {
-    // Arrange
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    when(notifier.notify(Mockito.<InstanceEvent>any()))
-        .thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
+	@MockitoBean
+	private Publisher<InstanceEvent> publisher;
 
-    // Act
-    notificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
+	/**
+	 * Test {@link NotificationTrigger#sendNotifications(InstanceEvent)}.
+	 * <p>
+	 * Method under test: {@link NotificationTrigger#sendNotifications(InstanceEvent)}
+	 */
+	@Test
+	public void testSendNotifications() {
+		// Arrange
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		when(notifier.notify(Mockito.<InstanceEvent>any()))
+			.thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
 
-    // Assert
-    verify(notifier).notify(isA(InstanceEvent.class));
-  }
+		// Act
+		notificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
 
-  /**
-   * Test {@link NotificationTrigger#sendNotifications(InstanceEvent)}.
-   * <p>
-   * Method under test: {@link NotificationTrigger#sendNotifications(InstanceEvent)}
-   */
-  @Test
-  public void testSendNotifications2() {
-    // Arrange
-    ChannelSendOperator<Object> channelSendOperator = mock(ChannelSendOperator.class);
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    when(channelSendOperator.doOnError(Mockito.<Consumer<Throwable>>any()))
-        .thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
-    when(notifier.notify(Mockito.<InstanceEvent>any())).thenReturn(channelSendOperator);
+		// Assert
+		verify(notifier).notify(isA(InstanceEvent.class));
+	}
 
-    // Act
-    notificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
+	/**
+	 * Test {@link NotificationTrigger#sendNotifications(InstanceEvent)}.
+	 * <p>
+	 * Method under test: {@link NotificationTrigger#sendNotifications(InstanceEvent)}
+	 */
+	@Test
+	public void testSendNotifications2() {
+		// Arrange
+		ChannelSendOperator<Object> channelSendOperator = mock(ChannelSendOperator.class);
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		when(channelSendOperator.doOnError(Mockito.<Consumer<Throwable>>any()))
+			.thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
+		when(notifier.notify(Mockito.<InstanceEvent>any())).thenReturn(channelSendOperator);
 
-    // Assert
-    verify(notifier).notify(isA(InstanceEvent.class));
-    verify(channelSendOperator).doOnError(isA(Consumer.class));
-  }
+		// Act
+		notificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
 
-  /**
-   * Test {@link NotificationTrigger#sendNotifications(InstanceEvent)}.
-   * <p>
-   * Method under test: {@link NotificationTrigger#sendNotifications(InstanceEvent)}
-   */
-  @Test
-  public void testSendNotifications3() {
-    // Arrange
-    ChannelSendOperator<Object> channelSendOperator = mock(ChannelSendOperator.class);
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    ChannelSendOperator<Object> channelSendOperator2 = new ChannelSendOperator<>(source, mock(Function.class));
+		// Assert
+		verify(notifier).notify(isA(InstanceEvent.class));
+		verify(channelSendOperator).doOnError(isA(Consumer.class));
+	}
 
-    when(channelSendOperator.onErrorResume(Mockito.<Function<Throwable, Mono<Void>>>any()))
-        .thenReturn(channelSendOperator2);
-    ChannelSendOperator<Object> channelSendOperator3 = mock(ChannelSendOperator.class);
-    when(channelSendOperator3.doOnError(Mockito.<Consumer<Throwable>>any())).thenReturn(channelSendOperator);
-    when(notifier.notify(Mockito.<InstanceEvent>any())).thenReturn(channelSendOperator3);
+	/**
+	 * Test {@link NotificationTrigger#sendNotifications(InstanceEvent)}.
+	 * <p>
+	 * Method under test: {@link NotificationTrigger#sendNotifications(InstanceEvent)}
+	 */
+	@Test
+	public void testSendNotifications3() {
+		// Arrange
+		ChannelSendOperator<Object> channelSendOperator = mock(ChannelSendOperator.class);
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		ChannelSendOperator<Object> channelSendOperator2 = new ChannelSendOperator<>(source, mock(Function.class));
 
-    // Act
-    Mono<Void> actualSendNotificationsResult = notificationTrigger
-        .sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
+		when(channelSendOperator.onErrorResume(Mockito.<Function<Throwable, Mono<Void>>>any()))
+			.thenReturn(channelSendOperator2);
+		ChannelSendOperator<Object> channelSendOperator3 = mock(ChannelSendOperator.class);
+		when(channelSendOperator3.doOnError(Mockito.<Consumer<Throwable>>any())).thenReturn(channelSendOperator);
+		when(notifier.notify(Mockito.<InstanceEvent>any())).thenReturn(channelSendOperator3);
 
-    // Assert
-    verify(notifier).notify(isA(InstanceEvent.class));
-    verify(channelSendOperator3).doOnError(isA(Consumer.class));
-    verify(channelSendOperator).onErrorResume(isA(Function.class));
-    assertSame(channelSendOperator2, actualSendNotificationsResult);
-  }
+		// Act
+		Mono<Void> actualSendNotificationsResult = notificationTrigger
+			.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
+
+		// Assert
+		verify(notifier).notify(isA(InstanceEvent.class));
+		verify(channelSendOperator3).doOnError(isA(Consumer.class));
+		verify(channelSendOperator).onErrorResume(isA(Function.class));
+		assertSame(channelSendOperator2, actualSendNotificationsResult);
+	}
+
 }

@@ -14,30 +14,34 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.web.client.RestTemplate;
 
 class RegistrationApplicationListenerDiffblueTest {
-  /**
-   * Test {@link RegistrationApplicationListener#onClosedContext(ContextClosedEvent)}.
-   * <ul>
-   *   <li>Then calls {@link AbstractApplicationContext#getParent()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link RegistrationApplicationListener#onClosedContext(ContextClosedEvent)}
-   */
-  @Test
-  @DisplayName("Test onClosedContext(ContextClosedEvent); then calls getParent()")
-  @Tag("MaintainedByDiffblue")
-  void testOnClosedContext_thenCallsGetParent() {
-    // Arrange
-    ApplicationFactory applicationFactory = mock(ApplicationFactory.class);
-    RegistrationApplicationListener registrationApplicationListener = new RegistrationApplicationListener(
-        new DefaultApplicationRegistrator(applicationFactory, new BlockingRegistrationClient(mock(RestTemplate.class)),
-            new String[]{"https://example.org/example"}, true));
-    AnnotationConfigApplicationContext source = mock(AnnotationConfigApplicationContext.class);
-    when(source.getParent()).thenReturn(new AnnotationConfigReactiveWebApplicationContext());
 
-    // Act
-    registrationApplicationListener.onClosedContext(new ContextClosedEvent(source));
+	/**
+	 * Test {@link RegistrationApplicationListener#onClosedContext(ContextClosedEvent)}.
+	 * <ul>
+	 * <li>Then calls {@link AbstractApplicationContext#getParent()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link RegistrationApplicationListener#onClosedContext(ContextClosedEvent)}
+	 */
+	@Test
+	@DisplayName("Test onClosedContext(ContextClosedEvent); then calls getParent()")
+	@Tag("MaintainedByDiffblue")
+	void testOnClosedContext_thenCallsGetParent() {
+		// Arrange
+		ApplicationFactory applicationFactory = mock(ApplicationFactory.class);
+		RegistrationApplicationListener registrationApplicationListener = new RegistrationApplicationListener(
+				new DefaultApplicationRegistrator(applicationFactory,
+						new BlockingRegistrationClient(mock(RestTemplate.class)),
+						new String[] { "https://example.org/example" }, true));
+		AnnotationConfigApplicationContext source = mock(AnnotationConfigApplicationContext.class);
+		when(source.getParent()).thenReturn(new AnnotationConfigReactiveWebApplicationContext());
 
-    // Assert
-    verify(source, atLeast(1)).getParent();
-  }
+		// Act
+		registrationApplicationListener.onClosedContext(new ContextClosedEvent(source));
+
+		// Assert
+		verify(source, atLeast(1)).getParent();
+	}
+
 }

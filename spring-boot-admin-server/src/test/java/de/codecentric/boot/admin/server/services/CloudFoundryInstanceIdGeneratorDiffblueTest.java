@@ -17,96 +17,98 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CloudFoundryInstanceIdGeneratorDiffblueTest {
-  @InjectMocks
-  private CloudFoundryInstanceIdGenerator cloudFoundryInstanceIdGenerator;
 
-  @Mock
-  private InstanceIdGenerator instanceIdGenerator;
+	@InjectMocks
+	private CloudFoundryInstanceIdGenerator cloudFoundryInstanceIdGenerator;
 
-  /**
-   * Test {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}.
-   * <p>
-   * Method under test: {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}
-   */
-  @Test
-  public void testGenerateId() {
-    // Arrange
-    InstanceIdGenerator fallbackIdGenerator = mock(InstanceIdGenerator.class);
-    InstanceId ofResult = InstanceId.of("42");
-    when(fallbackIdGenerator.generateId(Mockito.<Registration>any())).thenReturn(ofResult);
-    CloudFoundryInstanceIdGenerator cloudFoundryInstanceIdGenerator = new CloudFoundryInstanceIdGenerator(
-        new CloudFoundryInstanceIdGenerator(fallbackIdGenerator));
-    Registration registration = Registration.builder()
-        .healthUrl("https://example.org/example")
-        .managementUrl("https://example.org/example")
-        .name("Name")
-        .serviceUrl("https://example.org/example")
-        .source("Source")
-        .build();
+	@Mock
+	private InstanceIdGenerator instanceIdGenerator;
 
-    // Act
-    InstanceId actualGenerateIdResult = cloudFoundryInstanceIdGenerator.generateId(registration);
+	/**
+	 * Test {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}.
+	 * <p>
+	 * Method under test: {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}
+	 */
+	@Test
+	public void testGenerateId() {
+		// Arrange
+		InstanceIdGenerator fallbackIdGenerator = mock(InstanceIdGenerator.class);
+		InstanceId ofResult = InstanceId.of("42");
+		when(fallbackIdGenerator.generateId(Mockito.<Registration>any())).thenReturn(ofResult);
+		CloudFoundryInstanceIdGenerator cloudFoundryInstanceIdGenerator = new CloudFoundryInstanceIdGenerator(
+				new CloudFoundryInstanceIdGenerator(fallbackIdGenerator));
+		Registration registration = Registration.builder()
+			.healthUrl("https://example.org/example")
+			.managementUrl("https://example.org/example")
+			.name("Name")
+			.serviceUrl("https://example.org/example")
+			.source("Source")
+			.build();
 
-    // Assert
-    verify(fallbackIdGenerator).generateId(isA(Registration.class));
-    assertSame(ofResult, actualGenerateIdResult);
-  }
+		// Act
+		InstanceId actualGenerateIdResult = cloudFoundryInstanceIdGenerator.generateId(registration);
 
-  /**
-   * Test {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}.
-   * <ul>
-   *   <li>Then return {@link InstanceId} with value is {@code 42}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}
-   */
-  @Test
-  public void testGenerateId_thenReturnInstanceIdWithValueIs42() {
-    // Arrange
-    InstanceId ofResult = InstanceId.of("42");
-    when(instanceIdGenerator.generateId(Mockito.<Registration>any())).thenReturn(ofResult);
-    Registration registration = Registration.builder()
-        .healthUrl("https://example.org/example")
-        .managementUrl("https://example.org/example")
-        .name("Name")
-        .serviceUrl("https://example.org/example")
-        .source("Source")
-        .build();
+		// Assert
+		verify(fallbackIdGenerator).generateId(isA(Registration.class));
+		assertSame(ofResult, actualGenerateIdResult);
+	}
 
-    // Act
-    InstanceId actualGenerateIdResult = cloudFoundryInstanceIdGenerator.generateId(registration);
+	/**
+	 * Test {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}.
+	 * <ul>
+	 * <li>Then return {@link InstanceId} with value is {@code 42}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}
+	 */
+	@Test
+	public void testGenerateId_thenReturnInstanceIdWithValueIs42() {
+		// Arrange
+		InstanceId ofResult = InstanceId.of("42");
+		when(instanceIdGenerator.generateId(Mockito.<Registration>any())).thenReturn(ofResult);
+		Registration registration = Registration.builder()
+			.healthUrl("https://example.org/example")
+			.managementUrl("https://example.org/example")
+			.name("Name")
+			.serviceUrl("https://example.org/example")
+			.source("Source")
+			.build();
 
-    // Assert
-    verify(instanceIdGenerator).generateId(isA(Registration.class));
-    assertSame(ofResult, actualGenerateIdResult);
-  }
+		// Act
+		InstanceId actualGenerateIdResult = cloudFoundryInstanceIdGenerator.generateId(registration);
 
-  /**
-   * Test {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}.
-   * <ul>
-   *   <li>Then return Value is {@code 504149e8a3fa}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}
-   */
-  @Test
-  public void testGenerateId_thenReturnValueIs504149e8a3fa() {
-    // Arrange
-    CloudFoundryInstanceIdGenerator cloudFoundryInstanceIdGenerator = new CloudFoundryInstanceIdGenerator(
-        new HashingInstanceUrlIdGenerator());
-    Registration registration = Registration.builder()
-        .healthUrl("https://example.org/example")
-        .managementUrl("https://example.org/example")
-        .name("Name")
-        .serviceUrl("https://example.org/example")
-        .source("Source")
-        .build();
+		// Assert
+		verify(instanceIdGenerator).generateId(isA(Registration.class));
+		assertSame(ofResult, actualGenerateIdResult);
+	}
 
-    // Act
-    InstanceId actualGenerateIdResult = cloudFoundryInstanceIdGenerator.generateId(registration);
+	/**
+	 * Test {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}.
+	 * <ul>
+	 * <li>Then return Value is {@code 504149e8a3fa}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link CloudFoundryInstanceIdGenerator#generateId(Registration)}
+	 */
+	@Test
+	public void testGenerateId_thenReturnValueIs504149e8a3fa() {
+		// Arrange
+		CloudFoundryInstanceIdGenerator cloudFoundryInstanceIdGenerator = new CloudFoundryInstanceIdGenerator(
+				new HashingInstanceUrlIdGenerator());
+		Registration registration = Registration.builder()
+			.healthUrl("https://example.org/example")
+			.managementUrl("https://example.org/example")
+			.name("Name")
+			.serviceUrl("https://example.org/example")
+			.source("Source")
+			.build();
 
-    // Assert
-    assertEquals("504149e8a3fa", actualGenerateIdResult.getValue());
-    assertEquals("504149e8a3fa", actualGenerateIdResult.toString());
-  }
+		// Act
+		InstanceId actualGenerateIdResult = cloudFoundryInstanceIdGenerator.generateId(registration);
+
+		// Assert
+		assertEquals("504149e8a3fa", actualGenerateIdResult.getValue());
+		assertEquals("504149e8a3fa", actualGenerateIdResult.toString());
+	}
+
 }

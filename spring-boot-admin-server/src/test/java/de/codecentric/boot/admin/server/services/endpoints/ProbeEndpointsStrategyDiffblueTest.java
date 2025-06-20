@@ -33,206 +33,214 @@ import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
 public class ProbeEndpointsStrategyDiffblueTest {
-  /**
-   * Test {@link ProbeEndpointsStrategy#convert(List)} with {@code endpoints}.
-   * <ul>
-   *   <li>Given {@link EndpointDefinition#EndpointDefinition(String, String)} with id is {@code 42} and {@code Path}.</li>
-   *   <li>Then calls {@link Builder#build()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ProbeEndpointsStrategy#convert(List)}
-   */
-  @Test
-  public void testConvertWithEndpoints_givenEndpointDefinitionWithIdIs42AndPath_thenCallsBuild() throws AssertionError {
-    // Arrange
-    Builder builder = mock(Builder.class);
-    when(builder.build()).thenReturn(mock(WebClient.class));
-    InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
-    ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
-        new String[]{"https://config.us-east-2.amazonaws.com"});
 
-    ArrayList<DetectedEndpoint> endpoints = new ArrayList<>();
-    EndpointDefinition definition = new EndpointDefinition("42", "Path");
+	/**
+	 * Test {@link ProbeEndpointsStrategy#convert(List)} with {@code endpoints}.
+	 * <ul>
+	 * <li>Given {@link EndpointDefinition#EndpointDefinition(String, String)} with id is
+	 * {@code 42} and {@code Path}.</li>
+	 * <li>Then calls {@link Builder#build()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link ProbeEndpointsStrategy#convert(List)}
+	 */
+	@Test
+	public void testConvertWithEndpoints_givenEndpointDefinitionWithIdIs42AndPath_thenCallsBuild()
+			throws AssertionError {
+		// Arrange
+		Builder builder = mock(Builder.class);
+		when(builder.build()).thenReturn(mock(WebClient.class));
+		InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
+		ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
+				new String[] { "https://config.us-east-2.amazonaws.com" });
 
-    String id = "42";
-    String url = "https://example.org/example";
-    Endpoint endpoint = Endpoint.of(id, url);
-    endpoints.add(new DetectedEndpoint(definition, endpoint));
+		ArrayList<DetectedEndpoint> endpoints = new ArrayList<>();
+		EndpointDefinition definition = new EndpointDefinition("42", "Path");
 
-    // Act and Assert
-    FirstStep<Endpoints> createResult = StepVerifier.create(probeEndpointsStrategy.convert(endpoints));
-    createResult.assertNext(e -> {
-      Endpoints endpoints2 = e;
-      Iterator<Endpoint> iteratorResult = endpoints2.iterator();
-      Endpoint nextResult = iteratorResult.next();
-      assertFalse(iteratorResult.hasNext());
-      assertEquals("42", nextResult.getId());
-      assertSame(endpoint, nextResult);
-      Stream<Endpoint> streamResult = endpoints2.stream();
-      List<Endpoint> collectResult = streamResult.limit(5).collect(Collectors.toList());
-      assertEquals(1, collectResult.size());
-      assertSame(endpoint, collectResult.get(0));
-      return;
-    }).expectComplete().verify();
-    verify(builder).build();
-  }
+		String id = "42";
+		String url = "https://example.org/example";
+		Endpoint endpoint = Endpoint.of(id, url);
+		endpoints.add(new DetectedEndpoint(definition, endpoint));
 
-  /**
-   * Test {@link ProbeEndpointsStrategy#convert(List)} with {@code endpoints}.
-   * <ul>
-   *   <li>Given {@link EndpointDefinition#EndpointDefinition(String, String)} with id is {@code 42} and {@code Path}.</li>
-   *   <li>Then calls {@link Builder#build()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ProbeEndpointsStrategy#convert(List)}
-   */
-  @Test
-  public void testConvertWithEndpoints_givenEndpointDefinitionWithIdIs42AndPath_thenCallsBuild2()
-      throws AssertionError {
-    // Arrange
-    Builder builder = mock(Builder.class);
-    when(builder.build()).thenReturn(mock(WebClient.class));
-    InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
-    ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
-        new String[]{"https://config.us-east-2.amazonaws.com"});
+		// Act and Assert
+		FirstStep<Endpoints> createResult = StepVerifier.create(probeEndpointsStrategy.convert(endpoints));
+		createResult.assertNext(e -> {
+			Endpoints endpoints2 = e;
+			Iterator<Endpoint> iteratorResult = endpoints2.iterator();
+			Endpoint nextResult = iteratorResult.next();
+			assertFalse(iteratorResult.hasNext());
+			assertEquals("42", nextResult.getId());
+			assertSame(endpoint, nextResult);
+			Stream<Endpoint> streamResult = endpoints2.stream();
+			List<Endpoint> collectResult = streamResult.limit(5).collect(Collectors.toList());
+			assertEquals(1, collectResult.size());
+			assertSame(endpoint, collectResult.get(0));
+			return;
+		}).expectComplete().verify();
+		verify(builder).build();
+	}
 
-    ArrayList<DetectedEndpoint> endpoints = new ArrayList<>();
-    EndpointDefinition definition = new EndpointDefinition("42", "Path");
+	/**
+	 * Test {@link ProbeEndpointsStrategy#convert(List)} with {@code endpoints}.
+	 * <ul>
+	 * <li>Given {@link EndpointDefinition#EndpointDefinition(String, String)} with id is
+	 * {@code 42} and {@code Path}.</li>
+	 * <li>Then calls {@link Builder#build()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link ProbeEndpointsStrategy#convert(List)}
+	 */
+	@Test
+	public void testConvertWithEndpoints_givenEndpointDefinitionWithIdIs42AndPath_thenCallsBuild2()
+			throws AssertionError {
+		// Arrange
+		Builder builder = mock(Builder.class);
+		when(builder.build()).thenReturn(mock(WebClient.class));
+		InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
+		ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
+				new String[] { "https://config.us-east-2.amazonaws.com" });
 
-    String id = "42";
-    String url = "https://example.org/example";
-    Endpoint endpoint = Endpoint.of(id, url);
-    endpoints.add(new DetectedEndpoint(definition, endpoint));
-    EndpointDefinition definition2 = new EndpointDefinition("42", "Path");
+		ArrayList<DetectedEndpoint> endpoints = new ArrayList<>();
+		EndpointDefinition definition = new EndpointDefinition("42", "Path");
 
-    endpoints.add(new DetectedEndpoint(definition2, Endpoint.of("42", "https://example.org/example")));
+		String id = "42";
+		String url = "https://example.org/example";
+		Endpoint endpoint = Endpoint.of(id, url);
+		endpoints.add(new DetectedEndpoint(definition, endpoint));
+		EndpointDefinition definition2 = new EndpointDefinition("42", "Path");
 
-    // Act and Assert
-    FirstStep<Endpoints> createResult = StepVerifier.create(probeEndpointsStrategy.convert(endpoints));
-    createResult.assertNext(e -> {
-      Endpoints endpoints2 = e;
-      Iterator<Endpoint> iteratorResult = endpoints2.iterator();
-      Endpoint nextResult = iteratorResult.next();
-      assertFalse(iteratorResult.hasNext());
-      assertEquals("42", nextResult.getId());
-      assertSame(endpoint, nextResult);
-      Stream<Endpoint> streamResult = endpoints2.stream();
-      List<Endpoint> collectResult = streamResult.limit(5).collect(Collectors.toList());
-      assertEquals(1, collectResult.size());
-      assertSame(endpoint, collectResult.get(0));
-      return;
-    }).expectComplete().verify();
-    verify(builder).build();
-  }
+		endpoints.add(new DetectedEndpoint(definition2, Endpoint.of("42", "https://example.org/example")));
 
-  /**
-   * Test {@link ProbeEndpointsStrategy#convert(List)} with {@code endpoints}.
-   * <ul>
-   *   <li>Given {@link Endpoint} with {@code Id} and url is {@code https://example.org/example}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ProbeEndpointsStrategy#convert(List)}
-   */
-  @Test
-  public void testConvertWithEndpoints_givenEndpointWithIdAndUrlIsHttpsExampleOrgExample() throws AssertionError {
-    // Arrange
-    Builder builder = mock(Builder.class);
-    when(builder.build()).thenReturn(mock(WebClient.class));
-    InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
-    ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
-        new String[]{"https://config.us-east-2.amazonaws.com"});
+		// Act and Assert
+		FirstStep<Endpoints> createResult = StepVerifier.create(probeEndpointsStrategy.convert(endpoints));
+		createResult.assertNext(e -> {
+			Endpoints endpoints2 = e;
+			Iterator<Endpoint> iteratorResult = endpoints2.iterator();
+			Endpoint nextResult = iteratorResult.next();
+			assertFalse(iteratorResult.hasNext());
+			assertEquals("42", nextResult.getId());
+			assertSame(endpoint, nextResult);
+			Stream<Endpoint> streamResult = endpoints2.stream();
+			List<Endpoint> collectResult = streamResult.limit(5).collect(Collectors.toList());
+			assertEquals(1, collectResult.size());
+			assertSame(endpoint, collectResult.get(0));
+			return;
+		}).expectComplete().verify();
+		verify(builder).build();
+	}
 
-    ArrayList<DetectedEndpoint> endpoints = new ArrayList<>();
-    EndpointDefinition definition = new EndpointDefinition("42", "Path");
+	/**
+	 * Test {@link ProbeEndpointsStrategy#convert(List)} with {@code endpoints}.
+	 * <ul>
+	 * <li>Given {@link Endpoint} with {@code Id} and url is
+	 * {@code https://example.org/example}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link ProbeEndpointsStrategy#convert(List)}
+	 */
+	@Test
+	public void testConvertWithEndpoints_givenEndpointWithIdAndUrlIsHttpsExampleOrgExample() throws AssertionError {
+		// Arrange
+		Builder builder = mock(Builder.class);
+		when(builder.build()).thenReturn(mock(WebClient.class));
+		InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
+		ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
+				new String[] { "https://config.us-east-2.amazonaws.com" });
 
-    String id = "Id";
-    String url = "https://example.org/example";
-    Endpoint endpoint = Endpoint.of(id, url);
-    endpoints.add(new DetectedEndpoint(definition, endpoint));
-    EndpointDefinition definition2 = new EndpointDefinition("https", "Path");
+		ArrayList<DetectedEndpoint> endpoints = new ArrayList<>();
+		EndpointDefinition definition = new EndpointDefinition("42", "Path");
 
-    String id2 = "42";
-    String url2 = "https://example.org/example";
-    Endpoint endpoint2 = Endpoint.of(id2, url2);
-    endpoints.add(new DetectedEndpoint(definition2, endpoint2));
+		String id = "Id";
+		String url = "https://example.org/example";
+		Endpoint endpoint = Endpoint.of(id, url);
+		endpoints.add(new DetectedEndpoint(definition, endpoint));
+		EndpointDefinition definition2 = new EndpointDefinition("https", "Path");
 
-    // Act and Assert
-    FirstStep<Endpoints> createResult = StepVerifier.create(probeEndpointsStrategy.convert(endpoints));
-    createResult.assertNext(e -> {
-      Endpoints endpoints2 = e;
-      Iterator<Endpoint> iteratorResult = endpoints2.iterator();
-      Endpoint nextResult = iteratorResult.next();
-      Endpoint actualNextResult = iteratorResult.next();
-      assertFalse(iteratorResult.hasNext());
-      assertEquals("Id", nextResult.getId());
-      assertSame(endpoint, nextResult);
-      assertSame(endpoint2, actualNextResult);
-      Stream<Endpoint> streamResult = endpoints2.stream();
-      List<Endpoint> collectResult = streamResult.limit(5).collect(Collectors.toList());
-      assertEquals(2, collectResult.size());
-      assertSame(endpoint, collectResult.get(0));
-      assertSame(endpoint2, collectResult.get(1));
-      return;
-    }).expectComplete().verify();
-    verify(builder).build();
-  }
+		String id2 = "42";
+		String url2 = "https://example.org/example";
+		Endpoint endpoint2 = Endpoint.of(id2, url2);
+		endpoints.add(new DetectedEndpoint(definition2, endpoint2));
 
-  /**
-   * Test {@link ProbeEndpointsStrategy#convert(List)} with {@code endpoints}.
-   * <ul>
-   *   <li>When {@link ArrayList#ArrayList()}.</li>
-   *   <li>Then calls {@link Builder#build()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ProbeEndpointsStrategy#convert(List)}
-   */
-  @Test
-  public void testConvertWithEndpoints_whenArrayList_thenCallsBuild() throws AssertionError {
-    // Arrange
-    Builder builder = mock(Builder.class);
-    when(builder.build()).thenReturn(mock(WebClient.class));
-    InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
-    ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
-        new String[]{"https://config.us-east-2.amazonaws.com"});
+		// Act and Assert
+		FirstStep<Endpoints> createResult = StepVerifier.create(probeEndpointsStrategy.convert(endpoints));
+		createResult.assertNext(e -> {
+			Endpoints endpoints2 = e;
+			Iterator<Endpoint> iteratorResult = endpoints2.iterator();
+			Endpoint nextResult = iteratorResult.next();
+			Endpoint actualNextResult = iteratorResult.next();
+			assertFalse(iteratorResult.hasNext());
+			assertEquals("Id", nextResult.getId());
+			assertSame(endpoint, nextResult);
+			assertSame(endpoint2, actualNextResult);
+			Stream<Endpoint> streamResult = endpoints2.stream();
+			List<Endpoint> collectResult = streamResult.limit(5).collect(Collectors.toList());
+			assertEquals(2, collectResult.size());
+			assertSame(endpoint, collectResult.get(0));
+			assertSame(endpoint2, collectResult.get(1));
+			return;
+		}).expectComplete().verify();
+		verify(builder).build();
+	}
 
-    // Act and Assert
-    FirstStep<Endpoints> createResult = StepVerifier.create(probeEndpointsStrategy.convert(new ArrayList<>()));
-    createResult.expectComplete().verify();
-    verify(builder).build();
-  }
+	/**
+	 * Test {@link ProbeEndpointsStrategy#convert(List)} with {@code endpoints}.
+	 * <ul>
+	 * <li>When {@link ArrayList#ArrayList()}.</li>
+	 * <li>Then calls {@link Builder#build()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link ProbeEndpointsStrategy#convert(List)}
+	 */
+	@Test
+	public void testConvertWithEndpoints_whenArrayList_thenCallsBuild() throws AssertionError {
+		// Arrange
+		Builder builder = mock(Builder.class);
+		when(builder.build()).thenReturn(mock(WebClient.class));
+		InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
+		ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
+				new String[] { "https://config.us-east-2.amazonaws.com" });
 
-  /**
-   * Test {@link ProbeEndpointsStrategy#convert(InstanceId, EndpointDefinition, URI)} with {@code instanceId}, {@code endpointDefinition}, {@code uri}.
-   * <ul>
-   *   <li>Then calls {@link ClientResponse#releaseBody()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ProbeEndpointsStrategy#convert(InstanceId, EndpointDefinition, URI)}
-   */
-  @Test
-  public void testConvertWithInstanceIdEndpointDefinitionUri_thenCallsReleaseBody() throws AssertionError {
-    // Arrange
-    Builder builder = mock(Builder.class);
-    when(builder.build()).thenReturn(mock(WebClient.class));
-    InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
-    ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
-        new String[]{"https://config.us-east-2.amazonaws.com"});
-    InstanceId instanceId = InstanceId.of("42");
+		// Act and Assert
+		FirstStep<Endpoints> createResult = StepVerifier.create(probeEndpointsStrategy.convert(new ArrayList<>()));
+		createResult.expectComplete().verify();
+		verify(builder).build();
+	}
 
-    // Act
-    Function<ClientResponse, Mono<DetectedEndpoint>> actualConvertResult = probeEndpointsStrategy.convert(instanceId,
-        new EndpointDefinition("42", "Path"), PagerdutyNotifier.DEFAULT_URI);
-    ClientResponse delegate = mock(ClientResponse.class);
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    when(delegate.releaseBody()).thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
-    when(delegate.statusCode()).thenReturn(HttpStatus.OK);
-    Mono<DetectedEndpoint> actualPublisher = actualConvertResult.apply(new ClientResponseWrapper(delegate));
+	/**
+	 * Test {@link ProbeEndpointsStrategy#convert(InstanceId, EndpointDefinition, URI)}
+	 * with {@code instanceId}, {@code endpointDefinition}, {@code uri}.
+	 * <ul>
+	 * <li>Then calls {@link ClientResponse#releaseBody()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link ProbeEndpointsStrategy#convert(InstanceId, EndpointDefinition, URI)}
+	 */
+	@Test
+	public void testConvertWithInstanceIdEndpointDefinitionUri_thenCallsReleaseBody() throws AssertionError {
+		// Arrange
+		Builder builder = mock(Builder.class);
+		when(builder.build()).thenReturn(mock(WebClient.class));
+		InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
+		ProbeEndpointsStrategy probeEndpointsStrategy = new ProbeEndpointsStrategy(instanceWebClient,
+				new String[] { "https://config.us-east-2.amazonaws.com" });
+		InstanceId instanceId = InstanceId.of("42");
 
-    // Assert
-    verify(delegate).releaseBody();
-    verify(delegate).statusCode();
-    verify(builder).build();
-    FirstStep<DetectedEndpoint> createResult = StepVerifier.create(actualPublisher);
-    createResult.expectError().verify();
-  }
+		// Act
+		Function<ClientResponse, Mono<DetectedEndpoint>> actualConvertResult = probeEndpointsStrategy
+			.convert(instanceId, new EndpointDefinition("42", "Path"), PagerdutyNotifier.DEFAULT_URI);
+		ClientResponse delegate = mock(ClientResponse.class);
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		when(delegate.releaseBody()).thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
+		when(delegate.statusCode()).thenReturn(HttpStatus.OK);
+		Mono<DetectedEndpoint> actualPublisher = actualConvertResult.apply(new ClientResponseWrapper(delegate));
+
+		// Assert
+		verify(delegate).releaseBody();
+		verify(delegate).statusCode();
+		verify(builder).build();
+		FirstStep<DetectedEndpoint> createResult = StepVerifier.create(actualPublisher);
+		createResult.expectError().verify();
+	}
+
 }

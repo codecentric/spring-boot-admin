@@ -12,50 +12,55 @@ import java.time.ZoneOffset;
 import org.junit.Test;
 
 public class ExpiringNotificationFilterDiffblueTest {
-  /**
-   * Test {@link ExpiringNotificationFilter#isExpired()}.
-   * <ul>
-   *   <li>Then return {@code false}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ExpiringNotificationFilter#isExpired()}
-   */
-  @Test
-  public void testIsExpired_thenReturnFalse() {
-    // Arrange, Act and Assert
-    assertFalse(new ApplicationNameNotificationFilter("Application Name", null).isExpired());
-  }
 
-  /**
-   * Test {@link ExpiringNotificationFilter#filter(InstanceEvent, Instance)}.
-   * <ul>
-   *   <li>Then return {@code false}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ExpiringNotificationFilter#filter(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testFilter_thenReturnFalse() {
-    // Arrange
-    ApplicationNameNotificationFilter applicationNameNotificationFilter = new ApplicationNameNotificationFilter(
-        "Application Name", LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
+	/**
+	 * Test {@link ExpiringNotificationFilter#isExpired()}.
+	 * <ul>
+	 * <li>Then return {@code false}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link ExpiringNotificationFilter#isExpired()}
+	 */
+	@Test
+	public void testIsExpired_thenReturnFalse() {
+		// Arrange, Act and Assert
+		assertFalse(new ApplicationNameNotificationFilter("Application Name", null).isExpired());
+	}
 
-    // Act and Assert
-    assertFalse(applicationNameNotificationFilter.filter(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
-  }
+	/**
+	 * Test {@link ExpiringNotificationFilter#filter(InstanceEvent, Instance)}.
+	 * <ul>
+	 * <li>Then return {@code false}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link ExpiringNotificationFilter#filter(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testFilter_thenReturnFalse() {
+		// Arrange
+		ApplicationNameNotificationFilter applicationNameNotificationFilter = new ApplicationNameNotificationFilter(
+				"Application Name", LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant());
 
-  /**
-   * Test {@link ExpiringNotificationFilter#getExpiry()}.
-   * <p>
-   * Method under test: {@link ExpiringNotificationFilter#getExpiry()}
-   */
-  @Test
-  public void testGetExpiry() {
-    // Arrange and Act
-    Instant actualExpiry = new ApplicationNameNotificationFilter("Application Name",
-        LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant()).getExpiry();
+		// Act and Assert
+		assertFalse(
+				applicationNameNotificationFilter.filter(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
+	}
 
-    // Assert
-    assertSame(actualExpiry.EPOCH, actualExpiry);
-  }
+	/**
+	 * Test {@link ExpiringNotificationFilter#getExpiry()}.
+	 * <p>
+	 * Method under test: {@link ExpiringNotificationFilter#getExpiry()}
+	 */
+	@Test
+	public void testGetExpiry() {
+		// Arrange and Act
+		Instant actualExpiry = new ApplicationNameNotificationFilter("Application Name",
+				LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant())
+			.getExpiry();
+
+		// Assert
+		assertSame(actualExpiry.EPOCH, actualExpiry);
+	}
+
 }

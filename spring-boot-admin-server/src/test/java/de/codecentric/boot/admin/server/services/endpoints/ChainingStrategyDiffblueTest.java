@@ -14,29 +14,31 @@ import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
 public class ChainingStrategyDiffblueTest {
-  /**
-   * Test {@link ChainingStrategy#detectEndpoints(Instance)}.
-   * <ul>
-   *   <li>Then calls {@link EndpointDetectionStrategy#detectEndpoints(Instance)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link ChainingStrategy#detectEndpoints(Instance)}
-   */
-  @Test
-  public void testDetectEndpoints_thenCallsDetectEndpoints() throws AssertionError {
-    // Arrange
-    EndpointDetectionStrategy endpointDetectionStrategy = mock(EndpointDetectionStrategy.class);
-    Endpoints emptyResult = Endpoints.empty();
-    Mono<Endpoints> justResult = Mono.just(emptyResult);
-    when(endpointDetectionStrategy.detectEndpoints(Mockito.<Instance>any())).thenReturn(justResult);
 
-    // Act and Assert
-    FirstStep<Endpoints> createResult = StepVerifier
-        .create(new ChainingStrategy(endpointDetectionStrategy).detectEndpoints(null));
-    createResult.assertNext(e -> {
-      assertSame(emptyResult, e);
-      return;
-    }).expectComplete().verify();
-    verify(endpointDetectionStrategy).detectEndpoints(isNull());
-  }
+	/**
+	 * Test {@link ChainingStrategy#detectEndpoints(Instance)}.
+	 * <ul>
+	 * <li>Then calls {@link EndpointDetectionStrategy#detectEndpoints(Instance)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link ChainingStrategy#detectEndpoints(Instance)}
+	 */
+	@Test
+	public void testDetectEndpoints_thenCallsDetectEndpoints() throws AssertionError {
+		// Arrange
+		EndpointDetectionStrategy endpointDetectionStrategy = mock(EndpointDetectionStrategy.class);
+		Endpoints emptyResult = Endpoints.empty();
+		Mono<Endpoints> justResult = Mono.just(emptyResult);
+		when(endpointDetectionStrategy.detectEndpoints(Mockito.<Instance>any())).thenReturn(justResult);
+
+		// Act and Assert
+		FirstStep<Endpoints> createResult = StepVerifier
+			.create(new ChainingStrategy(endpointDetectionStrategy).detectEndpoints(null));
+		createResult.assertNext(e -> {
+			assertSame(emptyResult, e);
+			return;
+		}).expectComplete().verify();
+		verify(endpointDetectionStrategy).detectEndpoints(isNull());
+	}
+
 }

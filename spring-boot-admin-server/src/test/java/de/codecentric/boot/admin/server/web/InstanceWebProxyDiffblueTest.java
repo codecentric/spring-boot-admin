@@ -20,25 +20,29 @@ import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
 public class InstanceWebProxyDiffblueTest {
-  /**
-   * Test {@link InstanceWebProxy#forward(Flux, ForwardRequest)} with {@code instances}, {@code forwardRequest}.
-   * <p>
-   * Method under test: {@link InstanceWebProxy#forward(Flux, ForwardRequest)}
-   */
-  @Test
-  public void testForwardWithInstancesForwardRequest() throws AssertionError {
-    // Arrange
-    Builder builder = mock(Builder.class);
-    when(builder.build()).thenReturn(mock(WebClient.class));
-    InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
-    InstanceWebProxy instanceWebProxy = new InstanceWebProxy(instanceWebClient);
-    Flux<Instance> instances = Flux.fromIterable(new ArrayList<>());
-    HttpMethod method = HttpMethod.valueOf("https://example.org/example");
 
-    // Act and Assert
-    FirstStep<InstanceResponse> createResult = StepVerifier.create(instanceWebProxy.forward(instances,
-        new ForwardRequest(PagerdutyNotifier.DEFAULT_URI, method, new HttpHeaders(), mock(BodyInserter.class))));
-    createResult.expectComplete().verify();
-    verify(builder).build();
-  }
+	/**
+	 * Test {@link InstanceWebProxy#forward(Flux, ForwardRequest)} with {@code instances},
+	 * {@code forwardRequest}.
+	 * <p>
+	 * Method under test: {@link InstanceWebProxy#forward(Flux, ForwardRequest)}
+	 */
+	@Test
+	public void testForwardWithInstancesForwardRequest() throws AssertionError {
+		// Arrange
+		Builder builder = mock(Builder.class);
+		when(builder.build()).thenReturn(mock(WebClient.class));
+		InstanceWebClient instanceWebClient = InstanceWebClient.builder().webClient(builder).build();
+		InstanceWebProxy instanceWebProxy = new InstanceWebProxy(instanceWebClient);
+		Flux<Instance> instances = Flux.fromIterable(new ArrayList<>());
+		HttpMethod method = HttpMethod.valueOf("https://example.org/example");
+
+		// Act and Assert
+		FirstStep<InstanceResponse> createResult = StepVerifier
+			.create(instanceWebProxy.forward(instances, new ForwardRequest(PagerdutyNotifier.DEFAULT_URI, method,
+					new HttpHeaders(), mock(BodyInserter.class))));
+		createResult.expectComplete().verify();
+		verify(builder).build();
+	}
+
 }

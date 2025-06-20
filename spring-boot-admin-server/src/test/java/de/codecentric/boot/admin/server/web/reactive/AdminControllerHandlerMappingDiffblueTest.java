@@ -12,50 +12,53 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.cors.reactive.DefaultCorsProcessor;
 import org.springframework.web.util.pattern.PathPatternParser;
 
-@ContextConfiguration(classes = {AdminControllerHandlerMapping.class, String.class})
+@ContextConfiguration(classes = { AdminControllerHandlerMapping.class, String.class })
 @RunWith(SpringJUnit4ClassRunner.class)
 public class AdminControllerHandlerMappingDiffblueTest {
-  @Autowired
-  private AdminControllerHandlerMapping adminControllerHandlerMapping;
 
-  /**
-   * Test {@link AdminControllerHandlerMapping#AdminControllerHandlerMapping(String)}.
-   * <p>
-   * Method under test: {@link AdminControllerHandlerMapping#AdminControllerHandlerMapping(String)}
-   */
-  @Test
-  public void testNewAdminControllerHandlerMapping() throws IllegalStateException {
-    // Arrange and Act
-    AdminControllerHandlerMapping actualAdminControllerHandlerMapping = new AdminControllerHandlerMapping(
-        "Admin Context Path");
+	@Autowired
+	private AdminControllerHandlerMapping adminControllerHandlerMapping;
 
-    // Assert
-    assertTrue(actualAdminControllerHandlerMapping.getCorsProcessor() instanceof DefaultCorsProcessor);
-    PathPatternParser pathPatternParser = actualAdminControllerHandlerMapping.getPathPatternParser();
-    assertEquals('/', pathPatternParser.getPathOptions().separator());
-    assertNull(actualAdminControllerHandlerMapping.getApplicationContext());
-    assertFalse(pathPatternParser.isMatchOptionalTrailingSeparator());
-    assertTrue(actualAdminControllerHandlerMapping.getHandlerMethods().isEmpty());
-    assertTrue(actualAdminControllerHandlerMapping.getPathPrefixes().isEmpty());
-    assertTrue(pathPatternParser.isCaseSensitive());
-    assertEquals(Integer.MAX_VALUE, actualAdminControllerHandlerMapping.getOrder());
-  }
+	/**
+	 * Test {@link AdminControllerHandlerMapping#AdminControllerHandlerMapping(String)}.
+	 * <p>
+	 * Method under test:
+	 * {@link AdminControllerHandlerMapping#AdminControllerHandlerMapping(String)}
+	 */
+	@Test
+	public void testNewAdminControllerHandlerMapping() throws IllegalStateException {
+		// Arrange and Act
+		AdminControllerHandlerMapping actualAdminControllerHandlerMapping = new AdminControllerHandlerMapping(
+				"Admin Context Path");
 
-  /**
-   * Test {@link AdminControllerHandlerMapping#isHandler(Class)}.
-   * <ul>
-   *   <li>When {@code Object}.</li>
-   *   <li>Then return {@code false}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AdminControllerHandlerMapping#isHandler(Class)}
-   */
-  @Test
-  public void testIsHandler_whenJavaLangObject_thenReturnFalse() {
-    // Arrange
-    Class<Object> beanType = Object.class;
+		// Assert
+		assertTrue(actualAdminControllerHandlerMapping.getCorsProcessor() instanceof DefaultCorsProcessor);
+		PathPatternParser pathPatternParser = actualAdminControllerHandlerMapping.getPathPatternParser();
+		assertEquals('/', pathPatternParser.getPathOptions().separator());
+		assertNull(actualAdminControllerHandlerMapping.getApplicationContext());
+		assertFalse(pathPatternParser.isMatchOptionalTrailingSeparator());
+		assertTrue(actualAdminControllerHandlerMapping.getHandlerMethods().isEmpty());
+		assertTrue(actualAdminControllerHandlerMapping.getPathPrefixes().isEmpty());
+		assertTrue(pathPatternParser.isCaseSensitive());
+		assertEquals(Integer.MAX_VALUE, actualAdminControllerHandlerMapping.getOrder());
+	}
 
-    // Act and Assert
-    assertFalse(adminControllerHandlerMapping.isHandler(beanType));
-  }
+	/**
+	 * Test {@link AdminControllerHandlerMapping#isHandler(Class)}.
+	 * <ul>
+	 * <li>When {@code Object}.</li>
+	 * <li>Then return {@code false}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AdminControllerHandlerMapping#isHandler(Class)}
+	 */
+	@Test
+	public void testIsHandler_whenJavaLangObject_thenReturnFalse() {
+		// Arrange
+		Class<Object> beanType = Object.class;
+
+		// Act and Assert
+		assertFalse(adminControllerHandlerMapping.isHandler(beanType));
+	}
+
 }

@@ -5,96 +5,102 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 public class AdminServerPropertiesDiffblueTest {
-  /**
-   * Test {@link AdminServerProperties#setContextPath(String)}.
-   * <ul>
-   *   <li>Then {@link AdminServerProperties} (default constructor) ContextPath is {@code /Context Path}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AdminServerProperties#setContextPath(String)}
-   */
-  @Test
-  public void testSetContextPath_thenAdminServerPropertiesContextPathIsContextPath() {
-    // Arrange
-    AdminServerProperties adminServerProperties = new AdminServerProperties();
 
-    // Act
-    adminServerProperties.setContextPath("Context Path");
+	/**
+	 * Test {@link AdminServerProperties#setContextPath(String)}.
+	 * <ul>
+	 * <li>Then {@link AdminServerProperties} (default constructor) ContextPath is
+	 * {@code /Context Path}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AdminServerProperties#setContextPath(String)}
+	 */
+	@Test
+	public void testSetContextPath_thenAdminServerPropertiesContextPathIsContextPath() {
+		// Arrange
+		AdminServerProperties adminServerProperties = new AdminServerProperties();
 
-    // Assert
-    assertEquals("/Context Path", adminServerProperties.getContextPath());
-  }
+		// Act
+		adminServerProperties.setContextPath("Context Path");
 
-  /**
-   * Test {@link AdminServerProperties#setContextPath(String)}.
-   * <ul>
-   *   <li>Then {@link AdminServerProperties} (default constructor) ContextPath is {@code /}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AdminServerProperties#setContextPath(String)}
-   */
-  @Test
-  public void testSetContextPath_thenAdminServerPropertiesContextPathIsSlash() {
-    // Arrange
-    AdminServerProperties adminServerProperties = new AdminServerProperties();
+		// Assert
+		assertEquals("/Context Path", adminServerProperties.getContextPath());
+	}
 
-    // Act
-    adminServerProperties.setContextPath("///");
+	/**
+	 * Test {@link AdminServerProperties#setContextPath(String)}.
+	 * <ul>
+	 * <li>Then {@link AdminServerProperties} (default constructor) ContextPath is
+	 * {@code /}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AdminServerProperties#setContextPath(String)}
+	 */
+	@Test
+	public void testSetContextPath_thenAdminServerPropertiesContextPathIsSlash() {
+		// Arrange
+		AdminServerProperties adminServerProperties = new AdminServerProperties();
 
-    // Assert
-    assertEquals("/", adminServerProperties.getContextPath());
-  }
+		// Act
+		adminServerProperties.setContextPath("///");
 
-  /**
-   * Test {@link AdminServerProperties#setContextPath(String)}.
-   * <ul>
-   *   <li>When {@code null}.</li>
-   *   <li>Then {@link AdminServerProperties} (default constructor) ContextPath is {@code null}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AdminServerProperties#setContextPath(String)}
-   */
-  @Test
-  public void testSetContextPath_whenNull_thenAdminServerPropertiesContextPathIsNull() {
-    // Arrange
-    AdminServerProperties adminServerProperties = new AdminServerProperties();
+		// Assert
+		assertEquals("/", adminServerProperties.getContextPath());
+	}
 
-    // Act
-    adminServerProperties.setContextPath(null);
+	/**
+	 * Test {@link AdminServerProperties#setContextPath(String)}.
+	 * <ul>
+	 * <li>When {@code null}.</li>
+	 * <li>Then {@link AdminServerProperties} (default constructor) ContextPath is
+	 * {@code null}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AdminServerProperties#setContextPath(String)}
+	 */
+	@Test
+	public void testSetContextPath_whenNull_thenAdminServerPropertiesContextPathIsNull() {
+		// Arrange
+		AdminServerProperties adminServerProperties = new AdminServerProperties();
 
-    // Assert
-    assertNull(adminServerProperties.getContextPath());
-  }
+		// Act
+		adminServerProperties.setContextPath(null);
 
-  /**
-   * Test {@link AdminServerProperties#setContextPath(String)}.
-   * <ul>
-   *   <li>When {@code /}.</li>
-   *   <li>Then {@link AdminServerProperties} (default constructor) ContextPath is empty string.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AdminServerProperties#setContextPath(String)}
-   */
-  @Test
-  public void testSetContextPath_whenSlash_thenAdminServerPropertiesContextPathIsEmptyString() {
-    // Arrange
-    AdminServerProperties adminServerProperties = new AdminServerProperties();
+		// Assert
+		assertNull(adminServerProperties.getContextPath());
+	}
 
-    // Act
-    adminServerProperties.setContextPath("/");
+	/**
+	 * Test {@link AdminServerProperties#setContextPath(String)}.
+	 * <ul>
+	 * <li>When {@code /}.</li>
+	 * <li>Then {@link AdminServerProperties} (default constructor) ContextPath is empty
+	 * string.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AdminServerProperties#setContextPath(String)}
+	 */
+	@Test
+	public void testSetContextPath_whenSlash_thenAdminServerPropertiesContextPathIsEmptyString() {
+		// Arrange
+		AdminServerProperties adminServerProperties = new AdminServerProperties();
 
-    // Assert that nothing has changed
-    assertEquals("", adminServerProperties.getContextPath());
-  }
+		// Act
+		adminServerProperties.setContextPath("/");
 
-  /**
-   * Test {@link AdminServerProperties#path(String)}.
-   * <p>
-   * Method under test: {@link AdminServerProperties#path(String)}
-   */
-  @Test
-  public void testPath() {
-    // Arrange, Act and Assert
-    assertEquals("Path", new AdminServerProperties().path("Path"));
-  }
+		// Assert that nothing has changed
+		assertEquals("", adminServerProperties.getContextPath());
+	}
+
+	/**
+	 * Test {@link AdminServerProperties#path(String)}.
+	 * <p>
+	 * Method under test: {@link AdminServerProperties#path(String)}
+	 */
+	@Test
+	public void testPath() {
+		// Arrange, Act and Assert
+		assertEquals("Path", new AdminServerProperties().path("Path"));
+	}
+
 }

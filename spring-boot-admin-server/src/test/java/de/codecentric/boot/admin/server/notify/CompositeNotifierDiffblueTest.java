@@ -14,45 +14,47 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
-@ContextConfiguration(classes = {CompositeNotifier.class})
+@ContextConfiguration(classes = { CompositeNotifier.class })
 @DisabledInAotMode
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CompositeNotifierDiffblueTest {
-  @Autowired
-  private CompositeNotifier compositeNotifier;
 
-  @MockitoBean
-  private Iterable<Notifier> iterable;
+	@Autowired
+	private CompositeNotifier compositeNotifier;
 
-  /**
-   * Test {@link CompositeNotifier#CompositeNotifier(Iterable)}.
-   * <ul>
-   *   <li>When {@link ArrayList#ArrayList()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link CompositeNotifier#CompositeNotifier(Iterable)}
-   */
-  @Test
-  public void testNewCompositeNotifier_whenArrayList() throws AssertionError {
-    // Arrange and Act
-    CompositeNotifier actualCompositeNotifier = new CompositeNotifier(new ArrayList<>());
+	@MockitoBean
+	private Iterable<Notifier> iterable;
 
-    // Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(actualCompositeNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
-    createResult.expectComplete().verify();
-  }
+	/**
+	 * Test {@link CompositeNotifier#CompositeNotifier(Iterable)}.
+	 * <ul>
+	 * <li>When {@link ArrayList#ArrayList()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link CompositeNotifier#CompositeNotifier(Iterable)}
+	 */
+	@Test
+	public void testNewCompositeNotifier_whenArrayList() throws AssertionError {
+		// Arrange and Act
+		CompositeNotifier actualCompositeNotifier = new CompositeNotifier(new ArrayList<>());
 
-  /**
-   * Test {@link CompositeNotifier#notify(InstanceEvent)} with {@code InstanceEvent}.
-   * <p>
-   * Method under test: {@link CompositeNotifier#notify(InstanceEvent)}
-   */
-  @Test
-  public void testNotifyWithInstanceEvent() throws AssertionError {
-    // Arrange, Act and Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(compositeNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
-    createResult.expectError().verify();
-  }
+		// Assert
+		FirstStep<Void> createResult = StepVerifier
+			.create(actualCompositeNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
+		createResult.expectComplete().verify();
+	}
+
+	/**
+	 * Test {@link CompositeNotifier#notify(InstanceEvent)} with {@code InstanceEvent}.
+	 * <p>
+	 * Method under test: {@link CompositeNotifier#notify(InstanceEvent)}
+	 */
+	@Test
+	public void testNotifyWithInstanceEvent() throws AssertionError {
+		// Arrange, Act and Assert
+		FirstStep<Void> createResult = StepVerifier
+			.create(compositeNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
+		createResult.expectError().verify();
+	}
+
 }

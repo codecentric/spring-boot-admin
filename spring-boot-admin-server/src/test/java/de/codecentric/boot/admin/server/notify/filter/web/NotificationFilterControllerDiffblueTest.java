@@ -34,294 +34,308 @@ import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@ContextConfiguration(classes = {NotificationFilterController.class})
+@ContextConfiguration(classes = { NotificationFilterController.class })
 @DisabledInAotMode
 @RunWith(SpringJUnit4ClassRunner.class)
 public class NotificationFilterControllerDiffblueTest {
-  @MockitoBean
-  private FilteringNotifier filteringNotifier;
 
-  @Autowired
-  private NotificationFilterController notificationFilterController;
+	@MockitoBean
+	private FilteringNotifier filteringNotifier;
 
-  /**
-   * Test {@link NotificationFilterController#NotificationFilterController(FilteringNotifier)}.
-   * <p>
-   * Method under test: {@link NotificationFilterController#NotificationFilterController(FilteringNotifier)}
-   */
-  @Test
-  public void testNewNotificationFilterController() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
+	@Autowired
+	private NotificationFilterController notificationFilterController;
 
-    // Act and Assert
-    assertTrue(new NotificationFilterController(
-        new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore()))).getFilters()
-        .isEmpty());
-  }
+	/**
+	 * Test
+	 * {@link NotificationFilterController#NotificationFilterController(FilteringNotifier)}.
+	 * <p>
+	 * Method under test:
+	 * {@link NotificationFilterController#NotificationFilterController(FilteringNotifier)}
+	 */
+	@Test
+	public void testNewNotificationFilterController() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
 
-  /**
-   * Test {@link NotificationFilterController#getFilters()}.
-   * <p>
-   * Method under test: {@link NotificationFilterController#getFilters()}
-   */
-  @Test
-  public void testGetFilters() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
+		// Act and Assert
+		assertTrue(new NotificationFilterController(
+				new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore())))
+			.getFilters()
+			.isEmpty());
+	}
 
-    // Act and Assert
-    assertTrue(new NotificationFilterController(
-        new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore()))).getFilters()
-        .isEmpty());
-  }
+	/**
+	 * Test {@link NotificationFilterController#getFilters()}.
+	 * <p>
+	 * Method under test: {@link NotificationFilterController#getFilters()}
+	 */
+	@Test
+	public void testGetFilters() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
 
-  /**
-   * Test {@link NotificationFilterController#getFilters()}.
-   * <ul>
-   *   <li>Then calls {@link FilteringNotifier#getNotificationFilters()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link NotificationFilterController#getFilters()}
-   */
-  @Test
-  public void testGetFilters_thenCallsGetNotificationFilters() {
-    // Arrange
-    when(filteringNotifier.getNotificationFilters()).thenReturn(new HashMap<>());
+		// Act and Assert
+		assertTrue(new NotificationFilterController(
+				new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore())))
+			.getFilters()
+			.isEmpty());
+	}
 
-    // Act
-    Collection<NotificationFilter> actualFilters = notificationFilterController.getFilters();
+	/**
+	 * Test {@link NotificationFilterController#getFilters()}.
+	 * <ul>
+	 * <li>Then calls {@link FilteringNotifier#getNotificationFilters()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link NotificationFilterController#getFilters()}
+	 */
+	@Test
+	public void testGetFilters_thenCallsGetNotificationFilters() {
+		// Arrange
+		when(filteringNotifier.getNotificationFilters()).thenReturn(new HashMap<>());
 
-    // Assert
-    verify(filteringNotifier).getNotificationFilters();
-    assertTrue(actualFilters.isEmpty());
-  }
+		// Act
+		Collection<NotificationFilter> actualFilters = notificationFilterController.getFilters();
 
-  /**
-   * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
-   * <p>
-   * Method under test: {@link NotificationFilterController#addFilter(String, String, Long)}
-   */
-  @Test
-  public void testAddFilter() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
+		// Assert
+		verify(filteringNotifier).getNotificationFilters();
+		assertTrue(actualFilters.isEmpty());
+	}
 
-    // Act and Assert
-    Object body = new NotificationFilterController(
-        new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore())))
-        .addFilter("42", "Name", 1L)
-        .getBody();
-    assertTrue(body instanceof InstanceIdNotificationFilter);
-    InstanceId instanceId = ((InstanceIdNotificationFilter) body).getInstanceId();
-    assertEquals("42", instanceId.getValue());
-    assertEquals("42", instanceId.toString());
-  }
+	/**
+	 * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
+	 * <p>
+	 * Method under test:
+	 * {@link NotificationFilterController#addFilter(String, String, Long)}
+	 */
+	@Test
+	public void testAddFilter() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
 
-  /**
-   * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
-   * <ul>
-   *   <li>Given {@link FilteringNotifier}.</li>
-   *   <li>When {@code null}.</li>
-   *   <li>Then StatusCode return {@link HttpStatus}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link NotificationFilterController#addFilter(String, String, Long)}
-   */
-  @Test
-  public void testAddFilter_givenFilteringNotifier_whenNull_thenStatusCodeReturnHttpStatus() {
-    // Arrange and Act
-    ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter(null, null, null);
+		// Act and Assert
+		Object body = new NotificationFilterController(
+				new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore())))
+			.addFilter("42", "Name", 1L)
+			.getBody();
+		assertTrue(body instanceof InstanceIdNotificationFilter);
+		InstanceId instanceId = ((InstanceIdNotificationFilter) body).getInstanceId();
+		assertEquals("42", instanceId.getValue());
+		assertEquals("42", instanceId.toString());
+	}
 
-    // Assert
-    HttpStatusCode statusCode = actualAddFilterResult.getStatusCode();
-    assertTrue(statusCode instanceof HttpStatus);
-    assertEquals("Either 'instanceId' or 'applicationName' must be set", actualAddFilterResult.getBody());
-    assertEquals(400, actualAddFilterResult.getStatusCodeValue());
-    assertEquals(HttpStatus.BAD_REQUEST, statusCode);
-  }
+	/**
+	 * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
+	 * <ul>
+	 * <li>Given {@link FilteringNotifier}.</li>
+	 * <li>When {@code null}.</li>
+	 * <li>Then StatusCode return {@link HttpStatus}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link NotificationFilterController#addFilter(String, String, Long)}
+	 */
+	@Test
+	public void testAddFilter_givenFilteringNotifier_whenNull_thenStatusCodeReturnHttpStatus() {
+		// Arrange and Act
+		ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter(null, null, null);
 
-  /**
-   * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
-   * <ul>
-   *   <li>When {@code 42}.</li>
-   *   <li>Then return Body InstanceId Value is {@code 42}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link NotificationFilterController#addFilter(String, String, Long)}
-   */
-  @Test
-  public void testAddFilter_when42_thenReturnBodyInstanceIdValueIs42() {
-    // Arrange
-    doNothing().when(filteringNotifier).addFilter(Mockito.<NotificationFilter>any());
+		// Assert
+		HttpStatusCode statusCode = actualAddFilterResult.getStatusCode();
+		assertTrue(statusCode instanceof HttpStatus);
+		assertEquals("Either 'instanceId' or 'applicationName' must be set", actualAddFilterResult.getBody());
+		assertEquals(400, actualAddFilterResult.getStatusCodeValue());
+		assertEquals(HttpStatus.BAD_REQUEST, statusCode);
+	}
 
-    // Act
-    ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter("42", "Name", 1L);
+	/**
+	 * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
+	 * <ul>
+	 * <li>When {@code 42}.</li>
+	 * <li>Then return Body InstanceId Value is {@code 42}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link NotificationFilterController#addFilter(String, String, Long)}
+	 */
+	@Test
+	public void testAddFilter_when42_thenReturnBodyInstanceIdValueIs42() {
+		// Arrange
+		doNothing().when(filteringNotifier).addFilter(Mockito.<NotificationFilter>any());
 
-    // Assert
-    verify(filteringNotifier).addFilter(isA(NotificationFilter.class));
-    Object body = actualAddFilterResult.getBody();
-    assertTrue(body instanceof InstanceIdNotificationFilter);
-    InstanceId instanceId = ((InstanceIdNotificationFilter) body).getInstanceId();
-    assertEquals("42", instanceId.getValue());
-    assertEquals("42", instanceId.toString());
-  }
+		// Act
+		ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter("42", "Name", 1L);
 
-  /**
-   * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
-   * <ul>
-   *   <li>When minus one.</li>
-   *   <li>Then return Body Expiry is {@code null}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link NotificationFilterController#addFilter(String, String, Long)}
-   */
-  @Test
-  public void testAddFilter_whenMinusOne_thenReturnBodyExpiryIsNull() {
-    // Arrange
-    doNothing().when(filteringNotifier).addFilter(Mockito.<NotificationFilter>any());
+		// Assert
+		verify(filteringNotifier).addFilter(isA(NotificationFilter.class));
+		Object body = actualAddFilterResult.getBody();
+		assertTrue(body instanceof InstanceIdNotificationFilter);
+		InstanceId instanceId = ((InstanceIdNotificationFilter) body).getInstanceId();
+		assertEquals("42", instanceId.getValue());
+		assertEquals("42", instanceId.toString());
+	}
 
-    // Act
-    ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter("42", "Name", -1L);
+	/**
+	 * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
+	 * <ul>
+	 * <li>When minus one.</li>
+	 * <li>Then return Body Expiry is {@code null}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link NotificationFilterController#addFilter(String, String, Long)}
+	 */
+	@Test
+	public void testAddFilter_whenMinusOne_thenReturnBodyExpiryIsNull() {
+		// Arrange
+		doNothing().when(filteringNotifier).addFilter(Mockito.<NotificationFilter>any());
 
-    // Assert
-    verify(filteringNotifier).addFilter(isA(NotificationFilter.class));
-    Object body = actualAddFilterResult.getBody();
-    assertTrue(body instanceof InstanceIdNotificationFilter);
-    InstanceId instanceId = ((InstanceIdNotificationFilter) body).getInstanceId();
-    assertEquals("42", instanceId.getValue());
-    assertEquals("42", instanceId.toString());
-    assertNull(((InstanceIdNotificationFilter) body).getExpiry());
-  }
+		// Act
+		ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter("42", "Name", -1L);
 
-  /**
-   * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
-   * <ul>
-   *   <li>When {@code not blank}.</li>
-   *   <li>Then return Body InstanceId Value is {@code not blank}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link NotificationFilterController#addFilter(String, String, Long)}
-   */
-  @Test
-  public void testAddFilter_whenNotBlank_thenReturnBodyInstanceIdValueIsNotBlank() {
-    // Arrange
-    doNothing().when(filteringNotifier).addFilter(Mockito.<NotificationFilter>any());
+		// Assert
+		verify(filteringNotifier).addFilter(isA(NotificationFilter.class));
+		Object body = actualAddFilterResult.getBody();
+		assertTrue(body instanceof InstanceIdNotificationFilter);
+		InstanceId instanceId = ((InstanceIdNotificationFilter) body).getInstanceId();
+		assertEquals("42", instanceId.getValue());
+		assertEquals("42", instanceId.toString());
+		assertNull(((InstanceIdNotificationFilter) body).getExpiry());
+	}
 
-    // Act
-    ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter("not blank", "not blank", null);
+	/**
+	 * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
+	 * <ul>
+	 * <li>When {@code not blank}.</li>
+	 * <li>Then return Body InstanceId Value is {@code not blank}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link NotificationFilterController#addFilter(String, String, Long)}
+	 */
+	@Test
+	public void testAddFilter_whenNotBlank_thenReturnBodyInstanceIdValueIsNotBlank() {
+		// Arrange
+		doNothing().when(filteringNotifier).addFilter(Mockito.<NotificationFilter>any());
 
-    // Assert
-    verify(filteringNotifier).addFilter(isA(NotificationFilter.class));
-    Object body = actualAddFilterResult.getBody();
-    assertTrue(body instanceof InstanceIdNotificationFilter);
-    InstanceId instanceId = ((InstanceIdNotificationFilter) body).getInstanceId();
-    assertEquals("not blank", instanceId.getValue());
-    assertEquals("not blank", instanceId.toString());
-    assertNull(((InstanceIdNotificationFilter) body).getExpiry());
-  }
+		// Act
+		ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter("not blank", "not blank",
+				null);
 
-  /**
-   * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
-   * <ul>
-   *   <li>When space.</li>
-   *   <li>Then Body return {@link ApplicationNameNotificationFilter}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link NotificationFilterController#addFilter(String, String, Long)}
-   */
-  @Test
-  public void testAddFilter_whenSpace_thenBodyReturnApplicationNameNotificationFilter() {
-    // Arrange
-    doNothing().when(filteringNotifier).addFilter(Mockito.<NotificationFilter>any());
+		// Assert
+		verify(filteringNotifier).addFilter(isA(NotificationFilter.class));
+		Object body = actualAddFilterResult.getBody();
+		assertTrue(body instanceof InstanceIdNotificationFilter);
+		InstanceId instanceId = ((InstanceIdNotificationFilter) body).getInstanceId();
+		assertEquals("not blank", instanceId.getValue());
+		assertEquals("not blank", instanceId.toString());
+		assertNull(((InstanceIdNotificationFilter) body).getExpiry());
+	}
 
-    // Act
-    ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter(" ", "Name", 1L);
+	/**
+	 * Test {@link NotificationFilterController#addFilter(String, String, Long)}.
+	 * <ul>
+	 * <li>When space.</li>
+	 * <li>Then Body return {@link ApplicationNameNotificationFilter}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link NotificationFilterController#addFilter(String, String, Long)}
+	 */
+	@Test
+	public void testAddFilter_whenSpace_thenBodyReturnApplicationNameNotificationFilter() {
+		// Arrange
+		doNothing().when(filteringNotifier).addFilter(Mockito.<NotificationFilter>any());
 
-    // Assert
-    verify(filteringNotifier).addFilter(isA(NotificationFilter.class));
-    Object body = actualAddFilterResult.getBody();
-    assertTrue(body instanceof ApplicationNameNotificationFilter);
-    assertEquals("Name", ((ApplicationNameNotificationFilter) body).getApplicationName());
-  }
+		// Act
+		ResponseEntity<?> actualAddFilterResult = notificationFilterController.addFilter(" ", "Name", 1L);
 
-  /**
-   * Test {@link NotificationFilterController#deleteFilter(String)}.
-   * <p>
-   * Method under test: {@link NotificationFilterController#deleteFilter(String)}
-   */
-  @Test
-  public void testDeleteFilter() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
+		// Assert
+		verify(filteringNotifier).addFilter(isA(NotificationFilter.class));
+		Object body = actualAddFilterResult.getBody();
+		assertTrue(body instanceof ApplicationNameNotificationFilter);
+		assertEquals("Name", ((ApplicationNameNotificationFilter) body).getApplicationName());
+	}
 
-    // Act
-    ResponseEntity<Void> actualDeleteFilterResult = new NotificationFilterController(
-        new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore())))
-        .deleteFilter("42");
+	/**
+	 * Test {@link NotificationFilterController#deleteFilter(String)}.
+	 * <p>
+	 * Method under test: {@link NotificationFilterController#deleteFilter(String)}
+	 */
+	@Test
+	public void testDeleteFilter() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
 
-    // Assert
-    HttpStatusCode statusCode = actualDeleteFilterResult.getStatusCode();
-    assertTrue(statusCode instanceof HttpStatus);
-    assertNull(actualDeleteFilterResult.getBody());
-    assertEquals(404, actualDeleteFilterResult.getStatusCodeValue());
-    assertEquals(HttpStatus.NOT_FOUND, statusCode);
-    assertFalse(actualDeleteFilterResult.hasBody());
-    assertTrue(actualDeleteFilterResult.getHeaders().isEmpty());
-  }
+		// Act
+		ResponseEntity<Void> actualDeleteFilterResult = new NotificationFilterController(
+				new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore())))
+			.deleteFilter("42");
 
-  /**
-   * Test {@link NotificationFilterController#deleteFilter(String)}.
-   * <ul>
-   *   <li>Given {@link FilteringNotifier} {@link FilteringNotifier#removeFilter(String)} return {@code null}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link NotificationFilterController#deleteFilter(String)}
-   */
-  @Test
-  public void testDeleteFilter_givenFilteringNotifierRemoveFilterReturnNull() {
-    // Arrange
-    when(filteringNotifier.removeFilter(Mockito.<String>any())).thenReturn(null);
+		// Assert
+		HttpStatusCode statusCode = actualDeleteFilterResult.getStatusCode();
+		assertTrue(statusCode instanceof HttpStatus);
+		assertNull(actualDeleteFilterResult.getBody());
+		assertEquals(404, actualDeleteFilterResult.getStatusCodeValue());
+		assertEquals(HttpStatus.NOT_FOUND, statusCode);
+		assertFalse(actualDeleteFilterResult.hasBody());
+		assertTrue(actualDeleteFilterResult.getHeaders().isEmpty());
+	}
 
-    // Act
-    ResponseEntity<Void> actualDeleteFilterResult = notificationFilterController.deleteFilter("42");
+	/**
+	 * Test {@link NotificationFilterController#deleteFilter(String)}.
+	 * <ul>
+	 * <li>Given {@link FilteringNotifier} {@link FilteringNotifier#removeFilter(String)}
+	 * return {@code null}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link NotificationFilterController#deleteFilter(String)}
+	 */
+	@Test
+	public void testDeleteFilter_givenFilteringNotifierRemoveFilterReturnNull() {
+		// Arrange
+		when(filteringNotifier.removeFilter(Mockito.<String>any())).thenReturn(null);
 
-    // Assert
-    verify(filteringNotifier).removeFilter(eq("42"));
-    HttpStatusCode statusCode = actualDeleteFilterResult.getStatusCode();
-    assertTrue(statusCode instanceof HttpStatus);
-    assertNull(actualDeleteFilterResult.getBody());
-    assertEquals(404, actualDeleteFilterResult.getStatusCodeValue());
-    assertEquals(HttpStatus.NOT_FOUND, statusCode);
-    assertFalse(actualDeleteFilterResult.hasBody());
-    assertTrue(actualDeleteFilterResult.getHeaders().isEmpty());
-  }
+		// Act
+		ResponseEntity<Void> actualDeleteFilterResult = notificationFilterController.deleteFilter("42");
 
-  /**
-   * Test {@link NotificationFilterController#deleteFilter(String)}.
-   * <ul>
-   *   <li>Then return StatusCodeValue is two hundred.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link NotificationFilterController#deleteFilter(String)}
-   */
-  @Test
-  public void testDeleteFilter_thenReturnStatusCodeValueIsTwoHundred() {
-    // Arrange
-    when(filteringNotifier.removeFilter(Mockito.<String>any())).thenReturn(new ApplicationNameNotificationFilter(
-        "Application Name", LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant()));
+		// Assert
+		verify(filteringNotifier).removeFilter(eq("42"));
+		HttpStatusCode statusCode = actualDeleteFilterResult.getStatusCode();
+		assertTrue(statusCode instanceof HttpStatus);
+		assertNull(actualDeleteFilterResult.getBody());
+		assertEquals(404, actualDeleteFilterResult.getStatusCodeValue());
+		assertEquals(HttpStatus.NOT_FOUND, statusCode);
+		assertFalse(actualDeleteFilterResult.hasBody());
+		assertTrue(actualDeleteFilterResult.getHeaders().isEmpty());
+	}
 
-    // Act
-    ResponseEntity<Void> actualDeleteFilterResult = notificationFilterController.deleteFilter("42");
+	/**
+	 * Test {@link NotificationFilterController#deleteFilter(String)}.
+	 * <ul>
+	 * <li>Then return StatusCodeValue is two hundred.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link NotificationFilterController#deleteFilter(String)}
+	 */
+	@Test
+	public void testDeleteFilter_thenReturnStatusCodeValueIsTwoHundred() {
+		// Arrange
+		when(filteringNotifier.removeFilter(Mockito.<String>any())).thenReturn(new ApplicationNameNotificationFilter(
+				"Application Name", LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant()));
 
-    // Assert
-    verify(filteringNotifier).removeFilter(eq("42"));
-    HttpStatusCode statusCode = actualDeleteFilterResult.getStatusCode();
-    assertTrue(statusCode instanceof HttpStatus);
-    assertNull(actualDeleteFilterResult.getBody());
-    assertEquals(200, actualDeleteFilterResult.getStatusCodeValue());
-    assertEquals(HttpStatus.OK, statusCode);
-    assertFalse(actualDeleteFilterResult.hasBody());
-    assertTrue(actualDeleteFilterResult.getHeaders().isEmpty());
-  }
+		// Act
+		ResponseEntity<Void> actualDeleteFilterResult = notificationFilterController.deleteFilter("42");
+
+		// Assert
+		verify(filteringNotifier).removeFilter(eq("42"));
+		HttpStatusCode statusCode = actualDeleteFilterResult.getStatusCode();
+		assertTrue(statusCode instanceof HttpStatus);
+		assertNull(actualDeleteFilterResult.getBody());
+		assertEquals(200, actualDeleteFilterResult.getStatusCodeValue());
+		assertEquals(HttpStatus.OK, statusCode);
+		assertFalse(actualDeleteFilterResult.hasBody());
+		assertTrue(actualDeleteFilterResult.getHeaders().isEmpty());
+	}
+
 }

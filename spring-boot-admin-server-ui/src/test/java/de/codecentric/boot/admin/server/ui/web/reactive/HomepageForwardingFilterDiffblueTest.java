@@ -23,39 +23,42 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 class HomepageForwardingFilterDiffblueTest {
-  /**
-   * Test {@link HomepageForwardingFilter#filter(ServerWebExchange, WebFilterChain)}.
-   * <p>
-   * Method under test: {@link HomepageForwardingFilter#filter(ServerWebExchange, WebFilterChain)}
-   */
-  @Test
-  @DisplayName("Test filter(ServerWebExchange, WebFilterChain)")
-  @Tag("MaintainedByDiffblue")
-  void testFilter() {
-    // Arrange
-    ArrayList<String> routesIncludes = new ArrayList<>();
-    HomepageForwardingFilter homepageForwardingFilter = new HomepageForwardingFilter(
-        new HomepageForwardingFilterConfig("Homepage", routesIncludes, new ArrayList<>()));
-    ServerHttpRequestDecorator delegate = mock(ServerHttpRequestDecorator.class);
-    when(delegate.getMethod()).thenReturn(HttpMethod.valueOf("https://example.org/example"));
-    ServerWebExchangeDecorator exchange = mock(ServerWebExchangeDecorator.class);
-    when(exchange.getRequest()).thenReturn(new ServerHttpRequestDecorator(delegate));
-    doNothing().when(exchange).addUrlTransformer(Mockito.<Function<String, String>>any());
-    exchange.addUrlTransformer(mock(Function.class));
-    WebFilterChain chain = mock(WebFilterChain.class);
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    ChannelSendOperator<Object> channelSendOperator = new ChannelSendOperator<>(source, mock(Function.class));
 
-    when(chain.filter(Mockito.<ServerWebExchange>any())).thenReturn(channelSendOperator);
+	/**
+	 * Test {@link HomepageForwardingFilter#filter(ServerWebExchange, WebFilterChain)}.
+	 * <p>
+	 * Method under test:
+	 * {@link HomepageForwardingFilter#filter(ServerWebExchange, WebFilterChain)}
+	 */
+	@Test
+	@DisplayName("Test filter(ServerWebExchange, WebFilterChain)")
+	@Tag("MaintainedByDiffblue")
+	void testFilter() {
+		// Arrange
+		ArrayList<String> routesIncludes = new ArrayList<>();
+		HomepageForwardingFilter homepageForwardingFilter = new HomepageForwardingFilter(
+				new HomepageForwardingFilterConfig("Homepage", routesIncludes, new ArrayList<>()));
+		ServerHttpRequestDecorator delegate = mock(ServerHttpRequestDecorator.class);
+		when(delegate.getMethod()).thenReturn(HttpMethod.valueOf("https://example.org/example"));
+		ServerWebExchangeDecorator exchange = mock(ServerWebExchangeDecorator.class);
+		when(exchange.getRequest()).thenReturn(new ServerHttpRequestDecorator(delegate));
+		doNothing().when(exchange).addUrlTransformer(Mockito.<Function<String, String>>any());
+		exchange.addUrlTransformer(mock(Function.class));
+		WebFilterChain chain = mock(WebFilterChain.class);
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		ChannelSendOperator<Object> channelSendOperator = new ChannelSendOperator<>(source, mock(Function.class));
 
-    // Act
-    Mono<Void> actualFilterResult = homepageForwardingFilter.filter(exchange, chain);
+		when(chain.filter(Mockito.<ServerWebExchange>any())).thenReturn(channelSendOperator);
 
-    // Assert
-    verify(delegate).getMethod();
-    verify(exchange).addUrlTransformer(isA(Function.class));
-    verify(exchange).getRequest();
-    verify(chain).filter(isA(ServerWebExchange.class));
-    assertSame(channelSendOperator, actualFilterResult);
-  }
+		// Act
+		Mono<Void> actualFilterResult = homepageForwardingFilter.filter(exchange, chain);
+
+		// Assert
+		verify(delegate).getMethod();
+		verify(exchange).addUrlTransformer(isA(Function.class));
+		verify(exchange).getRequest();
+		verify(chain).filter(isA(ServerWebExchange.class));
+		assertSame(channelSendOperator, actualFilterResult);
+	}
+
 }

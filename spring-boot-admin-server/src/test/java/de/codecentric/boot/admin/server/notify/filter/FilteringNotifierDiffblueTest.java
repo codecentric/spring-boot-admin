@@ -27,121 +27,124 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class FilteringNotifierDiffblueTest {
-  /**
-   * Test {@link FilteringNotifier#FilteringNotifier(Notifier, InstanceRepository)}.
-   * <ul>
-   *   <li>When {@link Notifier}.</li>
-   *   <li>Then return Enabled.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link FilteringNotifier#FilteringNotifier(Notifier, InstanceRepository)}
-   */
-  @Test
-  public void testNewFilteringNotifier_whenNotifier_thenReturnEnabled() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
 
-    // Act
-    FilteringNotifier actualFilteringNotifier = new FilteringNotifier(delegate,
-        new EventsourcingInstanceRepository(new InMemoryEventStore()));
+	/**
+	 * Test {@link FilteringNotifier#FilteringNotifier(Notifier, InstanceRepository)}.
+	 * <ul>
+	 * <li>When {@link Notifier}.</li>
+	 * <li>Then return Enabled.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link FilteringNotifier#FilteringNotifier(Notifier, InstanceRepository)}
+	 */
+	@Test
+	public void testNewFilteringNotifier_whenNotifier_thenReturnEnabled() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
 
-    // Assert
-    assertTrue(actualFilteringNotifier.isEnabled());
-    assertTrue(actualFilteringNotifier.getNotificationFilters().isEmpty());
-  }
+		// Act
+		FilteringNotifier actualFilteringNotifier = new FilteringNotifier(delegate,
+				new EventsourcingInstanceRepository(new InMemoryEventStore()));
 
-  /**
-   * Test {@link FilteringNotifier#shouldNotify(InstanceEvent, Instance)}.
-   * <ul>
-   *   <li>Then return {@code true}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link FilteringNotifier#shouldNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testShouldNotify_thenReturnTrue() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
-    FilteringNotifier filteringNotifier = new FilteringNotifier(delegate,
-        new EventsourcingInstanceRepository(new InMemoryEventStore()));
+		// Assert
+		assertTrue(actualFilteringNotifier.isEnabled());
+		assertTrue(actualFilteringNotifier.getNotificationFilters().isEmpty());
+	}
 
-    // Act and Assert
-    assertTrue(filteringNotifier.shouldNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
-  }
+	/**
+	 * Test {@link FilteringNotifier#shouldNotify(InstanceEvent, Instance)}.
+	 * <ul>
+	 * <li>Then return {@code true}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link FilteringNotifier#shouldNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testShouldNotify_thenReturnTrue() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
+		FilteringNotifier filteringNotifier = new FilteringNotifier(delegate,
+				new EventsourcingInstanceRepository(new InMemoryEventStore()));
 
-  /**
-   * Test {@link FilteringNotifier#doNotify(InstanceEvent, Instance)}.
-   * <p>
-   * Method under test: {@link FilteringNotifier#doNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testDoNotify() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    ChannelSendOperator<Object> channelSendOperator = new ChannelSendOperator<>(source, mock(Function.class));
+		// Act and Assert
+		assertTrue(filteringNotifier.shouldNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
+	}
 
-    when(delegate.notify(Mockito.<InstanceEvent>any())).thenReturn(channelSendOperator);
-    FilteringNotifier filteringNotifier = new FilteringNotifier(delegate,
-        new EventsourcingInstanceRepository(new InMemoryEventStore()));
+	/**
+	 * Test {@link FilteringNotifier#doNotify(InstanceEvent, Instance)}.
+	 * <p>
+	 * Method under test: {@link FilteringNotifier#doNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testDoNotify() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		ChannelSendOperator<Object> channelSendOperator = new ChannelSendOperator<>(source, mock(Function.class));
 
-    // Act
-    Mono<Void> actualDoNotifyResult = filteringNotifier.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L),
-        null);
+		when(delegate.notify(Mockito.<InstanceEvent>any())).thenReturn(channelSendOperator);
+		FilteringNotifier filteringNotifier = new FilteringNotifier(delegate,
+				new EventsourcingInstanceRepository(new InMemoryEventStore()));
 
-    // Assert
-    verify(delegate).notify(isA(InstanceEvent.class));
-    assertSame(channelSendOperator, actualDoNotifyResult);
-  }
+		// Act
+		Mono<Void> actualDoNotifyResult = filteringNotifier
+			.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null);
 
-  /**
-   * Test {@link FilteringNotifier#addFilter(NotificationFilter)}.
-   * <p>
-   * Method under test: {@link FilteringNotifier#addFilter(NotificationFilter)}
-   */
-  @Test
-  public void testAddFilter() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
-    FilteringNotifier filteringNotifier = new FilteringNotifier(delegate,
-        new EventsourcingInstanceRepository(new InMemoryEventStore()));
+		// Assert
+		verify(delegate).notify(isA(InstanceEvent.class));
+		assertSame(channelSendOperator, actualDoNotifyResult);
+	}
 
-    // Act
-    filteringNotifier.addFilter(new ApplicationNameNotificationFilter("Application Name",
-        LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant()));
+	/**
+	 * Test {@link FilteringNotifier#addFilter(NotificationFilter)}.
+	 * <p>
+	 * Method under test: {@link FilteringNotifier#addFilter(NotificationFilter)}
+	 */
+	@Test
+	public void testAddFilter() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
+		FilteringNotifier filteringNotifier = new FilteringNotifier(delegate,
+				new EventsourcingInstanceRepository(new InMemoryEventStore()));
 
-    // Assert
-    assertEquals(1, filteringNotifier.getNotificationFilters().size());
-  }
+		// Act
+		filteringNotifier.addFilter(new ApplicationNameNotificationFilter("Application Name",
+				LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant()));
 
-  /**
-   * Test {@link FilteringNotifier#removeFilter(String)}.
-   * <p>
-   * Method under test: {@link FilteringNotifier#removeFilter(String)}
-   */
-  @Test
-  public void testRemoveFilter() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
+		// Assert
+		assertEquals(1, filteringNotifier.getNotificationFilters().size());
+	}
 
-    // Act and Assert
-    assertNull(new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore()))
-        .removeFilter("42"));
-  }
+	/**
+	 * Test {@link FilteringNotifier#removeFilter(String)}.
+	 * <p>
+	 * Method under test: {@link FilteringNotifier#removeFilter(String)}
+	 */
+	@Test
+	public void testRemoveFilter() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
 
-  /**
-   * Test {@link FilteringNotifier#getNotificationFilters()}.
-   * <p>
-   * Method under test: {@link FilteringNotifier#getNotificationFilters()}
-   */
-  @Test
-  public void testGetNotificationFilters() {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
+		// Act and Assert
+		assertNull(new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore()))
+			.removeFilter("42"));
+	}
 
-    // Act and Assert
-    assertTrue(new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore()))
-        .getNotificationFilters()
-        .isEmpty());
-  }
+	/**
+	 * Test {@link FilteringNotifier#getNotificationFilters()}.
+	 * <p>
+	 * Method under test: {@link FilteringNotifier#getNotificationFilters()}
+	 */
+	@Test
+	public void testGetNotificationFilters() {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
+
+		// Act and Assert
+		assertTrue(new FilteringNotifier(delegate, new EventsourcingInstanceRepository(new InMemoryEventStore()))
+			.getNotificationFilters()
+			.isEmpty());
+	}
+
 }

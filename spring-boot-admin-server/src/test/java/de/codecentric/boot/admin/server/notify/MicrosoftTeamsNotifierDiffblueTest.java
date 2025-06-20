@@ -42,296 +42,311 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 
-@ContextConfiguration(classes = {MicrosoftTeamsNotifier.class})
+@ContextConfiguration(classes = { MicrosoftTeamsNotifier.class })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @DisabledInAotMode
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MicrosoftTeamsNotifierDiffblueTest {
-  @MockitoBean
-  private InstanceRepository instanceRepository;
 
-  @Autowired
-  private MicrosoftTeamsNotifier microsoftTeamsNotifier;
+	@MockitoBean
+	private InstanceRepository instanceRepository;
 
-  @MockitoBean
-  private RestTemplate restTemplate;
+	@Autowired
+	private MicrosoftTeamsNotifier microsoftTeamsNotifier;
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#MicrosoftTeamsNotifier(InstanceRepository, RestTemplate)}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#MicrosoftTeamsNotifier(InstanceRepository, RestTemplate)}
-   */
-  @Test
-  public void testNewMicrosoftTeamsNotifier() {
-    // Arrange and Act
-    MicrosoftTeamsNotifier actualMicrosoftTeamsNotifier = new MicrosoftTeamsNotifier(instanceRepository,
-        mock(RestTemplate.class));
+	@MockitoBean
+	private RestTemplate restTemplate;
 
-    // Assert
-    assertEquals("#{instance.registration.name} with id #{instance.id} changed status from #{lastStatus} to #{event"
-        + ".statusInfo.status}", actualMicrosoftTeamsNotifier.getStatusActivitySubtitle());
-    assertEquals("#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin",
-        actualMicrosoftTeamsNotifier.getDeregisterActivitySubtitle());
-    assertEquals("#{instance.registration.name} with id #{instance.id} has registered with Spring Boot Admin",
-        actualMicrosoftTeamsNotifier.getRegisterActivitySubtitle());
-    assertEquals("De-Registered", actualMicrosoftTeamsNotifier.getDeRegisteredTitle());
-    assertEquals("Registered", actualMicrosoftTeamsNotifier.getRegisteredTitle());
-    assertEquals("Spring Boot Admin Notification", actualMicrosoftTeamsNotifier.getMessageSummary());
-    assertEquals("Status Changed", actualMicrosoftTeamsNotifier.getStatusChangedTitle());
-    assertEquals("event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'",
-        actualMicrosoftTeamsNotifier.getThemeColor());
-    assertNull(actualMicrosoftTeamsNotifier.getWebhookUrl());
-    assertTrue(actualMicrosoftTeamsNotifier.isEnabled());
-    assertArrayEquals(new String[]{"UNKNOWN:UP"}, actualMicrosoftTeamsNotifier.getIgnoreChanges());
-  }
+	/**
+	 * Test
+	 * {@link MicrosoftTeamsNotifier#MicrosoftTeamsNotifier(InstanceRepository, RestTemplate)}.
+	 * <p>
+	 * Method under test:
+	 * {@link MicrosoftTeamsNotifier#MicrosoftTeamsNotifier(InstanceRepository, RestTemplate)}
+	 */
+	@Test
+	public void testNewMicrosoftTeamsNotifier() {
+		// Arrange and Act
+		MicrosoftTeamsNotifier actualMicrosoftTeamsNotifier = new MicrosoftTeamsNotifier(instanceRepository,
+				mock(RestTemplate.class));
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testShouldNotify() {
-    // Arrange
-    InstanceId instance = InstanceId.of("42");
-    Registration registration = Registration.builder()
-        .healthUrl("https://example.org/example")
-        .managementUrl("https://example.org/example")
-        .name("Name")
-        .serviceUrl("https://example.org/example")
-        .source("Source")
-        .build();
+		// Assert
+		assertEquals("#{instance.registration.name} with id #{instance.id} changed status from #{lastStatus} to #{event"
+				+ ".statusInfo.status}", actualMicrosoftTeamsNotifier.getStatusActivitySubtitle());
+		assertEquals("#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin",
+				actualMicrosoftTeamsNotifier.getDeregisterActivitySubtitle());
+		assertEquals("#{instance.registration.name} with id #{instance.id} has registered with Spring Boot Admin",
+				actualMicrosoftTeamsNotifier.getRegisterActivitySubtitle());
+		assertEquals("De-Registered", actualMicrosoftTeamsNotifier.getDeRegisteredTitle());
+		assertEquals("Registered", actualMicrosoftTeamsNotifier.getRegisteredTitle());
+		assertEquals("Spring Boot Admin Notification", actualMicrosoftTeamsNotifier.getMessageSummary());
+		assertEquals("Status Changed", actualMicrosoftTeamsNotifier.getStatusChangedTitle());
+		assertEquals(
+				"event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'",
+				actualMicrosoftTeamsNotifier.getThemeColor());
+		assertNull(actualMicrosoftTeamsNotifier.getWebhookUrl());
+		assertTrue(actualMicrosoftTeamsNotifier.isEnabled());
+		assertArrayEquals(new String[] { "UNKNOWN:UP" }, actualMicrosoftTeamsNotifier.getIgnoreChanges());
+	}
 
-    // Act and Assert
-    assertTrue(microsoftTeamsNotifier.shouldNotify(new InstanceRegisteredEvent(instance, 1L, registration), null));
-  }
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}.
+	 * <p>
+	 * Method under test:
+	 * {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testShouldNotify() {
+		// Arrange
+		InstanceId instance = InstanceId.of("42");
+		Registration registration = Registration.builder()
+			.healthUrl("https://example.org/example")
+			.managementUrl("https://example.org/example")
+			.name("Name")
+			.serviceUrl("https://example.org/example")
+			.source("Source")
+			.build();
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testShouldNotify2() {
-    // Arrange, Act and Assert
-    assertTrue(microsoftTeamsNotifier.shouldNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
-  }
+		// Act and Assert
+		assertTrue(microsoftTeamsNotifier.shouldNotify(new InstanceRegisteredEvent(instance, 1L, registration), null));
+	}
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}.
-   * <ul>
-   *   <li>When {@code null}.</li>
-   *   <li>Then return {@code false}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testShouldNotify_whenNull_thenReturnFalse() {
-    // Arrange, Act and Assert
-    assertFalse(microsoftTeamsNotifier.shouldNotify(null, null));
-  }
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}.
+	 * <p>
+	 * Method under test:
+	 * {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testShouldNotify2() {
+		// Arrange, Act and Assert
+		assertTrue(microsoftTeamsNotifier.shouldNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
+	}
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#evaluateExpression(EvaluationContext, Expression)}.
-   * <ul>
-   *   <li>When {@link StandardEvaluationContext#StandardEvaluationContext()}.</li>
-   *   <li>Then return {@code 42}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#evaluateExpression(EvaluationContext, Expression)}
-   */
-  @Test
-  public void testEvaluateExpression_whenStandardEvaluationContext_thenReturn42() {
-    // Arrange
-    StandardEvaluationContext context = new StandardEvaluationContext();
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}.
+	 * <ul>
+	 * <li>When {@code null}.</li>
+	 * <li>Then return {@code false}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link MicrosoftTeamsNotifier#shouldNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testShouldNotify_whenNull_thenReturnFalse() {
+		// Arrange, Act and Assert
+		assertFalse(microsoftTeamsNotifier.shouldNotify(null, null));
+	}
 
-    // Act and Assert
-    assertEquals("42", microsoftTeamsNotifier.evaluateExpression(context, new LiteralExpression("42")));
-  }
+	/**
+	 * Test
+	 * {@link MicrosoftTeamsNotifier#evaluateExpression(EvaluationContext, Expression)}.
+	 * <ul>
+	 * <li>When {@link StandardEvaluationContext#StandardEvaluationContext()}.</li>
+	 * <li>Then return {@code 42}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link MicrosoftTeamsNotifier#evaluateExpression(EvaluationContext, Expression)}
+	 */
+	@Test
+	public void testEvaluateExpression_whenStandardEvaluationContext_thenReturn42() {
+		// Arrange
+		StandardEvaluationContext context = new StandardEvaluationContext();
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#createEvaluationContext(InstanceEvent, Instance)}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#createEvaluationContext(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testCreateEvaluationContext() {
-    // Arrange and Act
-    EvaluationContext actualCreateEvaluationContextResult = microsoftTeamsNotifier
-        .createEvaluationContext(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null);
+		// Act and Assert
+		assertEquals("42", microsoftTeamsNotifier.evaluateExpression(context, new LiteralExpression("42")));
+	}
 
-    // Assert
-    Object value = actualCreateEvaluationContextResult.getRootObject().getValue();
-    assertTrue(value instanceof Map);
-    List<PropertyAccessor> propertyAccessors = actualCreateEvaluationContextResult.getPropertyAccessors();
-    assertEquals(2, propertyAccessors.size());
-    assertTrue(propertyAccessors.get(1) instanceof MapAccessor);
-    assertTrue(propertyAccessors.get(0) instanceof DataBindingPropertyAccessor);
-    assertTrue(actualCreateEvaluationContextResult instanceof SimpleEvaluationContext);
-    assertTrue(actualCreateEvaluationContextResult.getOperatorOverloader() instanceof StandardOperatorOverloader);
-    assertTrue(actualCreateEvaluationContextResult.getTypeComparator() instanceof StandardTypeComparator);
-    assertTrue(actualCreateEvaluationContextResult.getTypeConverter() instanceof StandardTypeConverter);
-    assertNull(actualCreateEvaluationContextResult.getBeanResolver());
-    assertEquals(3, ((Map<String, Object>) value).size());
-    List<ConstructorResolver> constructorResolvers = actualCreateEvaluationContextResult.getConstructorResolvers();
-    assertTrue(constructorResolvers.isEmpty());
-    assertTrue(((Map<String, Object>) value).containsKey("event"));
-    assertTrue(((Map<String, Object>) value).containsKey("instance"));
-    assertTrue(((Map<String, Object>) value).containsKey("lastStatus"));
-    assertTrue(actualCreateEvaluationContextResult.isAssignmentEnabled());
-    assertSame(constructorResolvers, actualCreateEvaluationContextResult.getIndexAccessors());
-    assertSame(constructorResolvers, actualCreateEvaluationContextResult.getMethodResolvers());
-  }
+	/**
+	 * Test
+	 * {@link MicrosoftTeamsNotifier#createEvaluationContext(InstanceEvent, Instance)}.
+	 * <p>
+	 * Method under test:
+	 * {@link MicrosoftTeamsNotifier#createEvaluationContext(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testCreateEvaluationContext() {
+		// Arrange and Act
+		EvaluationContext actualCreateEvaluationContextResult = microsoftTeamsNotifier
+			.createEvaluationContext(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null);
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#getThemeColor()}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#getThemeColor()}
-   */
-  @Test
-  public void testGetThemeColor() {
-    // Arrange, Act and Assert
-    assertEquals("event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'",
-        microsoftTeamsNotifier.getThemeColor());
-  }
+		// Assert
+		Object value = actualCreateEvaluationContextResult.getRootObject().getValue();
+		assertTrue(value instanceof Map);
+		List<PropertyAccessor> propertyAccessors = actualCreateEvaluationContextResult.getPropertyAccessors();
+		assertEquals(2, propertyAccessors.size());
+		assertTrue(propertyAccessors.get(1) instanceof MapAccessor);
+		assertTrue(propertyAccessors.get(0) instanceof DataBindingPropertyAccessor);
+		assertTrue(actualCreateEvaluationContextResult instanceof SimpleEvaluationContext);
+		assertTrue(actualCreateEvaluationContextResult.getOperatorOverloader() instanceof StandardOperatorOverloader);
+		assertTrue(actualCreateEvaluationContextResult.getTypeComparator() instanceof StandardTypeComparator);
+		assertTrue(actualCreateEvaluationContextResult.getTypeConverter() instanceof StandardTypeConverter);
+		assertNull(actualCreateEvaluationContextResult.getBeanResolver());
+		assertEquals(3, ((Map<String, Object>) value).size());
+		List<ConstructorResolver> constructorResolvers = actualCreateEvaluationContextResult.getConstructorResolvers();
+		assertTrue(constructorResolvers.isEmpty());
+		assertTrue(((Map<String, Object>) value).containsKey("event"));
+		assertTrue(((Map<String, Object>) value).containsKey("instance"));
+		assertTrue(((Map<String, Object>) value).containsKey("lastStatus"));
+		assertTrue(actualCreateEvaluationContextResult.isAssignmentEnabled());
+		assertSame(constructorResolvers, actualCreateEvaluationContextResult.getIndexAccessors());
+		assertSame(constructorResolvers, actualCreateEvaluationContextResult.getMethodResolvers());
+	}
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#setThemeColor(String)}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#setThemeColor(String)}
-   */
-  @Test
-  public void testSetThemeColor() {
-    // Arrange and Act
-    microsoftTeamsNotifier.setThemeColor("Theme Color");
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#getThemeColor()}.
+	 * <p>
+	 * Method under test: {@link MicrosoftTeamsNotifier#getThemeColor()}
+	 */
+	@Test
+	public void testGetThemeColor() {
+		// Arrange, Act and Assert
+		assertEquals(
+				"event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'",
+				microsoftTeamsNotifier.getThemeColor());
+	}
 
-    // Assert
-    assertEquals("Theme Color", microsoftTeamsNotifier.getThemeColor());
-  }
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#setThemeColor(String)}.
+	 * <p>
+	 * Method under test: {@link MicrosoftTeamsNotifier#setThemeColor(String)}
+	 */
+	@Test
+	public void testSetThemeColor() {
+		// Arrange and Act
+		microsoftTeamsNotifier.setThemeColor("Theme Color");
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#getDeregisterActivitySubtitle()}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#getDeregisterActivitySubtitle()}
-   */
-  @Test
-  public void testGetDeregisterActivitySubtitle() {
-    // Arrange, Act and Assert
-    assertEquals("#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin",
-        microsoftTeamsNotifier.getDeregisterActivitySubtitle());
-  }
+		// Assert
+		assertEquals("Theme Color", microsoftTeamsNotifier.getThemeColor());
+	}
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#setDeregisterActivitySubtitle(String)}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#setDeregisterActivitySubtitle(String)}
-   */
-  @Test
-  public void testSetDeregisterActivitySubtitle() {
-    // Arrange and Act
-    microsoftTeamsNotifier.setDeregisterActivitySubtitle("Dr");
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#getDeregisterActivitySubtitle()}.
+	 * <p>
+	 * Method under test: {@link MicrosoftTeamsNotifier#getDeregisterActivitySubtitle()}
+	 */
+	@Test
+	public void testGetDeregisterActivitySubtitle() {
+		// Arrange, Act and Assert
+		assertEquals("#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin",
+				microsoftTeamsNotifier.getDeregisterActivitySubtitle());
+	}
 
-    // Assert
-    assertEquals("Dr", microsoftTeamsNotifier.getDeregisterActivitySubtitle());
-  }
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#setDeregisterActivitySubtitle(String)}.
+	 * <p>
+	 * Method under test:
+	 * {@link MicrosoftTeamsNotifier#setDeregisterActivitySubtitle(String)}
+	 */
+	@Test
+	public void testSetDeregisterActivitySubtitle() {
+		// Arrange and Act
+		microsoftTeamsNotifier.setDeregisterActivitySubtitle("Dr");
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#getRegisterActivitySubtitle()}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#getRegisterActivitySubtitle()}
-   */
-  @Test
-  public void testGetRegisterActivitySubtitle() {
-    // Arrange, Act and Assert
-    assertEquals("#{instance.registration.name} with id #{instance.id} has registered with Spring Boot Admin",
-        microsoftTeamsNotifier.getRegisterActivitySubtitle());
-  }
+		// Assert
+		assertEquals("Dr", microsoftTeamsNotifier.getDeregisterActivitySubtitle());
+	}
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#setRegisterActivitySubtitle(String)}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#setRegisterActivitySubtitle(String)}
-   */
-  @Test
-  public void testSetRegisterActivitySubtitle() {
-    // Arrange and Act
-    microsoftTeamsNotifier.setRegisterActivitySubtitle("Dr");
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#getRegisterActivitySubtitle()}.
+	 * <p>
+	 * Method under test: {@link MicrosoftTeamsNotifier#getRegisterActivitySubtitle()}
+	 */
+	@Test
+	public void testGetRegisterActivitySubtitle() {
+		// Arrange, Act and Assert
+		assertEquals("#{instance.registration.name} with id #{instance.id} has registered with Spring Boot Admin",
+				microsoftTeamsNotifier.getRegisterActivitySubtitle());
+	}
 
-    // Assert
-    assertEquals("Dr", microsoftTeamsNotifier.getRegisterActivitySubtitle());
-  }
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#setRegisterActivitySubtitle(String)}.
+	 * <p>
+	 * Method under test:
+	 * {@link MicrosoftTeamsNotifier#setRegisterActivitySubtitle(String)}
+	 */
+	@Test
+	public void testSetRegisterActivitySubtitle() {
+		// Arrange and Act
+		microsoftTeamsNotifier.setRegisterActivitySubtitle("Dr");
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#getStatusActivitySubtitle()}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#getStatusActivitySubtitle()}
-   */
-  @Test
-  public void testGetStatusActivitySubtitle() {
-    // Arrange, Act and Assert
-    assertEquals("#{instance.registration.name} with id #{instance.id} changed status from #{lastStatus} to #{event"
-        + ".statusInfo.status}", microsoftTeamsNotifier.getStatusActivitySubtitle());
-  }
+		// Assert
+		assertEquals("Dr", microsoftTeamsNotifier.getRegisterActivitySubtitle());
+	}
 
-  /**
-   * Test {@link MicrosoftTeamsNotifier#setStatusActivitySubtitle(String)}.
-   * <p>
-   * Method under test: {@link MicrosoftTeamsNotifier#setStatusActivitySubtitle(String)}
-   */
-  @Test
-  public void testSetStatusActivitySubtitle() {
-    // Arrange and Act
-    microsoftTeamsNotifier.setStatusActivitySubtitle("Dr");
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#getStatusActivitySubtitle()}.
+	 * <p>
+	 * Method under test: {@link MicrosoftTeamsNotifier#getStatusActivitySubtitle()}
+	 */
+	@Test
+	public void testGetStatusActivitySubtitle() {
+		// Arrange, Act and Assert
+		assertEquals("#{instance.registration.name} with id #{instance.id} changed status from #{lastStatus} to #{event"
+				+ ".statusInfo.status}", microsoftTeamsNotifier.getStatusActivitySubtitle());
+	}
 
-    // Assert
-    assertEquals("Dr", microsoftTeamsNotifier.getStatusActivitySubtitle());
-  }
+	/**
+	 * Test {@link MicrosoftTeamsNotifier#setStatusActivitySubtitle(String)}.
+	 * <p>
+	 * Method under test: {@link MicrosoftTeamsNotifier#setStatusActivitySubtitle(String)}
+	 */
+	@Test
+	public void testSetStatusActivitySubtitle() {
+		// Arrange and Act
+		microsoftTeamsNotifier.setStatusActivitySubtitle("Dr");
 
-  /**
-   * Test getters and setters.
-   * <p>
-   * Methods under test:
-   * <ul>
-   *   <li>{@link MicrosoftTeamsNotifier#setDeRegisteredTitle(String)}
-   *   <li>{@link MicrosoftTeamsNotifier#setMessageSummary(String)}
-   *   <li>{@link MicrosoftTeamsNotifier#setRegisteredTitle(String)}
-   *   <li>{@link MicrosoftTeamsNotifier#setRestTemplate(RestTemplate)}
-   *   <li>{@link MicrosoftTeamsNotifier#setStatusChangedTitle(String)}
-   *   <li>{@link MicrosoftTeamsNotifier#setWebhookUrl(URI)}
-   *   <li>{@link MicrosoftTeamsNotifier#getDeRegisteredTitle()}
-   *   <li>{@link MicrosoftTeamsNotifier#getMessageSummary()}
-   *   <li>{@link MicrosoftTeamsNotifier#getRegisteredTitle()}
-   *   <li>{@link MicrosoftTeamsNotifier#getStatusChangedTitle()}
-   *   <li>{@link MicrosoftTeamsNotifier#getWebhookUrl()}
-   * </ul>
-   */
-  @Test
-  public void testGettersAndSetters() {
-    // Arrange
-    MicrosoftTeamsNotifier microsoftTeamsNotifier = new MicrosoftTeamsNotifier(
-        new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(RestTemplate.class));
+		// Assert
+		assertEquals("Dr", microsoftTeamsNotifier.getStatusActivitySubtitle());
+	}
 
-    // Act
-    microsoftTeamsNotifier.setDeRegisteredTitle("Dr");
-    microsoftTeamsNotifier.setMessageSummary("Message Summary");
-    microsoftTeamsNotifier.setRegisteredTitle("Dr");
-    microsoftTeamsNotifier.setRestTemplate(mock(RestTemplate.class));
-    microsoftTeamsNotifier.setStatusChangedTitle("Dr");
-    URI webhookUrl = PagerdutyNotifier.DEFAULT_URI;
-    microsoftTeamsNotifier.setWebhookUrl(webhookUrl);
-    String actualDeRegisteredTitle = microsoftTeamsNotifier.getDeRegisteredTitle();
-    String actualMessageSummary = microsoftTeamsNotifier.getMessageSummary();
-    String actualRegisteredTitle = microsoftTeamsNotifier.getRegisteredTitle();
-    String actualStatusChangedTitle = microsoftTeamsNotifier.getStatusChangedTitle();
-    URI actualWebhookUrl = microsoftTeamsNotifier.getWebhookUrl();
+	/**
+	 * Test getters and setters.
+	 * <p>
+	 * Methods under test:
+	 * <ul>
+	 * <li>{@link MicrosoftTeamsNotifier#setDeRegisteredTitle(String)}
+	 * <li>{@link MicrosoftTeamsNotifier#setMessageSummary(String)}
+	 * <li>{@link MicrosoftTeamsNotifier#setRegisteredTitle(String)}
+	 * <li>{@link MicrosoftTeamsNotifier#setRestTemplate(RestTemplate)}
+	 * <li>{@link MicrosoftTeamsNotifier#setStatusChangedTitle(String)}
+	 * <li>{@link MicrosoftTeamsNotifier#setWebhookUrl(URI)}
+	 * <li>{@link MicrosoftTeamsNotifier#getDeRegisteredTitle()}
+	 * <li>{@link MicrosoftTeamsNotifier#getMessageSummary()}
+	 * <li>{@link MicrosoftTeamsNotifier#getRegisteredTitle()}
+	 * <li>{@link MicrosoftTeamsNotifier#getStatusChangedTitle()}
+	 * <li>{@link MicrosoftTeamsNotifier#getWebhookUrl()}
+	 * </ul>
+	 */
+	@Test
+	public void testGettersAndSetters() {
+		// Arrange
+		MicrosoftTeamsNotifier microsoftTeamsNotifier = new MicrosoftTeamsNotifier(
+				new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(RestTemplate.class));
 
-    // Assert
-    assertEquals("Dr", actualDeRegisteredTitle);
-    assertEquals("Dr", actualRegisteredTitle);
-    assertEquals("Dr", actualStatusChangedTitle);
-    assertEquals("Message Summary", actualMessageSummary);
-    assertEquals("https://events.pagerduty.com/generic/2010-04-15/create_event.json", actualWebhookUrl.toString());
-    assertSame(webhookUrl, actualWebhookUrl);
-  }
+		// Act
+		microsoftTeamsNotifier.setDeRegisteredTitle("Dr");
+		microsoftTeamsNotifier.setMessageSummary("Message Summary");
+		microsoftTeamsNotifier.setRegisteredTitle("Dr");
+		microsoftTeamsNotifier.setRestTemplate(mock(RestTemplate.class));
+		microsoftTeamsNotifier.setStatusChangedTitle("Dr");
+		URI webhookUrl = PagerdutyNotifier.DEFAULT_URI;
+		microsoftTeamsNotifier.setWebhookUrl(webhookUrl);
+		String actualDeRegisteredTitle = microsoftTeamsNotifier.getDeRegisteredTitle();
+		String actualMessageSummary = microsoftTeamsNotifier.getMessageSummary();
+		String actualRegisteredTitle = microsoftTeamsNotifier.getRegisteredTitle();
+		String actualStatusChangedTitle = microsoftTeamsNotifier.getStatusChangedTitle();
+		URI actualWebhookUrl = microsoftTeamsNotifier.getWebhookUrl();
+
+		// Assert
+		assertEquals("Dr", actualDeRegisteredTitle);
+		assertEquals("Dr", actualRegisteredTitle);
+		assertEquals("Dr", actualStatusChangedTitle);
+		assertEquals("Message Summary", actualMessageSummary);
+		assertEquals("https://events.pagerduty.com/generic/2010-04-15/create_event.json", actualWebhookUrl.toString());
+		assertSame(webhookUrl, actualWebhookUrl);
+	}
+
 }

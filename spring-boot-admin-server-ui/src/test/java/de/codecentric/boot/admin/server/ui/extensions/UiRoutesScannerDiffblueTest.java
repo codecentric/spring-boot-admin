@@ -8,19 +8,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 class UiRoutesScannerDiffblueTest {
-  /**
-   * Test {@link UiRoutesScanner#scan(String[])}.
-   * <ul>
-   *   <li>Then return Empty.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link UiRoutesScanner#scan(String[])}
-   */
-  @Test
-  @DisplayName("Test scan(String[]); then return Empty")
-  @Tag("MaintainedByDiffblue")
-  void testScan_thenReturnEmpty() throws IOException {
-    // Arrange, Act and Assert
-    assertTrue(new UiRoutesScanner(new PathMatchingResourcePatternResolver()).scan("Locations").isEmpty());
-  }
+
+	/**
+	 * Test {@link UiRoutesScanner#scan(String[])}.
+	 * <ul>
+	 * <li>Then return Empty.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link UiRoutesScanner#scan(String[])}
+	 */
+	@Test
+	@DisplayName("Test scan(String[]); then return Empty")
+	@Tag("MaintainedByDiffblue")
+	void testScan_thenReturnEmpty() throws IOException {
+		// Arrange, Act and Assert
+		assertTrue(new UiRoutesScanner(new PathMatchingResourcePatternResolver()).scan("Locations").isEmpty());
+	}
+
 }

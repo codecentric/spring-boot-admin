@@ -11,54 +11,60 @@ import java.time.ZoneOffset;
 import org.junit.Test;
 
 public class InstanceRegistrationUpdatedEventDiffblueTest {
-  /**
-   * Test {@link InstanceRegistrationUpdatedEvent#InstanceRegistrationUpdatedEvent(InstanceId, long, Registration)}.
-   * <ul>
-   *   <li>Then return Registration is {@code null}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link InstanceRegistrationUpdatedEvent#InstanceRegistrationUpdatedEvent(InstanceId, long, Registration)}
-   */
-  @Test
-  public void testNewInstanceRegistrationUpdatedEvent_thenReturnRegistrationIsNull() {
-    // Arrange
-    InstanceId instance = InstanceId.of("42");
 
-    // Act
-    InstanceRegistrationUpdatedEvent actualInstanceRegistrationUpdatedEvent = new InstanceRegistrationUpdatedEvent(
-        instance, 1L, null);
+	/**
+	 * Test
+	 * {@link InstanceRegistrationUpdatedEvent#InstanceRegistrationUpdatedEvent(InstanceId, long, Registration)}.
+	 * <ul>
+	 * <li>Then return Registration is {@code null}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link InstanceRegistrationUpdatedEvent#InstanceRegistrationUpdatedEvent(InstanceId, long, Registration)}
+	 */
+	@Test
+	public void testNewInstanceRegistrationUpdatedEvent_thenReturnRegistrationIsNull() {
+		// Arrange
+		InstanceId instance = InstanceId.of("42");
 
-    // Assert
-    assertNull(actualInstanceRegistrationUpdatedEvent.getRegistration());
-    assertEquals(1L, actualInstanceRegistrationUpdatedEvent.getVersion());
-    assertEquals(InstanceRegistrationUpdatedEvent.TYPE, actualInstanceRegistrationUpdatedEvent.getType());
-    assertSame(instance, actualInstanceRegistrationUpdatedEvent.getInstance());
-  }
+		// Act
+		InstanceRegistrationUpdatedEvent actualInstanceRegistrationUpdatedEvent = new InstanceRegistrationUpdatedEvent(
+				instance, 1L, null);
 
-  /**
-   * Test {@link InstanceRegistrationUpdatedEvent#InstanceRegistrationUpdatedEvent(InstanceId, long, Instant, Registration)}.
-   * <ul>
-   *   <li>Then return Registration is {@code null}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link InstanceRegistrationUpdatedEvent#InstanceRegistrationUpdatedEvent(InstanceId, long, Instant, Registration)}
-   */
-  @Test
-  public void testNewInstanceRegistrationUpdatedEvent_thenReturnRegistrationIsNull2() {
-    // Arrange
-    InstanceId instance = InstanceId.of("42");
-    Instant timestamp = LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant();
+		// Assert
+		assertNull(actualInstanceRegistrationUpdatedEvent.getRegistration());
+		assertEquals(1L, actualInstanceRegistrationUpdatedEvent.getVersion());
+		assertEquals(InstanceRegistrationUpdatedEvent.TYPE, actualInstanceRegistrationUpdatedEvent.getType());
+		assertSame(instance, actualInstanceRegistrationUpdatedEvent.getInstance());
+	}
 
-    // Act
-    InstanceRegistrationUpdatedEvent actualInstanceRegistrationUpdatedEvent = new InstanceRegistrationUpdatedEvent(
-        instance, 1L, timestamp, null);
+	/**
+	 * Test
+	 * {@link InstanceRegistrationUpdatedEvent#InstanceRegistrationUpdatedEvent(InstanceId, long, Instant, Registration)}.
+	 * <ul>
+	 * <li>Then return Registration is {@code null}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link InstanceRegistrationUpdatedEvent#InstanceRegistrationUpdatedEvent(InstanceId, long, Instant, Registration)}
+	 */
+	@Test
+	public void testNewInstanceRegistrationUpdatedEvent_thenReturnRegistrationIsNull2() {
+		// Arrange
+		InstanceId instance = InstanceId.of("42");
+		Instant timestamp = LocalDate.of(1970, 1, 1).atStartOfDay().atZone(ZoneOffset.UTC).toInstant();
 
-    // Assert
-    assertNull(actualInstanceRegistrationUpdatedEvent.getRegistration());
-    assertEquals(1L, actualInstanceRegistrationUpdatedEvent.getVersion());
-    assertEquals(InstanceRegistrationUpdatedEvent.TYPE, actualInstanceRegistrationUpdatedEvent.getType());
-    assertSame(instance, actualInstanceRegistrationUpdatedEvent.getInstance());
-    Instant expectedTimestamp = timestamp.EPOCH;
-    assertSame(expectedTimestamp, actualInstanceRegistrationUpdatedEvent.getTimestamp());
-  }
+		// Act
+		InstanceRegistrationUpdatedEvent actualInstanceRegistrationUpdatedEvent = new InstanceRegistrationUpdatedEvent(
+				instance, 1L, timestamp, null);
+
+		// Assert
+		assertNull(actualInstanceRegistrationUpdatedEvent.getRegistration());
+		assertEquals(1L, actualInstanceRegistrationUpdatedEvent.getVersion());
+		assertEquals(InstanceRegistrationUpdatedEvent.TYPE, actualInstanceRegistrationUpdatedEvent.getType());
+		assertSame(instance, actualInstanceRegistrationUpdatedEvent.getInstance());
+		Instant expectedTimestamp = timestamp.EPOCH;
+		assertSame(expectedTimestamp, actualInstanceRegistrationUpdatedEvent.getTimestamp());
+	}
+
 }

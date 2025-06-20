@@ -30,143 +30,154 @@ import reactor.test.StepVerifier.FirstStep;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @RunWith(MockitoJUnitRunner.class)
 public class HazelcastNotificationTriggerDiffblueTest {
-  @Mock
-  private ConcurrentMap<InstanceId, Long> concurrentMap;
 
-  @InjectMocks
-  private HazelcastNotificationTrigger hazelcastNotificationTrigger;
+	@Mock
+	private ConcurrentMap<InstanceId, Long> concurrentMap;
 
-  @Mock
-  private Notifier notifier;
+	@InjectMocks
+	private HazelcastNotificationTrigger hazelcastNotificationTrigger;
 
-  /**
-   * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
-   * <p>
-   * Method under test: {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
-   */
-  @Test
-  public void testSendNotifications() {
-    // Arrange
-    Mono<Void> mono = mock(Mono.class);
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    when(mono.doOnError(Mockito.<Consumer<Throwable>>any()))
-        .thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
-    when(notifier.notify(Mockito.<InstanceEvent>any())).thenReturn(mono);
-    when(concurrentMap.replace(Mockito.<InstanceId>any(), Mockito.<Long>any(), Mockito.<Long>any())).thenReturn(true);
-    when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(0L);
+	@Mock
+	private Notifier notifier;
 
-    // Act
-    hazelcastNotificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
+	/**
+	 * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
+	 * <p>
+	 * Method under test:
+	 * {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
+	 */
+	@Test
+	public void testSendNotifications() {
+		// Arrange
+		Mono<Void> mono = mock(Mono.class);
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		when(mono.doOnError(Mockito.<Consumer<Throwable>>any()))
+			.thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
+		when(notifier.notify(Mockito.<InstanceEvent>any())).thenReturn(mono);
+		when(concurrentMap.replace(Mockito.<InstanceId>any(), Mockito.<Long>any(), Mockito.<Long>any()))
+			.thenReturn(true);
+		when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(0L);
 
-    // Assert
-    verify(notifier).notify(isA(InstanceEvent.class));
-    verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
-    verify(concurrentMap).replace(isA(InstanceId.class), eq(0L), eq(1L));
-    verify(mono).doOnError(isA(Consumer.class));
-  }
+		// Act
+		hazelcastNotificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
 
-  /**
-   * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
-   * <p>
-   * Method under test: {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
-   */
-  @Test
-  public void testSendNotifications2() {
-    // Arrange
-    ChannelSendOperator<Object> channelSendOperator = mock(ChannelSendOperator.class);
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    ChannelSendOperator<Object> channelSendOperator2 = new ChannelSendOperator<>(source, mock(Function.class));
+		// Assert
+		verify(notifier).notify(isA(InstanceEvent.class));
+		verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
+		verify(concurrentMap).replace(isA(InstanceId.class), eq(0L), eq(1L));
+		verify(mono).doOnError(isA(Consumer.class));
+	}
 
-    when(channelSendOperator.onErrorResume(Mockito.<Function<Throwable, Mono<Void>>>any()))
-        .thenReturn(channelSendOperator2);
-    Mono<Void> mono = mock(Mono.class);
-    when(mono.doOnError(Mockito.<Consumer<Throwable>>any())).thenReturn(channelSendOperator);
-    when(notifier.notify(Mockito.<InstanceEvent>any())).thenReturn(mono);
-    when(concurrentMap.replace(Mockito.<InstanceId>any(), Mockito.<Long>any(), Mockito.<Long>any())).thenReturn(true);
-    when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(0L);
+	/**
+	 * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
+	 * <p>
+	 * Method under test:
+	 * {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
+	 */
+	@Test
+	public void testSendNotifications2() {
+		// Arrange
+		ChannelSendOperator<Object> channelSendOperator = mock(ChannelSendOperator.class);
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		ChannelSendOperator<Object> channelSendOperator2 = new ChannelSendOperator<>(source, mock(Function.class));
 
-    // Act
-    Mono<Void> actualSendNotificationsResult = hazelcastNotificationTrigger
-        .sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
+		when(channelSendOperator.onErrorResume(Mockito.<Function<Throwable, Mono<Void>>>any()))
+			.thenReturn(channelSendOperator2);
+		Mono<Void> mono = mock(Mono.class);
+		when(mono.doOnError(Mockito.<Consumer<Throwable>>any())).thenReturn(channelSendOperator);
+		when(notifier.notify(Mockito.<InstanceEvent>any())).thenReturn(mono);
+		when(concurrentMap.replace(Mockito.<InstanceId>any(), Mockito.<Long>any(), Mockito.<Long>any()))
+			.thenReturn(true);
+		when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(0L);
 
-    // Assert
-    verify(notifier).notify(isA(InstanceEvent.class));
-    verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
-    verify(concurrentMap).replace(isA(InstanceId.class), eq(0L), eq(1L));
-    verify(mono).doOnError(isA(Consumer.class));
-    verify(channelSendOperator).onErrorResume(isA(Function.class));
-    assertSame(channelSendOperator2, actualSendNotificationsResult);
-  }
+		// Act
+		Mono<Void> actualSendNotificationsResult = hazelcastNotificationTrigger
+			.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
 
-  /**
-   * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
-   * <ul>
-   *   <li>Given {@link ConcurrentMap} {@link ConcurrentMap#getOrDefault(Object, Object)} return one.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
-   */
-  @Test
-  public void testSendNotifications_givenConcurrentMapGetOrDefaultReturnOne() throws AssertionError {
-    // Arrange
-    when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(1L);
+		// Assert
+		verify(notifier).notify(isA(InstanceEvent.class));
+		verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
+		verify(concurrentMap).replace(isA(InstanceId.class), eq(0L), eq(1L));
+		verify(mono).doOnError(isA(Consumer.class));
+		verify(channelSendOperator).onErrorResume(isA(Function.class));
+		assertSame(channelSendOperator2, actualSendNotificationsResult);
+	}
 
-    // Act and Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(hazelcastNotificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
-    createResult.expectComplete().verify();
-    verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
-  }
+	/**
+	 * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
+	 * <ul>
+	 * <li>Given {@link ConcurrentMap} {@link ConcurrentMap#getOrDefault(Object, Object)}
+	 * return one.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
+	 */
+	@Test
+	public void testSendNotifications_givenConcurrentMapGetOrDefaultReturnOne() throws AssertionError {
+		// Arrange
+		when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(1L);
 
-  /**
-   * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
-   * <ul>
-   *   <li>Then calls {@link ConcurrentMap#putIfAbsent(Object, Object)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
-   */
-  @Test
-  public void testSendNotifications_thenCallsPutIfAbsent() {
-    // Arrange
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    when(notifier.notify(Mockito.<InstanceEvent>any()))
-        .thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
-    when(concurrentMap.putIfAbsent(Mockito.<InstanceId>any(), Mockito.<Long>any())).thenReturn(null);
-    when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(-1L);
+		// Act and Assert
+		FirstStep<Void> createResult = StepVerifier.create(
+				hazelcastNotificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
+		createResult.expectComplete().verify();
+		verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
+	}
 
-    // Act
-    hazelcastNotificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
+	/**
+	 * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
+	 * <ul>
+	 * <li>Then calls {@link ConcurrentMap#putIfAbsent(Object, Object)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
+	 */
+	@Test
+	public void testSendNotifications_thenCallsPutIfAbsent() {
+		// Arrange
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		when(notifier.notify(Mockito.<InstanceEvent>any()))
+			.thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
+		when(concurrentMap.putIfAbsent(Mockito.<InstanceId>any(), Mockito.<Long>any())).thenReturn(null);
+		when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(-1L);
 
-    // Assert
-    verify(notifier).notify(isA(InstanceEvent.class));
-    verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
-    verify(concurrentMap).putIfAbsent(isA(InstanceId.class), eq(1L));
-  }
+		// Act
+		hazelcastNotificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
 
-  /**
-   * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
-   * <ul>
-   *   <li>Then calls {@link ConcurrentMap#replace(Object, Object, Object)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
-   */
-  @Test
-  public void testSendNotifications_thenCallsReplace() {
-    // Arrange
-    Flux<?> source = Flux.fromIterable(new ArrayList<>());
-    when(notifier.notify(Mockito.<InstanceEvent>any()))
-        .thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
-    when(concurrentMap.replace(Mockito.<InstanceId>any(), Mockito.<Long>any(), Mockito.<Long>any())).thenReturn(true);
-    when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(0L);
+		// Assert
+		verify(notifier).notify(isA(InstanceEvent.class));
+		verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
+		verify(concurrentMap).putIfAbsent(isA(InstanceId.class), eq(1L));
+	}
 
-    // Act
-    hazelcastNotificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
+	/**
+	 * Test {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}.
+	 * <ul>
+	 * <li>Then calls {@link ConcurrentMap#replace(Object, Object, Object)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link HazelcastNotificationTrigger#sendNotifications(InstanceEvent)}
+	 */
+	@Test
+	public void testSendNotifications_thenCallsReplace() {
+		// Arrange
+		Flux<?> source = Flux.fromIterable(new ArrayList<>());
+		when(notifier.notify(Mockito.<InstanceEvent>any()))
+			.thenReturn(new ChannelSendOperator<>(source, mock(Function.class)));
+		when(concurrentMap.replace(Mockito.<InstanceId>any(), Mockito.<Long>any(), Mockito.<Long>any()))
+			.thenReturn(true);
+		when(concurrentMap.getOrDefault(Mockito.<Object>any(), Mockito.<Long>any())).thenReturn(0L);
 
-    // Assert
-    verify(notifier).notify(isA(InstanceEvent.class));
-    verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
-    verify(concurrentMap).replace(isA(InstanceId.class), eq(0L), eq(1L));
-  }
+		// Act
+		hazelcastNotificationTrigger.sendNotifications(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L));
+
+		// Assert
+		verify(notifier).notify(isA(InstanceEvent.class));
+		verify(concurrentMap).getOrDefault(isA(Object.class), eq(-1L));
+		verify(concurrentMap).replace(isA(InstanceId.class), eq(0L), eq(1L));
+	}
+
 }

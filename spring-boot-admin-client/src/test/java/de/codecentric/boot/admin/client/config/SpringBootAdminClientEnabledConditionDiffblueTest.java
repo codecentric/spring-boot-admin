@@ -14,29 +14,33 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 class SpringBootAdminClientEnabledConditionDiffblueTest {
-  /**
-   * Test {@link SpringBootAdminClientEnabledCondition#getMatchOutcome(ConditionContext, AnnotatedTypeMetadata)}.
-   * <p>
-   * Method under test: {@link SpringBootAdminClientEnabledCondition#getMatchOutcome(ConditionContext, AnnotatedTypeMetadata)}
-   */
-  @Test
-  @DisplayName("Test getMatchOutcome(ConditionContext, AnnotatedTypeMetadata)")
-  @Tag("MaintainedByDiffblue")
-  void testGetMatchOutcome() {
-    // Arrange
-    SpringBootAdminClientEnabledCondition springBootAdminClientEnabledCondition = new SpringBootAdminClientEnabledCondition();
-    ConditionContext context = mock(ConditionContext.class);
-    when(context.getEnvironment()).thenReturn(new StandardReactiveWebEnvironment());
 
-    // Act
-    ConditionOutcome actualMatchOutcome = springBootAdminClientEnabledCondition.getMatchOutcome(context,
-        mock(AnnotatedTypeMetadata.class));
+	/**
+	 * Test
+	 * {@link SpringBootAdminClientEnabledCondition#getMatchOutcome(ConditionContext, AnnotatedTypeMetadata)}.
+	 * <p>
+	 * Method under test:
+	 * {@link SpringBootAdminClientEnabledCondition#getMatchOutcome(ConditionContext, AnnotatedTypeMetadata)}
+	 */
+	@Test
+	@DisplayName("Test getMatchOutcome(ConditionContext, AnnotatedTypeMetadata)")
+	@Tag("MaintainedByDiffblue")
+	void testGetMatchOutcome() {
+		// Arrange
+		SpringBootAdminClientEnabledCondition springBootAdminClientEnabledCondition = new SpringBootAdminClientEnabledCondition();
+		ConditionContext context = mock(ConditionContext.class);
+		when(context.getEnvironment()).thenReturn(new StandardReactiveWebEnvironment());
 
-    // Assert
-    verify(context).getEnvironment();
-    assertEquals("Spring Boot Client is disabled, because 'spring.boot.admin.client.url' is empty.",
-        actualMatchOutcome.getMessage());
-    assertFalse(actualMatchOutcome.getConditionMessage().isEmpty());
-    assertFalse(actualMatchOutcome.isMatch());
-  }
+		// Act
+		ConditionOutcome actualMatchOutcome = springBootAdminClientEnabledCondition.getMatchOutcome(context,
+				mock(AnnotatedTypeMetadata.class));
+
+		// Assert
+		verify(context).getEnvironment();
+		assertEquals("Spring Boot Client is disabled, because 'spring.boot.admin.client.url' is empty.",
+				actualMatchOutcome.getMessage());
+		assertFalse(actualMatchOutcome.getConditionMessage().isEmpty());
+		assertFalse(actualMatchOutcome.isMatch());
+	}
+
 }

@@ -33,286 +33,327 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
-@ContextConfiguration(classes = {InstanceExchangeFiltersConfiguration.class, AdminServerProperties.class,
-    CookieStoreConfiguration.class})
+@ContextConfiguration(classes = { InstanceExchangeFiltersConfiguration.class, AdminServerProperties.class,
+		CookieStoreConfiguration.class })
 @DisabledInAotMode
 @RunWith(SpringJUnit4ClassRunner.class)
 public class AdminServerInstanceWebClientConfigurationDiffblueTest {
-  @Autowired
-  private CookieStoreConfiguration cookieStoreConfiguration;
 
-  @Autowired
-  private InstanceExchangeFiltersConfiguration instanceExchangeFiltersConfiguration;
+	@Autowired
+	private CookieStoreConfiguration cookieStoreConfiguration;
 
-  @MockitoBean
-  private PerInstanceCookieStore perInstanceCookieStore;
+	@Autowired
+	private InstanceExchangeFiltersConfiguration instanceExchangeFiltersConfiguration;
 
-  @MockitoBean
-  private Publisher publisher;
+	@MockitoBean
+	private PerInstanceCookieStore perInstanceCookieStore;
 
-  /**
-   * Test CookieStoreConfiguration {@link CookieStoreConfiguration#cookieStore()}.
-   * <ul>
-   *   <li>Then return {@link JdkPerInstanceCookieStore}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link CookieStoreConfiguration#cookieStore()}
-   */
-  @Test
-  public void testCookieStoreConfigurationCookieStore_thenReturnJdkPerInstanceCookieStore() {
-    // Arrange, Act and Assert
-    assertTrue(cookieStoreConfiguration.cookieStore() instanceof JdkPerInstanceCookieStore);
-  }
+	@MockitoBean
+	private Publisher publisher;
 
-  /**
-   * Test InstanceExchangeFiltersConfiguration {@link InstanceExchangeFiltersConfiguration#filterInstanceWebClientCustomizer(List)}.
-   * <p>
-   * Method under test: {@link InstanceExchangeFiltersConfiguration#filterInstanceWebClientCustomizer(List)}
-   */
-  @Test
-  public void testInstanceExchangeFiltersConfigurationFilterInstanceWebClientCustomizer() {
-    // Arrange and Act
-    InstanceWebClientCustomizer actualFilterInstanceWebClientCustomizerResult = instanceExchangeFiltersConfiguration
-        .filterInstanceWebClientCustomizer(new ArrayList<>());
-    Builder instanceWebClientBuilder = mock(Builder.class);
-    when(instanceWebClientBuilder.filters(Mockito.<Consumer<List<InstanceExchangeFilterFunction>>>any()))
-        .thenReturn(InstanceWebClient.builder());
-    actualFilterInstanceWebClientCustomizerResult.customize(instanceWebClientBuilder);
+	/**
+	 * Test CookieStoreConfiguration {@link CookieStoreConfiguration#cookieStore()}.
+	 * <ul>
+	 * <li>Then return {@link JdkPerInstanceCookieStore}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link CookieStoreConfiguration#cookieStore()}
+	 */
+	@Test
+	public void testCookieStoreConfigurationCookieStore_thenReturnJdkPerInstanceCookieStore() {
+		// Arrange, Act and Assert
+		assertTrue(cookieStoreConfiguration.cookieStore() instanceof JdkPerInstanceCookieStore);
+	}
 
-    // Assert
-    verify(instanceWebClientBuilder).filters(isA(Consumer.class));
-  }
+	/**
+	 * Test InstanceExchangeFiltersConfiguration
+	 * {@link InstanceExchangeFiltersConfiguration#filterInstanceWebClientCustomizer(List)}.
+	 * <p>
+	 * Method under test:
+	 * {@link InstanceExchangeFiltersConfiguration#filterInstanceWebClientCustomizer(List)}
+	 */
+	@Test
+	public void testInstanceExchangeFiltersConfigurationFilterInstanceWebClientCustomizer() {
+		// Arrange and Act
+		InstanceWebClientCustomizer actualFilterInstanceWebClientCustomizerResult = instanceExchangeFiltersConfiguration
+			.filterInstanceWebClientCustomizer(new ArrayList<>());
+		Builder instanceWebClientBuilder = mock(Builder.class);
+		when(instanceWebClientBuilder.filters(Mockito.<Consumer<List<InstanceExchangeFilterFunction>>>any()))
+			.thenReturn(InstanceWebClient.builder());
+		actualFilterInstanceWebClientCustomizerResult.customize(instanceWebClientBuilder);
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#beansLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#beansLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationBeansLegacyEndpointConverter() throws AssertionError {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		verify(instanceWebClientBuilder).filters(isA(Consumer.class));
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualBeansLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .beansLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#beansLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#beansLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationBeansLegacyEndpointConverter() throws AssertionError {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertFalse(actualBeansLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-    FirstStep<DataBuffer> createResult = StepVerifier.create(actualBeansLegacyEndpointConverterResult.convert(null));
-    createResult.expectError().verify();
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualBeansLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.beansLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#configpropsLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#configpropsLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationConfigpropsLegacyEndpointConverter() throws AssertionError {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertFalse(actualBeansLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+		FirstStep<DataBuffer> createResult = StepVerifier
+			.create(actualBeansLegacyEndpointConverterResult.convert(null));
+		createResult.expectError().verify();
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualConfigpropsLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .configpropsLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#configpropsLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#configpropsLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationConfigpropsLegacyEndpointConverter() throws AssertionError {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertFalse(actualConfigpropsLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-    FirstStep<DataBuffer> createResult = StepVerifier
-        .create(actualConfigpropsLegacyEndpointConverterResult.convert(null));
-    createResult.expectError().verify();
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualConfigpropsLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.configpropsLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#envLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#envLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationEnvLegacyEndpointConverter() throws AssertionError {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertFalse(actualConfigpropsLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+		FirstStep<DataBuffer> createResult = StepVerifier
+			.create(actualConfigpropsLegacyEndpointConverterResult.convert(null));
+		createResult.expectError().verify();
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualEnvLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .envLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#envLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#envLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationEnvLegacyEndpointConverter() throws AssertionError {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertFalse(actualEnvLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-    FirstStep<DataBuffer> createResult = StepVerifier.create(actualEnvLegacyEndpointConverterResult.convert(null));
-    createResult.expectError().verify();
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualEnvLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.envLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#flywayLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#flywayLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationFlywayLegacyEndpointConverter() throws AssertionError {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertFalse(actualEnvLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+		FirstStep<DataBuffer> createResult = StepVerifier.create(actualEnvLegacyEndpointConverterResult.convert(null));
+		createResult.expectError().verify();
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualFlywayLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .flywayLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#flywayLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#flywayLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationFlywayLegacyEndpointConverter() throws AssertionError {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertFalse(actualFlywayLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-    FirstStep<DataBuffer> createResult = StepVerifier.create(actualFlywayLegacyEndpointConverterResult.convert(null));
-    createResult.expectError().verify();
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualFlywayLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.flywayLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#healthLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#healthLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationHealthLegacyEndpointConverter() throws AssertionError {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertFalse(actualFlywayLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+		FirstStep<DataBuffer> createResult = StepVerifier
+			.create(actualFlywayLegacyEndpointConverterResult.convert(null));
+		createResult.expectError().verify();
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualHealthLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .healthLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#healthLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#healthLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationHealthLegacyEndpointConverter() throws AssertionError {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertFalse(actualHealthLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-    FirstStep<DataBuffer> createResult = StepVerifier.create(actualHealthLegacyEndpointConverterResult.convert(null));
-    createResult.expectError().verify();
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualHealthLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.healthLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#httptraceLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#httptraceLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationHttptraceLegacyEndpointConverter() throws AssertionError {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertFalse(actualHealthLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+		FirstStep<DataBuffer> createResult = StepVerifier
+			.create(actualHealthLegacyEndpointConverterResult.convert(null));
+		createResult.expectError().verify();
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualHttptraceLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .httptraceLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#httptraceLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#httptraceLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationHttptraceLegacyEndpointConverter() throws AssertionError {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertFalse(actualHttptraceLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-    FirstStep<DataBuffer> createResult = StepVerifier
-        .create(actualHttptraceLegacyEndpointConverterResult.convert(null));
-    createResult.expectError().verify();
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualHttptraceLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.httptraceLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#infoLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#infoLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationInfoLegacyEndpointConverter() {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertFalse(actualHttptraceLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+		FirstStep<DataBuffer> createResult = StepVerifier
+			.create(actualHttptraceLegacyEndpointConverterResult.convert(null));
+		createResult.expectError().verify();
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualInfoLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .infoLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#infoLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#infoLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationInfoLegacyEndpointConverter() {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertNull(actualInfoLegacyEndpointConverterResult.convert(null));
-    assertFalse(actualInfoLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualInfoLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.infoLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#liquibaseLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#liquibaseLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationLiquibaseLegacyEndpointConverter() throws AssertionError {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertNull(actualInfoLegacyEndpointConverterResult.convert(null));
+		assertFalse(actualInfoLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualLiquibaseLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .liquibaseLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#liquibaseLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#liquibaseLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationLiquibaseLegacyEndpointConverter() throws AssertionError {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertFalse(actualLiquibaseLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-    FirstStep<DataBuffer> createResult = StepVerifier
-        .create(actualLiquibaseLegacyEndpointConverterResult.convert(null));
-    createResult.expectError().verify();
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualLiquibaseLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.liquibaseLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#mappingsLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#mappingsLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationMappingsLegacyEndpointConverter() throws AssertionError {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertFalse(actualLiquibaseLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+		FirstStep<DataBuffer> createResult = StepVerifier
+			.create(actualLiquibaseLegacyEndpointConverterResult.convert(null));
+		createResult.expectError().verify();
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualMappingsLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .mappingsLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#mappingsLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#mappingsLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationMappingsLegacyEndpointConverter() throws AssertionError {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertFalse(actualMappingsLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-    FirstStep<DataBuffer> createResult = StepVerifier.create(actualMappingsLegacyEndpointConverterResult.convert(null));
-    createResult.expectError().verify();
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualMappingsLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.mappingsLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#startupLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#startupLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationStartupLegacyEndpointConverter() {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertFalse(actualMappingsLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+		FirstStep<DataBuffer> createResult = StepVerifier
+			.create(actualMappingsLegacyEndpointConverterResult.convert(null));
+		createResult.expectError().verify();
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualStartupLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .startupLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#startupLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#startupLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationStartupLegacyEndpointConverter() {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertNull(actualStartupLegacyEndpointConverterResult.convert(null));
-    assertFalse(actualStartupLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualStartupLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.startupLegacyEndpointConverter();
 
-  /**
-   * Test LegaycEndpointConvertersConfiguration {@link LegaycEndpointConvertersConfiguration#threaddumpLegacyEndpointConverter()}.
-   * <p>
-   * Method under test: {@link LegaycEndpointConvertersConfiguration#threaddumpLegacyEndpointConverter()}
-   */
-  @Test
-  public void testLegaycEndpointConvertersConfigurationThreaddumpLegacyEndpointConverter() throws AssertionError {
-    //   Diffblue Cover was unable to create a Spring-specific test for this Spring method.
-    //   Run dcover create --keep-partial-tests to gain insights into why
-    //   a non-Spring test was created.
+		// Assert
+		assertNull(actualStartupLegacyEndpointConverterResult.convert(null));
+		assertFalse(actualStartupLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+	}
 
-    // Arrange and Act
-    LegacyEndpointConverter actualThreaddumpLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
-        .threaddumpLegacyEndpointConverter();
+	/**
+	 * Test LegaycEndpointConvertersConfiguration
+	 * {@link LegaycEndpointConvertersConfiguration#threaddumpLegacyEndpointConverter()}.
+	 * <p>
+	 * Method under test:
+	 * {@link LegaycEndpointConvertersConfiguration#threaddumpLegacyEndpointConverter()}
+	 */
+	@Test
+	public void testLegaycEndpointConvertersConfigurationThreaddumpLegacyEndpointConverter() throws AssertionError {
+		// Diffblue Cover was unable to create a Spring-specific test for this Spring
+		// method.
+		// Run dcover create --keep-partial-tests to gain insights into why
+		// a non-Spring test was created.
 
-    // Assert
-    assertFalse(actualThreaddumpLegacyEndpointConverterResult.canConvert("Endpoint Id"));
-    FirstStep<DataBuffer> createResult = StepVerifier
-        .create(actualThreaddumpLegacyEndpointConverterResult.convert(null));
-    createResult.expectError().verify();
-  }
+		// Arrange and Act
+		LegacyEndpointConverter actualThreaddumpLegacyEndpointConverterResult = new LegaycEndpointConvertersConfiguration()
+			.threaddumpLegacyEndpointConverter();
+
+		// Assert
+		assertFalse(actualThreaddumpLegacyEndpointConverterResult.canConvert("Endpoint Id"));
+		FirstStep<DataBuffer> createResult = StepVerifier
+			.create(actualThreaddumpLegacyEndpointConverterResult.convert(null));
+		createResult.expectError().verify();
+	}
+
 }

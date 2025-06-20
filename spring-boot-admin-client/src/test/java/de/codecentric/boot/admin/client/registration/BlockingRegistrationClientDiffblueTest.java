@@ -20,52 +20,54 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-@ContextConfiguration(classes = {BlockingRegistrationClient.class})
+@ContextConfiguration(classes = { BlockingRegistrationClient.class })
 @DisabledInAotMode
 @ExtendWith(SpringExtension.class)
 class BlockingRegistrationClientDiffblueTest {
-  @Autowired
-  private BlockingRegistrationClient blockingRegistrationClient;
 
-  @MockitoBean
-  private RestTemplate restTemplate;
+	@Autowired
+	private BlockingRegistrationClient blockingRegistrationClient;
 
-  /**
-   * Test {@link BlockingRegistrationClient#deregister(String, String)}.
-   * <p>
-   * Method under test: {@link BlockingRegistrationClient#deregister(String, String)}
-   */
-  @Test
-  @DisplayName("Test deregister(String, String)")
-  @Tag("MaintainedByDiffblue")
-  void testDeregister() throws RestClientException {
-    // Arrange
-    doNothing().when(restTemplate).delete(Mockito.<String>any(), isA(Object[].class));
+	@MockitoBean
+	private RestTemplate restTemplate;
 
-    // Act
-    blockingRegistrationClient.deregister("https://example.org/example", "42");
+	/**
+	 * Test {@link BlockingRegistrationClient#deregister(String, String)}.
+	 * <p>
+	 * Method under test: {@link BlockingRegistrationClient#deregister(String, String)}
+	 */
+	@Test
+	@DisplayName("Test deregister(String, String)")
+	@Tag("MaintainedByDiffblue")
+	void testDeregister() throws RestClientException {
+		// Arrange
+		doNothing().when(restTemplate).delete(Mockito.<String>any(), isA(Object[].class));
 
-    // Assert
-    verify(restTemplate).delete(eq("https://example.org/example/42"), isA(Object[].class));
-  }
+		// Act
+		blockingRegistrationClient.deregister("https://example.org/example", "42");
 
-  /**
-   * Test {@link BlockingRegistrationClient#createRequestHeaders()}.
-   * <p>
-   * Method under test: {@link BlockingRegistrationClient#createRequestHeaders()}
-   */
-  @Test
-  @DisplayName("Test createRequestHeaders()")
-  @Tag("MaintainedByDiffblue")
-  void testCreateRequestHeaders() {
-    // Arrange and Act
-    HttpHeaders actualCreateRequestHeadersResult = blockingRegistrationClient.createRequestHeaders();
+		// Assert
+		verify(restTemplate).delete(eq("https://example.org/example/42"), isA(Object[].class));
+	}
 
-    // Assert
-    assertEquals(2, actualCreateRequestHeadersResult.size());
-    List<String> getResult = actualCreateRequestHeadersResult.get(HttpHeaders.CONTENT_TYPE);
-    assertEquals(1, getResult.size());
-    assertEquals("application/json", getResult.get(0));
-    assertEquals(getResult, actualCreateRequestHeadersResult.get(HttpHeaders.ACCEPT));
-  }
+	/**
+	 * Test {@link BlockingRegistrationClient#createRequestHeaders()}.
+	 * <p>
+	 * Method under test: {@link BlockingRegistrationClient#createRequestHeaders()}
+	 */
+	@Test
+	@DisplayName("Test createRequestHeaders()")
+	@Tag("MaintainedByDiffblue")
+	void testCreateRequestHeaders() {
+		// Arrange and Act
+		HttpHeaders actualCreateRequestHeadersResult = blockingRegistrationClient.createRequestHeaders();
+
+		// Assert
+		assertEquals(2, actualCreateRequestHeadersResult.size());
+		List<String> getResult = actualCreateRequestHeadersResult.get(HttpHeaders.CONTENT_TYPE);
+		assertEquals(1, getResult.size());
+		assertEquals("application/json", getResult.get(0));
+		assertEquals(getResult, actualCreateRequestHeadersResult.get(HttpHeaders.ACCEPT));
+	}
+
 }

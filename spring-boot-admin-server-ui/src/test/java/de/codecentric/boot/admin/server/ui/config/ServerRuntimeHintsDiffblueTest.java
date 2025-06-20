@@ -16,34 +16,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ContextConfiguration(classes = {ServerRuntimeHints.class})
+@ContextConfiguration(classes = { ServerRuntimeHints.class })
 @ExtendWith(SpringExtension.class)
 class ServerRuntimeHintsDiffblueTest {
-  @Autowired
-  private ServerRuntimeHints serverRuntimeHints;
 
-  /**
-   * Test {@link ServerRuntimeHints#registerHints(RuntimeHints, ClassLoader)}.
-   * <p>
-   * Method under test: {@link ServerRuntimeHints#registerHints(RuntimeHints, ClassLoader)}
-   */
-  @Test
-  @DisplayName("Test registerHints(RuntimeHints, ClassLoader)")
-  @Tag("MaintainedByDiffblue")
-  void testRegisterHints() {
-    // Arrange
-    RuntimeHints hints = new RuntimeHints();
+	@Autowired
+	private ServerRuntimeHints serverRuntimeHints;
 
-    // Act
-    serverRuntimeHints.registerHints(hints, new MLet());
+	/**
+	 * Test {@link ServerRuntimeHints#registerHints(RuntimeHints, ClassLoader)}.
+	 * <p>
+	 * Method under test:
+	 * {@link ServerRuntimeHints#registerHints(RuntimeHints, ClassLoader)}
+	 */
+	@Test
+	@DisplayName("Test registerHints(RuntimeHints, ClassLoader)")
+	@Tag("MaintainedByDiffblue")
+	void testRegisterHints() {
+		// Arrange
+		RuntimeHints hints = new RuntimeHints();
 
-    // Assert
-    Stream<JavaSerializationHint> javaSerializationHintsResult = hints.serialization().javaSerializationHints();
-    List<JavaSerializationHint> collectResult = javaSerializationHintsResult.limit(5).collect(Collectors.toList());
-    assertEquals(5, collectResult.size());
-    assertNull(collectResult.get(0).getReachableType());
-    assertNull(collectResult.get(1).getReachableType());
-    assertNull(collectResult.get(3).getReachableType());
-    assertNull(collectResult.get(4).getReachableType());
-  }
+		// Act
+		serverRuntimeHints.registerHints(hints, new MLet());
+
+		// Assert
+		Stream<JavaSerializationHint> javaSerializationHintsResult = hints.serialization().javaSerializationHints();
+		List<JavaSerializationHint> collectResult = javaSerializationHintsResult.limit(5).collect(Collectors.toList());
+		assertEquals(5, collectResult.size());
+		assertNull(collectResult.get(0).getReachableType());
+		assertNull(collectResult.get(1).getReachableType());
+		assertNull(collectResult.get(3).getReachableType());
+		assertNull(collectResult.get(4).getReachableType());
+	}
+
 }

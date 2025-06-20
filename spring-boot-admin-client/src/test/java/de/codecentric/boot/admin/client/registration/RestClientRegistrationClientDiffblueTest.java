@@ -27,79 +27,84 @@ import org.springframework.web.client.RestClient.RequestBodySpec;
 import org.springframework.web.client.RestClient.RequestBodyUriSpec;
 import org.springframework.web.client.RestClient.ResponseSpec;
 
-@ContextConfiguration(classes = {RestClientRegistrationClient.class})
+@ContextConfiguration(classes = { RestClientRegistrationClient.class })
 @DisabledInAotMode
 @ExtendWith(SpringExtension.class)
 class RestClientRegistrationClientDiffblueTest {
-  @MockitoBean
-  private RestClient restClient;
 
-  @Autowired
-  private RestClientRegistrationClient restClientRegistrationClient;
+	@MockitoBean
+	private RestClient restClient;
 
-  /**
-   * Test {@link RestClientRegistrationClient#register(String, Application)}.
-   * <ul>
-   *   <li>Given {@link HashMap#HashMap()} {@code id} is {@code 42}.</li>
-   *   <li>Then return {@code 42}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link RestClientRegistrationClient#register(String, Application)}
-   */
-  @Test
-  @DisplayName("Test register(String, Application); given HashMap() 'id' is '42'; then return '42'")
-  @Tag("MaintainedByDiffblue")
-  void testRegister_givenHashMapIdIs42_thenReturn42() {
-    // Arrange
-    HashMap<String, Object> stringObjectMap = new HashMap<>();
-    stringObjectMap.put("id", "42");
-    ResponseSpec responseSpec = mock(ResponseSpec.class);
-    when(responseSpec.body(Mockito.<ParameterizedTypeReference<Map<String, Object>>>any())).thenReturn(stringObjectMap);
-    RequestBodySpec requestBodySpec = mock(RequestBodySpec.class);
-    when(requestBodySpec.retrieve()).thenReturn(responseSpec);
-    RequestBodySpec requestBodySpec2 = mock(RequestBodySpec.class);
-    when(requestBodySpec2.body(Mockito.<Object>any())).thenReturn(requestBodySpec);
-    RequestBodySpec requestBodySpec3 = mock(RequestBodySpec.class);
-    when(requestBodySpec3.headers(Mockito.<Consumer<HttpHeaders>>any())).thenReturn(requestBodySpec2);
-    RequestBodyUriSpec requestBodyUriSpec = mock(RequestBodyUriSpec.class);
-    when(requestBodyUriSpec.uri(Mockito.<String>any(), isA(Object[].class))).thenReturn(requestBodySpec3);
-    when(restClient.post()).thenReturn(requestBodyUriSpec);
+	@Autowired
+	private RestClientRegistrationClient restClientRegistrationClient;
 
-    // Act
-    String actualRegisterResult = restClientRegistrationClient.register("https://example.org/example",
-        new Application("Name", "https://example.org/example", "https://example.org/example",
-            "https://example.org/example", new HashMap<>()));
+	/**
+	 * Test {@link RestClientRegistrationClient#register(String, Application)}.
+	 * <ul>
+	 * <li>Given {@link HashMap#HashMap()} {@code id} is {@code 42}.</li>
+	 * <li>Then return {@code 42}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link RestClientRegistrationClient#register(String, Application)}
+	 */
+	@Test
+	@DisplayName("Test register(String, Application); given HashMap() 'id' is '42'; then return '42'")
+	@Tag("MaintainedByDiffblue")
+	void testRegister_givenHashMapIdIs42_thenReturn42() {
+		// Arrange
+		HashMap<String, Object> stringObjectMap = new HashMap<>();
+		stringObjectMap.put("id", "42");
+		ResponseSpec responseSpec = mock(ResponseSpec.class);
+		when(responseSpec.body(Mockito.<ParameterizedTypeReference<Map<String, Object>>>any()))
+			.thenReturn(stringObjectMap);
+		RequestBodySpec requestBodySpec = mock(RequestBodySpec.class);
+		when(requestBodySpec.retrieve()).thenReturn(responseSpec);
+		RequestBodySpec requestBodySpec2 = mock(RequestBodySpec.class);
+		when(requestBodySpec2.body(Mockito.<Object>any())).thenReturn(requestBodySpec);
+		RequestBodySpec requestBodySpec3 = mock(RequestBodySpec.class);
+		when(requestBodySpec3.headers(Mockito.<Consumer<HttpHeaders>>any())).thenReturn(requestBodySpec2);
+		RequestBodyUriSpec requestBodyUriSpec = mock(RequestBodyUriSpec.class);
+		when(requestBodyUriSpec.uri(Mockito.<String>any(), isA(Object[].class))).thenReturn(requestBodySpec3);
+		when(restClient.post()).thenReturn(requestBodyUriSpec);
 
-    // Assert
-    verify(restClient).post();
-    verify(requestBodySpec2).body(isA(Object.class));
-    verify(requestBodySpec3).headers(isA(Consumer.class));
-    verify(requestBodySpec).retrieve();
-    verify(responseSpec).body(isA(ParameterizedTypeReference.class));
-    verify(requestBodyUriSpec).uri(eq("https://example.org/example"), isA(Object[].class));
-    assertEquals("42", actualRegisterResult);
-  }
+		// Act
+		String actualRegisterResult = restClientRegistrationClient.register("https://example.org/example",
+				new Application("Name", "https://example.org/example", "https://example.org/example",
+						"https://example.org/example", new HashMap<>()));
 
-  /**
-   * Test {@link RestClientRegistrationClient#setRequestHeaders(HttpHeaders)}.
-   * <p>
-   * Method under test: {@link RestClientRegistrationClient#setRequestHeaders(HttpHeaders)}
-   */
-  @Test
-  @DisplayName("Test setRequestHeaders(HttpHeaders)")
-  @Tag("MaintainedByDiffblue")
-  void testSetRequestHeaders() {
-    // Arrange
-    HttpHeaders headers = new HttpHeaders();
+		// Assert
+		verify(restClient).post();
+		verify(requestBodySpec2).body(isA(Object.class));
+		verify(requestBodySpec3).headers(isA(Consumer.class));
+		verify(requestBodySpec).retrieve();
+		verify(responseSpec).body(isA(ParameterizedTypeReference.class));
+		verify(requestBodyUriSpec).uri(eq("https://example.org/example"), isA(Object[].class));
+		assertEquals("42", actualRegisterResult);
+	}
 
-    // Act
-    restClientRegistrationClient.setRequestHeaders(headers);
+	/**
+	 * Test {@link RestClientRegistrationClient#setRequestHeaders(HttpHeaders)}.
+	 * <p>
+	 * Method under test:
+	 * {@link RestClientRegistrationClient#setRequestHeaders(HttpHeaders)}
+	 */
+	@Test
+	@DisplayName("Test setRequestHeaders(HttpHeaders)")
+	@Tag("MaintainedByDiffblue")
+	void testSetRequestHeaders() {
+		// Arrange
+		HttpHeaders headers = new HttpHeaders();
 
-    // Assert
-    assertEquals(2, headers.size());
-    List<String> getResult = headers.get(HttpHeaders.CONTENT_TYPE);
-    assertEquals(1, getResult.size());
-    assertEquals("application/json", getResult.get(0));
-    assertEquals(getResult, headers.get(HttpHeaders.ACCEPT));
-  }
+		// Act
+		restClientRegistrationClient.setRequestHeaders(headers);
+
+		// Assert
+		assertEquals(2, headers.size());
+		List<String> getResult = headers.get(HttpHeaders.CONTENT_TYPE);
+		assertEquals(1, getResult.size());
+		assertEquals("application/json", getResult.get(0));
+		assertEquals(getResult, headers.get(HttpHeaders.ACCEPT));
+	}
+
 }

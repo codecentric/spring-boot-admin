@@ -37,93 +37,99 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.http.converter.json.SpringHandlerInstantiator;
 
 public class RegistrationBeanSerializerModifierDiffblueTest {
-  /**
-   * Test {@link RegistrationBeanSerializerModifier#changeProperties(SerializationConfig, BeanDescription, List)}.
-   * <ul>
-   *   <li>Given {@code Registration}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link RegistrationBeanSerializerModifier#changeProperties(SerializationConfig, BeanDescription, List)}
-   */
-  @Test
-  public void testChangeProperties_givenDeCodecentricBootAdminServerDomainValuesRegistration() {
-    // Arrange
-    RegistrationBeanSerializerModifier registrationBeanSerializerModifier = new RegistrationBeanSerializerModifier(
-        new SanitizingMapSerializer(new String[]{"Patterns"}));
-    BasicClassIntrospector ci = new BasicClassIntrospector();
-    JacksonAnnotationIntrospector ai = new JacksonAnnotationIntrospector();
-    PropertyNamingStrategy pns = new PropertyNamingStrategy();
-    TypeFactory tf = TypeFactory.createDefaultInstance();
-    DefaultTypeResolverBuilder typer = new DefaultTypeResolverBuilder(DefaultTyping.JAVA_LANG_OBJECT);
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
-    SpringHandlerInstantiator hi = new SpringHandlerInstantiator(new DefaultListableBeanFactory());
-    Locale locale = Locale.getDefault();
-    TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
-    Base64Variant defaultBase64 = Base64Variants.getDefaultVariant();
-    DefaultBaseTypeLimitingValidator ptv = new DefaultBaseTypeLimitingValidator();
-    BaseSettings base = new BaseSettings(ci, ai, pns, tf, typer, dateFormat, hi, locale, tz, defaultBase64, ptv,
-        new Provider());
 
-    StdSubtypeResolver str = new StdSubtypeResolver();
-    SimpleMixInResolver mixins = new SimpleMixInResolver(mock(MixInResolver.class));
-    RootNameLookup rootNames = new RootNameLookup();
-    SerializationConfig config = new SerializationConfig(base, str, mixins, rootNames, new ConfigOverrides());
+	/**
+	 * Test
+	 * {@link RegistrationBeanSerializerModifier#changeProperties(SerializationConfig, BeanDescription, List)}.
+	 * <ul>
+	 * <li>Given {@code Registration}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link RegistrationBeanSerializerModifier#changeProperties(SerializationConfig, BeanDescription, List)}
+	 */
+	@Test
+	public void testChangeProperties_givenDeCodecentricBootAdminServerDomainValuesRegistration() {
+		// Arrange
+		RegistrationBeanSerializerModifier registrationBeanSerializerModifier = new RegistrationBeanSerializerModifier(
+				new SanitizingMapSerializer(new String[] { "Patterns" }));
+		BasicClassIntrospector ci = new BasicClassIntrospector();
+		JacksonAnnotationIntrospector ai = new JacksonAnnotationIntrospector();
+		PropertyNamingStrategy pns = new PropertyNamingStrategy();
+		TypeFactory tf = TypeFactory.createDefaultInstance();
+		DefaultTypeResolverBuilder typer = new DefaultTypeResolverBuilder(DefaultTyping.JAVA_LANG_OBJECT);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
+		SpringHandlerInstantiator hi = new SpringHandlerInstantiator(new DefaultListableBeanFactory());
+		Locale locale = Locale.getDefault();
+		TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
+		Base64Variant defaultBase64 = Base64Variants.getDefaultVariant();
+		DefaultBaseTypeLimitingValidator ptv = new DefaultBaseTypeLimitingValidator();
+		BaseSettings base = new BaseSettings(ci, ai, pns, tf, typer, dateFormat, hi, locale, tz, defaultBase64, ptv,
+				new Provider());
 
-    BeanDescription beanDesc = mock(BeanDescription.class);
-    Class<Registration> forNameResult = Registration.class;
-    org.mockito.Mockito.<Class<?>>when(beanDesc.getBeanClass()).thenReturn(forNameResult);
+		StdSubtypeResolver str = new StdSubtypeResolver();
+		SimpleMixInResolver mixins = new SimpleMixInResolver(mock(MixInResolver.class));
+		RootNameLookup rootNames = new RootNameLookup();
+		SerializationConfig config = new SerializationConfig(base, str, mixins, rootNames, new ConfigOverrides());
 
-    // Act
-    List<BeanPropertyWriter> actualChangePropertiesResult = registrationBeanSerializerModifier.changeProperties(config,
-        beanDesc, new ArrayList<>());
+		BeanDescription beanDesc = mock(BeanDescription.class);
+		Class<Registration> forNameResult = Registration.class;
+		org.mockito.Mockito.<Class<?>>when(beanDesc.getBeanClass()).thenReturn(forNameResult);
 
-    // Assert
-    verify(beanDesc).getBeanClass();
-    assertTrue(actualChangePropertiesResult.isEmpty());
-  }
+		// Act
+		List<BeanPropertyWriter> actualChangePropertiesResult = registrationBeanSerializerModifier
+			.changeProperties(config, beanDesc, new ArrayList<>());
 
-  /**
-   * Test {@link RegistrationBeanSerializerModifier#changeProperties(SerializationConfig, BeanDescription, List)}.
-   * <ul>
-   *   <li>Given {@code Object}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link RegistrationBeanSerializerModifier#changeProperties(SerializationConfig, BeanDescription, List)}
-   */
-  @Test
-  public void testChangeProperties_givenJavaLangObject() {
-    // Arrange
-    RegistrationBeanSerializerModifier registrationBeanSerializerModifier = new RegistrationBeanSerializerModifier(
-        new SanitizingMapSerializer(new String[]{"Patterns"}));
-    BasicClassIntrospector ci = new BasicClassIntrospector();
-    JacksonAnnotationIntrospector ai = new JacksonAnnotationIntrospector();
-    PropertyNamingStrategy pns = new PropertyNamingStrategy();
-    TypeFactory tf = TypeFactory.createDefaultInstance();
-    DefaultTypeResolverBuilder typer = new DefaultTypeResolverBuilder(DefaultTyping.JAVA_LANG_OBJECT);
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
-    SpringHandlerInstantiator hi = new SpringHandlerInstantiator(new DefaultListableBeanFactory());
-    Locale locale = Locale.getDefault();
-    TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
-    Base64Variant defaultBase64 = Base64Variants.getDefaultVariant();
-    DefaultBaseTypeLimitingValidator ptv = new DefaultBaseTypeLimitingValidator();
-    BaseSettings base = new BaseSettings(ci, ai, pns, tf, typer, dateFormat, hi, locale, tz, defaultBase64, ptv,
-        new Provider());
+		// Assert
+		verify(beanDesc).getBeanClass();
+		assertTrue(actualChangePropertiesResult.isEmpty());
+	}
 
-    StdSubtypeResolver str = new StdSubtypeResolver();
-    SimpleMixInResolver mixins = new SimpleMixInResolver(mock(MixInResolver.class));
-    RootNameLookup rootNames = new RootNameLookup();
-    SerializationConfig config = new SerializationConfig(base, str, mixins, rootNames, new ConfigOverrides());
+	/**
+	 * Test
+	 * {@link RegistrationBeanSerializerModifier#changeProperties(SerializationConfig, BeanDescription, List)}.
+	 * <ul>
+	 * <li>Given {@code Object}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link RegistrationBeanSerializerModifier#changeProperties(SerializationConfig, BeanDescription, List)}
+	 */
+	@Test
+	public void testChangeProperties_givenJavaLangObject() {
+		// Arrange
+		RegistrationBeanSerializerModifier registrationBeanSerializerModifier = new RegistrationBeanSerializerModifier(
+				new SanitizingMapSerializer(new String[] { "Patterns" }));
+		BasicClassIntrospector ci = new BasicClassIntrospector();
+		JacksonAnnotationIntrospector ai = new JacksonAnnotationIntrospector();
+		PropertyNamingStrategy pns = new PropertyNamingStrategy();
+		TypeFactory tf = TypeFactory.createDefaultInstance();
+		DefaultTypeResolverBuilder typer = new DefaultTypeResolverBuilder(DefaultTyping.JAVA_LANG_OBJECT);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/mm/dd");
+		SpringHandlerInstantiator hi = new SpringHandlerInstantiator(new DefaultListableBeanFactory());
+		Locale locale = Locale.getDefault();
+		TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
+		Base64Variant defaultBase64 = Base64Variants.getDefaultVariant();
+		DefaultBaseTypeLimitingValidator ptv = new DefaultBaseTypeLimitingValidator();
+		BaseSettings base = new BaseSettings(ci, ai, pns, tf, typer, dateFormat, hi, locale, tz, defaultBase64, ptv,
+				new Provider());
 
-    BeanDescription beanDesc = mock(BeanDescription.class);
-    Class<Object> forNameResult = Object.class;
-    org.mockito.Mockito.<Class<?>>when(beanDesc.getBeanClass()).thenReturn(forNameResult);
+		StdSubtypeResolver str = new StdSubtypeResolver();
+		SimpleMixInResolver mixins = new SimpleMixInResolver(mock(MixInResolver.class));
+		RootNameLookup rootNames = new RootNameLookup();
+		SerializationConfig config = new SerializationConfig(base, str, mixins, rootNames, new ConfigOverrides());
 
-    // Act
-    List<BeanPropertyWriter> actualChangePropertiesResult = registrationBeanSerializerModifier.changeProperties(config,
-        beanDesc, new ArrayList<>());
+		BeanDescription beanDesc = mock(BeanDescription.class);
+		Class<Object> forNameResult = Object.class;
+		org.mockito.Mockito.<Class<?>>when(beanDesc.getBeanClass()).thenReturn(forNameResult);
 
-    // Assert
-    verify(beanDesc).getBeanClass();
-    assertTrue(actualChangePropertiesResult.isEmpty());
-  }
+		// Act
+		List<BeanPropertyWriter> actualChangePropertiesResult = registrationBeanSerializerModifier
+			.changeProperties(config, beanDesc, new ArrayList<>());
+
+		// Assert
+		verify(beanDesc).getBeanClass();
+		assertTrue(actualChangePropertiesResult.isEmpty());
+	}
+
 }

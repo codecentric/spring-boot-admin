@@ -38,230 +38,237 @@ import org.thymeleaf.context.IContext;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
-@ContextConfiguration(classes = {MailNotifier.class})
+@ContextConfiguration(classes = { MailNotifier.class })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @DisabledInAotMode
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MailNotifierDiffblueTest {
-  @MockitoBean
-  private InstanceRepository instanceRepository;
 
-  @MockitoBean
-  private JavaMailSender javaMailSender;
+	@MockitoBean
+	private InstanceRepository instanceRepository;
 
-  @Autowired
-  private MailNotifier mailNotifier;
+	@MockitoBean
+	private JavaMailSender javaMailSender;
 
-  @MockitoBean
-  private TemplateEngine templateEngine;
+	@Autowired
+	private MailNotifier mailNotifier;
 
-  /**
-   * Test {@link MailNotifier#MailNotifier(JavaMailSender, InstanceRepository, TemplateEngine)}.
-   * <p>
-   * Method under test: {@link MailNotifier#MailNotifier(JavaMailSender, InstanceRepository, TemplateEngine)}
-   */
-  @Test
-  public void testNewMailNotifier() {
-    // Arrange and Act
-    MailNotifier actualMailNotifier = new MailNotifier(javaMailSender, instanceRepository, templateEngine);
+	@MockitoBean
+	private TemplateEngine templateEngine;
 
-    // Assert
-    assertEquals("META-INF/spring-boot-admin-server/mail/status-changed.html", actualMailNotifier.getTemplate());
-    assertEquals("Spring Boot Admin <noreply@localhost>", actualMailNotifier.getFrom());
-    assertNull(actualMailNotifier.getBaseUrl());
-    assertEquals(0, actualMailNotifier.getCc().length);
-    assertTrue(actualMailNotifier.isEnabled());
-    assertTrue(actualMailNotifier.getAdditionalProperties().isEmpty());
-    assertArrayEquals(new String[]{"UNKNOWN:UP"}, actualMailNotifier.getIgnoreChanges());
-    assertArrayEquals(new String[]{"root@localhost"}, actualMailNotifier.getTo());
-  }
+	/**
+	 * Test
+	 * {@link MailNotifier#MailNotifier(JavaMailSender, InstanceRepository, TemplateEngine)}.
+	 * <p>
+	 * Method under test:
+	 * {@link MailNotifier#MailNotifier(JavaMailSender, InstanceRepository, TemplateEngine)}
+	 */
+	@Test
+	public void testNewMailNotifier() {
+		// Arrange and Act
+		MailNotifier actualMailNotifier = new MailNotifier(javaMailSender, instanceRepository, templateEngine);
 
-  /**
-   * Test {@link MailNotifier#doNotify(InstanceEvent, Instance)}.
-   * <p>
-   * Method under test: {@link MailNotifier#doNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testDoNotify() throws AssertionError {
-    // Arrange, Act and Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(mailNotifier.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
-    createResult.expectError().verify();
-  }
+		// Assert
+		assertEquals("META-INF/spring-boot-admin-server/mail/status-changed.html", actualMailNotifier.getTemplate());
+		assertEquals("Spring Boot Admin <noreply@localhost>", actualMailNotifier.getFrom());
+		assertNull(actualMailNotifier.getBaseUrl());
+		assertEquals(0, actualMailNotifier.getCc().length);
+		assertTrue(actualMailNotifier.isEnabled());
+		assertTrue(actualMailNotifier.getAdditionalProperties().isEmpty());
+		assertArrayEquals(new String[] { "UNKNOWN:UP" }, actualMailNotifier.getIgnoreChanges());
+		assertArrayEquals(new String[] { "root@localhost" }, actualMailNotifier.getTo());
+	}
 
-  /**
-   * Test {@link MailNotifier#getBody(Context)}.
-   * <ul>
-   *   <li>Given {@link TemplateEngine} {@link TemplateEngine#process(String, IContext)} return {@code Process}.</li>
-   *   <li>Then return {@code Process}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link MailNotifier#getBody(Context)}
-   */
-  @Test
-  public void testGetBody_givenTemplateEngineProcessReturnProcess_thenReturnProcess() {
-    // Arrange
-    when(templateEngine.process(Mockito.<String>any(), Mockito.<IContext>any())).thenReturn("Process");
+	/**
+	 * Test {@link MailNotifier#doNotify(InstanceEvent, Instance)}.
+	 * <p>
+	 * Method under test: {@link MailNotifier#doNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testDoNotify() throws AssertionError {
+		// Arrange, Act and Assert
+		FirstStep<Void> createResult = StepVerifier
+			.create(mailNotifier.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
+		createResult.expectError().verify();
+	}
 
-    // Act
-    String actualBody = mailNotifier.getBody(new Context());
+	/**
+	 * Test {@link MailNotifier#getBody(Context)}.
+	 * <ul>
+	 * <li>Given {@link TemplateEngine} {@link TemplateEngine#process(String, IContext)}
+	 * return {@code Process}.</li>
+	 * <li>Then return {@code Process}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link MailNotifier#getBody(Context)}
+	 */
+	@Test
+	public void testGetBody_givenTemplateEngineProcessReturnProcess_thenReturnProcess() {
+		// Arrange
+		when(templateEngine.process(Mockito.<String>any(), Mockito.<IContext>any())).thenReturn("Process");
 
-    // Assert
-    verify(templateEngine).process(eq("META-INF/spring-boot-admin-server/mail/status-changed.html"),
-        isA(IContext.class));
-    assertEquals("Process", actualBody);
-  }
+		// Act
+		String actualBody = mailNotifier.getBody(new Context());
 
-  /**
-   * Test {@link MailNotifier#getBody(Context)}.
-   * <ul>
-   *   <li>Then throw {@link RuntimeException}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link MailNotifier#getBody(Context)}
-   */
-  @Test
-  public void testGetBody_thenThrowRuntimeException() {
-    // Arrange
-    when(templateEngine.process(Mockito.<String>any(), Mockito.<IContext>any())).thenThrow(new RuntimeException("foo"));
+		// Assert
+		verify(templateEngine).process(eq("META-INF/spring-boot-admin-server/mail/status-changed.html"),
+				isA(IContext.class));
+		assertEquals("Process", actualBody);
+	}
 
-    // Act and Assert
-    assertThrows(RuntimeException.class, () -> mailNotifier.getBody(new Context()));
-    verify(templateEngine).process(eq("META-INF/spring-boot-admin-server/mail/status-changed.html"),
-        isA(IContext.class));
-  }
+	/**
+	 * Test {@link MailNotifier#getBody(Context)}.
+	 * <ul>
+	 * <li>Then throw {@link RuntimeException}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link MailNotifier#getBody(Context)}
+	 */
+	@Test
+	public void testGetBody_thenThrowRuntimeException() {
+		// Arrange
+		when(templateEngine.process(Mockito.<String>any(), Mockito.<IContext>any()))
+			.thenThrow(new RuntimeException("foo"));
 
-  /**
-   * Test {@link MailNotifier#getSubject(Context)}.
-   * <ul>
-   *   <li>Given {@link TemplateEngine} {@link TemplateEngine#process(String, Set, IContext)} return {@code Process}.</li>
-   *   <li>Then return {@code Process}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link MailNotifier#getSubject(Context)}
-   */
-  @Test
-  public void testGetSubject_givenTemplateEngineProcessReturnProcess_thenReturnProcess() {
-    // Arrange
-    when(templateEngine.process(Mockito.<String>any(), Mockito.<Set<String>>any(), Mockito.<IContext>any()))
-        .thenReturn("Process");
+		// Act and Assert
+		assertThrows(RuntimeException.class, () -> mailNotifier.getBody(new Context()));
+		verify(templateEngine).process(eq("META-INF/spring-boot-admin-server/mail/status-changed.html"),
+				isA(IContext.class));
+	}
 
-    // Act
-    String actualSubject = mailNotifier.getSubject(new Context());
+	/**
+	 * Test {@link MailNotifier#getSubject(Context)}.
+	 * <ul>
+	 * <li>Given {@link TemplateEngine}
+	 * {@link TemplateEngine#process(String, Set, IContext)} return {@code Process}.</li>
+	 * <li>Then return {@code Process}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link MailNotifier#getSubject(Context)}
+	 */
+	@Test
+	public void testGetSubject_givenTemplateEngineProcessReturnProcess_thenReturnProcess() {
+		// Arrange
+		when(templateEngine.process(Mockito.<String>any(), Mockito.<Set<String>>any(), Mockito.<IContext>any()))
+			.thenReturn("Process");
 
-    // Assert
-    verify(templateEngine).process(eq("META-INF/spring-boot-admin-server/mail/status-changed.html"), isA(Set.class),
-        isA(IContext.class));
-    assertEquals("Process", actualSubject);
-  }
+		// Act
+		String actualSubject = mailNotifier.getSubject(new Context());
 
-  /**
-   * Test {@link MailNotifier#getSubject(Context)}.
-   * <ul>
-   *   <li>Then throw {@link RuntimeException}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link MailNotifier#getSubject(Context)}
-   */
-  @Test
-  public void testGetSubject_thenThrowRuntimeException() {
-    // Arrange
-    when(templateEngine.process(Mockito.<String>any(), Mockito.<Set<String>>any(), Mockito.<IContext>any()))
-        .thenThrow(new RuntimeException("subject"));
+		// Assert
+		verify(templateEngine).process(eq("META-INF/spring-boot-admin-server/mail/status-changed.html"), isA(Set.class),
+				isA(IContext.class));
+		assertEquals("Process", actualSubject);
+	}
 
-    // Act and Assert
-    assertThrows(RuntimeException.class, () -> mailNotifier.getSubject(new Context()));
-    verify(templateEngine).process(eq("META-INF/spring-boot-admin-server/mail/status-changed.html"), isA(Set.class),
-        isA(IContext.class));
-  }
+	/**
+	 * Test {@link MailNotifier#getSubject(Context)}.
+	 * <ul>
+	 * <li>Then throw {@link RuntimeException}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link MailNotifier#getSubject(Context)}
+	 */
+	@Test
+	public void testGetSubject_thenThrowRuntimeException() {
+		// Arrange
+		when(templateEngine.process(Mockito.<String>any(), Mockito.<Set<String>>any(), Mockito.<IContext>any()))
+			.thenThrow(new RuntimeException("subject"));
 
-  /**
-   * Test {@link MailNotifier#getTo()}.
-   * <p>
-   * Method under test: {@link MailNotifier#getTo()}
-   */
-  @Test
-  public void testGetTo() {
-    // Arrange, Act and Assert
-    assertArrayEquals(new String[]{"root@localhost"}, mailNotifier.getTo());
-  }
+		// Act and Assert
+		assertThrows(RuntimeException.class, () -> mailNotifier.getSubject(new Context()));
+		verify(templateEngine).process(eq("META-INF/spring-boot-admin-server/mail/status-changed.html"), isA(Set.class),
+				isA(IContext.class));
+	}
 
-  /**
-   * Test {@link MailNotifier#setTo(String[])}.
-   * <p>
-   * Method under test: {@link MailNotifier#setTo(String[])}
-   */
-  @Test
-  public void testSetTo() {
-    // Arrange and Act
-    mailNotifier.setTo(new String[]{"alice.liddell@example.org"});
+	/**
+	 * Test {@link MailNotifier#getTo()}.
+	 * <p>
+	 * Method under test: {@link MailNotifier#getTo()}
+	 */
+	@Test
+	public void testGetTo() {
+		// Arrange, Act and Assert
+		assertArrayEquals(new String[] { "root@localhost" }, mailNotifier.getTo());
+	}
 
-    // Assert
-    assertArrayEquals(new String[]{"alice.liddell@example.org"}, mailNotifier.getTo());
-  }
+	/**
+	 * Test {@link MailNotifier#setTo(String[])}.
+	 * <p>
+	 * Method under test: {@link MailNotifier#setTo(String[])}
+	 */
+	@Test
+	public void testSetTo() {
+		// Arrange and Act
+		mailNotifier.setTo(new String[] { "alice.liddell@example.org" });
 
-  /**
-   * Test {@link MailNotifier#getCc()}.
-   * <p>
-   * Method under test: {@link MailNotifier#getCc()}
-   */
-  @Test
-  public void testGetCc() {
-    // Arrange, Act and Assert
-    assertEquals(0, mailNotifier.getCc().length);
-  }
+		// Assert
+		assertArrayEquals(new String[] { "alice.liddell@example.org" }, mailNotifier.getTo());
+	}
 
-  /**
-   * Test {@link MailNotifier#setCc(String[])}.
-   * <p>
-   * Method under test: {@link MailNotifier#setCc(String[])}
-   */
-  @Test
-  public void testSetCc() {
-    // Arrange and Act
-    mailNotifier.setCc(new String[]{"ada.lovelace@example.org"});
+	/**
+	 * Test {@link MailNotifier#getCc()}.
+	 * <p>
+	 * Method under test: {@link MailNotifier#getCc()}
+	 */
+	@Test
+	public void testGetCc() {
+		// Arrange, Act and Assert
+		assertEquals(0, mailNotifier.getCc().length);
+	}
 
-    // Assert
-    assertArrayEquals(new String[]{"ada.lovelace@example.org"}, mailNotifier.getCc());
-  }
+	/**
+	 * Test {@link MailNotifier#setCc(String[])}.
+	 * <p>
+	 * Method under test: {@link MailNotifier#setCc(String[])}
+	 */
+	@Test
+	public void testSetCc() {
+		// Arrange and Act
+		mailNotifier.setCc(new String[] { "ada.lovelace@example.org" });
 
-  /**
-   * Test getters and setters.
-   * <p>
-   * Methods under test:
-   * <ul>
-   *   <li>{@link MailNotifier#setAdditionalProperties(Map)}
-   *   <li>{@link MailNotifier#setBaseUrl(String)}
-   *   <li>{@link MailNotifier#setFrom(String)}
-   *   <li>{@link MailNotifier#setTemplate(String)}
-   *   <li>{@link MailNotifier#getAdditionalProperties()}
-   *   <li>{@link MailNotifier#getBaseUrl()}
-   *   <li>{@link MailNotifier#getFrom()}
-   *   <li>{@link MailNotifier#getTemplate()}
-   * </ul>
-   */
-  @Test
-  public void testGettersAndSetters() {
-    // Arrange
-    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-    EventsourcingInstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
-    MailNotifier mailNotifier = new MailNotifier(mailSender, repository, new TemplateEngine());
-    HashMap<String, Object> additionalProperties = new HashMap<>();
+		// Assert
+		assertArrayEquals(new String[] { "ada.lovelace@example.org" }, mailNotifier.getCc());
+	}
 
-    // Act
-    mailNotifier.setAdditionalProperties(additionalProperties);
-    mailNotifier.setBaseUrl("https://example.org/example");
-    mailNotifier.setFrom("jane.doe@example.org");
-    mailNotifier.setTemplate("Template");
-    Map<String, Object> actualAdditionalProperties = mailNotifier.getAdditionalProperties();
-    String actualBaseUrl = mailNotifier.getBaseUrl();
-    String actualFrom = mailNotifier.getFrom();
+	/**
+	 * Test getters and setters.
+	 * <p>
+	 * Methods under test:
+	 * <ul>
+	 * <li>{@link MailNotifier#setAdditionalProperties(Map)}
+	 * <li>{@link MailNotifier#setBaseUrl(String)}
+	 * <li>{@link MailNotifier#setFrom(String)}
+	 * <li>{@link MailNotifier#setTemplate(String)}
+	 * <li>{@link MailNotifier#getAdditionalProperties()}
+	 * <li>{@link MailNotifier#getBaseUrl()}
+	 * <li>{@link MailNotifier#getFrom()}
+	 * <li>{@link MailNotifier#getTemplate()}
+	 * </ul>
+	 */
+	@Test
+	public void testGettersAndSetters() {
+		// Arrange
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		EventsourcingInstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
+		MailNotifier mailNotifier = new MailNotifier(mailSender, repository, new TemplateEngine());
+		HashMap<String, Object> additionalProperties = new HashMap<>();
 
-    // Assert
-    assertEquals("Template", mailNotifier.getTemplate());
-    assertEquals("https://example.org/example", actualBaseUrl);
-    assertEquals("jane.doe@example.org", actualFrom);
-    assertTrue(actualAdditionalProperties.isEmpty());
-    assertSame(additionalProperties, actualAdditionalProperties);
-  }
+		// Act
+		mailNotifier.setAdditionalProperties(additionalProperties);
+		mailNotifier.setBaseUrl("https://example.org/example");
+		mailNotifier.setFrom("jane.doe@example.org");
+		mailNotifier.setTemplate("Template");
+		Map<String, Object> actualAdditionalProperties = mailNotifier.getAdditionalProperties();
+		String actualBaseUrl = mailNotifier.getBaseUrl();
+		String actualFrom = mailNotifier.getFrom();
+
+		// Assert
+		assertEquals("Template", mailNotifier.getTemplate());
+		assertEquals("https://example.org/example", actualBaseUrl);
+		assertEquals("jane.doe@example.org", actualFrom);
+		assertTrue(actualAdditionalProperties.isEmpty());
+		assertSame(additionalProperties, actualAdditionalProperties);
+	}
+
 }

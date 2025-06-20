@@ -31,291 +31,297 @@ import org.springframework.web.client.RestTemplate;
 import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
-@ContextConfiguration(classes = {SlackNotifier.class})
+@ContextConfiguration(classes = { SlackNotifier.class })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @DisabledInAotMode
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SlackNotifierDiffblueTest {
-  @MockitoBean
-  private InstanceRepository instanceRepository;
 
-  @MockitoBean
-  private RestTemplate restTemplate;
+	@MockitoBean
+	private InstanceRepository instanceRepository;
 
-  @Autowired
-  private SlackNotifier slackNotifier;
+	@MockitoBean
+	private RestTemplate restTemplate;
 
-  /**
-   * Test {@link SlackNotifier#SlackNotifier(InstanceRepository, RestTemplate)}.
-   * <p>
-   * Method under test: {@link SlackNotifier#SlackNotifier(InstanceRepository, RestTemplate)}
-   */
-  @Test
-  public void testNewSlackNotifier() {
-    // Arrange and Act
-    SlackNotifier actualSlackNotifier = new SlackNotifier(instanceRepository, mock(RestTemplate.class));
+	@Autowired
+	private SlackNotifier slackNotifier;
 
-    // Assert
-    assertEquals("*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*",
-        actualSlackNotifier.getMessage());
-    assertEquals("Spring Boot Admin", actualSlackNotifier.getUsername());
-    assertNull(actualSlackNotifier.getChannel());
-    assertNull(actualSlackNotifier.getIcon());
-    assertNull(actualSlackNotifier.getWebhookUrl());
-    assertTrue(actualSlackNotifier.isEnabled());
-    assertArrayEquals(new String[]{"UNKNOWN:UP"}, actualSlackNotifier.getIgnoreChanges());
-  }
+	/**
+	 * Test {@link SlackNotifier#SlackNotifier(InstanceRepository, RestTemplate)}.
+	 * <p>
+	 * Method under test:
+	 * {@link SlackNotifier#SlackNotifier(InstanceRepository, RestTemplate)}
+	 */
+	@Test
+	public void testNewSlackNotifier() {
+		// Arrange and Act
+		SlackNotifier actualSlackNotifier = new SlackNotifier(instanceRepository, mock(RestTemplate.class));
 
-  /**
-   * Test {@link SlackNotifier#doNotify(InstanceEvent, Instance)}.
-   * <ul>
-   *   <li>Given {@link SlackNotifier} WebhookUrl is {@link PagerdutyNotifier#DEFAULT_URI}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link SlackNotifier#doNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testDoNotify_givenSlackNotifierWebhookUrlIsDefault_uri() throws AssertionError {
-    // Arrange
-    slackNotifier.setWebhookUrl(PagerdutyNotifier.DEFAULT_URI);
+		// Assert
+		assertEquals("*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*",
+				actualSlackNotifier.getMessage());
+		assertEquals("Spring Boot Admin", actualSlackNotifier.getUsername());
+		assertNull(actualSlackNotifier.getChannel());
+		assertNull(actualSlackNotifier.getIcon());
+		assertNull(actualSlackNotifier.getWebhookUrl());
+		assertTrue(actualSlackNotifier.isEnabled());
+		assertArrayEquals(new String[] { "UNKNOWN:UP" }, actualSlackNotifier.getIgnoreChanges());
+	}
 
-    // Act and Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(slackNotifier.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
-    createResult.expectError().verify();
-  }
+	/**
+	 * Test {@link SlackNotifier#doNotify(InstanceEvent, Instance)}.
+	 * <ul>
+	 * <li>Given {@link SlackNotifier} WebhookUrl is
+	 * {@link PagerdutyNotifier#DEFAULT_URI}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link SlackNotifier#doNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testDoNotify_givenSlackNotifierWebhookUrlIsDefault_uri() throws AssertionError {
+		// Arrange
+		slackNotifier.setWebhookUrl(PagerdutyNotifier.DEFAULT_URI);
 
-  /**
-   * Test {@link SlackNotifier#doNotify(InstanceEvent, Instance)}.
-   * <ul>
-   *   <li>Given {@link SlackNotifier} WebhookUrl is {@code null}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link SlackNotifier#doNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testDoNotify_givenSlackNotifierWebhookUrlIsNull() throws AssertionError {
-    // Arrange
-    slackNotifier.setWebhookUrl(null);
+		// Act and Assert
+		FirstStep<Void> createResult = StepVerifier
+			.create(slackNotifier.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
+		createResult.expectError().verify();
+	}
 
-    // Act and Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(slackNotifier.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
-    createResult.expectError().verify();
-  }
+	/**
+	 * Test {@link SlackNotifier#doNotify(InstanceEvent, Instance)}.
+	 * <ul>
+	 * <li>Given {@link SlackNotifier} WebhookUrl is {@code null}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link SlackNotifier#doNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testDoNotify_givenSlackNotifierWebhookUrlIsNull() throws AssertionError {
+		// Arrange
+		slackNotifier.setWebhookUrl(null);
 
-  /**
-   * Test {@link SlackNotifier#getText(InstanceEvent, Instance)}.
-   * <ul>
-   *   <li>Then return {@code Not all who wander are lost}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link SlackNotifier#getText(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testGetText_thenReturnNotAllWhoWanderAreLost() {
-    // Arrange
-    SlackNotifier slackNotifier = new SlackNotifier(new EventsourcingInstanceRepository(new InMemoryEventStore()),
-        mock(RestTemplate.class));
-    slackNotifier.setMessage("Not all who wander are lost");
+		// Act and Assert
+		FirstStep<Void> createResult = StepVerifier
+			.create(slackNotifier.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
+		createResult.expectError().verify();
+	}
 
-    // Act and Assert
-    assertEquals("Not all who wander are lost",
-        slackNotifier.getText(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
-  }
+	/**
+	 * Test {@link SlackNotifier#getText(InstanceEvent, Instance)}.
+	 * <ul>
+	 * <li>Then return {@code Not all who wander are lost}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link SlackNotifier#getText(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testGetText_thenReturnNotAllWhoWanderAreLost() {
+		// Arrange
+		SlackNotifier slackNotifier = new SlackNotifier(new EventsourcingInstanceRepository(new InMemoryEventStore()),
+				mock(RestTemplate.class));
+		slackNotifier.setMessage("Not all who wander are lost");
 
-  /**
-   * Test {@link SlackNotifier#getColor(InstanceEvent)}.
-   * <ul>
-   *   <li>Given {@link IllegalStateException#IllegalStateException(String)} with {@code UP}.</li>
-   *   <li>Then throw {@link IllegalStateException}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link SlackNotifier#getColor(InstanceEvent)}
-   */
-  @Test
-  public void testGetColor_givenIllegalStateExceptionWithUp_thenThrowIllegalStateException() {
-    // Arrange
-    InstanceStatusChangedEvent event = mock(InstanceStatusChangedEvent.class);
-    when(event.getStatusInfo()).thenThrow(new IllegalStateException("UP"));
+		// Act and Assert
+		assertEquals("Not all who wander are lost",
+				slackNotifier.getText(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
+	}
 
-    // Act and Assert
-    assertThrows(IllegalStateException.class, () -> slackNotifier.getColor(event));
-    verify(event).getStatusInfo();
-  }
+	/**
+	 * Test {@link SlackNotifier#getColor(InstanceEvent)}.
+	 * <ul>
+	 * <li>Given {@link IllegalStateException#IllegalStateException(String)} with
+	 * {@code UP}.</li>
+	 * <li>Then throw {@link IllegalStateException}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link SlackNotifier#getColor(InstanceEvent)}
+	 */
+	@Test
+	public void testGetColor_givenIllegalStateExceptionWithUp_thenThrowIllegalStateException() {
+		// Arrange
+		InstanceStatusChangedEvent event = mock(InstanceStatusChangedEvent.class);
+		when(event.getStatusInfo()).thenThrow(new IllegalStateException("UP"));
 
-  /**
-   * Test {@link SlackNotifier#getColor(InstanceEvent)}.
-   * <ul>
-   *   <li>When {@link InstanceId} with value is {@code 42}.</li>
-   *   <li>Then return {@code #439FE0}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link SlackNotifier#getColor(InstanceEvent)}
-   */
-  @Test
-  public void testGetColor_whenInstanceIdWithValueIs42_thenReturn439fe0() {
-    // Arrange, Act and Assert
-    assertEquals("#439FE0", slackNotifier.getColor(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
-  }
+		// Act and Assert
+		assertThrows(IllegalStateException.class, () -> slackNotifier.getColor(event));
+		verify(event).getStatusInfo();
+	}
 
-  /**
-   * Test getters and setters.
-   * <p>
-   * Methods under test:
-   * <ul>
-   *   <li>{@link SlackNotifier#setChannel(String)}
-   *   <li>{@link SlackNotifier#setIcon(String)}
-   *   <li>{@link SlackNotifier#setRestTemplate(RestTemplate)}
-   *   <li>{@link SlackNotifier#setUsername(String)}
-   *   <li>{@link SlackNotifier#setWebhookUrl(URI)}
-   *   <li>{@link SlackNotifier#getChannel()}
-   *   <li>{@link SlackNotifier#getIcon()}
-   *   <li>{@link SlackNotifier#getUsername()}
-   *   <li>{@link SlackNotifier#getWebhookUrl()}
-   * </ul>
-   */
-  @Test
-  public void testGettersAndSetters() {
-    // Arrange
-    SlackNotifier slackNotifier = new SlackNotifier(new EventsourcingInstanceRepository(new InMemoryEventStore()),
-        mock(RestTemplate.class));
+	/**
+	 * Test {@link SlackNotifier#getColor(InstanceEvent)}.
+	 * <ul>
+	 * <li>When {@link InstanceId} with value is {@code 42}.</li>
+	 * <li>Then return {@code #439FE0}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link SlackNotifier#getColor(InstanceEvent)}
+	 */
+	@Test
+	public void testGetColor_whenInstanceIdWithValueIs42_thenReturn439fe0() {
+		// Arrange, Act and Assert
+		assertEquals("#439FE0", slackNotifier.getColor(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
+	}
 
-    // Act
-    slackNotifier.setChannel("Channel");
-    slackNotifier.setIcon("Icon");
-    slackNotifier.setRestTemplate(mock(RestTemplate.class));
-    slackNotifier.setUsername("janedoe");
-    URI webhookUrl = PagerdutyNotifier.DEFAULT_URI;
-    slackNotifier.setWebhookUrl(webhookUrl);
-    String actualChannel = slackNotifier.getChannel();
-    String actualIcon = slackNotifier.getIcon();
-    String actualUsername = slackNotifier.getUsername();
-    URI actualWebhookUrl = slackNotifier.getWebhookUrl();
+	/**
+	 * Test getters and setters.
+	 * <p>
+	 * Methods under test:
+	 * <ul>
+	 * <li>{@link SlackNotifier#setChannel(String)}
+	 * <li>{@link SlackNotifier#setIcon(String)}
+	 * <li>{@link SlackNotifier#setRestTemplate(RestTemplate)}
+	 * <li>{@link SlackNotifier#setUsername(String)}
+	 * <li>{@link SlackNotifier#setWebhookUrl(URI)}
+	 * <li>{@link SlackNotifier#getChannel()}
+	 * <li>{@link SlackNotifier#getIcon()}
+	 * <li>{@link SlackNotifier#getUsername()}
+	 * <li>{@link SlackNotifier#getWebhookUrl()}
+	 * </ul>
+	 */
+	@Test
+	public void testGettersAndSetters() {
+		// Arrange
+		SlackNotifier slackNotifier = new SlackNotifier(new EventsourcingInstanceRepository(new InMemoryEventStore()),
+				mock(RestTemplate.class));
 
-    // Assert
-    assertEquals("Channel", actualChannel);
-    assertEquals("Icon", actualIcon);
-    assertEquals("https://events.pagerduty.com/generic/2010-04-15/create_event.json", actualWebhookUrl.toString());
-    assertEquals("janedoe", actualUsername);
-    assertSame(webhookUrl, actualWebhookUrl);
-  }
+		// Act
+		slackNotifier.setChannel("Channel");
+		slackNotifier.setIcon("Icon");
+		slackNotifier.setRestTemplate(mock(RestTemplate.class));
+		slackNotifier.setUsername("janedoe");
+		URI webhookUrl = PagerdutyNotifier.DEFAULT_URI;
+		slackNotifier.setWebhookUrl(webhookUrl);
+		String actualChannel = slackNotifier.getChannel();
+		String actualIcon = slackNotifier.getIcon();
+		String actualUsername = slackNotifier.getUsername();
+		URI actualWebhookUrl = slackNotifier.getWebhookUrl();
 
-  /**
-   * Test {@link SlackNotifier#getMessage()}.
-   * <p>
-   * Method under test: {@link SlackNotifier#getMessage()}
-   */
-  @Test
-  public void testGetMessage() {
-    // Arrange, Act and Assert
-    assertEquals("*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*",
-        slackNotifier.getMessage());
-  }
+		// Assert
+		assertEquals("Channel", actualChannel);
+		assertEquals("Icon", actualIcon);
+		assertEquals("https://events.pagerduty.com/generic/2010-04-15/create_event.json", actualWebhookUrl.toString());
+		assertEquals("janedoe", actualUsername);
+		assertSame(webhookUrl, actualWebhookUrl);
+	}
 
-  /**
-   * Test {@link SlackNotifier#setMessage(String)}.
-   * <p>
-   * Method under test: {@link SlackNotifier#setMessage(String)}
-   */
-  @Test
-  public void testSetMessage() {
-    // Arrange and Act
-    slackNotifier.setMessage("Not all who wander are lostattachmentschannel");
+	/**
+	 * Test {@link SlackNotifier#getMessage()}.
+	 * <p>
+	 * Method under test: {@link SlackNotifier#getMessage()}
+	 */
+	@Test
+	public void testGetMessage() {
+		// Arrange, Act and Assert
+		assertEquals("*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*",
+				slackNotifier.getMessage());
+	}
 
-    // Assert
-    assertEquals("Not all who wander are lostattachmentschannel", slackNotifier.getMessage());
-  }
+	/**
+	 * Test {@link SlackNotifier#setMessage(String)}.
+	 * <p>
+	 * Method under test: {@link SlackNotifier#setMessage(String)}
+	 */
+	@Test
+	public void testSetMessage() {
+		// Arrange and Act
+		slackNotifier.setMessage("Not all who wander are lostattachmentschannel");
 
-  /**
-   * Test {@link SlackNotifier#setMessage(String)}.
-   * <p>
-   * Method under test: {@link SlackNotifier#setMessage(String)}
-   */
-  @Test
-  public void testSetMessage2() {
-    // Arrange and Act
-    slackNotifier.setMessage("Not all who wander are lostjava.lang.VoidMessage");
+		// Assert
+		assertEquals("Not all who wander are lostattachmentschannel", slackNotifier.getMessage());
+	}
 
-    // Assert
-    assertEquals("Not all who wander are lostjava.lang.VoidMessage", slackNotifier.getMessage());
-  }
+	/**
+	 * Test {@link SlackNotifier#setMessage(String)}.
+	 * <p>
+	 * Method under test: {@link SlackNotifier#setMessage(String)}
+	 */
+	@Test
+	public void testSetMessage2() {
+		// Arrange and Act
+		slackNotifier.setMessage("Not all who wander are lostjava.lang.VoidMessage");
 
-  /**
-   * Test {@link SlackNotifier#setMessage(String)}.
-   * <ul>
-   *   <li>Then {@link SlackNotifier} Message is {@code MessageNot all who wander are lost42}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link SlackNotifier#setMessage(String)}
-   */
-  @Test
-  public void testSetMessage_thenSlackNotifierMessageIsMessageNotAllWhoWanderAreLost42() {
-    // Arrange and Act
-    slackNotifier.setMessage("MessageNot all who wander are lost42");
+		// Assert
+		assertEquals("Not all who wander are lostjava.lang.VoidMessage", slackNotifier.getMessage());
+	}
 
-    // Assert
-    assertEquals("MessageNot all who wander are lost42", slackNotifier.getMessage());
-  }
+	/**
+	 * Test {@link SlackNotifier#setMessage(String)}.
+	 * <ul>
+	 * <li>Then {@link SlackNotifier} Message is
+	 * {@code MessageNot all who wander are lost42}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link SlackNotifier#setMessage(String)}
+	 */
+	@Test
+	public void testSetMessage_thenSlackNotifierMessageIsMessageNotAllWhoWanderAreLost42() {
+		// Arrange and Act
+		slackNotifier.setMessage("MessageNot all who wander are lost42");
 
-  /**
-   * Test {@link SlackNotifier#setMessage(String)}.
-   * <ul>
-   *   <li>Then {@link SlackNotifier} Message is {@code Not all who wander are lost}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link SlackNotifier#setMessage(String)}
-   */
-  @Test
-  public void testSetMessage_thenSlackNotifierMessageIsNotAllWhoWanderAreLost() {
-    // Arrange and Act
-    slackNotifier.setMessage("Not all who wander are lost");
+		// Assert
+		assertEquals("MessageNot all who wander are lost42", slackNotifier.getMessage());
+	}
 
-    // Assert
-    assertEquals("Not all who wander are lost", slackNotifier.getMessage());
-  }
+	/**
+	 * Test {@link SlackNotifier#setMessage(String)}.
+	 * <ul>
+	 * <li>Then {@link SlackNotifier} Message is {@code Not all who wander are lost}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link SlackNotifier#setMessage(String)}
+	 */
+	@Test
+	public void testSetMessage_thenSlackNotifierMessageIsNotAllWhoWanderAreLost() {
+		// Arrange and Act
+		slackNotifier.setMessage("Not all who wander are lost");
 
-  /**
-   * Test {@link SlackNotifier#setMessage(String)}.
-   * <ul>
-   *   <li>When a string.</li>
-   *   <li>Then {@link SlackNotifier} Message is a string.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link SlackNotifier#setMessage(String)}
-   */
-  @Test
-  public void testSetMessage_whenAString_thenSlackNotifierMessageIsAString() {
-    // Arrange and Act
-    slackNotifier.setMessage(
-        "Not all who wander are lostde.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEventde"
-            + ".codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent");
+		// Assert
+		assertEquals("Not all who wander are lost", slackNotifier.getMessage());
+	}
 
-    // Assert
-    assertEquals(
-        "Not all who wander are lostde.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEventde"
-            + ".codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent",
-        slackNotifier.getMessage());
-  }
+	/**
+	 * Test {@link SlackNotifier#setMessage(String)}.
+	 * <ul>
+	 * <li>When a string.</li>
+	 * <li>Then {@link SlackNotifier} Message is a string.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link SlackNotifier#setMessage(String)}
+	 */
+	@Test
+	public void testSetMessage_whenAString_thenSlackNotifierMessageIsAString() {
+		// Arrange and Act
+		slackNotifier.setMessage(
+				"Not all who wander are lostde.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEventde"
+						+ ".codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent");
 
-  /**
-   * Test {@link SlackNotifier#setMessage(String)}.
-   * <ul>
-   *   <li>When a string.</li>
-   *   <li>Then {@link SlackNotifier} Message is a string.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link SlackNotifier#setMessage(String)}
-   */
-  @Test
-  public void testSetMessage_whenAString_thenSlackNotifierMessageIsAString2() {
-    // Arrange and Act
-    slackNotifier
-        .setMessage("MessageNot all who wander are lostde.codecentric.boot.admin.server.domain.events.InstanceStatusCh"
-            + "angedEvent");
+		// Assert
+		assertEquals(
+				"Not all who wander are lostde.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEventde"
+						+ ".codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent",
+				slackNotifier.getMessage());
+	}
 
-    // Assert
-    assertEquals("MessageNot all who wander are lostde.codecentric.boot.admin.server.domain.events.InstanceStatusCh"
-        + "angedEvent", slackNotifier.getMessage());
-  }
+	/**
+	 * Test {@link SlackNotifier#setMessage(String)}.
+	 * <ul>
+	 * <li>When a string.</li>
+	 * <li>Then {@link SlackNotifier} Message is a string.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link SlackNotifier#setMessage(String)}
+	 */
+	@Test
+	public void testSetMessage_whenAString_thenSlackNotifierMessageIsAString2() {
+		// Arrange and Act
+		slackNotifier.setMessage(
+				"MessageNot all who wander are lostde.codecentric.boot.admin.server.domain.events.InstanceStatusCh"
+						+ "angedEvent");
+
+		// Assert
+		assertEquals("MessageNot all who wander are lostde.codecentric.boot.admin.server.domain.events.InstanceStatusCh"
+				+ "angedEvent", slackNotifier.getMessage());
+	}
+
 }

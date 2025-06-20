@@ -33,231 +33,238 @@ import org.springframework.test.context.aot.DisabledInAotMode;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@ContextConfiguration(classes = {NotificationTrigger.class})
+@ContextConfiguration(classes = { NotificationTrigger.class })
 @DisabledInAotMode
 @RunWith(SpringJUnit4ClassRunner.class)
 public class AbstractEventHandlerDiffblueTest {
-  @Autowired
-  private AbstractEventHandler<InstanceEvent> abstractEventHandler;
 
-  @MockitoBean
-  private Notifier notifier;
+	@Autowired
+	private AbstractEventHandler<InstanceEvent> abstractEventHandler;
 
-  @MockitoBean
-  private Publisher<InstanceEvent> publisher;
+	@MockitoBean
+	private Notifier notifier;
 
-  /**
-   * Test {@link AbstractEventHandler#start()}.
-   * <ul>
-   *   <li>Given {@link ArrayList#ArrayList()} addAll {@link ArrayList#ArrayList()}.</li>
-   *   <li>Then calls {@link Function#apply(Object)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AbstractEventHandler#start()}
-   */
-  @Test
-  public void testStart_givenArrayListAddAllArrayList_thenCallsApply() {
-    // Arrange
-    IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
-    when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
+	@MockitoBean
+	private Publisher<InstanceEvent> publisher;
 
-    ArrayList<InstanceEvent> events = new ArrayList<>();
-    events.addAll(new ArrayList<>());
+	/**
+	 * Test {@link AbstractEventHandler#start()}.
+	 * <ul>
+	 * <li>Given {@link ArrayList#ArrayList()} addAll {@link ArrayList#ArrayList()}.</li>
+	 * <li>Then calls {@link Function#apply(Object)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AbstractEventHandler#start()}
+	 */
+	@Test
+	public void testStart_givenArrayListAddAllArrayList_thenCallsApply() {
+		// Arrange
+		IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
+		when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
 
-    HazelcastEventStore events2 = new HazelcastEventStore(eventLogs);
-    events2.append(events);
-    Function<InstanceId, Long> function = mock(Function.class);
-    when(function.apply(Mockito.<InstanceId>any())).thenReturn(1L);
+		ArrayList<InstanceEvent> events = new ArrayList<>();
+		events.addAll(new ArrayList<>());
 
-    ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
-    sentNotifications.computeIfAbsent(InstanceId.of("42"), function);
+		HazelcastEventStore events2 = new HazelcastEventStore(eventLogs);
+		events2.append(events);
+		Function<InstanceId, Long> function = mock(Function.class);
+		when(function.apply(Mockito.<InstanceId>any())).thenReturn(1L);
 
-    // Act
-    new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events2, sentNotifications).start();
+		ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
+		sentNotifications.computeIfAbsent(InstanceId.of("42"), function);
 
-    // Assert
-    verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
-    verify(function).apply(isA(InstanceId.class));
-  }
+		// Act
+		new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events2, sentNotifications).start();
 
-  /**
-   * Test {@link AbstractEventHandler#start()}.
-   * <ul>
-   *   <li>Given {@link ConcurrentHashMap#ConcurrentHashMap()} IfAbsent {@link InstanceId} with value is {@code 42} is one.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AbstractEventHandler#start()}
-   */
-  @Test
-  public void testStart_givenConcurrentHashMapIfAbsentInstanceIdWithValueIs42IsOne() {
-    // Arrange
-    IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
-    when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
+		// Assert
+		verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
+		verify(function).apply(isA(InstanceId.class));
+	}
 
-    ArrayList<InstanceEvent> events = new ArrayList<>();
-    events.addAll(new ArrayList<>());
+	/**
+	 * Test {@link AbstractEventHandler#start()}.
+	 * <ul>
+	 * <li>Given {@link ConcurrentHashMap#ConcurrentHashMap()} IfAbsent {@link InstanceId}
+	 * with value is {@code 42} is one.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AbstractEventHandler#start()}
+	 */
+	@Test
+	public void testStart_givenConcurrentHashMapIfAbsentInstanceIdWithValueIs42IsOne() {
+		// Arrange
+		IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
+		when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
 
-    HazelcastEventStore events2 = new HazelcastEventStore(eventLogs);
-    events2.append(events);
+		ArrayList<InstanceEvent> events = new ArrayList<>();
+		events.addAll(new ArrayList<>());
 
-    ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
-    sentNotifications.putIfAbsent(InstanceId.of("42"), 1L);
-    sentNotifications.putAll(new HashMap<>());
-    sentNotifications.computeIfAbsent(InstanceId.of("42"), mock(Function.class));
+		HazelcastEventStore events2 = new HazelcastEventStore(eventLogs);
+		events2.append(events);
 
-    // Act
-    new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events2, sentNotifications).start();
+		ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
+		sentNotifications.putIfAbsent(InstanceId.of("42"), 1L);
+		sentNotifications.putAll(new HashMap<>());
+		sentNotifications.computeIfAbsent(InstanceId.of("42"), mock(Function.class));
 
-    // Assert
-    verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
-  }
+		// Act
+		new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events2, sentNotifications).start();
 
-  /**
-   * Test {@link AbstractEventHandler#start()}.
-   * <ul>
-   *   <li>Given {@link Function} {@link Function#apply(Object)} return {@link Long#MAX_VALUE}.</li>
-   *   <li>Then calls {@link Function#apply(Object)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AbstractEventHandler#start()}
-   */
-  @Test
-  public void testStart_givenFunctionApplyReturnMax_value_thenCallsApply() {
-    // Arrange
-    IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
-    when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
+		// Assert
+		verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
+	}
 
-    HazelcastEventStore events = new HazelcastEventStore(eventLogs);
-    events.append(new ArrayList<>());
-    Function<InstanceId, Long> function = mock(Function.class);
-    when(function.apply(Mockito.<InstanceId>any())).thenReturn(Long.MAX_VALUE);
+	/**
+	 * Test {@link AbstractEventHandler#start()}.
+	 * <ul>
+	 * <li>Given {@link Function} {@link Function#apply(Object)} return
+	 * {@link Long#MAX_VALUE}.</li>
+	 * <li>Then calls {@link Function#apply(Object)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AbstractEventHandler#start()}
+	 */
+	@Test
+	public void testStart_givenFunctionApplyReturnMax_value_thenCallsApply() {
+		// Arrange
+		IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
+		when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
 
-    ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
-    sentNotifications.computeIfAbsent(InstanceId.of("42"), function);
+		HazelcastEventStore events = new HazelcastEventStore(eventLogs);
+		events.append(new ArrayList<>());
+		Function<InstanceId, Long> function = mock(Function.class);
+		when(function.apply(Mockito.<InstanceId>any())).thenReturn(Long.MAX_VALUE);
 
-    // Act
-    new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events, sentNotifications).start();
+		ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
+		sentNotifications.computeIfAbsent(InstanceId.of("42"), function);
 
-    // Assert
-    verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
-    verify(function).apply(isA(InstanceId.class));
-  }
+		// Act
+		new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events, sentNotifications).start();
 
-  /**
-   * Test {@link AbstractEventHandler#start()}.
-   * <ul>
-   *   <li>Given {@link Function} {@link Function#apply(Object)} return one.</li>
-   *   <li>Then calls {@link Function#apply(Object)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AbstractEventHandler#start()}
-   */
-  @Test
-  public void testStart_givenFunctionApplyReturnOne_thenCallsApply() {
-    // Arrange
-    IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
-    when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
+		// Assert
+		verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
+		verify(function).apply(isA(InstanceId.class));
+	}
 
-    HazelcastEventStore events = new HazelcastEventStore(eventLogs);
-    events.append(new ArrayList<>());
-    Function<InstanceId, Long> function = mock(Function.class);
-    when(function.apply(Mockito.<InstanceId>any())).thenReturn(1L);
+	/**
+	 * Test {@link AbstractEventHandler#start()}.
+	 * <ul>
+	 * <li>Given {@link Function} {@link Function#apply(Object)} return one.</li>
+	 * <li>Then calls {@link Function#apply(Object)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AbstractEventHandler#start()}
+	 */
+	@Test
+	public void testStart_givenFunctionApplyReturnOne_thenCallsApply() {
+		// Arrange
+		IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
+		when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
 
-    ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
-    sentNotifications.computeIfAbsent(InstanceId.of("42"), function);
+		HazelcastEventStore events = new HazelcastEventStore(eventLogs);
+		events.append(new ArrayList<>());
+		Function<InstanceId, Long> function = mock(Function.class);
+		when(function.apply(Mockito.<InstanceId>any())).thenReturn(1L);
 
-    // Act
-    new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events, sentNotifications).start();
+		ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
+		sentNotifications.computeIfAbsent(InstanceId.of("42"), function);
 
-    // Assert
-    verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
-    verify(function).apply(isA(InstanceId.class));
-  }
+		// Act
+		new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events, sentNotifications).start();
 
-  /**
-   * Test {@link AbstractEventHandler#start()}.
-   * <ul>
-   *   <li>Given {@link HazelcastEventStore#HazelcastEventStore(IMap)} with eventLogs is {@link IMap} append {@link ArrayList#ArrayList()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AbstractEventHandler#start()}
-   */
-  @Test
-  public void testStart_givenHazelcastEventStoreWithEventLogsIsIMapAppendArrayList() {
-    // Arrange
-    IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
-    when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
+		// Assert
+		verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
+		verify(function).apply(isA(InstanceId.class));
+	}
 
-    HazelcastEventStore events = new HazelcastEventStore(eventLogs);
-    events.append(new ArrayList<>());
-    FeiShuNotifier notifier = mock(FeiShuNotifier.class);
+	/**
+	 * Test {@link AbstractEventHandler#start()}.
+	 * <ul>
+	 * <li>Given {@link HazelcastEventStore#HazelcastEventStore(IMap)} with eventLogs is
+	 * {@link IMap} append {@link ArrayList#ArrayList()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AbstractEventHandler#start()}
+	 */
+	@Test
+	public void testStart_givenHazelcastEventStoreWithEventLogsIsIMapAppendArrayList() {
+		// Arrange
+		IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
+		when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
 
-    // Act
-    new HazelcastNotificationTrigger(notifier, events, new ConcurrentHashMap<>()).start();
+		HazelcastEventStore events = new HazelcastEventStore(eventLogs);
+		events.append(new ArrayList<>());
+		FeiShuNotifier notifier = mock(FeiShuNotifier.class);
 
-    // Assert
-    verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
-  }
+		// Act
+		new HazelcastNotificationTrigger(notifier, events, new ConcurrentHashMap<>()).start();
 
-  /**
-   * Test {@link AbstractEventHandler#start()}.
-   * <ul>
-   *   <li>Given {@link HazelcastEventStore#HazelcastEventStore(IMap)} with eventLogs is {@link IMap}.</li>
-   *   <li>Then calls {@link IMap#addEntryListener(MapListener, boolean)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AbstractEventHandler#start()}
-   */
-  @Test
-  public void testStart_givenHazelcastEventStoreWithEventLogsIsIMap_thenCallsAddEntryListener() {
-    // Arrange
-    IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
-    when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
-    HazelcastEventStore events = new HazelcastEventStore(eventLogs);
-    FeiShuNotifier notifier = mock(FeiShuNotifier.class);
+		// Assert
+		verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
+	}
 
-    // Act
-    new HazelcastNotificationTrigger(notifier, events, new ConcurrentHashMap<>()).start();
+	/**
+	 * Test {@link AbstractEventHandler#start()}.
+	 * <ul>
+	 * <li>Given {@link HazelcastEventStore#HazelcastEventStore(IMap)} with eventLogs is
+	 * {@link IMap}.</li>
+	 * <li>Then calls {@link IMap#addEntryListener(MapListener, boolean)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AbstractEventHandler#start()}
+	 */
+	@Test
+	public void testStart_givenHazelcastEventStoreWithEventLogsIsIMap_thenCallsAddEntryListener() {
+		// Arrange
+		IMap<InstanceId, List<InstanceEvent>> eventLogs = mock(IMap.class);
+		when(eventLogs.addEntryListener(Mockito.<MapListener>any(), anyBoolean())).thenReturn(UUID.randomUUID());
+		HazelcastEventStore events = new HazelcastEventStore(eventLogs);
+		FeiShuNotifier notifier = mock(FeiShuNotifier.class);
 
-    // Assert
-    verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
-  }
+		// Act
+		new HazelcastNotificationTrigger(notifier, events, new ConcurrentHashMap<>()).start();
 
-  /**
-   * Test {@link AbstractEventHandler#start()}.
-   * <ul>
-   *   <li>Given {@link InMemoryEventStore#InMemoryEventStore()} append {@link ArrayList#ArrayList()}.</li>
-   *   <li>Then calls {@link Function#apply(Object)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AbstractEventHandler#start()}
-   */
-  @Test
-  public void testStart_givenInMemoryEventStoreAppendArrayList_thenCallsApply() {
-    // Arrange
-    InMemoryEventStore events = new InMemoryEventStore();
-    events.append(new ArrayList<>());
-    Function<InstanceId, Long> function = mock(Function.class);
-    when(function.apply(Mockito.<InstanceId>any())).thenReturn(Long.MAX_VALUE);
+		// Assert
+		verify(eventLogs).addEntryListener(isA(MapListener.class), eq(true));
+	}
 
-    ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
-    sentNotifications.computeIfAbsent(InstanceId.of("42"), function);
+	/**
+	 * Test {@link AbstractEventHandler#start()}.
+	 * <ul>
+	 * <li>Given {@link InMemoryEventStore#InMemoryEventStore()} append
+	 * {@link ArrayList#ArrayList()}.</li>
+	 * <li>Then calls {@link Function#apply(Object)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AbstractEventHandler#start()}
+	 */
+	@Test
+	public void testStart_givenInMemoryEventStoreAppendArrayList_thenCallsApply() {
+		// Arrange
+		InMemoryEventStore events = new InMemoryEventStore();
+		events.append(new ArrayList<>());
+		Function<InstanceId, Long> function = mock(Function.class);
+		when(function.apply(Mockito.<InstanceId>any())).thenReturn(Long.MAX_VALUE);
 
-    // Act
-    new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events, sentNotifications).start();
+		ConcurrentHashMap<InstanceId, Long> sentNotifications = new ConcurrentHashMap<>();
+		sentNotifications.computeIfAbsent(InstanceId.of("42"), function);
 
-    // Assert
-    verify(function).apply(isA(InstanceId.class));
-  }
+		// Act
+		new HazelcastNotificationTrigger(mock(FeiShuNotifier.class), events, sentNotifications).start();
 
-  /**
-   * Test {@link AbstractEventHandler#createScheduler()}.
-   * <p>
-   * Method under test: {@link AbstractEventHandler#createScheduler()}
-   */
-  @Test
-  public void testCreateScheduler() {
-    // Arrange, Act and Assert
-    assertFalse(abstractEventHandler.createScheduler().isDisposed());
-  }
+		// Assert
+		verify(function).apply(isA(InstanceId.class));
+	}
+
+	/**
+	 * Test {@link AbstractEventHandler#createScheduler()}.
+	 * <p>
+	 * Method under test: {@link AbstractEventHandler#createScheduler()}
+	 */
+	@Test
+	public void testCreateScheduler() {
+		// Arrange, Act and Assert
+		assertFalse(abstractEventHandler.createScheduler().isDisposed());
+	}
+
 }

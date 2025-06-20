@@ -14,36 +14,38 @@ import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
 public class LoggingNotifierDiffblueTest {
-  /**
-   * Test {@link LoggingNotifier#LoggingNotifier(InstanceRepository)}.
-   * <p>
-   * Method under test: {@link LoggingNotifier#LoggingNotifier(InstanceRepository)}
-   */
-  @Test
-  public void testNewLoggingNotifier() {
-    // Arrange and Act
-    LoggingNotifier actualLoggingNotifier = new LoggingNotifier(
-        new EventsourcingInstanceRepository(new InMemoryEventStore()));
 
-    // Assert
-    assertTrue(actualLoggingNotifier.isEnabled());
-    assertArrayEquals(new String[]{"UNKNOWN:UP"}, actualLoggingNotifier.getIgnoreChanges());
-  }
+	/**
+	 * Test {@link LoggingNotifier#LoggingNotifier(InstanceRepository)}.
+	 * <p>
+	 * Method under test: {@link LoggingNotifier#LoggingNotifier(InstanceRepository)}
+	 */
+	@Test
+	public void testNewLoggingNotifier() {
+		// Arrange and Act
+		LoggingNotifier actualLoggingNotifier = new LoggingNotifier(
+				new EventsourcingInstanceRepository(new InMemoryEventStore()));
 
-  /**
-   * Test {@link LoggingNotifier#doNotify(InstanceEvent, Instance)}.
-   * <p>
-   * Method under test: {@link LoggingNotifier#doNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testDoNotify() throws AssertionError {
-    // Arrange
-    LoggingNotifier loggingNotifier = new LoggingNotifier(
-        new EventsourcingInstanceRepository(new InMemoryEventStore()));
+		// Assert
+		assertTrue(actualLoggingNotifier.isEnabled());
+		assertArrayEquals(new String[] { "UNKNOWN:UP" }, actualLoggingNotifier.getIgnoreChanges());
+	}
 
-    // Act and Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(loggingNotifier.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
-    createResult.expectError().verify();
-  }
+	/**
+	 * Test {@link LoggingNotifier#doNotify(InstanceEvent, Instance)}.
+	 * <p>
+	 * Method under test: {@link LoggingNotifier#doNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testDoNotify() throws AssertionError {
+		// Arrange
+		LoggingNotifier loggingNotifier = new LoggingNotifier(
+				new EventsourcingInstanceRepository(new InMemoryEventStore()));
+
+		// Act and Assert
+		FirstStep<Void> createResult = StepVerifier
+			.create(loggingNotifier.doNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
+		createResult.expectError().verify();
+	}
+
 }

@@ -15,77 +15,82 @@ import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
 public class CompositeReactiveHttpHeadersProviderDiffblueTest {
-  /**
-   * Test {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}.
-   * <p>
-   * Method under test: {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}
-   */
-  @Test
-  public void testGetHeaders() throws AssertionError {
-    // Arrange, Act and Assert
-    FirstStep<HttpHeaders> createResult = StepVerifier
-        .create(new CompositeReactiveHttpHeadersProvider(new ArrayList<>()).getHeaders(null));
-    createResult.expectComplete().verify();
-  }
 
-  /**
-   * Test {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}.
-   * <ul>
-   *   <li>Then calls {@link ReactiveHttpHeadersProvider#getHeaders(Instance)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}
-   */
-  @Test
-  public void testGetHeaders_thenCallsGetHeaders() throws AssertionError {
-    // Arrange
-    ReactiveHttpHeadersProvider reactiveHttpHeadersProvider = mock(ReactiveHttpHeadersProvider.class);
-    Mono<HttpHeaders> justResult = Mono.just(new HttpHeaders());
-    when(reactiveHttpHeadersProvider.getHeaders(Mockito.<Instance>any())).thenReturn(justResult);
+	/**
+	 * Test {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}.
+	 * <p>
+	 * Method under test:
+	 * {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}
+	 */
+	@Test
+	public void testGetHeaders() throws AssertionError {
+		// Arrange, Act and Assert
+		FirstStep<HttpHeaders> createResult = StepVerifier
+			.create(new CompositeReactiveHttpHeadersProvider(new ArrayList<>()).getHeaders(null));
+		createResult.expectComplete().verify();
+	}
 
-    ArrayList<ReactiveHttpHeadersProvider> delegates = new ArrayList<>();
-    delegates.add(reactiveHttpHeadersProvider);
+	/**
+	 * Test {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}.
+	 * <ul>
+	 * <li>Then calls {@link ReactiveHttpHeadersProvider#getHeaders(Instance)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}
+	 */
+	@Test
+	public void testGetHeaders_thenCallsGetHeaders() throws AssertionError {
+		// Arrange
+		ReactiveHttpHeadersProvider reactiveHttpHeadersProvider = mock(ReactiveHttpHeadersProvider.class);
+		Mono<HttpHeaders> justResult = Mono.just(new HttpHeaders());
+		when(reactiveHttpHeadersProvider.getHeaders(Mockito.<Instance>any())).thenReturn(justResult);
 
-    // Act and Assert
-    FirstStep<HttpHeaders> createResult = StepVerifier
-        .create(new CompositeReactiveHttpHeadersProvider(delegates).getHeaders(null));
-    createResult.assertNext(h -> {
-      assertTrue(h.isEmpty());
-      return;
-    }).expectComplete().verify();
-    verify(reactiveHttpHeadersProvider).getHeaders(isNull());
-  }
+		ArrayList<ReactiveHttpHeadersProvider> delegates = new ArrayList<>();
+		delegates.add(reactiveHttpHeadersProvider);
 
-  /**
-   * Test {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}.
-   * <ul>
-   *   <li>Then calls {@link ReactiveHttpHeadersProvider#getHeaders(Instance)}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}
-   */
-  @Test
-  public void testGetHeaders_thenCallsGetHeaders2() throws AssertionError {
-    // Arrange
-    ReactiveHttpHeadersProvider reactiveHttpHeadersProvider = mock(ReactiveHttpHeadersProvider.class);
-    Mono<HttpHeaders> justResult = Mono.just(new HttpHeaders());
-    when(reactiveHttpHeadersProvider.getHeaders(Mockito.<Instance>any())).thenReturn(justResult);
-    ReactiveHttpHeadersProvider reactiveHttpHeadersProvider2 = mock(ReactiveHttpHeadersProvider.class);
-    Mono<HttpHeaders> justResult2 = Mono.just(new HttpHeaders());
-    when(reactiveHttpHeadersProvider2.getHeaders(Mockito.<Instance>any())).thenReturn(justResult2);
+		// Act and Assert
+		FirstStep<HttpHeaders> createResult = StepVerifier
+			.create(new CompositeReactiveHttpHeadersProvider(delegates).getHeaders(null));
+		createResult.assertNext(h -> {
+			assertTrue(h.isEmpty());
+			return;
+		}).expectComplete().verify();
+		verify(reactiveHttpHeadersProvider).getHeaders(isNull());
+	}
 
-    ArrayList<ReactiveHttpHeadersProvider> delegates = new ArrayList<>();
-    delegates.add(reactiveHttpHeadersProvider2);
-    delegates.add(reactiveHttpHeadersProvider);
+	/**
+	 * Test {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}.
+	 * <ul>
+	 * <li>Then calls {@link ReactiveHttpHeadersProvider#getHeaders(Instance)}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test:
+	 * {@link CompositeReactiveHttpHeadersProvider#getHeaders(Instance)}
+	 */
+	@Test
+	public void testGetHeaders_thenCallsGetHeaders2() throws AssertionError {
+		// Arrange
+		ReactiveHttpHeadersProvider reactiveHttpHeadersProvider = mock(ReactiveHttpHeadersProvider.class);
+		Mono<HttpHeaders> justResult = Mono.just(new HttpHeaders());
+		when(reactiveHttpHeadersProvider.getHeaders(Mockito.<Instance>any())).thenReturn(justResult);
+		ReactiveHttpHeadersProvider reactiveHttpHeadersProvider2 = mock(ReactiveHttpHeadersProvider.class);
+		Mono<HttpHeaders> justResult2 = Mono.just(new HttpHeaders());
+		when(reactiveHttpHeadersProvider2.getHeaders(Mockito.<Instance>any())).thenReturn(justResult2);
 
-    // Act and Assert
-    FirstStep<HttpHeaders> createResult = StepVerifier
-        .create(new CompositeReactiveHttpHeadersProvider(delegates).getHeaders(null));
-    createResult.assertNext(h -> {
-      assertTrue(h.isEmpty());
-      return;
-    }).expectComplete().verify();
-    verify(reactiveHttpHeadersProvider2).getHeaders(isNull());
-    verify(reactiveHttpHeadersProvider).getHeaders(isNull());
-  }
+		ArrayList<ReactiveHttpHeadersProvider> delegates = new ArrayList<>();
+		delegates.add(reactiveHttpHeadersProvider2);
+		delegates.add(reactiveHttpHeadersProvider);
+
+		// Act and Assert
+		FirstStep<HttpHeaders> createResult = StepVerifier
+			.create(new CompositeReactiveHttpHeadersProvider(delegates).getHeaders(null));
+		createResult.assertNext(h -> {
+			assertTrue(h.isEmpty());
+			return;
+		}).expectComplete().verify();
+		verify(reactiveHttpHeadersProvider2).getHeaders(isNull());
+		verify(reactiveHttpHeadersProvider).getHeaders(isNull());
+	}
+
 }

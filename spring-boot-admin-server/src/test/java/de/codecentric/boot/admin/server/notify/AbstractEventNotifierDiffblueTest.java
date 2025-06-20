@@ -16,105 +16,111 @@ import reactor.test.StepVerifier;
 import reactor.test.StepVerifier.FirstStep;
 
 public class AbstractEventNotifierDiffblueTest {
-  /**
-   * Test {@link AbstractEventNotifier#notify(InstanceEvent)} with {@code InstanceEvent}.
-   * <p>
-   * Method under test: {@link AbstractEventNotifier#notify(InstanceEvent)}
-   */
-  @Test
-  public void testNotifyWithInstanceEvent() throws AssertionError {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
-    RemindingNotifier remindingNotifier = new RemindingNotifier(delegate,
-        new EventsourcingInstanceRepository(new InMemoryEventStore()));
 
-    // Act and Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(remindingNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
-    createResult.expectComplete().verify();
-  }
+	/**
+	 * Test {@link AbstractEventNotifier#notify(InstanceEvent)} with
+	 * {@code InstanceEvent}.
+	 * <p>
+	 * Method under test: {@link AbstractEventNotifier#notify(InstanceEvent)}
+	 */
+	@Test
+	public void testNotifyWithInstanceEvent() throws AssertionError {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
+		RemindingNotifier remindingNotifier = new RemindingNotifier(delegate,
+				new EventsourcingInstanceRepository(new InMemoryEventStore()));
 
-  /**
-   * Test {@link AbstractEventNotifier#notify(InstanceEvent)} with {@code InstanceEvent}.
-   * <p>
-   * Method under test: {@link AbstractEventNotifier#notify(InstanceEvent)}
-   */
-  @Test
-  public void testNotifyWithInstanceEvent2() throws AssertionError {
-    // Arrange
-    DingTalkNotifier dingTalkNotifier = new DingTalkNotifier(
-        new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(RestTemplate.class));
-    dingTalkNotifier.setEnabled(false);
+		// Act and Assert
+		FirstStep<Void> createResult = StepVerifier
+			.create(remindingNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
+		createResult.expectComplete().verify();
+	}
 
-    // Act and Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(dingTalkNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
-    createResult.expectComplete().verify();
-  }
+	/**
+	 * Test {@link AbstractEventNotifier#notify(InstanceEvent)} with
+	 * {@code InstanceEvent}.
+	 * <p>
+	 * Method under test: {@link AbstractEventNotifier#notify(InstanceEvent)}
+	 */
+	@Test
+	public void testNotifyWithInstanceEvent2() throws AssertionError {
+		// Arrange
+		DingTalkNotifier dingTalkNotifier = new DingTalkNotifier(
+				new EventsourcingInstanceRepository(new InMemoryEventStore()), mock(RestTemplate.class));
+		dingTalkNotifier.setEnabled(false);
 
-  /**
-   * Test {@link AbstractEventNotifier#notify(InstanceEvent)} with {@code InstanceEvent}.
-   * <p>
-   * Method under test: {@link AbstractEventNotifier#notify(InstanceEvent)}
-   */
-  @Test
-  public void testNotifyWithInstanceEvent3() throws AssertionError {
-    // Arrange
-    Notifier delegate = mock(Notifier.class);
-    RemindingNotifier remindingNotifier = new RemindingNotifier(delegate,
-        new SnapshottingInstanceRepository(new InMemoryEventStore()));
+		// Act and Assert
+		FirstStep<Void> createResult = StepVerifier
+			.create(dingTalkNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
+		createResult.expectComplete().verify();
+	}
 
-    // Act and Assert
-    FirstStep<Void> createResult = StepVerifier
-        .create(remindingNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
-    createResult.expectComplete().verify();
-  }
+	/**
+	 * Test {@link AbstractEventNotifier#notify(InstanceEvent)} with
+	 * {@code InstanceEvent}.
+	 * <p>
+	 * Method under test: {@link AbstractEventNotifier#notify(InstanceEvent)}
+	 */
+	@Test
+	public void testNotifyWithInstanceEvent3() throws AssertionError {
+		// Arrange
+		Notifier delegate = mock(Notifier.class);
+		RemindingNotifier remindingNotifier = new RemindingNotifier(delegate,
+				new SnapshottingInstanceRepository(new InMemoryEventStore()));
 
-  /**
-   * Test {@link AbstractEventNotifier#shouldNotify(InstanceEvent, Instance)}.
-   * <p>
-   * Method under test: {@link AbstractEventNotifier#shouldNotify(InstanceEvent, Instance)}
-   */
-  @Test
-  public void testShouldNotify() {
-    // Arrange
-    LoggingNotifier loggingNotifier = new LoggingNotifier(
-        new EventsourcingInstanceRepository(new InMemoryEventStore()));
+		// Act and Assert
+		FirstStep<Void> createResult = StepVerifier
+			.create(remindingNotifier.notify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L)));
+		createResult.expectComplete().verify();
+	}
 
-    // Act and Assert
-    assertFalse(loggingNotifier.shouldNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
-  }
+	/**
+	 * Test {@link AbstractEventNotifier#shouldNotify(InstanceEvent, Instance)}.
+	 * <p>
+	 * Method under test:
+	 * {@link AbstractEventNotifier#shouldNotify(InstanceEvent, Instance)}
+	 */
+	@Test
+	public void testShouldNotify() {
+		// Arrange
+		LoggingNotifier loggingNotifier = new LoggingNotifier(
+				new EventsourcingInstanceRepository(new InMemoryEventStore()));
 
-  /**
-   * Test {@link AbstractEventNotifier#isEnabled()}.
-   * <ul>
-   *   <li>Then return {@code false}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AbstractEventNotifier#isEnabled()}
-   */
-  @Test
-  public void testIsEnabled_thenReturnFalse() {
-    // Arrange
-    LoggingNotifier loggingNotifier = new LoggingNotifier(
-        new EventsourcingInstanceRepository(new InMemoryEventStore()));
-    loggingNotifier.setEnabled(false);
+		// Act and Assert
+		assertFalse(loggingNotifier.shouldNotify(new InstanceDeregisteredEvent(InstanceId.of("42"), 1L), null));
+	}
 
-    // Act and Assert
-    assertFalse(loggingNotifier.isEnabled());
-  }
+	/**
+	 * Test {@link AbstractEventNotifier#isEnabled()}.
+	 * <ul>
+	 * <li>Then return {@code false}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AbstractEventNotifier#isEnabled()}
+	 */
+	@Test
+	public void testIsEnabled_thenReturnFalse() {
+		// Arrange
+		LoggingNotifier loggingNotifier = new LoggingNotifier(
+				new EventsourcingInstanceRepository(new InMemoryEventStore()));
+		loggingNotifier.setEnabled(false);
 
-  /**
-   * Test {@link AbstractEventNotifier#isEnabled()}.
-   * <ul>
-   *   <li>Then return {@code true}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link AbstractEventNotifier#isEnabled()}
-   */
-  @Test
-  public void testIsEnabled_thenReturnTrue() {
-    // Arrange, Act and Assert
-    assertTrue(new LoggingNotifier(new EventsourcingInstanceRepository(new InMemoryEventStore())).isEnabled());
-  }
+		// Act and Assert
+		assertFalse(loggingNotifier.isEnabled());
+	}
+
+	/**
+	 * Test {@link AbstractEventNotifier#isEnabled()}.
+	 * <ul>
+	 * <li>Then return {@code true}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link AbstractEventNotifier#isEnabled()}
+	 */
+	@Test
+	public void testIsEnabled_thenReturnTrue() {
+		// Arrange, Act and Assert
+		assertTrue(new LoggingNotifier(new EventsourcingInstanceRepository(new InMemoryEventStore())).isEnabled());
+	}
+
 }

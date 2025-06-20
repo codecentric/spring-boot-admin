@@ -13,87 +13,90 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class CompositeMetadataContributorDiffblueTest {
-  /**
-   * Test {@link CompositeMetadataContributor#CompositeMetadataContributor(List)}.
-   * <p>
-   * Method under test: {@link CompositeMetadataContributor#CompositeMetadataContributor(List)}
-   */
-  @Test
-  @DisplayName("Test new CompositeMetadataContributor(List)")
-  @Tag("MaintainedByDiffblue")
-  void testNewCompositeMetadataContributor() {
-    // Arrange, Act and Assert
-    assertTrue(new CompositeMetadataContributor(new ArrayList<>()).getMetadata().isEmpty());
-  }
 
-  /**
-   * Test {@link CompositeMetadataContributor#getMetadata()}.
-   * <p>
-   * Method under test: {@link CompositeMetadataContributor#getMetadata()}
-   */
-  @Test
-  @DisplayName("Test getMetadata()")
-  @Tag("MaintainedByDiffblue")
-  void testGetMetadata() {
-    // Arrange, Act and Assert
-    assertTrue(new CompositeMetadataContributor(new ArrayList<>()).getMetadata().isEmpty());
-  }
+	/**
+	 * Test {@link CompositeMetadataContributor#CompositeMetadataContributor(List)}.
+	 * <p>
+	 * Method under test:
+	 * {@link CompositeMetadataContributor#CompositeMetadataContributor(List)}
+	 */
+	@Test
+	@DisplayName("Test new CompositeMetadataContributor(List)")
+	@Tag("MaintainedByDiffblue")
+	void testNewCompositeMetadataContributor() {
+		// Arrange, Act and Assert
+		assertTrue(new CompositeMetadataContributor(new ArrayList<>()).getMetadata().isEmpty());
+	}
 
-  /**
-   * Test {@link CompositeMetadataContributor#getMetadata()}.
-   * <ul>
-   *   <li>Then calls {@link MetadataContributor#getMetadata()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link CompositeMetadataContributor#getMetadata()}
-   */
-  @Test
-  @DisplayName("Test getMetadata(); then calls getMetadata()")
-  @Tag("MaintainedByDiffblue")
-  void testGetMetadata_thenCallsGetMetadata() {
-    // Arrange
-    MetadataContributor metadataContributor = mock(MetadataContributor.class);
-    when(metadataContributor.getMetadata()).thenReturn(new HashMap<>());
+	/**
+	 * Test {@link CompositeMetadataContributor#getMetadata()}.
+	 * <p>
+	 * Method under test: {@link CompositeMetadataContributor#getMetadata()}
+	 */
+	@Test
+	@DisplayName("Test getMetadata()")
+	@Tag("MaintainedByDiffblue")
+	void testGetMetadata() {
+		// Arrange, Act and Assert
+		assertTrue(new CompositeMetadataContributor(new ArrayList<>()).getMetadata().isEmpty());
+	}
 
-    ArrayList<MetadataContributor> delegates = new ArrayList<>();
-    delegates.add(metadataContributor);
+	/**
+	 * Test {@link CompositeMetadataContributor#getMetadata()}.
+	 * <ul>
+	 * <li>Then calls {@link MetadataContributor#getMetadata()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link CompositeMetadataContributor#getMetadata()}
+	 */
+	@Test
+	@DisplayName("Test getMetadata(); then calls getMetadata()")
+	@Tag("MaintainedByDiffblue")
+	void testGetMetadata_thenCallsGetMetadata() {
+		// Arrange
+		MetadataContributor metadataContributor = mock(MetadataContributor.class);
+		when(metadataContributor.getMetadata()).thenReturn(new HashMap<>());
 
-    // Act
-    Map<String, String> actualMetadata = new CompositeMetadataContributor(delegates).getMetadata();
+		ArrayList<MetadataContributor> delegates = new ArrayList<>();
+		delegates.add(metadataContributor);
 
-    // Assert
-    verify(metadataContributor).getMetadata();
-    assertTrue(actualMetadata.isEmpty());
-  }
+		// Act
+		Map<String, String> actualMetadata = new CompositeMetadataContributor(delegates).getMetadata();
 
-  /**
-   * Test {@link CompositeMetadataContributor#getMetadata()}.
-   * <ul>
-   *   <li>Then calls {@link MetadataContributor#getMetadata()}.</li>
-   * </ul>
-   * <p>
-   * Method under test: {@link CompositeMetadataContributor#getMetadata()}
-   */
-  @Test
-  @DisplayName("Test getMetadata(); then calls getMetadata()")
-  @Tag("MaintainedByDiffblue")
-  void testGetMetadata_thenCallsGetMetadata2() {
-    // Arrange
-    MetadataContributor metadataContributor = mock(MetadataContributor.class);
-    when(metadataContributor.getMetadata()).thenReturn(new HashMap<>());
-    MetadataContributor metadataContributor2 = mock(MetadataContributor.class);
-    when(metadataContributor2.getMetadata()).thenReturn(new HashMap<>());
+		// Assert
+		verify(metadataContributor).getMetadata();
+		assertTrue(actualMetadata.isEmpty());
+	}
 
-    ArrayList<MetadataContributor> delegates = new ArrayList<>();
-    delegates.add(metadataContributor2);
-    delegates.add(metadataContributor);
+	/**
+	 * Test {@link CompositeMetadataContributor#getMetadata()}.
+	 * <ul>
+	 * <li>Then calls {@link MetadataContributor#getMetadata()}.</li>
+	 * </ul>
+	 * <p>
+	 * Method under test: {@link CompositeMetadataContributor#getMetadata()}
+	 */
+	@Test
+	@DisplayName("Test getMetadata(); then calls getMetadata()")
+	@Tag("MaintainedByDiffblue")
+	void testGetMetadata_thenCallsGetMetadata2() {
+		// Arrange
+		MetadataContributor metadataContributor = mock(MetadataContributor.class);
+		when(metadataContributor.getMetadata()).thenReturn(new HashMap<>());
+		MetadataContributor metadataContributor2 = mock(MetadataContributor.class);
+		when(metadataContributor2.getMetadata()).thenReturn(new HashMap<>());
 
-    // Act
-    Map<String, String> actualMetadata = new CompositeMetadataContributor(delegates).getMetadata();
+		ArrayList<MetadataContributor> delegates = new ArrayList<>();
+		delegates.add(metadataContributor2);
+		delegates.add(metadataContributor);
 
-    // Assert
-    verify(metadataContributor2).getMetadata();
-    verify(metadataContributor).getMetadata();
-    assertTrue(actualMetadata.isEmpty());
-  }
+		// Act
+		Map<String, String> actualMetadata = new CompositeMetadataContributor(delegates).getMetadata();
+
+		// Assert
+		verify(metadataContributor2).getMetadata();
+		verify(metadataContributor).getMetadata();
+		assertTrue(actualMetadata.isEmpty());
+	}
+
 }
