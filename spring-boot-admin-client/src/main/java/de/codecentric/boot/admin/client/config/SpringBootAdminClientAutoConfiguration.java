@@ -159,7 +159,7 @@ public class SpringBootAdminClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(RestClient.Builder.class)
+	@ConditionalOnBean({ RestClient.Builder.class, ClientHttpRequestFactoryBuilder.class })
 	public static class RestClientRegistrationClientConfig {
 
 		@Bean
@@ -183,7 +183,6 @@ public class SpringBootAdminClientAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(WebClient.Builder.class)
-	@ConditionalOnMissingBean({ RestTemplateBuilder.class, RestClient.Builder.class })
 	public static class ReactiveRegistrationClientConfig {
 
 		@Bean
