@@ -49,7 +49,7 @@ jobs:
       # otherwise the build will fail https://stackoverflow.com/questions/38051787/maven-javadoc-skip-true-throws-an-error
       - name: Build with Maven
         run: |
-          mvn -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
+          ./mvnw -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
 
       - uses: codecov/codecov-action@v5
         with:

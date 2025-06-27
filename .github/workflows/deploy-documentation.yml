@@ -42,10 +42,10 @@ jobs:
             ${{ runner.os }}-
 
       - name: Set projects Maven version to GitHub Action GUI set version
-        run: mvn versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" --no-transfer-progress
+        run: ./mvnw versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" --no-transfer-progress
 
       - name: Build with Maven
-        run: mvn -B --no-transfer-progress install -DskipTests
+        run: ./mvnw -B --no-transfer-progress install -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
