@@ -481,13 +481,6 @@
             </activation>
             <repositories>
                 <repository>
-                    <id>spring-release</id>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <url>https://repo.spring.io/release</url>
-                </repository>
-                <repository>
                     <id>spring-milestone</id>
                     <snapshots>
                         <enabled>false</enabled>
@@ -512,13 +505,6 @@
                 </repository>
             </repositories>
             <pluginRepositories>
-                <pluginRepository>
-                    <id>spring-release</id>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <url>https://repo.spring.io/release</url>
-                </pluginRepository>
                 <pluginRepository>
                     <id>spring-milestone</id>
                     <snapshots>
