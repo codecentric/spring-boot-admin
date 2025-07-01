@@ -32,7 +32,7 @@
     "chart.js": "4.5.0",
     "chartjs-adapter-moment": "1.0.1",
     "classnames": "2.5.1",
-    "cronstrue": "^2.61.0",
+    "cronstrue": "^3.0.0",
     "d3": "^7.9.0",
     "d3-array": "3.2.4",
     "d3-axis": "3.0.0",
