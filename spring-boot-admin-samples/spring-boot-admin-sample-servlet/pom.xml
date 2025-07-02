@@ -18,15 +18,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <artifactId>spring-boot-admin-sample-servlet</artifactId>
+
     <name>Spring Boot Admin Sample Servlet</name>
     <description>Spring Boot Admin Sample Servlet</description>
+
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-samples</artifactId>
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+
     <dependencies>
         <dependency>
             <groupId>de.codecentric</groupId>
@@ -83,14 +87,8 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- removed due to NPE in AbstractMessageConverterMethodProcessor#formatValue should be fixed with 2.1.0.M4
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
-            <optional>true</optional>
-        </dependency>
-        -->
     </dependencies>
+
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>

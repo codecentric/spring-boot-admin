@@ -18,15 +18,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <artifactId>spring-boot-admin-server-ui</artifactId>
+
     <name>Spring Boot Admin Server UI</name>
     <description>Spring Boot Admin Server UI</description>
+
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
         <version>${revision}</version>
         <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
+
     <dependencies>
         <dependency>
             <groupId>de.codecentric</groupId>
@@ -68,6 +72,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -81,7 +86,6 @@
                         </goals>
                         <configuration>
                             <nodeVersion>${node.version}</nodeVersion>
-                            <npmVersion>${npm.version}</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
@@ -173,8 +177,8 @@
                     <includeEmptyDirs>true</includeEmptyDirs>
                 </configuration>
             </plugin>
-
         </plugins>
+
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -186,6 +190,7 @@
             </resource>
         </resources>
     </build>
+
     <profiles>
         <profile>
             <id>noNpm</id>
