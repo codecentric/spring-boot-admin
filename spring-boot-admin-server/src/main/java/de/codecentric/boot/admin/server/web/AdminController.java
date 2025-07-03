@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that the annotated class is a mvn controller used whithin spring boot admin.
+ * Indicates that the annotated class is a mvc controller used within spring boot admin.
  *
  * @author Johannes Edmeier
  */
