@@ -43,6 +43,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!-- required for later replacement of argLine -->
+        <argLine/>
+
         <!-- used dependencies versions -->
         <spring-boot.version>3.5.3</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
@@ -337,6 +340,7 @@
                     <configuration>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <rerunFailingTestsCount>2</rerunFailingTestsCount>
+                        <argLine>@{argLine} -Xshare:off</argLine>
                         <includes>
                             <include>**/*Tests.java</include>
                             <include>**/*Test.java</include>
