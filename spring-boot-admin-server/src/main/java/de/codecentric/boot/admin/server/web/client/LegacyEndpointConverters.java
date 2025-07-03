@@ -475,7 +475,8 @@ public final class LegacyEndpointConverters {
 
 			// All detail values in SB1.x are in form of 'str1 || str2' so we split
 			// them on ' || '
-			List<Object> conditionValue = Arrays.asList(conditionValueStr.split(" \\|\\| "));
+			String[] split = conditionValueStr.split(" \\|\\| ");
+			List<Object> conditionValue = Arrays.asList(split);
 
 			// Based on conditionKey we may need to apply some transformations,
 			// mostly wrapping, of the input values

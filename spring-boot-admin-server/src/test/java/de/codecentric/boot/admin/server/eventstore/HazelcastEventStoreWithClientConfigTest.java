@@ -56,7 +56,7 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 	}
 
 	private HazelcastInstance createHazelcastInstance() {
-		String address = hazelcastServer.getContainerIpAddress() + ":" + hazelcastServer.getMappedPort(5701);
+		String address = hazelcastServer.getHost() + ":" + hazelcastServer.getMappedPort(5701);
 
 		ClientConfig clientConfig = new ClientConfig();
 		clientConfig.getNetworkConfig().addAddress(address);
