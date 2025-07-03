@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// Spring Boot Admin Server - jackson utils package.
+
 @NonNullApi
 @NonNullFields
 package de.codecentric.boot.admin.server.utils.jackson;

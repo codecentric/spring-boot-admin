@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// Spring Boot Admin Server - servlet package.
+
 @NonNullApi
 @NonNullFields
 package de.codecentric.boot.admin.server.web.servlet;

@@ -18,6 +18,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>spring-boot-admin-starter-client</artifactId>
+    <packaging>pom</packaging>
     <name>Spring Boot Admin Client Starter</name>
     <description>Spring Boot Admin Client Starter</description>
     <parent>

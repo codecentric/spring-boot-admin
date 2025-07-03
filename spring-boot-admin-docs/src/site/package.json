@@ -7,7 +7,7 @@
     "start": "docusaurus start",
     "build:current-version-redirect": "mkdir -p build/current/ && sed \"s/@@VERSION@@/$VERSION/g\" current/index.template.html > build/current/index.html && sed \"s/@@VERSION@@/$VERSION/g\" current/404.template.html > build/current/404.html",
     "build": "docusaurus build",
-    "build:prod": "npm run build && npm run build:current-version-redirect && mv ./build ../../target/generated-docs"
+    "build:prod": "npm run build && npm run build:current-version-redirect && rsync -a --delete-before ./build ../../target/generated-docs"
   },
   "dependencies": {
     "@docusaurus/core": "^3.6.3",

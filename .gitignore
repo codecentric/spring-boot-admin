@@ -27,3 +27,4 @@ node/
 .flattened-pom.xml
 
 .DS_Store
+mockServiceWorker.js

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// Spring Boot Admin Server - core configuration package.
 @NonNullApi
 @NonNullFields
 package de.codecentric.boot.admin.server.config;
