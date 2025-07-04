@@ -77,6 +77,14 @@
                 <version>${testcontainers.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <!-- Maven 4 related fixes: delete as soon as not needed! -->
+            <dependency>
+                <groupId>org.springframework.retry</groupId>
+                <artifactId>spring-retry</artifactId>
+                <version>2.0.12</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
