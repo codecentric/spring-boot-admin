@@ -18,20 +18,58 @@ logging:
       - de.codecentric.boot.admin.client
 
 management:
+  info:
+    build:
+      enabled: true
+    env:
+      enabled: true
+    git:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+    process:
+      enabled: true
+    ssl:
+      enabled: true
   endpoints:
     web:
       exposure:
         include: "*"
   endpoint:
-    refresh:
-      enabled: true
-    restart:
-      enabled: true
-    shutdown:
-      enabled: true
+    auditevents.access: unrestricted
+    beans.access: unrestricted
+    caches.access: unrestricted
+    conditions.access: unrestricted
+    configprops.access: unrestricted
+    features.access: unrestricted
+    flyway.access: unrestricted
+    health.access: unrestricted
+    heapdump.access: unrestricted
+    httpexchanges.access: unrestricted
+    info.access: unrestricted
+    integrationgraph.access: unrestricted
+    liquibase.access: unrestricted
+    logfile.access: unrestricted
+    loggers.access: unrestricted
+    mappings.access: unrestricted
+    metrics.access: unrestricted
+    prometheus.access: unrestricted
+    quartz.access: unrestricted
+    refresh.access: unrestricted
+    restart.access: unrestricted
+    sbom.access: unrestricted
+    scheduledtasks.access: unrestricted
+    serviceregistry.access: unrestricted
+    sessions.access: unrestricted
+    shutdown.access: unrestricted
+    startup.access: unrestricted
+    threaddump.access: unrestricted
     env:
       post:
         enabled: true
+      access: unrestricted
     health:
       show-details: ALWAYS
 
@@ -40,10 +78,13 @@ spring:
     name: spring-boot-admin-sample-servlet
   boot:
     admin:
+      monitor:
+        info-lifetime: 0s
+        info-interval: 10s
       client:
         url: http://localhost:8080
         instance:
-          service-host-type: HOST_NAME
+          service-host-type: IP
           metadata:
             tags:
               environment: test
