@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// Spring Boot Admin Server - domain objects package.
+
 @NonNullApi
 @NonNullFields
 package de.codecentric.boot.admin.server.domain.values;

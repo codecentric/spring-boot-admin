@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// Spring Boot Admin Server - events package.
+
 @NonNullApi
 @NonNullFields
 package de.codecentric.boot.admin.server.domain.events;

@@ -186,7 +186,8 @@ public class InstancesControllerIntegrationTest {
 			.expectHeader()
 			.contentType(MediaType.APPLICATION_JSON)
 			.expectBody()
-			.jsonPath("$[0].id", id);
+			.jsonPath("$.id")
+			.isEqualTo(id);
 	}
 
 	private void assertInstancesByName(String id) {
@@ -198,7 +199,7 @@ public class InstancesControllerIntegrationTest {
 			.expectHeader()
 			.contentType(MediaType.APPLICATION_JSON)
 			.expectBody()
-			.jsonPath("$[0].id", id);
+			.jsonPath("$[0].id");
 	}
 
 	private void assertInstances(String id) {
@@ -210,7 +211,7 @@ public class InstancesControllerIntegrationTest {
 			.expectHeader()
 			.contentType(MediaType.APPLICATION_JSON)
 			.expectBody()
-			.jsonPath("$[0].id", id);
+			.jsonPath("$[0].id");
 	}
 
 	private void registerSecondTime(String id) {
