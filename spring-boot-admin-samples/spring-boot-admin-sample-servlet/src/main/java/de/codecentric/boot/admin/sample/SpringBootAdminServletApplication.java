@@ -35,6 +35,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -45,6 +47,7 @@ import de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctio
 @EnableAdminServer
 @Lazy(false)
 @EnableCaching
+@EnableScheduling
 public class SpringBootAdminServletApplication {
 
 	private static final Logger log = LoggerFactory.getLogger(SpringBootAdminServletApplication.class);
@@ -53,6 +56,16 @@ public class SpringBootAdminServletApplication {
 		SpringApplication app = new SpringApplication(SpringBootAdminServletApplication.class);
 		app.setApplicationStartup(new BufferingApplicationStartup(1500));
 		app.run(args);
+	}
+
+	@Scheduled(fixedDelay = 1000)
+	public void scheduleFixedDelayTask() {
+		// NOOP
+	}
+
+	@Scheduled(cron = "0 15 10 15 * ?")
+	public void scheduleTaskUsingCronExpression() {
+		// NOOP
 	}
 
 	@Bean

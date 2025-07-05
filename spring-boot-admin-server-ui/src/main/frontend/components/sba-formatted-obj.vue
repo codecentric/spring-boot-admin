@@ -15,12 +15,14 @@
   -->
 
 <template>
-  <div class="formatted" v-html="formatted" />
+  <pre class="formatted" v-html="formatted" />
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 import { Autolink } from '@/utils/autolink';
-import objToString from '@/utils/objToString';
+import { objToYaml } from '@/utils/objToYaml';
 
 const autolink = new Autolink({
   truncate: {
@@ -29,7 +31,7 @@ const autolink = new Autolink({
   },
 });
 
-export default {
+export default defineComponent({
   props: {
     value: {
       type: null,
@@ -38,10 +40,11 @@ export default {
   },
   computed: {
     formatted() {
-      return autolink(objToString(this.value));
+      const yml = objToYaml(this.value);
+      return autolink(yml);
     },
   },
-};
+});
 </script>
 
 <style>
