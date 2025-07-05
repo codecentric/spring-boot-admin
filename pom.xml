@@ -18,16 +18,22 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin</artifactId>
     <version>${revision}</version>
+
     <packaging>pom</packaging>
+
     <name>Spring Boot Admin</name>
     <description>Spring Boot Admin</description>
     <url>https://github.com/codecentric/spring-boot-admin/</url>
+
     <properties>
         <revision>3.5.2-SNAPSHOT</revision>
+
         <java.version>17</java.version>
+        <node.version>v22.12.0</node.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -38,19 +44,22 @@
         <!-- used dependencies versions -->
         <spring-boot.version>3.5.3</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
-        <wiremock.version>3.0.1</wiremock.version>
-        <hazelcast-tests.version>5.5.0</hazelcast-tests.version>
+        <jolokia-support-spring.version>2.2.9</jolokia-support-spring.version>
+
+        <checkstyle.version>10.26.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
+
+        <wiremock.version>3.0.3</wiremock.version>
+        <hazelcast-tests.version>5.5.0</hazelcast-tests.version>
         <awaitility.version>4.3.0</awaitility.version>
         <testcontainers.version>1.21.3</testcontainers.version>
-        <eureka-client.version>3.1.1</eureka-client.version>
         <jetty.version>12.0.23</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
-        <versions-maven-plugin.version>2.18.0
-        </versions-maven-plugin.version> <!-- because of https://github.com/mojohaus/versions/issues/855 -->
+        <!-- because of https://github.com/mojohaus/versions/issues/855 -->
+        <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
         <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
         <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
@@ -67,19 +76,15 @@
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
-        <asciidoctor-maven-plugin.version>3.1.0</asciidoctor-maven-plugin.version>
-        <asciidoctor-converter-doxia-module.version>3.1.0</asciidoctor-converter-doxia-module.version>
         <asciidoctor-maven-plugin.version>3.2.0</asciidoctor-maven-plugin.version>
         <asciidoctor-converter-doxia-module.version>3.1.1</asciidoctor-converter-doxia-module.version>
         <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
         <flatten-maven-plugin.version>1.7.1</flatten-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <checkstyle.version>10.26.1</checkstyle.version>
-        <spring-javaformat-checkstyle.version>0.0.47</spring-javaformat-checkstyle.version>
+        <spring-javaformat-maven-plugin.version>0.0.47</spring-javaformat-maven-plugin.version>
         <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
-        <node.version>v22.12.0</node.version>
-        <jolokia-support-spring.version>2.2.9</jolokia-support-spring.version>
     </properties>
+
     <modules>
         <module>spring-boot-admin-server</module>
         <module>spring-boot-admin-server-ui</module>
@@ -91,21 +96,25 @@
         <module>spring-boot-admin-starter-client</module>
         <module>spring-boot-admin-samples</module>
     </modules>
+
     <organization>
         <name>codecentric AG</name>
-        <url>http://www.codecentric.de</url>
+        <url>https://www.codecentric.de</url>
     </organization>
+
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
         </license>
     </licenses>
+
     <scm>
         <connection>scm:git:git://github.com/codecentric/spring-boot-admin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/codecentric/spring-boot-admin.git</developerConnection>
         <url>https://github.com/codecentric/spring-boot-admin</url>
     </scm>
+
     <developers>
         <developer>
             <name>codecentric AG</name>
@@ -113,6 +122,7 @@
             <url>https://www.codecentric.de/</url>
         </developer>
     </developers>
+
     <build>
         <plugins>
             <plugin>
@@ -215,7 +225,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.5</version>
+                                    <version>3.9</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
@@ -225,7 +235,7 @@
             <plugin>
                 <groupId>io.spring.javaformat</groupId>
                 <artifactId>spring-javaformat-maven-plugin</artifactId>
-                <version>${spring-javaformat-checkstyle.version}</version>
+                <version>${spring-javaformat-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -237,6 +247,7 @@
                 </executions>
             </plugin>
         </plugins>
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -362,7 +373,7 @@
                         <dependency>
                             <groupId>io.spring.javaformat</groupId>
                             <artifactId>spring-javaformat-checkstyle</artifactId>
-                            <version>${spring-javaformat-checkstyle.version}</version>
+                            <version>${spring-javaformat-maven-plugin.version}</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -394,6 +405,7 @@
             </plugins>
         </pluginManagement>
     </build>
+
     <profiles>
         <profile>
             <id>include-cloud</id>
@@ -481,13 +493,6 @@
             </activation>
             <repositories>
                 <repository>
-                    <id>spring-release</id>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <url>https://repo.spring.io/release</url>
-                </repository>
-                <repository>
                     <id>spring-milestone</id>
                     <snapshots>
                         <enabled>false</enabled>
@@ -513,13 +518,6 @@
             </repositories>
             <pluginRepositories>
                 <pluginRepository>
-                    <id>spring-release</id>
-                    <snapshots>
-                        <enabled>false</enabled>
-                    </snapshots>
-                    <url>https://repo.spring.io/release</url>
-                </pluginRepository>
-                <pluginRepository>
                     <id>spring-milestone</id>
                     <snapshots>
                         <enabled>false</enabled>
@@ -536,6 +534,7 @@
             </pluginRepositories>
         </profile>
     </profiles>
+
     <distributionManagement>
         <snapshotRepository>
             <id>github</id>

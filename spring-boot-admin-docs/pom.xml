@@ -18,10 +18,14 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <artifactId>spring-boot-admin-docs</artifactId>
+
     <packaging>pom</packaging>
+
     <name>Spring Boot Admin Docs</name>
     <description>Spring Boot Admin Docs</description>
+
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
