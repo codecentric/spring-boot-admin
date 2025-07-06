@@ -21,10 +21,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { Autolink } from '@/utils/autolink';
+import { createAutolink } from '@/utils/autolink';
 import { objToYaml } from '@/utils/objToYaml';
 
-const autolink = Autolink({
+const autolink = createAutolink({
   truncate: {
     length: 50,
     location: 'smart',

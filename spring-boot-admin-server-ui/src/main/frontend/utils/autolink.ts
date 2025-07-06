@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import _Autolinker from 'autolinker';
+import _Autolinker, { AutolinkerConfig } from 'autolinker';
 
-export const defaults = {
+export const defaults: AutolinkerConfig = {
   urls: {
     schemeMatches: true,
-    wwwMatches: false,
     tldMatches: false,
   },
   email: false,
@@ -38,9 +37,9 @@ export const defaults = {
   className: '',
 };
 const autolinker = new _Autolinker(defaults);
-
 export default (s) => autolinker.link(s);
-export function Autolink(cfg) {
-  this.autolinker = new _Autolinker({ ...defaults, ...cfg });
-  return (s) => this.autolinker.link(s);
+
+export function createAutolink(cfg) {
+  const autolinker = new _Autolinker({ ...defaults, ...cfg });
+  return (s) => autolinker.link(s);
 }
