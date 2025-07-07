@@ -49,7 +49,7 @@
         <checkstyle.version>10.26.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
 
-        <wiremock.version>3.0.3</wiremock.version>
+        <wiremock.version>3.13.1</wiremock.version>
         <hazelcast-tests.version>5.5.0</hazelcast-tests.version>
         <awaitility.version>4.3.0</awaitility.version>
         <testcontainers.version>1.21.3</testcontainers.version>
