@@ -37,11 +37,30 @@
               "
             >
               <option :value="undefined">-</option>
-              <option value="integer" v-text="$t('term.integer')" />
-              <option value="float" v-text="$t('term.float')" />
-              <option value="duration" v-text="$t('term.duration')" />
-              <option value="millis" v-text="$t('term.milliseconds')" />
-              <option value="bytes" v-text="$t('term.bytes')" />
+              <option
+                :value="MetricValueType.INTEGER"
+                v-text="$t('term.integer')"
+              />
+              <option
+                :value="MetricValueType.FLOAT"
+                v-text="$t('term.float')"
+              />
+              <option
+                :value="MetricValueType.DURATION"
+                v-text="$t('term.duration')"
+              />
+              <option
+                :value="MetricValueType.MILLIS"
+                v-text="$t('term.milliseconds')"
+              />
+              <option
+                :value="MetricValueType.BYTES"
+                v-text="$t('term.bytes')"
+              />
+              <option
+                :value="MetricValueType.EPOCH_TIME"
+                v-text="$t('term.epoch_time')"
+              />
             </select>
           </div>
         </div>
@@ -102,33 +121,64 @@ import { useI18n } from 'vue-i18n';
 import SbaIconButton from '@/components/sba-icon-button.vue';
 import SbaPanel from '@/components/sba-panel.vue';
 
+import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
 import { concatMap, delay, from, retryWhen, timer } from '@/utils/rxjs';
 
-const formatDuration = (value, baseUnit) => {
+const { formatDateTime } = useDateTimeFormatter();
+
+enum MetricValueType {
+  INTEGER = 'integer',
+  FLOAT = 'float',
+  DURATION = 'duration',
+  MILLIS = 'millis',
+  BYTES = 'bytes',
+  EPOCH_TIME = 'epoch_time',
+}
+
+enum BaseUnit {
+  NANOSECONDS = 'nanoseconds',
+  MICROSECONDS = 'microseconds',
+  MILLISECONDS = 'milliseconds',
+  SECONDS = 'seconds',
+}
+
+// c.f. for a full list in Java Source Code: io.micrometer.core.instrument.Statistic
+type StatisticType =
+  | 'VALUE'
+  | 'COUNT'
+  | 'TOTAL'
+  | 'TOTAL_TIME'
+  | 'MAX'
+  | 'UNKNOWN'
+  | 'ACTIVE_TASKS'
+  | 'DURATION'
+  | string;
+
+const formatDuration = (value: number, baseUnit: BaseUnit) => {
   const duration = moment.duration(toMillis(value, baseUnit));
   return `${Math.floor(
     duration.asDays(),
-  )}d ${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s`;
+  )}d ${duration.hours()}h ${duration.minutes()}m ${duration.seconds()}s ${duration.milliseconds()}ms`;
 };
 
-const formatMillis = (value, baseUnit) => {
+const formatMillis = (value: number, baseUnit: BaseUnit) => {
   const duration = moment.duration(toMillis(value, baseUnit));
   return `${moment.duration(duration).asMilliseconds().toFixed(0)} ms`;
 };
 
-export const toMillis = (value, baseUnit) => {
+export const toMillis = (value: number, baseUnit: BaseUnit) => {
   switch (baseUnit) {
-    case 'nanoseconds':
-      return value / 1000000;
-    case 'microseconds':
-      return value / 1000;
-    case 'milliseconds':
+    case BaseUnit.NANOSECONDS:
+      return value / 1_000_000;
+    case BaseUnit.MICROSECONDS:
+      return value / 1_000;
+    case BaseUnit.MILLISECONDS:
       return value;
-    case 'seconds':
+    case BaseUnit.SECONDS:
     default:
-      return value * 1000;
+      return value * 1_000;
   }
 };
 
@@ -153,15 +203,12 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    index: {
-      type: Number,
-      default: 0,
-    },
   },
   emits: ['type-select', 'remove'],
   setup() {
     const i18n = useI18n();
     return {
+      MetricValueType,
       i18n,
     };
   },
@@ -184,24 +231,33 @@ export default {
     handleRemove(idx) {
       this.$emit('remove', this.metricName, idx);
     },
-    getValue(measurements, statistic) {
+    getValue(
+      measurements: Array<{ statistic: StatisticType; value: any }>,
+      statistic: StatisticType,
+    ) {
       const measurement =
         measurements && measurements.find((m) => m.statistic === statistic);
+
       if (!measurement) {
         return undefined;
       }
+
       const type = this.statisticTypes?.[statistic];
       switch (type) {
-        case 'integer':
+        case MetricValueType.INTEGER:
           return measurement.value.toFixed(0);
-        case 'float':
+        case MetricValueType.FLOAT:
           return measurement.value.toFixed(4);
-        case 'duration':
+        case MetricValueType.DURATION:
           return formatDuration(measurement.value, this.baseUnit);
-        case 'millis':
+        case MetricValueType.MILLIS:
           return formatMillis(measurement.value, this.baseUnit);
-        case 'bytes':
+        case MetricValueType.BYTES:
           return prettyBytes(measurement.value);
+        case MetricValueType.EPOCH_TIME:
+          return formatDateTime(
+            new Date(toMillis(measurement.value, this.baseUnit)),
+          );
         default:
           return measurement.value;
       }
