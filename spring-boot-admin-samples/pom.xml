@@ -18,16 +18,21 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <artifactId>spring-boot-admin-samples</artifactId>
+
     <packaging>pom</packaging>
+
     <name>Spring Boot Admin Samples</name>
     <description>Spring Boot Admin Samples</description>
+
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
         <version>${revision}</version>
         <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
+
     <modules>
         <module>spring-boot-admin-sample-servlet</module>
         <module>spring-boot-admin-sample-reactive</module>
@@ -35,6 +40,7 @@
         <module>spring-boot-admin-sample-hazelcast</module>
         <module>spring-boot-admin-sample-custom-ui</module>
     </modules>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -51,6 +57,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <build>
         <!-- Turn on filtering by default for application properties -->
         <resources>
@@ -72,6 +79,7 @@
                 </excludes>
             </resource>
         </resources>
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -87,6 +95,7 @@
             </plugins>
         </pluginManagement>
     </build>
+
     <profiles>
         <profile>
             <id>include-cloud</id>
