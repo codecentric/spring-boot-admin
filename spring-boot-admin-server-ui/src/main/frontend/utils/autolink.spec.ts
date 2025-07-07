@@ -15,7 +15,7 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import autolink, { Autolink } from './autolink';
+import autolink, { createAutolink } from './autolink';
 
 describe('autolink should', () => {
   it('return the input string for normal text', () => {
@@ -34,7 +34,7 @@ describe('autolink should', () => {
     const str =
       'Please visit http://extraordinary.com/very/very/log/hyperlink.';
 
-    const customAutolink = new Autolink({
+    const customAutolink = createAutolink({
       truncate: {
         length: 30,
         location: 'smart',
