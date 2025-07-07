@@ -13,33 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import _Autolinker, { AutolinkerConfig } from 'autolinker';
+import { dump } from 'js-yaml';
 
-export const defaults: AutolinkerConfig = {
-  urls: {
-    schemeMatches: true,
-    tldMatches: false,
-  },
-  email: false,
-  phone: false,
-  mention: false,
-  hashtag: false,
+/**
+ * Convert JSON to YAML.
+ * @param input  A JSON object or a JSON string.
+ * @param options Optional js-yaml dump options.
+ * @returns YAML string.
+ */
+export function objToYaml(
+  input: object | string,
+  options: Parameters<typeof dump>[1] = {},
+): string {
+  if (typeof input === 'string') {
+    return input;
+  }
 
-  stripPrefix: false,
-  stripTrailingSlash: false,
-  newWindow: true,
-
-  truncate: {
-    length: 0,
-    location: 'smart',
-  },
-
-  className: '',
-};
-const autolinker = new _Autolinker(defaults);
-export default (s) => autolinker.link(s);
-
-export function createAutolink(cfg) {
-  const autolinker = new _Autolinker({ ...defaults, ...cfg });
-  return (s) => autolinker.link(s);
+  return dump(input, {
+    noRefs: true,
+    indent: 2,
+    ...options,
+  });
 }
