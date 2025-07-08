@@ -11,7 +11,7 @@
       "instance": "Eintak",
       "new": "nýtt",
       "no_loggers_found": "Fundið engar annálsritarar.",
-      "reset": "Núllstilla",
+      "unset": "Núllstilla",
       "setting_loglevel_failed": "Stilla {logger} á {loglevel} mistekist."
     }
   }

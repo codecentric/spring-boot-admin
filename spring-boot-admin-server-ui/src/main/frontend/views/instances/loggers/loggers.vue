@@ -160,7 +160,11 @@ const addLoggerCreationEntryIfLoggerNotPresent = (nameFilter, loggers) => {
     loggers.unshift({
       level: [
         {
-          configuredLevel: null,
+          /**
+           * If not null, effectiveLevel is the same as configuredLevel
+           * If null, effectiveLevel is the same as the level of the parent logger
+           */
+          configuredLevel: null, // Explicitly configured logging level for the logger
           effectiveLevel: null,
           instanceId: null,
         },
