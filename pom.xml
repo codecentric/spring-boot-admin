@@ -49,7 +49,6 @@
         <!-- used dependencies versions -->
         <spring-boot.version>3.5.3</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
-        <jolokia-support-spring.version>2.2.9</jolokia-support-spring.version>
 
         <checkstyle.version>10.26.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
@@ -77,7 +76,6 @@
         <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-        <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <frontend-maven-plugin.version>1.15.1</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
@@ -88,6 +86,7 @@
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <spring-javaformat-maven-plugin.version>0.0.47</spring-javaformat-maven-plugin.version>
         <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
+        <spring-conf-prop-documenter-maven-plugin.version>0.7.1</spring-conf-prop-documenter-maven-plugin.version>
     </properties>
 
     <modules>
@@ -406,6 +405,11 @@
                     <groupId>org.sonatype.central</groupId>
                     <artifactId>central-publishing-maven-plugin</artifactId>
                     <version>${central-publishing-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.rodnansol</groupId>
+                    <artifactId>spring-configuration-property-documenter-maven-plugin</artifactId>
+                    <version>${spring-conf-prop-documenter-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
