@@ -24,7 +24,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 
@@ -50,11 +50,13 @@ public class SecurityPermitAllConfig {
 			.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 				.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 				.ignoringRequestMatchers(
-						new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()),
-						new AntPathRequestMatcher(this.adminServer.path("/notifications/**"), POST.toString()),
-						new AntPathRequestMatcher(this.adminServer.path("/notifications/**"), DELETE.toString()),
-						new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()),
-						new AntPathRequestMatcher(this.adminServer.path("/actuator/**"))));
+						PathPatternRequestMatcher.withDefaults().matcher(POST, this.adminServer.path("/instances")),
+						PathPatternRequestMatcher.withDefaults()
+							.matcher(POST, this.adminServer.path("/notifications/**")),
+						PathPatternRequestMatcher.withDefaults()
+							.matcher(DELETE, this.adminServer.path("/notifications/**")),
+						PathPatternRequestMatcher.withDefaults().matcher(DELETE, this.adminServer.path("/instances/*")),
+						PathPatternRequestMatcher.withDefaults().matcher(this.adminServer.path("/actuator/**"))));
 
 		return http.build();
 
