@@ -38,7 +38,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
+                <version>3.5.3</version> <!-- hardcoded to fix issues with sbom, should be ${spring-boot.version} -->
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
