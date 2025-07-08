@@ -41,6 +41,13 @@
         <module>spring-boot-admin-sample-hazelcast</module>
     </modules>
 
+    <properties>
+        <jolokia-support-spring.version>2.2.9</jolokia-support-spring.version>
+
+        <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+        <cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -54,6 +61,11 @@
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-sample-custom-ui</artifactId>
                 <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jolokia</groupId>
+                <artifactId>jolokia-support-spring</artifactId>
+                <version>${jolokia-support-spring.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -91,6 +103,11 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <version>${spring-boot.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.cyclonedx</groupId>
+                    <artifactId>cyclonedx-maven-plugin</artifactId>
+                    <version>${cyclonedx-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
