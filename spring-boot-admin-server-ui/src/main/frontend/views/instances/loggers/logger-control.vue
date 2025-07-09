@@ -26,11 +26,12 @@
       />
     </div>
     <sba-button
+      v-if="allowReset"
       class="ml-3"
       :class="{ 'is-loading': getStatusForLevel(null) === 'executing' }"
-      :disabled="!isConfigured || !allowReset"
+      :disabled="!isConfigured"
       @click.stop="selectLevel(null)"
-      v-text="$t('instances.loggers.reset')"
+      v-text="$t('instances.loggers.unset')"
     />
   </div>
 </template>

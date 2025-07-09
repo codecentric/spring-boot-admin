@@ -12,7 +12,7 @@
       "instance": "Instancia",
       "new": "nuevo",
       "no_loggers_found": "No se encontraron loggers.",
-      "reset": "Reiniciar",
+      "unset": "Reiniciar",
       "setting_loglevel_failed": "Falla al cambiar {logger} a {loglevel}."
     }
   }
