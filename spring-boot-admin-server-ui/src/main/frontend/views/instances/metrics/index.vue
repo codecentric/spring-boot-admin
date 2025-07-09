@@ -84,9 +84,8 @@
     />
 
     <metric
-      v-for="(metric, index) in metrics"
+      v-for="metric in metrics"
       :key="metric.name"
-      :index="index"
       :instance="instance"
       :metric-name="metric.name"
       :statistic-types="metric.types"
