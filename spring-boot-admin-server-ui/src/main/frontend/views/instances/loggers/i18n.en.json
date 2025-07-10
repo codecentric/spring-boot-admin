@@ -14,7 +14,7 @@
       "instance": "Instance",
       "new": "new",
       "no_loggers_found": "No loggers found.",
-      "reset": "Reset",
+      "unset": "Unset",
       "setting_loglevel_failed": "Setting {logger} to {loglevel} failed."
     }
   }
