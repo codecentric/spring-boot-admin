@@ -94,8 +94,7 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <!-- needs to be installed instead of ci as of a bug in npm; https://github.com/npm/cli/issues/4828 -->
-                            <arguments>i --no-progress --no-audit --quiet --silent</arguments>
+                            <arguments>ci --prefer-offline --no-progress --no-audit --silent</arguments>
                         </configuration>
                     </execution>
                     <execution>
@@ -128,35 +127,6 @@
                         <phase>test</phase>
                         <configuration>
                             <arguments>run test</arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <!-- Delete some node_modules due to a bug in npm optionalDependencies -->
-                <!-- see bug in npm https://github.com/npm/cli/issues/4828 -->
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <id>auto-clean</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                        <configuration>
-                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                            <filesets>
-                                <fileset>
-                                    <directory>node_modules</directory>
-                                </fileset>
-                                <fileset>
-                                    <directory>./</directory>
-                                    <includes>
-                                        <include>package-lock.json</include>
-                                    </includes>
-                                </fileset>
-                            </filesets>
                         </configuration>
                     </execution>
                 </executions>
