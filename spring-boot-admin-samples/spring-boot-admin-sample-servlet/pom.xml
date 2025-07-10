@@ -96,16 +96,19 @@
                 <artifactId>cyclonedx-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>validate</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>makeAggregateBom</goal>
                         </goals>
+                        <configuration>
+                            <projectType>application</projectType>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <outputName>bom</outputName>
+                            <outputFormat>json</outputFormat>
+                            <skipAttach>true</skipAttach>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <outputFormat>json</outputFormat>
-                    <outputName>classes/bom</outputName>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
