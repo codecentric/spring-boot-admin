@@ -62,7 +62,7 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>ci --prefer-offline --no-audit</arguments>
+                            <arguments>ci --prefer-offline --no-progress --no-audit --silent</arguments>
                         </configuration>
                     </execution>
                     <execution>
