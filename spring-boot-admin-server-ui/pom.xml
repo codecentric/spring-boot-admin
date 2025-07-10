@@ -136,7 +136,6 @@
                 <!-- Delete some node_modules due to a bug in npm optionalDependencies -->
                 <!-- see bug in npm https://github.com/npm/cli/issues/4828 -->
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.5.0</version>
                 <executions>
                     <execution>
                         <id>auto-clean</id>
