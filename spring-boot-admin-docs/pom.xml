@@ -80,7 +80,7 @@
             <plugin>
                 <groupId>org.rodnansol</groupId>
                 <artifactId>spring-configuration-property-documenter-maven-plugin</artifactId>
-                <version>0.7.1</version>
+                <version>0.8.0</version>
                 <executions>
                     <execution>
                         <id>generate-adoc</id>
@@ -90,6 +90,8 @@
                         <phase>generate-resources</phase>
                         <configuration>
                             <type>ADOC</type>
+                            <failOnError>false</failOnError>
+                            <includeDeprecated>false</includeDeprecated>
                             <inputs>
                                 <input>
                                     <name>spring-boot-admin-server</name>
@@ -97,6 +99,9 @@
                                 </input>
                             </inputs>
                             <outputFile>target/aggregated-adoc.adoc</outputFile>
+                            <excludedPropertyKeys>
+                                <excludedPropertyKey>spring.boot.admin.server.logging.*</excludedPropertyKey>
+                            </excludedPropertyKeys>
                         </configuration>
                     </execution>
                 </executions>
