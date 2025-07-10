@@ -79,7 +79,6 @@
         <dependency>
             <groupId>org.jolokia</groupId>
             <artifactId>jolokia-support-spring</artifactId>
-            <version>${jolokia-support-spring.version}</version>
         </dependency>
         <!-- Test -->
         <dependency>

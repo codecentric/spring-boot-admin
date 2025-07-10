@@ -50,15 +50,22 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>org.jolokia</groupId>
+                <artifactId>jolokia-support-spring</artifactId>
+                <version>${jolokia-support-spring.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.wiremock</groupId>
                 <artifactId>wiremock-standalone</artifactId>
                 <version>${wiremock.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
                 <version>${hazelcast.version}</version>
                 <classifier>tests</classifier>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
