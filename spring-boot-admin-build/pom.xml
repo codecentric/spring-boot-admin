@@ -50,7 +50,7 @@
             <dependency>
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
-                <version>${hazelcast-tests.version}</version>
+                <version>${hazelcast.version}</version>
                 <classifier>tests</classifier>
             </dependency>
             <dependency>
