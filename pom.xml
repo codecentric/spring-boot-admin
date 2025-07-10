@@ -35,6 +35,8 @@
         <java.version>17</java.version>
         <node.version>v22.12.0</node.version>
 
+        <require.maven.version>3.9</require.maven.version>
+
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <resource.delimiter>@</resource.delimiter>
@@ -223,7 +225,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.9</version>
+                                    <version>${require.maven.version}</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
