@@ -75,15 +75,27 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.outputDirectory}/META-INF/spring-boot-admin-server-ui/extensions/custom
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/dist</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
-
-        <resources>
-            <resource>
-                <directory>target/dist</directory>
-                <targetPath>META-INF/spring-boot-admin-server-ui/extensions/custom</targetPath>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
     </build>
 </project>
