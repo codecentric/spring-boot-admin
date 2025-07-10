@@ -27,6 +27,10 @@
     "fetching_data": "Lade Daten...",
     "fetch_failed": "Abruf der Daten fehlgeschlagen.",
     "float": "Float",
+    "group_by": {
+      "group": "Nach Gruppen gruppieren",
+      "application": "Nach Applikationen gruppieren"
+    },
     "hours": "{count} Stunde | {count} Stunden",
     "instance": "Instanz",
     "instances": "Instanzen",
