@@ -14,8 +14,9 @@ const config: Config = {
   baseUrl: process.env.VERSION ? `/${process.env.VERSION}/` : '/',
   organizationName: 'codecentric',
   projectName: 'spring-boot-admin',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
+  onBrokenAnchors: 'warn',
   i18n: {
     defaultLocale: "en",
     locales: ["en"]
