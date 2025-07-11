@@ -34,22 +34,15 @@
     </parent>
 
     <modules>
+        <module>spring-boot-admin-sample-custom-ui</module>
         <module>spring-boot-admin-sample-servlet</module>
         <module>spring-boot-admin-sample-reactive</module>
         <module>spring-boot-admin-sample-war</module>
         <module>spring-boot-admin-sample-hazelcast</module>
-        <module>spring-boot-admin-sample-custom-ui</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-sample-custom-ui</artifactId>
@@ -62,7 +55,7 @@
         <!-- Turn on filtering by default for application properties -->
         <resources>
             <resource>
-                <directory>${basedir}/src/main/resources</directory>
+                <directory>${project.basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/application*.yml</include>
@@ -71,7 +64,7 @@
                 </includes>
             </resource>
             <resource>
-                <directory>${basedir}/src/main/resources</directory>
+                <directory>${project.basedir}/src/main/resources</directory>
                 <excludes>
                     <exclude>**/application*.yml</exclude>
                     <exclude>**/application*.yaml</exclude>
@@ -88,16 +81,6 @@
                     <configuration>
                         <doclint>none</doclint>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>${maven-war-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${spring-boot.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

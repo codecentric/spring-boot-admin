@@ -7,9 +7,9 @@ You can find some hints for starting development in the [README](spring-boot-adm
 ### Java / Server
 We try to satisfy the [Code Style of Spring Framework](https://github.com/spring-projects/spring-framework/wiki/Code-Style).
 
-The [Spring Java Format Plugin](https://github.com/spring-io/spring-javaformat) is added to the build. Checkstyle will enforce the consistency of the code. Nevertheless there are some disabled rules, due to backward compatibility. You can find these disabled rules in a comment in `src/checkstyle/checkstyle.xml`.
+The [Spring Java Format Plugin](https://github.com/spring-io/spring-javaformat) is added to the build. Checkstyle will enforce the consistency of the code. Nevertheless, there are some disabled rules, due to backward compatibility. You can find these disabled rules in a comment in `src/checkstyle/checkstyle.xml`.
 
-However, you can always run `mvn spring-javaformat:apply` to fix some basic errors, like indentation.
+However, you can always run `./mvnw spring-javaformat:apply` to fix some basic errors, like indentation.
 
 ### JavaScript / Client
 The Vue frontend implements basic prettier rules as well as Vue3 recommended rules.
@@ -21,7 +21,7 @@ Append `:fix` to let eslint or prettier auto-solve most issues.
 The IntelliJ settings are based on the IntelliJ-IDEA-Editor-Settings from spring, but have been adapted slightly, you can find the original settings [here](https://github.com/spring-projects/spring-framework/wiki/IntelliJ-IDEA-Editor-Settings).
 The custom settings are stored in `.editorconfig` and are imported automatically by IntelliJ.
 If you are using IntelliJ, there is also a [formatter-plugin provided by Spring](https://github.com/spring-io/spring-javaformat#intellij-idea).
-(i) Plugin version x didn't not work in IntelliJ IDEA Ultimate 2020.3.
+(i) Plugin version x did not work in IntelliJ IDEA Ultimate 2020.3.
 
 #### Checkstyle Plugin
 This plugin scans Java files with the project's custom CheckStyle rules from within IDEA.

@@ -79,7 +79,6 @@
         <dependency>
             <groupId>org.jolokia</groupId>
             <artifactId>jolokia-support-spring</artifactId>
-            <version>${jolokia-support-spring.version}</version>
         </dependency>
         <!-- Test -->
         <dependency>
@@ -95,19 +94,21 @@
             <plugin>
                 <groupId>org.cyclonedx</groupId>
                 <artifactId>cyclonedx-maven-plugin</artifactId>
-                <version>2.9.1</version>
                 <executions>
                     <execution>
-                        <phase>validate</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>makeAggregateBom</goal>
                         </goals>
+                        <configuration>
+                            <projectType>application</projectType>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <outputName>bom</outputName>
+                            <outputFormat>json</outputFormat>
+                            <skipAttach>true</skipAttach>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <outputFormat>json</outputFormat>
-                    <outputName>classes/bom</outputName>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
