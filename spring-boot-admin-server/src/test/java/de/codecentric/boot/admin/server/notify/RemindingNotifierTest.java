@@ -20,6 +20,8 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -38,11 +40,12 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RemindingNotifierTest {
+class RemindingNotifierTest {
 
 	private static final Instance instance1 = Instance.create(InstanceId.of("id-1"))
 		.register(Registration.create("App", "http://health").build())
@@ -71,20 +74,21 @@ public class RemindingNotifierTest {
 	private InstanceRepository repository;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.repository = mock(InstanceRepository.class);
 		when(this.repository.find(any())).thenReturn(Mono.empty());
 		when(this.repository.find(instance1.getId())).thenReturn(Mono.just(instance1));
 		when(this.repository.find(instance2.getId())).thenReturn(Mono.just(instance2));
 	}
 
-	@Test
-	public void should_throw_on_invalid_ctor() {
-		assertThatThrownBy(() -> new CompositeNotifier(null)).isInstanceOf(IllegalArgumentException.class);
+	@ParameterizedTest
+	@NullSource
+	void should_throw_on_invalid_ctor(Iterable<Notifier> delegates) {
+		assertThatThrownBy(() -> new CompositeNotifier(delegates)).isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
-	public void should_remind_only_down_events() throws InterruptedException {
+	void should_remind_only_down_events() {
 		TestNotifier notifier = new TestNotifier();
 		RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
 		reminder.setReminderPeriod(Duration.ZERO);
@@ -92,17 +96,18 @@ public class RemindingNotifierTest {
 		StepVerifier.create(reminder.notify(appDown)).verifyComplete();
 		StepVerifier.create(reminder.notify(appEndpointsDiscovered)).verifyComplete();
 		StepVerifier.create(reminder.notify(otherAppUp)).verifyComplete();
-		Thread.sleep(10);
-		StepVerifier.create(reminder.sendReminders()).verifyComplete();
-		Thread.sleep(10);
-		StepVerifier.create(reminder.sendReminders()).verifyComplete();
+
+		await().pollDelay(Duration.ofMillis(10))
+			.untilAsserted(() -> StepVerifier.create(reminder.sendReminders()).verifyComplete());
+		await().pollDelay(Duration.ofMillis(10))
+			.untilAsserted(() -> StepVerifier.create(reminder.sendReminders()).verifyComplete());
 
 		assertThat(notifier.getEvents()).containsExactlyInAnyOrder(appDown, appEndpointsDiscovered, otherAppUp, appDown,
 				appDown);
 	}
 
 	@Test
-	public void should_not_remind_remind_after_up() {
+	void should_not_remind_remind_after_up() {
 		TestNotifier notifier = new TestNotifier();
 		RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
 		reminder.setReminderPeriod(Duration.ZERO);
@@ -115,7 +120,7 @@ public class RemindingNotifierTest {
 	}
 
 	@Test
-	public void should_not_remind_remind_after_deregister() {
+	void should_not_remind_remind_after_deregister() {
 		TestNotifier notifier = new TestNotifier();
 		RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
 		reminder.setReminderPeriod(Duration.ZERO);
@@ -128,7 +133,7 @@ public class RemindingNotifierTest {
 	}
 
 	@Test
-	public void should_not_remind_remind_before_period_ends() {
+	void should_not_remind_remind_before_period_ends() {
 		TestNotifier notifier = new TestNotifier();
 		RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
 		reminder.setReminderPeriod(Duration.ofHours(24));
@@ -140,11 +145,11 @@ public class RemindingNotifierTest {
 	}
 
 	@Test
-	public void should_resubscribe_after_error() {
+	void should_resubscribe_after_error() {
 		TestPublisher<InstanceEvent> eventPublisher = TestPublisher.create();
 
-		Flux<InstanceEvent> emittedNotifications = Flux.create((emitter) -> {
-			Notifier notifier = (event) -> {
+		Flux<InstanceEvent> emittedNotifications = Flux.create(emitter -> {
+			Notifier notifier = event -> {
 				emitter.next(event);
 				if (event.equals(errorTriggeringEvent)) {
 					return Mono.error(new IllegalArgumentException("TEST-ERROR"));
@@ -164,7 +169,7 @@ public class RemindingNotifierTest {
 			.then(() -> eventPublisher.next(appDown))
 			.expectNext(appDown, appDown)
 			.then(() -> eventPublisher.next(errorTriggeringEvent))
-			.thenConsumeWhile((e) -> !e.equals(errorTriggeringEvent))
+			.thenConsumeWhile(e -> !e.equals(errorTriggeringEvent))
 			.expectNext(errorTriggeringEvent, appDown, appDown)
 			.thenCancel()
 			.verify();

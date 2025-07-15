@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
@@ -33,56 +34,56 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class IntervalCheckTest {
+class IntervalCheckTest {
 
 	private static final InstanceId INSTANCE_ID = InstanceId.of("Test");
 
 	@SuppressWarnings("unchecked")
-	private final Function<InstanceId, Mono<Void>> checkFn = mock(Function.class, (i) -> Mono.empty());
+	private final Function<InstanceId, Mono<Void>> checkFn = mock(Function.class, i -> Mono.empty());
 
 	private final IntervalCheck intervalCheck = new IntervalCheck("test", this.checkFn, Duration.ofMillis(10),
 			Duration.ofMillis(10), Duration.ofSeconds(1));
 
 	@Test
-	public void should_check_after_being_started() throws InterruptedException {
+	void should_check_after_being_started() {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.start();
-		Thread.sleep(100);
-		verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID);
+		await().atMost(Duration.ofMillis(100))
+			.pollInterval(Duration.ofMillis(10))
+			.untilAsserted(() -> verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID));
 	}
 
 	@Test
-	public void should_not_check_when_stopped() throws InterruptedException {
+	void should_not_check_when_stopped() {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.stop();
-		Thread.sleep(100);
-		verify(this.checkFn, never()).apply(any());
+		await().pollDelay(Duration.ofMillis(100)).untilAsserted(() -> verify(this.checkFn, never()).apply(any()));
 	}
 
 	@Test
-	public void should_not_check_in_retention_period() throws InterruptedException {
+	void should_not_check_in_retention_period() {
 		this.intervalCheck.setMinRetention(Duration.ofSeconds(100));
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.start();
-		Thread.sleep(100);
-		verify(this.checkFn, never()).apply(any());
+		await().pollDelay(Duration.ofMillis(100)).untilAsserted(() -> verify(this.checkFn, never()).apply(any()));
 	}
 
 	@Test
-	public void should_recheck_after_retention_period() throws InterruptedException {
+	void should_recheck_after_retention_period() {
 		this.intervalCheck.setMinRetention(Duration.ofMillis(10));
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.start();
-		Thread.sleep(100);
-		verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID);
+		await().atMost(Duration.ofMillis(100))
+			.pollInterval(Duration.ofMillis(10))
+			.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID));
 	}
 
 	@Test
-	public void should_not_wait_longer_than_maxBackoff() throws InterruptedException {
+	void should_not_wait_longer_than_maxBackoff() {
 		this.intervalCheck.setInterval(Duration.ofMillis(10));
 		this.intervalCheck.setMinRetention(Duration.ofMillis(10));
 		this.intervalCheck.setMaxBackoff(Duration.ofSeconds(2));
@@ -91,23 +92,22 @@ public class IntervalCheckTest {
 		when(this.checkFn.apply(any())).thenReturn(Mono.error(new RuntimeException("Test")));
 
 		this.intervalCheck.start();
-		Thread.sleep(1000 * 10);
-		verify(this.checkFn, atLeast(7)).apply(INSTANCE_ID);
+		await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> verify(this.checkFn, atLeast(7)).apply(INSTANCE_ID));
 	}
 
 	@Test
-	public void should_check_after_error() throws InterruptedException {
+	void should_check_after_error() {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		when(this.checkFn.apply(any())).thenReturn(Mono.error(new RuntimeException("Test"))).thenReturn(Mono.empty());
 
 		this.intervalCheck.start();
-		Thread.sleep(1500);
-		verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test"));
+		await().atMost(Duration.ofMillis(1500))
+			.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test")));
 	}
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		this.intervalCheck.stop();
 	}
 
