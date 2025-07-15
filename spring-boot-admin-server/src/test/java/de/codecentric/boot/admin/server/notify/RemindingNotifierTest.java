@@ -148,8 +148,8 @@ class RemindingNotifierTest {
 	void should_resubscribe_after_error() {
 		TestPublisher<InstanceEvent> eventPublisher = TestPublisher.create();
 
-		Flux<InstanceEvent> emittedNotifications = Flux.create(emitter -> {
-			Notifier notifier = event -> {
+		Flux<InstanceEvent> emittedNotifications = Flux.create((emitter) -> {
+			Notifier notifier = (event) -> {
 				emitter.next(event);
 				if (event.equals(errorTriggeringEvent)) {
 					return Mono.error(new IllegalArgumentException("TEST-ERROR"));
@@ -169,7 +169,7 @@ class RemindingNotifierTest {
 			.then(() -> eventPublisher.next(appDown))
 			.expectNext(appDown, appDown)
 			.then(() -> eventPublisher.next(errorTriggeringEvent))
-			.thenConsumeWhile(e -> !e.equals(errorTriggeringEvent))
+			.thenConsumeWhile((e) -> !e.equals(errorTriggeringEvent))
 			.expectNext(errorTriggeringEvent, appDown, appDown)
 			.thenCancel()
 			.verify();
