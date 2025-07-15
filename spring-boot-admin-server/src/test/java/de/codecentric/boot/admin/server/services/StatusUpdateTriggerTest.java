@@ -74,27 +74,25 @@ class StatusUpdateTriggerTest {
 		await().until(this.events::wasSubscribed);
 
 		this.events.next(new InstanceRegisteredEvent(this.instance.getId(), 0L, this.instance.getRegistration()));
-		await().atMost(Duration.ofMillis(50)).pollInterval(Duration.ofMillis(10)).untilAsserted(() -> {
-			// it should start updating one time for registration and at least once for
-			// monitor
-			verify(this.updater, atLeast(2)).updateStatus(this.instance.getId());
-		});
+		// it should start updating one time for registration and at least once for
+		// monitor
+		await().atMost(Duration.ofMillis(50))
+			.pollInterval(Duration.ofMillis(10))
+			.untilAsserted(() -> verify(this.updater, atLeast(2)).updateStatus(this.instance.getId()));
 
 		// given long lifetime
 		this.trigger.setLifetime(Duration.ofSeconds(10));
 		clearInvocations(this.updater);
-		await().pollDelay(Duration.ofMillis(50)).untilAsserted(() -> {
-			// when the lifetime is not expired should never update
-			verify(this.updater, never()).updateStatus(any(InstanceId.class));
-		});
+		// when the lifetime is not expired should never update
+		await().pollDelay(Duration.ofMillis(50))
+			.untilAsserted(() -> verify(this.updater, never()).updateStatus(any(InstanceId.class)));
 
 		this.trigger.setLifetime(Duration.ofMillis(10));
 		this.trigger.stop();
 		clearInvocations(this.updater);
-		await().pollDelay(Duration.ofMillis(15)).untilAsserted(() -> {
-			// when trigger ist destroyed it should stop updating
-			verify(this.updater, never()).updateStatus(any(InstanceId.class));
-		});
+		// when trigger ist destroyed it should stop updating
+		await().pollDelay(Duration.ofMillis(15))
+			.untilAsserted(() -> verify(this.updater, never()).updateStatus(any(InstanceId.class)));
 	}
 
 	@Test
