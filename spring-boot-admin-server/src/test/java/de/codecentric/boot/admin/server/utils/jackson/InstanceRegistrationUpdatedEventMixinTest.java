@@ -40,25 +40,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 
-public class InstanceRegistrationUpdatedEventMixinTest {
+class InstanceRegistrationUpdatedEventMixinTest {
 
 	private final ObjectMapper objectMapper;
 
 	private JacksonTester<InstanceRegistrationUpdatedEvent> jsonTester;
 
-	public InstanceRegistrationUpdatedEventMixinTest() {
+	protected InstanceRegistrationUpdatedEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		JacksonTester.initFields(this, objectMapper);
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -89,7 +89,7 @@ public class InstanceRegistrationUpdatedEventMixinTest {
 	}
 
 	@Test
-	public void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "REGISTRATION_UPDATED")
@@ -99,7 +99,7 @@ public class InstanceRegistrationUpdatedEventMixinTest {
 		InstanceRegistrationUpdatedEvent event = objectMapper.readValue(json, InstanceRegistrationUpdatedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
-		assertThat(event.getVersion()).isEqualTo(0L);
+		assertThat(event.getVersion()).isZero();
 		assertThat(event.getTimestamp()).isEqualTo(Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS));
 
 		Registration registration = event.getRegistration();
@@ -113,7 +113,7 @@ public class InstanceRegistrationUpdatedEventMixinTest {
 	}
 
 	@Test
-	public void verifyDeserializeWithoutRegistration() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithoutRegistration() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -129,7 +129,7 @@ public class InstanceRegistrationUpdatedEventMixinTest {
 	}
 
 	@Test
-	public void verifyDeserializeWithEmptyRegistration() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithEmptyRegistration() throws JSONException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -144,7 +144,7 @@ public class InstanceRegistrationUpdatedEventMixinTest {
 	}
 
 	@Test
-	public void verifySerialize() throws IOException {
+	void verifySerialize() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		Registration registration = Registration.create("test", "http://localhost:9080/heath")
@@ -178,7 +178,7 @@ public class InstanceRegistrationUpdatedEventMixinTest {
 	}
 
 	@Test
-	public void verifySerializeWithOnlyRequiredProperties() throws IOException {
+	void verifySerializeWithOnlyRequiredProperties() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		Registration registration = Registration.create("test", "http://localhost:9080/heath").build();
@@ -202,7 +202,7 @@ public class InstanceRegistrationUpdatedEventMixinTest {
 	}
 
 	@Test
-	public void verifySerializeWithoutRegistration() throws IOException {
+	void verifySerializeWithoutRegistration() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		InstanceRegistrationUpdatedEvent event = new InstanceRegistrationUpdatedEvent(id, 12345678L, timestamp, null);
