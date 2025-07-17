@@ -19,7 +19,6 @@ package de.codecentric.boot.admin.server.domain.values;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -34,16 +33,16 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class StatusInfoTest {
+class StatusInfoTest {
 
 	@Test
-	public void invariants() {
+	void invariants() {
 		assertThatThrownBy(() -> StatusInfo.valueOf("")).isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'status' must not be empty.");
 	}
 
 	@Test
-	public void test_isMethods() {
+	void test_isMethods() {
 		assertThat(StatusInfo.valueOf("FOO").isUp()).isFalse();
 		assertThat(StatusInfo.valueOf("FOO").isDown()).isFalse();
 		assertThat(StatusInfo.valueOf("FOO").isUnknown()).isFalse();
@@ -71,7 +70,7 @@ public class StatusInfoTest {
 	}
 
 	@Test
-	public void from_map_should_return_same_result() {
+	void from_map_should_return_same_result() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("status", "UP");
 		map.put("details", singletonMap("foo", "bar"));
@@ -80,7 +79,7 @@ public class StatusInfoTest {
 	}
 
 	@Test
-	public void when_first_level_key_is_components() {
+	void when_first_level_key_is_components() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("status", "UP");
 		map.put("components", singletonMap("foo", "bar"));
@@ -89,11 +88,11 @@ public class StatusInfoTest {
 	}
 
 	@Test
-	public void should_sort_by_status_order() {
+	void should_sort_by_status_order() {
 		List<String> unordered = asList(STATUS_OUT_OF_SERVICE, STATUS_UNKNOWN, STATUS_OFFLINE, STATUS_DOWN, STATUS_UP,
 				STATUS_RESTRICTED);
 
-		List<String> ordered = unordered.stream().sorted(StatusInfo.severity()).collect(Collectors.toList());
+		List<String> ordered = unordered.stream().sorted(StatusInfo.severity()).toList();
 		assertThat(ordered).containsExactly(STATUS_DOWN, STATUS_OUT_OF_SERVICE, STATUS_OFFLINE, STATUS_UNKNOWN,
 				STATUS_RESTRICTED, STATUS_UP);
 	}

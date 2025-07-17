@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class EndpointsTest {
+class EndpointsTest {
 
 	@Test
-	public void should_return_endpoint_or_empty() {
+	void should_return_endpoint_or_empty() {
 		Endpoints endpoints = Endpoints.single("id", "path");
 		assertThat(endpoints.isPresent("id")).isTrue();
 		assertThat(endpoints.get("id")).contains(Endpoint.of("id", "path"));
@@ -34,7 +34,7 @@ public class EndpointsTest {
 	}
 
 	@Test
-	public void factory_methods() {
+	void factory_methods() {
 		assertThat(Endpoints.empty()).isEqualTo(Endpoints.of(Collections.emptyList())).isEqualTo(Endpoints.of(null));
 		assertThat(Endpoints.of(Collections.singletonList(Endpoint.of("id", "path"))))
 			.isEqualTo(Endpoints.empty().withEndpoint("id", "path"))
@@ -42,7 +42,7 @@ public class EndpointsTest {
 	}
 
 	@Test
-	public void should_throw_on_iterator_modificiation() {
+	void should_throw_on_iterator_modification() {
 		Endpoints endpoints = Endpoints.single("id", "path");
 		assertThatThrownBy(() -> endpoints.iterator().remove()).isInstanceOf(UnsupportedOperationException.class);
 	}

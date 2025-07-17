@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InfoTest {
+class InfoTest {
 
 	@Test
-	public void should_keep_order() {
+	void should_keep_order() {
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("z", "1");
 		map.put("x", "2");
