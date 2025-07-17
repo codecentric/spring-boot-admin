@@ -74,10 +74,10 @@ class SpringBootAdminClientAutoConfigurationTest {
 
 	@Test
 	void nonWebEnvironment() {
-		ApplicationContextRunner nonWebcontextRunner = new ApplicationContextRunner()
+		ApplicationContextRunner nonWebContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SpringBootAdminClientAutoConfiguration.class));
 
-		nonWebcontextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
+		nonWebContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
 			.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
 	}
 
@@ -179,7 +179,7 @@ class SpringBootAdminClientAutoConfigurationTest {
 	@Configuration
 	public static class CustomBlockingConfiguration {
 
-		RegistrationClient registrationClient = new BlockingRegistrationClient(new RestTemplate());
+		final RegistrationClient registrationClient = new BlockingRegistrationClient(new RestTemplate());
 
 		@Bean
 		public RegistrationClient registrationClient() {

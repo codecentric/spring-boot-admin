@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.client;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
@@ -47,6 +48,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.awaitility.Awaitility.await;
 
 public abstract class AbstractClientApplicationTest {
 
@@ -100,8 +102,6 @@ public abstract class AbstractClientApplicationTest {
 	public void test_context() throws InterruptedException, UnknownHostException {
 		setUpApplicationContext();
 
-		cdl.await();
-		Thread.sleep(2500);
 		String hostName = InetAddress.getLocalHost().getCanonicalHostName();
 		String serviceHost = "http://" + hostName + ":" + getServerPort();
 		String managementHost = "http://" + hostName + ":" + getManagementPort();
@@ -113,15 +113,14 @@ public abstract class AbstractClientApplicationTest {
 			.withRequestBody(matchingJsonPath("$.serviceUrl", equalTo(serviceHost + "/")))
 			.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
 
-		wireMock.verify(request);
+		cdl.await();
+		await().atMost(Duration.ofMillis(2500)).untilAsserted(() -> wireMock.verify(request));
 	}
 
 	@Test
 	public void test_context_with_snake_case() throws InterruptedException, UnknownHostException {
 		setUpApplicationContext("--spring.jackson.property-naming-strategy=SNAKE_CASE");
 
-		cdl.await();
-		Thread.sleep(2500);
 		String hostName = InetAddress.getLocalHost().getCanonicalHostName();
 		String serviceHost = "http://" + hostName + ":" + getServerPort();
 		String managementHost = "http://" + hostName + ":" + getManagementPort();
@@ -133,7 +132,8 @@ public abstract class AbstractClientApplicationTest {
 			.withRequestBody(matchingJsonPath("$.service_url", equalTo(serviceHost + "/")))
 			.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
 
-		wireMock.verify(request);
+		cdl.await();
+		await().atMost(Duration.ofMillis(2500)).untilAsserted(() -> wireMock.verify(request));
 	}
 
 	private int getServerPort() {
@@ -154,14 +154,7 @@ public abstract class AbstractClientApplicationTest {
 		@EventListener
 		public void ping(ApplicationReadyEvent ev) {
 			new Thread(() -> {
-				try {
-					while (registrator.getRegisteredId() == null) {
-						Thread.sleep(500);
-					}
-				}
-				catch (InterruptedException ex) {
-					Thread.interrupted();
-				}
+				await().atMost(Duration.ofMillis(500)).until(() -> registrator.getRegisteredId() != null);
 				cdl.countDown();
 			}).start();
 		}

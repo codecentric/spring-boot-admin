@@ -121,7 +121,7 @@ class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	void should_deregister_when_autoDeregister_and_parent_is_bootstrap_contex() {
+	void should_deregister_when_autoDeregister_and_parent_is_bootstrap_context() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);

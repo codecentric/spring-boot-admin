@@ -52,8 +52,8 @@ class ReactiveApplicationFactoryTest {
 
 	private final WebFluxProperties webflux = new WebFluxProperties();
 
-	private final ReactiveApplicationFactory factory = new ReactiveApplicationFactory(instanceProperties, management, server,
-			pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"), webflux);
+	private final ReactiveApplicationFactory factory = new ReactiveApplicationFactory(instanceProperties, management,
+			server, pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"), webflux);
 
 	@BeforeEach
 	void setup() {

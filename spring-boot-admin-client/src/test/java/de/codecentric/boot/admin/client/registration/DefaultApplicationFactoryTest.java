@@ -19,8 +19,6 @@ package de.codecentric.boot.admin.client.registration;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import de.codecentric.boot.admin.client.config.ServiceHostType;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -34,6 +32,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 
 import de.codecentric.boot.admin.client.config.InstanceProperties;
+import de.codecentric.boot.admin.client.config.ServiceHostType;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,8 +53,8 @@ class DefaultApplicationFactoryTest {
 
 	private final WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
-	private final DefaultApplicationFactory factory = new DefaultApplicationFactory(instanceProperties, management, server,
-			pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"));
+	private final DefaultApplicationFactory factory = new DefaultApplicationFactory(instanceProperties, management,
+			server, pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"));
 
 	@BeforeEach
 	void setup() {
@@ -115,7 +114,7 @@ class DefaultApplicationFactoryTest {
 	}
 
 	@Test
-	void test_preferIpAddress_serveraddress_missing() {
+	void test_preferIpAddress_server_address_missing() {
 		instanceProperties.setServiceHostType(ServiceHostType.IP);
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/application/alive");
 		publishApplicationReadyEvent(factory, 8080, null);
@@ -125,7 +124,7 @@ class DefaultApplicationFactoryTest {
 	}
 
 	@Test
-	void test_preferIpAddress_managementaddress_missing() {
+	void test_preferIpAddress_management_address_missing() {
 		instanceProperties.setServiceHostType(ServiceHostType.IP);
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/application/alive");
 		publishApplicationReadyEvent(factory, 8080, 8081);
@@ -149,7 +148,7 @@ class DefaultApplicationFactoryTest {
 	}
 
 	@Test
-	void test_allcustom() {
+	void test_all_custom() {
 		instanceProperties.setHealthUrl("http://health");
 		instanceProperties.setManagementUrl("http://management");
 		instanceProperties.setServiceUrl("http://service");
@@ -186,7 +185,7 @@ class DefaultApplicationFactoryTest {
 	}
 
 	@Test
-	void test_missingports() {
+	void test_missing_ports() {
 		assertThatThrownBy(factory::createApplication).isInstanceOf(IllegalStateException.class)
 			.hasMessageContaining("service-base-url");
 	}
