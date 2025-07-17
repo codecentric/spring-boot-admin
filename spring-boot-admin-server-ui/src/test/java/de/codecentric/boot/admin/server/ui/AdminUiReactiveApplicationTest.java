@@ -31,14 +31,14 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
-public class AdminUiReactiveApplicationTest extends AbstractAdminUiApplicationTest {
+class AdminUiReactiveApplicationTest extends AbstractAdminUiApplicationTest {
 
 	private static ConfigurableApplicationContext instance;
 
 	private static Integer port;
 
 	@BeforeAll
-	public static void setUp() {
+	static void setUp() {
 		instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 			.web(WebApplicationType.REACTIVE)
 			.run("--server.port=0",
@@ -49,12 +49,12 @@ public class AdminUiReactiveApplicationTest extends AbstractAdminUiApplicationTe
 	}
 
 	@AfterAll
-	public static void shutdown() {
+	static void shutdown() {
 		instance.close();
 	}
 
 	@BeforeEach
-	public void setupEach() {
+	void setupEach() {
 		super.setUp(port);
 	}
 
