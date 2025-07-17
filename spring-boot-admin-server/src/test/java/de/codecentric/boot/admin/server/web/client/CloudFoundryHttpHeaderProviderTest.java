@@ -24,13 +24,13 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CloudFoundryHttpHeaderProviderTest {
+class CloudFoundryHttpHeaderProviderTest {
 
-	private CloudFoundryHttpHeaderProvider headersProvider = new CloudFoundryHttpHeaderProvider();
+	private final CloudFoundryHttpHeaderProvider headersProvider = new CloudFoundryHttpHeaderProvider();
 
 	@Test
-	public void test_cloud_foundry_header() {
-		Registration registration = Registration.create("foo", "http://health")
+	void test_cloud_foundry_header() {
+		Registration registration = Registration.create("foo", "https://health")
 			.metadata("applicationId", "549e64cf-a478-423d-9d6d-02d803a028a8")
 			.metadata("instanceId", "0")
 			.build();
@@ -40,8 +40,8 @@ public class CloudFoundryHttpHeaderProviderTest {
 	}
 
 	@Test
-	public void test_no_header() {
-		Registration registration = Registration.create("foo", "http://health").build();
+	void test_no_header() {
+		Registration registration = Registration.create("foo", "https://health").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(headersProvider.getHeaders(instance)).isEmpty();
 	}
