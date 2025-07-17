@@ -45,20 +45,18 @@ import static org.mockito.Mockito.when;
 /**
  * @author Jamie Brown
  */
-public class HipchatNotifierTest {
+class HipchatNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create("App", "http://health").build());
+		.register(Registration.create("App", "https://health").build());
 
 	private HipchatNotifier notifier;
 
 	private RestTemplate restTemplate;
 
-	private InstanceRepository repository;
-
 	@BeforeEach
-	public void setUp() {
-		repository = mock(InstanceRepository.class);
+	void setUp() {
+		InstanceRepository repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		restTemplate = mock(RestTemplate.class);
@@ -70,7 +68,7 @@ public class HipchatNotifierTest {
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
+	void test_onApplicationEvent_resolve() {
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
 			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
@@ -99,7 +97,7 @@ public class HipchatNotifierTest {
 	}
 
 	@Test
-	public void test_onApplicationEvent_trigger() {
+	void test_onApplicationEvent_trigger() {
 		StatusInfo infoDown = StatusInfo.ofDown();
 
 		@SuppressWarnings("unchecked")

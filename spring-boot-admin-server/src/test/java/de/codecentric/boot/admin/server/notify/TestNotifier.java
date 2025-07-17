@@ -19,22 +19,20 @@ package de.codecentric.boot.admin.server.notify;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
+@Getter
 public class TestNotifier implements Notifier {
 
-	private List<InstanceEvent> events = new ArrayList<>();
+	private final List<InstanceEvent> events = new ArrayList<>();
 
 	@Override
 	public Mono<Void> notify(InstanceEvent event) {
 		this.events.add(event);
 		return Mono.empty();
-	}
-
-	public List<InstanceEvent> getEvents() {
-		return events;
 	}
 
 }

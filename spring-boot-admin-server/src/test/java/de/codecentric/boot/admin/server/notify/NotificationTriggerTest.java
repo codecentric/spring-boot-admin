@@ -37,7 +37,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class NotificationTriggerTest {
+class NotificationTriggerTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("id-1"))
 		.register(Registration.create("foo", "http://health-1").build());
@@ -48,12 +48,12 @@ public class NotificationTriggerTest {
 
 	private final NotificationTrigger trigger = new NotificationTrigger(this.notifier, this.events);
 
-	public NotificationTriggerTest() {
+	NotificationTriggerTest() {
 		when(this.notifier.notify(any())).thenReturn(Mono.empty());
 	}
 
 	@Test
-	public void should_notify_on_event() throws InterruptedException {
+	void should_notify_on_event() {
 		// given the notifier subscribed to the events
 		this.trigger.start();
 		await().until(this.events::wasSubscribed);
@@ -76,8 +76,7 @@ public class NotificationTriggerTest {
 	}
 
 	@Test
-
-	public void should_resume_on_exceptopn() throws InterruptedException {
+	void should_resume_on_exception() {
 		// given
 		this.trigger.start();
 		await().until(this.events::wasSubscribed);

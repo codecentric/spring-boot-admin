@@ -48,11 +48,11 @@ import static org.mockito.Mockito.when;
 class RemindingNotifierTest {
 
 	private static final Instance instance1 = Instance.create(InstanceId.of("id-1"))
-		.register(Registration.create("App", "http://health").build())
+		.register(Registration.create("App", "https://health").build())
 		.withStatusInfo(StatusInfo.ofDown());
 
 	private static final Instance instance2 = Instance.create(InstanceId.of("id-2"))
-		.register(Registration.create("App", "http://health").build())
+		.register(Registration.create("App", "https://health").build())
 		.withStatusInfo(StatusInfo.ofDown());
 
 	private static final InstanceEvent appDown = new InstanceStatusChangedEvent(instance1.getId(), 0L,

@@ -22,6 +22,8 @@ import java.time.Instant;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -31,16 +33,17 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class FilteringNotifierTest {
+class FilteringNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("-"))
-		.register(Registration.create("foo", "http://health").build());
+		.register(Registration.create("foo", "https://health").build());
 
 	private final InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), instance.getVersion(),
 			instance.getRegistration());
@@ -48,19 +51,20 @@ public class FilteringNotifierTest {
 	private InstanceRepository repository;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 	}
 
-	@Test
-	public void test_ctor_assert() {
-		Assertions.assertThatThrownBy(() -> new FilteringNotifier(null, repository))
+	@ParameterizedTest
+	@NullSource
+	void test_ctor_assert(Notifier delegate) {
+		Assertions.assertThatThrownBy(() -> new FilteringNotifier(delegate, repository))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
-	public void test_expired_removal() {
+	void test_expired_removal() {
 		FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), repository);
 		notifier.setCleanupInterval(Duration.ZERO);
 
@@ -81,7 +85,7 @@ public class FilteringNotifierTest {
 	}
 
 	@Test
-	public void test_filter() {
+	void test_filter() {
 		TestNotifier delegate = new TestNotifier();
 		FilteringNotifier notifier = new FilteringNotifier(delegate, repository);
 

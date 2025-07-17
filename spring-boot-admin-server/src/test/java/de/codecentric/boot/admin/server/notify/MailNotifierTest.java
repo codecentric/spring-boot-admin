@@ -55,7 +55,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class MailNotifierTest {
+class MailNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("cafebabe"))
 		.register(Registration.create("application-name", "http://localhost:8081/actuator/health")
@@ -70,7 +70,7 @@ public class MailNotifierTest {
 	private InstanceRepository repository;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
@@ -92,7 +92,7 @@ public class MailNotifierTest {
 	}
 
 	@Test
-	public void should_send_mail_using_default_template() throws IOException, MessagingException {
+	void should_send_mail_using_default_template() throws IOException, MessagingException {
 		Map<String, Object> details = new HashMap<>();
 		details.put("Simple Value", 1234);
 		details.put("Complex Value", singletonMap("Nested Simple Value", "99!"));
@@ -117,8 +117,7 @@ public class MailNotifierTest {
 	}
 
 	@Test
-	public void should_send_mail_using_custom_template_with_additional_properties()
-			throws IOException, MessagingException {
+	void should_send_mail_using_custom_template_with_additional_properties() throws IOException, MessagingException {
 		notifier.setTemplate("/de/codecentric/boot/admin/server/notify/custom-mail.html");
 		notifier.getAdditionalProperties().put("customProperty", "HELLO WORLD!");
 
@@ -138,7 +137,7 @@ public class MailNotifierTest {
 	// The following tests are rather for AbstractNotifier
 
 	@Test
-	public void should_not_send_mail_when_disabled() {
+	void should_not_send_mail_when_disabled() {
 		notifier.setEnabled(false);
 		StepVerifier
 			.create(notifier
@@ -149,7 +148,7 @@ public class MailNotifierTest {
 	}
 
 	@Test
-	public void should_not_send_when_unknown_to_up() {
+	void should_not_send_when_unknown_to_up() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
@@ -159,7 +158,7 @@ public class MailNotifierTest {
 	}
 
 	@Test
-	public void should_not_send_on_wildcard_ignore() {
+	void should_not_send_on_wildcard_ignore() {
 		notifier.setIgnoreChanges(new String[] { "*:UP" });
 		StepVerifier
 			.create(notifier
@@ -170,15 +169,15 @@ public class MailNotifierTest {
 	}
 
 	@Test
-	public void should_not_propagate_error() {
-		Notifier notifier = new AbstractStatusChangeNotifier(repository) {
+	void should_not_propagate_error() {
+		Notifier abstractStatusChangeNotifier = new AbstractStatusChangeNotifier(repository) {
 			@Override
 			protected Mono<Void> doNotify(InstanceEvent event, Instance application) {
 				return Mono.error(new IllegalStateException("test"));
 			}
 		};
 		StepVerifier
-			.create(notifier
+			.create(abstractStatusChangeNotifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 	}

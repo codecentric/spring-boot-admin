@@ -63,7 +63,7 @@ class MailNotifierIntegrationTest implements WithAssertions {
 	}
 
 	@Test
-	void callToReflectionUtilsAreNotAllwed() {
+	void callToReflectionUtilsAreNotAllowed() {
 		assertThatThrownBy(() -> {
 			mailNotifier.setTemplate("/de/codecentric/boot/admin/server/notify/vulnerable-file.html");
 			mailNotifier.getBody(new Context());
