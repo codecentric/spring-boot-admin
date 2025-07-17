@@ -35,37 +35,37 @@ import de.codecentric.boot.admin.server.domain.values.Endpoints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EndpointsMixinTest {
+class EndpointsMixinTest {
 
 	private final ObjectMapper objectMapper;
 
 	private JacksonTester<Endpoints> jsonTester;
 
-	public EndpointsMixinTest() {
+	protected EndpointsMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		JacksonTester.initFields(this, objectMapper);
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONArray().put(new JSONObject().put("id", "info").put("url", "http://localhost:8080/info"))
 			.put(new JSONObject().put("id", "health").put("url", "http://localhost:8080/health"))
 			.toString();
 
 		Endpoints endpoints = objectMapper.readValue(json, Endpoints.class);
-		assertThat(endpoints).isNotNull();
-		assertThat(endpoints).containsExactlyInAnyOrder(Endpoint.of("info", "http://localhost:8080/info"),
-				Endpoint.of("health", "http://localhost:8080/health"));
+		assertThat(endpoints).isNotNull()
+			.containsExactlyInAnyOrder(Endpoint.of("info", "http://localhost:8080/info"),
+					Endpoint.of("health", "http://localhost:8080/health"));
 	}
 
 	@Test
-	public void verifySerialize() throws IOException {
+	void verifySerialize() throws IOException {
 		Endpoints endpoints = Endpoints.single("info", "http://localhost:8080/info")
 			.withEndpoint("health", "http://localhost:8080/health");
 

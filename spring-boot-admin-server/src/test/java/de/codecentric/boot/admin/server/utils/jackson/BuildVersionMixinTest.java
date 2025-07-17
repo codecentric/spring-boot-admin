@@ -19,7 +19,6 @@ package de.codecentric.boot.admin.server.utils.jackson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
@@ -28,24 +27,24 @@ import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BuildVersionMixinTest {
+class BuildVersionMixinTest {
 
 	private final ObjectMapper objectMapper;
 
-	public BuildVersionMixinTest() {
+	protected BuildVersionMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JsonProcessingException {
 		BuildVersion buildVersion = objectMapper.readValue("\"1.0.0\"", BuildVersion.class);
 		assertThat(buildVersion).isEqualTo(BuildVersion.valueOf("1.0.0"));
 	}
 
 	@Test
-	public void verifySerialize() throws JsonProcessingException {
+	void verifySerialize() throws JsonProcessingException {
 		BuildVersion buildVersion = BuildVersion.valueOf("1.0.0");
 
 		String result = objectMapper.writeValueAsString(buildVersion);
@@ -53,7 +52,7 @@ public class BuildVersionMixinTest {
 	}
 
 	@Test
-	public void verifySerializeWithMapEntryVersion() throws JsonProcessingException {
+	void verifySerializeWithMapEntryVersion() throws JsonProcessingException {
 		BuildVersion buildVersion = BuildVersion.from(singletonMap("version", "1.0.0"));
 
 		String result = objectMapper.writeValueAsString(buildVersion);
@@ -61,7 +60,7 @@ public class BuildVersionMixinTest {
 	}
 
 	@Test
-	public void verifySerializeWithNestedMapEntryVersion() throws JsonProcessingException {
+	void verifySerializeWithNestedMapEntryVersion() throws JsonProcessingException {
 		BuildVersion buildVersion = BuildVersion.from(singletonMap("build", singletonMap("version", "1.0.0")));
 
 		String result = objectMapper.writeValueAsString(buildVersion);

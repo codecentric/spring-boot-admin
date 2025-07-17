@@ -41,25 +41,25 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-public class InstanceInfoChangedEventMixinTest {
+class InstanceInfoChangedEventMixinTest {
 
 	private final ObjectMapper objectMapper;
 
 	private JacksonTester<InstanceInfoChangedEvent> jsonTester;
 
-	public InstanceInfoChangedEventMixinTest() {
+	protected InstanceInfoChangedEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		JacksonTester.initFields(this, objectMapper);
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -80,7 +80,7 @@ public class InstanceInfoChangedEventMixinTest {
 	}
 
 	@Test
-	public void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "INFO_CHANGED")
@@ -89,13 +89,13 @@ public class InstanceInfoChangedEventMixinTest {
 		InstanceInfoChangedEvent event = objectMapper.readValue(json, InstanceInfoChangedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
-		assertThat(event.getVersion()).isEqualTo(0L);
+		assertThat(event.getVersion()).isZero();
 		assertThat(event.getTimestamp()).isEqualTo(Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS));
 		assertThat(event.getInfo()).isNull();
 	}
 
 	@Test
-	public void verifyDeserializeWithEmptyInfo() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithEmptyInfo() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -115,7 +115,7 @@ public class InstanceInfoChangedEventMixinTest {
 	}
 
 	@Test
-	public void verifySerialize() throws IOException {
+	void verifySerialize() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		Map<String, Object> data = new HashMap<>();
@@ -135,7 +135,7 @@ public class InstanceInfoChangedEventMixinTest {
 	}
 
 	@Test
-	public void verifySerializeWithOnlyRequiredProperties() throws IOException {
+	void verifySerializeWithOnlyRequiredProperties() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		InstanceInfoChangedEvent event = new InstanceInfoChangedEvent(id, 0L, timestamp, null);
@@ -149,7 +149,7 @@ public class InstanceInfoChangedEventMixinTest {
 	}
 
 	@Test
-	public void verifySerializeWithEmptyInfo() throws IOException {
+	void verifySerializeWithEmptyInfo() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		InstanceInfoChangedEvent event = new InstanceInfoChangedEvent(id, 12345678L, timestamp,

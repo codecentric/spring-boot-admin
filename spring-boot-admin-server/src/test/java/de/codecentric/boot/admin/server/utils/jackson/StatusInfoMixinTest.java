@@ -35,25 +35,25 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-public class StatusInfoMixinTest {
+class StatusInfoMixinTest {
 
 	private final ObjectMapper objectMapper;
 
 	private JacksonTester<StatusInfo> jsonTester;
 
-	public StatusInfoMixinTest() {
+	protected StatusInfoMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		JacksonTester.initFields(this, objectMapper);
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("status", "OFFLINE")
 			.put("details", new JSONObject().put("foo", "bar"))
 			.toString();
@@ -65,16 +65,16 @@ public class StatusInfoMixinTest {
 	}
 
 	@Test
-	public void verifySerialize() throws IOException {
+	void verifySerialize() throws IOException {
 		StatusInfo statusInfo = StatusInfo.valueOf("OFFLINE", Collections.singletonMap("foo", "bar"));
 
 		JsonContent<StatusInfo> jsonContent = jsonTester.write(statusInfo);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.status").isEqualTo("OFFLINE");
 		assertThat(jsonContent).extractingJsonPathMapValue("$.details").containsOnly(entry("foo", "bar"));
-		assertThat(jsonContent).doesNotHaveJsonPath("$.up");
-		assertThat(jsonContent).doesNotHaveJsonPath("$.offline");
-		assertThat(jsonContent).doesNotHaveJsonPath("$.down");
-		assertThat(jsonContent).doesNotHaveJsonPath("$.unknown");
+		assertThat(jsonContent).doesNotHaveJsonPath("$.up")
+			.doesNotHaveJsonPath("$.offline")
+			.doesNotHaveJsonPath("$.down")
+			.doesNotHaveJsonPath("$.unknown");
 	}
 
 }
