@@ -33,31 +33,31 @@ import static java.util.Collections.singletonMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CloudFoundryApplicationFactoryTest {
+class CloudFoundryApplicationFactoryTest {
 
-	private InstanceProperties instanceProperties = new InstanceProperties();
+	private final InstanceProperties instanceProperties = new InstanceProperties();
 
-	private ServerProperties server = new ServerProperties();
+	private final ServerProperties server = new ServerProperties();
 
-	private ManagementServerProperties management = new ManagementServerProperties();
+	private final ManagementServerProperties management = new ManagementServerProperties();
 
-	private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
+	private final PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
 
-	private WebEndpointProperties webEndpoint = new WebEndpointProperties();
+	private final WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
-	private CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
+	private final CloudFoundryApplicationProperties cfApplicationProperties = new CloudFoundryApplicationProperties();
 
-	private CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(this.instanceProperties,
+	private final CloudFoundryApplicationFactory factory = new CloudFoundryApplicationFactory(this.instanceProperties,
 			this.management, this.server, this.pathMappedEndpoints, this.webEndpoint,
 			() -> singletonMap("contributor", "test"), this.cfApplicationProperties);
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.instanceProperties.setName("test");
 	}
 
 	@Test
-	public void should_use_application_uri() {
+	void should_use_application_uri() {
 		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
 
@@ -71,7 +71,7 @@ public class CloudFoundryApplicationFactoryTest {
 	}
 
 	@Test
-	public void should_use_service_base_uri() {
+	void should_use_service_base_uri() {
 		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
 		this.instanceProperties.setServiceBaseUrl("https://serviceBaseUrl");

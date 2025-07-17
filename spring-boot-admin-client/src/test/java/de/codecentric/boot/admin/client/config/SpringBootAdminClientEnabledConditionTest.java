@@ -26,7 +26,7 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class SpringBootAdminClientEnabledConditionTest {
+class SpringBootAdminClientEnabledConditionTest {
 
 	private SpringBootAdminClientEnabledCondition condition;
 
@@ -35,21 +35,21 @@ public class SpringBootAdminClientEnabledConditionTest {
 	private ConditionContext conditionContext;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		condition = new SpringBootAdminClientEnabledCondition();
 		annotatedTypeMetadata = mock(AnnotatedTypeMetadata.class);
 		conditionContext = mock(ConditionContext.class);
 	}
 
 	@Test
-	public void test_emptyUrl_enabled() {
+	void test_emptyUrl_enabled() {
 		MockEnvironment environment = new MockEnvironment();
 		BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
 		assertThat(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch()).isFalse();
 	}
 
 	@Test
-	public void test_emptyUrl_disabled() {
+	void test_emptyUrl_disabled() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.boot.admin.client.enabled", "false");
 		BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
@@ -57,7 +57,7 @@ public class SpringBootAdminClientEnabledConditionTest {
 	}
 
 	@Test
-	public void test_nonEmptyUrl_disabled() {
+	void test_nonEmptyUrl_disabled() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.boot.admin.client.enabled", "false");
 		environment.setProperty("spring.boot.admin.client.url", "http://localhost:8080/management");
@@ -66,7 +66,7 @@ public class SpringBootAdminClientEnabledConditionTest {
 	}
 
 	@Test
-	public void test_nonEmptyUrl_enabled() {
+	void test_nonEmptyUrl_enabled() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.boot.admin.client.url", "http://localhost:8080/management");
 		BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);

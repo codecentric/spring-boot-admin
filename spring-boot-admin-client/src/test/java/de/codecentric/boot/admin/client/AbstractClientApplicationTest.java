@@ -59,7 +59,7 @@ public abstract class AbstractClientApplicationTest {
 
 	private static final CountDownLatch cdl = new CountDownLatch(1);
 
-	protected void setUp(WebApplicationType type) throws Exception {
+	protected void setUp(WebApplicationType type) {
 		setUpWiremock();
 		setUpApplication(type);
 	}

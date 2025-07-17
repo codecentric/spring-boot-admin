@@ -37,10 +37,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class RegistrationApplicationListenerTest {
+class RegistrationApplicationListenerTest {
 
 	@Test
-	public void should_schedule_register_task() {
+	void should_schedule_register_task() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -52,7 +52,7 @@ public class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	public void should_no_schedule_register_task_when_not_autoRegister() {
+	void should_no_schedule_register_task_when_not_autoRegister() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -65,7 +65,7 @@ public class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	public void should_cancel_register_task_on_context_close() {
+	void should_cancel_register_task_on_context_close() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -82,7 +82,7 @@ public class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	public void should_start_and_cancel_task_on_request() {
+	void should_start_and_cancel_task_on_request() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -98,7 +98,7 @@ public class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	public void should_not_deregister_when_not_autoDeregister() {
+	void should_not_deregister_when_not_autoDeregister() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -109,7 +109,7 @@ public class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	public void should_deregister_when_autoDeregister() {
+	void should_deregister_when_autoDeregister() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -121,7 +121,7 @@ public class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	public void should_deregister_when_autoDeregister_and_parent_is_bootstrap_contex() {
+	void should_deregister_when_autoDeregister_and_parent_is_bootstrap_contex() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -137,7 +137,7 @@ public class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	public void should_not_deregister_when_autoDeregister_and_not_root() {
+	void should_not_deregister_when_autoDeregister_and_not_root() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
@@ -151,7 +151,7 @@ public class RegistrationApplicationListenerTest {
 	}
 
 	@Test
-	public void should_init_and_shutdown_taskScheduler() {
+	void should_init_and_shutdown_taskScheduler() {
 		ApplicationRegistrator registrator = mock(ApplicationRegistrator.class);
 		ThreadPoolTaskScheduler scheduler = mock(ThreadPoolTaskScheduler.class);
 		RegistrationApplicationListener listener = new RegistrationApplicationListener(registrator, scheduler);
