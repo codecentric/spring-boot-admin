@@ -24,10 +24,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { SpringBootAdminConsulApplication.class },
 		properties = { "spring.cloud.consul.enabled=false" })
-public class SpringBootAdminConsulApplicationTest {
+class SpringBootAdminConsulApplicationTest {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 	}
 
 }
