@@ -37,18 +37,16 @@ class CookieStoreCleanupTriggerTest {
 
 	private PerInstanceCookieStore cookieStore;
 
-	private CookieStoreCleanupTrigger trigger;
-
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		cookieStore = mock(PerInstanceCookieStore.class);
-		trigger = new CookieStoreCleanupTrigger(this.events.flux(), cookieStore);
+		CookieStoreCleanupTrigger trigger = new CookieStoreCleanupTrigger(this.events.flux(), cookieStore);
 		trigger.start();
 		await().until(this.events::wasSubscribed);
 	}
 
 	@Test
-	void deregisterevent_should_trigger_cleanup_cookiestore() {
+	void deregister_event_should_trigger_cleanup_cookie_store() {
 		this.events.next(new InstanceDeregisteredEvent(INSTANCE.getId(), 42L));
 
 		verify(cookieStore).cleanupInstance(INSTANCE.getId());

@@ -278,7 +278,7 @@ class InstanceExchangeFilterFunctionsTest {
 	@Nested
 	class AddHeaders {
 
-		private InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.addHeaders((i) -> {
+		private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.addHeaders((i) -> {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("X-INSTANCE-ID", i.getId().getValue());
 			return headers;
@@ -408,7 +408,7 @@ class InstanceExchangeFilterFunctionsTest {
 			.withEndpoints(this.endpoints);
 
 		@Test
-		void should_rewirte_url_and_add_endpoint_attribute() {
+		void should_rewrite_url_and_add_endpoint_attribute() {
 			ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("health/database"))
 				.attribute(ATTRIBUTE_INSTANCE, this.instance)
 				.build();
@@ -519,7 +519,7 @@ class InstanceExchangeFilterFunctionsTest {
 	@Nested
 	class LogfileAcceptWorkaround {
 
-		InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.logfileAcceptWorkaround();
+		private final InstanceExchangeFilterFunction filter = InstanceExchangeFilterFunctions.logfileAcceptWorkaround();
 
 		@Test
 		void should_add_accept_all_to_headers_for_logfile() {

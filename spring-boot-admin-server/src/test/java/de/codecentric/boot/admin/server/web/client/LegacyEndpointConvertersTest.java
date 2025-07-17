@@ -58,7 +58,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	}
 
 	@Test
-	public void should_convert_health() {
+	void should_convert_health() {
 		LegacyEndpointConverter converter = LegacyEndpointConverters.health();
 		assertThat(converter.canConvert("health")).isTrue();
 		assertThat(converter.canConvert("foo")).isFalse();
@@ -74,7 +74,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	}
 
 	@Test
-	public void should_convert_env() {
+	void should_convert_env() {
 		LegacyEndpointConverter converter = LegacyEndpointConverters.env();
 		assertThat(converter.canConvert("env")).isTrue();
 		assertThat(converter.canConvert("foo")).isFalse();
@@ -90,7 +90,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	}
 
 	@Test
-	public void should_convert_trace() {
+	void should_convert_trace() {
 		LegacyEndpointConverter converter = LegacyEndpointConverters.httptrace();
 		assertThat(converter.canConvert("httptrace")).isTrue();
 		assertThat(converter.canConvert("foo")).isFalse();
@@ -106,7 +106,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	}
 
 	@Test
-	public void should_convert_threaddump() {
+	void should_convert_threaddump() {
 		LegacyEndpointConverter converter = LegacyEndpointConverters.threaddump();
 		assertThat(converter.canConvert("threaddump")).isTrue();
 		assertThat(converter.canConvert("foo")).isFalse();
@@ -122,7 +122,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	}
 
 	@Test
-	public void should_convert_liquibase() {
+	void should_convert_liquibase() {
 		LegacyEndpointConverter converter = LegacyEndpointConverters.liquibase();
 		assertThat(converter.canConvert("liquibase")).isTrue();
 		assertThat(converter.canConvert("foo")).isFalse();
@@ -138,7 +138,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	}
 
 	@Test
-	public void should_convert_flyway() {
+	void should_convert_flyway() {
 		LegacyEndpointConverter converter = LegacyEndpointConverters.flyway();
 		assertThat(converter.canConvert("flyway")).isTrue();
 		assertThat(converter.canConvert("foo")).isFalse();
@@ -154,7 +154,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	}
 
 	@Test
-	public void should_convert_beans() {
+	void should_convert_beans() {
 		LegacyEndpointConverter converter = LegacyEndpointConverters.beans();
 		assertThat(converter.canConvert("beans")).isTrue();
 		assertThat(converter.canConvert("foo")).isFalse();
@@ -170,7 +170,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	}
 
 	@Test
-	public void should_convert_configprops() {
+	void should_convert_configprops() {
 		LegacyEndpointConverter converter = LegacyEndpointConverters.configprops();
 		assertThat(converter.canConvert("configprops")).isTrue();
 		assertThat(converter.canConvert("foo")).isFalse();
@@ -186,7 +186,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	}
 
 	@Test
-	public void should_convert_mappings() {
+	void should_convert_mappings() {
 		LegacyEndpointConverter converter = LegacyEndpointConverters.mappings();
 		assertThat(converter.canConvert("mappings")).isTrue();
 		assertThat(converter.canConvert("foo")).isFalse();
