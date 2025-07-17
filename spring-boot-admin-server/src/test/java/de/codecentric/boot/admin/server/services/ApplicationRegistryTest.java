@@ -42,28 +42,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class ApplicationRegistryTest {
+class ApplicationRegistryTest {
 
 	private InstanceRegistry instanceRegistry;
 
 	private ApplicationRegistry applicationRegistry;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.instanceRegistry = mock(InstanceRegistry.class);
 		InstanceEventPublisher instanceEventPublisher = mock(InstanceEventPublisher.class);
 		this.applicationRegistry = new ApplicationRegistry(this.instanceRegistry, instanceEventPublisher);
 	}
 
 	@Test
-	public void getApplications_noRegisteredApplications() {
+	void getApplications_noRegisteredApplications() {
 		when(this.instanceRegistry.getInstances()).thenReturn(Flux.just());
 
 		StepVerifier.create(this.applicationRegistry.getApplications()).verifyComplete();
 	}
 
 	@Test
-	public void getApplications_oneRegisteredAndOneUnregisteredApplication() {
+	void getApplications_oneRegisteredAndOneUnregisteredApplication() {
 		Instance instance1 = getInstance("App1");
 		Instance instance2 = getInstance("App2").deregister();
 
@@ -75,7 +75,7 @@ public class ApplicationRegistryTest {
 	}
 
 	@Test
-	public void getApplications_allRegisteredApplications() {
+	void getApplications_allRegisteredApplications() {
 		Instance instance1 = getInstance("App1");
 		Instance instance2 = getInstance("App2");
 
@@ -90,14 +90,14 @@ public class ApplicationRegistryTest {
 	}
 
 	@Test
-	public void getApplication_noRegisteredApplications() {
+	void getApplication_noRegisteredApplications() {
 		when(this.instanceRegistry.getInstances(any(String.class))).thenReturn(Flux.just());
 
 		StepVerifier.create(this.applicationRegistry.getApplication("App1")).verifyComplete();
 	}
 
 	@Test
-	public void getApplication_noMatchingRegisteredApplications() {
+	void getApplication_noMatchingRegisteredApplications() {
 		when(this.instanceRegistry.getInstances("App2")).thenReturn(Flux.just(getInstance("App2")));
 		when(this.instanceRegistry.getInstances(any(String.class))).thenReturn(Flux.just());
 
@@ -105,7 +105,7 @@ public class ApplicationRegistryTest {
 	}
 
 	@Test
-	public void getApplication_matchingUnregisteredApplications() {
+	void getApplication_matchingUnregisteredApplications() {
 		Instance instance = getInstance("App1").deregister();
 		when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance));
 
@@ -113,7 +113,7 @@ public class ApplicationRegistryTest {
 	}
 
 	@Test
-	public void getApplication_matchingRegisteredApplications() {
+	void getApplication_matchingRegisteredApplications() {
 		Instance instance = getInstance("App1");
 		when(this.instanceRegistry.getInstances("App1")).thenReturn(Flux.just(instance));
 
@@ -123,7 +123,7 @@ public class ApplicationRegistryTest {
 	}
 
 	@Test
-	public void deregister() {
+	void deregister() {
 		Instance instance1 = getInstance("App1");
 		InstanceId instance1Id = instance1.getId();
 
@@ -138,7 +138,7 @@ public class ApplicationRegistryTest {
 	}
 
 	@Test
-	public void getBuildVersion() {
+	void getBuildVersion() {
 		Instance instance1 = getInstance("App1", "0.1");
 		Instance instance2 = getInstance("App2", "0.2");
 
@@ -158,7 +158,7 @@ public class ApplicationRegistryTest {
 	@CsvSource({ "UP, UP, UP", "DOWN, DOWN, DOWN", "UNKNOWN, UNKNOWN, UNKNOWN", "UP, DOWN, RESTRICTED",
 			"UP, UNKNOWN, RESTRICTED", "UP, OUT_OF_SERVICE, RESTRICTED", "UP, OFFLINE, RESTRICTED",
 			"UP, RESTRICTED, RESTRICTED", "DOWN, UP, RESTRICTED" })
-	public void getStatus(String instance1Status, String instance2Status, String expectedApplicationStatus) {
+	void getStatus(String instance1Status, String instance2Status, String expectedApplicationStatus) {
 		Instance instance1 = getInstance("App1").withStatusInfo(StatusInfo.valueOf(instance1Status));
 		Instance instance2 = getInstance("App1").withStatusInfo(StatusInfo.valueOf(instance2Status));
 

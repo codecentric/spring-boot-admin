@@ -52,9 +52,9 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InfoUpdaterTest {
+class InfoUpdaterTest {
 
-	public WireMockServer wireMock = new WireMockServer(Options.DYNAMIC_PORT);
+	public final WireMockServer wireMock = new WireMockServer(Options.DYNAMIC_PORT);
 
 	private InfoUpdater updater;
 
@@ -65,7 +65,7 @@ public class InfoUpdaterTest {
 	private final ApiMediaTypeHandler apiMediaTypeHandler = new ApiMediaTypeHandler();
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.eventStore = new InMemoryEventStore();
 		this.repository = new EventsourcingInstanceRepository(this.eventStore);
 		this.updater = new InfoUpdater(this.repository,
@@ -79,17 +79,17 @@ public class InfoUpdaterTest {
 	}
 
 	@AfterEach
-	public void teardown() {
+	void teardown() {
 		this.wireMock.stop();
 	}
 
 	@BeforeAll
-	public static void setUp() {
+	static void setUp() {
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
 	}
 
 	@AfterAll
-	public static void tearDown() {
+	static void tearDown() {
 		StepVerifier.resetDefaultTimeout();
 	}
 
