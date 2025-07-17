@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class RegistrationTest {
+class RegistrationTest {
 
 	@Test
-	public void invariants() {
+	void invariants() {
 		assertThatThrownBy(() -> Registration.create(null, null).build()).isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'name' must not be empty.");
 
@@ -34,11 +34,11 @@ public class RegistrationTest {
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'healthUrl' is not valid: invalid");
 
-		assertThatThrownBy(() -> Registration.create("test", "http://example.com").managementUrl("invalid").build())
+		assertThatThrownBy(() -> Registration.create("test", "https://example.com").managementUrl("invalid").build())
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'managementUrl' is not valid: invalid");
 
-		assertThatThrownBy(() -> Registration.create("test", "http://example.com").serviceUrl("invalid").build())
+		assertThatThrownBy(() -> Registration.create("test", "https://example.com").serviceUrl("invalid").build())
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'serviceUrl' is not valid: invalid");
 	}
