@@ -23,12 +23,12 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UiExtensionsScannerTest {
+class UiExtensionsScannerTest {
 
 	private final UiExtensionsScanner scanner = new UiExtensionsScanner(new PathMatchingResourcePatternResolver());
 
 	@Test
-	public void should_find_extensions() throws IOException {
+	void should_find_extensions() throws IOException {
 		UiExtensions extensions = this.scanner.scan("classpath:/META-INF/test-extensions/");
 		assertThat(extensions.getCssExtensions()).contains(new UiExtension("custom/custom.abcdef.css",
 				"classpath:/META-INF/test-extensions/custom/custom.abcdef.css"));
@@ -38,7 +38,7 @@ public class UiExtensionsScannerTest {
 	}
 
 	@Test
-	public void should_not_find_extensions() throws IOException {
+	void should_not_find_extensions() throws IOException {
 		UiExtensions extensions = this.scanner.scan("classpath:/META-INF/NO-test-extensions/");
 		assertThat(extensions.getCssExtensions()).isEmpty();
 		assertThat(extensions.getJsExtensions()).isEmpty();

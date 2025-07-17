@@ -52,7 +52,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class AdminServerUiAutoConfigurationTest implements WithAssertions {
+class AdminServerUiAutoConfigurationTest implements WithAssertions {
 
 	@Test
 	void testNormalizeHomepageUrl() {
@@ -60,7 +60,7 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 	}
 
 	@Nested
-	public class ReactiveUiConfigurationTest {
+	class ReactiveUiConfigurationTest {
 
 		private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withPropertyValues("--spring.boot.admin.ui.available-languages=de", "--spring.webflux.base-path=test")
@@ -74,7 +74,7 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 		@ParameterizedTest
 		@CsvSource({ "/test/extensions/myextension", "/test/instances/1/actuator/heapdump",
 				"/test/instances/1/actuator/logfile" })
-		public void contextPathIsRespectedInExcludedRoutes(String routeExcludes) {
+		void contextPathIsRespectedInExcludedRoutes(String routeExcludes) {
 			MockServerHttpRequest serverHttpRequest = MockServerHttpRequest.get(routeExcludes)
 				.header(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE)
 				.build();
@@ -95,7 +95,7 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 		@ParameterizedTest
 		@CsvSource({ "/test/about", "/test/applications", "/test/instances", "/test/journal", "/test/wallboard",
 				"/test/external" })
-		public void contextPathIsRespectedInIncludedRoutes(String routeIncludes) {
+		void contextPathIsRespectedInIncludedRoutes(String routeIncludes) {
 			MockServerHttpRequest serverHttpRequest = MockServerHttpRequest.get(routeIncludes)
 				.header(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE)
 				.build();
@@ -116,7 +116,7 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 	}
 
 	@Nested
-	public class ServletUiConfiguration {
+	class ServletUiConfiguration {
 
 		private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withPropertyValues("--spring.boot.admin.ui.available-languages=de", "--spring.boot.admin.contextPath=test")
@@ -126,7 +126,7 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 		@ParameterizedTest
 		@CsvSource({ "/test/extensions/myextension", "/test/instances/1/actuator/heapdump",
 				"/test/instances/1/actuator/logfile" })
-		public void contextPathIsRespectedInExcludedRoutes(String routeExcludes) {
+		void contextPathIsRespectedInExcludedRoutes(String routeExcludes) {
 			MockHttpServletRequest httpServletRequest = spy(new MockHttpServletRequest("GET", routeExcludes));
 			httpServletRequest.addHeader(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE);
 
@@ -145,7 +145,7 @@ public class AdminServerUiAutoConfigurationTest implements WithAssertions {
 		@ParameterizedTest
 		@CsvSource({ "/test/about", "/test/applications", "/test/instances", "/test/journal", "/test/wallboard",
 				"/test/external" })
-		public void contextPathIsRespectedInIncludedRoutes(String routeIncludes) {
+		void contextPathIsRespectedInIncludedRoutes(String routeIncludes) {
 			MockHttpServletRequest httpServletRequest = spy(new MockHttpServletRequest("GET", routeIncludes));
 			httpServletRequest.addHeader(HttpHeaders.ACCEPT, MediaType.TEXT_HTML_VALUE);
 
