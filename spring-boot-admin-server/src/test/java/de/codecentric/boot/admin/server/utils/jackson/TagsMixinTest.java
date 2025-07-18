@@ -36,25 +36,25 @@ import de.codecentric.boot.admin.server.domain.values.Tags;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-public class TagsMixinTest {
+class TagsMixinTest {
 
 	private final ObjectMapper objectMapper;
 
 	private JacksonTester<Tags> jsonTester;
 
-	public TagsMixinTest() {
+	protected TagsMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		JacksonTester.initFields(this, objectMapper);
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("env", "test").put("foo", "bar").toString();
 
 		Tags tags = objectMapper.readValue(json, Tags.class);
@@ -63,7 +63,7 @@ public class TagsMixinTest {
 	}
 
 	@Test
-	public void verifySerialize() throws IOException {
+	void verifySerialize() throws IOException {
 		Map<String, Object> data = new HashMap<>();
 		data.put("env", "test");
 		data.put("foo", "bar");

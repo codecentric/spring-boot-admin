@@ -43,23 +43,23 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InstancesControllerIntegrationTest {
+class InstancesControllerIntegrationTest {
 
 	private int localPort;
 
 	private WebTestClient client;
 
-	private String register_as_test;
+	private String registerAsTest;
 
-	private String register_as_twice;
+	private String registerAsTwice;
 
 	private ConfigurableApplicationContext instance;
 
-	private ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	private final ParameterizedTypeReference<Map<String, Object>> responseType = new ParameterizedTypeReference<>() {
 	};
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		instance = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
 			.web(WebApplicationType.REACTIVE)
 			.run("--server.port=0", "--eureka.client.enabled=false");
@@ -67,24 +67,24 @@ public class InstancesControllerIntegrationTest {
 		localPort = instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
 
 		this.client = WebTestClient.bindToServer().baseUrl("http://localhost:" + localPort).build();
-		this.register_as_test = "{ \"name\": \"test\", \"healthUrl\": \"http://localhost:" + localPort
+		this.registerAsTest = "{ \"name\": \"test\", \"healthUrl\": \"http://localhost:" + localPort
 				+ "/application/health\" }";
-		this.register_as_twice = "{ \"name\": \"twice\", \"healthUrl\": \"http://localhost:" + localPort
+		this.registerAsTwice = "{ \"name\": \"twice\", \"healthUrl\": \"http://localhost:" + localPort
 				+ "/application/health\" }";
 	}
 
 	@AfterEach
-	public void shutdown() {
+	void shutdown() {
 		instance.close();
 	}
 
 	@Test
-	public void should_return_not_found_when_get_unknown_instance() {
+	void should_return_not_found_when_get_unknown_instance() {
 		this.client.get().uri("/instances/unknown").exchange().expectStatus().isNotFound();
 	}
 
 	@Test
-	public void should_return_empty_list() {
+	void should_return_empty_list() {
 		this.client.get()
 			.uri("/instances?name=unknown")
 			.exchange()
@@ -95,12 +95,12 @@ public class InstancesControllerIntegrationTest {
 	}
 
 	@Test
-	public void should_return_not_found_when_deleting_unknown_instance() {
+	void should_return_not_found_when_deleting_unknown_instance() {
 		this.client.delete().uri("/instances/unknown").exchange().expectStatus().isNotFound();
 	}
 
 	@Test
-	public void should_return_registered_instances() {
+	void should_return_registered_instances() {
 		AtomicReference<String> id = new AtomicReference<>();
 		CountDownLatch cdl = new CountDownLatch(1);
 
@@ -155,7 +155,7 @@ public class InstancesControllerIntegrationTest {
 			.consumeWith((response) -> {
 				DocumentContext json = JsonPath.parse(response.getResponseBody());
 				assertThat(json.read("$[0].instance", String.class)).isEqualTo(id);
-				assertThat(json.read("$[0].version", Long.class)).isEqualTo(0L);
+				assertThat(json.read("$[0].version", Long.class)).isZero();
 				assertThat(json.read("$[0].type", String.class)).isEqualTo("REGISTERED");
 				assertThat(json.read("$[1].instance", String.class)).isEqualTo(id);
 				assertThat(json.read("$[1].version", Long.class)).isEqualTo(1L);
@@ -219,7 +219,7 @@ public class InstancesControllerIntegrationTest {
 			.uri("/instances")
 			.accept(MediaType.APPLICATION_JSON)
 			.contentType(MediaType.APPLICATION_JSON)
-			.bodyValue(register_as_twice)
+			.bodyValue(registerAsTwice)
 			.exchange()
 			.expectStatus()
 			.isCreated()
@@ -236,12 +236,12 @@ public class InstancesControllerIntegrationTest {
 		EntityExchangeResult<Map<String, Object>> result = client.post()
 																.uri("/instances")
 																.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-																.bodyValue(register_as_test)
+																.bodyValue(registerAsTest)
 																.exchange()
 																.expectStatus().isCreated()
 																.expectHeader().contentType(MediaType.APPLICATION_JSON)
 																.expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
-																.expectBody(RESPONSE_TYPE)
+																.expectBody(responseType)
 																.returnResult();
 		//@formatter:on
 		assertThat(result.getResponseBody()).containsKeys("id");
@@ -259,7 +259,7 @@ public class InstancesControllerIntegrationTest {
 						.exchange()
 						.expectStatus().isOk()
 						.expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
-						.returnResult(RESPONSE_TYPE).getResponseBody();
+						.returnResult(responseType).getResponseBody();
 		//@formatter:on
 	}
 

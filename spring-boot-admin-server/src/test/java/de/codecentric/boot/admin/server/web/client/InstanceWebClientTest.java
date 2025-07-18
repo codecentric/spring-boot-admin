@@ -29,10 +29,10 @@ import de.codecentric.boot.admin.server.web.client.exception.ResolveInstanceExce
 import static de.codecentric.boot.admin.server.web.client.InstanceWebClient.ATTRIBUTE_INSTANCE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InstanceWebClientTest {
+class InstanceWebClientTest {
 
 	@Test
-	public void should_error_without_instance() {
+	void should_error_without_instance() {
 		Mono<Void> response = InstanceWebClient.builder()
 			.build()
 			.instance(Mono.empty())
@@ -45,7 +45,7 @@ public class InstanceWebClientTest {
 	}
 
 	@Test
-	public void should_add_instance_attribute() {
+	void should_add_instance_attribute() {
 		Instance instance = Instance.create(InstanceId.of("i"));
 
 		Mono<ClientResponse> response = InstanceWebClient.builder().filter((inst, req, next) -> {

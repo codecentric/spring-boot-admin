@@ -26,10 +26,10 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CompositeReactiveHttpHeadersProviderTest {
+class CompositeReactiveHttpHeadersProviderTest {
 
 	@Test
-	public void should_return_all_headers() {
+	void should_return_all_headers() {
 		ReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(asList((i) -> {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("a", "1");
@@ -43,19 +43,19 @@ public class CompositeReactiveHttpHeadersProviderTest {
 		}));
 
 		StepVerifier.create(provider.getHeaders(null)).thenConsumeWhile((headers) -> {
-			assertThat(headers.get("a")).isEqualTo(singletonList("1"));
-			assertThat(headers.get("b")).isEqualTo(asList("2-a", "2-b"));
-			assertThat(headers.get("c")).isEqualTo(singletonList("3"));
+			assertThat(headers).containsEntry("a", singletonList("1"))
+				.containsEntry("b", asList("2-a", "2-b"))
+				.containsEntry("c", singletonList("3"));
 			return true;
 		}).verifyComplete();
 	}
 
 	@Test
-	public void should_return_empty_headers() {
+	void should_return_empty_headers() {
 		CompositeReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(emptyList());
 
 		StepVerifier.create(provider.getHeaders(null)).thenConsumeWhile((headers) -> {
-			assertThat(headers.size()).isEqualTo(0);
+			assertThat(headers).isEmpty();
 			return true;
 		}).verifyComplete();
 	}
