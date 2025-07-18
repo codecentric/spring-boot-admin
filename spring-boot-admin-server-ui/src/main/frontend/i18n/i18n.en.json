@@ -34,6 +34,10 @@
     "fetch_failed": "Fetching of data failed.",
     "float": "Float",
     "filter": "Filter",
+    "group_by": {
+      "group": "Group by group",
+      "application": "Group by application"
+    },
     "hours": "{count} hour | {count} hours",
     "instance": "Instance",
     "instances": "Instances",
