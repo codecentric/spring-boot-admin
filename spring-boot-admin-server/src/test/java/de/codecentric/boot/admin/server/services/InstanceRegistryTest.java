@@ -21,8 +21,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
@@ -56,10 +54,9 @@ class InstanceRegistryTest {
 		});
 	}
 
-	@ParameterizedTest
-	@NullSource
-	void registerFailed_null(Registration registration) {
-		assertThatThrownBy(() -> registry.register(registration)).isInstanceOf(IllegalArgumentException.class);
+	@Test
+	void registerFailed_null() {
+		assertThatThrownBy(() -> registry.register(null)).isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
