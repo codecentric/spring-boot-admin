@@ -41,7 +41,6 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class AbstractEventStoreTest {
@@ -50,7 +49,7 @@ public abstract class AbstractEventStoreTest {
 
 	private final InstanceId id = InstanceId.of("id");
 
-	private final Registration registration = Registration.create("foo", "http://health")
+	private final Registration registration = Registration.create("foo", "https://health")
 		.metadata("test", "dummy")
 		.build();
 
@@ -104,7 +103,7 @@ public abstract class AbstractEventStoreTest {
 	}
 
 	@Test
-	public void should_throw_optimictic_locking_exception() {
+	public void should_throw_optimistic_locking_exception() {
 		InstanceEvent event0 = new InstanceRegisteredEvent(id, 0L, registration);
 		InstanceEvent event1 = new InstanceStatusChangedEvent(id, 1L, StatusInfo.ofDown());
 		InstanceEvent event1b = new InstanceDeregisteredEvent(id, 1L);
@@ -117,11 +116,11 @@ public abstract class AbstractEventStoreTest {
 
 	@Test
 	public void concurrent_read_writes() {
-		InstanceId id = InstanceId.of("a");
+		InstanceId instanceId = InstanceId.of("a");
 		InstanceEventStore store = createStore(500);
 
-		Function<Integer, InstanceEvent> eventFactory = (i) -> new InstanceDeregisteredEvent(id, i);
-		Flux<Void> eventgenerator = Flux.range(0, 500)
+		Function<Integer, InstanceEvent> eventFactory = (i) -> new InstanceDeregisteredEvent(instanceId, i);
+		Flux<Void> eventGenerator = Flux.range(0, 500)
 			.map(eventFactory)
 			.buffer(2)
 			.flatMap((events) -> store.append(events).onErrorResume(OptimisticLockingException.class, (ex) -> {
@@ -130,15 +129,15 @@ public abstract class AbstractEventStoreTest {
 			}).delayElement(Duration.ofMillis(5L)));
 
 		StepVerifier
-			.create(eventgenerator.subscribeOn(Schedulers.newSingle("a"))
-				.mergeWith(eventgenerator.subscribeOn(Schedulers.newSingle("a")))
-				.mergeWith(eventgenerator.subscribeOn(Schedulers.newSingle("a")))
-				.mergeWith(eventgenerator.subscribeOn(Schedulers.newSingle("a")))
+			.create(eventGenerator.subscribeOn(Schedulers.newSingle("a"))
+				.mergeWith(eventGenerator.subscribeOn(Schedulers.newSingle("a")))
+				.mergeWith(eventGenerator.subscribeOn(Schedulers.newSingle("a")))
+				.mergeWith(eventGenerator.subscribeOn(Schedulers.newSingle("a")))
 				.then())
 			.verifyComplete();
 
-		List<Long> versions = store.find(id).map(InstanceEvent::getVersion).collectList().block();
-		List<Long> expected = LongStream.range(0, 500).boxed().collect(toList());
+		List<Long> versions = store.find(instanceId).map(InstanceEvent::getVersion).collectList().block();
+		List<Long> expected = LongStream.range(0, 500).boxed().toList();
 		assertThat(versions).containsExactlyElementsOf(expected);
 	}
 

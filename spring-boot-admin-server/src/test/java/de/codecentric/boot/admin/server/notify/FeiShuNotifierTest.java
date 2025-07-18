@@ -47,17 +47,15 @@ public class FeiShuNotifierTest {
 	public static final String WEBHOOK_URL = "http://localhost/v2";
 
 	private final Instance instance = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create("App", "http://health").build());
+		.register(Registration.create("App", "https://health").build());
 
 	private FeiShuNotifier notifier;
 
 	private RestTemplate restTemplate;
 
-	private InstanceRepository instanceRepository;
-
 	@BeforeEach
-	public void setUp() {
-		instanceRepository = mock(InstanceRepository.class);
+	void setUp() {
+		InstanceRepository instanceRepository = mock(InstanceRepository.class);
 		when(instanceRepository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		restTemplate = mock(RestTemplate.class);
@@ -66,7 +64,7 @@ public class FeiShuNotifierTest {
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
+	void test_onApplicationEvent_resolve() {
 		@SuppressWarnings("unchecked")
 		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
 			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
@@ -93,7 +91,7 @@ public class FeiShuNotifierTest {
 	}
 
 	@Test
-	public void test_onApplicationEvent_trigger() {
+	void test_onApplicationEvent_trigger() {
 		StatusInfo infoDown = StatusInfo.ofDown();
 
 		@SuppressWarnings("unchecked")

@@ -37,10 +37,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class FilteringNotifierTest {
+class FilteringNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("-"))
-		.register(Registration.create("foo", "http://health").build());
+		.register(Registration.create("foo", "https://health").build());
 
 	private final InstanceRegisteredEvent event = new InstanceRegisteredEvent(instance.getId(), instance.getVersion(),
 			instance.getRegistration());
@@ -48,19 +48,19 @@ public class FilteringNotifierTest {
 	private InstanceRepository repository;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 	}
 
 	@Test
-	public void test_ctor_assert() {
+	void test_ctor_assert() {
 		Assertions.assertThatThrownBy(() -> new FilteringNotifier(null, repository))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
-	public void test_expired_removal() {
+	void test_expired_removal() {
 		FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), repository);
 		notifier.setCleanupInterval(Duration.ZERO);
 
@@ -81,7 +81,7 @@ public class FilteringNotifierTest {
 	}
 
 	@Test
-	public void test_filter() {
+	void test_filter() {
 		TestNotifier delegate = new TestNotifier();
 		FilteringNotifier notifier = new FilteringNotifier(delegate, repository);
 

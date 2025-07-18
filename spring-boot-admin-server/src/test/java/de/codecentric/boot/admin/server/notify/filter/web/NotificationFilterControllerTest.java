@@ -39,30 +39,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class NotificationFilterControllerTest {
+class NotificationFilterControllerTest {
 
 	private final InstanceRepository repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
 
 	private final NotificationFilterController controller = new NotificationFilterController(
 			new FilteringNotifier(new LoggingNotifier(this.repository), this.repository));
 
-	private MockMvc mvc = MockMvcBuilders.standaloneSetup(this.controller)
+	private final MockMvc mvc = MockMvcBuilders.standaloneSetup(this.controller)
 		.setCustomHandlerMapping(
 				() -> new de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping("/"))
 		.build();
 
 	@Test
-	public void test_missing_parameters() throws Exception {
+	void test_missing_parameters() throws Exception {
 		this.mvc.perform(post("/notifications/filters")).andExpect(status().isBadRequest());
 	}
 
 	@Test
-	public void test_delete_notfound() throws Exception {
+	void test_delete_notfound() throws Exception {
 		this.mvc.perform(delete("/notifications/filters/abcdef")).andExpect(status().isNotFound());
 	}
 
 	@Test
-	public void test_post_delete() throws Exception {
+	void test_post_delete() throws Exception {
 		String response = this.mvc.perform(post("/notifications/filters?instanceId=1337&ttl=10000"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(not(emptyString())))

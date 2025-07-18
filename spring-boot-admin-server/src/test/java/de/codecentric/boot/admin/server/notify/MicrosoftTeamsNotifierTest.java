@@ -51,15 +51,15 @@ class MicrosoftTeamsNotifierTest {
 
 	private static final String GREEN = "6db33f";
 
-	private static final String appName = "Test App";
+	private static final String APP_NAME = "Test App";
 
-	private static final String appId = "TestAppId";
+	private static final String APP_ID = "TestAppId";
 
-	private static final String healthUrl = "http://health";
+	private static final String HEALTH_URL = "https://health";
 
-	private static final String managementUrl = "http://management";
+	private static final String MANAGEMENT_URL = "https://management";
 
-	private static final String serviceUrl = "http://service";
+	private static final String SERVICE_URL = "https://service";
 
 	private MicrosoftTeamsNotifier notifier;
 
@@ -67,22 +67,20 @@ class MicrosoftTeamsNotifierTest {
 
 	private Instance instance;
 
-	private InstanceRepository repository;
-
 	@BeforeEach
 	void setUp() {
-		instance = Instance.create(InstanceId.of(appId))
-			.register(Registration.create(appName, healthUrl)
-				.managementUrl(managementUrl)
-				.serviceUrl(serviceUrl)
+		instance = Instance.create(InstanceId.of(APP_ID))
+			.register(Registration.create(APP_NAME, HEALTH_URL)
+				.managementUrl(MANAGEMENT_URL)
+				.serviceUrl(SERVICE_URL)
 				.build());
 
-		repository = mock(InstanceRepository.class);
+		InstanceRepository repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		mockRestTemplate = mock(RestTemplate.class);
 		notifier = new MicrosoftTeamsNotifier(repository, mockRestTemplate);
-		notifier.setWebhookUrl(URI.create("http://example.com"));
+		notifier.setWebhookUrl(URI.create("https://example.com"));
 	}
 
 	@Test
@@ -93,9 +91,10 @@ class MicrosoftTeamsNotifierTest {
 		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
 		ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
-		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
+		verify(mockRestTemplate).postForEntity(eq(URI.create("https://example.com")), entity.capture(), eq(Void.class));
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+		assertThat(entity.getValue().getBody()).isNotNull();
 		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
 				"Test App with id TestAppId has de-registered from Spring Boot Admin", BLUE);
 	}
@@ -108,9 +107,10 @@ class MicrosoftTeamsNotifierTest {
 		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
 		ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
-		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
+		verify(mockRestTemplate).postForEntity(eq(URI.create("https://example.com")), entity.capture(), eq(Void.class));
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+		assertThat(entity.getValue().getBody()).isNotNull();
 		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(), notifier.getMessageSummary(),
 				"Test App with id TestAppId has registered with Spring Boot Admin", BLUE);
 	}
@@ -123,9 +123,10 @@ class MicrosoftTeamsNotifierTest {
 		StepVerifier.create(notifier.doNotify(event, instance)).verifyComplete();
 
 		ArgumentCaptor<HttpEntity<Message>> entity = ArgumentCaptor.forClass(HttpEntity.class);
-		verify(mockRestTemplate).postForEntity(eq(URI.create("http://example.com")), entity.capture(), eq(Void.class));
+		verify(mockRestTemplate).postForEntity(eq(URI.create("https://example.com")), entity.capture(), eq(Void.class));
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
+		assertThat(entity.getValue().getBody()).isNotNull();
 		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
 				"Test App with id TestAppId changed status from UNKNOWN to UP", GREEN);
 	}
@@ -186,7 +187,7 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getStatusChangedMessage(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
-		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("STATUS_ACTIVITY_PATTERN_" + appName);
+		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("STATUS_ACTIVITY_PATTERN_" + APP_NAME);
 	}
 
 	@Test
@@ -196,7 +197,7 @@ class MicrosoftTeamsNotifierTest {
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
-			.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + appName);
+			.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + APP_NAME);
 	}
 
 	@Test
@@ -206,7 +207,7 @@ class MicrosoftTeamsNotifierTest {
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(message.getSections().get(0).getActivitySubtitle())
-			.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + appName);
+			.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + APP_NAME);
 	}
 
 	@Test
@@ -235,16 +236,16 @@ class MicrosoftTeamsNotifierTest {
 				assertThat(fact.getValue()).isEqualTo("UNKNOWN");
 			}).anySatisfy((fact) -> {
 				assertThat(fact.getName()).isEqualTo("Service URL");
-				assertThat(fact.getValue()).isEqualTo(serviceUrl);
+				assertThat(fact.getValue()).isEqualTo(SERVICE_URL);
 			}).anySatisfy((fact) -> {
 				assertThat(fact.getName()).isEqualTo("Health URL");
-				assertThat(fact.getValue()).isEqualTo(healthUrl);
+				assertThat(fact.getValue()).isEqualTo(HEALTH_URL);
 			}).anySatisfy((fact) -> {
 				assertThat(fact.getName()).isEqualTo("Management URL");
-				assertThat(fact.getValue()).isEqualTo(managementUrl);
+				assertThat(fact.getValue()).isEqualTo(MANAGEMENT_URL);
 			}).anySatisfy((fact) -> {
 				assertThat(fact.getName()).isEqualTo("Source");
-				assertThat(fact.getValue()).isEqualTo(null);
+				assertThat(fact.getValue()).isNull();
 			});
 		});
 	}

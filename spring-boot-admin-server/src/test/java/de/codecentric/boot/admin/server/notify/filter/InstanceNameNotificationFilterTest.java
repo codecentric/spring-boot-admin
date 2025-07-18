@@ -18,7 +18,6 @@ package de.codecentric.boot.admin.server.notify.filter;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,28 +27,29 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
-public class InstanceNameNotificationFilterTest {
+class InstanceNameNotificationFilterTest {
 
 	@Test
-	public void test_filterByName() {
+	void test_filterByName() {
 		NotificationFilter filter = new ApplicationNameNotificationFilter("foo", null);
 
 		Instance filteredInstance = Instance.create(InstanceId.of("-"))
-			.register(Registration.create("foo", "http://health").build());
+			.register(Registration.create("foo", "https://health").build());
 		InstanceRegisteredEvent filteredEvent = new InstanceRegisteredEvent(filteredInstance.getId(),
 				filteredInstance.getVersion(), filteredInstance.getRegistration());
 		assertThat(filter.filter(filteredEvent, filteredInstance)).isTrue();
 
 		Instance ignoredInstance = Instance.create(InstanceId.of("-"))
-			.register(Registration.create("bar", "http://health").build());
+			.register(Registration.create("bar", "https://health").build());
 		InstanceRegisteredEvent ignoredEvent = new InstanceRegisteredEvent(ignoredInstance.getId(),
 				ignoredInstance.getVersion(), ignoredInstance.getRegistration());
 		assertThat(filter.filter(ignoredEvent, ignoredInstance)).isFalse();
 	}
 
 	@Test
-	public void test_expiry() throws InterruptedException {
+	void test_expiry() {
 		ExpiringNotificationFilter filterForever = new ApplicationNameNotificationFilter("foo", null);
 		ExpiringNotificationFilter filterExpired = new ApplicationNameNotificationFilter("foo",
 				Instant.now().minus(Duration.ofSeconds(1)));
@@ -60,8 +60,9 @@ public class InstanceNameNotificationFilterTest {
 		assertThat(filterLong.isExpired()).isFalse();
 		assertThat(filterExpired.isExpired()).isTrue();
 
-		TimeUnit.MILLISECONDS.sleep(200);
-		assertThat(filterLong.isExpired()).isTrue();
+		await().atMost(Duration.ofMillis(200))
+			.pollInterval(Duration.ofMillis(10))
+			.untilAsserted(() -> assertThat(filterLong.isExpired()).isTrue());
 	}
 
 }

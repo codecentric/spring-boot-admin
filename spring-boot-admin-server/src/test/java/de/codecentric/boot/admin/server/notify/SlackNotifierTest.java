@@ -44,42 +44,40 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SlackNotifierTest {
+class SlackNotifierTest {
 
-	private static final String channel = "channel";
+	private static final String CHANNEL = "channel";
 
-	private static final String icon = "icon";
+	private static final String ICON = "icon";
 
-	private static final String user = "user";
+	private static final String USER = "user";
 
-	private static final String appName = "App";
+	private static final String APP_NAME = "App";
 
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create(appName, "http://health").build());
+		.register(Registration.create(APP_NAME, "https://health").build());
 
-	private static final String message = "test";
+	private static final String MESSAGE = "test";
 
 	private SlackNotifier notifier;
 
 	private RestTemplate restTemplate;
 
-	private InstanceRepository repository;
-
 	@BeforeEach
-	public void setUp() {
-		repository = mock(InstanceRepository.class);
+	void setUp() {
+		InstanceRepository repository = mock(InstanceRepository.class);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
 		restTemplate = mock(RestTemplate.class);
 
 		notifier = new SlackNotifier(repository, restTemplate);
-		notifier.setUsername(user);
+		notifier.setUsername(USER);
 		notifier.setWebhookUrl(URI.create("http://localhost/"));
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
-		notifier.setChannel(channel);
-		notifier.setIcon(icon);
+	void test_onApplicationEvent_resolve() {
+		notifier.setChannel(CHANNEL);
+		notifier.setIcon(ICON);
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
@@ -90,13 +88,13 @@ public class SlackNotifierTest {
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
-		Object expected = expectedMessage("good", user, icon, channel, standardMessage("UP"));
+		Object expected = expectedMessage("good", USER, ICON, CHANNEL, standardMessage("UP"));
 
 		verify(restTemplate).postForEntity(any(URI.class), eq(expected), eq(Void.class));
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve_without_channel_and_icon() {
+	void test_onApplicationEvent_resolve_without_channel_and_icon() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
@@ -107,17 +105,17 @@ public class SlackNotifierTest {
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
-		Object expected = expectedMessage("good", user, null, null, standardMessage("UP"));
+		Object expected = expectedMessage("good", USER, null, null, standardMessage("UP"));
 
 		verify(restTemplate).postForEntity(any(URI.class), eq(expected), eq(Void.class));
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve_with_given_user() {
+	void test_onApplicationEvent_resolve_with_given_user() {
 		String anotherUser = "another user";
 		notifier.setUsername(anotherUser);
-		notifier.setChannel(channel);
-		notifier.setIcon(icon);
+		notifier.setChannel(CHANNEL);
+		notifier.setIcon(ICON);
 
 		StepVerifier
 			.create(notifier
@@ -129,16 +127,16 @@ public class SlackNotifierTest {
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
-		Object expected = expectedMessage("good", anotherUser, icon, channel, standardMessage("UP"));
+		Object expected = expectedMessage("good", anotherUser, ICON, CHANNEL, standardMessage("UP"));
 
 		verify(restTemplate).postForEntity(any(URI.class), eq(expected), eq(Void.class));
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve_with_given_message() {
-		notifier.setMessage(message);
-		notifier.setChannel(channel);
-		notifier.setIcon(icon);
+	void test_onApplicationEvent_resolve_with_given_message() {
+		notifier.setMessage(MESSAGE);
+		notifier.setChannel(CHANNEL);
+		notifier.setIcon(ICON);
 
 		StepVerifier
 			.create(notifier
@@ -150,15 +148,15 @@ public class SlackNotifierTest {
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
-		Object expected = expectedMessage("good", user, icon, channel, message);
+		Object expected = expectedMessage("good", USER, ICON, CHANNEL, MESSAGE);
 
 		verify(restTemplate).postForEntity(any(URI.class), eq(expected), eq(Void.class));
 	}
 
 	@Test
-	public void test_onApplicationEvent_trigger() {
-		notifier.setChannel(channel);
-		notifier.setIcon(icon);
+	void test_onApplicationEvent_trigger() {
+		notifier.setChannel(CHANNEL);
+		notifier.setIcon(ICON);
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
@@ -169,7 +167,7 @@ public class SlackNotifierTest {
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
 			.verifyComplete();
 
-		Object expected = expectedMessage("danger", user, icon, channel, standardMessage("DOWN"));
+		Object expected = expectedMessage("danger", USER, ICON, CHANNEL, standardMessage("DOWN"));
 
 		verify(restTemplate).postForEntity(any(URI.class), eq(expected), eq(Void.class));
 	}
