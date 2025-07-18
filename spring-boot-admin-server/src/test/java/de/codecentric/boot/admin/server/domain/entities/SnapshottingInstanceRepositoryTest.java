@@ -38,29 +38,29 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SnapshottingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
+class SnapshottingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("app-1"))
-		.register(Registration.create("app", "http://health").build());
+		.register(Registration.create("app", "https://health").build());
 
-	private InMemoryEventStore eventStore = spy(new InMemoryEventStore());
+	private final InMemoryEventStore eventStore = spy(new InMemoryEventStore());
 
 	private SnapshottingInstanceRepository repository;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.repository = new SnapshottingInstanceRepository(this.eventStore);
 		this.repository.start();
 		super.setUp(this.repository);
 	}
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 		this.repository.stop();
 	}
 
 	@Test
-	public void should_return_instance_from_cache() {
+	void should_return_instance_from_cache() {
 		// given
 		StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
 		// when
@@ -71,7 +71,7 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
 	}
 
 	@Test
-	public void should_return_all_instances_from_cache() {
+	void should_return_all_instances_from_cache() {
 		// given
 		StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
 		// when
@@ -82,7 +82,7 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
 	}
 
 	@Test
-	public void should_update_cache_after_error() {
+	void should_update_cache_after_error() {
 		// given
 		this.repository.stop();
 		when(this.eventStore.findAll()).thenReturn(
@@ -101,7 +101,7 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
 	}
 
 	@Test
-	public void should_return_outdated_instance_not_present_in_cache() {
+	void should_return_outdated_instance_not_present_in_cache() {
 		this.repository.stop();
 		// given
 		StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
@@ -111,7 +111,7 @@ public class SnapshottingInstanceRepositoryTest extends AbstractInstanceReposito
 	}
 
 	@Test
-	public void should_refresh_snapshots_eagerly_on_optimistick_lock_exception() {
+	void should_refresh_snapshots_eagerly_on_optimistic_locking_exception() {
 		// given
 		StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1L).verifyComplete();
 		this.repository.stop();

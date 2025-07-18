@@ -33,25 +33,25 @@ import de.codecentric.boot.admin.server.domain.values.Endpoint;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EndpointMixinTest {
+class EndpointMixinTest {
 
 	private final ObjectMapper objectMapper;
 
 	private JacksonTester<Endpoint> jsonTester;
 
-	public EndpointMixinTest() {
+	protected EndpointMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		JacksonTester.initFields(this, objectMapper);
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("id", "info").put("url", "http://localhost:8080/info").toString();
 
 		Endpoint endpoint = objectMapper.readValue(json, Endpoint.class);
@@ -61,7 +61,7 @@ public class EndpointMixinTest {
 	}
 
 	@Test
-	public void verifySerialize() throws IOException {
+	void verifySerialize() throws IOException {
 		Endpoint endpoint = Endpoint.of("info", "http://localhost:8080/info");
 
 		JsonContent<Endpoint> jsonContent = jsonTester.write(endpoint);

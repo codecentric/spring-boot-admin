@@ -37,25 +37,25 @@ import de.codecentric.boot.admin.server.domain.values.Info;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-public class InfoMixinTest {
+class InfoMixinTest {
 
 	private final ObjectMapper objectMapper;
 
 	private JacksonTester<Info> jsonTester;
 
-	public InfoMixinTest() {
+	protected InfoMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		JacksonTester.initFields(this, objectMapper);
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("build", new JSONObject().put("version", "1.0.0"))
 			.put("foo", "bar")
 			.toString();
@@ -67,7 +67,7 @@ public class InfoMixinTest {
 	}
 
 	@Test
-	public void verifySerialize() throws IOException {
+	void verifySerialize() throws IOException {
 		Map<String, Object> data = new HashMap<>();
 		data.put("build", Collections.singletonMap("version", "1.0.0"));
 		data.put("foo", "bar");

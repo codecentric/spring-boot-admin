@@ -26,7 +26,7 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class SpringBootAdminServerEnabledConditionTest {
+class SpringBootAdminServerEnabledConditionTest {
 
 	private SpringBootAdminServerEnabledCondition condition;
 
@@ -35,21 +35,21 @@ public class SpringBootAdminServerEnabledConditionTest {
 	private ConditionContext conditionContext;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		condition = new SpringBootAdminServerEnabledCondition();
 		annotatedTypeMetadata = mock(AnnotatedTypeMetadata.class);
 		conditionContext = mock(ConditionContext.class);
 	}
 
 	@Test
-	public void test_server_enabled() {
+	void test_server_enabled() {
 		MockEnvironment environment = new MockEnvironment();
 		BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);
 		assertThat(condition.getMatchOutcome(conditionContext, annotatedTypeMetadata).isMatch()).isTrue();
 	}
 
 	@Test
-	public void test_server_disabled() {
+	void test_server_disabled() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.boot.admin.server.enabled", "false");
 		BDDMockito.given(conditionContext.getEnvironment()).willReturn(environment);

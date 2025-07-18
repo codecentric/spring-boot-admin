@@ -20,8 +20,8 @@ import com.hazelcast.config.Config;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -40,7 +40,7 @@ import de.codecentric.boot.admin.server.notify.Notifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AdminServerAutoConfigurationTest {
+class AdminServerAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
@@ -50,7 +50,7 @@ public class AdminServerAutoConfigurationTest {
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
-	public void simpleConfig() {
+	void simpleConfig() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).getBean(InstanceRepository.class).isInstanceOf(SnapshottingInstanceRepository.class);
 			assertThat(context).doesNotHaveBean(MailNotifier.class);
@@ -59,7 +59,7 @@ public class AdminServerAutoConfigurationTest {
 	}
 
 	@Test
-	public void hazelcastConfig() {
+	void hazelcastConfig() {
 		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class).run((context) -> {
 			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
 			assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);

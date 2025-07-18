@@ -42,7 +42,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class StatusUpdateTriggerTest {
+class StatusUpdateTriggerTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("id-1"))
 		.register(Registration.create("foo", "http://health-1").build());
@@ -54,7 +54,7 @@ public class StatusUpdateTriggerTest {
 	private StatusUpdateTrigger trigger;
 
 	@BeforeEach
-	public void setUp() throws Exception {
+	void setUp() {
 		when(this.updater.updateStatus(any(InstanceId.class))).thenReturn(Mono.empty());
 		when(this.updater.timeout(any())).thenReturn(this.updater);
 
@@ -65,7 +65,7 @@ public class StatusUpdateTriggerTest {
 	}
 
 	@Test
-	public void should_start_and_stop_monitor() throws Exception {
+	void should_start_and_stop_monitor() {
 		// given
 		this.trigger.stop();
 		this.trigger.setInterval(Duration.ofMillis(10));
@@ -74,33 +74,29 @@ public class StatusUpdateTriggerTest {
 		await().until(this.events::wasSubscribed);
 
 		this.events.next(new InstanceRegisteredEvent(this.instance.getId(), 0L, this.instance.getRegistration()));
-
-		Thread.sleep(50L);
-		// then it should start updating one time for registration and at least once for
+		// it should start updating one time for registration and at least once for
 		// monitor
-		verify(this.updater, atLeast(2)).updateStatus(this.instance.getId());
+		await().atMost(Duration.ofMillis(50))
+			.pollInterval(Duration.ofMillis(10))
+			.untilAsserted(() -> verify(this.updater, atLeast(2)).updateStatus(this.instance.getId()));
 
 		// given long lifetime
 		this.trigger.setLifetime(Duration.ofSeconds(10));
-		Thread.sleep(50L);
 		clearInvocations(this.updater);
-		// when the lifetime is not expired
-		Thread.sleep(50L);
-		// should never update
-		verify(this.updater, never()).updateStatus(any(InstanceId.class));
+		// when the lifetime is not expired should never update
+		await().pollDelay(Duration.ofMillis(50))
+			.untilAsserted(() -> verify(this.updater, never()).updateStatus(any(InstanceId.class)));
 
-		// when trigger ist destroyed
 		this.trigger.setLifetime(Duration.ofMillis(10));
 		this.trigger.stop();
 		clearInvocations(this.updater);
-		Thread.sleep(15L);
-
-		// it should stop updating
-		verify(this.updater, never()).updateStatus(any(InstanceId.class));
+		// when trigger ist destroyed it should stop updating
+		await().pollDelay(Duration.ofMillis(15))
+			.untilAsserted(() -> verify(this.updater, never()).updateStatus(any(InstanceId.class)));
 	}
 
 	@Test
-	public void should_not_update_when_stopped() {
+	void should_not_update_when_stopped() {
 		// when registered event is emitted but the trigger has been stopped
 		this.trigger.stop();
 		clearInvocations(this.updater);
@@ -111,7 +107,7 @@ public class StatusUpdateTriggerTest {
 	}
 
 	@Test
-	public void should_update_on_instance_registered_event() {
+	void should_update_on_instance_registered_event() {
 		// when registered event is emitted
 		this.events.next(new InstanceRegisteredEvent(this.instance.getId(), this.instance.getVersion(),
 				this.instance.getRegistration()));
@@ -120,7 +116,7 @@ public class StatusUpdateTriggerTest {
 	}
 
 	@Test
-	public void should_update_on_instance_registration_update_event() {
+	void should_update_on_instance_registration_update_event() {
 		// when registered event is emitted
 		this.events.next(new InstanceRegistrationUpdatedEvent(this.instance.getId(), this.instance.getVersion(),
 				this.instance.getRegistration()));
@@ -129,7 +125,7 @@ public class StatusUpdateTriggerTest {
 	}
 
 	@Test
-	public void should_not_update_on_non_relevant_event() {
+	void should_not_update_on_non_relevant_event() {
 		// when some non-registered event is emitted
 		this.events.next(new InstanceInfoChangedEvent(this.instance.getId(), this.instance.getVersion(), Info.empty()));
 		// then should not update
@@ -137,7 +133,7 @@ public class StatusUpdateTriggerTest {
 	}
 
 	@Test
-	public void should_continue_update_after_error() throws InterruptedException {
+	void should_continue_update_after_error() {
 		// when status-change event is emitted and an error is emitted
 		when(this.updater.updateStatus(any())).thenReturn(Mono.error(IllegalStateException::new))
 			.thenReturn(Mono.empty());

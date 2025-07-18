@@ -45,7 +45,7 @@ class JdkPerInstanceCookieStoreTest {
 	private JdkPerInstanceCookieStore store;
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		store = spy(new JdkPerInstanceCookieStore());
 		cookieHandler = mock(CookieHandler.class);
 
@@ -63,8 +63,8 @@ class JdkPerInstanceCookieStoreTest {
 
 		final MultiValueMap<String, String> cookieMap = store.get(INSTANCE_ID, uri, new LinkedMultiValueMap<>());
 
-		assertThat(cookieMap).containsEntry("name", singletonList("value"));
-		assertThat(cookieMap).containsEntry("name2", singletonList("tricky=value"));
+		assertThat(cookieMap).containsEntry("name", singletonList("value"))
+			.containsEntry("name2", singletonList("tricky=value"));
 	}
 
 	@Test
@@ -81,14 +81,14 @@ class JdkPerInstanceCookieStoreTest {
 
 	@Test
 	void different_handler_should_be_used_for_different_instance_id() throws IOException {
-		InstanceId INSTANCE_ID2 = InstanceId.of("j");
+		InstanceId instanceId2 = InstanceId.of("j");
 		CookieHandler cookieHandler2 = mock(CookieHandler.class);
-		when(store.createCookieHandler(INSTANCE_ID2)).thenReturn(cookieHandler2);
+		when(store.createCookieHandler(instanceId2)).thenReturn(cookieHandler2);
 
 		MultiValueMap<String, String> storeMap = new LinkedMultiValueMap<>();
 		final URI uri = URI.create("http://localhost/test");
 		store.get(INSTANCE_ID, uri, storeMap);
-		store.get(INSTANCE_ID2, uri, storeMap);
+		store.get(instanceId2, uri, storeMap);
 
 		verify(cookieHandler).get(uri, storeMap);
 		verify(cookieHandler2).get(uri, storeMap);

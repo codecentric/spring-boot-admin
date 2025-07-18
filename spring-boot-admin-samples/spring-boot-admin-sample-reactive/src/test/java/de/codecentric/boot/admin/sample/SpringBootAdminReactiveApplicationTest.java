@@ -23,10 +23,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { SpringBootAdminReactiveApplication.class })
-public class SpringBootAdminReactiveApplicationTest {
+class SpringBootAdminReactiveApplicationTest {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 	}
 
 }
