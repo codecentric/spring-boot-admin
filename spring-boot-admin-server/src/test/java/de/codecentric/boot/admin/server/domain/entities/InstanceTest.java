@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.domain.entities;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,10 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 
-public class InstanceTest {
+class InstanceTest {
 
 	@Test
-	public void invariants() {
+	void invariants() {
 		assertThatThrownBy(() -> Instance.create(null)).isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'id' must not be null");
 
@@ -61,8 +60,8 @@ public class InstanceTest {
 	}
 
 	@Test
-	public void should_track_unsaved_events() {
-		Registration registration = Registration.create("foo", "http://health").build();
+	void should_track_unsaved_events() {
+		Registration registration = Registration.create("foo", "https://health").build();
 		Info info = Info.from(singletonMap("foo", "bar"));
 		Instance newInstance = Instance.create(InstanceId.of("id"));
 
@@ -75,9 +74,9 @@ public class InstanceTest {
 		Instance instance = newInstance.register(registration).register(registration);
 		assertThat(instance.getRegistration()).isEqualTo(registration);
 		assertThat(instance.isRegistered()).isTrue();
-		assertThat(instance.getVersion()).isEqualTo(0L);
+		assertThat(instance.getVersion()).isZero();
 
-		Registration registration2 = Registration.create("foo2", "http://health").build();
+		Registration registration2 = Registration.create("foo2", "https://health").build();
 		instance = instance.register(registration2);
 		assertThat(instance.getRegistration()).isEqualTo(registration2);
 		assertThat(instance.isRegistered()).isTrue();
@@ -103,8 +102,8 @@ public class InstanceTest {
 	}
 
 	@Test
-	public void should_yield_same_status_from_replaying() {
-		Registration registration = Registration.create("foo-instance", "http://health")
+	void should_yield_same_status_from_replaying() {
+		Registration registration = Registration.create("foo-instance", "https://health")
 			.metadata("version", "1.0.0")
 			.build();
 		Instance instance = Instance.create(InstanceId.of("id"))
@@ -122,7 +121,7 @@ public class InstanceTest {
 		assertThat(loaded.getStatusTimestamp()).isEqualTo(instance.getStatusTimestamp());
 		assertThat(loaded.getInfo()).isEqualTo(Info.from(singletonMap("foo", "bar")));
 		assertThat(loaded.getEndpoints())
-			.isEqualTo(Endpoints.single("info", "info").withEndpoint("health", "http://health"));
+			.isEqualTo(Endpoints.single("info", "info").withEndpoint("health", "https://health"));
 		assertThat(loaded.getVersion()).isEqualTo(4L);
 		assertThat(loaded.getBuildVersion()).isEqualTo(BuildVersion.valueOf("1.0.0"));
 
@@ -135,11 +134,11 @@ public class InstanceTest {
 		assertThat(loaded.getStatusTimestamp()).isEqualTo(deregisteredInstance.getStatusTimestamp());
 		assertThat(loaded.getEndpoints()).isEqualTo(Endpoints.empty());
 		assertThat(loaded.getVersion()).isEqualTo(5L);
-		assertThat(loaded.getBuildVersion()).isEqualTo(null);
+		assertThat(loaded.getBuildVersion()).isNull();
 	}
 
 	@Test
-	public void should_throw_when_applied_wrong_event() {
+	void should_throw_when_applied_wrong_event() {
 		Instance instance = Instance.create(InstanceId.of("id"));
 		assertThatThrownBy(() -> instance.apply((InstanceEvent) null)).isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'event' must not be null");
@@ -154,12 +153,12 @@ public class InstanceTest {
 	}
 
 	@Test
-	public void should_update_buildVersion() {
+	void should_update_buildVersion() {
 		Instance instance = Instance.create(InstanceId.of("id"));
 
 		assertThat(instance.getBuildVersion()).isNull();
 
-		Registration registration = Registration.create("foo-instance", "http://health")
+		Registration registration = Registration.create("foo-instance", "https://health")
 			.metadata("version", "1.0.0")
 			.build();
 		instance = instance.register(registration).withInfo(Info.empty());
@@ -176,12 +175,12 @@ public class InstanceTest {
 	}
 
 	@Test
-	public void should_extract_tags() {
+	void should_extract_tags() {
 		Instance instance = Instance.create(InstanceId.of("id"));
 
 		assertThat(instance.getTags().getValues()).isEmpty();
 
-		Registration registration = Registration.create("foo-instance", "http://health")
+		Registration registration = Registration.create("foo-instance", "https://health")
 			.metadata("tags.environment", "test")
 			.metadata("tags.region", "EU")
 			.build();
@@ -201,7 +200,7 @@ public class InstanceTest {
 	}
 
 	@Test
-	public void shoud_rebuild_instance() {
+	void should_rebuild_instance() {
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", "http://test").build())
 			.withInfo(Info.from(singletonMap("info", "remove")))
@@ -211,7 +210,7 @@ public class InstanceTest {
 			.stream()
 			.filter((e) -> !(e instanceof InstanceInfoChangedEvent
 					&& ((InstanceInfoChangedEvent) e).getInfo().getValues().get("info").equals("remove")))
-			.collect(Collectors.toList());
+			.toList();
 
 		Instance rebuilt = Instance.create(InstanceId.of("id")).apply(relevantEvents);
 

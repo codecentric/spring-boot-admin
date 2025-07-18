@@ -34,10 +34,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
-public class UiControllerTest {
+class UiControllerTest {
 
 	@Test
-	public void should_use_default_url() throws Exception {
+	void should_use_default_url() throws Exception {
 		MockMvc mockMvc = setupController("", List.of());
 
 		mockMvc.perform(get("http://example/"))
@@ -47,7 +47,7 @@ public class UiControllerTest {
 	}
 
 	@Test
-	public void should_use_path_from_public_url() throws Exception {
+	void should_use_path_from_public_url() throws Exception {
 		MockMvc mockMvc = setupController("/public", List.of());
 
 		mockMvc.perform(get("http://example/"))
@@ -57,7 +57,7 @@ public class UiControllerTest {
 	}
 
 	@Test
-	public void should_use_host_and_path_from_public_url() throws Exception {
+	void should_use_host_and_path_from_public_url() throws Exception {
 		MockMvc mockMvc = setupController("http://public/public", List.of());
 
 		mockMvc.perform(get("http://example/"))
@@ -67,7 +67,7 @@ public class UiControllerTest {
 	}
 
 	@Test
-	public void should_use_scheme_host_and_path_from_public_url() throws Exception {
+	void should_use_scheme_host_and_path_from_public_url() throws Exception {
 		MockMvc mockMvc = setupController("https://public/public", List.of());
 
 		mockMvc.perform(get("http://example/"))
@@ -82,14 +82,14 @@ public class UiControllerTest {
 			"link without children without url, null, false, true", //
 			"link with children, null, true, false" }, //
 			nullValues = { "null" })
-	public void should_validate_external_views(String label, String url, boolean hasChildren, boolean shouldFail) {
+	void should_validate_external_views(String label, String url, boolean hasChildren, boolean shouldFail) {
 		try {
 			UiController.ExternalView externalView = new UiController.ExternalView(label, url, 1, false,
 					hasChildren
 							? List.of(new UiController.ExternalView("child", "https://urli.com", 1, false, List.of()))
 							: List.of());
 
-			setupController("http://mysba.com", List.of(externalView));
+			setupController("https://mysba.com", List.of(externalView));
 		}
 		catch (Exception ex) {
 			if (!shouldFail) {

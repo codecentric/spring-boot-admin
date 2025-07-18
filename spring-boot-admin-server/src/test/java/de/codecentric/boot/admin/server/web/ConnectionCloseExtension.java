@@ -16,20 +16,18 @@
 
 package de.codecentric.boot.admin.server.web;
 
-import com.github.tomakehurst.wiremock.common.FileSource;
-import com.github.tomakehurst.wiremock.extension.Parameters;
-import com.github.tomakehurst.wiremock.extension.ResponseTransformer;
+import com.github.tomakehurst.wiremock.extension.ResponseTransformerV2;
 import com.github.tomakehurst.wiremock.http.HttpHeader;
 import com.github.tomakehurst.wiremock.http.HttpHeaders;
-import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.Response;
+import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 
 // Force the connections to be closed...
 // see https://github.com/tomakehurst/wiremock/issues/485
-class ConnectionCloseExtension extends ResponseTransformer {
+class ConnectionCloseExtension implements ResponseTransformerV2 {
 
 	@Override
-	public Response transform(Request request, Response response, FileSource files, Parameters parameters) {
+	public Response transform(Response response, ServeEvent serveEvent) {
 		return Response.Builder.like(response)
 			.headers(HttpHeaders.copyOf(response.getHeaders()).plus(new HttpHeader("Connection", "Close")))
 			.build();

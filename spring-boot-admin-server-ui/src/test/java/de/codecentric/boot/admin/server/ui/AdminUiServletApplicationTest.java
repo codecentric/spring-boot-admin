@@ -32,12 +32,12 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
-public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTest {
+class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTest {
 
 	private ConfigurableApplicationContext instance;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 			.web(WebApplicationType.SERVLET)
 			.run("--server.port=0",
@@ -48,7 +48,7 @@ public class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTes
 	}
 
 	@AfterEach
-	public void shutdown() {
+	void shutdown() {
 		this.instance.close();
 	}
 

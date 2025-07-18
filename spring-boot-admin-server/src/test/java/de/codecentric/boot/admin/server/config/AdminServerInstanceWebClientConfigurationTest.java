@@ -18,8 +18,8 @@ package de.codecentric.boot.admin.server.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.ClientHttpConnectorAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -31,7 +31,7 @@ import de.codecentric.boot.admin.server.web.client.LegacyEndpointConverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AdminServerInstanceWebClientConfigurationTest {
+class AdminServerInstanceWebClientConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(
@@ -41,7 +41,7 @@ public class AdminServerInstanceWebClientConfigurationTest {
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
-	public void simpleConfig() {
+	void simpleConfig() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(InstanceWebClient.Builder.class);
 			assertThat(context).hasBean("filterInstanceWebClientCustomizer");

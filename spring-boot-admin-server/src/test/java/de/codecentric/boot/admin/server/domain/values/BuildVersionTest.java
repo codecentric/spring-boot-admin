@@ -22,10 +22,10 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class BuildVersionTest {
+class BuildVersionTest {
 
 	@Test
-	public void should_return_version() {
+	void should_return_version() {
 		assertThat(BuildVersion.valueOf(null).getValue()).isEqualTo("UNKNOWN");
 		assertThat(BuildVersion.from(emptyMap())).isNull();
 		assertThat(BuildVersion.from(singletonMap("version", "1.0.0"))).isEqualTo(BuildVersion.valueOf("1.0.0"));
@@ -35,13 +35,13 @@ public class BuildVersionTest {
 	}
 
 	@Test
-	public void should_return_simple_string() {
-		assertThat(BuildVersion.valueOf("1.0.0").toString()).isEqualTo("1.0.0");
+	void should_return_simple_string() {
+		assertThat(BuildVersion.valueOf("1.0.0")).hasToString("1.0.0");
 	}
 
 	@Test
-	public void compare() {
-		assertThat(doCompare("1.0.0", "1.0.0")).isEqualTo(0);
+	void compare() {
+		assertThat(doCompare("1.0.0", "1.0.0")).isZero();
 		assertThat(doCompare("1.0.1", "1.0.0")).isEqualTo(1);
 		assertThat(doCompare("1.0.0", "1.0.1")).isEqualTo(-1);
 
@@ -57,13 +57,13 @@ public class BuildVersionTest {
 		assertThat(doCompare("1.11.0", "1.2.0")).isEqualTo(1);
 		assertThat(doCompare("1.2.0", "1.11.0")).isEqualTo(-1);
 
-		assertThat(doCompare("1.0.0.RC1", "1.0.0.RC1")).isEqualTo(0);
+		assertThat(doCompare("1.0.0.RC1", "1.0.0.RC1")).isZero();
 		assertThat(doCompare("1.0.0.RC2", "1.0.0.RC1")).isEqualTo(1);
 		assertThat(doCompare("1.0.0.RC1", "1.0.0.RC2")).isEqualTo(-1);
 		assertThat(doCompare("1.0.1.RC1", "1.0.0.RC1")).isEqualTo(1);
 		assertThat(doCompare("1.0.0.RC1", "1.0.1.RC1")).isEqualTo(-1);
 
-		assertThat(doCompare("1.0.0-beta1", "1.0.0-beta1")).isEqualTo(0);
+		assertThat(doCompare("1.0.0-beta1", "1.0.0-beta1")).isZero();
 		assertThat(doCompare("1.0.0-beta2", "1.0.0-beta1")).isEqualTo(1);
 		assertThat(doCompare("1.0.0-beta1", "1.0.0-beta2")).isEqualTo(-1);
 	}

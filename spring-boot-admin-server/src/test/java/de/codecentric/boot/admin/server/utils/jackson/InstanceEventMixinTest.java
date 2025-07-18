@@ -41,24 +41,24 @@ public class InstanceEventMixinTest {
 
 	private final ObjectMapper objectMapper;
 
-	public InstanceEventMixinTest() {
+	protected InstanceEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@Nested
-	public class InstanceEventTests {
+	class InstanceEventTests {
 
 		private JacksonTester<InstanceEvent> jsonTester;
 
 		@BeforeEach
-		public void setup() {
+		void setup() {
 			JacksonTester.initFields(this, objectMapper);
 		}
 
 		@Test
-		public void verifyDeserializeOfInstanceDeregisteredEvent() throws JSONException, JsonProcessingException {
+		void verifyDeserializeOfInstanceDeregisteredEvent() throws JSONException, JsonProcessingException {
 			String json = new JSONObject().put("instance", "test123")
 				.put("timestamp", 1587751031.000000000)
 				.put("type", "DEREGISTERED")
@@ -69,7 +69,7 @@ public class InstanceEventMixinTest {
 		}
 
 		@Test
-		public void verifyDeserializeOfInstanceEndpointsDetectedEvent() throws JSONException, JsonProcessingException {
+		void verifyDeserializeOfInstanceEndpointsDetectedEvent() throws JSONException, JsonProcessingException {
 			String json = new JSONObject().put("instance", "test123")
 				.put("timestamp", 1587751031.000000000)
 				.put("type", "ENDPOINTS_DETECTED")
@@ -80,7 +80,7 @@ public class InstanceEventMixinTest {
 		}
 
 		@Test
-		public void verifyDeserializeOfInstanceInfoChangedEvent() throws JSONException, JsonProcessingException {
+		void verifyDeserializeOfInstanceInfoChangedEvent() throws JSONException, JsonProcessingException {
 			String json = new JSONObject().put("instance", "test123")
 				.put("timestamp", 1587751031.000000000)
 				.put("type", "INFO_CHANGED")
@@ -91,7 +91,7 @@ public class InstanceEventMixinTest {
 		}
 
 		@Test
-		public void verifyDeserializeOfInstanceRegisteredEvent() throws JSONException, JsonProcessingException {
+		void verifyDeserializeOfInstanceRegisteredEvent() throws JSONException, JsonProcessingException {
 			String json = new JSONObject().put("instance", "test123")
 				.put("timestamp", 1587751031.000000000)
 				.put("type", "REGISTERED")
@@ -104,8 +104,7 @@ public class InstanceEventMixinTest {
 		}
 
 		@Test
-		public void verifyDeserializeOfInstanceRegistrationUpdatedEvent()
-				throws JSONException, JsonProcessingException {
+		void verifyDeserializeOfInstanceRegistrationUpdatedEvent() throws JSONException, JsonProcessingException {
 			String json = new JSONObject().put("instance", "test123")
 				.put("timestamp", 1587751031.000000000)
 				.put("type", "REGISTRATION_UPDATED")
@@ -118,7 +117,7 @@ public class InstanceEventMixinTest {
 		}
 
 		@Test
-		public void verifyDeserializeOfInstanceStatusChangedEvent() throws JSONException, JsonProcessingException {
+		void verifyDeserializeOfInstanceStatusChangedEvent() throws JSONException, JsonProcessingException {
 			String json = new JSONObject().put("instance", "test123")
 				.put("timestamp", 1587751031.000000000)
 				.put("type", "STATUS_CHANGED")
