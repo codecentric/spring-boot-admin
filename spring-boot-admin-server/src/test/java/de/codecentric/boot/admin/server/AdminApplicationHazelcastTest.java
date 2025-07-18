@@ -55,7 +55,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dennis Schulte
  */
-public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest {
+class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest {
 
 	private ConfigurableApplicationContext instance1;
 
@@ -64,7 +64,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 	private WebTestClient webClient2;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		System.setProperty("hazelcast.wait.seconds.before.join", "0");
 		this.instance1 = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 			.web(WebApplicationType.REACTIVE)
@@ -114,7 +114,7 @@ public class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest 
 	}
 
 	@AfterEach
-	public void shutdown() {
+	void shutdown() {
 		this.instance1.close();
 		this.instance2.close();
 	}

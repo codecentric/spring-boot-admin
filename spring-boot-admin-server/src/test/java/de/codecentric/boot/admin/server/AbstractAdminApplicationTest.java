@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
+import lombok.Getter;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -36,6 +37,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Getter
 public abstract class AbstractAdminApplicationTest {
 
 	private WebTestClient webClient;
@@ -151,14 +153,6 @@ public abstract class AbstractAdminApplicationTest {
 				configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));
 			}).build())
 			.build();
-	}
-
-	public int getPort() {
-		return this.port;
-	}
-
-	public WebTestClient getWebClient() {
-		return this.webClient;
 	}
 
 }

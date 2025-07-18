@@ -56,10 +56,10 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StatusUpdaterTest {
+class StatusUpdaterTest {
 
 	// @Rule
-	public WireMockServer wireMock = new WireMockServer(Options.DYNAMIC_PORT);
+	public final WireMockServer wireMock = new WireMockServer(Options.DYNAMIC_PORT);
 
 	private StatusUpdater updater;
 
@@ -70,17 +70,17 @@ public class StatusUpdaterTest {
 	private Instance instance;
 
 	@BeforeAll
-	public static void setUp() {
+	static void setUp() {
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
 	}
 
 	@AfterAll
-	public static void tearDown() {
+	static void tearDown() {
 		StepVerifier.resetDefaultTimeout();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		this.wireMock.start();
 		this.eventStore = new InMemoryEventStore();
 		this.repository = new EventsourcingInstanceRepository(this.eventStore);
@@ -98,12 +98,12 @@ public class StatusUpdaterTest {
 	}
 
 	@AfterEach
-	public void teardown() {
+	void teardown() {
 		this.wireMock.stop();
 	}
 
 	@Test
-	public void should_change_status_to_down() {
+	void should_change_status_to_down() {
 		String body = "{ \"status\" : \"UP\", \"details\" : { \"foo\" : \"bar\" } }";
 		this.wireMock.stubFor(
 				get("/health").willReturn(okForContentType(ApiVersion.LATEST.getProducedMimeType().toString(), body)
@@ -139,7 +139,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
-	public void should_not_change_status() {
+	void should_not_change_status() {
 		String body = "{ \"status\" : \"UNKNOWN\" }";
 		this.wireMock.stubFor(
 				get("/health").willReturn(okJson(body).withHeader("Content-Type", Integer.toString(body.length()))));
@@ -153,7 +153,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
-	public void should_change_status_to_up() {
+	void should_change_status_to_up() {
 		this.wireMock.stubFor(get("/health").willReturn(ok()));
 
 		StepVerifier.create(this.eventStore)
@@ -169,7 +169,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
-	public void should_change_status_to_down_with_details() {
+	void should_change_status_to_down_with_details() {
 		String body = "{ \"foo\" : \"bar\" }";
 		this.wireMock
 			.stubFor(get("/health").willReturn(status(503).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -190,7 +190,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
-	public void should_change_status_to_down_without_details_incompatible_content_type() {
+	void should_change_status_to_down_without_details_incompatible_content_type() {
 		this.wireMock.stubFor(get("/health").willReturn(status(503)));
 
 		StepVerifier.create(this.eventStore)
@@ -208,7 +208,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
-	public void should_change_status_to_down_without_details_no_body() {
+	void should_change_status_to_down_without_details_no_body() {
 		this.wireMock.stubFor(
 				get("/health").willReturn(status(503).withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)));
 
@@ -227,7 +227,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
-	public void should_change_status_to_offline() {
+	void should_change_status_to_offline() {
 		this.wireMock.stubFor(get("/health").willReturn(aResponse().withFault(Fault.EMPTY_RESPONSE)));
 
 		StepVerifier.create(this.eventStore)
@@ -246,7 +246,7 @@ public class StatusUpdaterTest {
 	}
 
 	@Test
-	public void should_retry() {
+	void should_retry() {
 		this.wireMock.stubFor(get("/health").inScenario("retry")
 			.whenScenarioStateIs(STARTED)
 			.willReturn(aResponse().withFixedDelay(5000))

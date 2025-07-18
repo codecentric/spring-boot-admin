@@ -26,10 +26,10 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ChainingStrategyTest {
+class ChainingStrategyTest {
 
 	@Test
-	public void invariants() {
+	void invariants() {
 		assertThatThrownBy(() -> new ChainingStrategy((EndpointDetectionStrategy[]) null))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'delegates' must not be null.");
@@ -39,7 +39,7 @@ public class ChainingStrategyTest {
 	}
 
 	@Test
-	public void should_chain_on_empty() {
+	void should_chain_on_empty() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"));
 		ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty(), (a) -> Mono.empty(),
@@ -51,7 +51,7 @@ public class ChainingStrategyTest {
 	}
 
 	@Test
-	public void should_return_empty_endpoints_when_all_empty() {
+	void should_return_empty_endpoints_when_all_empty() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"));
 		ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty());

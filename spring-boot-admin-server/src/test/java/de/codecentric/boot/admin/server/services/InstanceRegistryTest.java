@@ -36,7 +36,7 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class InstanceRegistryTest {
+class InstanceRegistryTest {
 
 	private InstanceRepository repository;
 
@@ -45,7 +45,7 @@ public class InstanceRegistryTest {
 	private InstanceRegistry registry;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		repository = new EventsourcingInstanceRepository(new InMemoryEventStore());
 		idGenerator = new HashingInstanceUrlIdGenerator();
 		registry = new InstanceRegistry(repository, idGenerator, (instance) -> {
@@ -55,12 +55,12 @@ public class InstanceRegistryTest {
 	}
 
 	@Test
-	public void registerFailed_null() {
+	void registerFailed_null() {
 		assertThatThrownBy(() -> registry.register(null)).isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
-	public void register() {
+	void register() {
 		Registration registration = Registration.create("abc", "http://localhost:8080/health").build();
 		InstanceId id = registry.register(registration).block();
 
@@ -76,7 +76,7 @@ public class InstanceRegistryTest {
 	}
 
 	@Test
-	public void deregister() {
+	void deregister() {
 		InstanceId id = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
 		registry.deregister(id).block();
 
@@ -86,8 +86,8 @@ public class InstanceRegistryTest {
 	}
 
 	@Test
-	public void refresh() {
-		// Given instance is already reegistered and has status and info.
+	void refresh() {
+		// Given instance is already registered and has status and info.
 		StatusInfo status = StatusInfo.ofUp();
 		Info info = Info.from(singletonMap("foo", "bar"));
 		Registration registration = Registration.create("abc", "http://localhost:8080/health").build();
@@ -108,7 +108,7 @@ public class InstanceRegistryTest {
 	}
 
 	@Test
-	public void findByName() {
+	void findByName() {
 		InstanceId id1 = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
 		InstanceId id2 = registry.register(Registration.create("abc", "http://localhost:8081/health").build()).block();
 		InstanceId id3 = registry.register(Registration.create("zzz", "http://localhost:9999/health").build()).block();
@@ -123,7 +123,7 @@ public class InstanceRegistryTest {
 	}
 
 	@Test
-	public void findByNameAndFilter() {
+	void findByNameAndFilter() {
 		InstanceId id1 = registry.register(Registration.create("abc", "http://localhost:8080/health").build()).block();
 		registry
 			.register(Registration.create("abc", "http://localhost:8081/health").metadata("displayed", "false").build())

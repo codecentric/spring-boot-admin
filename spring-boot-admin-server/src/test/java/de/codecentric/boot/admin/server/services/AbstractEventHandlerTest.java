@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 
+import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -34,11 +35,11 @@ import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
-public class AbstractEventHandlerTest {
+class AbstractEventHandlerTest {
 
 	private static final Logger log = LoggerFactory.getLogger(AbstractEventHandlerTest.class);
 
-	private static final Registration registration = Registration.create("foo", "http://health").build();
+	private static final Registration registration = Registration.create("foo", "https://health").build();
 
 	private static final InstanceRegisteredEvent firstEvent = new InstanceRegisteredEvent(InstanceId.of("id"), 0L,
 			registration);
@@ -53,7 +54,7 @@ public class AbstractEventHandlerTest {
 			2L);
 
 	@Test
-	public void should_resubscribe_after_error() {
+	void should_resubscribe_after_error() {
 		TestPublisher<InstanceEvent> testPublisher = TestPublisher.create();
 
 		TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
@@ -68,7 +69,7 @@ public class AbstractEventHandlerTest {
 	}
 
 	@Test
-	public void should_filter() {
+	void should_filter() {
 		TestPublisher<InstanceEvent> testPublisher = TestPublisher.create();
 
 		TestEventHandler eventHandler = new TestEventHandler(testPublisher.flux());
@@ -86,6 +87,7 @@ public class AbstractEventHandlerTest {
 
 		private final Sinks.Many<InstanceEvent> unicast;
 
+		@Getter
 		private final Flux<InstanceEvent> flux;
 
 		private TestEventHandler(Publisher<InstanceEvent> publisher) {
@@ -106,10 +108,6 @@ public class AbstractEventHandlerTest {
 					return Mono.empty();
 				}
 			}).then();
-		}
-
-		public Flux<InstanceEvent> getFlux() {
-			return this.flux;
 		}
 
 	}

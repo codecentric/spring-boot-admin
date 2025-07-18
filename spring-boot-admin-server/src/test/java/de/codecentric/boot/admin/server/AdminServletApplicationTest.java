@@ -36,7 +36,7 @@ public class AdminServletApplicationTest extends AbstractAdminApplicationTest {
 	private ConfigurableApplicationContext instance;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 			.web(WebApplicationType.SERVLET)
 			.run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
@@ -46,7 +46,7 @@ public class AdminServletApplicationTest extends AbstractAdminApplicationTest {
 	}
 
 	@AfterEach
-	public void shutdown() {
+	void shutdown() {
 		this.instance.close();
 	}
 

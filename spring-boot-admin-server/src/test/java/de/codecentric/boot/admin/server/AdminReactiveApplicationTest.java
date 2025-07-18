@@ -35,7 +35,7 @@ public class AdminReactiveApplicationTest extends AbstractAdminApplicationTest {
 	private ConfigurableApplicationContext instance;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		this.instance = new SpringApplicationBuilder().sources(TestAdminApplication.class)
 			.web(WebApplicationType.REACTIVE)
 			.run("--server.port=0", "--management.endpoints.web.base-path=/mgmt",
@@ -45,7 +45,7 @@ public class AdminReactiveApplicationTest extends AbstractAdminApplicationTest {
 	}
 
 	@AfterEach
-	public void shutdown() {
+	void shutdown() {
 		this.instance.close();
 	}
 

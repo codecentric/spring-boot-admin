@@ -39,19 +39,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class EndpointDetectionTriggerTest {
+class EndpointDetectionTriggerTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("id-1"))
 		.register(Registration.create("foo", "http://health-1").build());
 
-	private TestPublisher<InstanceEvent> events = TestPublisher.create();
+	private final TestPublisher<InstanceEvent> events = TestPublisher.create();
 
-	private EndpointDetector detector = mock(EndpointDetector.class);
+	private final EndpointDetector detector = mock(EndpointDetector.class);
 
 	private EndpointDetectionTrigger trigger;
 
 	@BeforeEach
-	public void setUp() throws Exception {
+	void setUp() {
 		when(this.detector.detectEndpoints(any(InstanceId.class))).thenReturn(Mono.empty());
 		this.trigger = new EndpointDetectionTrigger(this.detector, this.events.flux());
 		this.trigger.start();
@@ -59,7 +59,7 @@ public class EndpointDetectionTriggerTest {
 	}
 
 	@Test
-	public void should_detect_on_status_changed() {
+	void should_detect_on_status_changed() {
 		// when status-change event is emitted
 		this.events.next(
 				new InstanceStatusChangedEvent(this.instance.getId(), this.instance.getVersion(), StatusInfo.ofDown()));
@@ -68,7 +68,7 @@ public class EndpointDetectionTriggerTest {
 	}
 
 	@Test
-	public void should_detect_on_registration_updated() {
+	void should_detect_on_registration_updated() {
 		// when status-change event is emitted
 		this.events.next(new InstanceRegistrationUpdatedEvent(this.instance.getId(), this.instance.getVersion(),
 				this.instance.getRegistration()));
@@ -77,7 +77,7 @@ public class EndpointDetectionTriggerTest {
 	}
 
 	@Test
-	public void should_not_detect_on_non_relevant_event() {
+	void should_not_detect_on_non_relevant_event() {
 		// when some non-status-change event is emitted
 		this.events.next(new InstanceRegisteredEvent(this.instance.getId(), this.instance.getVersion(),
 				this.instance.getRegistration()));
@@ -86,7 +86,7 @@ public class EndpointDetectionTriggerTest {
 	}
 
 	@Test
-	public void should_not_detect_on_trigger_stopped() {
+	void should_not_detect_on_trigger_stopped() {
 		// when registered event is emitted but the trigger has been stopped
 		this.trigger.stop();
 		clearInvocations(this.detector);
@@ -97,7 +97,7 @@ public class EndpointDetectionTriggerTest {
 	}
 
 	@Test
-	public void should_continue_detection_after_error() throws InterruptedException {
+	void should_continue_detection_after_error() {
 		// when status-change event is emitted and an error is emitted
 		when(this.detector.detectEndpoints(any())).thenReturn(Mono.error(IllegalStateException::new))
 			.thenReturn(Mono.empty());
