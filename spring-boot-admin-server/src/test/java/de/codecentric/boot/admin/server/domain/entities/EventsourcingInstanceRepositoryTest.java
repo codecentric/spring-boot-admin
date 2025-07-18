@@ -20,10 +20,10 @@ import org.junit.jupiter.api.BeforeEach;
 
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 
-public class EventsourcingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
+class EventsourcingInstanceRepositoryTest extends AbstractInstanceRepositoryTest {
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		super.setUp(new EventsourcingInstanceRepository(new InMemoryEventStore()));
 	}
 

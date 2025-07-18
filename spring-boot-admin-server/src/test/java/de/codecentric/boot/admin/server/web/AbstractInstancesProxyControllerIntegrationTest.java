@@ -275,7 +275,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 			.willReturn(ok("{ }").withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 		this.wireMock.stubFor(options(urlEqualTo(managementPath + "/env")).willReturn(
 				ok().withHeader(ALLOW, HttpMethod.HEAD.name(), HttpMethod.GET.name(), HttpMethod.OPTIONS.name())));
-		this.wireMock.stubFor(get(urlEqualTo(managementPath + ""))
+		this.wireMock.stubFor(get(urlEqualTo(managementPath))
 			.willReturn(ok(actuatorIndex).withHeader(CONTENT_TYPE, ACTUATOR_CONTENT_TYPE)));
 		this.wireMock.stubFor(get(urlEqualTo(managementPath + "/invalid"))
 			.willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
@@ -293,15 +293,15 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 	private String registerInstance(String managementPath) {
 		stubForInstance(managementPath);
 
-		AtomicReference<String> instanceId = new AtomicReference<>();
+		AtomicReference<String> instanceIdRef = new AtomicReference<>();
 		StepVerifier.create(getEventStream())
 			.expectSubscription()
-			.then(() -> instanceId.set(sendRegistration(managementPath)))
+			.then(() -> instanceIdRef.set(sendRegistration(managementPath)))
 			.thenConsumeWhile((event) -> !event.get("type").equals("ENDPOINTS_DETECTED"))
 			.assertNext((event) -> assertThat(event).containsEntry("type", "ENDPOINTS_DETECTED"))
 			.thenCancel()
 			.verify();
-		return instanceId.get();
+		return instanceIdRef.get();
 	}
 
 	private String sendRegistration(String managementPath) {

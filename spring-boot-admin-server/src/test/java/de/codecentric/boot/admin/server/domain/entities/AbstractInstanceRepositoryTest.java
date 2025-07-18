@@ -32,13 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public abstract class AbstractInstanceRepositoryTest {
 
 	private final Instance instance1 = Instance.create(InstanceId.of("app-1"))
-		.register(Registration.create("app", "http://health").build());
+		.register(Registration.create("app", "https://health").build());
 
 	private final Instance instance2 = Instance.create(InstanceId.of("app-2"))
-		.register(Registration.create("app", "http://health").build());
+		.register(Registration.create("app", "https://health").build());
 
 	private final Instance instance3 = Instance.create(InstanceId.of("other-1"))
-		.register(Registration.create("other", "http://health").build());
+		.register(Registration.create("other", "https://health").build());
 
 	private InstanceRepository repository;
 
@@ -84,7 +84,7 @@ public abstract class AbstractInstanceRepositoryTest {
 		// when
 		StepVerifier.create(this.repository.computeIfPresent(this.instance1.getId(), (key, value) -> {
 			if (counter.getAndDecrement() > 0L) {
-				return Mono.just(this.instance1); // causes OptimistickLockException
+				return Mono.just(this.instance1); // causes OptimisticLockingException
 			}
 			else {
 				return Mono.just(value.withEndpoints(infoEndpoint));
@@ -115,7 +115,7 @@ public abstract class AbstractInstanceRepositoryTest {
 	@Test
 	public void should_run_compute_with_null() {
 		InstanceId instanceId = InstanceId.of("app-1");
-		Registration registration = Registration.create("app", "http://health").build();
+		Registration registration = Registration.create("app", "https://health").build();
 
 		// when
 		StepVerifier.create(this.repository.compute(this.instance1.getId(), (key, application) -> {
@@ -144,7 +144,7 @@ public abstract class AbstractInstanceRepositoryTest {
 		// when
 		StepVerifier.create(this.repository.compute(this.instance1.getId(), (key, value) -> {
 			if (counter.getAndDecrement() > 0L) {
-				return Mono.just(this.instance1); // causes OptimistickLockException
+				return Mono.just(this.instance1); // causes OptimisticLockingException
 			}
 			else {
 				return Mono.just(value.withEndpoints(infoEndpoint));

@@ -27,13 +27,13 @@ import org.springframework.lang.Nullable;
 import de.codecentric.boot.admin.server.AdminServletApplicationTest;
 import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerIntegrationTest;
 
-public class InstancesProxyControllerIntegrationTest extends AbstractInstancesProxyControllerIntegrationTest {
+class InstancesProxyControllerIntegrationTest extends AbstractInstancesProxyControllerIntegrationTest {
 
 	@Nullable
 	private static ConfigurableApplicationContext context;
 
 	@BeforeAll
-	public static void setUpContext() {
+	static void setUpContext() {
 		context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
 			.web(WebApplicationType.SERVLET)
 			.run("--server.port=0", "--spring.boot.admin.monitor.default-timeout=2500");
@@ -41,12 +41,12 @@ public class InstancesProxyControllerIntegrationTest extends AbstractInstancesPr
 	}
 
 	@BeforeEach
-	public void setUpClient() {
+	void setUpClient() {
 		super.setUpClient(context);
 	}
 
 	@AfterAll
-	public static void tearDownContext() {
+	static void tearDownContext() {
 		if (context != null) {
 			context.close();
 		}

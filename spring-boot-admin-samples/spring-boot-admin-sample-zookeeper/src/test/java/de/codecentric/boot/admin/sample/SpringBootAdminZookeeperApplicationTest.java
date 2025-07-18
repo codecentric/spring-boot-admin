@@ -24,10 +24,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = { SpringBootAdminZookeeperApplication.class },
 		properties = { "spring.cloud.zookeeper.enabled=false" })
-public class SpringBootAdminZookeeperApplicationTest {
+class SpringBootAdminZookeeperApplicationTest {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 	}
 
 }
