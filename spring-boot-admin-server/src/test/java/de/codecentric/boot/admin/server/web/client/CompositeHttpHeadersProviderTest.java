@@ -24,10 +24,10 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CompositeHttpHeadersProviderTest {
+class CompositeHttpHeadersProviderTest {
 
 	@Test
-	public void should_return_all_headers() {
+	void should_return_all_headers() {
 		HttpHeadersProvider provider = new CompositeHttpHeadersProvider(asList((i) -> {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("a", "1");
@@ -41,16 +41,16 @@ public class CompositeHttpHeadersProviderTest {
 		}));
 
 		HttpHeaders headers = provider.getHeaders(null);
-		assertThat(headers.get("a")).isEqualTo(singletonList("1"));
-		assertThat(headers.get("b")).isEqualTo(asList("2-a", "2-b"));
-		assertThat(headers.get("c")).isEqualTo(singletonList("3"));
+		assertThat(headers).containsEntry("a", singletonList("1"))
+			.containsEntry("b", asList("2-a", "2-b"))
+			.containsEntry("c", singletonList("3"));
 	}
 
 	@Test
-	public void should_return_empty_headers() {
+	void should_return_empty_headers() {
 		HttpHeadersProvider provider = new CompositeHttpHeadersProvider(emptyList());
 		HttpHeaders headers = provider.getHeaders(null);
-		assertThat(headers.size()).isEqualTo(0);
+		assertThat(headers).isEmpty();
 	}
 
 }

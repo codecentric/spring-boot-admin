@@ -36,25 +36,25 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InstanceDeregisteredEventMixinTest {
+class InstanceDeregisteredEventMixinTest {
 
 	private final ObjectMapper objectMapper;
 
 	private JacksonTester<InstanceDeregisteredEvent> jsonTester;
 
-	public InstanceDeregisteredEventMixinTest() {
+	protected InstanceDeregisteredEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		JacksonTester.initFields(this, objectMapper);
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -69,7 +69,7 @@ public class InstanceDeregisteredEventMixinTest {
 	}
 
 	@Test
-	public void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "DEREGISTERED")
@@ -78,12 +78,12 @@ public class InstanceDeregisteredEventMixinTest {
 		InstanceDeregisteredEvent event = objectMapper.readValue(json, InstanceDeregisteredEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
-		assertThat(event.getVersion()).isEqualTo(0L);
+		assertThat(event.getVersion()).isZero();
 		assertThat(event.getTimestamp()).isEqualTo(Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS));
 	}
 
 	@Test
-	public void verifySerialize() throws IOException {
+	void verifySerialize() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		InstanceDeregisteredEvent event = new InstanceDeregisteredEvent(id, 12345678L, timestamp);
@@ -96,7 +96,7 @@ public class InstanceDeregisteredEventMixinTest {
 	}
 
 	@Test
-	public void verifySerializeWithOnlyRequiredProperties() throws IOException {
+	void verifySerializeWithOnlyRequiredProperties() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		InstanceDeregisteredEvent event = new InstanceDeregisteredEvent(id, 0L, timestamp);

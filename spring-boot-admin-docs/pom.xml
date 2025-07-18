@@ -80,7 +80,6 @@
             <plugin>
                 <groupId>org.rodnansol</groupId>
                 <artifactId>spring-configuration-property-documenter-maven-plugin</artifactId>
-                <version>0.7.1</version>
                 <executions>
                     <execution>
                         <id>generate-adoc</id>

@@ -32,7 +32,9 @@
     </parent>
 
     <properties>
+        <zstd-jni.version>1.5.7-4</zstd-jni.version>
         <native-build-tools-plugin.version>0.10.6</native-build-tools-plugin.version>
+
         <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>
 
@@ -53,7 +55,7 @@
         <dependency>
             <groupId>com.github.luben</groupId>
             <artifactId>zstd-jni</artifactId>
-            <version>1.5.7-4</version>
+            <version>${zstd-jni.version}</version>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>

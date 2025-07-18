@@ -39,25 +39,25 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InstanceEndpointsDetectedEventMixinTest {
+class InstanceEndpointsDetectedEventMixinTest {
 
 	private final ObjectMapper objectMapper;
 
 	private JacksonTester<InstanceEndpointsDetectedEvent> jsonTester;
 
-	public InstanceEndpointsDetectedEventMixinTest() {
+	protected InstanceEndpointsDetectedEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
 		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
 	}
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		JacksonTester.initFields(this, objectMapper);
 	}
 
 	@Test
-	public void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -77,7 +77,7 @@ public class InstanceEndpointsDetectedEventMixinTest {
 	}
 
 	@Test
-	public void verifyDeserializeWithEmptyEndpoints() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithEmptyEndpoints() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -94,7 +94,7 @@ public class InstanceEndpointsDetectedEventMixinTest {
 	}
 
 	@Test
-	public void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "ENDPOINTS_DETECTED")
@@ -103,13 +103,13 @@ public class InstanceEndpointsDetectedEventMixinTest {
 		InstanceEndpointsDetectedEvent event = objectMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
-		assertThat(event.getVersion()).isEqualTo(0L);
+		assertThat(event.getVersion()).isZero();
 		assertThat(event.getTimestamp()).isEqualTo(Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS));
 		assertThat(event.getEndpoints()).isNull();
 	}
 
 	@Test
-	public void verifySerialize() throws IOException {
+	void verifySerialize() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		Endpoints endpoints = Endpoints.single("info", "http://localhost:8080/info")
@@ -133,7 +133,7 @@ public class InstanceEndpointsDetectedEventMixinTest {
 	}
 
 	@Test
-	public void verifySerializeWithOnlyRequiredProperties() throws IOException {
+	void verifySerializeWithOnlyRequiredProperties() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		InstanceEndpointsDetectedEvent event = new InstanceEndpointsDetectedEvent(id, 0L, timestamp, null);
@@ -147,7 +147,7 @@ public class InstanceEndpointsDetectedEventMixinTest {
 	}
 
 	@Test
-	public void verifySerializeWithEmptyEndpoints() throws IOException {
+	void verifySerializeWithEmptyEndpoints() throws IOException {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		InstanceEndpointsDetectedEvent event = new InstanceEndpointsDetectedEvent(id, 0L, timestamp, Endpoints.empty());

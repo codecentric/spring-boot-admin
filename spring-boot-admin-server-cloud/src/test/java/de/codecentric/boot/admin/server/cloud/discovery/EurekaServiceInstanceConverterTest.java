@@ -29,10 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class EurekaServiceInstanceConverterTest {
+class EurekaServiceInstanceConverterTest {
 
 	@Test
-	public void convert_secure() {
+	void convert_secure() {
 		InstanceInfo instanceInfo = mock(InstanceInfo.class);
 		when(instanceInfo.getSecureHealthCheckUrl()).thenReturn("");
 		when(instanceInfo.getHealthCheckUrl()).thenReturn("http://localhost:80/mgmt/ping");
@@ -51,7 +51,7 @@ public class EurekaServiceInstanceConverterTest {
 	}
 
 	@Test
-	public void convert_missing_mgmtpath() {
+	void convert_missing_mgmt_path() {
 		InstanceInfo instanceInfo = mock(InstanceInfo.class);
 		when(instanceInfo.getHealthCheckUrl()).thenReturn("http://localhost:80/mgmt/ping");
 		EurekaServiceInstance service = mock(EurekaServiceInstance.class);
@@ -65,7 +65,7 @@ public class EurekaServiceInstanceConverterTest {
 	}
 
 	@Test
-	public void convert_secure_healthUrl() {
+	void convert_secure_healthUrl() {
 		InstanceInfo instanceInfo = mock(InstanceInfo.class);
 		when(instanceInfo.getSecureHealthCheckUrl()).thenReturn("https://localhost:80/health");
 		EurekaServiceInstance service = mock(EurekaServiceInstance.class);

@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @EnableConfigurationProperties(AdminServerProperties.class)
 @TestPropertySource("classpath:server-config-test.properties")
-public class AdminServerPropertiesTest {
+class AdminServerPropertiesTest {
 
 	@Autowired
 	private AdminServerProperties serverConfig;

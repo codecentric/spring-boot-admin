@@ -29,10 +29,10 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DefaultServiceInstanceConverterTest {
+class DefaultServiceInstanceConverterTest {
 
 	@Test
-	public void should_convert_with_defaults() {
+	void should_convert_with_defaults() {
 		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
 		Registration registration = new DefaultServiceInstanceConverter().convert(service);
 
@@ -43,7 +43,7 @@ public class DefaultServiceInstanceConverterTest {
 	}
 
 	@Test
-	public void should_convert_with_custom_defaults() {
+	void should_convert_with_custom_defaults() {
 		DefaultServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
 		converter.setHealthEndpointPath("ping");
 		converter.setManagementContextPath("mgmt");
@@ -58,7 +58,7 @@ public class DefaultServiceInstanceConverterTest {
 	}
 
 	@Test
-	public void should_convert_with_metadata() {
+	void should_convert_with_metadata() {
 		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("health.path", "ping");
@@ -79,7 +79,7 @@ public class DefaultServiceInstanceConverterTest {
 
 	// Fix for Issue #2076, #1737
 	@Test
-	public void should_convert_with_metadata_without_dots() {
+	void should_convert_with_metadata_without_dots() {
 		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("health-path", "ping");
@@ -99,7 +99,7 @@ public class DefaultServiceInstanceConverterTest {
 	}
 
 	@Test
-	public void should_convert_with_metadata_having_null_value() {
+	void should_convert_with_metadata_having_null_value() {
 		ServiceInstance service = new DefaultServiceInstance("test-1", "test", "localhost", 80, false);
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("health.path", "ping");
@@ -116,7 +116,7 @@ public class DefaultServiceInstanceConverterTest {
 	}
 
 	@Test
-	public void should_convert_service_with_uri() {
+	void should_convert_service_with_uri() {
 		ServiceInstance service = new TestServiceInstance("test", URI.create("http://localhost/test"),
 				Collections.emptyMap());
 		Registration registration = new DefaultServiceInstanceConverter().convert(service);
@@ -129,7 +129,7 @@ public class DefaultServiceInstanceConverterTest {
 	}
 
 	@Test
-	public void should_convert_service_with_uri_and_custom_defaults() {
+	void should_convert_service_with_uri_and_custom_defaults() {
 		DefaultServiceInstanceConverter converter = new DefaultServiceInstanceConverter();
 		converter.setHealthEndpointPath("ping");
 		converter.setManagementContextPath("mgmt");
@@ -145,7 +145,7 @@ public class DefaultServiceInstanceConverterTest {
 	}
 
 	@Test
-	public void should_convert_service_with_uri_and_metadata_different_port() {
+	void should_convert_service_with_uri_and_metadata_different_port() {
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("health.path", "ping");
 		metadata.put("management.context-path", "mgmt");
@@ -162,7 +162,7 @@ public class DefaultServiceInstanceConverterTest {
 	}
 
 	@Test
-	public void should_convert_service_with_uri_and_metadata() {
+	void should_convert_service_with_uri_and_metadata() {
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("health.path", "ping");
 		metadata.put("management.context-path", "mgmt");
@@ -176,19 +176,8 @@ public class DefaultServiceInstanceConverterTest {
 		assertThat(registration.getMetadata()).isEqualTo(metadata);
 	}
 
-	private static class TestServiceInstance implements ServiceInstance {
-
-		private final String serviceId;
-
-		private final URI uri;
-
-		private final Map<String, String> metadata;
-
-		TestServiceInstance(String serviceId, URI uri, Map<String, String> metadata) {
-			this.uri = uri;
-			this.serviceId = serviceId;
-			this.metadata = metadata;
-		}
+	private record TestServiceInstance(String serviceId, URI uri,
+			Map<String, String> metadata) implements ServiceInstance {
 
 		@Override
 		public String getServiceId() {

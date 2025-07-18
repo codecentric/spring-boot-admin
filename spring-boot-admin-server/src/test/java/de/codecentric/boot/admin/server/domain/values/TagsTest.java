@@ -27,16 +27,16 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-public class TagsTest {
+class TagsTest {
 
 	@Test
-	public void should_return_empty_from_factory_method() {
+	void should_return_empty_from_factory_method() {
 		assertThat(Tags.empty().getValues()).isEmpty();
 		assertThat(Tags.from(Collections.emptyMap())).isSameAs(Tags.empty());
 	}
 
 	@Test
-	public void should_return_tags_from_flat_map() {
+	void should_return_tags_from_flat_map() {
 		Map<String, String> flatTags = new LinkedHashMap<>();
 		flatTags.put("tags.env", "test");
 		flatTags.put("tags.foo", "bar");
@@ -47,7 +47,7 @@ public class TagsTest {
 	}
 
 	@Test
-	public void should_return_tags_from_nested_map() {
+	void should_return_tags_from_nested_map() {
 		Map<String, String> tags = new LinkedHashMap<>();
 		tags.put("env", "test");
 		tags.put("foo", "bar");
@@ -61,7 +61,7 @@ public class TagsTest {
 	}
 
 	@Test
-	public void should_append_tags() {
+	void should_append_tags() {
 		Tags tags = Tags.empty()
 			.append(Tags.from(singletonMap("tags.env", "test"), "tags"))
 			.append(Tags.from(singletonMap("env", "test2")))

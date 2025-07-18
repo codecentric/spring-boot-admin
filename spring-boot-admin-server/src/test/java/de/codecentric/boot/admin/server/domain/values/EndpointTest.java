@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class EndpointTest {
+class EndpointTest {
 
 	@Test
-	public void invariants() {
+	void invariants() {
 		assertThatThrownBy(() -> Endpoint.of("", "")).isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'id' must not be empty.");
 		assertThatThrownBy(() -> Endpoint.of("id", "")).isInstanceOf(IllegalArgumentException.class)
