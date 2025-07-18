@@ -22,8 +22,6 @@ import java.time.Instant;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -33,7 +31,6 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
-import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.TestNotifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,10 +53,9 @@ class FilteringNotifierTest {
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 	}
 
-	@ParameterizedTest
-	@NullSource
-	void test_ctor_assert(Notifier delegate) {
-		Assertions.assertThatThrownBy(() -> new FilteringNotifier(delegate, repository))
+	@Test
+	void test_ctor_assert() {
+		Assertions.assertThatThrownBy(() -> new FilteringNotifier(null, repository))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 

@@ -19,8 +19,6 @@ package de.codecentric.boot.admin.server.notify;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -37,10 +35,9 @@ class CompositeNotifierTest {
 	private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("-"), 0L,
 			StatusInfo.ofDown());
 
-	@ParameterizedTest
-	@NullSource
-	void should_throw_for_invariants(Iterable<Notifier> delegates) {
-		assertThatThrownBy(() -> new CompositeNotifier(delegates)).isInstanceOf(IllegalArgumentException.class);
+	@Test
+	void should_throw_for_invariants() {
+		assertThatThrownBy(() -> new CompositeNotifier(null)).isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
