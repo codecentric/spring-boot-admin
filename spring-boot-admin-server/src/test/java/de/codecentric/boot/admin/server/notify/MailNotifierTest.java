@@ -170,14 +170,14 @@ class MailNotifierTest {
 
 	@Test
 	void should_not_propagate_error() {
-		Notifier abstractStatusChangeNotifier = new AbstractStatusChangeNotifier(repository) {
+		Notifier statusChangeNotifier = new AbstractStatusChangeNotifier(repository) {
 			@Override
 			protected Mono<Void> doNotify(InstanceEvent event, Instance application) {
 				return Mono.error(new IllegalStateException("test"));
 			}
 		};
 		StepVerifier
-			.create(abstractStatusChangeNotifier
+			.create(statusChangeNotifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 	}
