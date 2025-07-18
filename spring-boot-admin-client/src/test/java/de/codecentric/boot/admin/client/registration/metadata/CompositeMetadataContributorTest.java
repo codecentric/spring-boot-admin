@@ -26,10 +26,10 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-public class CompositeMetadataContributorTest {
+class CompositeMetadataContributorTest {
 
 	@Test
-	public void should_merge_metadata() {
+	void should_merge_metadata() {
 		CompositeMetadataContributor contributor = new CompositeMetadataContributor(
 				asList(() -> singletonMap("a", "first"), () -> singletonMap("b", "second"),
 						() -> singletonMap("b", "second-new")));
@@ -40,7 +40,7 @@ public class CompositeMetadataContributorTest {
 	}
 
 	@Test
-	public void should_return_empty_metadata() {
+	void should_return_empty_metadata() {
 		CompositeMetadataContributor contributor = new CompositeMetadataContributor(emptyList());
 
 		Map<String, String> metadata = contributor.getMetadata();

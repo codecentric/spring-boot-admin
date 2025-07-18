@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class StartupDateMetadataContributorTest {
+class StartupDateMetadataContributorTest {
 
 	@Test
-	public void should_return_startupdate() {
+	void should_return_startupdate() {
 		StartupDateMetadataContributor contributor = new StartupDateMetadataContributor();
 
 		Map<String, String> metadata = contributor.getMetadata();

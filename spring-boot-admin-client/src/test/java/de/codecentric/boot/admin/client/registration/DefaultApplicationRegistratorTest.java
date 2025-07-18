@@ -28,7 +28,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DefaultApplicationRegistratorTest {
+class DefaultApplicationRegistratorTest {
 
 	private final Application application = Application.create("AppName")
 		.managementUrl("http://localhost:8080/mgmt")
@@ -39,7 +39,7 @@ public class DefaultApplicationRegistratorTest {
 	private final RegistrationClient registrationClient = mock(RegistrationClient.class);
 
 	@Test
-	public void register_should_return_true_when_successful() {
+	void register_should_return_true_when_successful() {
 		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				true);
@@ -50,7 +50,7 @@ public class DefaultApplicationRegistratorTest {
 	}
 
 	@Test
-	public void register_should_return_false_when_failed() {
+	void register_should_return_false_when_failed() {
 		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				true);
@@ -63,7 +63,7 @@ public class DefaultApplicationRegistratorTest {
 	}
 
 	@Test
-	public void register_should_try_next_on_error() {
+	void register_should_try_next_on_error() {
 		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				true);
@@ -77,7 +77,7 @@ public class DefaultApplicationRegistratorTest {
 	}
 
 	@Test
-	public void deregister_should_deregister_at_server() {
+	void deregister_should_deregister_at_server() {
 		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				true);
@@ -92,7 +92,7 @@ public class DefaultApplicationRegistratorTest {
 	}
 
 	@Test
-	public void deregister_should_not_deregister_when_not_registered() {
+	void deregister_should_not_deregister_when_not_registered() {
 		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				true);
@@ -103,7 +103,7 @@ public class DefaultApplicationRegistratorTest {
 	}
 
 	@Test
-	public void deregister_should_try_next_on_error() {
+	void deregister_should_try_next_on_error() {
 		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				true);
@@ -121,7 +121,7 @@ public class DefaultApplicationRegistratorTest {
 	}
 
 	@Test
-	public void register_should_register_on_multiple_servers() {
+	void register_should_register_on_multiple_servers() {
 		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				false);
@@ -136,7 +136,7 @@ public class DefaultApplicationRegistratorTest {
 	}
 
 	@Test
-	public void deregister_should_deregister_on_multiple_servers() {
+	void deregister_should_deregister_on_multiple_servers() {
 		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
 				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
 				false);

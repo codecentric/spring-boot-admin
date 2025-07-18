@@ -46,7 +46,7 @@ import de.codecentric.boot.admin.client.registration.RegistrationClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SpringBootAdminClientAutoConfigurationTest {
+class SpringBootAdminClientAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
@@ -54,18 +54,18 @@ public class SpringBootAdminClientAutoConfigurationTest {
 				SpringBootAdminClientAutoConfiguration.class));
 
 	@Test
-	public void not_active() {
+	void not_active() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
 	}
 
 	@Test
-	public void active() {
+	void active() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
 			.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
 	}
 
 	@Test
-	public void disabled() {
+	void disabled() {
 		this.contextRunner
 			.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081",
 					"spring.boot.admin.client.enabled:false")
@@ -73,16 +73,16 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	}
 
 	@Test
-	public void nonWebEnvironment() {
-		ApplicationContextRunner nonWebcontextRunner = new ApplicationContextRunner()
+	void nonWebEnvironment() {
+		ApplicationContextRunner nonWebContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SpringBootAdminClientAutoConfiguration.class));
 
-		nonWebcontextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
+		nonWebContextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
 			.run((context) -> assertThat(context).doesNotHaveBean(ApplicationRegistrator.class));
 	}
 
 	@Test
-	public void reactiveEnvironment() {
+	void reactiveEnvironment() {
 		ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
@@ -93,7 +93,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	}
 
 	@Test
-	public void blockingClientInBlockingEnvironment() {
+	void blockingClientInBlockingEnvironment() {
 		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
 					WebEndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
@@ -118,7 +118,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	}
 
 	@Test
-	public void restClientRegistrationClientInBlockingEnvironment() {
+	void restClientRegistrationClientInBlockingEnvironment() {
 		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner().withConfiguration(
 				AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 						DispatcherServletAutoConfiguration.class, HttpClientAutoConfiguration.class,
@@ -144,7 +144,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	}
 
 	@Test
-	public void customBlockingClientInReactiveEnvironment() {
+	void customBlockingClientInReactiveEnvironment() {
 		ReactiveWebApplicationContextRunner reactiveContextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class))
 			.withConfiguration(
@@ -161,7 +161,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	}
 
 	@Test
-	public void customBlockingClientInBlockingEnvironment() {
+	void customBlockingClientInBlockingEnvironment() {
 		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner()
 			.withConfiguration(UserConfigurations.of(CustomBlockingConfiguration.class))
 			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class,
@@ -179,7 +179,7 @@ public class SpringBootAdminClientAutoConfigurationTest {
 	@Configuration
 	public static class CustomBlockingConfiguration {
 
-		RegistrationClient registrationClient = new BlockingRegistrationClient(new RestTemplate());
+		final RegistrationClient registrationClient = new BlockingRegistrationClient(new RestTemplate());
 
 		@Bean
 		public RegistrationClient registrationClient() {

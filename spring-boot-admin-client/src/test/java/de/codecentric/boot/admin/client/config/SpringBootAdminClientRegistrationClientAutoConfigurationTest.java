@@ -44,7 +44,7 @@ public class SpringBootAdminClientRegistrationClientAutoConfigurationTest {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("contextRunnerCustomizations")
-	public void autoConfiguresRegistrationClient(String testCaseName,
+	void autoConfiguresRegistrationClient(String testCaseName,
 			Function<WebApplicationContextRunner, WebApplicationContextRunner> customizer,
 			Class<RegistrationClient> expectedRegistrationClient) {
 		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner()
