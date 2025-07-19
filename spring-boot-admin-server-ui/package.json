@@ -121,6 +121,6 @@
     ]
   },
   "overrides": {
-    "esbuild": "0.25.7"
+    "esbuild": "0.25.8"
   }
 }
