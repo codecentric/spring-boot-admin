@@ -26,10 +26,10 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ApplicationTest {
+class ApplicationTest {
 
 	@Test
-	public void test_json_format() throws IOException {
+	void test_json_format() throws IOException {
 		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
 		Application app = Application.create("test")
@@ -47,7 +47,7 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void test_equals_hashCode() {
+	void test_equals_hashCode() {
 		Application a1 = Application.create("foo")
 			.healthUrl("healthUrl")
 			.managementUrl("mgmt")
@@ -59,8 +59,7 @@ public class ApplicationTest {
 			.serviceUrl("svc")
 			.build();
 
-		assertThat(a1).isEqualTo(a2);
-		assertThat(a1.hashCode()).isEqualTo(a2.hashCode());
+		assertThat(a1).isEqualTo(a2).hasSameHashCodeAs(a2);
 
 		Application a3 = Application.create("foo")
 			.healthUrl("healthUrl2")
@@ -73,7 +72,7 @@ public class ApplicationTest {
 	}
 
 	@Test
-	public void should_not_return_sensitive_data_in_toString() {
+	void should_not_return_sensitive_data_in_toString() {
 		Application application = Application.create("app").healthUrl("HEALTH").metadata("password", "geheim").build();
 		assertThat(application.toString()).doesNotContain("geheim");
 	}

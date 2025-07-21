@@ -38,30 +38,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ReactiveApplicationFactoryTest {
+class ReactiveApplicationFactoryTest {
 
-	private InstanceProperties instanceProperties = new InstanceProperties();
+	private final InstanceProperties instanceProperties = new InstanceProperties();
 
-	private ServerProperties server = new ServerProperties();
+	private final ServerProperties server = new ServerProperties();
 
-	private ManagementServerProperties management = new ManagementServerProperties();
+	private final ManagementServerProperties management = new ManagementServerProperties();
 
-	private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
+	private final PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
 
-	private WebEndpointProperties webEndpoint = new WebEndpointProperties();
+	private final WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
-	private WebFluxProperties webflux = new WebFluxProperties();
+	private final WebFluxProperties webflux = new WebFluxProperties();
 
-	private ReactiveApplicationFactory factory = new ReactiveApplicationFactory(instanceProperties, management, server,
-			pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"), webflux);
+	private final ReactiveApplicationFactory factory = new ReactiveApplicationFactory(instanceProperties, management,
+			server, pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"), webflux);
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		instanceProperties.setName("test");
 	}
 
 	@Test
-	public void test_contextPath_mgmtPath() {
+	void test_contextPath_mgmtPath() {
 		webflux.setBasePath("/app");
 		webEndpoint.setBasePath("/admin");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
@@ -74,7 +74,7 @@ public class ReactiveApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_contextPath_mgmtPortPath() {
+	void test_contextPath_mgmtPortPath() {
 		webflux.setBasePath("/app");
 		webEndpoint.setBasePath("/admin");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
@@ -87,7 +87,7 @@ public class ReactiveApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_basePath() {
+	void test_basePath() {
 		webflux.setBasePath("/app");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		publishApplicationReadyEvent(factory, 80, null);
@@ -99,7 +99,7 @@ public class ReactiveApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_noBasePath() {
+	void test_noBasePath() {
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		publishApplicationReadyEvent(factory, 80, null);
 
@@ -110,7 +110,7 @@ public class ReactiveApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_mgmtBasePath_mgmtPortPath() {
+	void test_mgmtBasePath_mgmtPortPath() {
 		webflux.setBasePath("/app");
 		management.setBasePath("/mgnt");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");

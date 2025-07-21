@@ -19,10 +19,10 @@ package de.codecentric.boot.admin.client;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.WebApplicationType;
 
-public class ClientReactiveApplicationTest extends AbstractClientApplicationTest {
+class ClientReactiveApplicationTest extends AbstractClientApplicationTest {
 
 	@BeforeEach
-	public void setUp() throws Exception {
+	void setUp() {
 		super.setUp(WebApplicationType.REACTIVE);
 	}
 

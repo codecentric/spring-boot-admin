@@ -21,10 +21,10 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClientPropertiesTest {
+class ClientPropertiesTest {
 
 	@Test
-	public void should_default_autoDeregister_to_false() {
+	void should_default_autoDeregister_to_false() {
 		MockEnvironment env = new MockEnvironment();
 
 		ClientProperties clientProperties = new ClientProperties();
@@ -38,7 +38,7 @@ public class ClientPropertiesTest {
 	}
 
 	@Test
-	public void should_default_autoDeregister_to_true() {
+	void should_default_autoDeregister_to_true() {
 		MockEnvironment env = new MockEnvironment();
 		env.setProperty("VCAP_APPLICATION", "");
 
@@ -53,7 +53,7 @@ public class ClientPropertiesTest {
 	}
 
 	@Test
-	public void should_return_all_adminUrls() {
+	void should_return_all_adminUrls() {
 		ClientProperties clientProperties = new ClientProperties();
 		clientProperties.setApiPath("register");
 		clientProperties.setUrl(new String[] { "http://first", "http://second" });

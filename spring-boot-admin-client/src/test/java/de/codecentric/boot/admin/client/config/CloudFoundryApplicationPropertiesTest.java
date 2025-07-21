@@ -25,10 +25,10 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CloudFoundryApplicationPropertiesTest {
+class CloudFoundryApplicationPropertiesTest {
 
 	@Test
-	public void bind() {
+	void bind() {
 		String vcap = "{\"application_users\":[]," + "\"application_id\":\"9958288f-9842-4ddc-93dd-1ea3c90634cd\","
 				+ "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\","
 				+ "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
