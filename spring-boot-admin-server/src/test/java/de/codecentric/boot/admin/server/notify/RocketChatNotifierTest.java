@@ -37,46 +37,45 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class RocketChatNotifierTest {
+class RocketChatNotifierTest {
 
-	private static final String roomId = "roomId";
+	private static final String ROOM_ID = "roomId";
 
-	private static final String token = "tokenApi";
+	private static final String TOKEN = "tokenApi";
 
-	private static final String userId = "userId";
+	private static final String USER_ID = "userId";
 
-	private static final String host = "http://localhost";
+	private static final String HOST = "http://localhost";
 
-	private static final String message = "test";
+	private static final String MESSAGE = "test";
 
 	private static final Instance instance = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create("App", "http://health").build());
+		.register(Registration.create("App", "https://health").build());
 
 	private RocketChatNotifier notifier;
 
 	private RestTemplate restTemplate;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		InstanceRepository repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		restTemplate = mock(RestTemplate.class);
 		notifier = new RocketChatNotifier(repository, restTemplate);
-		notifier.setUrl(host);
-		notifier.setUserId(userId);
-		notifier.setToken(token);
-		notifier.setRoomId(roomId);
+		notifier.setUrl(HOST);
+		notifier.setUserId(USER_ID);
+		notifier.setToken(TOKEN);
+		notifier.setRoomId(ROOM_ID);
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
+	void test_onApplicationEvent_resolve() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
@@ -89,13 +88,13 @@ public class RocketChatNotifierTest {
 			.verifyComplete();
 
 		HttpEntity<?> expected = expectedMessage(standardMessage(StatusInfo.ofUp().getStatus()));
-		verify(restTemplate).exchange(eq(URI.create(String.format("%s/api/v1/chat.sendMessage", host))),
-				eq(HttpMethod.POST), eq(expected), eq(Void.class));
+		verify(restTemplate).exchange(URI.create(String.format("%s/api/v1/chat.sendMessage", HOST)), HttpMethod.POST,
+				expected, Void.class);
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve_with_given_message() {
-		notifier.setMessage(message);
+	void test_onApplicationEvent_resolve_with_given_message() {
+		notifier.setMessage(MESSAGE);
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
@@ -107,18 +106,18 @@ public class RocketChatNotifierTest {
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
-		HttpEntity<?> expected = expectedMessage(message);
-		verify(restTemplate).exchange(eq(URI.create(String.format("%s/api/v1/chat.sendMessage", host))),
-				eq(HttpMethod.POST), eq(expected), eq(Void.class));
+		HttpEntity<?> expected = expectedMessage(MESSAGE);
+		verify(restTemplate).exchange(URI.create(String.format("%s/api/v1/chat.sendMessage", HOST)), HttpMethod.POST,
+				expected, Void.class);
 	}
 
 	private HttpEntity<?> expectedMessage(String message) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		httpHeaders.add("X-Auth-Token", token);
-		httpHeaders.add("X-User-Id", userId);
+		httpHeaders.add("X-Auth-Token", TOKEN);
+		httpHeaders.add("X-User-Id", USER_ID);
 		Map<String, String> messageJsonData = new HashMap<>();
-		messageJsonData.put("rid", roomId);
+		messageJsonData.put("rid", ROOM_ID);
 		messageJsonData.put("msg", message);
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("message", messageJsonData);

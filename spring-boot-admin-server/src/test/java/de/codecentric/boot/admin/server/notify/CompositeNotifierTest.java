@@ -30,18 +30,18 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class CompositeNotifierTest {
+class CompositeNotifierTest {
 
 	private static final InstanceEvent APP_DOWN = new InstanceStatusChangedEvent(InstanceId.of("-"), 0L,
 			StatusInfo.ofDown());
 
 	@Test
-	public void should_throw_for_invariants() {
+	void should_throw_for_invariants() {
 		assertThatThrownBy(() -> new CompositeNotifier(null)).isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
-	public void should_trigger_all_notifiers() {
+	void should_trigger_all_notifiers() {
 		TestNotifier notifier1 = new TestNotifier();
 		TestNotifier notifier2 = new TestNotifier();
 		CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));
@@ -53,7 +53,7 @@ public class CompositeNotifierTest {
 	}
 
 	@Test
-	public void should_continue_on_exception() {
+	void should_continue_on_exception() {
 		Notifier notifier1 = (ev) -> Mono.error(new IllegalStateException("Test"));
 		TestNotifier notifier2 = new TestNotifier();
 		CompositeNotifier compositeNotifier = new CompositeNotifier(Arrays.asList(notifier1, notifier2));

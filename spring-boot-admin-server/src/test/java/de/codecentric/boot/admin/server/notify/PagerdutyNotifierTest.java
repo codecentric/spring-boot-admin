@@ -17,8 +17,8 @@
 package de.codecentric.boot.admin.server.notify;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,13 +34,12 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PagerdutyNotifierTest {
+class PagerdutyNotifierTest {
 
 	private PagerdutyNotifier notifier;
 
@@ -48,13 +47,13 @@ public class PagerdutyNotifierTest {
 
 	private InstanceRepository repository;
 
-	private static final String appName = "App";
+	private static final String APP_NAME = "App";
 
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create(appName, "http://health").build());
+		.register(Registration.create(APP_NAME, "https://health").build());
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
 		restTemplate = mock(RestTemplate.class);
@@ -66,7 +65,7 @@ public class PagerdutyNotifierTest {
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
+	void test_onApplicationEvent_resolve() {
 		StepVerifier
 			.create(notifier.notify(
 					new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
@@ -89,11 +88,11 @@ public class PagerdutyNotifierTest {
 		details.put("to", up);
 		expected.put("details", details);
 
-		verify(restTemplate).postForEntity(eq(PagerdutyNotifier.DEFAULT_URI), eq(expected), eq(Void.class));
+		verify(restTemplate).postForEntity(PagerdutyNotifier.DEFAULT_URI, expected, Void.class);
 	}
 
 	@Test
-	public void test_onApplicationEvent_trigger() {
+	void test_onApplicationEvent_trigger() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
@@ -119,11 +118,11 @@ public class PagerdutyNotifierTest {
 		expected.put("details", details);
 		Map<String, Object> context = new HashMap<>();
 		context.put("type", "link");
-		context.put("href", "http://health");
+		context.put("href", "https://health");
 		context.put("text", "Application health-endpoint");
-		expected.put("contexts", Arrays.asList(context));
+		expected.put("contexts", List.of(context));
 
-		verify(restTemplate).postForEntity(eq(PagerdutyNotifier.DEFAULT_URI), eq(expected), eq(Void.class));
+		verify(restTemplate).postForEntity(PagerdutyNotifier.DEFAULT_URI, expected, Void.class);
 	}
 
 }

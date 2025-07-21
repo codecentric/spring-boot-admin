@@ -36,13 +36,12 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class OpsGenieNotifierTest {
+class OpsGenieNotifierTest {
 
 	private OpsGenieNotifier notifier;
 
@@ -51,10 +50,10 @@ public class OpsGenieNotifierTest {
 	private InstanceRepository repository;
 
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create("App", "http://health").build());
+		.register(Registration.create("App", "https://health").build());
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
 		restTemplate = mock(RestTemplate.class);
@@ -69,7 +68,7 @@ public class OpsGenieNotifierTest {
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
+	void test_onApplicationEvent_resolve() {
 		StepVerifier
 			.create(notifier.notify(
 					new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofDown())))
@@ -82,12 +81,12 @@ public class OpsGenieNotifierTest {
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofUp())))
 			.verifyComplete();
 
-		verify(restTemplate).exchange(eq("https://api.opsgenie.com/v2/alerts/App_-id-/close"), eq(HttpMethod.POST),
-				eq(expectedRequest("DOWN", "UP")), eq(Void.class));
+		verify(restTemplate).exchange("https://api.opsgenie.com/v2/alerts/App_-id-/close", HttpMethod.POST,
+				expectedRequest("DOWN", "UP"), Void.class);
 	}
 
 	@Test
-	public void test_onApplicationEvent_trigger() {
+	void test_onApplicationEvent_trigger() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 1, StatusInfo.ofUp())))
@@ -100,8 +99,8 @@ public class OpsGenieNotifierTest {
 					new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofDown())))
 			.verifyComplete();
 
-		verify(restTemplate).exchange(eq("https://api.opsgenie.com/v2/alerts"), eq(HttpMethod.POST),
-				eq(expectedRequest("UP", "DOWN")), eq(Void.class));
+		verify(restTemplate).exchange("https://api.opsgenie.com/v2/alerts", HttpMethod.POST,
+				expectedRequest("UP", "DOWN"), Void.class);
 	}
 
 	private String getMessage(String expectedStatus) {
@@ -128,7 +127,7 @@ public class OpsGenieNotifierTest {
 
 			Map<String, Object> details = new HashMap<>();
 			details.put("type", "link");
-			details.put("href", "http://health");
+			details.put("href", "https://health");
 			details.put("text", "Instance health-endpoint");
 			expected.put("details", details);
 		}

@@ -39,44 +39,43 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class LetsChatNotifierTest {
+class LetsChatNotifierTest {
 
-	private static final String room = "text_room";
+	private static final String ROOM = "text_room";
 
-	private static final String token = "text_token";
+	private static final String TOKEN = "text_token";
 
-	private static final String user = "api_user";
+	private static final String USER = "api_user";
 
-	private static final String host = "http://localhost";
+	private static final String HOST = "http://localhost";
 
 	private static final Instance instance = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create("App", "http://health").build());
+		.register(Registration.create("App", "https://health").build());
 
 	private LetsChatNotifier notifier;
 
 	private RestTemplate restTemplate;
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		InstanceRepository repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		restTemplate = mock(RestTemplate.class);
 		notifier = new LetsChatNotifier(repository, restTemplate);
-		notifier.setUsername(user);
-		notifier.setUrl(URI.create(host));
-		notifier.setRoom(room);
-		notifier.setToken(token);
+		notifier.setUsername(USER);
+		notifier.setUrl(URI.create(HOST));
+		notifier.setRoom(ROOM);
+		notifier.setToken(TOKEN);
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
+	void test_onApplicationEvent_resolve() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
@@ -89,12 +88,12 @@ public class LetsChatNotifierTest {
 			.verifyComplete();
 
 		HttpEntity<?> expected = expectedMessage(standardMessage("UP"));
-		verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
-				eq(HttpMethod.POST), eq(expected), eq(Void.class));
+		verify(restTemplate).exchange(URI.create(String.format("%s/rooms/%s/messages", HOST, ROOM)), HttpMethod.POST,
+				expected, Void.class);
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve_with_custom_message() {
+	void test_onApplicationEvent_resolve_with_custom_message() {
 		notifier.setMessage("TEST");
 		StepVerifier
 			.create(notifier
@@ -108,15 +107,15 @@ public class LetsChatNotifierTest {
 			.verifyComplete();
 
 		HttpEntity<?> expected = expectedMessage("TEST");
-		verify(restTemplate).exchange(eq(URI.create(String.format("%s/rooms/%s/messages", host, room))),
-				eq(HttpMethod.POST), eq(expected), eq(Void.class));
+		verify(restTemplate).exchange(URI.create(String.format("%s/rooms/%s/messages", HOST, ROOM)), HttpMethod.POST,
+				expected, Void.class);
 	}
 
 	private HttpEntity<?> expectedMessage(String message) {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		String auth = Base64.getEncoder()
-			.encodeToString(String.format("%s:%s", token, user).getBytes(StandardCharsets.UTF_8));
+			.encodeToString(String.format("%s:%s", TOKEN, USER).getBytes(StandardCharsets.UTF_8));
 		httpHeaders.add(HttpHeaders.AUTHORIZATION, String.format("Basic %s", auth));
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("text", message);

@@ -19,10 +19,10 @@ package de.codecentric.boot.admin.client.registration;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.web.client.RestClient;
 
-public class RestClientRegistrationClientTest extends AbstractRegistrationClientTest {
+class RestClientRegistrationClientTest extends AbstractRegistrationClientTest {
 
 	@BeforeEach
-	public void setUp() {
+	void setUp() {
 		super.setUp(new RestClientRegistrationClient(RestClient.create()));
 	}
 

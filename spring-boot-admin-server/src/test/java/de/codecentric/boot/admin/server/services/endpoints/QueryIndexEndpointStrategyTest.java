@@ -57,13 +57,13 @@ import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilter
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 
-public class QueryIndexEndpointStrategyTest {
+class QueryIndexEndpointStrategyTest {
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler = new ApiMediaTypeHandler();
 
-	public WireMockServer wireMock = new WireMockServer(wireMockConfig().dynamicPort().dynamicHttpsPort());
+	public final WireMockServer wireMock = new WireMockServer(wireMockConfig().dynamicPort().dynamicHttpsPort());
 
-	private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
+	private final InstanceWebClient instanceWebClient = InstanceWebClient.builder()
 		.webClient(WebClient.builder().clientConnector(httpConnector()))
 		.filter(rewriteEndpointUrl())
 		.filter(retry(0, singletonMap(Endpoint.ACTUATOR_INDEX, 1)))
@@ -81,7 +81,7 @@ public class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	public void should_return_endpoints() {
+	void should_return_endpoints() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
@@ -108,7 +108,7 @@ public class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	public void should_return_endpoints_with_aligned_scheme() {
+	void should_return_endpoints_with_aligned_scheme() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
@@ -137,7 +137,7 @@ public class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	public void should_return_empty_on_empty_endpoints() {
+	void should_return_empty_on_empty_endpoints() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
@@ -158,7 +158,7 @@ public class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	public void should_return_empty_on_not_found() {
+	void should_return_empty_on_not_found() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
@@ -177,7 +177,7 @@ public class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	public void should_return_empty_on_error() {
+	void should_return_empty_on_error() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
@@ -196,14 +196,14 @@ public class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	public void should_return_empty_on_wrong_content_type() {
+	void should_return_empty_on_wrong_content_type() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
 				.managementUrl(this.wireMock.url("/mgmt"))
 				.build());
 
-		String body = "HELLOW WORLD";
+		String body = "HELLO WORLD";
 		this.wireMock.stubFor(get("/mgmt").willReturn(ok(body).withHeader("Content-Type", MediaType.TEXT_PLAIN_VALUE)));
 
 		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
@@ -216,7 +216,7 @@ public class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	public void should_return_empty_when_mgmt_equals_service_url() {
+	void should_return_empty_when_mgmt_equals_service_url() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/app/health"))
@@ -233,7 +233,7 @@ public class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	public void should_retry() {
+	void should_retry() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))

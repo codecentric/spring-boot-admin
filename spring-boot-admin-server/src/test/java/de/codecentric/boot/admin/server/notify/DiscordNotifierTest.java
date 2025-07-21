@@ -36,44 +36,41 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DiscordNotifierTest {
+class DiscordNotifierTest {
 
-	private static final String avatarUrl = "http://avatarUrl";
+	private static final String AVATAR_URL = "http://avatarUrl";
 
-	private static final String username = "user";
+	private static final String USER_NAME = "user";
 
-	private static final String appName = "App";
+	private static final String APP_NAME = "App";
 
-	private static final URI webhookUri = URI.create("http://localhost/");
+	private static final URI WEBHOOK_URI = URI.create("http://localhost/");
 
 	private static final Instance INSTANCE = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create(appName, "http://health").build());
+		.register(Registration.create(APP_NAME, "https://health").build());
 
 	private DiscordNotifier notifier;
 
 	private RestTemplate restTemplate;
 
-	private InstanceRepository repository;
-
 	@BeforeEach
-	public void setUp() {
-		repository = mock(InstanceRepository.class);
+	void setUp() {
+		InstanceRepository repository = mock(InstanceRepository.class);
 		when(repository.find(INSTANCE.getId())).thenReturn(Mono.just(INSTANCE));
 		restTemplate = mock(RestTemplate.class);
 		notifier = new DiscordNotifier(repository, restTemplate);
-		notifier.setWebhookUrl(webhookUri);
+		notifier.setWebhookUrl(WEBHOOK_URI);
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
-		notifier.setUsername(username);
-		notifier.setAvatarUrl(avatarUrl);
+	void test_onApplicationEvent_resolve() {
+		notifier.setUsername(USER_NAME);
+		notifier.setAvatarUrl(AVATAR_URL);
 		notifier.setTts(true);
 
 		StepVerifier
@@ -86,13 +83,13 @@ public class DiscordNotifierTest {
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
-		Object expected = expectedMessage(username, true, avatarUrl, standardMessage("UP"));
+		Object expected = expectedMessage(USER_NAME, true, AVATAR_URL, standardMessage("UP"));
 
-		verify(restTemplate).postForEntity(eq(webhookUri), eq(expected), eq(Void.class));
+		verify(restTemplate).postForEntity(WEBHOOK_URI, expected, Void.class);
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve_minimum_configuration() {
+	void test_onApplicationEvent_resolve_minimum_configuration() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion(), StatusInfo.ofDown())))
@@ -105,7 +102,7 @@ public class DiscordNotifierTest {
 
 		Object expected = expectedMessage(null, false, null, standardMessage("UP"));
 
-		verify(restTemplate).postForEntity(eq(webhookUri), eq(expected), eq(Void.class));
+		verify(restTemplate).postForEntity(WEBHOOK_URI, expected, Void.class);
 	}
 
 	private HttpEntity<Map<String, Object>> expectedMessage(String username, boolean tts, String avatarUrl,

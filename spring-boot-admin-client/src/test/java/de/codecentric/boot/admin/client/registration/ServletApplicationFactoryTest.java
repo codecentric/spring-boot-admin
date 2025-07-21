@@ -39,33 +39,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ServletApplicationFactoryTest {
+class ServletApplicationFactoryTest {
 
-	private InstanceProperties instance = new InstanceProperties();
+	private final InstanceProperties instance = new InstanceProperties();
 
-	private ServerProperties server = new ServerProperties();
+	private final ServerProperties server = new ServerProperties();
 
-	private ManagementServerProperties management = new ManagementServerProperties();
+	private final ManagementServerProperties management = new ManagementServerProperties();
 
-	private MockServletContext servletContext = new MockServletContext();
+	private final MockServletContext servletContext = new MockServletContext();
 
-	private PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
+	private final PathMappedEndpoints pathMappedEndpoints = mock(PathMappedEndpoints.class);
 
-	private WebEndpointProperties webEndpoint = new WebEndpointProperties();
+	private final WebEndpointProperties webEndpoint = new WebEndpointProperties();
 
-	private DispatcherServletPath dispatcherServletPath = mock(DispatcherServletPath.class);
+	private final DispatcherServletPath dispatcherServletPath = mock(DispatcherServletPath.class);
 
-	private ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
+	private final ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
 			servletContext, pathMappedEndpoints, webEndpoint, Collections::emptyMap, dispatcherServletPath);
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		instance.setName("test");
 		when(dispatcherServletPath.getPrefix()).thenReturn("");
 	}
 
 	@Test
-	public void test_contextPath_mgmtPath() {
+	void test_contextPath_mgmtPath() {
 		servletContext.setContextPath("app");
 		webEndpoint.setBasePath("/admin");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
@@ -78,7 +78,7 @@ public class ServletApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_contextPath_mgmtPortPath() {
+	void test_contextPath_mgmtPortPath() {
 		servletContext.setContextPath("app");
 		webEndpoint.setBasePath("/admin");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
@@ -91,7 +91,7 @@ public class ServletApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_contextPath() {
+	void test_contextPath() {
 		servletContext.setContextPath("app");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		publishApplicationReadyEvent(factory, 80, null);
@@ -103,7 +103,7 @@ public class ServletApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_servletPath() {
+	void test_servletPath() {
 		when(dispatcherServletPath.getPrefix()).thenReturn("app");
 		servletContext.setContextPath("srv");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
@@ -116,7 +116,7 @@ public class ServletApplicationFactoryTest {
 	}
 
 	@Test
-	public void test_servicePath() {
+	void test_servicePath() {
 		servletContext.setContextPath("app");
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		publishApplicationReadyEvent(factory, 80, null);
