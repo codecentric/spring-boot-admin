@@ -72,9 +72,8 @@ public class HazelcastEventStoreWithServerConfigTest extends AbstractEventStoreT
 			.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		// This map is used to deduplicate the notifications.
-		// If data in this map gets lost it should not be a big issue as it will atmost
-		// lead to
-		// the same notification to be sent by multiple instances
+		// If data in this map gets lost it should not be a big issue as it will at most
+		// lead to the same notification to be sent by multiple instances
 		MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
 			.setInMemoryFormat(InMemoryFormat.OBJECT)
 			.setBackupCount(1)
@@ -86,7 +85,7 @@ public class HazelcastEventStoreWithServerConfigTest extends AbstractEventStoreT
 		config.addMapConfig(sentNotificationsMap);
 		config.setProperty("hazelcast.jmx", "true");
 
-		// WARNING: This setups a local cluster, you change it to fit your needs.
+		// WARNING: This code setups a local cluster, you change it to fit your needs.
 		config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
 		TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
 		tcpIpConfig.setEnabled(true);

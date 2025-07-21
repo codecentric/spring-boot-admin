@@ -45,20 +45,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class WebexNotifierTest {
+class WebexNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create("webex", "http://health").build());
-
-	private InstanceRepository repository;
+		.register(Registration.create("webex", "https://health").build());
 
 	private WebexNotifier notifier;
 
 	private RestTemplate restTemplate;
 
 	@BeforeEach
-	public void setUp() {
-		repository = mock(InstanceRepository.class);
+	void setUp() {
+		InstanceRepository repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		restTemplate = mock(RestTemplate.class);
@@ -69,7 +67,7 @@ public class WebexNotifierTest {
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
+	void test_onApplicationEvent_resolve() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
@@ -81,15 +79,15 @@ public class WebexNotifierTest {
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
-		URI DEFAULT_URL = URI.create("https://webexapis.com/v1/messages");
+		URI defaultUrl = URI.create("https://webexapis.com/v1/messages");
 
-		HttpEntity entity = new HttpEntity<>(createMessage("UP"), createHeaders());
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(createMessage("UP"), createHeaders());
 
-		verify(restTemplate).postForEntity(eq(DEFAULT_URL), eq(entity), eq(Void.class));
+		verify(restTemplate).postForEntity(defaultUrl, entity, Void.class);
 	}
 
 	@Test
-	public void test_onApplicationEvent_trigger() {
+	void test_onApplicationEvent_trigger() {
 		StatusInfo infoDown = StatusInfo.ofDown();
 
 		@SuppressWarnings("unchecked")
@@ -107,11 +105,11 @@ public class WebexNotifierTest {
 			.create(notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
 			.verifyComplete();
 
-		URI DEFAULT_URL = URI.create("https://webexapis.com/v1/messages");
+		URI defaultUrl = URI.create("https://webexapis.com/v1/messages");
 
-		HttpEntity entity = new HttpEntity<>(createMessage("DOWN"), createHeaders());
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(createMessage("DOWN"), createHeaders());
 
-		verify(restTemplate).postForEntity(eq(DEFAULT_URL), eq(entity), eq(Void.class));
+		verify(restTemplate).postForEntity(defaultUrl, entity, Void.class);
 	}
 
 	private HttpHeaders createHeaders() {

@@ -42,20 +42,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DingTalkNotifierTest {
+class DingTalkNotifierTest {
 
 	private final Instance instance = Instance.create(InstanceId.of("-id-"))
-		.register(Registration.create("DingTalk", "http://health").build());
-
-	private InstanceRepository repository;
+		.register(Registration.create("DingTalk", "https://health").build());
 
 	private DingTalkNotifier notifier;
 
 	private RestTemplate restTemplate;
 
 	@BeforeEach
-	public void setUp() {
-		repository = mock(InstanceRepository.class);
+	void setUp() {
+		InstanceRepository repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		restTemplate = mock(RestTemplate.class);
@@ -65,7 +63,7 @@ public class DingTalkNotifierTest {
 	}
 
 	@Test
-	public void test_onApplicationEvent_resolve() {
+	void test_onApplicationEvent_resolve() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
@@ -83,7 +81,7 @@ public class DingTalkNotifierTest {
 	}
 
 	@Test
-	public void test_onApplicationEvent_trigger() {
+	void test_onApplicationEvent_trigger() {
 		StepVerifier
 			.create(notifier
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
