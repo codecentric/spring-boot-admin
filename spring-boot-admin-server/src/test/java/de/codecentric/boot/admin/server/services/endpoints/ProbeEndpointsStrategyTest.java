@@ -47,22 +47,22 @@ import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilter
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class ProbeEndpointsStrategyTest {
+class ProbeEndpointsStrategyTest {
 
-	public WireMockServer wireMock = new WireMockServer(Options.DYNAMIC_PORT);
+	public final WireMockServer wireMock = new WireMockServer(Options.DYNAMIC_PORT);
 
-	private InstanceWebClient instanceWebClient = InstanceWebClient.builder()
+	private final InstanceWebClient instanceWebClient = InstanceWebClient.builder()
 		.filter(retry(1, emptyMap()))
 		.filter(timeout(Duration.ofSeconds(1), emptyMap()))
 		.build();
 
 	@BeforeAll
-	public static void setUp() {
+	static void setUp() {
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
 	}
 
 	@AfterAll
-	public static void tearDown() {
+	static void tearDown() {
 		StepVerifier.resetDefaultTimeout();
 	}
 
@@ -72,12 +72,12 @@ public class ProbeEndpointsStrategyTest {
 	}
 
 	@AfterEach
-	void teardsown() {
+	void teardown() {
 		wireMock.stop();
 	}
 
 	@Test
-	public void invariants() {
+	void invariants() {
 		assertThatThrownBy(() -> new ProbeEndpointsStrategy(this.instanceWebClient, null))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'endpoints' must not be null.");
@@ -87,7 +87,7 @@ public class ProbeEndpointsStrategyTest {
 	}
 
 	@Test
-	public void should_return_detect_endpoints() {
+	void should_return_detect_endpoints() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
@@ -114,7 +114,7 @@ public class ProbeEndpointsStrategyTest {
 	}
 
 	@Test
-	public void should_return_empty() {
+	void should_return_empty() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
@@ -134,7 +134,7 @@ public class ProbeEndpointsStrategyTest {
 	}
 
 	@Test
-	public void should_retry() {
+	void should_retry() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))

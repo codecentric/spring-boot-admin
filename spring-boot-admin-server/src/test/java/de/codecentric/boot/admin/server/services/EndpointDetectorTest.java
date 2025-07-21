@@ -42,7 +42,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class EndpointDetectorTest {
+class EndpointDetectorTest {
 
 	private EndpointDetector detector;
 
@@ -53,7 +53,7 @@ public class EndpointDetectorTest {
 	private EndpointDetectionStrategy strategy;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		eventStore = new InMemoryEventStore();
 		repository = new EventsourcingInstanceRepository(eventStore);
 		strategy = mock(EndpointDetectionStrategy.class);
@@ -61,16 +61,16 @@ public class EndpointDetectorTest {
 	}
 
 	@Test
-	public void should_update_endpoints() {
+	void should_update_endpoints() {
 		// given
-		Registration registration = Registration.create("foo", "http://health").managementUrl("http://mgmt").build();
+		Registration registration = Registration.create("foo", "https://health").managementUrl("https://mgmt").build();
 		Instance instance = Instance.create(InstanceId.of("onl"))
 			.register(registration)
 			.withStatusInfo(StatusInfo.ofUp());
 		StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
 
 		Instance noActuator = Instance.create(InstanceId.of("noActuator"))
-			.register(Registration.create("foo", "http://health").build())
+			.register(Registration.create("foo", "https://health").build())
 			.withStatusInfo(StatusInfo.ofUp());
 		StepVerifier.create(repository.save(noActuator)).expectNextCount(1).verifyComplete();
 
@@ -100,7 +100,7 @@ public class EndpointDetectorTest {
 
 		StepVerifier.create(repository.find(instance.getId()))
 			.assertNext((app) -> assertThat(app.getEndpoints())
-				.isEqualTo(Endpoints.single("id", "url").withEndpoint("health", "http://health")))
+				.isEqualTo(Endpoints.single("id", "url").withEndpoint("health", "https://health")))
 			.verifyComplete();
 	}
 
