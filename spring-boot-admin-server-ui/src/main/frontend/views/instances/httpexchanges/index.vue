@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { debounce, mapKeys } from 'lodash-es';
+import { debounce } from 'lodash-es';
 import moment from 'moment';
 import { take } from 'rxjs/operators';
 
@@ -98,6 +98,7 @@ import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
+import { Exchange } from '@/views/instances/httpexchanges/Exchange';
 import SbaExchangesChart from '@/views/instances/httpexchanges/exchanges-chart';
 import SbaExchangesList from '@/views/instances/httpexchanges/exchanges-list';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
@@ -106,92 +107,6 @@ const addToFilter = (oldFilter, addedFilter) =>
   !oldFilter
     ? addedFilter
     : (val, key) => oldFilter(val, key) && addedFilter(val, key);
-
-const normalize = (obj) => mapKeys(obj, (value, key) => key.toLowerCase());
-
-class Exchange {
-  constructor({ timestamp, request, response, ...exchange }) {
-    Object.assign(this, exchange);
-    this.timestamp = moment(timestamp);
-    this.request = { ...request, headers: normalize(request.headers) };
-    this.response = response
-      ? { ...response, headers: normalize(response.headers) }
-      : null;
-  }
-
-  get key() {
-    return `${this.timestamp.valueOf()}-${this.request.method}-${
-      this.request.uri
-    }`;
-  }
-
-  get contentLengthResponse() {
-    return this.extractContentLength(this.response);
-  }
-
-  get contentLengthRequest() {
-    return this.extractContentLength(this.request);
-  }
-
-  get contentTypeResponse() {
-    return this.extractContentType(this.response);
-  }
-
-  get contentTypeRequest() {
-    return this.extractContentType(this.request);
-  }
-
-  extractContentLength(origin) {
-    const contentLength =
-      origin &&
-      origin.headers['content-length'] &&
-      origin.headers['content-length'][0];
-    if (contentLength && /^\d+$/.test(contentLength)) {
-      return parseInt(contentLength);
-    }
-    return null;
-  }
-
-  extractContentType(origin) {
-    const contentType =
-      origin &&
-      origin.headers['content-type'] &&
-      origin.headers['content-type'][0];
-    if (contentType) {
-      const idx = contentType.indexOf(';');
-      return idx >= 0 ? contentType.substring(0, idx) : contentType;
-    }
-    return null;
-  }
-
-  compareTo(other) {
-    return this.timestamp - other.timestamp;
-  }
-
-  isPending() {
-    return !this.response;
-  }
-
-  isSuccess() {
-    return this.response && this.response.status <= 399;
-  }
-
-  isClientError() {
-    return (
-      this.response &&
-      this.response.status >= 400 &&
-      this.response.status <= 499
-    );
-  }
-
-  isServerError() {
-    return (
-      this.response &&
-      this.response.status >= 500 &&
-      this.response.status <= 599
-    );
-  }
-}
 
 export default {
   components: {
