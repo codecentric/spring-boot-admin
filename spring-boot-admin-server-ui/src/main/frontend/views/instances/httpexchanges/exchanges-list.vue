@@ -81,7 +81,7 @@
         >
           <td
             class="httpexchanges__exchange-timestamp"
-            v-text="exchange.timestamp.format('L HH:mm:ss.SSS')"
+            v-text="formatDateTime(exchange.timestamp)"
           />
           <td
             class="httpexchanges__exchange-method"
@@ -157,36 +157,33 @@
   </table>
 </template>
 
-<script>
+<script setup lang="ts">
 import { parse } from 'iso8601-duration';
 import prettyBytes from 'pretty-bytes';
+import { ref } from 'vue';
 
+import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import { toMilliseconds } from '@/utils/iso8601-duration';
+import { Exchange } from '@/views/instances/httpexchanges/Exchange';
 
-export default {
-  props: {
-    newExchangesCount: {
-      type: Number,
-      default: 0,
-    },
-    exchanges: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  emits: ['show-new-exchanges'],
-  data: () => ({
-    showDetails: {},
-  }),
-  methods: {
-    prettyBytes,
-    toJson(obj) {
-      return JSON.stringify(obj, null, 4);
-    },
-    toMilliseconds,
-    parse,
-  },
+const { formatDateTime } = useDateTimeFormatter();
+
+type Props = {
+  newExchangesCount?: number;
+  exchanges?: Array<Exchange>;
 };
+
+withDefaults(defineProps<Props>(), {
+  newExchangesCount: 0,
+  exchanges: () => [],
+});
+
+defineEmits<{
+  (event: 'show-new-exchanges'): void;
+}>();
+
+const showDetails = ref<Record<string, boolean>>({});
+const toJson = (obj: any) => JSON.stringify(obj, null, 4);
 </script>
 
 <style lang="css">
