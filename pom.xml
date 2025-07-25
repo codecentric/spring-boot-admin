@@ -47,7 +47,7 @@
         <argLine/>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.5.3</spring-boot.version>
+        <spring-boot.version>3.5.4</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
 
         <jolokia-support-spring.version>2.2.9</jolokia-support-spring.version>
