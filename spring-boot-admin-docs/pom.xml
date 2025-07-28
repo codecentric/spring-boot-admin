@@ -92,10 +92,11 @@
                             <inputs>
                                 <input>
                                     <name>spring-boot-admin-server</name>
+                                    <!-- TODO use ${project.rootDirectory}/spring-boot-admin-server as soon as migrated to maven 4 -->
                                     <input>../spring-boot-admin-server</input>
                                 </input>
                             </inputs>
-                            <outputFile>target/aggregated-adoc.adoc</outputFile>
+                            <outputFile>${project.build.directory}/aggregated-adoc.adoc</outputFile>
                         </configuration>
                     </execution>
                 </executions>
