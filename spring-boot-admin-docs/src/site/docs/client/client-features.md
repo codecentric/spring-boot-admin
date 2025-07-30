@@ -101,7 +101,7 @@ info.tags.environment=test
 
 ## Spring Boot Admin Client
 
-The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing a HTTP post request to the SBA Server providing information about the application.
+The Spring Boot Admin Client registers the application at the admin server. This is done by periodically doing an HTTP post request to the SBA Server providing information about the application.
 
 :::tip
 There are plenty of properties to influence the way how the SBA Client registers your application. In case that doesn’t fit your needs, you can provide your own ApplicationFactory implementation.

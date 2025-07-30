@@ -6,7 +6,7 @@ sidebar_custom_props:
 
 You can set custom information in the header (i.e. displaying staging information or company name) by using following configuration properties:
 
-* **spring.boot.admin.ui.brand**: This HTML snippet is rendered in navigation header and defaults to `<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>`. By default it shows the SBA logo followed by it’s name. If you want to show a custom logo you can set: `spring.boot.admin.ui.brand=<img src="custom/custom-icon.png">`. Either you just add the image to your jar-file in `/META-INF/spring-boot-admin-server-ui/` (SBA registers a `ResourceHandler` for this location by default), or you must ensure yourself that the image gets served correctly (e.g. by registering your own `ResourceHandler`)
+* **spring.boot.admin.ui.brand**: This HTML snippet is rendered in navigation header and defaults to `<img src="assets/img/icon-spring-boot-admin.svg"><span>Spring Boot Admin</span>`. By default, it shows the SBA logo followed by its name. If you want to show a custom logo you can set: `spring.boot.admin.ui.brand=<img src="custom/custom-icon.png">`. Either you just add the image to your jar-file in `/META-INF/spring-boot-admin-server-ui/` (SBA registers a `ResourceHandler` for this location by default), or you must ensure yourself that the image gets served correctly (e.g. by registering your own `ResourceHandler`)
 * **spring.boot.admin.ui.title**: Use this option to customize the browsers window title.
 
 ## Customizing Colors
@@ -34,7 +34,7 @@ spring:
 ```
 
 | Property name                                                               | Default                                                                                                                          | Usage                                                                                                                                             |
-| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+|-----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
 | spring.boot.admin.ui.theme.color                                            | #42d3a5                                                                                                                          | Used in meta tag for setting theme color for user agents. Used to customize the display of the page or of the surrounding user interface.         |
 | spring.boot.admin.ui.theme.background-enabled                               | true                                                                                                                             | Disable background image in UI                                                                                                                    |
 | spring.boot.admin.ui.theme.palette.[50,100,200,300,400,500,600,700,800,900] | 50: #E8FBEF 100: #D0F7DF 200: #A1EFBD 300: #71E69C 400: #41DE7B 500: #22C55E 600: #1A9547 700: #116530 800: #09351A 900: #010603 | Define a color palette that affects the colors in sidebar view (e.g shade 600 of palette is used as text color and shade 50 as background color.) |
@@ -60,7 +60,7 @@ It is possible to use a custom favicon, which is also used for desktop notificat
 
 To filter languages to a subset of all supported languages:
 
-* **spring.boot.admin.ui.available-languages**: Used as a filter of existing languages. (e.g `en,de` out of existing `de,en,fr,ko,pt-BR,ru,zh`)
+* **spring.boot.admin.ui.available-languages**: Used as a filter of existing languages. (e.g. `en,de` out of existing `de,en,fr,ko,pt-BR,ru,zh`)
 
 ## Show or hide views
 
@@ -80,9 +80,9 @@ spring:
 
 To hide service URLs in Spring Boot Admin UI entirely, set the following property in your Server's configuration:
 
-| Property name                            | Default | Usage                                                                                                              
-|------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------
-| `spring.boot.admin.ui.hide-instance-url` | `false` | Set to `true` to hide service URLs as well as actions that require them in UI (e.g. jump to /health or /actuator). 
+| Property name                            | Default | Usage                                                                                                              |
+|------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------|
+| `spring.boot.admin.ui.hide-instance-url` | `false` | Set to `true` to hide service URLs as well as actions that require them in UI (e.g. jump to /health or /actuator). |
 
 If you want to hide the URL for specific instances only, you can set the `hide-url` property in the instance metadata
 while registering a service.
