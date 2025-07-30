@@ -70,7 +70,7 @@ public class ClientProperties {
 	private String password;
 
 	/**
-	 * Enable automatic deregistration on shutdown If not set it defaults to true if a
+	 * Enable automatic deregistration on shutdown If not set it defaults to true if an
 	 * active {@link CloudPlatform} is present;
 	 */
 	@Nullable

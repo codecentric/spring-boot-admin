@@ -30,13 +30,13 @@ import de.codecentric.boot.admin.client.registration.metadata.MetadataContributo
 
 public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 
-	private ManagementServerProperties management;
+	private final ManagementServerProperties management;
 
 	private final ServerProperties server;
 
-	private WebFluxProperties webflux;
+	private final WebFluxProperties webflux;
 
-	private InstanceProperties instance;
+	private final InstanceProperties instance;
 
 	public ReactiveApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
 			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,

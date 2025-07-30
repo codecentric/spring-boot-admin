@@ -27,7 +27,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 public class ReactiveRegistrationClient implements RegistrationClient {
 
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
 	};
 
 	private final WebClient webclient;
