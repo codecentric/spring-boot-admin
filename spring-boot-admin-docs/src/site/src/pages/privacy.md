@@ -52,14 +52,13 @@ Bei jedem Aufruf unserer Internetseite erfasst unser System automatisiert Daten 
 
 Folgende Daten werden hierbei erhoben:
 
-[arabic]
-. Informationen über den Browsertyp und die verwendete Version
-. Das Betriebssystem des Nutzers
-. Den Internet-Service-Provider des Nutzers
-. Die IP-Adresse des Nutzers
-. Datum und Uhrzeit des Zugriffs
-. Websites, von denen das System des Nutzers auf unsere Internetseite gelangt
-. Websites, die vom System des Nutzers über unsere Website aufgerufen werden
+1. Informationen über den Browsertyp und die verwendete Version
+2. Das Betriebssystem des Nutzers
+3. Den Internet-Service-Provider des Nutzers
+4. Die IP-Adresse des Nutzers
+5. Datum und Uhrzeit des Zugriffs
+6. Websites, von denen das System des Nutzers auf unsere Internetseite gelangt
+7. Websites, die vom System des Nutzers über unsere Website aufgerufen werden
 
 Die Daten werden ebenfalls in den Logfiles unseres Systems gespeichert. Eine Speicherung dieser Daten zusammen mit anderen personenbezogenen Daten des Nutzers findet nicht statt.
 
@@ -109,7 +108,7 @@ Liegt eine solche Verarbeitung vor, können Sie von dem Verantwortlichen über f
 
  (7) alle verfügbaren Informationen über die Herkunft der Daten, wenn die personenbezogenen Daten nicht bei der betroffenen Person erhoben werden;
 
- (8) das Bestehen einer automatisierten Entscheidungsfindung einschließlich Profiling gemäß Art. 22 Abs. 1 und 4 DSGVO und – zumindest in diesen Fällen – aussagekräftige Informationen über die involvierte Logik sowie die Tragweite und die angestrebten Auswirkungen einer derartigen Verarbeitung für die betroffene Person.
+ (8) das Bestehen einer automatisierten Entscheidungsfindung, einschließlich Profiling gemäß Art. 22 Abs. 1 und 4 DSGVO und – zumindest in diesen Fällen – aussagekräftige Informationen über die involvierte Logik sowie die Tragweite und die angestrebten Auswirkungen einer derartigen Verarbeitung für die betroffene Person.
 
 Ihnen steht das Recht zu, Auskunft darüber zu verlangen, ob die Sie betreffenden personenbezogenen Daten in ein Drittland oder an eine internationale Organisation übermittelt werden. In diesem Zusammenhang können Sie verlangen, über die geeigneten Garantien gem. Art. 46 DSGVO im Zusammenhang mit der Übermittlung unterrichtet zu werden.
 
@@ -221,4 +220,4 @@ Hinsichtlich der in (1) und (3) genannten Fälle trifft der Verantwortliche ange
 
 Unbeschadet eines anderweitigen verwaltungsrechtlichen oder gerichtlichen Rechtsbehelfs steht Ihnen das Recht auf Beschwerde bei einer Aufsichtsbehörde, insbesondere in dem Mitgliedstaat ihres Aufenthaltsorts, ihres Arbeitsplatzes oder des Orts des mutmaßlichen Verstoßes, zu, wenn Sie der Ansicht sind, dass die Verarbeitung der Sie betreffenden personenbezogenen Daten gegen die DSGVO verstößt.
 
-Die Aufsichtsbehörde, bei der die Beschwerde eingereicht wurde, unterrichtet den Beschwerdeführer über den Stand und die Ergebnisse der Beschwerde einschließlich der Möglichkeit eines gerichtlichen Rechtsbehelfs nach Art. 78 DSGVO.
+Die Aufsichtsbehörde, bei der die Beschwerde eingereicht wurde, unterrichtet den Beschwerdeführer über den Stand und die Ergebnisse der Beschwerde, einschließlich der Möglichkeit eines gerichtlichen Rechtsbehelfs nach Art. 78 DSGVO.
