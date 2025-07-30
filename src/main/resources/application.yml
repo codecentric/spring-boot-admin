@@ -1,0 +1,9 @@
+spring:
+  boot:
+    admin:
+      client:
+        url: http://application-admin-service:80
+        auto-registration: true
+        auto-registration-delay: 10000  # 10 seconds delay
+        instance:
+          service-host-type: ip
