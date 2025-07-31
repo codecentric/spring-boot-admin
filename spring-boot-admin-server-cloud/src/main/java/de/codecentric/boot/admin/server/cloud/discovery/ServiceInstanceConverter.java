@@ -29,7 +29,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 public interface ServiceInstanceConverter {
 
 	/**
-	 * Converts a service instance to a application instance to be registered.
+	 * Converts a service instance to an application instance to be registered.
 	 * @param instance the service instance.
 	 * @return the Registration
 	 */

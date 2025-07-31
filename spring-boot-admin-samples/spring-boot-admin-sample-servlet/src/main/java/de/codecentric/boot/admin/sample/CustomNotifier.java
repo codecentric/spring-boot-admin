@@ -25,12 +25,11 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.notify.AbstractEventNotifier;
-import de.codecentric.boot.admin.server.notify.LoggingNotifier;
 
 // tag::customization-notifiers[]
 public class CustomNotifier extends AbstractEventNotifier {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CustomNotifier.class);
 
 	public CustomNotifier(InstanceRepository repository) {
 		super(repository);

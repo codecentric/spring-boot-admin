@@ -10,7 +10,7 @@ You can add your own Notifiers by adding Spring Beans which implement the `Notif
 ```java title="CustomNotifier.java"
 public class CustomNotifier extends AbstractEventNotifier {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomNotifier.class);
 
     public CustomNotifier(InstanceRepository repository) {
         super(repository);
