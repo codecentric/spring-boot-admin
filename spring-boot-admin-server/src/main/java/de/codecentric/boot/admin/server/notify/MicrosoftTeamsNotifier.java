@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
@@ -50,6 +51,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent
 
 import static java.util.Collections.singletonList;
 
+@Slf4j
 public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MicrosoftTeamsNotifier.class);

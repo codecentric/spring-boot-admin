@@ -67,4 +67,10 @@ class BuildVersionMixinTest {
 		assertThat(result).isEqualTo("\"1.0.0\"");
 	}
 
+	@Test
+	public void verifyDeserializer() throws JSONException, JsonProcessingException {
+		BuildVersion buildVersion = objectMapper.readValue("\"1.0.0\"", BuildVersion.class);
+		assertThat(buildVersion).isEqualTo(BuildVersion.valueOf("1.0.0"));
+	}
+
 }

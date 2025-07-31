@@ -62,4 +62,11 @@ public class ReactiveRegistrationClient implements RegistrationClient {
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 	}
 
+	@Override
+	public String toString() {
+		return "ReactiveRegistrationClient{" +
+			"webclient=" + webclient +
+			", timeout=" + timeout +
+			'}';
+	}
 }

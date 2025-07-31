@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.client.registration;
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -37,6 +38,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  *
  * @author Johannes Edmeier
  */
+@Slf4j
 public class RegistrationApplicationListener implements InitializingBean, DisposableBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationApplicationListener.class);
@@ -77,6 +79,18 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
 		if (autoRegister) {
 			startRegisterTask();
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "RegistrationApplicationListener{" +
+			"registrator=" + registrator +
+			", taskScheduler=" + taskScheduler +
+			", autoDeregister=" + autoDeregister +
+			", autoRegister=" + autoRegister +
+			", registerPeriod=" + registerPeriod +
+			", scheduledTask=" + scheduledTask +
+			'}';
 	}
 
 	@EventListener

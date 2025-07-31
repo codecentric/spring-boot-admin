@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.ui.config;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -297,4 +298,30 @@ public class AdminServerUiProperties {
 
 	}
 
+
+	@Override
+	public String toString() {
+		return "AdminServerUiProperties{" +
+			"resourceLocations=" + Arrays.toString(resourceLocations) +
+			", extensionResourceLocations=" + Arrays.toString(extensionResourceLocations) +
+			", templateLocation='" + templateLocation + '\'' +
+			", loginIcon='" + loginIcon + '\'' +
+			", favicon='" + favicon + '\'' +
+			", faviconDanger='" + faviconDanger + '\'' +
+			", title='" + title + '\'' +
+			", brand='" + brand + '\'' +
+			", publicUrl='" + publicUrl + '\'' +
+			", cacheTemplates=" + cacheTemplates +
+			", cache=" + cache +
+			", externalViews=" + externalViews +
+			", viewSettings=" + viewSettings +
+			", rememberMeEnabled=" + rememberMeEnabled +
+			", availableLanguages=" + availableLanguages +
+			", pollTimer=" + pollTimer +
+			", additionalRouteExcludes=" + additionalRouteExcludes +
+			", enableToasts=" + enableToasts +
+			", hideInstanceUrl=" + hideInstanceUrl +
+			", theme=" + theme +
+			'}';
+	}
 }
