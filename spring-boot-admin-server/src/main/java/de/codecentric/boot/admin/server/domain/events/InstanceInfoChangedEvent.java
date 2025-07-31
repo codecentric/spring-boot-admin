@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.io.Serial;
 import java.time.Instant;
 
 import de.codecentric.boot.admin.server.domain.values.Info;
@@ -33,6 +34,7 @@ public class InstanceInfoChangedEvent extends InstanceEvent {
 
 	public static final String TYPE = "INFO_CHANGED";
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final Info info;

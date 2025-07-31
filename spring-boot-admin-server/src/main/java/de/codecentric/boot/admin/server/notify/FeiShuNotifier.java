@@ -30,6 +30,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
@@ -143,9 +144,6 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 				body.put("card", this.createCardContent(event, instance));
 				break;
 			case text:
-				body.put("content", this.createTextContent(event, instance));
-				break;
-
 			default:
 				body.put("content", this.createTextContent(event, instance));
 		}
@@ -177,13 +175,12 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	private String createCardContent(InstanceEvent event, Instance instance) {
 		String content = this.createContent(event, instance);
-		Card card = this.card;
 
 		Map<String, Object> header = new HashMap<>();
-		header.put("template", StringUtils.hasText(card.getThemeColor()) ? "red" : card.getThemeColor());
+		header.put("template", StringUtils.hasText(this.card.getThemeColor()) ? "red" : this.card.getThemeColor());
 		Map<String, String> titleContent = new HashMap<>();
 		titleContent.put("tag", "plain_text");
-		titleContent.put("content", card.getTitle());
+		titleContent.put("content", this.card.getTitle());
 		header.put("title", titleContent);
 
 		List<Map<String, Object>> elements = new ArrayList<>();
@@ -211,15 +208,10 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.toJsonString(cardContent);
 	}
 
+	@SneakyThrows
 	private String toJsonString(Object o) {
-		try {
-			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
-			return objectMapper.writeValueAsString(o);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return null;
+		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+		return objectMapper.writeValueAsString(o);
 	}
 
 	public URI getWebhookUrl() {
@@ -280,7 +272,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	}
 
-	public class Card {
+	public static class Card {
 
 		/**
 		 * This is header title.

@@ -56,7 +56,7 @@ public class TelegramNotifier extends AbstractStatusChangeNotifier {
 	private String chatId;
 
 	/**
-	 * The token identifiying und authorizing your Telegram bot (e.g.
+	 * The token identifying und authorizing your Telegram bot (e.g.
 	 * `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
 	 */
 	@Nullable

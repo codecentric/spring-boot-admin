@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.utils.jackson;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 
 public class RegistrationDeserializer extends StdDeserializer<Registration> {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public RegistrationDeserializer() {

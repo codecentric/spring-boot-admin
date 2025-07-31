@@ -36,7 +36,6 @@ import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 
 import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_UNKNOWN;
 import static java.util.Comparator.naturalOrder;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -114,7 +113,7 @@ public class ApplicationRegistry {
 			.filter(Objects::nonNull)
 			.distinct()
 			.sorted()
-			.collect(toList());
+			.toList();
 		if (versions.isEmpty()) {
 			return null;
 		}

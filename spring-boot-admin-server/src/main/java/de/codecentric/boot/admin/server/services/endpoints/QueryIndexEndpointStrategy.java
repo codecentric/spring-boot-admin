@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -110,7 +109,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 
 			return Endpoints.of(endpoints.stream()
 				.map((e) -> Endpoint.of(e.getId(), e.getUrl().replaceFirst("http:", "https:")))
-				.collect(Collectors.toList()));
+				.toList());
 		};
 	}
 
@@ -120,7 +119,7 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 			.stream()
 			.filter((e) -> !e.getKey().equals("self") && !e.getValue().isTemplated())
 			.map((e) -> Endpoint.of(e.getKey(), e.getValue().getHref()))
-			.collect(Collectors.toList());
+			.toList();
 		return endpoints.isEmpty() ? Mono.empty() : Mono.just(Endpoints.of(endpoints));
 	}
 

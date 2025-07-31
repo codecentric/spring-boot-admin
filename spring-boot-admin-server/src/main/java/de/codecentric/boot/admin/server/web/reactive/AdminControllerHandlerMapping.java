@@ -30,8 +30,6 @@ import org.springframework.web.util.pattern.PathPattern;
 import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.PathUtils;
 
-import static java.util.stream.Collectors.toList;
-
 public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping {
 
 	private final String adminContextPath;
@@ -64,7 +62,7 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 	private List<PathPattern> withNewPatterns(Set<PathPattern> patterns) {
 		return patterns.stream()
 			.map((pattern) -> getPathPatternParser().parse(PathUtils.normalizePath(adminContextPath + pattern)))
-			.collect(toList());
+			.toList();
 	}
 
 }

@@ -260,12 +260,12 @@ public final class Instance implements Serializable {
 
 	@Nullable
 	@SafeVarargs
-	private final BuildVersion updateBuildVersion(Map<String, ?>... sources) {
+	private BuildVersion updateBuildVersion(Map<String, ?>... sources) {
 		return Arrays.stream(sources).map(BuildVersion::from).filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	@SafeVarargs
-	private final Tags updateTags(Map<String, ?>... sources) {
+	private Tags updateTags(Map<String, ?>... sources) {
 		return Arrays.stream(sources).map((source) -> Tags.from(source, "tags")).reduce(Tags.empty(), Tags::append);
 	}
 
