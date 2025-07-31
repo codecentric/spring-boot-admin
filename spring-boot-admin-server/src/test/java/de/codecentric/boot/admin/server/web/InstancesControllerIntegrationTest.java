@@ -119,7 +119,7 @@ class InstancesControllerIntegrationTest {
 				.containsEntry("type", "REGISTERED");
 		}).then(() -> {
 			assertInstances(id.get());
-			assertInstancesByName(id.get());
+			assertInstancesByName("test", id.get());
 			assertInstanceById(id.get());
 		})
 			.assertNext((body) -> assertThat(body).containsEntry("instance", id.get())
@@ -190,16 +190,17 @@ class InstancesControllerIntegrationTest {
 			.isEqualTo(id);
 	}
 
-	private void assertInstancesByName(String id) {
+	private void assertInstancesByName(String name, String id) {
 		this.client.get()
-			.uri("/instances?name=twice")
+			.uri("/instances?name=" + name)
 			.exchange()
 			.expectStatus()
 			.isOk()
 			.expectHeader()
 			.contentType(MediaType.APPLICATION_JSON)
 			.expectBody()
-			.jsonPath("$[0].id");
+			.jsonPath("$[0].id")
+			.isEqualTo(id);
 	}
 
 	private void assertInstances(String id) {
@@ -211,7 +212,8 @@ class InstancesControllerIntegrationTest {
 			.expectHeader()
 			.contentType(MediaType.APPLICATION_JSON)
 			.expectBody()
-			.jsonPath("$[0].id");
+			.jsonPath("$[0].id")
+			.isEqualTo(id);
 	}
 
 	private void registerSecondTime(String id) {

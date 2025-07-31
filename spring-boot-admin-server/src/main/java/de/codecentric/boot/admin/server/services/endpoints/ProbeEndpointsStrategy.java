@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import lombok.Data;
 import org.slf4j.Logger;
@@ -52,7 +51,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
 	public ProbeEndpointsStrategy(InstanceWebClient instanceWebClient, String[] endpoints) {
 		Assert.notNull(endpoints, "'endpoints' must not be null.");
 		Assert.noNullElements(endpoints, "'endpoints' must not contain null.");
-		this.endpoints = Arrays.stream(endpoints).map(EndpointDefinition::create).collect(Collectors.toList());
+		this.endpoints = Arrays.stream(endpoints).map(EndpointDefinition::create).toList();
 		this.instanceWebClient = instanceWebClient;
 	}
 
@@ -117,7 +116,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
 						endpointList.get(0).getDefinition().getId(), endpointList.subList(1, endpointList.size()));
 			}
 			return endpointList.get(0).getEndpoint();
-		}).collect(Collectors.toList());
+		}).toList();
 		return Mono.just(Endpoints.of(result));
 	}
 

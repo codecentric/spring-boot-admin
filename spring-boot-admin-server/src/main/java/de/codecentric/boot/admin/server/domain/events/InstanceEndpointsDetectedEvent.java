@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.io.Serial;
 import java.time.Instant;
 
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
@@ -33,6 +34,7 @@ public class InstanceEndpointsDetectedEvent extends InstanceEvent {
 
 	public static final String TYPE = "ENDPOINTS_DETECTED";
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final Endpoints endpoints;

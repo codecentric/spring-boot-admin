@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import lombok.SneakyThrows;
 import org.apache.hc.client5.http.utils.Base64;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
@@ -110,18 +111,13 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		return message.getValue(context, String.class);
 	}
 
+	@SneakyThrows
 	private String getSign(Long timestamp) {
-		try {
-			String stringToSign = timestamp + "\n" + secret;
-			Mac mac = Mac.getInstance("HmacSHA256");
-			mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-			byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
-			return URLEncoder.encode(new String(Base64.encodeBase64(signData)), "UTF-8");
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return "";
+		String stringToSign = timestamp + "\n" + secret;
+		Mac mac = Mac.getInstance("HmacSHA256");
+		mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+		byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
+		return URLEncoder.encode(new String(Base64.encodeBase64(signData)), StandardCharsets.UTF_8);
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {

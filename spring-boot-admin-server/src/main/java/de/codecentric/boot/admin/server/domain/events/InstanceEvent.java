@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -31,6 +32,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 @lombok.Data
 public abstract class InstanceEvent implements Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final InstanceId instance;

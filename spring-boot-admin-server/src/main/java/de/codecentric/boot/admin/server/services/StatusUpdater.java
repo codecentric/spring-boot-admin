@@ -90,7 +90,7 @@ public class StatusUpdater {
 
 	/*
 	 * return a timeout less than the given one to prevent backdrops in concurrent get
-	 * request. This prevents flakyness of health checks.
+	 * request. This prevents flakiness of health checks.
 	 */
 	private Duration getTimeoutWithMargin() {
 		return this.timeout.minusSeconds(1).abs();

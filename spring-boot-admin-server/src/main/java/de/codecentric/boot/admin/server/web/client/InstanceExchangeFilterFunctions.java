@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -55,7 +54,7 @@ public final class InstanceExchangeFilterFunctions {
 
 	private static final List<MediaType> DEFAULT_LOGFILE_ACCEPT_MEDIA_TYPES = singletonList(MediaType.TEXT_PLAIN);
 
-	static MediaType V1_ACTUATOR_JSON = MediaType.valueOf("application/vnd.spring-boot.actuator.v1+json");
+	static final MediaType V1_ACTUATOR_JSON = MediaType.valueOf("application/vnd.spring-boot.actuator.v1+json");
 
 	private static final List<MediaType> DEFAULT_ACCEPT_MEDIA_TYPES = asList(
 			new MediaType(ApiVersion.V3.getProducedMimeType()), new MediaType(ApiVersion.V2.getProducedMimeType()),
@@ -103,7 +102,7 @@ public final class InstanceExchangeFilterFunctions {
 			String endpointId = requestUrl.getPathSegments().get(0);
 			Optional<Endpoint> endpoint = instance.getEndpoints().get(endpointId);
 
-			if (!endpoint.isPresent()) {
+			if (endpoint.isEmpty()) {
 				return Mono.error(new ResolveEndpointException("Endpoint '" + endpointId + "' not found"));
 			}
 
@@ -134,7 +133,7 @@ public final class InstanceExchangeFilterFunctions {
 			Mono<ClientResponse> clientResponse = next.exchange(request);
 
 			Optional<Object> endpoint = request.attribute(ATTRIBUTE_ENDPOINT);
-			if (!endpoint.isPresent()) {
+			if (endpoint.isEmpty()) {
 				return clientResponse;
 			}
 
@@ -209,7 +208,7 @@ public final class InstanceExchangeFilterFunctions {
 			if (request.attribute(ATTRIBUTE_ENDPOINT).map(Endpoint.LOGFILE::equals).orElse(false)) {
 				List<MediaType> newAcceptHeaders = Stream
 					.concat(request.headers().getAccept().stream(), Stream.of(MediaType.ALL))
-					.collect(Collectors.toList());
+					.toList();
 				request = ClientRequest.from(request).headers((h) -> h.setAccept(newAcceptHeaders)).build();
 			}
 			return next.exchange(request);

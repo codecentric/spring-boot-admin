@@ -36,8 +36,8 @@ import de.codecentric.boot.admin.server.domain.values.Tags;
 
 /**
  * Jackson module for Spring Boot Admin Server. <br>
- * In order to use this module just add this modules into your ObjectMapper configuration.
- * <pre>
+ * In order to use this module just add these modules into your ObjectMapper
+ * configuration. <pre>
  *     ObjectMapper mapper = new ObjectMapper();
  *     mapper.registerModule(new AdminServerModule());
  *     mapper.registerModule(new JavaTimeModule());

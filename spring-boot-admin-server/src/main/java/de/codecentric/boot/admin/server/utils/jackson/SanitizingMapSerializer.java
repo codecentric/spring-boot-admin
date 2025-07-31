@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.utils.jackson;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -28,6 +29,7 @@ import org.springframework.lang.Nullable;
 
 public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final Pattern[] keysToSanitize;

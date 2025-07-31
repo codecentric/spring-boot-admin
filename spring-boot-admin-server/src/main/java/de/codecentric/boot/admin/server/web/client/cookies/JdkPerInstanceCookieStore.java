@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.MultiValueMapAdapter;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.exception.InstanceWebClientException;
@@ -93,7 +94,7 @@ public class JdkPerInstanceCookieStore implements PerInstanceCookieStore {
 				.map((rcList) -> rcList.stream()
 					.map((rc) -> rc.split("=", 2))
 					.collect(LinkedMultiValueMap<String, String>::new, (map, nv) -> map.add(nv[0], nv[1]),
-							(m1, m2) -> m1.addAll(m2)))
+							MultiValueMapAdapter::addAll))
 				.orElseGet(LinkedMultiValueMap<String, String>::new);
 		}
 		catch (IOException ioe) {
