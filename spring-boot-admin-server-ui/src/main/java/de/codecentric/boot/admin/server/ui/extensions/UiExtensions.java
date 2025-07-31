@@ -19,7 +19,6 @@ package de.codecentric.boot.admin.server.ui.extensions;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @lombok.Data
 public class UiExtensions implements Iterable<UiExtension> {
@@ -40,11 +39,11 @@ public class UiExtensions implements Iterable<UiExtension> {
 	public List<UiExtension> getCssExtensions() {
 		return this.extensions.stream()
 			.filter((e) -> e.getResourcePath().endsWith(".css"))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	public List<UiExtension> getJsExtensions() {
-		return this.extensions.stream().filter((e) -> e.getResourcePath().endsWith(".js")).collect(Collectors.toList());
+		return this.extensions.stream().filter((e) -> e.getResourcePath().endsWith(".js")).toList();
 	}
 
 }
