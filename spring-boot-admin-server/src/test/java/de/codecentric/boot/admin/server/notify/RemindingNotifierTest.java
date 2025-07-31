@@ -159,7 +159,7 @@ class RemindingNotifierTest {
 
 			RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
 			eventPublisher.flux().flatMap(reminder::notify).subscribe();
-			reminder.setCheckReminderInverval(Duration.ofMillis(10));
+			reminder.setCheckReminderInterval(Duration.ofMillis(10));
 			reminder.setReminderPeriod(Duration.ofMillis(10));
 			reminder.start();
 		});

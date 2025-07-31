@@ -142,7 +142,7 @@ public class NotifierConfiguration {
     public RemindingNotifier remindingNotifier() {
         RemindingNotifier notifier = new RemindingNotifier(notifier, repository);
         notifier.setReminderPeriod(Duration.ofMinutes(10)); // (1)
-        notifier.setCheckReminderInverval(Duration.ofSeconds(10)); //(2)
+        notifier.setCheckReminderInterval(Duration.ofSeconds(10)); //(2)
         return notifier;
     }
 }
@@ -196,7 +196,7 @@ public class NotifierConfig {
     public RemindingNotifier remindingNotifier() { // (2)
         RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), this.repository);
         notifier.setReminderPeriod(Duration.ofMinutes(10));
-        notifier.setCheckReminderInverval(Duration.ofSeconds(10));
+        notifier.setCheckReminderInterval(Duration.ofSeconds(10));
         return notifier;
     }
 
