@@ -178,7 +178,7 @@ public class AdminServerInstanceWebClientConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class LegaycEndpointConvertersConfiguration {
+	protected static class LegacyEndpointConvertersConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = "healthLegacyEndpointConverter")
