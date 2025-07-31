@@ -37,9 +37,7 @@ public class UiExtensions implements Iterable<UiExtension> {
 	}
 
 	public List<UiExtension> getCssExtensions() {
-		return this.extensions.stream()
-			.filter((e) -> e.getResourcePath().endsWith(".css"))
-			.toList();
+		return this.extensions.stream().filter((e) -> e.getResourcePath().endsWith(".css")).toList();
 	}
 
 	public List<UiExtension> getJsExtensions() {

@@ -101,8 +101,7 @@ public class AdminServerUiAutoConfiguration {
 	public UiController homeUiController(UiExtensions uiExtensions) throws IOException {
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 			.scan(this.adminUi.getExtensionResourceLocations());
-		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-			.toList();
+		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream()).toList();
 
 		Settings uiSettings = Settings.builder()
 			.brand(this.adminUi.getBrand())
