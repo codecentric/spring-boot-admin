@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.utils.Base64;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
@@ -48,6 +48,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
  *
  * @author Mask
  */
+@Slf4j
 public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 
 	private static final String DEFAULT_MESSAGE = "#{instance.registration.name} #{instance.id} is #{event.statusInfo.status}";
@@ -111,13 +112,18 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		return message.getValue(context, String.class);
 	}
 
-	@SneakyThrows
 	private String getSign(Long timestamp) {
-		String stringToSign = timestamp + "\n" + secret;
-		Mac mac = Mac.getInstance("HmacSHA256");
-		mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-		byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
-		return URLEncoder.encode(new String(Base64.encodeBase64(signData)), StandardCharsets.UTF_8);
+		try {
+			String stringToSign = timestamp + "\n" + secret;
+			Mac mac = Mac.getInstance("HmacSHA256");
+			mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+			byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
+			return URLEncoder.encode(new String(Base64.encodeBase64(signData)), StandardCharsets.UTF_8);
+		}
+		catch (Exception ex) {
+			log.warn("Failed to sign message", ex);
+		}
+		return "";
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {
