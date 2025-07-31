@@ -4466,7 +4466,7 @@
           "tags": [
             {
               "key": "beanName",
-              "value": "de.codecentric.boot.admin.server.config.AdminServerInstanceWebClientConfiguration$LegaycEndpointConvertersConfiguration"
+              "value": "de.codecentric.boot.admin.server.config.AdminServerInstanceWebClientConfiguration$LegacyEndpointConvertersConfiguration"
             }
           ]
         },
