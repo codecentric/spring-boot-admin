@@ -294,8 +294,8 @@ public final class LegacyEndpointConverters {
 
 				Map<String, Object> in_response_headers = (Map<String, Object>) in_headers.get("response");
 				if (in_response_headers != null) {
-					if (in_response_headers.get("status") instanceof String) {
-						response.put("status", Long.valueOf(in_response_headers.get("status").toString()));
+					if (in_response_headers.get("status") instanceof String status) {
+						response.put("status", Long.valueOf(status));
 					}
 
 					Map<String, Object> responseHeaders = new LinkedHashMap<>();
@@ -306,8 +306,8 @@ public final class LegacyEndpointConverters {
 			}
 
 			out.put("response", response);
-			if (in_info.get("timeTaken") instanceof String) {
-				out.put("timeTaken", Long.valueOf(in_info.get("timeTaken").toString()));
+			if (in_info.get("timeTaken") instanceof String timeTaken) {
+				out.put("timeTaken", Long.valueOf(timeTaken));
 			}
 		}
 		return out;
@@ -333,8 +333,8 @@ public final class LegacyEndpointConverters {
 			converted.put("id", changeset.get("ID"));
 			converted.put("author", changeset.get("AUTHOR"));
 			converted.put("changeLog", changeset.get("FILENAME"));
-			if (changeset.get("DATEEXECUTED") instanceof Long) {
-				converted.put("dateExecuted", new Date((Long) changeset.get("DATEEXECUTED")));
+			if (changeset.get("DATEEXECUTED") instanceof Long dateExecuted) {
+				converted.put("dateExecuted", new Date(dateExecuted));
 			}
 			converted.put("orderExecuted", changeset.get("ORDEREXECUTED"));
 			converted.put("execType", changeset.get("EXECTYPE"));
@@ -342,10 +342,10 @@ public final class LegacyEndpointConverters {
 			converted.put("description", changeset.get("DESCRIPTION"));
 			converted.put("comments", changeset.get("COMMENTS"));
 			converted.put("tag", changeset.get("TAG"));
-			converted.put("contexts", (changeset.get("CONTEXTS") instanceof String)
-					? new LinkedHashSet<>(asList(((String) changeset.get("CONTEXTS")).split(",\\s*"))) : emptySet());
-			converted.put("labels", (changeset.get("LABELS") instanceof String)
-					? new LinkedHashSet<>(asList(((String) changeset.get("LABELS")).split(",\\s*"))) : emptySet());
+			converted.put("contexts", (changeset.get("CONTEXTS") instanceof String contexts)
+					? new LinkedHashSet<>(asList((contexts).split(",\\s*"))) : emptySet());
+			converted.put("labels", (changeset.get("LABELS") instanceof String labels)
+					? new LinkedHashSet<>(asList((labels).split(",\\s*"))) : emptySet());
 			converted.put("deploymentId", changeset.get("DEPLOYMENT_ID"));
 			return converted;
 		}).collect(toList());
@@ -363,8 +363,8 @@ public final class LegacyEndpointConverters {
 	private static List<Map<String, Object>> convertFlywayMigrations(List<Map<String, Object>> migrations) {
 		return migrations.stream().map((migration) -> {
 			Map<String, Object> converted = new LinkedHashMap<>(migration);
-			if (migration.get("installedOn") instanceof Long) {
-				converted.put("installedOn", new Date((Long) migration.get("installedOn")));
+			if (migration.get("installedOn") instanceof Long installedOn) {
+				converted.put("installedOn", new Date(installedOn));
 			}
 			return converted;
 		}).collect(toList());
@@ -504,11 +504,11 @@ public final class LegacyEndpointConverters {
 	@Nullable
 	private static Instant getInstant(Object o) {
 		try {
-			if (o instanceof String) {
-				return OffsetDateTime.parse((String) o, TIMESTAMP_PATTERN).toInstant();
+			if (o instanceof String stringObj) {
+				return OffsetDateTime.parse(stringObj, TIMESTAMP_PATTERN).toInstant();
 			}
-			else if (o instanceof Long) {
-				return Instant.ofEpochMilli((Long) o);
+			else if (o instanceof Long longObj) {
+				return Instant.ofEpochMilli(longObj);
 			}
 		}
 		catch (DateTimeException | ClassCastException ex) {
