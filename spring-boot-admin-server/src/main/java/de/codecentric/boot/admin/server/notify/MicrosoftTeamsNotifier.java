@@ -333,14 +333,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	}
 
-	@Data
-	public static class Fact {
-
-		private final String name;
-
-		@Nullable
-		private final String value;
-
+	public record Fact(String name, @Nullable String value) {
 	}
 
 }
