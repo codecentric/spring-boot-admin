@@ -30,9 +30,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -59,11 +57,10 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
  * "https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN">https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN</a>
  *
  */
+@Slf4j
 public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	private static final String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
-
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 
@@ -208,10 +205,15 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.toJsonString(cardContent);
 	}
 
-	@SneakyThrows
 	private String toJsonString(Object o) {
-		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
-		return objectMapper.writeValueAsString(o);
+		try {
+			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+			return objectMapper.writeValueAsString(o);
+		}
+		catch (Exception ex) {
+			log.warn("Failed to serialize JSON object", ex);
+		}
+		return null;
 	}
 
 	public URI getWebhookUrl() {
