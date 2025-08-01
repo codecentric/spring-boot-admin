@@ -129,9 +129,8 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	protected String getColor(InstanceEvent event) {
-		if (event instanceof InstanceStatusChangedEvent) {
-			return StatusInfo.STATUS_UP.equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())
-					? "green" : "red";
+		if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
+			return StatusInfo.STATUS_UP.equals(statusChangedEvent.getStatusInfo().getStatus()) ? "green" : "red";
 		}
 		else {
 			return "gray";

@@ -71,7 +71,7 @@ public class SpringBootAdminHazelcastApplication {
 			.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
 		// This map is used to deduplicate the notifications.
-		// If data in this map gets lost it should not be a big issue as it will atmost
+		// If data in this map gets lost it should not be a big issue as it will utmost
 		// lead to
 		// the same notification to be sent by multiple instances
 		MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
@@ -97,7 +97,7 @@ public class SpringBootAdminHazelcastApplication {
 
 	@Bean
 	public Notifier loggingNotifier() {
-		return (event) -> Mono.fromRunnable(() -> log.info("Event occured: {}", event));
+		return (event) -> Mono.fromRunnable(() -> log.info("Event occurred: {}", event));
 	}
 
 	@Profile("insecure")

@@ -200,36 +200,36 @@ public final class Instance implements Serializable {
 
 		List<InstanceEvent> unsavedEvents = appendToEvents(event, isNewEvent);
 
-		if (event instanceof InstanceRegisteredEvent) {
-			Registration registration = ((InstanceRegisteredEvent) event).getRegistration();
+		if (event instanceof InstanceRegisteredEvent registeredEvent) {
+			Registration registration = registeredEvent.getRegistration();
 			return new Instance(this.id, event.getVersion(), registration, true, StatusInfo.ofUnknown(),
 					event.getTimestamp(), Info.empty(), Endpoints.empty(),
 					updateBuildVersion(registration.getMetadata()), updateTags(registration.getMetadata()),
 					unsavedEvents);
 
 		}
-		else if (event instanceof InstanceRegistrationUpdatedEvent) {
-			Registration registration = ((InstanceRegistrationUpdatedEvent) event).getRegistration();
+		else if (event instanceof InstanceRegistrationUpdatedEvent updatedEvent) {
+			Registration registration = updatedEvent.getRegistration();
 			return new Instance(this.id, event.getVersion(), registration, this.registered, this.statusInfo,
 					this.statusTimestamp, this.info, this.endpoints,
 					updateBuildVersion(registration.getMetadata(), this.info.getValues()),
 					updateTags(registration.getMetadata(), this.info.getValues()), unsavedEvents);
 
 		}
-		else if (event instanceof InstanceStatusChangedEvent) {
-			StatusInfo statusInfo = ((InstanceStatusChangedEvent) event).getStatusInfo();
+		else if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
+			StatusInfo statusInfo = statusChangedEvent.getStatusInfo();
 			return new Instance(this.id, event.getVersion(), this.registration, this.registered, statusInfo,
 					event.getTimestamp(), this.info, this.endpoints, this.buildVersion, this.tags, unsavedEvents);
 
 		}
-		else if (event instanceof InstanceEndpointsDetectedEvent) {
-			Endpoints endpoints = ((InstanceEndpointsDetectedEvent) event).getEndpoints();
+		else if (event instanceof InstanceEndpointsDetectedEvent endpointsDetectedEvent) {
+			Endpoints endpoints = endpointsDetectedEvent.getEndpoints();
 			return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
 					this.statusTimestamp, this.info, endpoints, this.buildVersion, this.tags, unsavedEvents);
 
 		}
-		else if (event instanceof InstanceInfoChangedEvent) {
-			Info info = ((InstanceInfoChangedEvent) event).getInfo();
+		else if (event instanceof InstanceInfoChangedEvent infoChangedEvent) {
+			Info info = infoChangedEvent.getInfo();
 			Map<String, ?> metaData = (this.registration != null) ? this.registration.getMetadata() : emptyMap();
 			return new Instance(this.id, event.getVersion(), this.registration, this.registered, this.statusInfo,
 					this.statusTimestamp, info, this.endpoints, updateBuildVersion(metaData, info.getValues()),

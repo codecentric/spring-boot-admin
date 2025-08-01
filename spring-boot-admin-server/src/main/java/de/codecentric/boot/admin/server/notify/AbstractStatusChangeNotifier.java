@@ -55,9 +55,9 @@ public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier
 
 	@Override
 	protected boolean shouldNotify(InstanceEvent event, Instance instance) {
-		if (event instanceof InstanceStatusChangedEvent statusChange) {
+		if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
 			String from = getLastStatus(event.getInstance());
-			String to = statusChange.getStatusInfo().getStatus();
+			String to = statusChangedEvent.getStatusInfo().getStatus();
 			return Arrays.binarySearch(ignoreChanges, from + ":" + to) < 0
 					&& Arrays.binarySearch(ignoreChanges, "*:" + to) < 0
 					&& Arrays.binarySearch(ignoreChanges, from + ":*") < 0;
@@ -73,8 +73,8 @@ public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier
 		if (event instanceof InstanceDeregisteredEvent) {
 			lastStatuses.remove(event.getInstance());
 		}
-		if (event instanceof InstanceStatusChangedEvent) {
-			lastStatuses.put(event.getInstance(), ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
+		if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
+			lastStatuses.put(event.getInstance(), statusChangedEvent.getStatusInfo().getStatus());
 		}
 	}
 

@@ -102,8 +102,8 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 		Map<String, Object> details = getDetails(event);
 		result.put("details", details);
 
-		if (event instanceof InstanceStatusChangedEvent) {
-			if ("UP".equals(((InstanceStatusChangedEvent) event).getStatusInfo().getStatus())) {
+		if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
+			if ("UP".equals(statusChangedEvent.getStatusInfo().getStatus())) {
 				result.put("event_type", "resolve");
 			}
 			else {
@@ -141,9 +141,9 @@ public class PagerdutyNotifier extends AbstractStatusChangeNotifier {
 
 	protected Map<String, Object> getDetails(InstanceEvent event) {
 		Map<String, Object> details = new HashMap<>();
-		if (event instanceof InstanceStatusChangedEvent) {
+		if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
 			details.put("from", this.getLastStatus(event.getInstance()));
-			details.put("to", ((InstanceStatusChangedEvent) event).getStatusInfo());
+			details.put("to", statusChangedEvent.getStatusInfo());
 		}
 		return details;
 	}

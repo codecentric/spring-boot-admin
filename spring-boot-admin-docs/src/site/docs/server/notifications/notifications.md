@@ -10,7 +10,7 @@ You can add your own Notifiers by adding Spring Beans which implement the `Notif
 ```java title="CustomNotifier.java"
 public class CustomNotifier extends AbstractEventNotifier {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(LoggingNotifier.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomNotifier.class);
 
     public CustomNotifier(InstanceRepository repository) {
         super(repository);
@@ -19,9 +19,9 @@ public class CustomNotifier extends AbstractEventNotifier {
     @Override
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
         return Mono.fromRunnable(() -> {
-            if (event instanceof InstanceStatusChangedEvent) {
+            if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
                 LOGGER.info("Instance {} ({}) is {}", instance.getRegistration().getName(), event.getInstance(),
-                        ((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
+                        statusChangedEvent.getStatusInfo().getStatus());
             }
             else {
                 LOGGER.info("Instance {} ({}) {}", instance.getRegistration().getName(), event.getInstance(),

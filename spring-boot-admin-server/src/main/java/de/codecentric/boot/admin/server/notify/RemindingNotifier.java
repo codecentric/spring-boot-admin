@@ -117,9 +117,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
 	}
 
 	protected boolean shouldStartReminder(InstanceEvent event) {
-		if (event instanceof InstanceStatusChangedEvent) {
-			return Arrays.binarySearch(this.reminderStatuses,
-					((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) >= 0;
+		if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
+			return Arrays.binarySearch(this.reminderStatuses, statusChangedEvent.getStatusInfo().getStatus()) >= 0;
 		}
 		return false;
 	}
@@ -128,9 +127,8 @@ public class RemindingNotifier extends AbstractEventNotifier {
 		if (event instanceof InstanceDeregisteredEvent) {
 			return true;
 		}
-		if (event instanceof InstanceStatusChangedEvent) {
-			return Arrays.binarySearch(this.reminderStatuses,
-					((InstanceStatusChangedEvent) event).getStatusInfo().getStatus()) < 0;
+		if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
+			return Arrays.binarySearch(this.reminderStatuses, statusChangedEvent.getStatusInfo().getStatus()) < 0;
 		}
 		return false;
 	}
