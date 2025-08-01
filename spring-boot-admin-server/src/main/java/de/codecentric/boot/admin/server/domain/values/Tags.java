@@ -24,11 +24,13 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
+import lombok.Getter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import static java.util.stream.Collectors.toMap;
 
+@Getter
 @lombok.EqualsAndHashCode
 @lombok.ToString
 public final class Tags implements Serializable {
@@ -44,10 +46,6 @@ public final class Tags implements Serializable {
 		else {
 			this.values = Collections.unmodifiableMap(new LinkedHashMap<>(tags));
 		}
-	}
-
-	public Map<String, String> getValues() {
-		return this.values;
 	}
 
 	public Tags append(Tags other) {

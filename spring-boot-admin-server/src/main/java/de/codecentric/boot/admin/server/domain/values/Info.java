@@ -55,8 +55,4 @@ public final class Info implements Serializable {
 		return EMPTY;
 	}
 
-	public Map<String, Object> getValues() {
-		return this.values;
-	}
-
 }

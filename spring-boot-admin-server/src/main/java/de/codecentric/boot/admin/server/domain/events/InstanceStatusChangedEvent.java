@@ -27,7 +27,7 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
  *
  * @author Johannes Edmeier
  */
-@lombok.Data
+@lombok.Value
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceStatusChangedEvent extends InstanceEvent {
@@ -37,7 +37,7 @@ public class InstanceStatusChangedEvent extends InstanceEvent {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private final StatusInfo statusInfo;
+	StatusInfo statusInfo;
 
 	public InstanceStatusChangedEvent(InstanceId instance, long version, StatusInfo statusInfo) {
 		this(instance, version, Instant.now(), statusInfo);
