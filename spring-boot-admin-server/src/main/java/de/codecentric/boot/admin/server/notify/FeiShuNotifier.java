@@ -30,7 +30,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
@@ -206,7 +205,6 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.toJsonString(cardContent);
 	}
 
-	@SneakyThrows
 	private String toJsonString(Object o) {
 		try {
 			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();

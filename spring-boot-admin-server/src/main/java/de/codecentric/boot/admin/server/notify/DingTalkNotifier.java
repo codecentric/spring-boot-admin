@@ -112,7 +112,6 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		return message.getValue(context, String.class);
 	}
 
-	@SneakyThrows
 	private String getSign(Long timestamp) {
 		try {
 			String stringToSign = timestamp + "\n" + secret;
