@@ -25,8 +25,8 @@ import java.util.Objects;
 
 import lombok.Builder;
 import lombok.Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
@@ -52,8 +52,6 @@ import static java.util.Collections.singletonList;
 
 public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MicrosoftTeamsNotifier.class);
-
 	private static final String STATUS_KEY = "Status";
 
 	private static final String SERVICE_URL_KEY = "Service URL";
@@ -74,11 +72,12 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 
+	@Setter
 	private RestTemplate restTemplate;
 
 	/**
 	 * Webhook url for Microsoft Teams Channel Webhook connector (i.e.
-	 * https://outlook.office.com/webhook/{webhook-id})
+	 * <a href="https://outlook.office.com/webhook/">...</a>{webhook-id})
 	 */
 	@Nullable
 	private URI webhookUrl;
@@ -110,21 +109,29 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	/**
 	 * Title of the Teams message when an app de-registers
 	 */
+	@Setter
+	@Getter
 	private String deRegisteredTitle = "De-Registered";
 
 	/**
 	 * Title of the Teams message when an app registers
 	 */
+	@Setter
+	@Getter
 	private String registeredTitle = "Registered";
 
 	/**
 	 * Title of the Teams message when an app changes status
 	 */
+	@Setter
+	@Getter
 	private String statusChangedTitle = "Status Changed";
 
 	/**
 	 * Summary section of every Teams message originating from Spring Boot Admin
 	 */
+	@Setter
+	@Getter
 	private String messageSummary = "Spring Boot Admin Notification";
 
 	public MicrosoftTeamsNotifier(InstanceRepository repository, RestTemplate restTemplate) {
@@ -267,42 +274,6 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	public void setStatusActivitySubtitle(String statusActivitySubtitle) {
 		this.statusActivitySubtitle = parser.parseExpression(statusActivitySubtitle, ParserContext.TEMPLATE_EXPRESSION);
-	}
-
-	public String getDeRegisteredTitle() {
-		return deRegisteredTitle;
-	}
-
-	public void setDeRegisteredTitle(String deRegisteredTitle) {
-		this.deRegisteredTitle = deRegisteredTitle;
-	}
-
-	public String getRegisteredTitle() {
-		return registeredTitle;
-	}
-
-	public void setRegisteredTitle(String registeredTitle) {
-		this.registeredTitle = registeredTitle;
-	}
-
-	public String getStatusChangedTitle() {
-		return statusChangedTitle;
-	}
-
-	public void setStatusChangedTitle(String statusChangedTitle) {
-		this.statusChangedTitle = statusChangedTitle;
-	}
-
-	public String getMessageSummary() {
-		return messageSummary;
-	}
-
-	public void setMessageSummary(String messageSummary) {
-		this.messageSummary = messageSummary;
-	}
-
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
 	}
 
 	@Data
