@@ -30,8 +30,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -58,11 +57,10 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
  * "https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN">https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN</a>
  *
  */
+@Slf4j
 public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	private static final String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
-
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 
@@ -143,9 +141,6 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 				body.put("card", this.createCardContent(event, instance));
 				break;
 			case text:
-				body.put("content", this.createTextContent(event, instance));
-				break;
-
 			default:
 				body.put("content", this.createTextContent(event, instance));
 		}
@@ -177,13 +172,12 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	private String createCardContent(InstanceEvent event, Instance instance) {
 		String content = this.createContent(event, instance);
-		Card card = this.card;
 
 		Map<String, Object> header = new HashMap<>();
-		header.put("template", StringUtils.hasText(card.getThemeColor()) ? "red" : card.getThemeColor());
+		header.put("template", StringUtils.hasText(this.card.getThemeColor()) ? "red" : this.card.getThemeColor());
 		Map<String, String> titleContent = new HashMap<>();
 		titleContent.put("tag", "plain_text");
-		titleContent.put("content", card.getTitle());
+		titleContent.put("content", this.card.getTitle());
 		header.put("title", titleContent);
 
 		List<Map<String, Object>> elements = new ArrayList<>();
@@ -217,7 +211,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 			return objectMapper.writeValueAsString(o);
 		}
 		catch (Exception ex) {
-			ex.printStackTrace();
+			log.warn("Failed to serialize JSON object", ex);
 		}
 		return null;
 	}
@@ -280,7 +274,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	}
 
-	public class Card {
+	public static class Card {
 
 		/**
 		 * This is header title.

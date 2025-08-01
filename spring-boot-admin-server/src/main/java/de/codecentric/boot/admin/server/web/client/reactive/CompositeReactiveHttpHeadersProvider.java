@@ -25,8 +25,6 @@ import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 
-import static java.util.stream.Collectors.toList;
-
 public class CompositeReactiveHttpHeadersProvider implements ReactiveHttpHeadersProvider {
 
 	private final Collection<ReactiveHttpHeadersProvider> delegates;
@@ -39,7 +37,7 @@ public class CompositeReactiveHttpHeadersProvider implements ReactiveHttpHeaders
 	public Mono<HttpHeaders> getHeaders(Instance instance) {
 		List<Mono<HttpHeaders>> headers = delegates.stream()
 			.map((reactiveHttpHeadersProvider) -> reactiveHttpHeadersProvider.getHeaders(instance))
-			.collect(toList());
+			.toList();
 
 		return Mono.zip(headers, this::mergeMonosToHeaders);
 	}

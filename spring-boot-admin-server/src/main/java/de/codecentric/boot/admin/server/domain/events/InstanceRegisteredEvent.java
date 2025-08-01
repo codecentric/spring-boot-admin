@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.io.Serial;
 import java.time.Instant;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -33,6 +34,7 @@ public class InstanceRegisteredEvent extends InstanceEvent {
 
 	public static final String TYPE = "REGISTERED";
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final Registration registration;

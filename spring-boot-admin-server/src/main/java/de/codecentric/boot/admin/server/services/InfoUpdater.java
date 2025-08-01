@@ -43,7 +43,7 @@ public class InfoUpdater {
 
 	private static final Logger log = LoggerFactory.getLogger(InfoUpdater.class);
 
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
 	};
 
 	private final InstanceRepository repository;

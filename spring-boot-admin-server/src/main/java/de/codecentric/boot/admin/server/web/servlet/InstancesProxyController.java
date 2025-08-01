@@ -119,7 +119,7 @@ public class InstancesProxyController {
 						return Mono.error(ex);
 					}
 				})
-				// We need to explicitly block so the headers are recieved and written
+				// We need to explicitly block so the headers are received and written
 				// before any async dispatch otherwise the FrameworkServlet will add
 				// wrong
 				// Allow header for OPTIONS request

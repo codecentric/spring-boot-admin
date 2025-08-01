@@ -44,7 +44,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 
 	private final ConcurrentMap<InstanceId, Instance> snapshots = new ConcurrentHashMap<>();
 
-	private final Set<InstanceId> oudatedSnapshots = ConcurrentHashMap.newKeySet();
+	private final Set<InstanceId> outdatedSnapshots = ConcurrentHashMap.newKeySet();
 
 	private final InstanceEventStore eventStore;
 
@@ -64,11 +64,11 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 	@Override
 	public Mono<Instance> find(InstanceId id) {
 		return Mono.defer(() -> {
-			if (!this.oudatedSnapshots.contains(id)) {
+			if (!this.outdatedSnapshots.contains(id)) {
 				return Mono.justOrEmpty(this.snapshots.get(id));
 			}
 			else {
-				return rehydrateSnapshot(id).doOnSuccess((v) -> this.oudatedSnapshots.remove(v.getId()));
+				return rehydrateSnapshot(id).doOnSuccess((v) -> this.outdatedSnapshots.remove(v.getId()));
 			}
 		});
 	}
@@ -76,7 +76,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 	@Override
 	public Mono<Instance> save(Instance instance) {
 		return super.save(instance).doOnError(OptimisticLockingException.class,
-				(e) -> this.oudatedSnapshots.add(instance.getId()));
+				(e) -> this.outdatedSnapshots.add(instance.getId()));
 	}
 
 	public void start() {
