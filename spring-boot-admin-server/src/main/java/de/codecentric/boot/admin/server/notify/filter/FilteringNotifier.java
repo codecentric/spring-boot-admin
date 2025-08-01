@@ -88,8 +88,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
 		}
 		lastCleanup = now;
 		for (Entry<String, NotificationFilter> entry : getNotificationFilters().entrySet()) {
-			if (entry.getValue() instanceof ExpiringNotificationFilter
-					&& ((ExpiringNotificationFilter) entry.getValue()).isExpired()) {
+			if (entry.getValue() instanceof ExpiringNotificationFilter filter && filter.isExpired()) {
 				LOGGER.debug("Expired filter '{}' removed", entry);
 				filters.remove(entry.getKey());
 			}

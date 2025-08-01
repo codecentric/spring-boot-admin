@@ -208,8 +208,8 @@ class InstanceTest {
 
 		List<InstanceEvent> relevantEvents = instance.getUnsavedEvents()
 			.stream()
-			.filter((e) -> !(e instanceof InstanceInfoChangedEvent
-					&& ((InstanceInfoChangedEvent) e).getInfo().getValues().get("info").equals("remove")))
+			.filter((e) -> !(e instanceof InstanceInfoChangedEvent infoChangedEvent
+					&& infoChangedEvent.getInfo().getValues().get("info").equals("remove")))
 			.toList();
 
 		Instance rebuilt = Instance.create(InstanceId.of("id")).apply(relevantEvents);
