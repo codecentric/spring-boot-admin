@@ -26,7 +26,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
  *
  * @author Johannes Edmeier
  */
-@lombok.Data
+@lombok.Value
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceDeregisteredEvent extends InstanceEvent {

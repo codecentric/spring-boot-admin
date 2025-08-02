@@ -232,20 +232,20 @@ class MicrosoftTeamsNotifierTest {
 			assertThat(section.getActivitySubtitle()).isEqualTo(expectedSubTitle);
 
 			assertThat(section.getFacts()).hasSize(5).anySatisfy((fact) -> {
-				assertThat(fact.getName()).isEqualTo("Status");
-				assertThat(fact.getValue()).isEqualTo("UNKNOWN");
+				assertThat(fact.name()).isEqualTo("Status");
+				assertThat(fact.value()).isEqualTo("UNKNOWN");
 			}).anySatisfy((fact) -> {
-				assertThat(fact.getName()).isEqualTo("Service URL");
-				assertThat(fact.getValue()).isEqualTo(SERVICE_URL);
+				assertThat(fact.name()).isEqualTo("Service URL");
+				assertThat(fact.value()).isEqualTo(SERVICE_URL);
 			}).anySatisfy((fact) -> {
-				assertThat(fact.getName()).isEqualTo("Health URL");
-				assertThat(fact.getValue()).isEqualTo(HEALTH_URL);
+				assertThat(fact.name()).isEqualTo("Health URL");
+				assertThat(fact.value()).isEqualTo(HEALTH_URL);
 			}).anySatisfy((fact) -> {
-				assertThat(fact.getName()).isEqualTo("Management URL");
-				assertThat(fact.getValue()).isEqualTo(MANAGEMENT_URL);
+				assertThat(fact.name()).isEqualTo("Management URL");
+				assertThat(fact.value()).isEqualTo(MANAGEMENT_URL);
 			}).anySatisfy((fact) -> {
-				assertThat(fact.getName()).isEqualTo("Source");
-				assertThat(fact.getValue()).isNull();
+				assertThat(fact.name()).isEqualTo("Source");
+				assertThat(fact.value()).isNull();
 			});
 		});
 	}

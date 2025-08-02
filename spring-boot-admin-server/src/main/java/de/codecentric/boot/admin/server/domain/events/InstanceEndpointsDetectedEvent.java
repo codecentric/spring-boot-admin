@@ -27,7 +27,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
  *
  * @author Johannes Edmeier
  */
-@lombok.Data
+@lombok.Value
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceEndpointsDetectedEvent extends InstanceEvent {
@@ -37,7 +37,7 @@ public class InstanceEndpointsDetectedEvent extends InstanceEvent {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private final Endpoints endpoints;
+	Endpoints endpoints;
 
 	public InstanceEndpointsDetectedEvent(InstanceId instance, long version, Endpoints endpoints) {
 		this(instance, version, Instant.now(), endpoints);

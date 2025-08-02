@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -66,7 +65,7 @@ public class HomepageForwardingMatcher<T> implements Predicate<T> {
 		return routes.stream()
 			.map((r) -> "^" + r.replaceAll("/[*][*]", "(/.*)?").replaceAll("/[*]/", "/[^/]+/") + "$")
 			.map(Pattern::compile)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 }

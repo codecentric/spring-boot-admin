@@ -2,11 +2,11 @@ spring-boot-admin-server-ui
 ================================
 
 ### Building this module
-The jar **can be build with Maven** with the maven-exec-plugin. To do this node.js and npm must be installed on your machine and be on your `$PATH`.
+The jar **can be built with Maven** with the maven-exec-plugin. To do this node.js and npm must be installed on your machine and be on your `$PATH`.
 If you don't want to use the maven exec run the following commands:
 
 ### Running Spring Boot Admin Server for development
-To develop the ui on an running server the best to do is
+To develop the ui on a running server the best to do is
 
 1. Running the ui build in watch mode so the resources get updated:
 ```shell
@@ -23,7 +23,7 @@ Or just start the [spring-boot-admin-sample-servlet](../spring-boot-admin-sample
 project using the `dev` profile. You also might want to use the `insecure` profile so you don't need to login.
 
 If you are using hierarchical projects (like the samples here), you have to point "Working directory" in your run config to the Project you are running.
-In IDEA you can simply use "$MODULE_DIR$".
+In IntelliJ IDEA you can simply use "$MODULE_DIR$".
 
 ### Build
 ```shell
