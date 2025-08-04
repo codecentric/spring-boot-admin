@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -69,9 +68,10 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
 	}
 
 	protected Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
+		Assert.notNull(instance.getRegistration().getManagementUrl(), "managementUrl must not be null");
 		URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl())
 			.path("/")
-			.path(endpoint.getPath())
+			.path(endpoint.path())
 			.build()
 			.toUri();
 		return this.instanceWebClient.instance(instance)
@@ -108,37 +108,27 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
 		}
 
 		Map<String, List<DetectedEndpoint>> endpointsById = endpoints.stream()
-			.collect(groupingBy((e) -> e.getDefinition().getId()));
+			.collect(groupingBy((e) -> e.definition().id()));
 		List<Endpoint> result = endpointsById.values().stream().map((endpointList) -> {
-			endpointList.sort(comparingInt((e) -> this.endpoints.indexOf(e.getDefinition())));
+			endpointList.sort(comparingInt((e) -> this.endpoints.indexOf(e.definition())));
 			if (endpointList.size() > 1) {
 				log.warn("Duplicate endpoints for id '{}' detected. Omitting: {}",
-						endpointList.get(0).getDefinition().getId(), endpointList.subList(1, endpointList.size()));
+						endpointList.get(0).definition().id(), endpointList.subList(1, endpointList.size()));
 			}
-			return endpointList.get(0).getEndpoint();
+			return endpointList.get(0).endpoint();
 		}).toList();
 		return Mono.just(Endpoints.of(result));
 	}
 
-	@Data
-	protected static class DetectedEndpoint {
-
-		private final EndpointDefinition definition;
-
-		private final Endpoint endpoint;
+	protected record DetectedEndpoint(EndpointDefinition definition, Endpoint endpoint) {
 
 		private static DetectedEndpoint of(EndpointDefinition endpointDefinition, String url) {
-			return new DetectedEndpoint(endpointDefinition, Endpoint.of(endpointDefinition.getId(), url));
+			return new DetectedEndpoint(endpointDefinition, Endpoint.of(endpointDefinition.id(), url));
 		}
 
 	}
 
-	@Data
-	protected static class EndpointDefinition {
-
-		private final String id;
-
-		private final String path;
+	protected record EndpointDefinition(String id, String path) {
 
 		private static EndpointDefinition create(String idWithPath) {
 			int idxDelimiter = idWithPath.indexOf(':');

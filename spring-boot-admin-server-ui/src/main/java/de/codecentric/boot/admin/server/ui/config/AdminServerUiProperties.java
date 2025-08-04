@@ -227,8 +227,8 @@ public class AdminServerUiProperties {
 
 	/**
 	 * Color shades are based on Tailwind's color palettes:
-	 * https://tailwindcss.com/docs/customizing-colors
-	 *
+	 * <a href="https://tailwindcss.com/docs/customizing-colors">tailwindcss.com</a>
+	 * <p>
 	 * name shade number mainColorLighter 50 mainColorLight 300 mainColor 500
 	 * mainColorDark 700 mainColorDarker 800
 	 */

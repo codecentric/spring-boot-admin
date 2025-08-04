@@ -69,10 +69,6 @@ public final class BuildVersion implements Serializable, Comparable<BuildVersion
 		return null;
 	}
 
-	public String getValue() {
-		return this.value;
-	}
-
 	@Override
 	public String toString() {
 		return this.value;
