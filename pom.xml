@@ -47,7 +47,7 @@
         <spring-boot.version>3.5.4</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
 
-        <jolokia-support-spring.version>2.2.9</jolokia-support-spring.version>
+        <jolokia-support-spring.version>2.3.0</jolokia-support-spring.version>
 
         <checkstyle.version>10.26.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>

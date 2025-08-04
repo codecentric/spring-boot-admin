@@ -173,18 +173,27 @@ export default {
     },
   },
   watch: {
-    chartData: 'drawChart',
-    hovered(newVal) {
-      if (newVal) {
-        this.hover
-          .attr('opacity', 1)
-          .attr('d', `M${this.x(newVal)},${this.height} ${this.x(newVal)},0`);
-      } else {
-        this.hover.attr('opacity', 0);
-      }
+    chartData: {
+      handler: 'drawChart',
+      deep: true,
     },
-    brushSelection(newVal) {
-      this.$emit('selected', newVal);
+    hovered: {
+      handler(newVal) {
+        if (newVal) {
+          this.hover
+            .attr('opacity', 1)
+            .attr('d', `M${this.x(newVal)},${this.height} ${this.x(newVal)},0`);
+        } else {
+          this.hover.attr('opacity', 0);
+        }
+      },
+      immediate: true,
+    },
+    brushSelection: {
+      handler(newVal) {
+        this.$emit('selected', newVal);
+      },
+      immediate: true,
     },
   },
   mounted() {
@@ -317,7 +326,6 @@ export default {
               Math.floor(x.invert(event.selection[0]) / interval) * interval;
             const ceil =
               Math.ceil(x.invert(event.selection[1]) / interval) * interval;
-            d3.select(this).call(event.target.move, [floor, ceil].map(x));
             this.brushSelection = [floor, ceil];
           }
         })
@@ -358,10 +366,12 @@ export default {
   height: 200px;
   width: 100%;
 }
+
 .exchange-chart__hover {
   stroke: #b5b5b5;
   stroke-width: 1px;
 }
+
 .exchange-chart__tooltip {
   position: absolute;
   background: #000;
@@ -371,41 +381,51 @@ export default {
   padding: 0.825em;
   width: 200px;
 }
+
 .exchange-chart__tooltip table th,
 .exchange-chart__tooltip table td {
   border: none;
   color: #b5b5b5;
   padding: 0.25em 0.75em;
 }
+
 .exchange-chart__tooltip table td {
   text-align: right;
 }
+
 .exchange-chart__tooltip--left {
   left: 5px;
 }
+
 .exchange-chart__tooltip--right {
   right: 5px;
 }
+
 .exchange-chart .selection {
   stroke: none;
   fill: rgba(0, 0, 0, 0.2);
   fill-opacity: 1;
 }
+
 .exchange-chart__axis-y .domain {
   stroke: none;
 }
+
 .exchange-chart__axis-y .tick:not(:first-of-type) line {
   stroke-dasharray: 2, 2;
   stroke: #b5b5b5;
 }
+
 .exchange-chart__area--totalSuccess {
   fill: #48c78e;
   opacity: 0.8;
 }
+
 .exchange-chart__area--totalClientErrors {
   fill: #ffe08a;
   opacity: 0.8;
 }
+
 .exchange-chart__area--totalServerErrors {
   fill: #f14668;
   opacity: 0.8;

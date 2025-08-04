@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -61,7 +60,7 @@ public class UiExtensionsScanner {
 		return Stream
 			.concat(Arrays.stream(this.resolver.getResources(widerLocation + "**/*.js")),
 					Arrays.stream(this.resolver.getResources(widerLocation + "**/*.css")))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private String toPattern(String location) {

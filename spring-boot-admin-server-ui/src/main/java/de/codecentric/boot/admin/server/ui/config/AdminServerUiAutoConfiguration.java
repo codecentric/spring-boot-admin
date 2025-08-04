@@ -101,8 +101,7 @@ public class AdminServerUiAutoConfiguration {
 	public UiController homeUiController(UiExtensions uiExtensions) throws IOException {
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 			.scan(this.adminUi.getExtensionResourceLocations());
-		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream())
-			.collect(Collectors.toList());
+		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream()).toList();
 
 		Settings uiSettings = Settings.builder()
 			.brand(this.adminUi.getBrand())
@@ -197,7 +196,7 @@ public class AdminServerUiAutoConfiguration {
 				List<String> routesExcludes = Stream
 					.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
 					.map((path) -> webfluxBasePathSet ? webFluxBasePath + path : this.adminServer.path(path))
-					.collect(Collectors.toList());
+					.toList();
 
 				return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
 			}
@@ -218,7 +217,7 @@ public class AdminServerUiAutoConfiguration {
 			@Bean
 			@ConditionalOnMissingBean
 			public de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter homepageForwardFilter(
-					HomepageForwardingFilterConfig homepageForwardingFilterConfig) throws IOException {
+					HomepageForwardingFilterConfig homepageForwardingFilterConfig) {
 				return new de.codecentric.boot.admin.server.ui.web.reactive.HomepageForwardingFilter(
 						homepageForwardingFilterConfig);
 			}
@@ -261,12 +260,12 @@ public class AdminServerUiAutoConfiguration {
 				List<String> routesIncludes = Stream
 					.concat(DEFAULT_UI_ROUTES.stream(), Stream.concat(extensionRoutes.stream(), Stream.of("/")))
 					.map(this.adminServer::path)
-					.collect(Collectors.toList());
+					.toList();
 
 				List<String> routesExcludes = Stream
 					.concat(DEFAULT_UI_ROUTE_EXCLUDES.stream(), this.adminUi.getAdditionalRouteExcludes().stream())
 					.map(this.adminServer::path)
-					.collect(Collectors.toList());
+					.toList();
 
 				return new HomepageForwardingFilterConfig(homepage, routesIncludes, routesExcludes);
 			}
@@ -285,7 +284,7 @@ public class AdminServerUiAutoConfiguration {
 			@Bean
 			@ConditionalOnMissingBean
 			public de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter homepageForwardFilter(
-					HomepageForwardingFilterConfig homepageForwardingFilterConfig) throws IOException {
+					HomepageForwardingFilterConfig homepageForwardingFilterConfig) {
 				return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(
 						homepageForwardingFilterConfig);
 			}

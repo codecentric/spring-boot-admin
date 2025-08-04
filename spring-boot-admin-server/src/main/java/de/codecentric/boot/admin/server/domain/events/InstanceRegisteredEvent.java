@@ -27,7 +27,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
  *
  * @author Johannes Edmeier
  */
-@lombok.Data
+@lombok.Value
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceRegisteredEvent extends InstanceEvent {
@@ -37,7 +37,7 @@ public class InstanceRegisteredEvent extends InstanceEvent {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private final Registration registration;
+	Registration registration;
 
 	public InstanceRegisteredEvent(InstanceId instance, long version, Registration registration) {
 		this(instance, version, Instant.now(), registration);
