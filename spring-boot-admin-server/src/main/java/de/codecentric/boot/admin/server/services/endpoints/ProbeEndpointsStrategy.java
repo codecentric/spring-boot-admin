@@ -68,6 +68,7 @@ public class ProbeEndpointsStrategy implements EndpointDetectionStrategy {
 	}
 
 	protected Mono<DetectedEndpoint> detectEndpoint(Instance instance, EndpointDefinition endpoint) {
+		Assert.notNull(instance.getRegistration().getManagementUrl(), "managementUrl must not be null");
 		URI uri = UriComponentsBuilder.fromUriString(instance.getRegistration().getManagementUrl())
 			.path("/")
 			.path(endpoint.path())
