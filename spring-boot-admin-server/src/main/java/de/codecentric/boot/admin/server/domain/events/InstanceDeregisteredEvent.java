@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.io.Serial;
 import java.time.Instant;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -25,13 +26,14 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
  *
  * @author Johannes Edmeier
  */
-@lombok.Data
+@lombok.Value
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceDeregisteredEvent extends InstanceEvent {
 
 	public static final String TYPE = "DEREGISTERED";
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public InstanceDeregisteredEvent(InstanceId instance, long version) {

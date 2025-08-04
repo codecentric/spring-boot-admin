@@ -112,7 +112,7 @@ When using Spring Cloud Discovery, you must be aware that anybody who can query 
 :::
 
 :::tip
-When using this approach the SBA Server decides whether or not the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in [joshiste/spring-boot-admin-samples](https://github.com/joshiste/spring-boot-admin-samples).
+When using this approach the SBA Server decides whether the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in [joshiste/spring-boot-admin-samples](https://github.com/joshiste/spring-boot-admin-samples).
 :::
 
 ### SBA Client
@@ -131,13 +131,13 @@ spring.boot.admin.client:
 You can specify credentials via configuration properties in your admin server.
 
 :::tip
-You can use this in conjuction with [spring-cloud-kubernetes](https://cloud.spring.io/spring-cloud-kubernetes/1.1.x/reference/html/#secrets-propertysource) to pull credentials from [secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
+You can use this in conjunction with [spring-cloud-kubernetes](https://cloud.spring.io/spring-cloud-kubernetes/1.1.x/reference/html/#secrets-propertysource) to pull credentials from [secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
 :::
 
 To enable pulling credentials from properties the `spring.boot.admin.instance-auth.enabled` property must be `true` (default).
 
 :::note
-If your clients provide credentials via metadata (i.e., via service annotations), that metadata will be used instead of the properites.
+If your clients provide credentials via metadata (i.e., via service annotations), that metadata will be used instead of the properties.
 :::
 
 You can provide a default username and password by setting `spring.boot.admin.instance-auth.default-user-name` and `spring.boot.admin.instance-auth.default-user-password`. Optionally you can provide credentials for specific services (by name) using the `spring.boot.admin.instance-auth.service-map.*.user-name` pattern, replacing `*` with the service name.

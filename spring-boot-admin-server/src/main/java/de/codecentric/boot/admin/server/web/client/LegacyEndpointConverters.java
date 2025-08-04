@@ -52,18 +52,17 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public final class LegacyEndpointConverters {
 
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE_MAP = new ParameterizedTypeReference<Map<String, Object>>() {
+	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE_MAP = new ParameterizedTypeReference<>() {
 	};
 
-	private static final ParameterizedTypeReference<List<Object>> RESPONSE_TYPE_LIST = new ParameterizedTypeReference<List<Object>>() {
+	private static final ParameterizedTypeReference<List<Object>> RESPONSE_TYPE_LIST = new ParameterizedTypeReference<>() {
 	};
 
-	private static final ParameterizedTypeReference<List<Map<String, Object>>> RESPONSE_TYPE_LIST_MAP = new ParameterizedTypeReference<List<Map<String, Object>>>() {
+	private static final ParameterizedTypeReference<List<Map<String, Object>>> RESPONSE_TYPE_LIST_MAP = new ParameterizedTypeReference<>() {
 	};
 
 	private static final Jackson2JsonDecoder DECODER;
@@ -166,7 +165,7 @@ public final class LegacyEndpointConverters {
 		// the arguments of the handler method. Parameterized types were stripped early
 		// in the parsing process to maintain parsing simplicity.
 		// We also assume object types (see L) which is highly likely for spring-web
-		// @RequestMapping methods but there will be false positives (eg. on void).
+		// @RequestMapping methods but there will be false positives (e.g. on void).
 		//
 		// returnType -> Ljava/lang/Object;
 
@@ -180,7 +179,7 @@ public final class LegacyEndpointConverters {
 		//
 		// methodArgs -> (Ljava/util/List;)
 		String methodArgs = Arrays.stream(method
-			// get what's included in parenthesis
+			// get what's included in parentheses
 			.substring(method.indexOf('('), method.length() - 1)
 			// now remove the parenthesis
 			.replaceAll("[()]", "")
@@ -266,8 +265,7 @@ public final class LegacyEndpointConverters {
 	}
 
 	private static Map<String, Object> convertHttptrace(List<Map<String, Object>> traces) {
-		return singletonMap("traces",
-				traces.stream().sequential().map(LegacyEndpointConverters::convertHttptrace).collect(toList()));
+		return singletonMap("traces", traces.stream().map(LegacyEndpointConverters::convertHttptrace).toList());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -294,8 +292,8 @@ public final class LegacyEndpointConverters {
 
 				Map<String, Object> in_response_headers = (Map<String, Object>) in_headers.get("response");
 				if (in_response_headers != null) {
-					if (in_response_headers.get("status") instanceof String) {
-						response.put("status", Long.valueOf(in_response_headers.get("status").toString()));
+					if (in_response_headers.get("status") instanceof String status) {
+						response.put("status", Long.valueOf(status));
 					}
 
 					Map<String, Object> responseHeaders = new LinkedHashMap<>();
@@ -306,8 +304,8 @@ public final class LegacyEndpointConverters {
 			}
 
 			out.put("response", response);
-			if (in_info.get("timeTaken") instanceof String) {
-				out.put("timeTaken", Long.valueOf(in_info.get("timeTaken").toString()));
+			if (in_info.get("timeTaken") instanceof String timeTaken) {
+				out.put("timeTaken", Long.valueOf(timeTaken));
 			}
 		}
 		return out;
@@ -320,7 +318,6 @@ public final class LegacyEndpointConverters {
 	@SuppressWarnings("unchecked")
 	private static Map<String, Object> convertLiquibase(List<Map<String, Object>> reports) {
 		Map<String, Object> liquibaseBeans = reports.stream()
-			.sequential()
 			.collect(toMap((r) -> (String) r.get("name"), (r) -> singletonMap("changeSets", LegacyEndpointConverters
 				.convertLiquibaseChangesets((List<Map<String, Object>>) r.get("changeLogs")))));
 
@@ -333,8 +330,8 @@ public final class LegacyEndpointConverters {
 			converted.put("id", changeset.get("ID"));
 			converted.put("author", changeset.get("AUTHOR"));
 			converted.put("changeLog", changeset.get("FILENAME"));
-			if (changeset.get("DATEEXECUTED") instanceof Long) {
-				converted.put("dateExecuted", new Date((Long) changeset.get("DATEEXECUTED")));
+			if (changeset.get("DATEEXECUTED") instanceof Long dateExecuted) {
+				converted.put("dateExecuted", new Date(dateExecuted));
 			}
 			converted.put("orderExecuted", changeset.get("ORDEREXECUTED"));
 			converted.put("execType", changeset.get("EXECTYPE"));
@@ -342,19 +339,18 @@ public final class LegacyEndpointConverters {
 			converted.put("description", changeset.get("DESCRIPTION"));
 			converted.put("comments", changeset.get("COMMENTS"));
 			converted.put("tag", changeset.get("TAG"));
-			converted.put("contexts", (changeset.get("CONTEXTS") instanceof String)
-					? new LinkedHashSet<>(asList(((String) changeset.get("CONTEXTS")).split(",\\s*"))) : emptySet());
-			converted.put("labels", (changeset.get("LABELS") instanceof String)
-					? new LinkedHashSet<>(asList(((String) changeset.get("LABELS")).split(",\\s*"))) : emptySet());
+			converted.put("contexts", (changeset.get("CONTEXTS") instanceof String contexts)
+					? new LinkedHashSet<>(asList((contexts).split(",\\s*"))) : emptySet());
+			converted.put("labels", (changeset.get("LABELS") instanceof String labels)
+					? new LinkedHashSet<>(asList((labels).split(",\\s*"))) : emptySet());
 			converted.put("deploymentId", changeset.get("DEPLOYMENT_ID"));
 			return converted;
-		}).collect(toList());
+		}).toList();
 	}
 
 	@SuppressWarnings("unchecked")
 	private static Map<String, Object> convertFlyway(List<Map<String, Object>> reports) {
 		Map<String, Object> flywayBeans = reports.stream()
-			.sequential()
 			.collect(toMap((r) -> (String) r.get("name"), (r) -> singletonMap("migrations", LegacyEndpointConverters
 				.convertFlywayMigrations((List<Map<String, Object>>) r.get("migrations")))));
 		return singletonMap("contexts", singletonMap("application", singletonMap("flywayBeans", flywayBeans)));
@@ -363,11 +359,11 @@ public final class LegacyEndpointConverters {
 	private static List<Map<String, Object>> convertFlywayMigrations(List<Map<String, Object>> migrations) {
 		return migrations.stream().map((migration) -> {
 			Map<String, Object> converted = new LinkedHashMap<>(migration);
-			if (migration.get("installedOn") instanceof Long) {
-				converted.put("installedOn", new Date((Long) migration.get("installedOn")));
+			if (migration.get("installedOn") instanceof Long installedOn) {
+				converted.put("installedOn", new Date(installedOn));
 			}
 			return converted;
-		}).collect(toList());
+		}).toList();
 	}
 
 	private static Map<String, Object> convertBeans(List<Map<String, Object>> contextBeans) {
@@ -377,7 +373,7 @@ public final class LegacyEndpointConverters {
 
 			// SB 1.x /beans child application context has
 			// itself as parent as well. In order to avoid contexts
-			// with same name we simple append .child in that case.
+			// with same name we simply append .child in that case.
 			if (contextName.equals(parentId)) {
 				contextName = contextName + ".child";
 			}
@@ -432,7 +428,7 @@ public final class LegacyEndpointConverters {
 			convertedMappingDetails.put("requestMappingConditions", convertMappingConditions(predicate));
 
 			return convertedMapping;
-		}).collect(Collectors.toList());
+		}).toList();
 
 		return singletonMap("contexts", //
 				singletonMap("application", //
@@ -442,14 +438,14 @@ public final class LegacyEndpointConverters {
 	}
 
 	private static Map<String, Object> convertMappingConditions(String predicate) {
-		// Before further processing we need to remove the following occurencies
+		// Before further processing we need to remove the following occurrences
 		// {[, ]}, [, ] and split on comma to get condition pairs from the
 		// predicate string.
 		// Example:
 		// {[/scratch/{ticketId}/selectPrize/{prizeId}],methods=[POST]}
 		// -> "/scratch/{ticketId}/selectPrize/{prizeId}","methods=POST"
 		String[] conditionPairs = predicate
-			// remove all {[ and }] pairs
+			// remove all {[ and ]} pairs
 			.replaceAll("\\{\\[|\\]\\}", "")
 			// remove all single brackets [ and ]
 			.replaceAll("[\\[\\]]", "")
@@ -504,11 +500,11 @@ public final class LegacyEndpointConverters {
 	@Nullable
 	private static Instant getInstant(Object o) {
 		try {
-			if (o instanceof String) {
-				return OffsetDateTime.parse((String) o, TIMESTAMP_PATTERN).toInstant();
+			if (o instanceof String stringObj) {
+				return OffsetDateTime.parse(stringObj, TIMESTAMP_PATTERN).toInstant();
 			}
-			else if (o instanceof Long) {
-				return Instant.ofEpochMilli((Long) o);
+			else if (o instanceof Long longObj) {
+				return Instant.ofEpochMilli(longObj);
 			}
 		}
 		catch (DateTimeException | ClassCastException ex) {

@@ -91,7 +91,7 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		// Let's Chat requiers the token as basic username, the password can be an
+		// Let's Chat requires the token as basic username, the password can be an
 		// arbitrary string.
 		String auth = Base64.getEncoder()
 			.encodeToString(String.format("%s:%s", token, username).getBytes(StandardCharsets.UTF_8));

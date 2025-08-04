@@ -52,25 +52,21 @@ public final class BuildVersion implements Serializable, Comparable<BuildVersion
 		Object build = map.get("build");
 		if (build instanceof Map) {
 			Object version = ((Map<?, ?>) build).get("version");
-			if (version instanceof String) {
-				return valueOf((String) version);
+			if (version instanceof String versionString) {
+				return valueOf(versionString);
 			}
 		}
 
 		Object version = map.get("build.version");
-		if (version instanceof String) {
-			return valueOf((String) version);
+		if (version instanceof String versionString) {
+			return valueOf(versionString);
 		}
 
 		version = map.get("version");
-		if (version instanceof String) {
-			return valueOf((String) version);
+		if (version instanceof String versionString) {
+			return valueOf(versionString);
 		}
 		return null;
-	}
-
-	public String getValue() {
-		return this.value;
 	}
 
 	@Override

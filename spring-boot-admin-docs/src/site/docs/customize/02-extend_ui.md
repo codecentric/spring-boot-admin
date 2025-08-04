@@ -275,7 +275,7 @@ SBA.viewRegistry.addView({
 
 1. The parent must be 'instances' in order to render the new custom view for a single instance.
 2. You can group views by assigning them to a group.
-3. If you add a `isEnabled` callback you can figure out dynamically if the view should be show for the particular instance.
+3. If you add a `isEnabled` callback you can figure out dynamically if the view should be shown for the particular instance.
 
 :::note
 You can override default views by putting the same group and name as the one you want to override.

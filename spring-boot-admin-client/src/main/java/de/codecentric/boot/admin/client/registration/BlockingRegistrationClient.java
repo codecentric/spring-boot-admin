@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class BlockingRegistrationClient implements RegistrationClient {
 
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<Map<String, Object>>() {
+	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
 	};
 
 	private final RestTemplate restTemplate;

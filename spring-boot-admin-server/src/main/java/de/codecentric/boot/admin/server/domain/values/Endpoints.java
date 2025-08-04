@@ -86,13 +86,7 @@ public final class Endpoints implements Iterable<Endpoint>, Serializable {
 		return this.endpoints.values().stream();
 	}
 
-	private static final class UnmodifiableIterator<T> implements Iterator<T> {
-
-		private final Iterator<T> delegate;
-
-		private UnmodifiableIterator(Iterator<T> delegate) {
-			this.delegate = delegate;
-		}
+	private record UnmodifiableIterator<T>(Iterator<T> delegate) implements Iterator<T> {
 
 		@Override
 		public boolean hasNext() {

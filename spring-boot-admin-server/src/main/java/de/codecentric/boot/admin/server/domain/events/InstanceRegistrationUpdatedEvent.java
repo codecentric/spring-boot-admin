@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.events;
 
+import java.io.Serial;
 import java.time.Instant;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -26,16 +27,17 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
  *
  * @author Johannes Edmeier
  */
-@lombok.Data
+@lombok.Value
 @lombok.EqualsAndHashCode(callSuper = true)
 @lombok.ToString(callSuper = true)
 public class InstanceRegistrationUpdatedEvent extends InstanceEvent {
 
 	public static final String TYPE = "REGISTRATION_UPDATED";
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private final Registration registration;
+	Registration registration;
 
 	public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Registration registration) {
 		this(instance, version, Instant.now(), registration);

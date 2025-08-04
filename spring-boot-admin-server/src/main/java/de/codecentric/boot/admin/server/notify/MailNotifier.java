@@ -37,7 +37,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import static java.util.Collections.singleton;
 
 /**
- * Notifier sending emails using thymleaf templates.
+ * Notifier sending emails using Thymeleaf templates.
  *
  * @author Johannes Edmeier
  */
@@ -74,7 +74,7 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
 	private String baseUrl;
 
 	/**
-	 * Thymleaf template for mail
+	 * Thymeleaf template for mail
 	 */
 	private String template = "META-INF/spring-boot-admin-server/mail/status-changed.html";
 

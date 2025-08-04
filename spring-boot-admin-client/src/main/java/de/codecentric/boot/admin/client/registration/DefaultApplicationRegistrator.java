@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class DefaultApplicationRegistrator implements ApplicationRegistrator {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationRegistrator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationRegistrator.class);
 
 	private final ConcurrentHashMap<String, LongAdder> attempts = new ConcurrentHashMap<>();
 

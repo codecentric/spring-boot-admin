@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.eventstore;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.hazelcast.core.EntryAdapter;
 import com.hazelcast.core.EntryEvent;
@@ -52,7 +51,7 @@ public class HazelcastEventStore extends ConcurrentMapEventStore {
 				List<InstanceEvent> newEvents = event.getValue()
 					.stream()
 					.filter((e) -> e.getVersion() > lastKnownVersion)
-					.collect(Collectors.toList());
+					.toList();
 				HazelcastEventStore.this.publish(newEvents);
 			}
 		}, true);
