@@ -23,6 +23,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue';
+
 import { ActionScope } from '@/components/ActionScope';
 
 import Application from '@/services/application';
@@ -33,7 +35,6 @@ import {
   ApplicationLoggers,
   InstanceLoggers,
 } from '@/views/instances/loggers/service';
-import { computed, ref } from 'vue';
 
 const { instance, application } = defineProps<{
   instance: Instance;

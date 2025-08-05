@@ -74,7 +74,7 @@
     "@testing-library/jest-dom": "6.6.4",
     "@testing-library/user-event": "14.6.1",
     "@testing-library/vue": "8.1.0",
-    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.0.0",
     "@types/d3": "^7.4.3",
     "@types/lodash-es": "^4.17.7",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
