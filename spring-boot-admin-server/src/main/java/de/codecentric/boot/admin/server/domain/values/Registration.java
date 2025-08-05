@@ -67,7 +67,11 @@ public final class Registration implements Serializable {
 		this.serviceUrl = serviceUrl;
 		this.source = source;
 		this.metadata = new LinkedHashMap<>();
-		metadata.forEach(this.metadata::put);
+		for (Map.Entry<String, String> entry : metadata.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			this.metadata.put(key, value);
+		}
 	}
 
 	public static Registration.Builder create(String name, String healthUrl) {
