@@ -1,6 +1,5 @@
-// @vitest-environment happy-dom
 import { RenderResult, screen, waitFor } from '@testing-library/vue';
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { applications } from '@/mocks/applications/data';
 import Application from '@/services/application';
@@ -50,11 +49,11 @@ describe('TreeGraph', () => {
   };
 
   beforeEach(async () => {
-    vi.useFakeTimers();
+    vi.useFakeTimers({ ignoreMissingTimers: true });
     await renderComponent();
   });
 
-  afterAll(() => {
+  afterEach(() => {
     vi.useRealTimers();
   });
 
