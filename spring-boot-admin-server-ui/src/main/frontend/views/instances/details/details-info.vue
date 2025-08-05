@@ -54,6 +54,7 @@ export default {
     error: null,
     loading: false,
     liveInfo: null,
+    currentInstanceId: null,
   }),
   computed: {
     info() {
@@ -63,12 +64,24 @@ export default {
       return Object.keys(this.info).length <= 0;
     },
   },
+  watch: {
+    instance: {
+      handler: 'reloadInfo',
+      immediate: true,
+    },
+  },
   created() {
     this.fetchInfo();
   },
   methods: {
+    reloadInfo() {
+      if (this.instance.id !== this.currentInstanceId) {
+        this.fetchInfo();
+      }
+    },
     async fetchInfo() {
       if (this.instance.hasEndpoint('info')) {
+        this.currentInstanceId = this.instance.id;
         this.loading = true;
         this.error = null;
 
