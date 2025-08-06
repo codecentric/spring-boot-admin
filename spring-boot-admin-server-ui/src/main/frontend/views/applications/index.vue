@@ -182,6 +182,8 @@ import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
+import SbaButton from '@/components/sba-button.vue';
+import SbaConfirmButton from '@/components/sba-confirm-button.vue';
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 import SbaWave from '@/components/sba-wave.vue';
 
@@ -189,8 +191,9 @@ import { useApplicationStore } from '@/composables/useApplicationStore';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import NotificationFilter from '@/services/notification-filter';
+import axios from '@/utils/axios';
 import { anyValueMatches } from '@/utils/collections';
-import { concatMap, mergeWith, Subject, timer } from '@/utils/rxjs';
+import { Subject, concatMap, mergeWith, timer } from '@/utils/rxjs';
 import { useRouterState } from '@/utils/useRouterState';
 import { useSubscription } from '@/utils/useSubscription';
 import ApplicationListItemAction from '@/views/applications/ApplicationListItemAction.vue';
@@ -199,9 +202,6 @@ import ApplicationStats from '@/views/applications/ApplicationStats.vue';
 import ApplicationStatusHero from '@/views/applications/ApplicationStatusHero.vue';
 import InstancesList from '@/views/applications/InstancesList.vue';
 import NotificationFilterSettings from '@/views/applications/NotificationFilterSettings.vue';
-import SbaButton from '@/components/sba-button.vue';
-import SbaConfirmButton from '@/components/sba-confirm-button.vue';
-import axios from '@/utils/axios';
 
 const props = defineProps({
   error: {
