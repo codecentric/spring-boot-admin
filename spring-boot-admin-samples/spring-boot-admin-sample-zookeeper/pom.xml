@@ -26,7 +26,7 @@
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-samples</artifactId>
-        <version>3.5.2-springboot4-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
