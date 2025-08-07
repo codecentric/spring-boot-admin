@@ -27,7 +27,7 @@
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
-        <version>${revision}</version>
+        <version>3.5.2-springboot4-SNAPSHOT</version>
         <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
 
@@ -55,7 +55,7 @@
                     <groupId>de.codecentric</groupId>
                     <artifactId>spring-boot-admin-server-cloud</artifactId>
                     <!--fix for https://github.com/mojohaus/flatten-maven-plugin/issues/70 -->
-                    <version>${revision}</version>
+                    <version>3.5.2-springboot4-SNAPSHOT</version>
                     <scope>compile</scope>
                 </dependency>
             </dependencies>

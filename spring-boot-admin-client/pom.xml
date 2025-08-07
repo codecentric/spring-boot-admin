@@ -27,7 +27,7 @@
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
-        <version>${revision}</version>
+        <version>3.5.2-springboot4-SNAPSHOT</version>
         <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
 
