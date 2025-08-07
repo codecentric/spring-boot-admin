@@ -49,7 +49,7 @@
 
         <jolokia-support-spring.version>2.3.0</jolokia-support-spring.version>
 
-        <checkstyle.version>10.26.1</checkstyle.version>
+        <checkstyle.version>11.0.0</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
 
         <wiremock.version>3.13.1</wiremock.version>
