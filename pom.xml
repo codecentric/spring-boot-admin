@@ -59,7 +59,7 @@
         <hazelcast.version>5.5.0</hazelcast.version>
         <awaitility.version>4.3.0</awaitility.version>
         <testcontainers.version>1.21.3</testcontainers.version>
-        <jetty.version>12.0.23</jetty.version>
+        <jetty.version>12.0.24</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
