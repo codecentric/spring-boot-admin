@@ -29,7 +29,7 @@
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin</artifactId>
-        <version>3.5.2-springboot4-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -38,27 +38,27 @@
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-server</artifactId>
-                <version>3.5.2-springboot4-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-server-ui</artifactId>
-                <version>3.5.2-springboot4-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-client</artifactId>
-                <version>3.5.2-springboot4-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-client</artifactId>
-                <version>3.5.2-springboot4-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-server</artifactId>
-                <version>3.5.2-springboot4-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -105,7 +105,7 @@
                     <dependency>
                         <groupId>de.codecentric</groupId>
                         <artifactId>spring-boot-admin-server-cloud</artifactId>
-                        <version>3.5.2-springboot4-SNAPSHOT</version>
+                        <version>${revision}</version>
                     </dependency>
                 </dependencies>
             </dependencyManagement>
