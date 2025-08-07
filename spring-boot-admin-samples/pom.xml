@@ -29,7 +29,7 @@
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
-        <version>3.5.2-springboot4-SNAPSHOT</version>
+        <version>${revision}</version>
         <relativePath>../spring-boot-admin-build</relativePath>
     </parent>
 
@@ -46,7 +46,7 @@
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-sample-custom-ui</artifactId>
-                <version>3.5.2-springboot4-SNAPSHOT</version>
+                <version>${revision}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
