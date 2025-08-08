@@ -193,7 +193,13 @@ export default {
             event.type === InstanceEvent.REGISTERED ||
             event.type === InstanceEvent.REGISTRATION_UPDATED,
         )
-        .reduce((names, event) => {
+        .sort(
+          compareBy((e) => {
+            return e.timestamp;
+          }),
+        )
+        .reverse()
+        .reduceRight((names, event) => {
           names[event.instance] = event.payload.registration.name;
           return names;
         }, {});
