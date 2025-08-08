@@ -199,7 +199,8 @@ export default {
           }),
         )
         .reverse()
-        .reduceRight((names, event) => {
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .reduce((names, event) => {
           names[event.instance] = event.payload.registration.name;
           return names;
         }, {});
