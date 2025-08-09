@@ -1,7 +1,11 @@
 import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { HttpResponse, http } from 'msw';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import JournalView from './index.vue';
+
+import { server } from '@/mocks/server';
+import { render } from '@/test-utils';
 
 class InstanceEvent {
   constructor({ instance, version, type, timestamp, ...payload }) {
@@ -20,6 +24,14 @@ InstanceEvent.REGISTERED = 'REGISTERED';
 InstanceEvent.REGISTRATION_UPDATED = 'REGISTRATION_UPDATED';
 
 describe('Journal View', () => {
+  beforeEach(() => {
+    server.use(
+      http.get('/instances/events', () => {
+        return HttpResponse.json({});
+      }),
+    );
+  });
+
   it('should update instance names when registration is updated', () => {
     const events = [
       new InstanceEvent({
@@ -38,7 +50,7 @@ describe('Journal View', () => {
       }),
     ];
 
-    const wrapper = mount(JournalView, {
+    const { container } = render(JournalView, {
       data() {
         return {
           events: events,
@@ -53,7 +65,8 @@ describe('Journal View', () => {
       },
     });
 
-    const instanceNames = wrapper.vm.instanceNames;
+    const instanceNames =
+      container.firstChild.__vueParentComponent.ctx.instanceNames;
 
     // Should use the most recent name from REGISTRATION_UPDATED event
     expect(instanceNames['instance-1']).toBe('NEW APP NAME');
