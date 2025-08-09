@@ -33,7 +33,7 @@
         <revision>3.5.2-springboot4-SNAPSHOT</revision>
 
         <java.version>17</java.version>
-        <node.version>v22.12.0</node.version>
+        <node.version>v22.14.0</node.version>
 
         <require.maven.version>3.9</require.maven.version>
 
@@ -44,8 +44,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.5.4</spring-boot.version>
-        <spring-cloud.version>2025.0.0</spring-cloud.version>
+        <spring-boot.version>4.0.0-M1</spring-boot.version>
+        <spring-cloud.version>2025.1.0-M1</spring-cloud.version>
 
         <jolokia-support-spring.version>2.3.0</jolokia-support-spring.version>
 
