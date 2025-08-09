@@ -56,7 +56,7 @@ class HipchatNotifierTest {
 
 	@BeforeEach
 	void setUp() {
-		InstanceRepository repository = mock(InstanceRepository.class);
+		final InstanceRepository repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		restTemplate = mock(RestTemplate.class);
@@ -70,7 +70,7 @@ class HipchatNotifierTest {
 	@Test
 	void test_onApplicationEvent_resolve() {
 		@SuppressWarnings("unchecked")
-		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
+		final ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
 			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
 		when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
@@ -86,9 +86,9 @@ class HipchatNotifierTest {
 			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders().asMultiValueMap()).containsEntry("Content-Type",
-				Collections.singletonList("application/json"));
+			.containsAll(Collections.singletonList("application/json"));
 
-		Map<String, Object> body = httpRequest.getValue().getBody();
+		final Map<String, Object> body = httpRequest.getValue().getBody();
 		assertThat(body).containsEntry("color", "green");
 		assertThat(body).containsEntry("message", "<strong>App</strong>/-id- is <strong>UP</strong>");
 		assertThat(body).containsEntry("notify", Boolean.TRUE);
@@ -98,10 +98,10 @@ class HipchatNotifierTest {
 
 	@Test
 	void test_onApplicationEvent_trigger() {
-		StatusInfo infoDown = StatusInfo.ofDown();
+		final StatusInfo infoDown = StatusInfo.ofDown();
 
 		@SuppressWarnings("unchecked")
-		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
+		final ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
 			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
 		when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
@@ -117,7 +117,7 @@ class HipchatNotifierTest {
 
 		assertThat(httpRequest.getValue().getHeaders().toSingleValueMap()).containsEntry("Content-Type",
 				"application/json");
-		Map<String, Object> body = httpRequest.getValue().getBody();
+		final Map<String, Object> body = httpRequest.getValue().getBody();
 		assertThat(body).containsEntry("color", "red");
 		assertThat(body).containsEntry("message", "<strong>App</strong>/-id- is <strong>DOWN</strong>");
 		assertThat(body).containsEntry("notify", Boolean.TRUE);

@@ -68,7 +68,8 @@ public class SecuritySecureConfig {
 			.requestMatchers(
 					PathPatternRequestMatcher.withDefaults().matcher((this.adminServer.path("/actuator/info"))))
 			.permitAll()
-			.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher(adminServer.path("/actuator/health")))
+			.requestMatchers(
+					PathPatternRequestMatcher.withDefaults().matcher(this.adminServer.path("/actuator/health")))
 			.permitAll()
 			.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher(this.adminServer.path("/login")))
 			.permitAll()

@@ -33,7 +33,7 @@
         <revision>4.0.0-M1</revision>
 
         <java.version>17</java.version>
-        <node.version>v22.12.0</node.version>
+        <node.version>v22.14.0</node.version>
 
         <require.maven.version>3.9</require.maven.version>
 
