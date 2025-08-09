@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.result.condition.PatternsRequestCondition;
 import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
@@ -31,21 +32,21 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 
 	private final String adminContextPath;
 
-	public AdminControllerHandlerMapping(String adminContextPath) {
+	public AdminControllerHandlerMapping(final String adminContextPath) {
 		this.adminContextPath = adminContextPath;
 	}
 
 	@Override
-	protected boolean isHandler(Class<?> beanType) {
+	protected boolean isHandler(final Class<?> beanType) {
 		return AnnotatedElementUtils.hasAnnotation(beanType, AdminController.class);
 	}
 
 	@Override
-	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
+	protected void registerHandlerMethod(final Object handler, final Method method, final RequestMappingInfo mapping) {
 		super.registerHandlerMethod(handler, method, withPrefix(mapping));
 	}
 
-	private RequestMappingInfo withPrefix(RequestMappingInfo mapping) {
+	private RequestMappingInfo withPrefix(final RequestMappingInfo mapping) {
 		if (!StringUtils.hasText(adminContextPath)) {
 			return mapping;
 		}

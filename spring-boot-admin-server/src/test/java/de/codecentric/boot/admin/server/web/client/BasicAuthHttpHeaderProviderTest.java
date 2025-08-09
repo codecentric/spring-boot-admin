@@ -37,68 +37,68 @@ class BasicAuthHttpHeaderProviderTest {
 
 	@Test
 	void test_auth_header() {
-		Registration registration = Registration.create("foo", "https://health")
+		final Registration registration = Registration.create("foo", "https://health")
 			.metadata("user.name", "test")
 			.metadata("user.password", "drowssap")
 			.build();
-		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		final Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(this.headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 			.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}
 
 	@Test
 	void test_auth_header_with_dashes() {
-		Registration registration = Registration.create("foo", "https://health")
+		final Registration registration = Registration.create("foo", "https://health")
 			.metadata("user-name", "test")
 			.metadata("user-password", "drowssap")
 			.build();
-		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		final Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(this.headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 			.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}
 
 	@Test
 	void test_auth_header_no_separator() {
-		Registration registration = Registration.create("foo", "https://health")
+		final Registration registration = Registration.create("foo", "https://health")
 			.metadata("username", "test")
 			.metadata("userpassword", "drowssap")
 			.build();
-		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		final Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(this.headersProvider.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 			.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}
 
 	@Test
 	void test_no_header() {
-		Registration registration = Registration.create("foo", "https://health").build();
-		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		final Registration registration = Registration.create("foo", "https://health").build();
+		final Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(this.headersProvider.getHeaders(instance).toSingleValueMap()).isEmpty();
 	}
 
 	@Test
 	void test_auth_instance_enabled_use_default_creds() {
-		Registration registration = Registration.create("foo", "https://health").name("xyz-server").build();
-		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		final Registration registration = Registration.create("foo", "https://health").name("xyz-server").build();
+		final Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(this.headersProviderEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 			.containsOnly("Basic Y2xpZW50OmNsaWVudA==");
 	}
 
 	@Test
 	void test_auth_instance_enabled_use_service_specific_creds() {
-		Registration registration = Registration.create("foo", "https://health").name("sb-admin-server").build();
-		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		final Registration registration = Registration.create("foo", "https://health").name("sb-admin-server").build();
+		final Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(this.headersProviderEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 			.containsOnly("Basic YWRtaW46YWRtaW4=");
 	}
 
 	@Test
 	void test_auth_instance_enabled_use_metadata_over_props() {
-		Registration registration = Registration.create("foo", "https://health")
+		final Registration registration = Registration.create("foo", "https://health")
 			.metadata("username", "test")
 			.metadata("userpassword", "drowssap")
 			.name("xyz-server")
 			.build();
-		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		final Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(this.headersProviderEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 			.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
 	}

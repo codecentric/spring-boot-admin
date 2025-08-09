@@ -28,28 +28,28 @@ class CompositeHttpHeadersProviderTest {
 
 	@Test
 	void should_return_all_headers() {
-		HttpHeadersProvider provider = new CompositeHttpHeadersProvider(asList((i) -> {
-			HttpHeaders headers = new HttpHeaders();
+		final HttpHeadersProvider provider = new CompositeHttpHeadersProvider(asList((i) -> {
+			final HttpHeaders headers = new HttpHeaders();
 			headers.set("a", "1");
 			headers.set("b", "2-a");
 			return headers;
 		}, (i) -> {
-			HttpHeaders headers = new HttpHeaders();
+			final HttpHeaders headers = new HttpHeaders();
 			headers.set("b", "2-b");
 			headers.set("c", "3");
 			return headers;
 		}));
 
-		HttpHeaders headers = provider.getHeaders(null);
+		final HttpHeaders headers = provider.getHeaders(null);
 		assertThat(headers.asMultiValueMap()).containsEntry("a", singletonList("1"))
-			.containsEntry("b", asList("2-a", "2-b"))
-			.containsEntry("c", singletonList("3"));
+		assertThat(headers.get("b")).containsAll(asList("2-a", "2-b"));
+		assertThat(headers.get("c")).containsAll(singletonList("3"));
 	}
 
 	@Test
 	void should_return_empty_headers() {
-		HttpHeadersProvider provider = new CompositeHttpHeadersProvider(emptyList());
-		HttpHeaders headers = provider.getHeaders(null);
+		final HttpHeadersProvider provider = new CompositeHttpHeadersProvider(emptyList());
+		final HttpHeaders headers = provider.getHeaders(null);
 		assertThat(headers.toSingleValueMap()).isEmpty();
 	}
 

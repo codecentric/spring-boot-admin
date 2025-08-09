@@ -41,10 +41,10 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 
 	private final DispatcherServletPath dispatcherServletPath;
 
-	public ServletApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
-			ServerProperties server, ServletContext servletContext, PathMappedEndpoints pathMappedEndpoints,
-			WebEndpointProperties webEndpoint, MetadataContributor metadataContributor,
-			DispatcherServletPath dispatcherServletPath) {
+	public ServletApplicationFactory(final InstanceProperties instance, final ManagementServerProperties management,
+			final ServerProperties server, final ServletContext servletContext,
+			final PathMappedEndpoints pathMappedEndpoints, final WebEndpointProperties webEndpoint,
+			final MetadataContributor metadataContributor, final DispatcherServletPath dispatcherServletPath) {
 		super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
 		this.servletContext = servletContext;
 		this.server = server;
@@ -55,8 +55,8 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 
 	@Override
 	protected String getServiceUrl() {
-		if (instance.getServiceUrl() != null) {
-			return instance.getServiceUrl();
+		if (this.instance.getServiceUrl() != null) {
+			return this.instance.getServiceUrl();
 		}
 
 		return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
@@ -67,7 +67,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 
 	@Override
 	protected String getManagementBaseUrl() {
-		String baseUrl = instance.getManagementBaseUrl();
+		final String baseUrl = this.instance.getManagementBaseUrl();
 
 		if (StringUtils.hasText(baseUrl)) {
 			return baseUrl;
@@ -81,7 +81,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 				.toUriString();
 		}
 
-		Ssl ssl = (management.getSsl() != null) ? management.getSsl() : server.getSsl();
+		final Ssl ssl = (this.management.getSsl() != null) ? this.management.getSsl() : this.server.getSsl();
 		return UriComponentsBuilder.newInstance()
 			.scheme(getScheme(ssl))
 			.host(getManagementHost())
@@ -91,11 +91,11 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 	}
 
 	protected String getManagementContextPath() {
-		return management.getBasePath();
+		return this.management.getBasePath();
 	}
 
 	protected String getServerContextPath() {
-		return servletContext.getContextPath();
+		return this.servletContext.getContextPath();
 	}
 
 	protected String getDispatcherServletPrefix() {

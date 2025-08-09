@@ -61,9 +61,9 @@ class CloudFoundryApplicationFactoryTest {
 		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
 
-		Application app = this.factory.createApplication();
+		final Application app = this.factory.createApplication();
 
-		SoftAssertions softly = new SoftAssertions();
+		final SoftAssertions softly = new SoftAssertions();
 		softly.assertThat(app.getManagementUrl()).isEqualTo("http://application/Uppercase/actuator");
 		softly.assertThat(app.getHealthUrl()).isEqualTo("http://application/Uppercase/actuator/health");
 		softly.assertThat(app.getServiceUrl()).isEqualTo("http://application/Uppercase/");
@@ -76,9 +76,9 @@ class CloudFoundryApplicationFactoryTest {
 		this.cfApplicationProperties.setUris(singletonList("application/Uppercase"));
 		this.instanceProperties.setServiceBaseUrl("https://serviceBaseUrl");
 
-		Application app = this.factory.createApplication();
+		final Application app = this.factory.createApplication();
 
-		SoftAssertions softly = new SoftAssertions();
+		final SoftAssertions softly = new SoftAssertions();
 		softly.assertThat(app.getManagementUrl()).isEqualTo("https://serviceBaseUrl/actuator");
 		softly.assertThat(app.getHealthUrl()).isEqualTo("https://serviceBaseUrl/actuator/health");
 		softly.assertThat(app.getServiceUrl()).isEqualTo("https://serviceBaseUrl/");
