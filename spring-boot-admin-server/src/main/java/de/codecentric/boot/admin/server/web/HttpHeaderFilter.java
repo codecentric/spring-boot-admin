@@ -40,14 +40,14 @@ public class HttpHeaderFilter {
 
 	private final Set<String> ignoredHeaders;
 
-	public HttpHeaderFilter(Set<String> ignoredHeaders) {
+	public HttpHeaderFilter(final Set<String> ignoredHeaders) {
 		this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
 			.map(String::toLowerCase)
 			.collect(Collectors.toSet());
 	}
 
-	public HttpHeaders filterHeaders(HttpHeaders headers) {
-		HttpHeaders filtered = new HttpHeaders();
+	public HttpHeaders filterHeaders(final HttpHeaders headers) {
+		final HttpHeaders filtered = new HttpHeaders();
 		filtered.putAll(headers.headerSet()
 			.stream()
 			.filter((e) -> this.includeHeader(e.getKey()))
@@ -55,7 +55,7 @@ public class HttpHeaderFilter {
 		return filtered;
 	}
 
-	private boolean includeHeader(String header) {
+	private boolean includeHeader(final String header) {
 		return !this.ignoredHeaders.contains(header.toLowerCase());
 	}
 
