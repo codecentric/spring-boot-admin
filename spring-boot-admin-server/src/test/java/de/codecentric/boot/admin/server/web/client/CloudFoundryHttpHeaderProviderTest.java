@@ -30,19 +30,19 @@ class CloudFoundryHttpHeaderProviderTest {
 
 	@Test
 	void test_cloud_foundry_header() {
-		Registration registration = Registration.create("foo", "https://health")
+		final Registration registration = Registration.create("foo", "https://health")
 			.metadata("applicationId", "549e64cf-a478-423d-9d6d-02d803a028a8")
 			.metadata("instanceId", "0")
 			.build();
-		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(headersProvider.getHeaders(instance).get("X-CF-APP-INSTANCE"))
+		final Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		assertThat(this.headersProvider.getHeaders(instance).get("X-CF-APP-INSTANCE"))
 			.containsOnly("549e64cf-a478-423d-9d6d-02d803a028a8:0");
 	}
 
 	@Test
 	void test_no_header() {
-		Registration registration = Registration.create("foo", "https://health").build();
-		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
+		final Registration registration = Registration.create("foo", "https://health").build();
+		final Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(headersProvider.getHeaders(instance).toSingleValueMap()).isEmpty();
 	}
 

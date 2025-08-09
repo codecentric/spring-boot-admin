@@ -67,7 +67,7 @@ class ReactiveApplicationFactoryTest {
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
 		publishApplicationReadyEvent(factory, 8080, null);
 
-		Application app = factory.createApplication();
+		final Application app = factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
@@ -80,7 +80,7 @@ class ReactiveApplicationFactoryTest {
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
 		publishApplicationReadyEvent(factory, 8080, 8081);
 
-		Application app = factory.createApplication();
+		final Application app = factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/admin");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/admin/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
@@ -92,7 +92,7 @@ class ReactiveApplicationFactoryTest {
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		publishApplicationReadyEvent(factory, 80, null);
 
-		Application app = factory.createApplication();
+		final Application app = factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/app/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/app/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/app");
@@ -103,7 +103,7 @@ class ReactiveApplicationFactoryTest {
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		publishApplicationReadyEvent(factory, 80, null);
 
-		Application app = factory.createApplication();
+		final Application app = factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/");
@@ -116,7 +116,7 @@ class ReactiveApplicationFactoryTest {
 		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
 		publishApplicationReadyEvent(factory, 8080, 8081);
 
-		Application app = factory.createApplication();
+		final Application app = factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/mgnt/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/mgnt/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
@@ -126,13 +126,13 @@ class ReactiveApplicationFactoryTest {
 		try {
 			return InetAddress.getLocalHost().getCanonicalHostName();
 		}
-		catch (UnknownHostException ex) {
+		catch (final UnknownHostException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	private void publishApplicationReadyEvent(DefaultApplicationFactory factory, Integer serverport,
-			Integer managementport) {
+	private void publishApplicationReadyEvent(final DefaultApplicationFactory factory, final Integer serverport,
+			final Integer managementport) {
 		factory.onWebServerInitialized(new TestWebServerInitializedEvent("server", serverport));
 		factory.onWebServerInitialized(new TestWebServerInitializedEvent("management",
 				(managementport != null) ? managementport : serverport));
@@ -144,7 +144,7 @@ class ReactiveApplicationFactoryTest {
 
 		private final WebServerApplicationContext context = mock(WebServerApplicationContext.class);
 
-		private TestWebServerInitializedEvent(String name, int port) {
+		private TestWebServerInitializedEvent(final String name, final int port) {
 			super(mock(WebServer.class));
 			when(server.getPort()).thenReturn(port);
 			when(context.getServerNamespace()).thenReturn(name);

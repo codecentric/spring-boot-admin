@@ -21,9 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.utils.Base64;
 import org.springframework.context.expression.MapAccessor;
@@ -73,18 +70,18 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 	public DingTalkNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
+		this.message = this.parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-		return Mono
-			.fromRunnable(() -> restTemplate.postForEntity(buildUrl(), createMessage(event, instance), Void.class));
+		return Mono.fromRunnable(
+				() -> this.restTemplate.postForEntity(buildUrl(), createMessage(event, instance), Void.class));
 	}
 
 	private String buildUrl() {
 		Long timestamp = System.currentTimeMillis();
-		return String.format("%s&timestamp=%s&sign=%s", webhookUrl, timestamp, getSign(timestamp));
+		return String.format("%s&timestamp=%s&sign=%s", this.webhookUrl, timestamp, getSign(timestamp));
 	}
 
 	protected Object createMessage(InstanceEvent event, Instance instance) {
@@ -109,14 +106,14 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
 			.withRootObject(root)
 			.build();
-		return message.getValue(context, String.class);
+		return this.message.getValue(context, String.class);
 	}
 
 	private String getSign(Long timestamp) {
 		try {
-			String stringToSign = timestamp + "\n" + secret;
-			Mac mac = Mac.getInstance("HmacSHA256");
-			mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+			String stringToSign = timestamp + "\n" + this.secret;
+			javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+			mac.init(new javax.crypto.spec.SecretKeySpec(this.secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
 			byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
 			return URLEncoder.encode(new String(Base64.encodeBase64(signData)), StandardCharsets.UTF_8);
 		}
@@ -131,7 +128,7 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	public String getWebhookUrl() {
-		return webhookUrl;
+		return this.webhookUrl;
 	}
 
 	public void setWebhookUrl(String webhookUrl) {
@@ -140,7 +137,7 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 
 	@Nullable
 	public String getSecret() {
-		return secret;
+		return this.secret;
 	}
 
 	public void setSecret(@Nullable String secret) {
@@ -148,11 +145,11 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	public String getMessage() {
-		return message.getExpressionString();
+		return this.message.getExpressionString();
 	}
 
 	public void setMessage(String message) {
-		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
+		this.message = this.parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 }
