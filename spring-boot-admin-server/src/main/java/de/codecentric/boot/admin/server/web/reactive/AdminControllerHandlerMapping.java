@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.result.condition.PatternsRequestCondition;
 import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
@@ -34,32 +35,36 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 
 	private final String adminContextPath;
 
-	public AdminControllerHandlerMapping(String adminContextPath) {
+	public AdminControllerHandlerMapping(final String adminContextPath) {
 		this.adminContextPath = adminContextPath;
 	}
 
 	@Override
-	protected boolean isHandler(Class<?> beanType) {
+	protected boolean isHandler(final Class<?> beanType) {
 		return AnnotatedElementUtils.hasAnnotation(beanType, AdminController.class);
 	}
 
 	@Override
-	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
+	protected void registerHandlerMethod(final Object handler, final Method method, final RequestMappingInfo mapping) {
 		super.registerHandlerMethod(handler, method, withPrefix(mapping));
 	}
 
-	private RequestMappingInfo withPrefix(RequestMappingInfo mapping) {
+	private RequestMappingInfo withPrefix(final RequestMappingInfo mapping) {
 		if (!StringUtils.hasText(adminContextPath)) {
 			return mapping;
 		}
-		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
+		final PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
 				withNewPatterns(mapping.getPatternsCondition().getPatterns()));
-		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
-				mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
-				mapping.getCustomCondition());
+		return RequestMappingInfo.paths(patternsCondition.getPatterns().toArray(new String[0]))
+			.methods(mapping.getMethodsCondition().getMethods().toArray(new RequestMethod[0]))
+			.params(mapping.getParamsCondition().getExpressions().toArray(new String[0]))
+			.headers(mapping.getHeadersCondition().getExpressions().toArray(new String[0]))
+			.consumes(mapping.getConsumesCondition().getExpressions().toArray(new String[0]))
+			.produces(mapping.getProducesCondition().getExpressions().toArray(new String[0]))
+			.build();
 	}
 
-	private List<PathPattern> withNewPatterns(Set<PathPattern> patterns) {
+	private List<PathPattern> withNewPatterns(final Set<PathPattern> patterns) {
 		return patterns.stream()
 			.map((pattern) -> getPathPatternParser().parse(PathUtils.normalizePath(adminContextPath + pattern)))
 			.toList();
