@@ -20,7 +20,15 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.context.expression.MapAccessor;
+
+
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+
+import io.micrometer.common.lang.Nullable;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -28,17 +36,9 @@ import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.Instance;
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
-import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 /**
  * Notifier submitting events to opsgenie.com.
@@ -115,13 +115,15 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 				createRequest(event, instance), Void.class));
 	}
 
+	@Override
 	protected String buildUrl(InstanceEvent event, Instance instance) {
 		if ((event instanceof InstanceStatusChangedEvent statusChangedEvent)
-				&& (StatusInfo.STATUS_UP.equals(statusChangedEvent.getStatusInfo().getStatus()))) {
-			return String.format("%s/%s/close", url, generateAlias(instance));
+			&& (StatusInfo.STATUS_UP.equals(statusChangedEvent.getStatusInfo().getStatus()))) {
+			return String.format("%s/%s/close?identifierType=alias", url, generateAlias(instance));
 		}
 		return url.toString();
 	}
+
 
 	protected HttpEntity<?> createRequest(InstanceEvent event, Instance instance) {
 		Map<String, Object> body = new HashMap<>();

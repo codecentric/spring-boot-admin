@@ -189,4 +189,8 @@ public class SlackNotifier extends AbstractStatusChangeNotifier {
 		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
+	@Override
+	protected String buildUrl(InstanceEvent event, Instance instance) {
+		return "";
+	}
 }
