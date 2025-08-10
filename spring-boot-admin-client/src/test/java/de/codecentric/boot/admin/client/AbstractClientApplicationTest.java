@@ -17,15 +17,17 @@
 package de.codecentric.boot.admin.client;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.jackson.autoconfigure.JacksonProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 
@@ -49,6 +52,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.awaitility.Awaitility.await;
 
+@Slf4j
 public abstract class AbstractClientApplicationTest {
 
 	private final WireMockServer wireMock = new WireMockServer(
@@ -66,39 +70,43 @@ public abstract class AbstractClientApplicationTest {
 	}
 
 	private void setUpWiremock() {
-		wireMock.start();
+		this.wireMock.start();
 		ResponseDefinitionBuilder response = created().withHeader("Content-Type", "application/json")
 			.withHeader("Connection", "close")
-			.withHeader("Location", wireMock.url("/instances/abcdef"))
+			.withHeader("Location", this.wireMock.url("/instances/abcdef"))
 			.withBody("{ \"id\" : \"abcdef\" }");
-		wireMock.stubFor(post(urlEqualTo("/instances")).willReturn(response));
+		this.wireMock.stubFor(post(urlEqualTo("/instances")).willReturn(response));
 	}
 
 	private void setUpApplication(WebApplicationType type) {
-		application = new SpringApplication(TestClientApplication.class);
-		application.setWebApplicationType(type);
+		this.application = new SpringApplication(TestClientApplication.class);
+		this.application.setWebApplicationType(type);
 	}
 
 	private void setUpApplicationContext(String... additionalArgs) {
 		Stream<String> defaultArgs = Stream.of("--spring.application.name=Test-Client", "--server.port=0",
 				"--management.endpoints.web.base-path=/mgmt", "--endpoints.health.enabled=true",
-				"--spring.boot.admin.client.url=" + wireMock.url("/"));
+				"--spring.boot.admin.client.url=" + this.wireMock.url("/"));
 
 		String[] args = Stream.concat(defaultArgs, Arrays.stream(additionalArgs)).toArray(String[]::new);
 
-		this.instance = application.run(args);
+		this.instance = this.application.run(args);
 	}
 
 	@AfterEach
 	void tearDown() {
-		wireMock.stop();
-		if (instance != null) {
-			instance.close();
+		this.wireMock.stop();
+		if (this.instance != null) {
+			this.instance.close();
 		}
 	}
 
+	/**
+	 * @see JacksonProperties
+	 * @see PropertyNamingStrategies#LOWER_CAMEL_CASE
+	 */
 	@Test
-	public void test_context() throws InterruptedException, UnknownHostException {
+	public void test_context() throws Exception {
 		setUpApplicationContext();
 
 		String hostName = InetAddress.getLocalHost().getCanonicalHostName();
@@ -112,12 +120,17 @@ public abstract class AbstractClientApplicationTest {
 			.withRequestBody(matchingJsonPath("$.serviceUrl", equalTo(serviceHost + "/")))
 			.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
 
-		cdl.await();
-		await().untilAsserted(() -> wireMock.verify(request));
+		log.info("Waiting for registration at mocked sba-server for '{}' ...", this.instance);
+		cdl.await(5_000, TimeUnit.MILLISECONDS);
+		await().atMost(Duration.ofMillis(2500)).untilAsserted(() -> this.wireMock.verify(request));
 	}
 
+	/**
+	 * @see JacksonProperties
+	 * @see PropertyNamingStrategies#SNAKE_CASE
+	 */
 	@Test
-	public void test_context_with_snake_case() throws InterruptedException, UnknownHostException {
+	public void test_context_with_snake_case() throws Exception {
 		setUpApplicationContext("--spring.jackson.property-naming-strategy=SNAKE_CASE");
 
 		String hostName = InetAddress.getLocalHost().getCanonicalHostName();
@@ -131,16 +144,17 @@ public abstract class AbstractClientApplicationTest {
 			.withRequestBody(matchingJsonPath("$.service_url", equalTo(serviceHost + "/")))
 			.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
 
-		cdl.await();
-		await().untilAsserted(() -> wireMock.verify(request));
+		log.info("Waiting for registration at mocked sba-server for '{}' ...", this.instance);
+		cdl.await(5_000, TimeUnit.MILLISECONDS);
+		await().atMost(Duration.ofMillis(2500)).untilAsserted(() -> this.wireMock.verify(request));
 	}
 
 	private int getServerPort() {
-		return instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
+		return this.instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
 	}
 
 	private int getManagementPort() {
-		return instance.getEnvironment().getProperty("local.management.port", Integer.class, 0);
+		return this.instance.getEnvironment().getProperty("local.management.port", Integer.class, 0);
 	}
 
 	@SpringBootConfiguration
@@ -153,7 +167,9 @@ public abstract class AbstractClientApplicationTest {
 		@EventListener
 		public void ping(ApplicationReadyEvent ev) {
 			new Thread(() -> {
-				await().until(() -> registrator.getRegisteredId() != null);
+				log.info("Waiting for registration at mocked sba-server for '{}' ...", this);
+				await().atMost(Duration.ofMillis(3_500)).until(() -> this.registrator.getRegisteredId() != null);
+				log.info("Found registration id '{}' for '{}'", this.registrator.getRegisteredId(), this);
 				cdl.countDown();
 			}).start();
 		}
