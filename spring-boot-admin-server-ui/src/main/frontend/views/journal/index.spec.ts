@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { screen } from '@testing-library/vue';
 import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -27,7 +27,7 @@ describe('Journal View', () => {
   beforeEach(() => {
     server.use(
       http.get('/instances/events', () => {
-        return HttpResponse.json({});
+        return HttpResponse.json([{ event: '' }]);
       }),
     );
   });
@@ -50,7 +50,7 @@ describe('Journal View', () => {
       }),
     ];
 
-    const { container } = render(JournalView, {
+    render(JournalView, {
       data() {
         return {
           events: events,
@@ -60,16 +60,16 @@ describe('Journal View', () => {
         mocks: {
           $t: (key) => key,
           $route: { query: {} },
-          $router: { replace: () => {} },
+          $router: {
+            replace: () => {},
+          },
         },
       },
     });
 
-    const instanceNames =
-      container.firstChild.__vueParentComponent.ctx.instanceNames;
+    const allByNewText = screen.getAllByText('NEW APP NAME');
 
-    // Should use the most recent name from REGISTRATION_UPDATED event
-    expect(instanceNames['instance-1']).toBe('NEW APP NAME');
+    expect(allByNewText).toBeDefined();
   });
 
   it('should handle both REGISTERED and REGISTRATION_UPDATED events', () => {
@@ -97,7 +97,7 @@ describe('Journal View', () => {
       }),
     ];
 
-    const wrapper = mount(JournalView, {
+    render(JournalView, {
       data() {
         return {
           events: events,
@@ -112,12 +112,12 @@ describe('Journal View', () => {
       },
     });
 
-    const instanceNames = wrapper.vm.instanceNames;
+    const appOneText = screen.getAllByText('App One');
 
-    // Instance 1 should keep original name (only REGISTERED event)
-    expect(instanceNames['instance-1']).toBe('App One');
+    expect(appOneText).toBeDefined();
 
-    // Instance 2 should have updated name (from REGISTRATION_UPDATED event)
-    expect(instanceNames['instance-2']).toBe('App Two Updated');
+    const appTwoText = screen.getAllByText('App Two Updated');
+
+    expect(appTwoText).toBeDefined();
   });
 });
