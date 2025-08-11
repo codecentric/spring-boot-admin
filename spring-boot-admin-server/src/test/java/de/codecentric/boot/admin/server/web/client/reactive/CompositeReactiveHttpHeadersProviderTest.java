@@ -30,32 +30,32 @@ class CompositeReactiveHttpHeadersProviderTest {
 
 	@Test
 	void should_return_all_headers() {
-		ReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(asList((i) -> {
-			HttpHeaders headers = new HttpHeaders();
+		final ReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(asList((i) -> {
+			final HttpHeaders headers = new HttpHeaders();
 			headers.set("a", "1");
 			headers.set("b", "2-a");
 			return Mono.just(headers);
 		}, (i) -> {
-			HttpHeaders headers = new HttpHeaders();
+			final HttpHeaders headers = new HttpHeaders();
 			headers.set("b", "2-b");
 			headers.set("c", "3");
 			return Mono.just(headers);
 		}));
 
 		StepVerifier.create(provider.getHeaders(null)).thenConsumeWhile((headers) -> {
-			assertThat(headers).containsEntry("a", singletonList("1"))
-				.containsEntry("b", asList("2-a", "2-b"))
-				.containsEntry("c", singletonList("3"));
+			assertThat(headers.get("a")).containsAll(singletonList("1"));
+			assertThat(headers.get("b")).containsAll(asList("2-a", "2-b"));
+			assertThat(headers.get("c")).containsAll(singletonList("3"));
 			return true;
 		}).verifyComplete();
 	}
 
 	@Test
 	void should_return_empty_headers() {
-		CompositeReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(emptyList());
+		final CompositeReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(emptyList());
 
 		StepVerifier.create(provider.getHeaders(null)).thenConsumeWhile((headers) -> {
-			assertThat(headers).isEmpty();
+			assertThat(headers.asSingleValueMap()).isEmpty();
 			return true;
 		}).verifyComplete();
 	}

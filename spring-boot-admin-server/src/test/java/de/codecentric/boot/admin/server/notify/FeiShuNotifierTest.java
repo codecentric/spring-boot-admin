@@ -55,7 +55,7 @@ public class FeiShuNotifierTest {
 
 	@BeforeEach
 	void setUp() {
-		InstanceRepository instanceRepository = mock(InstanceRepository.class);
+		final InstanceRepository instanceRepository = mock(InstanceRepository.class);
 		when(instanceRepository.find(instance.getId())).thenReturn(Mono.just(instance));
 
 		restTemplate = mock(RestTemplate.class);
@@ -66,7 +66,7 @@ public class FeiShuNotifierTest {
 	@Test
 	void test_onApplicationEvent_resolve() {
 		@SuppressWarnings("unchecked")
-		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
+		final ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
 			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
 		when(restTemplate.postForEntity(any(), httpRequest.capture(), eq(String.class)))
@@ -81,10 +81,10 @@ public class FeiShuNotifierTest {
 				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
-		assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
-				Collections.singletonList("application/json"));
+		assertThat(httpRequest.getValue().getHeaders().get("Content-Type"))
+			.containsAll(Collections.singletonList("application/json"));
 
-		Map<String, Object> body = httpRequest.getValue().getBody();
+		final Map<String, Object> body = httpRequest.getValue().getBody();
 		assertThat(body).containsEntry("card",
 				"{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [DOWN] to [UP]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
 		assertThat(body).containsEntry("msg_type", FeiShuNotifier.MessageType.interactive);
@@ -92,10 +92,10 @@ public class FeiShuNotifierTest {
 
 	@Test
 	void test_onApplicationEvent_trigger() {
-		StatusInfo infoDown = StatusInfo.ofDown();
+		final StatusInfo infoDown = StatusInfo.ofDown();
 
 		@SuppressWarnings("unchecked")
-		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
+		final ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
 			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
 		when(restTemplate.postForEntity(any(), httpRequest.capture(), eq(String.class)))
@@ -109,9 +109,9 @@ public class FeiShuNotifierTest {
 			.create(notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
 			.verifyComplete();
 
-		assertThat(httpRequest.getValue().getHeaders()).containsEntry("Content-Type",
-				Collections.singletonList("application/json"));
-		Map<String, Object> body = httpRequest.getValue().getBody();
+		assertThat(httpRequest.getValue().getHeaders().get("Content-Type"))
+			.containsAll(Collections.singletonList("application/json"));
+		final Map<String, Object> body = httpRequest.getValue().getBody();
 		assertThat(body).containsEntry("card",
 				"{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [UP] to [DOWN]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
 		assertThat(body).containsEntry("msg_type", FeiShuNotifier.MessageType.interactive);
