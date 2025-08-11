@@ -20,6 +20,7 @@ class InstanceEvent {
     return `${this.instance}-${this.version}`;
   }
 }
+
 InstanceEvent.REGISTERED = 'REGISTERED';
 InstanceEvent.REGISTRATION_UPDATED = 'REGISTRATION_UPDATED';
 
