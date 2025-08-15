@@ -32,7 +32,7 @@ jobs:
           docker rmi $(docker image ls -aq)
           df -h
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up settings.xml for Maven Central Repository
         uses: actions/setup-java@v4
@@ -103,7 +103,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: free disk space
         continue-on-error: true
