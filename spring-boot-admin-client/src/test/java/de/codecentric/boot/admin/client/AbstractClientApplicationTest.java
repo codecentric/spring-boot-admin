@@ -18,7 +18,6 @@ package de.codecentric.boot.admin.client;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
@@ -114,7 +113,7 @@ public abstract class AbstractClientApplicationTest {
 			.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
 
 		cdl.await();
-		await().atMost(Duration.ofMillis(2500)).untilAsserted(() -> wireMock.verify(request));
+		await().untilAsserted(() -> wireMock.verify(request));
 	}
 
 	@Test
@@ -133,7 +132,7 @@ public abstract class AbstractClientApplicationTest {
 			.withRequestBody(matchingJsonPath("$.metadata.startup", matching(".+")));
 
 		cdl.await();
-		await().atMost(Duration.ofMillis(2500)).untilAsserted(() -> wireMock.verify(request));
+		await().untilAsserted(() -> wireMock.verify(request));
 	}
 
 	private int getServerPort() {
@@ -154,7 +153,7 @@ public abstract class AbstractClientApplicationTest {
 		@EventListener
 		public void ping(ApplicationReadyEvent ev) {
 			new Thread(() -> {
-				await().atMost(Duration.ofMillis(500)).until(() -> registrator.getRegisteredId() != null);
+				await().until(() -> registrator.getRegisteredId() != null);
 				cdl.countDown();
 			}).start();
 		}
