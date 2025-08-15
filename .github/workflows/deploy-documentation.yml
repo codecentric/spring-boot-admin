@@ -55,7 +55,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
           branch: gh-pages
-          folder: spring-boot-admin-docs/target/generated-docs
+          folder: spring-boot-admin-docs/target/generated-docs/build
           target-folder: ${{ github.event.inputs.releaseversion }}
           clean: true
 
@@ -64,7 +64,7 @@ jobs:
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages
-          folder: spring-boot-admin-docs/target/generated-docs/current
+          folder: spring-boot-admin-docs/target/generated-docs/build/current
           target-folder: /current
           clean: true
 
@@ -73,6 +73,6 @@ jobs:
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages
-          folder: spring-boot-admin-docs/target/generated-docs/current
+          folder: spring-boot-admin-docs/target/generated-docs/build/current
           target-folder: /
           clean: false
