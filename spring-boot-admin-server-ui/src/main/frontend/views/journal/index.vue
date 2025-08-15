@@ -188,8 +188,13 @@ export default {
   computed: {
     instanceNames() {
       return this.events
-        .filter((event) => event.type === InstanceEvent.REGISTERED)
-        .reduce((names, event) => {
+        .filter(
+          (event) =>
+            event.type === InstanceEvent.REGISTERED ||
+            event.type === InstanceEvent.REGISTRATION_UPDATED,
+        )
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .reduceRight((names, event) => {
           names[event.instance] = event.payload.registration.name;
           return names;
         }, {});
