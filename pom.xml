@@ -30,7 +30,7 @@
     <url>https://github.com/codecentric/spring-boot-admin/</url>
 
     <properties>
-        <revision>3.5.2-SNAPSHOT</revision>
+        <revision>3.5.2</revision>
 
         <java.version>17</java.version>
         <node.version>v22.12.0</node.version>
