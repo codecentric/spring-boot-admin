@@ -81,8 +81,8 @@ class OpsGenieNotifierTest {
 				.notify(new InstanceStatusChangedEvent(INSTANCE.getId(), INSTANCE.getVersion() + 2, StatusInfo.ofUp())))
 			.verifyComplete();
 
-		verify(restTemplate).exchange("https://api.opsgenie.com/v2/alerts/App_-id-/close", HttpMethod.POST,
-				expectedRequest("DOWN", "UP"), Void.class);
+		verify(restTemplate).exchange("https://api.opsgenie.com/v2/alerts/App_-id-/close?identifierType=alias",
+				HttpMethod.POST, expectedRequest("DOWN", "UP"), Void.class);
 	}
 
 	@Test
