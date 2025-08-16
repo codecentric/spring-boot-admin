@@ -35,13 +35,16 @@
         <java.version>17</java.version>
         <node.version>v22.12.0</node.version>
 
-        <require.maven.version>3.9</require.maven.version>
+        <require.maven.version>[4.0.0-rc-4,)</require.maven.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <resource.delimiter>@</resource.delimiter>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- required for later replacement of argLine -->
+        <argLine/>
 
         <!-- used dependencies versions -->
         <spring-boot.version>3.5.4</spring-boot.version>
@@ -352,6 +355,7 @@
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <rerunFailingTestsCount>2</rerunFailingTestsCount>
+                        <argLine>@{argLine} -Xshare:off</argLine>
                         <includes>
                             <include>**/*Tests.java</include>
                             <include>**/*Test.java</include>
