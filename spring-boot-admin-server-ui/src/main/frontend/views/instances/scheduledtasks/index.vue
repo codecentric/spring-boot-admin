@@ -40,7 +40,7 @@
             </thead>
             <tbody v-for="task in cron" :key="task.runnable.target">
               <tr>
-                <td v-text="task.runnable.target" />
+                <td class="scheduledtasks__target" v-text="task.runnable.target" />
                 <td
                   class="font-mono text-sm"
                   :title="task.expression"
@@ -241,3 +241,17 @@ export default {
   },
 };
 </script>
+<style lang="css">
+.scheduledtasks__target {
+  width: 250px;
+  max-width: 750px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.scheduledtasks__target:hover {
+  height: auto;
+  overflow: visible;
+  white-space: normal;
+}
+</style>
