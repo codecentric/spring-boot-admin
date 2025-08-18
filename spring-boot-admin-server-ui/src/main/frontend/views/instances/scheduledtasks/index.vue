@@ -40,7 +40,10 @@
             </thead>
             <tbody v-for="task in cron" :key="task.runnable.target">
               <tr>
-                <td class="scheduledtasks__target" v-text="task.runnable.target" />
+                <td
+                  class="scheduledtasks__target"
+                  v-text="task.runnable.target"
+                />
                 <td
                   class="font-mono text-sm"
                   :title="task.expression"
