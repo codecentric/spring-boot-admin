@@ -42,7 +42,8 @@
               <tr>
                 <td
                   class="scheduledtasks__target"
-                  v-text="task.runnable.target"
+                  :title="task.runnable.target"
+                  v-text="truncateClassname(task.runnable.target)"
                 />
                 <td
                   class="font-mono text-sm"
@@ -86,7 +87,11 @@
             </thead>
             <tbody v-for="task in fixedDelay" :key="task.runnable.target">
               <tr>
-                <td v-text="task.runnable.target" />
+                <td
+                  class="scheduledtasks__target"
+                  :title="task.runnable.target"
+                  v-text="truncateClassname(task.runnable.target)"
+                />
                 <td
                   :title="`${task.initialDelay}ms`"
                   v-text="formatTime(task.initialDelay)"
@@ -132,7 +137,11 @@
             </thead>
             <tbody v-for="task in fixedRate" :key="task.runnable.target">
               <tr>
-                <td v-text="task.runnable.target" />
+                <td
+                  class="scheduledtasks__target"
+                  :title="task.runnable.target"
+                  v-text="truncateClassname(task.runnable.target)"
+                />
                 <td
                   :title="`${task.initialDelay}ms`"
                   v-text="formatTime(task.initialDelay)"
@@ -157,6 +166,7 @@ import { useI18n } from 'vue-i18n';
 
 import SbaPanel from '@/components/sba-panel.vue';
 
+import { useClassnameShortener } from '@/composables/useClassnameShortener';
 import Instance from '@/services/instance';
 import { usePrettyTime } from '@/utils/prettyTime';
 import { VIEW_GROUP } from '@/views/ViewGroup';
@@ -178,9 +188,11 @@ export default {
   setup() {
     const { formatTime } = usePrettyTime();
     const { locale } = useI18n();
+    const { truncateClassname } = useClassnameShortener({ maxLen: 80 });
 
     return {
       formatTime,
+      truncateClassname,
       formatCron: (cron) =>
         cronstrue.toString(cron, {
           verbose: true,
@@ -249,12 +261,8 @@ export default {
   width: 250px;
   max-width: 750px;
   overflow: hidden;
+  direction: rtl;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.scheduledtasks__target:hover {
-  height: auto;
-  overflow: visible;
-  white-space: normal;
 }
 </style>
