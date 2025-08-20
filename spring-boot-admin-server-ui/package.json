@@ -65,6 +65,8 @@
     "vue3-click-away": "1.2.4"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.33.0",
     "@storybook/addon-actions": "9.0.8",
     "@storybook/addon-essentials": "8.6.14",
     "@storybook/addon-links": "9.1.2",
@@ -84,11 +86,12 @@
     "@vue/test-utils": "2.4.6",
     "autoprefixer": "10.4.21",
     "babel-loader": "10.0.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-storybook": "9.1.2",
     "eslint-plugin-vue": "^10.0.0",
+    "globals": "^16.3.0",
     "happy-dom": "^18.0.0",
     "jsdom": "^26.0.0",
     "msw": "2.10.5",
