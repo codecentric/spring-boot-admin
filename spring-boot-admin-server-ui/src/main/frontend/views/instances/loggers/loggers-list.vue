@@ -36,26 +36,20 @@
             @input="(level) => $emit('configureLogger', { logger, level })"
           />
 
-          <p
+          <sba-alert
             v-if="
               loggersStatus[logger.name] &&
               loggersStatus[logger.name].status === 'failed'
             "
-            class="has-text-danger"
-          >
-            <font-awesome-icon
-              class="has-text-danger"
-              icon="exclamation-triangle"
-            />
-            <span
-              v-text="
+            :error="
+              new Error(
                 $t('instances.loggers.setting_loglevel_failed', {
                   logger: logger.name,
                   loglevel: loggersStatus[logger.name].level,
-                })
-              "
-            />
-          </p>
+                }),
+              )
+            "
+          />
         </td>
       </tr>
       <tr v-if="loggers.length === 0">
@@ -81,7 +75,6 @@
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import InfiniteLoading from 'v3-infinite-loading';
 import { ref } from 'vue';
 
