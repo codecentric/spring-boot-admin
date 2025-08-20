@@ -73,7 +73,7 @@
     "@storybook/addon-mdx-gfm": "^8.0.0",
     "@storybook/vue3": "9.1.2",
     "@storybook/vue3-vite": "^9.0.0",
-    "@testing-library/jest-dom": "6.7.0",
+    "@testing-library/jest-dom": "6.8.0",
     "@testing-library/user-event": "14.6.1",
     "@testing-library/vue": "8.1.0",
     "@trivago/prettier-plugin-sort-imports": "^5.0.0",
