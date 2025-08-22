@@ -6,12 +6,11 @@
       "created_at": "Создано",
       "expired": "Истекла",
       "expiry": "Истечение",
-
       "last_accessed_at": "Последний доступ",
       "loading_sessions": "Загрузка сессий...",
       "max_inactive_interval": "Максимальный неактивный<br>интервал",
       "no_sessions_found": "Сессии не найдены",
-      "session_id": "Id сессии",
+      "session_id": "Идентификатор сессии",
       "unlimited": "Неограничен"
     }
   }

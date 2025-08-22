@@ -3,17 +3,16 @@
     "mappings": {
       "label": "Маппинги",
       "class": "Класс",
-      "consumes": "Consumes",
-
+      "consumes": "Потребляет",
       "filter_name": "Название фильтра",
       "handler": "Обработчик",
       "headers": "Заголовки",
       "http-verb": "Метод",
       "mappings_not_supported_spring_boot_1": "Маппинги не поддерживаются для приложений на Spring Boot 1.x.",
       "parameters": "Параметры",
-      "produces": "Produces",
+      "produces": "Производит",
       "servlet_name": "Имя сервлета",
-      "url_pattern": "Url паттерн"
+      "url_pattern": "URL-шаблон"
     }
   }
 }
