@@ -67,12 +67,9 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.33.0",
-    "@storybook/addon-actions": "9.0.8",
-    "@storybook/addon-essentials": "8.6.14",
+    "@storybook/addon-docs": "^9.1.3",
     "@storybook/addon-links": "9.1.3",
-    "@storybook/addon-mdx-gfm": "^8.0.0",
-    "@storybook/vue3": "9.1.3",
-    "@storybook/vue3-vite": "^9.0.0",
+    "@storybook/vue3-vite": "9.1.3",
     "@testing-library/jest-dom": "6.8.0",
     "@testing-library/user-event": "14.6.1",
     "@testing-library/vue": "8.1.0",
@@ -120,7 +117,8 @@
   "msw": {
     "workerDirectory": [
       "./src/main/frontend/public",
-      "src/main/frontend/public"
+      "src/main/frontend/public",
+      "public"
     ]
   },
   "overrides": {

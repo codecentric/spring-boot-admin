@@ -1,20 +1,27 @@
+import { vueRouter } from 'storybook-vue3-router';
+
 import { applications } from '../../../mocks/applications/data';
 import Instance from '../../../services/instance';
 import Sidebar from './sidebar.vue';
+
+import i18n from '@/i18n';
 
 export default {
   component: Sidebar,
   title: 'Sidebar',
 };
 
-const Template = (args, { argTypes }) => ({
+const TemplateWithProps = (args) => ({
   components: { Sidebar },
-  props: Object.keys(argTypes),
-  template: '<Sidebar v-bind="$props" />',
+  setup() {
+    return { args };
+  },
+  template: '<Sidebar v-bind="args" />',
+  i18n,
 });
 
 export const Test = {
-  render: Template,
+  render: TemplateWithProps,
 
   args: {
     instance: new Instance({
@@ -22,4 +29,16 @@ export const Test = {
       ...applications[0].instances[0],
     }),
   },
+  decorators: [
+    vueRouter(
+      [
+        {
+          name: 'instances/details',
+          path: '/',
+          component: TemplateWithProps,
+        },
+      ],
+      { initialRoute: '/' },
+    ),
+  ],
 };
