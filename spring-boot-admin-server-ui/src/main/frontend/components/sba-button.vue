@@ -1,58 +1,101 @@
 <template>
-  <button
+  <component
+    :is="as"
     class="btn relative"
-    :class="cssClasses"
-    :disabled="disabled === true"
-    :title="title"
-    @click="$emit('click', $event)"
+    v-bind="componentAttrs"
+    @click="handleClick"
   >
     <slot />
-  </button>
+  </component>
 </template>
 
-<script>
-export default {
-  name: 'SbaButton',
-  props: {
-    title: {
-      type: String,
-      default: '',
-    },
-    size: {
-      type: String,
-      default: 'sm',
-      validate(value) {
-        return ['xs', 'sm', 'base'].includes(value);
-      },
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    primary: {
-      type: Boolean,
-      default: false,
+<script setup>
+import classNames from 'classnames';
+import { computed, useAttrs } from 'vue';
+
+const props = defineProps({
+  title: {
+    type: String,
+    default: '',
+  },
+  as: {
+    type: String,
+    default: 'button',
+    validator(value) {
+      return ['a', 'button'].includes(value);
     },
   },
-  emits: ['click'],
-  computed: {
-    cssClasses() {
-      return {
-        'px-2 py-2 text-xs': this.size === 'xs',
-        'px-3 py-2': this.size === 'sm',
-        'px-4 py-3': this.size === 'base',
-        'px-5 py-2.5': this.size === '',
-        // Types
-        'is-primary': this.primary === true,
-      };
+  href: {
+    type: String,
+    default: null,
+  },
+  size: {
+    type: String,
+    default: 'sm',
+    validator(value) {
+      return ['xs', 'sm', 'base'].includes(value);
     },
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  primary: {
+    type: Boolean,
+    default: false,
+  },
+});
+const attrs = useAttrs();
+
+const cssClasses = computed(() => {
+  return {
+    'px-1 py-0 text-xs': props.size === '2xs',
+    'px-2 py-2 text-xs': props.size === 'xs',
+    'px-3 py-2': props.size === 'sm',
+    'px-4 py-3': props.size === 'base',
+    'px-5 py-2.5': props.size === '',
+    // Types
+    'is-primary': props.primary === true,
+  };
+});
+
+const componentAttrs = computed(() => {
+  const common = {
+    ...attrs,
+    title: props.title,
+    class: classNames(attrs.class, cssClasses.value),
+  };
+
+  if (props.as === 'a') {
+    return {
+      ...common,
+      href: props.href,
+    };
+  }
+  if (props.as === 'button') {
+    return {
+      ...common,
+      disabled: props.disabled === true,
+      type: props.type,
+    };
+  }
+  return {};
+});
+
+const emit = defineEmits(['click']);
+const handleClick = (event) => {
+  if (props.as === 'button') {
+    emit('click', event);
+  }
+  if (props.as === 'a') {
+    event.stopPropagation();
+  }
 };
 </script>
 
 <style scoped>
 .btn {
-  @apply rounded-l rounded-r font-medium text-sm text-center text-black border-gray-300 border border-gray-300 bg-white;
+  @apply rounded-l rounded-r font-medium text-sm text-center text-black border-gray-300 border bg-white;
   @apply focus:ring-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500;
   @apply hover:bg-gray-100;
 }

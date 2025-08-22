@@ -33,17 +33,41 @@
         <div class="flex gap-2 items-center">
           <div class="flex-1">
             <template v-if="instance.showUrl()">
-              <a
-                :href="
-                  instance.registration.serviceUrl ||
-                  instance.registration.healthUrl
-                "
-                @click.stop
+              <span
                 v-text="
                   instance.registration.serviceUrl ||
                   instance.registration.healthUrl
                 "
               />
+              <div class="ml-1 inline-flex gap-1">
+                <sba-button
+                  as="a"
+                  :href="instance.registration.serviceUrl"
+                  size="2xs"
+                  referrerpolicy="no-referrer"
+                  target="_blank"
+                >
+                  <font-awesome-icon :icon="faHome" size="xs" />
+                </sba-button>
+                <sba-button
+                  as="a"
+                  :href="instance.registration.managementUrl"
+                  size="2xs"
+                  referrerpolicy="no-referrer"
+                  target="_blank"
+                >
+                  <font-awesome-icon :icon="faClipboardList" size="xs" />
+                </sba-button>
+                <sba-button
+                  as="a"
+                  :href="instance.registration.healthUrl"
+                  size="2xs"
+                  referrerpolicy="no-referrer"
+                  target="_blank"
+                >
+                  <font-awesome-icon :icon="faHeart" size="xs" />
+                </sba-button>
+              </div>
               <sba-tag
                 v-if="instance.registration.metadata?.['group']"
                 class="ml-2"
@@ -77,9 +101,16 @@
 </template>
 
 <script lang="ts" setup>
+import {
+  faClipboardList,
+  faHeart,
+  faHome,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { PropType } from 'vue';
 import { useRouter } from 'vue-router';
 
+import SbaButton from '@/components/sba-button.vue';
 import SbaStatus from '@/components/sba-status.vue';
 import SbaTag from '@/components/sba-tag.vue';
 import SbaTags from '@/components/sba-tags.vue';
