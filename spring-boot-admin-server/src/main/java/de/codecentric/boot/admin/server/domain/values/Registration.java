@@ -54,7 +54,7 @@ public final class Registration implements Serializable {
 	/**
 	 * Absolute URL of the Actuator health endpoint. Required and used by Spring Boot
 	 * Admin to determine the instance status. Example:
-	 * <code>https://example.com/actuator</code>
+	 * <code>https://example.com/actuator/health</code>
 	 */
 	private final String healthUrl;
 
@@ -80,8 +80,6 @@ public final class Registration implements Serializable {
 				"'managementUrl' is not valid: " + managementUrl);
 		Assert.isTrue(!StringUtils.hasText(serviceUrl) || checkUrl(serviceUrl),
 				"'serviceUrl' is not valid: " + serviceUrl);
-
-		assert serviceUrl != null;
 
 		this.name = name;
 		this.managementUrl = managementUrl;
@@ -111,7 +109,11 @@ public final class Registration implements Serializable {
 	 * @param metadata metadata information of registered instance
 	 * @return the actual service url
 	 */
-	private String getServiceUrl(String serviceUrl, Map<String, String> metadata) {
+	@Nullable
+	private String getServiceUrl(@Nullable String serviceUrl, Map<String, String> metadata) {
+		if (serviceUrl == null) {
+			return null;
+		}
 		String url = metadata.getOrDefault("service-url", serviceUrl);
 
 		try {
