@@ -16,7 +16,8 @@ const ICON_MAP = {
   server: <Icon icon="mdi:server-outline" height="24" />,
   notifications: <Icon icon="carbon:notification" height="24" />,
   python: <Icon icon="ion:logo-python" height="24" />,
-  features: <Icon icon="ri:function-add-line" height="24" />
+  features: <Icon icon="ri:function-add-line" height="24" />,
+  configuration: <Icon icon="mdi:wrench" height="24" />
 }
 
 function useCategoryItemsPlural() {

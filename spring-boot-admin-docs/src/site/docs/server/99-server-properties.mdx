@@ -1,0 +1,12 @@
+---
+sidebar_custom_props:
+  icon: 'properties'
+---
+# Properties
+
+import metadata from "../../../../../spring-boot-admin-server/target/classes/META-INF/spring-configuration-metadata.json";
+import { PropertyTable } from "../../src/components/PropertyTable";
+
+<PropertyTable
+  properties={metadata.properties}
+/>

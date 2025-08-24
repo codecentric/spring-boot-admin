@@ -1,0 +1,17 @@
+---
+sidebar_custom_props:
+  icon: 'notifications'
+---
+import metadata from "../../../../../../spring-boot-admin-server/target/classes/META-INF/spring-configuration-metadata.json";
+import { PropertyTable } from "../../../src/components/PropertyTable";
+
+# Telegram Notifications
+
+To enable [Telegram](https://telegram.org/) notifications you need to create and authorize a telegram bot and set the appropriate configuration properties for auth-token and chat-id.
+
+<PropertyTable
+  title="Telegram notifications configuration options"
+  properties={metadata.properties}
+  filter={['notify.telegram']}
+  exclusive={false}
+/>
