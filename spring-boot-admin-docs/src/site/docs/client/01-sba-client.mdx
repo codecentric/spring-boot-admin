@@ -1,0 +1,20 @@
+---
+sidebar_custom_props:
+  icon: 'server'
+---
+
+# Spring Boot Admin Client
+
+The Spring Boot Admin Client is a Spring Boot Starter that registers itself with the Spring Boot Admin Server to
+enable monitoring and management. By including the Spring Boot Admin Client Starter dependency in your application, the
+Spring Boot Admin Server can access health, metrics, and other management endpoints, depending on which
+Actuator endpoints are accessible.
+
+## Properties
+
+import metadata from "../../../../../spring-boot-admin-client/target/classes/META-INF/spring-configuration-metadata.json";
+import { PropertyTable } from "../../src/components/PropertyTable";
+
+<PropertyTable
+  properties={metadata.properties}
+/>

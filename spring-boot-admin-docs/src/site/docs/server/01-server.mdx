@@ -1,0 +1,130 @@
+---
+sidebar_custom_props:
+  icon: 'server'
+---
+import metadataServer from "../../../../../spring-boot-admin-server/target/classes/META-INF/spring-configuration-metadata.json";
+import metadataServerCloud from "../../../../../spring-boot-admin-server-cloud/target/classes/META-INF/spring-configuration-metadata.json";
+import { PropertyTable } from "../../src/components/PropertyTable";
+
+# Set up the Server
+
+## Running Behind a Front-end Proxy Server
+
+In case the Spring Boot Admin server is running behind a reverse proxy, it may be requried to configure the public url where the server is reachable via (`spring.boot.admin.ui.public-url`). In addition, when the reverse proxy terminates the https connection, it may be necessary to configure `server.forward-headers-strategy=native` (also see [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-use-tomcat-behind-a-proxy-server)).
+
+## Spring Cloud Discovery
+
+The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don’t have to include the `spring-boot-admin-starter-client`. You just have to add a `DiscoveryClient` implementation to your admin server - everything else is done by AutoConfiguration.
+
+### Static Configuration using SimpleDiscoveryClient
+
+Spring Cloud provides a `SimpleDiscoveryClient`. It allows you to specify client applications via static configuration:
+
+```xml title="pom.xml"
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter</artifactId>
+</dependency>
+```
+
+```yaml title="application.yml"
+spring:
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            test:
+              - uri: http://instance1.intern:8080
+                metadata:
+                  management.context-path: /actuator
+              - uri: http://instance2.intern:8080
+                metadata:
+                  management.context-path: /actuator
+```
+
+### Other DiscoveryClients
+
+Spring Boot Admin supports all other implementations of Spring Cloud’s `DiscoveryClient` ([Eureka](https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/), [Zookeeper](https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery), [Consul](https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery), [Kubernetes](https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes), …​). You need to add it to the Spring Boot Admin Server and configure it properly. An [example setup using Eureka](../installation-and-setup/index.md#using-spring-cloud-discovery) is shown above.
+
+### Converting ServiceInstances
+
+The information from the service registry are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration.
+
+:::tip
+You can modify how the information from the registry is used to register the application by using SBA Server configuration options and instance metadata. The values from the metadata takes precedence over the server config. If the plenty of options don’t fit your needs you can provide your own ServiceInstanceConverter.
+:::
+
+:::tip
+When using Eureka, the healthCheckUrl known to Eureka is used for health-checking, which can be set on your client using eureka.instance.healthCheckUrl.
+:::
+
+<PropertyTable
+  title="Discovery configuration options"
+  properties={metadataServerCloud.properties}
+/>
+
+### CloudFoundry
+
+If you are deploying your applications to CloudFoundry then `vcap.application.application_id` and `vcap.application.instance_index` **_must_** be added to the metadata for proper registration of applications with Spring Boot Admin Server. Here is a sample configuration for Eureka:
+
+```yml title="application.yml"
+eureka:
+  instance:
+    hostname: ${vcap.application.uris[0]}
+    nonSecurePort: 80
+    metadata-map:
+      applicationId: ${vcap.application.application_id}
+      instanceId: ${vcap.application.instance_index}
+```
+
+## Clustering
+
+Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a `HazelcastConfig`\- or `HazelcastInstance`\-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts. Also have a look at the [Spring Boot support for Hazelcast](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/).
+
+1. Add Hazelcast to your dependencies:
+```xml title="pom.xml"
+<dependency>
+    <groupId>com.hazelcast</groupId>
+    <artifactId>hazelcast</artifactId>
+</dependency>
+```
+2. Instantiate a HazelcastConfig:
+```java title="HazelcastConfig.java"
+@Bean
+public Config hazelcastConfig() {
+    // This map is used to store the events.
+    // It should be configured to reliably hold all the data,
+    // Spring Boot Admin will compact the events, if there are too many
+    MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
+        .setBackupCount(1)
+        .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+    // This map is used to deduplicate the notifications.
+    // If data in this map gets lost it should not be a big issue as it will atmost
+    // lead to
+    // the same notification to be sent by multiple instances
+    MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
+        .setInMemoryFormat(InMemoryFormat.OBJECT)
+        .setBackupCount(1)
+        .setEvictionConfig(
+                new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setMaxSizePolicy(MaxSizePolicy.PER_NODE))
+        .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+    Config config = new Config();
+    config.addMapConfig(eventStoreMap);
+    config.addMapConfig(sentNotificationsMap);
+    config.setProperty("hazelcast.jmx", "true");
+    // WARNING: This setups a local cluster, you change it to fit your needs.
+    config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+    TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
+    tcpIpConfig.setEnabled(true);
+    tcpIpConfig.setMembers(singletonList("127.0.0.1"));
+    return config;
+}
+```
+
+<PropertyTable
+  title="Hazelcast configuration options"
+  properties={metadataServer.properties}
+  exclusive={false}
+  filter={['hazelcast']}
+/>
