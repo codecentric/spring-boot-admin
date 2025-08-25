@@ -7,7 +7,7 @@
       "no_audit_events_found": "События аудита не найдены.",
       "principal": "Принципал",
       "remote_address": "Адрес",
-      "session_id": "Id сессии",
+      "session_id": "Идентификатор сессии",
       "timestamp": "Время",
       "type": "Тип",
       "label": "Журнал аудита"
