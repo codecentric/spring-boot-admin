@@ -1,0 +1,17 @@
+---
+sidebar_custom_props:
+  icon: 'notifications'
+---
+import metadata from "../../../../../../spring-boot-admin-server/target/classes/META-INF/spring-configuration-metadata.json";
+import { PropertyTable } from "../../../src/components/PropertyTable";
+
+# Microsoft Teams Notifications
+
+To enable Microsoft Teams notifications you need to set up a connector webhook url and set the appropriate configuration property.
+
+<PropertyTable
+  title="Microsoft Teams notifications configuration options"
+  properties={metadata.properties}
+  filter={['notify.ms-teams']}
+  exclusive={false}
+/>

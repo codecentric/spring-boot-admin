@@ -1,0 +1,20 @@
+.propertyTable {
+    caption {
+        text-align: left;
+        font-weight: bold;
+        padding: 0 0 1rem 0;
+    }
+}
+
+.propertyCell {
+    div {
+        display: inline-flex;
+        gap: .5rem;
+
+        code {
+            border: none;
+            background: none;
+            text-wrap: wrap;
+        }
+    }
+}

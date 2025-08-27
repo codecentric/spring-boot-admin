@@ -1,5 +1,6 @@
 server:
-    port: 8080
+  port: 8080
+  shutdown: immediate
 spring:
     application:
         name: spring-boot-admin-server-test

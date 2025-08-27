@@ -1,4 +1,4 @@
-name: build main
+name: Build Main / Version Branch
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - master
       - 1.*
       - 2.*
+      - 3.*
 
 jobs:
   build:
@@ -15,35 +16,39 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-
       - uses: actions/checkout@v5
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+          node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
 
-      # since we also build on Windows Powershell, we need to add a space between -D maven.javadoc.skip=true
-      # otherwise the build will fail https://stackoverflow.com/questions/38051787/maven-javadoc-skip-true-throws-an-error
       - name: Build with Maven
-        run: |
-          ./mvnw -B verify -P coverage --no-transfer-progress -D maven.javadoc.skip=true
+        run: ./mvnw -B --no-transfer-progress install -P coverage
 
-      - uses: codecov/codecov-action@v5
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          files: "'*/jacoco.xml'"
+          name: surefire-reports
+          path: |
+            **/target/surefire-reports/*.xml
+            **/target/surefire-reports/*.txt
+            **/target/surefire-reports/*.dump*
+            **/target/surefire-reports/*.out
+            **/target/surefire-reports/*.err
+          if-no-files-found: warn
+          retention-days: 14
 
   publish-snapshot:
     needs: build
@@ -52,24 +57,20 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
         run: ./mvnw -B --no-transfer-progress deploy -DskipTests
@@ -83,10 +84,13 @@ jobs:
       - name: Show extracted Maven project version
         run: echo ${{ steps.project.outputs.version }}
 
-      - name: Deploy Asciidoc docs output to GitHub Pages
+      - name: Build documentation with Maven
+        run: ./mvnw -B --no-transfer-progress site
+
+      - name: Deploy documentation to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.7.3
         with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: spring-boot-admin-docs/target/generated-docs # The folder the action should deploy.
+          branch: gh-pages
+          folder: spring-boot-admin-docs/target/generated-docs/build
           target-folder: ${{ steps.project.outputs.version }}
           clean: true # Automatically remove deleted files from the deploy branch

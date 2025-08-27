@@ -24,6 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -37,13 +39,30 @@ import org.springframework.util.StringUtils;
 @ToString(exclude = "metadata")
 public final class Registration implements Serializable {
 
+	private static final Logger log = LoggerFactory.getLogger(Registration.class);
+
 	private final String name;
 
+	/**
+	 * Base URL of the Actuator (management) endpoints. May run on a different port or
+	 * context than the service itself. Must be an absolute URL when present. Example:
+	 * <code>https://example.com/actuator</code>
+	 */
 	@Nullable
 	private final String managementUrl;
 
+	/**
+	 * Absolute URL of the Actuator health endpoint. Required and used by Spring Boot
+	 * Admin to determine the instance status. Example:
+	 * <code>https://example.com/actuator/health</code>
+	 */
 	private final String healthUrl;
 
+	/**
+	 * Public base URL of the business application (not the Actuator base). Used by Spring
+	 * Boot Admin to link to the running app (e.g., "Open application"). Must be an
+	 * absolute URL; can be overridden via metadata keys "service-url" and "service-path".
+	 */
 	@Nullable
 	private final String serviceUrl;
 
@@ -61,10 +80,11 @@ public final class Registration implements Serializable {
 				"'managementUrl' is not valid: " + managementUrl);
 		Assert.isTrue(!StringUtils.hasText(serviceUrl) || checkUrl(serviceUrl),
 				"'serviceUrl' is not valid: " + serviceUrl);
+
 		this.name = name;
 		this.managementUrl = managementUrl;
 		this.healthUrl = healthUrl;
-		this.serviceUrl = serviceUrl;
+		this.serviceUrl = this.getServiceUrl(serviceUrl, metadata);
 		this.source = source;
 		this.metadata = new LinkedHashMap<>();
 		for (Map.Entry<String, String> entry : metadata.entrySet()) {
@@ -80,6 +100,31 @@ public final class Registration implements Serializable {
 
 	public static Registration.Builder copyOf(Registration registration) {
 		return registration.toBuilder();
+	}
+
+	/**
+	 * Determines the service url. It might be overriden by metadata entries to override
+	 * the service url.
+	 * @param serviceUrl original serviceUrl
+	 * @param metadata metadata information of registered instance
+	 * @return the actual service url
+	 */
+	@Nullable
+	private String getServiceUrl(@Nullable String serviceUrl, Map<String, String> metadata) {
+		if (serviceUrl == null) {
+			return null;
+		}
+		String url = metadata.getOrDefault("service-url", serviceUrl);
+
+		try {
+			URI baseUri = new URI(url);
+			return baseUri.toString();
+		}
+		catch (URISyntaxException ex) {
+			log.warn("Invalid service url: " + serviceUrl, ex);
+		}
+
+		return serviceUrl;
 	}
 
 	public Map<String, String> getMetadata() {
