@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
@@ -45,6 +46,8 @@ import de.codecentric.boot.admin.client.registration.metadata.MetadataContributo
  */
 public class DefaultApplicationFactory implements ApplicationFactory {
 
+	// Removed InetUtils dependency; using standard Java APIs for host resolution.
+
 	private final InstanceProperties instance;
 
 	private final ServerProperties server;
@@ -56,6 +59,8 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	private final WebEndpointProperties webEndpoint;
 
 	private final MetadataContributor metadataContributor;
+
+	private final Optional<?> inetUtils;
 
 	@Nullable
 	private Integer localServerPort;
@@ -72,6 +77,19 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		this.pathMappedEndpoints = pathMappedEndpoints;
 		this.webEndpoint = webEndpoint;
 		this.metadataContributor = metadataContributor;
+		this.inetUtils = Optional.empty();
+	}
+
+	public DefaultApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
+			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
+			MetadataContributor metadataContributor, Optional<?> inetUtils) {
+		this.instance = instance;
+		this.management = management;
+		this.server = server;
+		this.pathMappedEndpoints = pathMappedEndpoints;
+		this.webEndpoint = webEndpoint;
+		this.metadataContributor = metadataContributor;
+		this.inetUtils = (inetUtils != null) ? inetUtils : Optional.empty();
 	}
 
 	@Override
@@ -192,11 +210,31 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected InetAddress getLocalHost() {
+		// Try using Spring Cloud Commons InetUtils if available (optional dependency)
+		if (this.inetUtils != null && this.inetUtils.isPresent()) {
+			Object utils = this.inetUtils.get();
+			try {
+				java.lang.reflect.Method m = utils.getClass().getMethod("findFirstNonLoopbackHostInfo");
+				Object host = m.invoke(utils);
+				if (host instanceof String && StringUtils.hasText((String) host)) {
+					try {
+						return InetAddress.getByName((String) host);
+					}
+					catch (UnknownHostException ex) {
+						// fall through to default
+					}
+				}
+			}
+			catch (Exception ex) {
+				// ignore and fall back
+			}
+		}
+
 		try {
 			return InetAddress.getLocalHost();
 		}
 		catch (UnknownHostException ex) {
-			throw new IllegalArgumentException(ex.getMessage(), ex);
+			throw new IllegalStateException("Cannot determine local host address", ex);
 		}
 	}
 
@@ -236,11 +274,14 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 			return address.getHostAddress();
 		}
 
-		return switch (this.instance.getServiceHostType()) {
-			case IP -> address.getHostAddress();
-			case HOST_NAME -> address.getHostName();
-			default -> address.getCanonicalHostName();
-		};
+		switch (this.instance.getServiceHostType()) {
+			case IP:
+				return address.getHostAddress();
+			case HOST_NAME:
+				return address.getHostName();
+			default:
+				return address.getCanonicalHostName();
+		}
 	}
 
 	@EventListener

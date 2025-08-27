@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.client.registration;
 
+import java.util.Optional;
+
 import jakarta.servlet.ServletContext;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
@@ -44,13 +46,22 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 	public ServletApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
 			ServerProperties server, ServletContext servletContext, PathMappedEndpoints pathMappedEndpoints,
 			WebEndpointProperties webEndpoint, MetadataContributor metadataContributor,
-			DispatcherServletPath dispatcherServletPath) {
-		super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
+			DispatcherServletPath dispatcherServletPath, Optional<?> inetUtils) {
+		super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor, inetUtils);
 		this.servletContext = servletContext;
 		this.server = server;
 		this.management = management;
 		this.instance = instance;
 		this.dispatcherServletPath = dispatcherServletPath;
+	}
+
+	// Backward-compatible constructor for callers that don't provide InetUtils
+	public ServletApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
+			ServerProperties server, ServletContext servletContext, PathMappedEndpoints pathMappedEndpoints,
+			WebEndpointProperties webEndpoint, MetadataContributor metadataContributor,
+			DispatcherServletPath dispatcherServletPath) {
+		this(instance, management, server, servletContext, pathMappedEndpoints, webEndpoint, metadataContributor,
+				dispatcherServletPath, Optional.empty());
 	}
 
 	@Override

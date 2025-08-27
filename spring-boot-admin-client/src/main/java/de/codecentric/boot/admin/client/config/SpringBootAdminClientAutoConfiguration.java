@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.client.config;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.ObjectProvider;
@@ -112,11 +113,11 @@ public class SpringBootAdminClientAutoConfiguration {
 		public ApplicationFactory applicationFactory(InstanceProperties instance, ManagementServerProperties management,
 				ServerProperties server, ServletContext servletContext, PathMappedEndpoints pathMappedEndpoints,
 				WebEndpointProperties webEndpoint, ObjectProvider<List<MetadataContributor>> metadataContributors,
-				DispatcherServletPath dispatcherServletPath) {
+				DispatcherServletPath dispatcherServletPath, ObjectProvider<?> inetUtilsProvider) {
 			return new ServletApplicationFactory(instance, management, server, servletContext, pathMappedEndpoints,
 					webEndpoint,
 					new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
-					dispatcherServletPath);
+					dispatcherServletPath, Optional.ofNullable(inetUtilsProvider.getIfAvailable()));
 		}
 
 	}
@@ -130,10 +131,11 @@ public class SpringBootAdminClientAutoConfiguration {
 		@ConditionalOnMissingBean
 		public ApplicationFactory applicationFactory(InstanceProperties instance, ManagementServerProperties management,
 				ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
-				ObjectProvider<List<MetadataContributor>> metadataContributors, WebFluxProperties webFluxProperties) {
+				ObjectProvider<List<MetadataContributor>> metadataContributors, WebFluxProperties webFluxProperties,
+				ObjectProvider<?> inetUtilsProvider) {
 			return new ReactiveApplicationFactory(instance, management, server, pathMappedEndpoints, webEndpoint,
 					new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
-					webFluxProperties);
+					webFluxProperties, Optional.ofNullable(inetUtilsProvider.getIfAvailable()));
 		}
 
 	}
