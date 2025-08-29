@@ -4,11 +4,10 @@
       "label": "Планировщик заданий",
       "no_scheduledtasks": "Нет запланированных заданий.",
       "cron": {
-        "expression": "Expression",
-        "runnable": "Runnable",
-        "title": "Cron"
+        "expression": "Выражение",
+        "runnable": "Выполняемый объект",
+        "title": "Крон"
       },
-
       "fixed_delay": {
         "initial_delay_ms": "Начальная задержка (мс)",
         "interval_ms": "Интервал (мс)",

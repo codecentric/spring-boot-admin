@@ -8,7 +8,8 @@
       "executing": "Выполнение...",
       "execution_failed": "Ошибка при выполнении.",
       "execution_successful": "Выполнено успешно.",
-      "mbeans": "MBeans"
+      "mbeans": "MBeans",
+      "execute_modal_header": "Выполнить <code>{name}</code>?"
     }
   }
 }
