@@ -29,13 +29,15 @@ jobs:
           sudo swapoff -a
           sudo rm -f /swapfile
           sudo apt clean
-          docker rmi $(docker image ls -aq)
+          if [ -n "$(docker image ls -q)" ]; then
+            docker rmi -f $(docker image ls -aq) || true
+          fi
           df -h
 
       - uses: actions/checkout@v5
 
       - name: Set up settings.xml for Maven Central Repository
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -71,6 +73,9 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+      - name: Build documentation with Maven
+        run: ./mvnw -B --no-transfer-progress  -pl spring-boot-admin-docs site
 
       - name: Deploy documentation to GitHub Pages for version ${{ github.event.inputs.releaseversion }}
         uses: JamesIves/github-pages-deploy-action@v4.7.3
@@ -112,7 +117,9 @@ jobs:
           sudo swapoff -a
           sudo rm -f /swapfile
           sudo apt clean
-          docker rmi $(docker image ls -aq)
+          if [ -n "$(docker image ls -q)" ]; then
+            docker rmi -f $(docker image ls -aq) || true
+          fi
           df -h
 
       - name: Generate changelog

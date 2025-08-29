@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
+import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class RegistrationTest {
+class RegistrationTest implements WithAssertions {
 
 	@Test
 	void invariants() {
@@ -41,6 +42,59 @@ class RegistrationTest {
 		assertThatThrownBy(() -> Registration.create("test", "https://example.com").serviceUrl("invalid").build())
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("'serviceUrl' is not valid: invalid");
+	}
+
+	@Test
+	void returnsNull_whenServiceUrlIsNull_evenIfMetadataHasOverride() {
+		Registration reg = Registration.builder()
+			.name("app")
+			.healthUrl("https://example.com/actuator/health")
+			.metadata("service-url", "https://override.example.com")
+			.build();
+
+		assertThat(reg.getServiceUrl()).isNull();
+	}
+
+	@Test
+	void usesMetadataOverride_whenValidAbsoluteUrlProvided() {
+		Registration reg = Registration.create("app", "https://example.com/actuator/health")
+			.serviceUrl("https://base.example.com")
+			.metadata("service-url", "https://override.example.com")
+			.build();
+
+		assertThat(reg.getServiceUrl()).isEqualTo("https://override.example.com");
+	}
+
+	@Test
+	void fallsBackToOriginal_whenMetadataOverrideIsInvalidSyntax() {
+		Registration reg = Registration.create("app", "https://example.com/actuator/health")
+			.serviceUrl("https://base.example.com")
+			.metadata("service-url", "http://exa mple.com") // invalide URI (Leerzeichen)
+			.build();
+
+		assertThat(reg.getServiceUrl()).isEqualTo("https://base.example.com");
+	}
+
+	@Test
+	void keepsOriginal_whenNoMetadataOverridePresent() {
+		Registration reg = Registration.create("app", "https://example.com/actuator/health")
+			.serviceUrl("https://base.example.com")
+			.metadata("other", "value")
+			.build();
+
+		assertThat(reg.getServiceUrl()).isEqualTo("https://base.example.com");
+	}
+
+	@Test
+	void acceptsEmptyStringFromMetadata_evenThoughItIsRelative() {
+		Registration reg = Registration.create("app", "https://example.com/actuator/health")
+			.serviceUrl("https://base.example.com")
+			.metadata("service-url", "")
+			.build();
+
+		// new URI("") erzeugt eine relative, aber syntaktisch valide URI -> Methode gibt
+		// "" zurück
+		assertThat(reg.getServiceUrl()).isEqualTo("");
 	}
 
 }

@@ -120,7 +120,11 @@
               </template>
 
               <template v-if="singleVersionInGroup(group)" #version>
-                <span v-text="group.instances[0].buildVersion" />
+                <span
+                  v-text="group.instances[0].buildVersion"
+                  class="transition-[opacity]"
+                  :class="{ 'opacity-0': isExpanded(group.name) }"
+                />
               </template>
 
               <template v-if="isGroupedByApplication" #actions>
