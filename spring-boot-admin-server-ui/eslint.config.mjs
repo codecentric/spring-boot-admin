@@ -55,6 +55,15 @@ export default defineConfig([
       'vue/no-reserved-component-names': 'off',
       'vue/no-v-text-v-html-on-component': 'off',
 
+      'no-restricted-syntax': [
+        'error',
+        {
+          message: 'Please do not commit this.',
+          selector:
+            'MemberExpression > Identifier[name="logTestingPlaygroundURL"]',
+        },
+      ],
+
       quotes: [
         2,
         'single',

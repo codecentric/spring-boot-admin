@@ -97,7 +97,7 @@
           </div>
         </section>
         <section
-          v-if="instance.tags.length > 0"
+          v-if="instance.tags?.length > 0"
           class="mt-2 hidden lg:block overflow-x-auto"
         >
           <sba-tags :small="true" :tags="instance.tags" />
