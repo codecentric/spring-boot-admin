@@ -84,7 +84,7 @@
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <spring-javaformat-maven-plugin.version>0.0.47</spring-javaformat-maven-plugin.version>
         <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
-        <spring-conf-prop-documenter-maven-plugin.version>0.7.1</spring-conf-prop-documenter-maven-plugin.version>
+        <spring-conf-prop-documenter-maven-plugin.version>0.7.2</spring-conf-prop-documenter-maven-plugin.version>
     </properties>
 
     <modules>
