@@ -13,6 +13,18 @@ const outDir = resolve(__dirname, 'target/dist');
 export default defineConfig(({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
+  const staticCopyOptions =
+    process.env.TEST !== 'true'
+      ? {
+          targets: [
+            {
+              src: ['sba-settings.js', 'assets/'],
+              dest: outDir,
+            },
+          ],
+        }
+      : { targets: [] };
+
   return {
     base: './',
     define: {
@@ -28,14 +40,7 @@ export default defineConfig(({ mode }) => {
           filename: resolve(__dirname, 'target/vite.bundle-size-analyzer.html'),
         };
       }),
-      viteStaticCopy({
-        targets: [
-          {
-            src: ['sba-settings.js', 'assets/'],
-            dest: outDir,
-          },
-        ],
-      }),
+      viteStaticCopy(staticCopyOptions),
     ],
     css: {
       postcss,
@@ -81,7 +86,7 @@ export default defineConfig(({ mode }) => {
           target: 'http://localhost:8080',
           changeOrigin: true,
         },
-        '^/(applications|instances|notifications/|extensions/)': {
+        '^/(applications|instances|notifications|extensions/)': {
           target: 'http://localhost:8080',
           changeOrigin: true,
           bypass: (req) => {
