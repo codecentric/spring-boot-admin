@@ -10,9 +10,9 @@
         "successful_requests": "успешные запросы",
         "total_requests": "всего запросов"
       },
-      "content_type_response": "Response Content-Type",
-      "content_type_request": "Request Content-Type",
-      "length_request": "Request Длина",
+      "content_type_response": "Тип содержимого ответа",
+      "content_type_request": "Тип содержимого запроса",
+      "length_request": "Длина запроса",
       "fetching_failed": "Ошибка трассировки.",
       "limit": "ограничение",
       "filter": {
@@ -21,7 +21,7 @@
         "server_errors": "ошибки сервера",
         "success": "успех"
       },
-      "length_response": "Response Длина",
+      "length_response": "Длина ответа",
       "method": "Метод",
       "no_traces_found": "Трассировка не найдена.",
       "status": "Статус",
