@@ -32,7 +32,7 @@
       <div class="flex-1 overflow-hidden">
         <section class="flex gap-2 items-center">
           <div class="w-80" data-name="">
-            <!-- Section when URLs are visible -->
+            <!-- Section when URL is visible -->
             <template v-if="instance.showUrl()">
               <div class="flex gap-1">
                 <div
@@ -43,21 +43,25 @@
                   "
                 />
                 <div class="ml-1 inline-flex gap-1">
-                  <sba-button
-                    as="a"
-                    :href="instance.registration.serviceUrl"
-                    size="2xs"
-                    referrerpolicy="no-referrer"
-                    target="_blank"
-                  >
-                    <font-awesome-icon :icon="faHome" size="xs" />
-                  </sba-button>
+                  <template v-if="!instance.isUrlDisabled()">
+                    <sba-button
+                      as="a"
+                      :href="instance.registration.serviceUrl"
+                      size="2xs"
+                      referrerpolicy="no-referrer"
+                      target="_blank"
+                      :aria-label="t('term.homepage')"
+                    >
+                      <font-awesome-icon :icon="faHome" size="xs" />
+                    </sba-button>
+                  </template>
                   <sba-button
                     as="a"
                     :href="instance.registration.managementUrl"
                     size="2xs"
                     referrerpolicy="no-referrer"
                     target="_blank"
+                    :aria-label="t('term.actuator_endpoint')"
                   >
                     <font-awesome-icon :icon="faClipboardList" size="xs" />
                   </sba-button>
@@ -67,6 +71,7 @@
                     size="2xs"
                     referrerpolicy="no-referrer"
                     target="_blank"
+                    :aria-label="t('health.label')"
                   >
                     <font-awesome-icon :icon="faHeart" size="xs" />
                   </sba-button>
@@ -80,7 +85,7 @@
               />
               <span class="text-sm italic" v-text="instance.id" />
             </template>
-            <!-- asd -->
+            <!-- URL are hidden -->
             <template v-else>
               <div v-text="instance.id"></div>
               <sba-tag
@@ -115,6 +120,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { PropType } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 import SbaButton from '@/components/sba-button.vue';
@@ -125,6 +131,7 @@ import SbaTags from '@/components/sba-tags.vue';
 import Instance from '@/services/instance';
 
 const router = useRouter();
+const { t } = useI18n();
 
 defineProps({
   instances: {

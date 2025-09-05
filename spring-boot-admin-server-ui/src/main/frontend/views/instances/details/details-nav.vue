@@ -10,7 +10,7 @@
       <div class="flex-1 text-right">
         <sba-button-group>
           <sba-button
-            v-if="instance.showUrl()"
+            v-if="instance.showUrl() && !instance.isUrlDisabled()"
             as="a"
             referrerpolicy="no-referrer"
             target="_blank"
