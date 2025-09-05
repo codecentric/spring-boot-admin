@@ -152,6 +152,8 @@ public class UiController {
 
 		private final Boolean hideInstanceUrl;
 
+		private final Boolean disableInstanceUrl;
+
 	}
 
 	@lombok.Data

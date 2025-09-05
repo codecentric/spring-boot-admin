@@ -133,9 +133,16 @@ public class AdminServerUiProperties {
 	private Boolean enableToasts = false;
 
 	/**
-	 * Show or hide URL of instances.
+	 * Set to <code>true</code> to hide service URLs as well as actions that require them
+	 * in UI (e.g. jump to /health or /actuator).
 	 */
 	private Boolean hideInstanceUrl = false;
+
+	/**
+	 * Set to <code>true</code> to disable service URLs as well as actions that require
+	 * them in UI.
+	 */
+	private Boolean disableInstanceUrl = false;
 
 	private UiTheme theme = new UiTheme();
 

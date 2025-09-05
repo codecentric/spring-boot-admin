@@ -1,5 +1,5 @@
 export const filterPropertiesByName = (
-  properties: Array<Record<string, string>>,
+  properties: Array<SpringPropertyDefinition>,
   keywords: string[],
   exclusive: boolean = true
 ) => {
