@@ -21,6 +21,7 @@ type ApplicationStoreValue = {
   applicationsInitialized: Ref<boolean>;
   error: Ref<any>;
   applicationStore: ApplicationStore;
+  findApplicationByInstanceId: (instanceId: string) => Ref<Application | null>;
 };
 
 export function useApplicationStore(): ApplicationStoreValue {
@@ -44,5 +45,10 @@ export function useApplicationStore(): ApplicationStoreValue {
     applicationsInitialized.value = false;
   });
 
-  return { applications, applicationsInitialized, error, applicationStore };
+  return {
+    applications,
+    applicationsInitialized,
+    error,
+    applicationStore,
+  };
 }

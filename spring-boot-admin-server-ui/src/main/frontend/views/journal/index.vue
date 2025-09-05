@@ -30,105 +30,11 @@
           v-text="`${getName(filter.instanceId)} (${filter.instanceId})`"
         />
       </div>
-      <div>
-        <label class="label" v-text="$t('journal.per_page.per_page')" />
-        <sba-select
-          v-model="pageSize"
-          :options="[
-            { value: 10, label: 10 },
-            { value: 25, label: 25 },
-            { value: 50, label: 50 },
-            { value: 100, label: 100 },
-            { value: 200, label: 200 },
-            { value: 500, label: 500 },
-            { value: events.length, label: $t('journal.per_page.all') },
-          ]"
-          name="pageSize"
-          @change="setPageSize($event.target.value)"
-        />
-      </div>
     </div>
 
     <sba-alert :error="error" />
-    {{ error }}
 
-    <sba-panel :seamless="true">
-      <table class="table table-full table-striped">
-        <thead>
-          <tr>
-            <th v-text="$t('term.application')" />
-            <th v-text="$t('term.instance')" />
-            <th v-text="$t('term.time')" />
-            <th v-text="$t('term.event')" />
-          </tr>
-        </thead>
-        <tbody />
-        <transition>
-          <tr v-if="newEventsCount > 0">
-            <td
-              class="has-text-primary has-text-centered is-selectable"
-              colspan="4"
-              @click="showNewEvents"
-              v-text="`${newEventsCount} new events`"
-            />
-          </tr>
-        </transition>
-        <transition-group name="fade-in" tag="tbody">
-          <template v-for="event in listedEvents" :key="event.key">
-            <tr
-              class="cursor-pointer"
-              @click="
-                showPayload[event.key]
-                  ? delete showPayload[event.key]
-                  : (showPayload[event.key] = true)
-              "
-            >
-              <td class="flex items-center">
-                <font-awesome-icon
-                  :class="{ 'rotate-90': showPayload[event.key] === true }"
-                  :icon="['fas', 'chevron-right']"
-                  class="mr-2 transition-all"
-                />
-                <span v-text="getName(event.instance)" />
-              </td>
-              <td>
-                <router-link
-                  :to="{
-                    name: 'instances/details',
-                    params: { instanceId: event.instance },
-                  }"
-                >
-                  {{ event.instance }}
-                </router-link>
-              </td>
-              <td v-text="formatDate(event.timestamp)" />
-              <td>
-                <span v-text="event.type" />
-                <span
-                  v-if="event.type === Event.STATUS_CHANGED"
-                  v-text="`(${event.payload.statusInfo.status})`"
-                />
-              </td>
-            </tr>
-            <tr v-if="showPayload[event.key]" :key="`${event.key}-detail`">
-              <td colspan="4">
-                <pre
-                  class="whitespace-pre-wrap text-sm"
-                  v-text="toJson(event.payload)"
-                />
-              </td>
-            </tr>
-          </template>
-        </transition-group>
-      </table>
-    </sba-panel>
-
-    <sba-pagination-nav
-      v-model="current"
-      :page-count="pageCount"
-      :page-size="pageSize"
-      class="mt-6 text-center"
-    />
+    <JournalTable :events="listedEvents" :applications="applications" />
   </div>
 </template>
 
@@ -137,39 +43,24 @@ import { isEqual, uniq } from 'lodash-es';
 
 import SbaAlert from '@/components/sba-alert';
 
+import { useApplicationStore } from '@/composables/useApplicationStore';
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
-
-class InstanceEvent {
-  constructor({ instance, version, type, timestamp, ...payload }) {
-    this.instance = instance;
-    this.version = version;
-    this.type = type;
-    this.timestamp = new Date(timestamp);
-    this.payload = payload;
-  }
-
-  get key() {
-    return `${this.instance}-${this.version}`;
-  }
-}
-InstanceEvent.STATUS_CHANGED = 'STATUS_CHANGED';
-InstanceEvent.REGISTERED = 'REGISTERED';
-InstanceEvent.DEREGISTERED = 'DEREGISTERED';
-InstanceEvent.REGISTRATION_UPDATED = 'REGISTRATION_UPDATED';
-InstanceEvent.INFO_CHANGED = 'INFO_CHANGED';
-InstanceEvent.ENDPOINTS_DETECTED = 'ENDPOINTS_DETECTED';
+import { InstanceEvent } from '@/views/journal/InstanceEvent';
+import JournalTable from '@/views/journal/JournalTable.vue';
 
 export default {
-  components: { SbaAlert },
+  components: { JournalTable, SbaAlert },
   mixins: [subscribing],
   setup() {
     const { formatDateTime } = useDateTimeFormatter();
+    const { applications } = useApplicationStore();
 
     return {
       formatDate: formatDateTime,
+      applications,
     };
   },
   data: () => ({

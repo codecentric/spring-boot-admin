@@ -5,6 +5,17 @@
     "per_page": {
       "per_page": "Pro Seite:",
       "all": "Alle"
+    },
+    "filter": {
+      "application": {
+        "any": "Alle Anwendungen"
+      },
+      "event_type": {
+        "any": "Jeder Typ"
+      },
+      "instance_id": {
+        "any": "Alle Instanzen"
+      }
     }
   }
 }
