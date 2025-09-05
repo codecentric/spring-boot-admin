@@ -21,6 +21,6 @@ __Instance metadata options__
 | `tags.*`                        | Tags as key-value-pairs to be associated with this instance.                                                                         |
 | `group`                         | Assign a group name. Used in UI to aggregate instances not by application but by assigned group.                                     |
 | `hide-url`                      | Hide URLs of the instance in UI. Useful, when running in a cluster, exposing a non routable URL.                                     |
-| `disable-url`                   | Disables links of this instance in UI. Useful, when behind the URL has no UI.                                                        |
+| `disable-url`                   | Disables links of this instance in UI. Useful, when the URL does not point to a UI.                                                  |
 | `service-url`                   | Override the service url of the registered service. Allows to specify the actual URL to the UI. This does not affect management url. |
 | `user.name`<br/>`user.password` | Credentials being used to access the endpoints.                                                                                      |
