@@ -59,6 +59,10 @@ class Instance {
     registerErrorToastInterceptor(this.axios);
   }
 
+  get metadata() {
+    return this.registration.metadata;
+  }
+
   get isUnregisterable() {
     return this.registration.source === 'http-api';
   }

@@ -51,13 +51,14 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
+                        <phase>pre-site</phase>
                         <configuration>
                             <nodeVersion>${node.version}</nodeVersion>
                         </configuration>
                     </execution>
                     <execution>
                         <id>npm-install</id>
-                        <phase>compile</phase>
+                        <phase>pre-site</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -67,7 +68,7 @@
                     </execution>
                     <execution>
                         <id>npm-build</id>
-                        <phase>prepare-package</phase>
+                        <phase>site</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -86,7 +87,7 @@
                         <goals>
                             <goal>generate-and-aggregate-documents</goal>
                         </goals>
-                        <phase>generate-resources</phase>
+                        <phase>pre-site</phase>
                         <configuration>
                             <type>ADOC</type>
                             <inputs>

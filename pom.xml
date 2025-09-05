@@ -44,12 +44,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.5.4</spring-boot.version>
+        <spring-boot.version>3.5.5</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
 
         <jolokia-support-spring.version>2.3.0</jolokia-support-spring.version>
 
-        <checkstyle.version>11.0.0</checkstyle.version>
+        <checkstyle.version>11.0.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
 
         <wiremock.version>3.13.1</wiremock.version>
@@ -62,9 +62,8 @@
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <!-- because of https://github.com/mojohaus/versions/issues/855 -->
-        <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
+        <versions-maven-plugin.version>2.19.0</versions-maven-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
-        <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
         <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
         <maven-enforcer-plugin.version>3.6.1</maven-enforcer-plugin.version>
@@ -85,7 +84,7 @@
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <spring-javaformat-maven-plugin.version>0.0.47</spring-javaformat-maven-plugin.version>
         <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
-        <spring-conf-prop-documenter-maven-plugin.version>0.7.1</spring-conf-prop-documenter-maven-plugin.version>
+        <spring-conf-prop-documenter-maven-plugin.version>0.7.2</spring-conf-prop-documenter-maven-plugin.version>
     </properties>
 
     <modules>
@@ -185,6 +184,16 @@
                     <parameters>true</parameters>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                        <path>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
@@ -270,11 +279,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>${maven-site-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven-source-plugin.version}</version>
                 </plugin>
@@ -351,6 +355,9 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
+                        <parallel>classesAndMethods</parallel>
+                        <useUnlimitedThreads>false</useUnlimitedThreads>
+                        <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <rerunFailingTestsCount>2</rerunFailingTestsCount>
                         <includes>
                             <include>**/*Tests.java</include>
