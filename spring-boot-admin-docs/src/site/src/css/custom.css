@@ -21,3 +21,18 @@
 main[class^='docMainContainer'] {
     position: relative;
 }
+
+.dl-horizontal {
+    * {
+        margin: 0;
+    }
+    div {
+        display: grid;
+        gap: .5rem;
+        grid-template-columns: repeat(3, 1fr);
+
+        dd {
+            grid-column: span 2 / span 2;
+        }
+    }
+}
