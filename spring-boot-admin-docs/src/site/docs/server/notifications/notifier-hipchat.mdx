@@ -1,0 +1,17 @@
+---
+sidebar_custom_props:
+  icon: 'notifications'
+---
+import metadata from "../../../../../../spring-boot-admin-server/target/classes/META-INF/spring-configuration-metadata.json";
+import { PropertyTable } from "../../../src/components/PropertyTable";
+
+# Hipchat Notifications
+
+To enable [Hipchat](https://www.hipchat.com/) notifications you need to create an API token on your Hipchat account and set the appropriate configuration properties.
+
+<PropertyTable
+  title="Hipchat notifications configuration options"
+  properties={metadata.properties}
+  filter={['notify.hipchat']}
+  exclusive={false}
+/>

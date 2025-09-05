@@ -1,0 +1,27 @@
+.copyButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    background-color: var(--ifm-color-primary-light); /* Spring Boot green */
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.copyButton:hover {
+    background-color: var(--ifm-color-primary-dark); /* darker green on hover */
+}
+
+.copyButton:active {
+    transform: scale(0.97); /* subtle click effect */
+}
+
+.icon {
+    width: 12px;
+    aspect-ratio: 1;
+}

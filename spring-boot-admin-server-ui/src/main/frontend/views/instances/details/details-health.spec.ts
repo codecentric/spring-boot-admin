@@ -10,75 +10,134 @@ import { render } from '@/test-utils';
 import DetailsHealth from '@/views/instances/details/details-health.vue';
 
 describe('DetailsHealth', () => {
-  describe('Health Group', () => {
-    beforeEach(() => {
-      server.use(
-        http.get('/instances/:instanceId/actuator/health', () => {
-          return HttpResponse.json({
-            instance: 'UP',
-            groups: ['liveness'],
-          });
-        }),
-        http.get('/instances/:instanceId/actuator/health/liveness', () => {
-          return HttpResponse.json({
-            status: 'UP',
-            details: {
-              disk: { status: 'UNKNOWN' },
-              database: { status: 'UNKNOWN' },
-            },
-          });
-        }),
-      );
+  beforeEach(() => {
+    server.use(
+      http.get('/instances/:instanceId/actuator/health', () => {
+        return HttpResponse.json({
+          instance: 'UP',
+          groups: ['liveness'],
+        });
+      }),
+      http.get('/instances/:instanceId/actuator/health/liveness', () => {
+        return HttpResponse.json({
+          status: 'UP',
+          details: {
+            disk: { status: 'UNKNOWN' },
+            database: { status: 'UNKNOWN' },
+          },
+        });
+      }),
+    );
+  });
+
+  it('should display groups as part of health section', async () => {
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+
+    render(DetailsHealth, {
+      props: {
+        instance,
+      },
     });
 
-    it('should display groups as part of health section', async () => {
-      const application = new Application(applications[0]);
-      const instance = application.instances[0];
+    await waitFor(() =>
+      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
+    );
 
-      render(DetailsHealth, {
-        props: {
-          instance,
-        },
-      });
+    expect(
+      await screen.findByRole('button', {
+        name: /instances.details.health_group.title: liveness/,
+      }),
+    ).toBeVisible();
+  });
 
-      await waitFor(() =>
-        expect(screen.queryByRole('status')).not.toBeInTheDocument(),
-      );
+  it('health groups are toggleable, when details are available', async () => {
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+    instance.statusInfo = { status: 'UP', details: {} };
 
+    render(DetailsHealth, {
+      props: {
+        instance,
+      },
+    });
+
+    await waitFor(() =>
+      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
+    );
+
+    const button = screen.queryByRole('button', {
+      name: /instances.details.health_group.title: liveness/,
+    });
+    expect(button).toBeVisible();
+
+    expect(screen.queryByLabelText('disk')).toBeNull();
+    expect(screen.queryByLabelText('database')).toBeNull();
+
+    await userEvent.click(button);
+
+    expect(screen.queryByLabelText('disk')).toBeDefined();
+    expect(screen.queryByLabelText('database')).toBeDefined();
+  });
+
+  it('should update health details when instance prop changes (watch)', async () => {
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+    const instance2 = {
+      ...instance1,
+      id: 'other-id',
+      statusInfo: { status: 'DOWN', details: {} },
+    };
+
+    const { rerender } = render(DetailsHealth, {
+      props: {
+        instance: instance1,
+      },
+    });
+
+    await waitFor(() =>
+      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
+    );
+
+    // Simulate prop change
+    await rerender({ instance: instance2 });
+
+    // Wait for the component to react to the prop change
+    await waitFor(() =>
       expect(
-        await screen.findByRole('button', {
+        screen.queryByRole('button', {
           name: /instances.details.health_group.title: liveness/,
         }),
-      ).toBeVisible();
+      ).toBeVisible(),
+    );
+  });
+
+  it('should not display health group button if no groups are present', async () => {
+    server.use(
+      http.get('/instances/:instanceId/actuator/health', () => {
+        return HttpResponse.json({
+          instance: 'UP',
+          groups: [],
+        });
+      }),
+    );
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+
+    render(DetailsHealth, {
+      props: {
+        instance,
+      },
     });
 
-    it('health groups are toggleable, when details are available', async () => {
-      const application = new Application(applications[0]);
-      const instance = application.instances[0];
-      instance.statusInfo = {};
+    await waitFor(() =>
+      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
+    );
 
-      render(DetailsHealth, {
-        props: {
-          instance,
-        },
-      });
-
-      await waitFor(() =>
-        expect(screen.queryByRole('status')).not.toBeInTheDocument(),
-      );
-
-      const button = screen.queryByRole('button', {
+    expect(
+      screen.queryByRole('button', {
         name: /instances.details.health_group.title: liveness/,
-      });
-      expect(button).toBeVisible();
-
-      expect(screen.queryByLabelText('disk')).toBeNull();
-      expect(screen.queryByLabelText('database')).toBeNull();
-
-      await userEvent.click(button);
-
-      expect(screen.queryByLabelText('disk')).toBeDefined();
-      expect(screen.queryByLabelText('database')).toBeDefined();
-    });
+      }),
+    ).toBeNull();
   });
 });

@@ -3,6 +3,7 @@
     "server_connection_failed": "Verbindung zum Server fehlgeschlagen."
   },
   "term": {
+    "actuator_endpoint": "Actuator-Endpunkt",
     "affects_all_instances": "Betrifft alle {count} Instanzen",
     "affects_this_instance_only": "Betrifft nur diese Instanz",
     "all": "Alle",
@@ -27,6 +28,7 @@
     "fetching_data": "Lade Daten...",
     "fetch_failed": "Abruf der Daten fehlgeschlagen.",
     "float": "Float",
+    "homepage": "Startseite",
     "hours": "{count} Stunde | {count} Stunden",
     "instance": "Instanz",
     "instances": "Instanzen",

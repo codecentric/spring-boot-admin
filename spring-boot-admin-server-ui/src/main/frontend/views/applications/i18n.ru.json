@@ -1,9 +1,24 @@
 {
   "applications": {
+    "actions": {
+      "journal": "Журнал",
+      "notification_filters": "Фильтры уведомлений",
+      "unregister": "Удалить регистрацию",
+      "shutdown": "Остановить",
+      "restart": "Перезапустить"
+    },
     "all_up": "все доступны",
-    "applications": "Приложения",
-    "instances": "Экземпляры",
+    "all_down": "все недоступны",
+    "all_unknown": "все в неизвестном состоянии",
+    "some_unknown": "некоторые экземпляры в неизвестном состоянии",
     "some_down": "экземпляры недоступны",
+    "applications": "Приложения",
+    "fetching_notification_filters_failed": "Ошибка загрузки фильтров уведомлений.",
+    "notification_filter": {
+      "none": "Фильтры уведомлений не установлены.",
+      "removed": "Фильтр уведомлений удалён."
+    },
+    "instances": "Экземпляры",
     "loading_applications": "Загрузка приложений...",
     "no_applications_registered": "Нет зарегистрированных приложений.",
     "notifications_suppressed_for": "Уведомления для <code>{name}</code> отключены на",
@@ -13,13 +28,31 @@
     "status": "Статус",
     "label": "Приложения",
     "up": "ОК",
-    "shutdown": "Shutdown application <code>{name}</code>?",
-    "restart": "Restart application <code>{name}</code>?",
-    "restarted": "Successfully restarted application <code>{name}</code>"
+    "down": "недоступен",
+    "offline": "оффлайн",
+    "shutdown": "Остановить приложение <code>{name}</code>?",
+    "shutdown_successful": "Приложение {name} успешно остановлено.",
+    "refreshed": "Приложения обновлены.",
+    "restart": "Перезапустить приложение <code>{name}</code>?",
+    "restarted": "Приложение <code>{name}</code> успешно перезапущено.",
+    "unregister": "Удалить регистрацию приложения <code>{name}</code>?",
+    "unregister_successful": "Регистрация приложения <code>{name}</code> успешно удалена.",
+    "unregister_failed": "Ошибка удаления регистрации приложения <code>{name}</code> ({error})."
   },
   "instances": {
-    "shutdown": "Shutdown instance <code>{name}</code>?",
-    "restart": "Restart instance <code>{name}</code>?",
-    "restarted": "Successfully restarted instance"
+    "shutdown": "Остановить экземпляр <code>{name}</code>?",
+    "shutdown_successful": "Экземпляр {name} успешно остановлен.",
+    "shutdown_failed": "Ошибка остановки экземпляра {name}.",
+    "restart": "Перезапустить экземпляр <code>{name}</code>?",
+    "restarted": "Экземпляр {name} успешно перезапущен.",
+    "unregister": "Удалить регистрацию экземпляра <code>{name}</code>?",
+    "unregister_successful": "Регистрация экземпляра <code>{name}</code> успешно удалена.",
+    "unregister_failed": "Ошибка удаления регистрации экземпляра <code>{name}</code> ({error})."
+  },
+  "notification_filter_center": {
+    "description": "Уведомления для следующих приложений или экземпляров будут отключены."
+  },
+  "filter": {
+    "no_results": "Нет результатов, соответствующих вашему фильтру."
   }
 }

@@ -111,6 +111,7 @@ public class AdminServerUiAutoConfiguration {
 			.faviconDanger(this.adminUi.getFaviconDanger())
 			.enableToasts(this.adminUi.getEnableToasts())
 			.hideInstanceUrl(this.adminUi.getHideInstanceUrl())
+			.disableInstanceUrl(this.adminUi.getDisableInstanceUrl())
 			.notificationFilterEnabled(
 					!this.applicationContext.getBeansOfType(NotificationFilterController.class).isEmpty())
 			.routes(routes)

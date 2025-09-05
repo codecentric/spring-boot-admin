@@ -5,7 +5,7 @@
         :title="$t('applications.actions.journal')"
         @click.stop="navigate"
       >
-        <font-awesome-icon icon="history" />
+        <font-awesome-icon :icon="faHistory" />
       </sba-button>
     </router-link>
     <sba-button
@@ -15,7 +15,7 @@
       @click.stop="$emit('filter-settings', item)"
     >
       <font-awesome-icon
-        :icon="hasActiveNotificationFilter ? 'bell-slash' : 'bell'"
+        :icon="hasActiveNotificationFilter ? faBellSlash : faBell"
       />
     </sba-button>
     <sba-button
@@ -24,14 +24,14 @@
       :title="$t('applications.actions.unregister')"
       @click.stop="actionHandler.unregister(item)"
     >
-      <font-awesome-icon :icon="'trash'" />
+      <font-awesome-icon :icon="faTrash" />
     </sba-button>
     <sba-button
       v-if="item.hasEndpoint('restart')"
       :title="$t('applications.actions.restart')"
       @click.stop="actionHandler.restart(item)"
     >
-      <font-awesome-icon icon="undo-alt" />
+      <font-awesome-icon :icon="faUndoAlt" />
     </sba-button>
     <sba-button
       v-if="item.hasEndpoint('shutdown')"
@@ -39,12 +39,20 @@
       class="is-danger btn-shutdown"
       @click.stop="actionHandler.shutdown(item)"
     >
-      <font-awesome-icon :icon="['fa', 'power-off']" />
+      <font-awesome-icon :icon="faPowerOff" />
     </sba-button>
   </sba-button-group>
 </template>
 
 <script lang="ts" setup>
+import {
+  faBell,
+  faBellSlash,
+  faHistory,
+  faPowerOff,
+  faTrash,
+  faUndoAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { inject } from 'vue';
 import { useI18n } from 'vue-i18n';

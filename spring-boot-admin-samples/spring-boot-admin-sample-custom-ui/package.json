@@ -10,12 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "3.5.18"
+    "vue": "3.5.21"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "6.0.1",
     "@vue-macros/reactivity-transform": "^1.0.0",
-    "vite": "7.1.0",
+    "vite": "7.1.4",
     "vite-plugin-static-copy": "^3.0.0"
   },
   "browserslist": [

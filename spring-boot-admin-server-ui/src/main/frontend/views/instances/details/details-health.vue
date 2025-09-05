@@ -98,16 +98,28 @@ export default {
       isOpen: boolean;
       collapsible: boolean;
     },
+    currentInstanceId: null,
   }),
   computed: {
     health() {
       return this.liveHealth || this.instance.statusInfo;
     },
   },
+  watch: {
+    instance: {
+      handler: 'reloadHealth',
+      immediate: true,
+    },
+  },
   created() {
     this.fetchHealth();
   },
   methods: {
+    reloadHealth() {
+      if (this.instance.id !== this.currentInstanceId) {
+        this.fetchHealth();
+      }
+    },
     isHealthGroupOpen(groupName: string) {
       return this.healthGroupOpenStatus[groupName].isOpen === true;
     },
@@ -125,6 +137,7 @@ export default {
       this.loading = true;
       try {
         const res = await this.instance.fetchHealth();
+        this.currentInstanceId = this.instance.id;
         this.liveHealth = res.data;
 
         if (Array.isArray(res.data.groups)) {

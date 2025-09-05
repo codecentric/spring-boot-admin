@@ -1,5 +1,5 @@
-import { setup } from '@storybook/vue3';
-import { initialize, mswDecorator } from 'msw-storybook-addon';
+import { setup } from '@storybook/vue3-vite';
+import { initialize, mswLoader } from 'msw-storybook-addon';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import './storybook.css';
@@ -39,6 +39,12 @@ export const parameters = {
       others: [...mappingsEndpoint, ...applicationsEndpoint],
     },
   },
+  loader: { '.js': 'jsx' },
 };
 
-export const decorators = [mswDecorator];
+export const preview = {
+  parameters,
+  loaders: [mswLoader],
+};
+
+export const tags = ['autodocs'];

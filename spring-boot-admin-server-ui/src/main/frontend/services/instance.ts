@@ -41,7 +41,7 @@ class Instance {
   public statusInfo: StatusInfo;
   private readonly axios: AxiosInstance;
 
-  constructor({ id, ...instance }) {
+  constructor({ id, ...instance }: InstanceType<typeof Instance>) {
     Object.assign(this, instance);
     this.id = id;
     this.axios = axios.create({
@@ -57,6 +57,10 @@ class Instance {
       ),
     );
     registerErrorToastInterceptor(this.axios);
+  }
+
+  get metadata() {
+    return this.registration.metadata;
   }
 
   get isUnregisterable() {
@@ -122,6 +126,16 @@ class Instance {
 
     const hideUrlMetadata = this.registration.metadata?.['hide-url'];
     return hideUrlMetadata !== 'true';
+  }
+
+  isUrlDisabled() {
+    const sbaConfig = useSbaConfig();
+    if (sbaConfig.uiSettings.disableInstanceUrl) {
+      return true;
+    }
+
+    const disableUrl = this.registration.metadata?.['disable-url'];
+    return disableUrl === 'true';
   }
 
   getId() {

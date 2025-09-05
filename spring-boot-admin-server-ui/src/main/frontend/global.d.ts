@@ -73,6 +73,7 @@ declare global {
     viewSettings: ViewSettings[];
     enableToasts: boolean;
     hideInstanceUrl: boolean;
+    disableInstanceUrl: boolean;
   };
 
   type SBASettings = {

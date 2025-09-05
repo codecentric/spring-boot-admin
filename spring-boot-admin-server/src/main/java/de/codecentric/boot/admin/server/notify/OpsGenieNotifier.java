@@ -118,7 +118,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 	protected String buildUrl(InstanceEvent event, Instance instance) {
 		if ((event instanceof InstanceStatusChangedEvent statusChangedEvent)
 				&& (StatusInfo.STATUS_UP.equals(statusChangedEvent.getStatusInfo().getStatus()))) {
-			return String.format("%s/%s/close", url, generateAlias(instance));
+			return String.format("%s/%s/close?identifierType=alias", url, generateAlias(instance));
 		}
 		return url.toString();
 	}
