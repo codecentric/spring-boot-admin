@@ -43,6 +43,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!-- disable default maven site generation, but allow docusarus to hook into site lifecycle -->
+        <maven.site.skip>true</maven.site.skip>
+
         <!-- used dependencies versions -->
         <spring-boot.version>3.5.5</spring-boot.version>
         <spring-cloud.version>2025.0.0</spring-cloud.version>
