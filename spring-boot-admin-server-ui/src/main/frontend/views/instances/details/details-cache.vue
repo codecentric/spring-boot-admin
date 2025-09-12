@@ -111,6 +111,7 @@ export default {
     shouldFetchCacheHits: true,
     shouldFetchCacheMisses: true,
     chartData: [],
+    currentInstanceId: null,
   }),
   computed: {
     ratio() {
@@ -126,7 +127,25 @@ export default {
       return undefined;
     },
   },
+  watch: {
+    instance: {
+      handler: 'initCacheMetrics',
+      immediate: true,
+    },
+  },
   methods: {
+    initCacheMetrics() {
+      if (this.instance.id !== this.currentInstanceId) {
+        this.currentInstanceId = this.instance.id;
+        this.hasLoaded = false;
+        this.error = null;
+        this.current = null;
+        this.chartData = [];
+        this.shouldFetchCacheSize = true;
+        this.shouldFetchCacheHits = true;
+        this.shouldFetchCacheMisses = true;
+      }
+    },
     async fetchMetrics() {
       const [hit, miss, size] = await Promise.all([
         this.fetchCacheHits(),

@@ -105,6 +105,7 @@ export default defineComponent({
     error: null,
     current: null,
     chartData: [],
+    currentInstanceId: null,
   }),
   computed: {
     name() {
@@ -118,7 +119,22 @@ export default defineComponent({
       }
     },
   },
+  watch: {
+    instance: {
+      handler: 'initMetrics',
+      immediate: true,
+    },
+  },
   methods: {
+    initMetrics() {
+      if (this.instance.id !== this.currentInstanceId) {
+        this.currentInstanceId = this.instance.id;
+        this.hasLoaded = false;
+        this.error = null;
+        this.current = null;
+        this.chartData = [];
+      }
+    },
     prettyBytes,
     async fetchMetrics() {
       const responseMax = this.instance.fetchMetric('jvm.memory.max', {
