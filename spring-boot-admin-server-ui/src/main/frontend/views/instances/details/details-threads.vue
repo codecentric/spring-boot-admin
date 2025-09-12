@@ -69,8 +69,24 @@ export default {
     error: null,
     current: null,
     chartData: [],
+    currentInstanceId: null,
   }),
+  watch: {
+    instance: {
+      handler: 'initMetrics',
+      immediate: true,
+    },
+  },
   methods: {
+    initMetrics() {
+      if (this.instance.id !== this.currentInstanceId) {
+        this.currentInstanceId = this.instance.id;
+        this.error = null;
+        this.hasLoaded = false;
+        this.current = null;
+        this.chartData = [];
+      }
+    },
     async fetchMetrics() {
       const responseLive = this.instance.fetchMetric('jvm.threads.live');
       const responsePeak = this.instance.fetchMetric('jvm.threads.peak');

@@ -34,8 +34,6 @@ management:
         enabled: true
     health:
       show-details: ALWAYS
-  server:
-    port: 9999
 
 
 spring:
