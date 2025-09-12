@@ -103,6 +103,7 @@ export default {
   methods: {
     initDatasourceMetrics() {
       if (this.instance.id !== this.currentInstanceId) {
+        this.currentInstanceId = this.instance.id;
         this.hasLoaded = false;
         this.error = null;
         this.current = null;
@@ -110,7 +111,6 @@ export default {
       }
     },
     async fetchMetrics() {
-      this.currentInstanceId = this.instance.id;
       const responseActive = this.instance.fetchMetric(
         'jdbc.connections.active',
         { name: this.dataSource },

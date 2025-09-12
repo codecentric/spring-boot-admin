@@ -136,6 +136,7 @@ export default {
   methods: {
     initCacheMetrics() {
       if (this.instance.id !== this.currentInstanceId) {
+        this.currentInstanceId = this.instance.id;
         this.hasLoaded = false;
         this.error = null;
         this.current = null;
@@ -146,7 +147,6 @@ export default {
       }
     },
     async fetchMetrics() {
-      this.currentInstanceId = this.instance.id;
       const [hit, miss, size] = await Promise.all([
         this.fetchCacheHits(),
         this.fetchCacheMisses(),
