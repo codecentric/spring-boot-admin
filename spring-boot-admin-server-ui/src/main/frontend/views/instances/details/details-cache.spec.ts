@@ -1,5 +1,5 @@
 import { screen, waitFor } from '@testing-library/vue';
-import { enableAutoUnmount, shallowMount } from '@vue/test-utils';
+import { enableAutoUnmount } from '@vue/test-utils';
 import { HttpResponse, http } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -114,7 +114,17 @@ describe('DetailsCache', () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
 
-    const vueWrapper = shallowMount(DetailsCache, {
+    const stubChart = {
+      props: ['data'],
+      template: `
+        <div data-test="chart">
+          {{ JSON.stringify($props.data) }}
+        </div>
+      `,
+    };
+
+    const { container } = await render(DetailsCache, {
+      global: { stubs: { cacheChart: stubChart } },
       props: {
         instance,
         cacheName: CACHE_NAME,
@@ -122,12 +132,25 @@ describe('DetailsCache', () => {
       },
     });
 
-    await waitFor(() => {
-      expect(vueWrapper.vm.chartData).toHaveLength(3);
-    });
+    // wait until chart stub receives at least 3 data points
+    await waitFor(
+      () => {
+        const el = container.querySelector('[data-test="chart"]');
+        expect(el).toBeTruthy();
+        const text = (el?.textContent as string) || '[]';
+        const parsed = JSON.parse(text);
+        expect(parsed).toHaveLength(3);
+      },
+      { timeout: 2000 },
+    );
 
-    for (let index = 0; index < vueWrapper.vm.chartData.length; index++) {
-      expect(vueWrapper.vm.chartData[index].total).toEqual(TOTAL[index]);
+    const chartText =
+      (container.querySelector('[data-test="chart"]')?.textContent as string) ||
+      '[]';
+    const chartData = JSON.parse(chartText);
+
+    for (let index = 0; index < chartData.length; index++) {
+      expect(chartData[index].total).toEqual(TOTAL[index]);
     }
   });
 
@@ -135,7 +158,17 @@ describe('DetailsCache', () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
 
-    const vueWrapper = shallowMount(DetailsCache, {
+    const stubChart = {
+      props: ['data'],
+      template: `
+        <div data-test="chart">
+          {{ JSON.stringify($props.data) }}
+        </div>
+      `,
+    };
+
+    const { container } = await render(DetailsCache, {
+      global: { stubs: { cacheChart: stubChart } },
       props: {
         instance,
         cacheName: CACHE_NAME,
@@ -143,20 +176,66 @@ describe('DetailsCache', () => {
       },
     });
 
-    await waitFor(() => {
-      expect(vueWrapper.vm.chartData).toHaveLength(3);
-    });
+    // wait until chart stub receives at least 3 data points
+    await waitFor(
+      () => {
+        const el = container.querySelector('[data-test="chart"]');
+        expect(el).toBeTruthy();
+        const text = (el?.textContent as string) || '[]';
+        const parsed = JSON.parse(text);
+        expect(parsed).toHaveLength(3);
+      },
+      { timeout: 2000 },
+    );
 
-    for (let index = 0; index < vueWrapper.vm.chartData.length; index++) {
-      expect(vueWrapper.vm.chartData[index].hitsPerInterval).toEqual(
+    const chartText2 =
+      (container.querySelector('[data-test="chart"]')?.textContent as string) ||
+      '[]';
+    const chartData = JSON.parse(chartText2);
+
+    for (let index = 0; index < chartData.length; index++) {
+      expect(chartData[index].hitsPerInterval).toEqual(
         HITS_PER_INTERVAL[index],
       );
-      expect(vueWrapper.vm.chartData[index].missesPerInterval).toEqual(
+      expect(chartData[index].missesPerInterval).toEqual(
         MISSES_PER_INTERVAL[index],
       );
-      expect(vueWrapper.vm.chartData[index].totalPerInterval).toEqual(
+      expect(chartData[index].totalPerInterval).toEqual(
         TOTAL_PER_INTERVAL[index],
       );
     }
+  });
+
+  it('should reinitialize metrics when instance changes', async () => {
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+
+    const { getByText, rerender, queryByText } = await render(DetailsCache, {
+      props: {
+        instance,
+        cacheName: CACHE_NAME,
+        index: 0,
+      },
+    });
+
+    // wait until initial fetch rendered a numeric value
+    await waitFor(() => {
+      expect(getByText(`${HITS[0]}`)).toBeTruthy();
+    });
+
+    // simulate switching to a different instance
+    const newApp = new Application({
+      name: 'Other',
+      statusTimestamp: Date.now(),
+      instances: [{ id: 'other-1', statusInfo: { status: 'UP' } }],
+    });
+    const newInstance = newApp.instances[0];
+
+    await rerender({ instance: newInstance, cacheName: CACHE_NAME, index: 0 });
+
+    // component should have reset its rendered data
+    await waitFor(() => {
+      expect(queryByText(`${HITS[0]}`)).not.toBeInTheDocument();
+    });
   });
 });
