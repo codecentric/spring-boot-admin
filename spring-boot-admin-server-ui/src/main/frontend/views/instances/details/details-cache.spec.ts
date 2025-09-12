@@ -34,6 +34,30 @@ describe('DetailsCache', () => {
   const MISSES_PER_INTERVAL = [0, 0, 8];
   const TOTAL_PER_INTERVAL = [0, 8, 24];
 
+  const stubChart = {
+    props: ['data'],
+    template: `
+        <div data-test="chart">
+          {{ JSON.stringify($props.data) }}
+        </div>
+      `,
+  };
+
+  const renderComponent = async (stubs = {}) => {
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+    return render(DetailsCache, {
+      global: {
+        stubs,
+      },
+      props: {
+        instance,
+        cacheName: CACHE_NAME,
+        index: 0,
+      },
+    });
+  };
+
   beforeEach(() => {
     const hitsGenerator = (function* () {
       yield* HITS;
@@ -68,21 +92,6 @@ describe('DetailsCache', () => {
     );
   });
 
-  async function renderComponent(stubs = {}) {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
-    return render(DetailsCache, {
-      global: {
-        stubs,
-      },
-      props: {
-        instance,
-        cacheName: CACHE_NAME,
-        index: 0,
-      },
-    });
-  }
-
   it('should render cache name', async () => {
     await renderComponent();
 
@@ -113,15 +122,6 @@ describe('DetailsCache', () => {
   it('should calculate total', async () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
-
-    const stubChart = {
-      props: ['data'],
-      template: `
-        <div data-test="chart">
-          {{ JSON.stringify($props.data) }}
-        </div>
-      `,
-    };
 
     const { container } = await render(DetailsCache, {
       global: { stubs: { cacheChart: stubChart } },
@@ -157,15 +157,6 @@ describe('DetailsCache', () => {
   it('should calculate hits, misses and total per interval', async () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
-
-    const stubChart = {
-      props: ['data'],
-      template: `
-        <div data-test="chart">
-          {{ JSON.stringify($props.data) }}
-        </div>
-      `,
-    };
 
     const { container } = await render(DetailsCache, {
       global: { stubs: { cacheChart: stubChart } },
