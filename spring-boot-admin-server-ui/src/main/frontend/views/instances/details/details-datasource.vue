@@ -92,9 +92,25 @@ export default {
     error: null,
     current: null,
     chartData: [],
+    currentInstanceId: null,
   }),
+  watch: {
+    instance: {
+      handler: 'initDatasourceMetrics',
+      immediate: true,
+    },
+  },
   methods: {
+    initDatasourceMetrics() {
+      if (this.instance.id !== this.currentInstanceId) {
+        this.hasLoaded = false;
+        this.error = null;
+        this.current = null;
+        this.chartData = [];
+      }
+    },
     async fetchMetrics() {
+      this.currentInstanceId = this.instance.id;
       const responseActive = this.instance.fetchMetric(
         'jdbc.connections.active',
         { name: this.dataSource },
