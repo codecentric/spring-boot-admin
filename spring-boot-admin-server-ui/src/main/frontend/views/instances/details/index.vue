@@ -21,46 +21,17 @@
       <details-hero :instance="instance" />
     </template>
 
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
-        <details-info v-if="hasInfo" :instance="instance" />
-        <details-metadata v-if="hasMetadata" :instance="instance" />
-      </div>
-      <div class="flex-1">
-        <details-health :instance="instance" />
-      </div>
-    </div>
-
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
-        <details-process
-          v-if="hasProcess"
-          :instance="instance"
-          class="break-inside-avoid"
-        />
-        <details-gc v-if="hasGc" :instance="instance" />
-      </div>
-      <div class="flex-1">
-        <details-threads v-if="hasThreads" :instance="instance" />
-      </div>
-    </div>
-
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
-        <details-memory v-if="hasMemory" :instance="instance" type="heap" />
-      </div>
-      <div class="flex-1">
-        <details-memory v-if="hasMemory" :instance="instance" type="nonheap" />
-      </div>
-    </div>
-
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
-        <details-datasources v-if="hasDatasources" :instance="instance" />
-      </div>
-      <div class="flex-1">
-        <details-caches v-if="hasCaches" :instance="instance" />
-      </div>
+    <div class="grid grid-cols-2 gap-4 items-start">
+      <details-info v-if="hasInfo" :instance="instance" />
+      <details-health :instance="instance" />
+      <details-metadata v-if="hasMetadata" :instance="instance" />
+      <details-process v-if="hasProcess" :instance="instance" />
+      <details-gc v-if="hasGc" :instance="instance" />
+      <details-threads v-if="hasThreads" :instance="instance" />
+      <details-memory v-if="hasMemory" :instance="instance" type="heap" />
+      <details-memory v-if="hasMemory" :instance="instance" type="nonheap" />
+      <details-datasources v-if="hasDatasources" :instance="instance" />
+      <details-caches v-if="hasCaches" :instance="instance" />
     </div>
   </sba-instance-section>
 </template>
@@ -108,6 +79,7 @@ export default {
     },
   },
   data: () => ({
+    masonryId: 'details-masonry',
     hasLoaded: true,
     error: null,
     metrics: [],

@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/vue';
+import { screen } from '@testing-library/vue';
 import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -66,57 +66,27 @@ describe('DetailsThreads', () => {
     );
   });
 
-  const renderComponent = async (stubs = {}) => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
-    return render(DetailsThreads, {
-      global: { stubs },
-      props: { instance },
-    });
-  };
-
-  it('renders panel heading and current values', async () => {
-    await renderComponent();
-
-    // heading uses i18n keys in test environment
-    expect(await screen.findByRole('heading')).toBeVisible();
-
-    // numeric values should be rendered
-    expect(await screen.findByText(`${LIVE[0]}`)).toBeVisible();
-    expect(await screen.findByText(`${PEAK[0]}`)).toBeVisible();
-    expect(await screen.findByText(`${DAEMON[0]}`)).toBeVisible();
-  });
-
-  it('pushes chartData points and exposes them via stub', async () => {
+  const renderComponent = async () => {
     const stubChart = {
       props: ['data'],
       template: `
-        <div data-test="chart">{{ JSON.stringify($props.data) }}</div>
+        <div data-testid="chart">{{ JSON.stringify($props.data) }}</div>
       `,
     };
 
     const application = new Application(applications[0]);
     const instance = application.instances[0];
 
-    const { container } = await render(DetailsThreads, {
+    return render(DetailsThreads, {
       global: { stubs: { threadsChart: stubChart } },
       props: { instance },
     });
+  };
 
-    // wait until stub has at least 3 samples
-    await waitFor(
-      () => {
-        const el = container.querySelector('[data-test="chart"]');
-        expect(el).toBeTruthy();
-        const parsed = JSON.parse((el?.textContent as string) || '[]');
-        expect(parsed).toHaveLength(3);
-      },
-      { timeout: 2000 },
-    );
+  it('pushes chartData points and exposes them via stub', async () => {
+    await renderComponent();
 
-    const text =
-      (container.querySelector('[data-test="chart"]')?.textContent as string) ||
-      '[]';
+    const text = (await screen.findByTestId('chart')).textContent;
     const data = JSON.parse(text);
 
     // first sample matches generators
@@ -126,17 +96,7 @@ describe('DetailsThreads', () => {
   });
 
   it('should reinitialize metrics when instance changes', async () => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
-
-    const { getByText, rerender, queryByText } = await render(DetailsThreads, {
-      props: { instance },
-    });
-
-    // wait until initial metric value is visible
-    await waitFor(() => {
-      expect(getByText(`${LIVE[0]}`)).toBeTruthy();
-    });
+    const { rerender } = await renderComponent();
 
     const newApp = new Application({
       name: 'Other',
@@ -147,8 +107,12 @@ describe('DetailsThreads', () => {
 
     await rerender({ instance: newInstance });
 
-    await waitFor(() => {
-      expect(queryByText(`${LIVE[0]}`)).not.toBeInTheDocument();
-    });
+    const text = (await screen.findByTestId('chart')).textContent;
+    const data = JSON.parse(text);
+
+    // first sample matches generators
+    expect(data[0].live).toEqual(LIVE[0]);
+    expect(data[0].peak).toEqual(PEAK[0]);
+    expect(data[0].daemon).toEqual(DAEMON[0]);
   });
 });

@@ -15,7 +15,39 @@
   -->
 
 <template>
-  <sba-panel v-if="hasLoaded" :title="$t('instances.details.process.title')">
+  <sba-accordion
+    v-if="hasLoaded"
+    :id="`process-details-panel__${instance.id}`"
+    v-model="panelCollapsed"
+    :title="$t('instances.details.process.title')"
+  >
+    <template #title>
+      <div
+        class="ml-2 text-xs font-mono transition-opacity flex-1 justify-items-end"
+        :class="{ 'opacity-0': !panelCollapsed }"
+      >
+        <ul class="flex gap-4">
+          <li>
+            <span class="block 2xl:inline">
+              {{ t('instances.details.process.uptime_short') }}:
+            </span>
+            <process-uptime :value="tableData.uptime.value" />
+          </li>
+          <li>
+            <span class="block 2xl:inline">
+              {{ t('instances.details.process.system_cpu_usage_short') }}:
+            </span>
+            {{ tableData.systemCpuLoad.value }}
+          </li>
+          <li>
+            <span class="block 2xl:inline">
+              {{ t('instances.details.process.process_cpu_usage_short') }}:
+            </span>
+            {{ tableData.processCpuLoad.value }}
+          </li>
+        </ul>
+      </div>
+    </template>
     <div>
       <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
       <div v-else class="-mx-4 -my-3">
@@ -26,7 +58,7 @@
         </sba-key-value-table>
       </div>
     </div>
-  </sba-panel>
+  </sba-accordion>
 </template>
 
 <script setup lang="ts">
@@ -39,7 +71,10 @@ import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
 import processUptime from '@/views/instances/details/process-uptime';
+import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 import { toMillis } from '@/views/instances/metrics/metric';
+
+// Typdefinitionen
 
 // Typdefinitionen
 interface UptimeData {
@@ -63,7 +98,13 @@ interface TableData {
 }
 
 interface TableDataMap {
-  [key: string]: TableData;
+  pid: TableData;
+  parentPid: TableData;
+  owner: TableData;
+  uptime: TableData;
+  processCpuLoad: TableData;
+  systemCpuLoad: TableData;
+  cpus: TableData;
 }
 
 // Props Definition
@@ -84,6 +125,7 @@ const uptime = ref<UptimeData>({ value: null, baseUnit: null });
 const systemCpuLoad = ref<number | null>(null);
 const processCpuLoad = ref<number | null>(null);
 const systemCpuCount = ref<number | null>(null);
+const panelCollapsed = ref<boolean>(false);
 
 // Berechnete Eigenschaften
 const tableData = computed<TableDataMap>(() => {

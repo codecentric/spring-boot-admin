@@ -15,7 +15,21 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances.details.info.title')" :loading="loading">
+  <sba-accordion
+    :id="`info-details-panel__${instance.id}`"
+    v-model="panelCollapsed"
+    :title="$t('instances.details.info.title')"
+    :loading="loading"
+  >
+    <template #title>
+      <div
+        class="ml-2 transition-opacity"
+        :class="{ 'opacity-0': !panelCollapsed }"
+      >
+        ({{ Object.keys(info).length }})
+      </div>
+    </template>
+
     <sba-alert
       v-if="error"
       :error="error"
@@ -37,13 +51,15 @@
         v-text="$t('instances.details.info.no_info_provided')"
       />
     </div>
-  </sba-panel>
+  </sba-accordion>
 </template>
 
 <script>
 import Instance from '@/services/instance';
+import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 export default {
+  components: { SbaAccordion },
   props: {
     instance: {
       type: Instance,
@@ -51,6 +67,7 @@ export default {
     },
   },
   data: () => ({
+    panelCollapsed: false,
     error: null,
     loading: false,
     liveInfo: null,

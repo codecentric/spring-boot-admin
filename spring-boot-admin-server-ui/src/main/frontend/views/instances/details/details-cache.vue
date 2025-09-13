@@ -15,7 +15,11 @@
   -->
 
 <template>
-  <sba-panel v-if="hasLoaded" :title="`Cache: ${cacheName}`">
+  <sba-accordion
+    v-if="hasLoaded"
+    :id="`cache-details-panel__${instance.id}`"
+    :title="`Cache: ${cacheName}`"
+  >
     <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
     <dl
       v-if="current"
@@ -70,7 +74,7 @@
       </template>
     </dl>
     <cache-chart v-if="chartData.length > 0" :data="chartData" />
-  </sba-panel>
+  </sba-accordion>
 </template>
 
 <script>
@@ -85,9 +89,10 @@ import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import { concatMap, delay, map, retryWhen, timer } from '@/utils/rxjs';
 import cacheChart from '@/views/instances/details/cache-chart';
+import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 export default {
-  components: { sbaAlert, sbaPanel, cacheChart },
+  components: { SbaAccordion, sbaAlert, sbaPanel, cacheChart },
   mixins: [subscribing],
   props: {
     instance: {

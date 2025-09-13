@@ -15,7 +15,40 @@
   -->
 
 <template>
-  <sba-panel v-if="hasLoaded" :title="$t('instances.details.gc.title')">
+  <sba-accordion
+    v-if="hasLoaded"
+    :id="`gc-details-panel__${instance.id}`"
+    v-model="panelCollapsed"
+    :title="$t('instances.details.gc.title')"
+  >
+    <template #title>
+      <div
+        class="ml-2 text-xs font-mono transition-opacity flex-1 justify-items-end"
+        :class="{ 'opacity-0': !panelCollapsed }"
+      >
+        <ul class="flex gap-4">
+          <li>
+            <span class="block 2xl:inline">
+              {{ $t('instances.details.gc.count_short') }}:
+            </span>
+            {{ current.count }}
+          </li>
+          <li>
+            <span class="block 2xl:inline">
+              {{ $t('instances.details.gc.time_spent_total_short') }}:
+            </span>
+            {{ current.total_time.asSeconds().toFixed(0) }}s
+          </li>
+          <li>
+            <span class="block 2xl:inline">
+              {{ $t('instances.details.gc.time_spent_max_short') }}:
+            </span>
+            {{ current.max.asSeconds().toFixed(0) }}s
+          </li>
+        </ul>
+      </div>
+    </template>
+
     <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
     <div v-if="current" class="flex w-full">
@@ -38,7 +71,7 @@
         <p v-text="`${current.max.asSeconds().toFixed(4)}s`" />
       </div>
     </div>
-  </sba-panel>
+  </sba-accordion>
 </template>
 
 <script>
@@ -49,9 +82,11 @@ import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 import { toMillis } from '@/views/instances/metrics/metric';
 
 export default {
+  components: { SbaAccordion },
   mixins: [subscribing],
   props: {
     instance: {
@@ -60,6 +95,7 @@ export default {
     },
   },
   data: () => ({
+    panelCollapsed: false,
     hasLoaded: false,
     error: null,
     current: null,
