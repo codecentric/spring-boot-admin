@@ -17,8 +17,11 @@
       },
       "gc": {
         "count": "Count",
+        "count_short": "#",
         "time_spent_max": "Max time spent",
+        "time_spent_max_short": "Max",
         "time_spent_total": "Total time spent",
+        "time_spent_total_short": "Total",
         "title": "Garbage Collection Pauses"
       },
       "health": {
@@ -49,9 +52,12 @@
         "parent_pid": "Parent PID",
         "owner": "Owner",
         "process_cpu_usage": "Process CPU Usage",
+        "process_cpu_usage_short": "CPU",
         "system_cpu_usage": "System CPU Usage",
+        "system_cpu_usage_short": "Sys",
         "title": "Process",
-        "uptime": "Uptime"
+        "uptime": "Uptime",
+        "uptime_short": "Up"
       },
       "threads": {
         "daemon": "Daemon",

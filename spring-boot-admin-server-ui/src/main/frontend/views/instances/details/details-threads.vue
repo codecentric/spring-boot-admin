@@ -15,7 +15,40 @@
   -->
 
 <template>
-  <sba-panel v-if="hasLoaded" :title="$t('instances.details.threads.title')">
+  <sba-accordion
+    v-if="hasLoaded"
+    :id="`threads-details-panel__${instance.id}`"
+    v-model="panelCollapsed"
+    :title="$t('instances.details.threads.title')"
+  >
+    <template #title>
+      <div
+        class="ml-2 text-xs font-mono transition-opacity flex-1 justify-items-end"
+        :class="{ 'opacity-0': !panelCollapsed }"
+      >
+        <ul class="flex gap-4">
+          <li>
+            <span class="block 2xl:inline">
+              {{ $t('instances.details.threads.live') }}:
+            </span>
+            {{ current.live }}
+          </li>
+          <li>
+            <span class="block 2xl:inline">
+              {{ $t('instances.details.threads.daemon') }}:
+            </span>
+            {{ current.daemon }}
+          </li>
+          <li>
+            <span class="block 2xl:inline">
+              {{ $t('instances.details.threads.peak_live') }}:
+            </span>
+            {{ current.peak }}
+          </li>
+        </ul>
+      </div>
+    </template>
+
     <div>
       <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
@@ -42,7 +75,7 @@
 
       <threads-chart v-if="chartData.length > 0" :data="chartData" />
     </div>
-  </sba-panel>
+  </sba-accordion>
 </template>
 
 <script>
@@ -53,10 +86,11 @@ import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 import threadsChart from '@/views/instances/details/threads-chart';
 
 export default {
-  components: { threadsChart },
+  components: { SbaAccordion, threadsChart },
   mixins: [subscribing],
   props: {
     instance: {
@@ -65,6 +99,7 @@ export default {
     },
   },
   data: () => ({
+    panelCollapsed: false,
     hasLoaded: false,
     error: null,
     current: null,

@@ -15,28 +15,41 @@
   -->
 
 <template>
-  <sba-panel :title="$t('instances.details.metadata.title')" :seamless="true">
+  <sba-accordion
+    :id="`metadata-details-panel__${instance.id}`"
+    v-model="panelCollapsed"
+    :title="$t('instances.details.metadata.title')"
+    :seamless="true"
+  >
+    <template #title>
+      <div
+        class="ml-2 transition-opacity"
+        :class="{ 'opacity-0': !panelCollapsed }"
+      >
+        ({{ Object.keys(metadata).length }})
+      </div>
+    </template>
     <sba-key-value-table v-if="!isEmptyMetadata" :map="metadata" />
-  </sba-panel>
+  </sba-accordion>
 </template>
 
-<script>
-import Instance from '@/services/instance';
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
 
-export default {
-  props: {
-    instance: {
-      type: Instance,
-      required: true,
-    },
-  },
-  computed: {
-    metadata() {
-      return this.instance.registration.metadata;
-    },
-    isEmptyMetadata() {
-      return Object.keys(this.instance.registration.metadata).length <= 0;
-    },
-  },
-};
+import Instance from '@/services/instance';
+import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
+
+const { instance } = defineProps<{
+  instance: Instance;
+}>();
+
+const panelCollapsed = ref(false);
+
+const metadata = computed(() => {
+  return instance.registration.metadata;
+});
+
+const isEmptyMetadata = computed(() => {
+  return Object.keys(instance.registration.metadata).length <= 0;
+});
 </script>
