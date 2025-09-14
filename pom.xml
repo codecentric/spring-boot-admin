@@ -147,6 +147,9 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <source>${java.version}</source>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <docencoding>${project.reporting.outputEncoding}</docencoding>
+                    <charset>${project.reporting.outputEncoding}</charset>
                     <quiet>true</quiet>
                 </configuration>
                 <executions>
@@ -559,6 +562,25 @@
                     <url>https://repo.spring.io/snapshot</url>
                 </pluginRepository>
             </pluginRepositories>
+        </profile>
+        <!--
+        Profile: noNpm
+        Set this profile to skip any frontend related build step in this project.
+        Skipping frontend tests can be achieved by using default flag -D skipTests.
+        -->
+        <profile>
+            <id>noNpm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
