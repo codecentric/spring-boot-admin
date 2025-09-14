@@ -82,7 +82,6 @@ import moment from 'moment';
 import { take } from 'rxjs/operators';
 
 import sbaAlert from '@/components/sba-alert.vue';
-import sbaPanel from '@/components/sba-panel.vue';
 
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
@@ -92,7 +91,7 @@ import cacheChart from '@/views/instances/details/cache-chart';
 import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 export default {
-  components: { SbaAccordion, sbaAlert, sbaPanel, cacheChart },
+  components: { SbaAccordion, sbaAlert, cacheChart },
   mixins: [subscribing],
   props: {
     instance: {
