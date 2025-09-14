@@ -31,7 +31,6 @@ import {
   useApplicationStore,
 } from './composables/useApplicationStore.js';
 import i18n from './i18n';
-import { worker } from './mocks/browser';
 import Notifications from './notifications.js';
 import SbaModalPlugin from './plugins/modal';
 import sbaConfig from './sba-config';
@@ -44,6 +43,9 @@ const applicationStore = createApplicationStore();
 const viewRegistry = createViewRegistry();
 
 if (process.env.NODE_ENV === 'development') {
+  const { worker } = await import('./mocks/browser');
+  await worker.start();
+
   globalThis.__VUE_OPTIONS_API__ = true;
   globalThis.__VUE_PROD_DEVTOOLS__ = true;
 }
@@ -74,10 +76,6 @@ sbaConfig.extensions.css.forEach((extension) => {
 });
 
 moment.locale(navigator.language.split('-')[0]);
-
-if (process.env.NODE_ENV === 'development') {
-  await worker.start();
-}
 
 const installables = [Notifications, ...views];
 installables.forEach((installable) => {
