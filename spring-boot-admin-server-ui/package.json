@@ -24,6 +24,7 @@
     "@fortawesome/vue-fontawesome": "3.1.2",
     "@headlessui/vue": "1.7.23",
     "@primeuix/themes": "^1.2.3",
+    "@primevue/forms": "4.3.9",
     "@stekoe/vue-toast-notificationcenter": "https://github.com/SteKoe/vue-toast-notificationcenter/archive/refs/tags/1.0.0-RC5.tar.gz",
     "@tailwindcss/forms": "0.5.10",
     "@tailwindcss/typography": "0.5.16",
