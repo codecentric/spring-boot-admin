@@ -54,11 +54,13 @@
     </header>
     <div
       v-if="'default' in $slots"
-      :class="{
-        [classesForDefaultSlot]: true,
-        'rounded-t': !hasTitle,
-        'rounded-b': !('footer' in $slots),
-      }"
+      :class="[
+        $attrs.class,
+        {
+          'rounded-t': !hasTitle,
+          'rounded-b': !('footer' in $slots),
+        },
+      ]"
       class="px-4 py-3 bg-white"
     >
       <div :class="{ '-mx-4 -my-3': seamless }">
@@ -87,6 +89,7 @@ import sticksBelow from '@/directives/sticks-below';
 export default {
   components: { SbaLoadingSpinner, SbaIconButton },
   directives: { sticksBelow },
+  inheritAttrs: false,
   props: {
     title: {
       type: String,
@@ -120,14 +123,12 @@ export default {
   emits: ['close', 'title-click'],
   data() {
     return {
+      classNames,
       headerTopValue: 0,
       onScrollFn: undefined,
     };
   },
   computed: {
-    classesForDefaultSlot() {
-      return classNames(this.classForDefaultSlot);
-    },
     hasTitle() {
       return !!this.title || 'title' in this.$slots || 'actions' in this.$slots;
     },

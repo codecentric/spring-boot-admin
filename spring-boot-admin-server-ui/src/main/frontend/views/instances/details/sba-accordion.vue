@@ -18,7 +18,7 @@
   <sba-panel
     v-bind="$attrs"
     :aria-expanded="_open"
-    :class-for-default-slot="{
+    :class="{
       'transition-[height] h-auto': true,
       '!p-0 !h-0 overflow-hidden': !_open,
     }"
