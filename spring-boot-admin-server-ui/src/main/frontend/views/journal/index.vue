@@ -34,12 +34,12 @@
 
     <sba-alert :error="error" />
 
-    <JournalTable :events="listedEvents" :applications="applications" />
+    <JournalTable :events="events" :applications="applications" />
   </div>
 </template>
 
 <script>
-import { isEqual, uniq } from 'lodash-es';
+import { uniq } from 'lodash-es';
 
 import SbaAlert from '@/components/sba-alert';
 
@@ -90,15 +90,6 @@ export default {
           return names;
         }, {});
     },
-    listedEvents() {
-      return this.filterEvents(this.events).slice(
-        this.indexStart,
-        this.indexEnd,
-      );
-    },
-    newEventsCount() {
-      return this.filterEvents(this.events.slice(0, this.listOffset)).length;
-    },
     indexStart() {
       return (this.current - 1) * +this.pageSize;
     },
@@ -107,26 +98,6 @@ export default {
     },
     indexEnd() {
       return this.indexStart + +this.pageSize;
-    },
-  },
-  watch: {
-    '$route.query': {
-      immediate: true,
-      handler() {
-        this.filter = this.$route.query;
-      },
-    },
-    filter: {
-      deep: true,
-      immediate: true,
-      handler() {
-        if (!isEqual(this.filter, this.$route.query)) {
-          this.$router.replace({
-            name: 'journal',
-            query: this.filter,
-          });
-        }
-      },
     },
   },
   async created() {
@@ -149,13 +120,6 @@ export default {
     }
   },
   methods: {
-    setPageSize(newPageSize) {
-      this.current = 1;
-      this.pageSize = +newPageSize;
-    },
-    toJson(obj) {
-      return JSON.stringify(obj, null, 4);
-    },
     getName(instanceId) {
       return this.instanceNames[instanceId] || '?';
     },
@@ -165,9 +129,6 @@ export default {
           .filter(([, name]) => application === name)
           .map(([instanceId]) => instanceId),
       );
-    },
-    showNewEvents() {
-      this.listOffset = 0;
     },
     filterEvents(events) {
       if (this.filter.application) {

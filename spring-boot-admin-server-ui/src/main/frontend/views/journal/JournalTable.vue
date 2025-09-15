@@ -1,19 +1,64 @@
+<!--
+  - Copyright 2014-2025 the original author or authors.
+  -
+  - Licensed under the Apache License, Version 2.0 (the "License");
+  - you may not use this file except in compliance with the License.
+  - You may obtain a copy of the License at
+  -
+  -     http://www.apache.org/licenses/LICENSE-2.0
+  -
+  - Unless required by applicable law or agreed to in writing, software
+  - distributed under the License is distributed on an "AS IS" BASIS,
+  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  - See the License for the specific language governing permissions and
+  - limitations under the License.
+  -->
+
 <template>
   <DataTable
     v-model:filters="filters"
     v-model:expanded-rows="expandedRows"
     striped-rows
-    :value="events"
+    :value="mappedEvents"
     paginator
+    sort-field="date"
+    :sort-order="-1"
     :rows="50"
     :rows-per-page-options="[5, 10, 20, 50, 100, 250, 500]"
-    filter-display="row"
+    filter-display="menu"
+    :global-filter-fields="['application.name', 'instance', 'type']"
   >
+    <template #header>
+      <div class="flex justify-between">
+        <Button
+          type="button"
+          icon="pi pi-filter-slash"
+          :label="t('term.filter_action.reset')"
+          variant="outlined"
+          @click="clearFilter()"
+        />
+
+        <IconField>
+          <InputIcon>
+            <font-awesome-icon :icon="faSearch" />
+          </InputIcon>
+          <InputText
+            v-model="filters.global.value"
+            :placeholder="t('term.keyword_search')"
+          />
+        </IconField>
+      </div>
+    </template>
+
     <Column expander style="width: 2rem" />
+
     <Column
       :header="$t('term.application')"
+      :show-filter-match-modes="false"
       filter-field="application.name"
-      :show-filter-menu="false"
+      :filter-menu-style="{
+        minWidth: '16rem',
+      }"
     >
       <template #body="{ data }">
         {{ data.application?.name }}
@@ -35,22 +80,25 @@
         </MultiSelect>
       </template>
     </Column>
+
     <Column
       :header="$t('term.instance')"
+      :show-filter-match-modes="false"
       filter-field="instance"
-      :show-filter-menu="false"
+      :filter-menu-style="{
+        minWidth: '16rem',
+      }"
     >
       <template #body="{ data }">
         {{ data.instance }}
       </template>
-      <template #filter="{ filterModel, filterCallback }">
+      <template #filter="{ filterModel }">
         <MultiSelect
           v-model="filterModel.value"
           :options="instanceIds"
           :placeholder="t('journal.filter.instance_id.any')"
           :show-toggle-all="false"
           max-selected-labels="1"
-          @change="filterCallback()"
         >
           <template #option="slotProps">
             <div class="flex items-center gap-2">
@@ -60,31 +108,32 @@
         </MultiSelect>
       </template>
     </Column>
+
     <Column
       :header="$t('term.time')"
-      sortable
-      field="timestamp"
-      filter-field="timestamp"
+      :sortable="true"
+      field="date"
+      filter-field="date"
       data-type="date"
+      :filter-menu-style="{
+        minWidth: '16rem',
+      }"
     >
       <template #body="{ data }">
-        {{ formatDateTime(data.timestamp) }}
+        {{ formatDateTime(data.date) }}
       </template>
       <template #filter="{ filterModel }">
-        <DatePicker
-          v-model="filterModel.value"
-          show-time
-          show-button-bar
-          hour-format="24"
-          date-format="mm/dd/yy"
-          placeholder="mm/dd/yyyy HH:mm:ss"
-        />
+        <DatePicker v-model="filterModel.value" />
       </template>
     </Column>
+
     <Column
       :header="$t('term.event')"
+      :show-filter-match-modes="false"
       filter-field="type"
-      :show-filter-menu="false"
+      :filter-menu-style="{
+        minWidth: '16rem',
+      }"
     >
       <template #body="{ data }">
         {{ data.type }}
@@ -115,36 +164,45 @@
 </template>
 
 <script setup lang="ts">
+import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
 
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import Application from '@/services/application';
+import { pushFlattened } from '@/utils/array';
 import { InstanceEvent } from '@/views/journal/InstanceEvent';
 
-const props = defineProps<{
-  events: Array<InstanceEvent>;
+const route = useRoute();
+const router = useRouter();
+
+const { events = [], ...props } = defineProps<{
+  events?: Array<InstanceEvent>;
   applications: Array<Application>;
 }>();
+
 const { formatDateTime } = useDateTimeFormatter();
 const { t } = useI18n();
 
-const events = computed(() => {
-  return props.events.map((e) => ({
+const mappedEvents = computed(() => {
+  return events.map((e) => ({
     ...e,
+    date: new Date(e.timestamp),
     application: getApplication(e.instance),
   }));
 });
 
 const eventTypes = computed(() => {
-  return [...new Set(props.events.map((e) => e.type))].sort((a, b) =>
+  return [...new Set(mappedEvents.value.map((e) => e.type))].sort((a, b) =>
     a.localeCompare(b),
   );
 });
 
 const instanceIds = computed(() => {
-  return [...new Set(props.events.map((e) => e.instance))].sort((a, b) =>
+  return [...new Set(mappedEvents.value.map((e) => e.instance))].sort((a, b) =>
     a.localeCompare(b),
   );
 });
@@ -165,17 +223,66 @@ const applicationNames = computed(() => {
   return [...new Set(names)].sort((a, b) => a.localeCompare(b));
 });
 
-const filters = ref({
-  'application.name': { value: null, matchMode: FilterMatchMode.IN },
-  instance: { value: null, matchMode: FilterMatchMode.IN },
-  timestamp: {
-    operator: FilterOperator.AND,
-    constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
+const filters = ref();
+const initFilters = () => {
+  filters.value = {
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    'application.name': {
+      value: null,
+      matchMode: FilterMatchMode.IN,
+    },
+    instance: {
+      value: null,
+      matchMode: FilterMatchMode.IN,
+    },
+    date: {
+      operator: FilterOperator.AND,
+      constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
+    },
+    type: {
+      value: null,
+      matchMode: FilterMatchMode.IN,
+    },
+  };
+};
+initFilters();
+
+const clearFilter = () => {
+  initFilters();
+};
+
+watch(
+  filters,
+  () => {
+    const query: Record<string, string | string[]> = {};
+    if (filters.value.global.value) {
+      query.q = filters.value.global.value;
+    }
+    if (filters.value['application.name']?.value?.length) {
+      query.application = filters.value['application.name'].value;
+    }
+    if (filters.value.instance?.value?.length) {
+      query.instanceId = filters.value.instance.value;
+    }
+    if (filters.value.type?.value?.length) {
+      query.type = filters.value.type.value;
+    }
+    router.push({ query });
   },
-  type: { value: null, matchMode: FilterMatchMode.IN },
+  { deep: true },
+);
+
+onMounted(() => {
+  filters.value.global.value = route.query.q || null;
+  filters.value['application.name'].value = pushFlattened(
+    [],
+    route.query.application,
+  );
+  filters.value.instance.value = pushFlattened([], route.query.instanceId);
+  filters.value.type.value = pushFlattened([], route.query.type);
 });
 
-const expandedRows = ref({});
+const expandedRows = ref([]);
 
 function getApplication(instanceId: string) {
   return props.applications.find((application) =>
