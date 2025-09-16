@@ -17,7 +17,7 @@
 <template>
   <div
     :id="$attrs.id"
-    class="shadow-sm border rounded break-inside-avoid mb-6"
+    class="shadow-sm border rounded break-inside-avoid mb-4"
     :aria-expanded="$attrs.ariaExpanded"
   >
     <header
@@ -26,8 +26,8 @@
       v-sticks-below="headerSticksBelow"
       class="rounded-t flex justify-between px-4 pt-5 pb-5 border-b sm:px-6 items-center bg-white transition-all"
     >
-      <h3 class="text-lg leading-6 font-medium text-gray-900">
-        <button class="flex items-center" @click="$emit('title-click')">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 flex-1">
+        <button class="flex items-center w-full" @click="$emit('title-click')">
           <slot v-if="'prefix' in $slots" name="prefix" />
           <span v-text="title" />
           <span
@@ -54,11 +54,14 @@
     </header>
     <div
       v-if="'default' in $slots"
-      :class="{
-        'rounded-t': !hasTitle,
-        'rounded-b': !('footer' in $slots),
-      }"
-      class="border-gray-200 px-4 py-3 bg-white"
+      :class="[
+        $attrs.class,
+        {
+          'rounded-t': !hasTitle,
+          'rounded-b': !('footer' in $slots),
+        },
+      ]"
+      class="px-4 py-3 bg-white"
     >
       <div :class="{ '-mx-4 -my-3': seamless }">
         <sba-loading-spinner v-if="loading" class="" size="sm" />
@@ -73,7 +76,8 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import classNames from 'classnames';
 import { throttle } from 'lodash-es';
 
 import SbaIconButton from '@/components/sba-icon-button';
@@ -84,6 +88,7 @@ import sticksBelow from '@/directives/sticks-below';
 export default {
   components: { SbaLoadingSpinner, SbaIconButton },
   directives: { sticksBelow },
+  inheritAttrs: false,
   props: {
     title: {
       type: String,
@@ -113,6 +118,7 @@ export default {
   emits: ['close', 'title-click'],
   data() {
     return {
+      classNames,
       headerTopValue: 0,
       onScrollFn: undefined,
     };
