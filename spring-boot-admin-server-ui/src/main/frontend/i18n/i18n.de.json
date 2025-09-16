@@ -27,6 +27,9 @@
     "failed": "Fehlgeschlagen",
     "fetching_data": "Lade Daten...",
     "fetch_failed": "Abruf der Daten fehlgeschlagen.",
+    "filter_action": {
+      "reset": "Filter zurücksetzen"
+    },
     "float": "Float",
     "homepage": "Startseite",
     "hours": "{count} Stunde | {count} Stunden",
@@ -34,6 +37,7 @@
     "instances": "Instanzen",
     "instances_tc": "{count} Instanz | {count} Instanzen",
     "integer": "Integer",
+    "keyword_search": "Schlagwortsuche",
     "menu": {
       "open": "Menü öffnen"
     },
@@ -45,6 +49,7 @@
     "stacktrace": "Stacktrace",
     "suppress": "Unterdrücken",
     "time": "Zeit",
+    "today": "Heute",
     "unsuppress": "Reaktivieren",
     "no_group": "Keine Gruppe",
     "username": "Username",

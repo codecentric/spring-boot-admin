@@ -13,22 +13,13 @@ const outDir = resolve(__dirname, 'target/dist');
 export default defineConfig(({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
-  const staticCopyOptions =
-    process.env.TEST !== 'true'
-      ? {
-          targets: [
-            {
-              src: ['sba-settings.js', 'assets/'],
-              dest: outDir,
-            },
-          ],
-        }
-      : { targets: [] };
+  const isDevMode = process.env.NODE_ENV === 'development';
+  const isTestMode = process.env.TEST === 'true';
 
   return {
     base: './',
     define: {
-      __VUE_PROD_DEVTOOLS__: process.env.NODE_ENV === 'development',
+      __VUE_PROD_DEVTOOLS__: isDevMode,
       __PROJECT_VERSION__: JSON.stringify(
         `${process.env.PROJECT_VERSION || '0.0.0'}`,
       ),
@@ -40,7 +31,16 @@ export default defineConfig(({ mode }) => {
           filename: resolve(__dirname, 'target/vite.bundle-size-analyzer.html'),
         };
       }),
-      viteStaticCopy(staticCopyOptions),
+      viteStaticCopy({
+        targets: isTestMode
+          ? []
+          : [
+              {
+                src: ['sba-settings.js', 'assets/'],
+                dest: outDir,
+              },
+            ],
+      }),
     ],
     css: {
       postcss,

@@ -21,9 +21,16 @@ type ApplicationStoreValue = {
   applicationsInitialized: Ref<boolean>;
   error: Ref<any>;
   applicationStore: ApplicationStore;
+  findApplicationByInstanceId: (instanceId: string) => Ref<Application | null>;
 };
 
 export function useApplicationStore(): ApplicationStoreValue {
+  if (!applicationStore) {
+    throw new Error(
+      'ApplicationStore not created yet! Call createApplicationStore() first.',
+    );
+  }
+
   applicationStore.addEventListener('connected', () => {
     applicationsInitialized.value = true;
     error.value = null;
@@ -44,5 +51,10 @@ export function useApplicationStore(): ApplicationStoreValue {
     applicationsInitialized.value = false;
   });
 
-  return { applications, applicationsInitialized, error, applicationStore };
+  return {
+    applications,
+    applicationsInitialized,
+    error,
+    applicationStore,
+  };
 }

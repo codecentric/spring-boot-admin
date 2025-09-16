@@ -36,11 +36,15 @@
     "float": "Float",
     "homepage": "Homepage",
     "filter": "Filter",
+    "filter_action": {
+      "reset": "Reset filters"
+    },
     "hours": "{count} hour | {count} hours",
     "instance": "Instance",
     "instances": "Instances",
     "instances_tc": "{count} instance | {count} instances",
     "integer": "Integer",
+    "keyword_search": "Keyword search",
     "menu": {
       "open": "Open menu"
     },
@@ -52,6 +56,7 @@
     "stacktrace": "Stacktrace",
     "suppress": "Suppress",
     "time": "Time",
+    "today": "Today",
     "unsuppress": "Unsuppress",
     "no_group": "No Group",
     "username": "Username",

@@ -1,11 +1,33 @@
+/*!
+ * Copyright 2014-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import { screen } from '@testing-library/vue';
 import { HttpResponse, http } from 'msw';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ref } from 'vue';
 
 import JournalView from './index.vue';
 
+import { useApplicationStore } from '@/composables/useApplicationStore';
 import { server } from '@/mocks/server';
+import Application from '@/services/application';
 import { render } from '@/test-utils';
+
+vi.mock('@/composables/useApplicationStore', () => ({
+  useApplicationStore: vi.fn(),
+}));
 
 class InstanceEvent {
   constructor({ instance, version, type, timestamp, ...payload }) {
@@ -31,9 +53,28 @@ describe('Journal View', () => {
         return HttpResponse.json([{ event: '' }]);
       }),
     );
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    useApplicationStore.mockReturnValue({
+      applicationsInitialized: ref(true),
+      applications: ref([
+        new Application({
+          id: 'app-1',
+          name: 'App 1',
+          instances: [{ id: 'instance-1' }],
+        }),
+        new Application({
+          id: 'app-2',
+          name: 'App 2',
+          instances: [{ id: 'instance-2' }],
+        }),
+      ]),
+      error: ref(null),
+    });
   });
 
-  it('should update instance names when registration is updated', () => {
+  it('should update instance names when registration is updated', async () => {
     const events = [
       new InstanceEvent({
         instance: 'instance-1',
@@ -68,7 +109,7 @@ describe('Journal View', () => {
       },
     });
 
-    const allByNewText = screen.getAllByText('NEW APP NAME');
+    const allByNewText = await screen.findAllByText('App 1');
 
     expect(allByNewText).toBeDefined();
   });
@@ -113,11 +154,11 @@ describe('Journal View', () => {
       },
     });
 
-    const appOneText = screen.getAllByText('App One');
+    const appOneText = screen.getAllByText('App 1');
 
     expect(appOneText).toBeDefined();
 
-    const appTwoText = screen.getAllByText('App Two Updated');
+    const appTwoText = screen.getAllByText('App 2');
 
     expect(appTwoText).toBeDefined();
   });

@@ -16,6 +16,10 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }));
+global.matchMedia = vi.fn().mockReturnValue({
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+});
 
 global.SBA = sbaConfig;
 
