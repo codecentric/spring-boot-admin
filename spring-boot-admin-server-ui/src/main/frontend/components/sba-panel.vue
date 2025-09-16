@@ -79,7 +79,6 @@
 <script lang="ts">
 import classNames from 'classnames';
 import { throttle } from 'lodash-es';
-import { PropType } from 'vue';
 
 import SbaIconButton from '@/components/sba-icon-button';
 import SbaLoadingSpinner from '@/components/sba-loading-spinner';
@@ -114,10 +113,6 @@ export default {
     seamless: {
       type: Boolean,
       default: false,
-    },
-    classForDefaultSlot: {
-      type: Object as PropType<string | Record<string, boolean>>,
-      default: () => {},
     },
   },
   emits: ['close', 'title-click'],
