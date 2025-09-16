@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vue(),
       Components({
-        resolvers: [PrimeVueResolver()],
+        resolvers: isTestMode ? [] : [PrimeVueResolver()],
       }),
       visualizer(() => {
         return {

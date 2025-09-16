@@ -17,6 +17,7 @@ import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 import { usePrimeVue } from '@primevue/core';
 import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
+import moment from 'moment';
 import PrimeVue from 'primevue/config';
 import * as Vue from 'vue';
 import {
