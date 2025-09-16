@@ -25,6 +25,12 @@ type ApplicationStoreValue = {
 };
 
 export function useApplicationStore(): ApplicationStoreValue {
+  if (!applicationStore) {
+    throw new Error(
+      'ApplicationStore not created yet! Call createApplicationStore() first.',
+    );
+  }
+
   applicationStore.addEventListener('connected', () => {
     applicationsInitialized.value = true;
     error.value = null;

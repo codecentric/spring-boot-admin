@@ -167,6 +167,14 @@
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
+import {
+  Button,
+  Column,
+  DataTable,
+  IconField,
+  InputIcon,
+  InputText,
+} from 'primevue';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';

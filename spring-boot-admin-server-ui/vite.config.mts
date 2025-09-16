@@ -1,9 +1,7 @@
 /// <reference types="vitest" />
-import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
-import Components from 'unplugin-vue-components/vite';
 import { defineConfig, loadEnv } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
@@ -28,9 +26,6 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       vue(),
-      Components({
-        resolvers: isTestMode ? [] : [PrimeVueResolver()],
-      }),
       visualizer(() => {
         return {
           filename: resolve(__dirname, 'target/vite.bundle-size-analyzer.html'),

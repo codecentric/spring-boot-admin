@@ -39,8 +39,6 @@
 </template>
 
 <script>
-import { uniq } from 'lodash-es';
-
 import SbaAlert from '@/components/sba-alert';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
@@ -90,15 +88,6 @@ export default {
           return names;
         }, {});
     },
-    indexStart() {
-      return (this.current - 1) * +this.pageSize;
-    },
-    pageCount() {
-      return Math.ceil(this.filterEvents(this.events).length / +this.pageSize);
-    },
-    indexEnd() {
-      return this.indexStart + +this.pageSize;
-    },
   },
   async created() {
     try {
@@ -122,23 +111,6 @@ export default {
   methods: {
     getName(instanceId) {
       return this.instanceNames[instanceId] || '?';
-    },
-    getInstances(application) {
-      return uniq(
-        Object.entries(this.instanceNames)
-          .filter(([, name]) => application === name)
-          .map(([instanceId]) => instanceId),
-      );
-    },
-    filterEvents(events) {
-      if (this.filter.application) {
-        const instances = this.getInstances(this.filter.application);
-        return events.filter((e) => instances.includes(e.instance));
-      }
-      if (this.filter.instanceId) {
-        return events.filter((e) => e.instance === this.filter.instanceId);
-      }
-      return events;
     },
     createSubscription() {
       return Instance.getEventStream().subscribe({
