@@ -69,7 +69,7 @@
           :options="applicationNames"
           :placeholder="t('journal.filter.application.any')"
           :show-toggle-all="false"
-          max-selected-labels="1"
+          :max-selected-labels="1"
           @change="filterCallback()"
         >
           <template #option="slotProps">
@@ -98,7 +98,7 @@
           :options="instanceIds"
           :placeholder="t('journal.filter.instance_id.any')"
           :show-toggle-all="false"
-          max-selected-labels="1"
+          :max-selected-labels="1"
         >
           <template #option="slotProps">
             <div class="flex items-center gap-2">
@@ -144,7 +144,7 @@
           :options="eventTypes"
           :placeholder="t('journal.filter.event_type.any')"
           :show-toggle-all="false"
-          max-selected-labels="1"
+          :max-selected-labels="1"
           @change="filterCallback()"
         >
           <template #option="slotProps">
@@ -174,6 +174,7 @@ import {
   IconField,
   InputIcon,
   InputText,
+  MultiSelect,
 } from 'primevue';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
