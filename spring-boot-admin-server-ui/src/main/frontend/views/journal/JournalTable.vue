@@ -54,6 +54,8 @@
 
     <Column
       :header="$t('term.application')"
+      :sortable="true"
+      field="application.name"
       :show-filter-match-modes="false"
       filter-field="application.name"
       :filter-menu-style="{
@@ -69,7 +71,7 @@
           :options="applicationNames"
           :placeholder="t('journal.filter.application.any')"
           :show-toggle-all="false"
-          max-selected-labels="1"
+          :max-selected-labels="1"
           @change="filterCallback()"
         >
           <template #option="slotProps">
@@ -83,11 +85,14 @@
 
     <Column
       :header="$t('term.instance')"
+      :sortable="true"
+      field="instance"
       :show-filter-match-modes="false"
       filter-field="instance"
       :filter-menu-style="{
         minWidth: '16rem',
       }"
+      class="w-48"
     >
       <template #body="{ data }">
         {{ data.instance }}
@@ -98,7 +103,7 @@
           :options="instanceIds"
           :placeholder="t('journal.filter.instance_id.any')"
           :show-toggle-all="false"
-          max-selected-labels="1"
+          :max-selected-labels="1"
         >
           <template #option="slotProps">
             <div class="flex items-center gap-2">
@@ -118,22 +123,26 @@
       :filter-menu-style="{
         minWidth: '16rem',
       }"
+      class="w-72"
     >
       <template #body="{ data }">
         {{ formatDateTime(data.date) }}
       </template>
       <template #filter="{ filterModel }">
-        <DatePicker v-model="filterModel.value" />
+        <DatePicker v-model="filterModel.value" :manual-input="false" />
       </template>
     </Column>
 
     <Column
       :header="$t('term.event')"
+      :sortable="true"
+      field="type"
       :show-filter-match-modes="false"
       filter-field="type"
       :filter-menu-style="{
         minWidth: '16rem',
       }"
+      class="w-1/4"
     >
       <template #body="{ data }">
         {{ data.type }}
@@ -144,7 +153,7 @@
           :options="eventTypes"
           :placeholder="t('journal.filter.event_type.any')"
           :show-toggle-all="false"
-          max-selected-labels="1"
+          :max-selected-labels="1"
           @change="filterCallback()"
         >
           <template #option="slotProps">
@@ -171,9 +180,11 @@ import {
   Button,
   Column,
   DataTable,
+  DatePicker,
   IconField,
   InputIcon,
   InputText,
+  MultiSelect,
 } from 'primevue';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
