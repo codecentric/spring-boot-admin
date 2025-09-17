@@ -54,6 +54,8 @@
 
     <Column
       :header="$t('term.application')"
+      :sortable="true"
+      field="application.name"
       :show-filter-match-modes="false"
       filter-field="application.name"
       :filter-menu-style="{
@@ -83,11 +85,14 @@
 
     <Column
       :header="$t('term.instance')"
+      :sortable="true"
+      field="instance"
       :show-filter-match-modes="false"
       filter-field="instance"
       :filter-menu-style="{
         minWidth: '16rem',
       }"
+      class="w-48"
     >
       <template #body="{ data }">
         {{ data.instance }}
@@ -118,22 +123,26 @@
       :filter-menu-style="{
         minWidth: '16rem',
       }"
+      class="w-72"
     >
       <template #body="{ data }">
         {{ formatDateTime(data.date) }}
       </template>
       <template #filter="{ filterModel }">
-        <DatePicker v-model="filterModel.value" />
+        <DatePicker v-model="filterModel.value" :manual-input="false" />
       </template>
     </Column>
 
     <Column
       :header="$t('term.event')"
+      :sortable="true"
+      field="type"
       :show-filter-match-modes="false"
       filter-field="type"
       :filter-menu-style="{
         minWidth: '16rem',
       }"
+      class="w-1/4"
     >
       <template #body="{ data }">
         {{ data.type }}
@@ -171,6 +180,7 @@ import {
   Button,
   Column,
   DataTable,
+  DatePicker,
   IconField,
   InputIcon,
   InputText,
