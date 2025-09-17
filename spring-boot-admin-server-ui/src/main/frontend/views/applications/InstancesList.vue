@@ -31,7 +31,7 @@
       </div>
       <div class="flex-1 overflow-hidden">
         <section class="flex gap-2 items-center">
-          <div class="w-80" data-name="">
+          <div class="w-auto sm:w-[26rem]" data-name="">
             <!-- Section when URL is visible -->
             <template v-if="instance.showUrl()">
               <div class="flex gap-1">
@@ -42,7 +42,7 @@
                     instance.registration.healthUrl
                   "
                 />
-                <div class="ml-1 inline-flex gap-1">
+                <div class="ml-1 inline-flex gap-1 items-start">
                   <template v-if="!instance.isUrlDisabled()">
                     <sba-button
                       as="a"
@@ -96,7 +96,7 @@
               />
             </template>
           </div>
-          <div class="flex-1 hidden lg:block" v-text="instance.buildVersion" />
+          <div class="flex-1" v-text="instance.buildVersion" />
           <div class="hidden lg:block text-right">
             <slot :instance="instance" name="actions" />
           </div>
