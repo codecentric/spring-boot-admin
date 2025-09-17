@@ -17,15 +17,12 @@
 <template>
   <sba-accordion
     :id="`info-details-panel__${instance.id}`"
-    v-model="panelCollapsed"
+    v-model="panelOpen"
     :title="$t('instances.details.info.title')"
     :loading="loading"
   >
     <template #title>
-      <div
-        class="ml-2 transition-opacity"
-        :class="{ 'opacity-0': !panelCollapsed }"
-      >
+      <div class="ml-2 transition-opacity" :class="{ 'opacity-0': !panelOpen }">
         ({{ Object.keys(info).length }})
       </div>
     </template>
@@ -67,7 +64,7 @@ export default {
     },
   },
   data: () => ({
-    panelCollapsed: false,
+    panelOpen: true,
     error: null,
     loading: false,
     liveInfo: null,

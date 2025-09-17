@@ -18,13 +18,13 @@
   <sba-accordion
     v-if="hasLoaded"
     :id="`threads-details-panel__${instance.id}`"
-    v-model="panelCollapsed"
+    v-model="panelOpen"
     :title="$t('instances.details.threads.title')"
   >
     <template #title>
       <div
         class="ml-2 text-xs font-mono transition-opacity flex-1 justify-items-end"
-        :class="{ 'opacity-0': !panelCollapsed }"
+        :class="{ 'opacity-0': !panelOpen }"
       >
         <ul class="flex gap-4">
           <li>
@@ -99,7 +99,7 @@ export default {
     },
   },
   data: () => ({
-    panelCollapsed: false,
+    panelOpen: true,
     hasLoaded: false,
     error: null,
     current: null,

@@ -18,13 +18,13 @@
   <sba-accordion
     v-if="hasLoaded"
     :id="`memory-details-panel__${type}__${instance.id}`"
-    v-model="panelCollapsed"
+    v-model="panelOpen"
     :title="$t('instances.details.memory.title') + `: ${name}`"
   >
     <template #title>
       <div
         class="ml-2 text-xs font-mono transition-opacity flex-1 justify-items-end"
-        :class="{ 'opacity-0': !panelCollapsed }"
+        :class="{ 'opacity-0': !panelOpen }"
       >
         <div class="flex">
           {{ prettyBytes(current.used) }} /
@@ -117,7 +117,7 @@ export default defineComponent({
     },
   },
   data: () => ({
-    panelCollapsed: true,
+    panelOpen: true,
     hasLoaded: false,
     error: null,
     current: null,

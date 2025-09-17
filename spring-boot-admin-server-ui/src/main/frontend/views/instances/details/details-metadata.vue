@@ -17,15 +17,12 @@
 <template>
   <sba-accordion
     :id="`metadata-details-panel__${instance.id}`"
-    v-model="panelCollapsed"
+    v-model="panelOpen"
     :title="$t('instances.details.metadata.title')"
     :seamless="true"
   >
     <template #title>
-      <div
-        class="ml-2 transition-opacity"
-        :class="{ 'opacity-0': !panelCollapsed }"
-      >
+      <div class="ml-2 transition-opacity" :class="{ 'opacity-0': !panelOpen }">
         ({{ Object.keys(metadata).length }})
       </div>
     </template>
@@ -43,7 +40,7 @@ const { instance } = defineProps<{
   instance: Instance;
 }>();
 
-const panelCollapsed = ref(false);
+const panelOpen = ref(true);
 
 const metadata = computed(() => {
   return instance.registration.metadata;
