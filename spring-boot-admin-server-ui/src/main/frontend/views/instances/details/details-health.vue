@@ -17,7 +17,7 @@
 <template>
   <sba-accordion
     :id="`health-details-panel__${instance.id}`"
-    v-model="panelCollapsed"
+    v-model="panelOpen"
     :title="$t('instances.details.health.title')"
     :loading="loading"
   >
@@ -26,7 +26,7 @@
         v-if="health.status"
         :status="health.status"
         class="ml-2 transition-opacity"
-        :class="{ 'opacity-0': !panelCollapsed }"
+        :class="{ 'opacity-0': !panelOpen }"
       />
     </template>
 
@@ -109,7 +109,7 @@ export default {
     loading: false,
     liveHealth: null,
     healthGroups: [],
-    panelCollapsed: false,
+    panelOpen: true,
     healthGroupOpenStatus: {} as {
       isOpen: boolean;
       collapsible: boolean;

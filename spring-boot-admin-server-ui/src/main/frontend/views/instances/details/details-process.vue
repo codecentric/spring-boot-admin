@@ -18,13 +18,13 @@
   <sba-accordion
     v-if="hasLoaded"
     :id="`process-details-panel__${instance.id}`"
-    v-model="panelCollapsed"
+    v-model="panelOpen"
     :title="$t('instances.details.process.title')"
   >
     <template #title>
       <div
         class="ml-2 text-xs font-mono transition-opacity flex-1 justify-items-end"
-        :class="{ 'opacity-0': !panelCollapsed }"
+        :class="{ 'opacity-0': !panelOpen }"
       >
         <ul class="flex gap-4">
           <li>
@@ -125,7 +125,7 @@ const uptime = ref<UptimeData>({ value: null, baseUnit: null });
 const systemCpuLoad = ref<number | null>(null);
 const processCpuLoad = ref<number | null>(null);
 const systemCpuCount = ref<number | null>(null);
-const panelCollapsed = ref<boolean>(false);
+const panelOpen = ref<boolean>(true);
 
 // Berechnete Eigenschaften
 const tableData = computed<TableDataMap>(() => {
