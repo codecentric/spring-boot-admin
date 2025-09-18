@@ -38,7 +38,7 @@
       </li>
 
       <!-- sm: button toggle navigation -->
-      <li class="block md:hidden">
+      <li class="block md:hidden mb-1">
         <a class="navbar-link navbar-link__group" @click.stop="toggleSidebar">
           <font-awesome-icon :icon="['fas', 'bars']" />
         </a>
@@ -49,7 +49,7 @@
         v-for="group in enabledGroupedViews"
         :key="group.name"
         :data-sba-group="group.id"
-        class="relative"
+        class="relative mb-1"
       >
         <router-link
           :class="{ 'navbar-link__active': isActiveGroup(group) }"
@@ -57,9 +57,7 @@
             name: group.views[0].name,
             params: { instanceId: instance.id },
           }"
-          active-class=""
           class="navbar-link navbar-link__group"
-          exact-active-class=""
         >
           <span v-html="group.icon" />
           <span
@@ -76,7 +74,7 @@
               '': isActiveGroup(group),
             }"
             aria-hidden="true"
-            class="h-3 ml-auto hidden md:block"
+            class="h-3 ml-auto hidden md:block transition"
             data-prefix="fas"
             focusable="false"
             role="img"
