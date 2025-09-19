@@ -17,8 +17,8 @@ import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { render } from '../test-utils.js';
-import { ActionScope } from './ActionScope.js';
+import { render } from '../test-utils';
+import { ActionScope } from './ActionScope';
 import SbaToggleScopeButton from './sba-toggle-scope-button.vue';
 
 describe('SbaToggleScopeButton', function () {

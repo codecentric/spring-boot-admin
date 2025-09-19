@@ -4,7 +4,7 @@ import {
   STATE_COMPLETED,
   STATE_FAILED,
   responseHandler,
-} from '@/views/instances/jolokia/responseHandler.js';
+} from '@/views/instances/jolokia/responseHandler';
 
 const instanceResultFailure = {
   data: {
@@ -73,7 +73,7 @@ const applicationResultSuccess = {
   ],
 };
 
-describe('responseHandler.js', () => {
+describe('responseHandler', () => {
   describe('On Instance level', () => {
     it('should succeed when a correct return value is given', () => {
       const { state, result } = responseHandler(instanceResultSuccess);

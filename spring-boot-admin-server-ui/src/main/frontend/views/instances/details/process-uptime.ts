@@ -16,7 +16,7 @@
 import moment from 'moment';
 import { h } from 'vue';
 
-import subscribing from '../../../mixins/subscribing.js';
+import subscribing from '../../../mixins/subscribing';
 
 import { timer } from '@/utils/rxjs';
 

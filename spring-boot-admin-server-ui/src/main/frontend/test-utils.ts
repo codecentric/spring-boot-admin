@@ -6,7 +6,7 @@ import PrimeVue from 'primevue/config';
 import { createI18n } from 'vue-i18n';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-import components from './components/index.js';
+import components from './components/index';
 import SbaModalPlugin from './plugins/modal';
 
 import { createViewRegistry } from '@/composables/ViewRegistry';

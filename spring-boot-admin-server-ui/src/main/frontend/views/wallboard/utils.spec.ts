@@ -15,9 +15,9 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import * as hm from './utils.js';
+import * as hm from './utils';
 
-describe('utils.js', () => {
+describe('utils', () => {
   it('should calculate optimum layout for 12 in 1594x879', () => {
     const result = hm.calcLayout(12, 1594, 879);
 

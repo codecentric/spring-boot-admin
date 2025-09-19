@@ -1,6 +1,6 @@
 import { http } from 'msw';
 
-import { applications } from './data.js';
+import { applications } from './data';
 
 const applicationsEndpoint = [
   http.get('/applications', () => {
