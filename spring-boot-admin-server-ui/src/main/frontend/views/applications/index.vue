@@ -87,10 +87,6 @@
               :key="group.name"
               v-on-clickaway="(event: Event) => deselect(event, group.name)"
               :seamless="true"
-              :title="t(group.name)"
-              :subtitle="
-                t('term.instances_tc', { count: group.instances?.length ?? 0 })
-              "
               class="application-group"
               :aria-expanded="isExpanded(group.name)"
               @title-click="
@@ -100,30 +96,39 @@
                 }
               "
             >
-              <template #prefix>
-                <font-awesome-icon
-                  icon="chevron-down"
-                  :class="{
-                    '-rotate-90': !isExpanded(group.name),
-                    'mr-2 transition-[transform]': true,
-                  }"
-                />
-                <sba-status-badge
-                  v-if="isGroupedByApplication"
-                  class="mr-2"
-                  :status="
-                    applicationStore.findApplicationByInstanceId(
-                      group.instances[0].id,
-                    )?.status
-                  "
-                />
-              </template>
+              <template #title>
+                <div class="inline-flex flex-row min-w-[29rem]">
+                  <font-awesome-icon
+                    icon="chevron-down"
+                    :class="{
+                      '-rotate-90': !isExpanded(group.name),
+                      'mr-2 transition-[transform]': true,
+                    }"
+                  />
+                  <sba-status-badge
+                    v-if="isGroupedByApplication"
+                    class="mr-2"
+                    :status="
+                      applicationStore.findApplicationByInstanceId(
+                        group.instances[0].id,
+                      )?.status
+                    "
+                  />
 
-              <template v-if="singleVersionInGroup(group)" #version>
+                  <span v-text="t(group.name)" />
+                  <span
+                    class="ml-2 text-sm text-gray-500 self-end"
+                    v-text="
+                      t('term.instances_tc', {
+                        count: group.instances?.length ?? 0,
+                      })
+                    "
+                  />
+                </div>
+
                 <span
+                  class="hidden lg:inline ml-4"
                   v-text="group.instances[0].buildVersion"
-                  class="transition-[opacity]"
-                  :class="{ 'opacity-0': isExpanded(group.name) }"
                 />
               </template>
 
@@ -358,15 +363,6 @@ function filterInstances(applications: Application[]) {
 const isGroupedByApplication = computed(() => {
   return groupingFunction.value === groupingFunctions.application;
 });
-
-const singleVersionInGroup = (group) => {
-  return (
-    group.length === 1 ||
-    group.instances.filter(
-      (instance) => group.instances[0].buildVersion !== instance.buildVersion,
-    ).length === 0
-  );
-};
 
 if (props.selected) {
   scrollIntoView(props.selected);
