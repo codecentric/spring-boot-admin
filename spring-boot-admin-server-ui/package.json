@@ -52,7 +52,7 @@
     "mitt": "^3.0.0",
     "moment": "2.30.1",
     "popper.js": "1.16.1",
-    "pretty-bytes": "7.0.1",
+    "pretty-bytes": "7.1.0",
     "primelocale": "^2.1.7",
     "primevue": "^4.3.9",
     "qs": "^6.13.0",
