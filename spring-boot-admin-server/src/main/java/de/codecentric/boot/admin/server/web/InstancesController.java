@@ -131,16 +131,32 @@ public class InstancesController {
 			.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 
+	/**
+	 * Retrieve all instance events as a JSON array.
+	 * Returns all events for all registered instances. Useful for reconstructing application state or initializing the UI.
+	 * @return Flux of {@link InstanceEvent} objects
+	 */
 	@GetMapping(path = "/instances/events", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Flux<InstanceEvent> events() {
 		return eventStore.findAll();
 	}
 
+	/**
+	 * Stream all instance events as Server-Sent Events (SSE).
+	 * Returns a continuous stream of instance events for real-time monitoring and UI updates.
+	 * @return Flux of {@link ServerSentEvent} containing {@link InstanceEvent}
+	 */
 	@GetMapping(path = "/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<InstanceEvent>> eventStream() {
 		return Flux.from(eventStore).map((event) -> ServerSentEvent.builder(event).build()).mergeWith(ping());
 	}
 
+	/**
+	 * Stream events for a specific instance as Server-Sent Events (SSE).
+	 * Streams events for the instance identified by its ID. Each event is delivered as an SSE message.
+	 * @param id the instance ID
+	 * @return Flux of {@link ServerSentEvent} containing {@link Instance}
+	 */
 	@GetMapping(path = "/instances/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<Instance>> instanceStream(@PathVariable String id) {
 		return Flux.from(eventStore)
@@ -150,9 +166,27 @@ public class InstancesController {
 			.mergeWith(ping());
 	}
 
+	/**
+	 * Returns a periodic Server-Sent Event (SSE) comment-only ping every 10 seconds.
+	 * <p>
+	 * This method is used to keep SSE connections alive for all event stream endpoints in Spring Boot Admin.
+	 * The ping event is sent as a comment (": ping") and does not contain any data payload.
+	 * <br>
+	 * <b>Why?</b> Many proxies, firewalls, and browsers may close idle HTTP connections. The ping event provides regular activity on the stream, ensuring the connection remains open even when no instance events are emitted.
+	 * <br>
+	 * <b>Technical details:</b>
+	 * <ul>
+	 *   <li>Interval: 10 seconds</li>
+	 *   <li>Format: SSE comment-only event</li>
+	 *   <li>Applies to: All event stream endpoints (e.g., /instances/events, /instances/{id} with Accept: text/event-stream)</li>
+	 * </ul>
+	 * </p>
+	 * @param <T> the type of event data (unused for ping)
+	 * @return Flux of ServerSentEvent<T> representing periodic ping comments
+	 */
 	@SuppressWarnings("unchecked")
 	private static <T> Flux<ServerSentEvent<T>> ping() {
-		return (Flux<ServerSentEvent<T>>) (Flux) PING_FLUX;
+		return (Flux<ServerSentEvent<T>>) PING_FLUX;
 	}
 
 }
