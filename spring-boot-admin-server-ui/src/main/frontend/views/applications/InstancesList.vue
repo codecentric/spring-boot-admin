@@ -36,7 +36,7 @@
             <template v-if="instance.showUrl()">
               <div class="flex gap-1">
                 <div
-                  class="overflow-hidden text-ellipsis"
+                  class="break-all"
                   v-text="
                     instance.registration.serviceUrl ||
                     instance.registration.healthUrl
