@@ -20,6 +20,10 @@ global.matchMedia = vi.fn().mockReturnValue({
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
 });
+global.EventSource = class {
+  constructor() {}
+  close() {}
+};
 
 global.SBA = sbaConfig;
 

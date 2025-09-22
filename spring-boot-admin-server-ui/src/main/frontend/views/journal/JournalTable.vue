@@ -50,8 +50,6 @@
       </div>
     </template>
 
-    <template #empty> asd </template>
-
     <Column expander style="width: 2rem" />
 
     <Column

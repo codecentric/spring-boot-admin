@@ -32,7 +32,6 @@ export const getApplicationNamesByInstanceId = (events: InstanceEvent[]) => {
     )
     .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
     .reduceRight((names, event) => {
-      console.log(event);
       names[event.instance] = event.registration?.name;
       return names;
     }, {});
