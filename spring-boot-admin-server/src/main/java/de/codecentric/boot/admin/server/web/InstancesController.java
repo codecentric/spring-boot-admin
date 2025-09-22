@@ -134,7 +134,7 @@ public class InstancesController {
 	/**
 	 * Retrieve all instance events as a JSON array. Returns all events for all registered
 	 * instances. Useful for reconstructing application state or initializing the UI.
-	 * @return Flux of {@link InstanceEvent} objects
+	 * @return flux of {@link InstanceEvent} objects
 	 */
 	@GetMapping(path = "/instances/events", produces = MediaType.APPLICATION_JSON_VALUE)
 	public Flux<InstanceEvent> events() {
@@ -144,7 +144,7 @@ public class InstancesController {
 	/**
 	 * Stream all instance events as Server-Sent Events (SSE). Returns a continuous stream
 	 * of instance events for real-time monitoring and UI updates.
-	 * @return Flux of {@link ServerSentEvent} containing {@link InstanceEvent}
+	 * @return flux of {@link ServerSentEvent} containing {@link InstanceEvent}
 	 */
 	@GetMapping(path = "/instances/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<InstanceEvent>> eventStream() {
@@ -155,7 +155,7 @@ public class InstancesController {
 	 * Stream events for a specific instance as Server-Sent Events (SSE). Streams events
 	 * for the instance identified by its ID. Each event is delivered as an SSE message.
 	 * @param id the instance ID
-	 * @return Flux of {@link ServerSentEvent} containing {@link Instance}
+	 * @return flux of {@link ServerSentEvent} containing {@link Instance}
 	 */
 	@GetMapping(path = "/instances/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	public Flux<ServerSentEvent<Instance>> instanceStream(@PathVariable String id) {
@@ -184,11 +184,11 @@ public class InstancesController {
 	 * </ul>
 	 * </p>
 	 * @param <T> the type of event data (unused for ping)
-	 * @return Flux of ServerSentEvent<T> representing periodic ping comments
+	 * @return flux of ServerSentEvent representing periodic ping comments
 	 */
 	@SuppressWarnings("unchecked")
 	private static <T> Flux<ServerSentEvent<T>> ping() {
-		return (Flux<ServerSentEvent<T>>) PING_FLUX;
+		return (Flux<ServerSentEvent<T>>) (Flux) PING_FLUX;
 	}
 
 }
