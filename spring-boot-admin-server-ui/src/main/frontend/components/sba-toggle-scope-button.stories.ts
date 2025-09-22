@@ -1,6 +1,6 @@
 import { reactive } from 'vue';
 
-import { ActionScope } from './ActionScope.js';
+import { ActionScope } from './ActionScope';
 import SbaToggleScopeButton from './sba-toggle-scope-button.vue';
 
 export default {

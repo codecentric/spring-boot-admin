@@ -36,13 +36,13 @@ import {
   CUSTOM_ROUTES_ADDED_EVENT,
   createViewRegistry,
   useViewRegistry,
-} from './composables/ViewRegistry.js';
+} from './composables/ViewRegistry';
 import {
   createApplicationStore,
   useApplicationStore,
-} from './composables/useApplicationStore.js';
+} from './composables/useApplicationStore';
 import i18n from './i18n';
-import Notifications from './notifications.js';
+import Notifications from './notifications';
 import SbaModalPlugin from './plugins/modal';
 import sbaConfig from './sba-config';
 import views from './views';
@@ -53,14 +53,6 @@ import sbaShell from '@/shell';
 
 const applicationStore = createApplicationStore();
 const viewRegistry = createViewRegistry();
-
-if (process.env.NODE_ENV === 'development') {
-  const { worker } = await import('./mocks/browser');
-  await worker.start();
-
-  globalThis.__VUE_OPTIONS_API__ = true;
-  globalThis.__VUE_PROD_DEVTOOLS__ = true;
-}
 
 globalThis.Vue = Vue;
 globalThis.SBA.viewRegistry = useViewRegistry();
@@ -91,10 +83,14 @@ moment.locale(navigator.language.split('-')[0]);
 
 const installables = [Notifications, ...views];
 installables.forEach((installable) => {
-  installable.install({
-    viewRegistry,
-    applicationStore,
-  });
+  try {
+    installable.install({
+      viewRegistry,
+      applicationStore,
+    });
+  } catch (e) {
+    console.error('Error while installing ', installable, e);
+  }
 });
 
 const app = createApp({

@@ -20,7 +20,7 @@ import { Observable, concat, from, ignoreElements } from 'rxjs';
 import axios, {
   redirectOn401,
   registerErrorToastInterceptor,
-} from '../utils/axios.js';
+} from '../utils/axios';
 import waitForPolyfill from '../utils/eventsource-polyfill';
 import logtail from '../utils/logtail';
 import uri from '../utils/uri';

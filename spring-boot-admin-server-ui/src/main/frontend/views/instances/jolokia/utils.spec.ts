@@ -20,7 +20,7 @@ import {
   truncatePackageName,
 } from '@/views/instances/jolokia/utils';
 
-describe('utils.js', () => {
+describe('utils', () => {
   it('truncateJavaType', () => {
     expect(truncateJavaType('java.lang.String')).toEqual('String');
   });

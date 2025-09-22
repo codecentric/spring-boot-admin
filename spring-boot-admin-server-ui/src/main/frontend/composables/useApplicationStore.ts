@@ -1,6 +1,6 @@
 import { Ref, ref } from 'vue';
 
-import ApplicationStore from '../store.js';
+import ApplicationStore from '../store';
 
 import Application from '@/services/application';
 

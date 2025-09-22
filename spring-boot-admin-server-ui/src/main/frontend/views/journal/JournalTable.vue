@@ -63,7 +63,7 @@
       }"
     >
       <template #body="{ data }">
-        {{ data.application?.name }}
+        {{ applicationNamesByInstanceId[data.instance] }}
       </template>
       <template #filter="{ filterModel, filterCallback }">
         <MultiSelect
@@ -194,23 +194,34 @@ import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import Application from '@/services/application';
 import { pushFlattened } from '@/utils/array';
 import { InstanceEvent } from '@/views/journal/InstanceEvent';
+import {
+  getApplicationNames,
+  getApplicationNamesByInstanceId,
+} from '@/views/journal/utils';
 
 const route = useRoute();
 const router = useRouter();
 
-const { events = [], ...props } = defineProps<{
+const { events = [] } = defineProps<{
   events?: Array<InstanceEvent>;
   applications: Array<Application>;
 }>();
 
 const { formatDateTime } = useDateTimeFormatter();
 const { t } = useI18n();
+const expandedRows = ref([]);
 
+const applicationNames = computed(() => {
+  return getApplicationNames(events);
+});
+const applicationNamesByInstanceId = computed(() => {
+  return getApplicationNamesByInstanceId(events);
+});
 const mappedEvents = computed(() => {
   return events.map((e) => ({
     ...e,
     date: new Date(e.timestamp),
-    application: getApplication(e.instance),
+    application: applicationNamesByInstanceId.value[e.instance],
   }));
 });
 
@@ -224,22 +235,6 @@ const instanceIds = computed(() => {
   return [...new Set(mappedEvents.value.map((e) => e.instance))].sort((a, b) =>
     a.localeCompare(b),
   );
-});
-
-const instanceToApplicationMap = computed(() => {
-  return instanceIds.value.reduce((prev, instanceId) => {
-    return {
-      ...prev,
-      [instanceId]: getApplication(instanceId),
-    };
-  }, {});
-});
-
-const applicationNames = computed(() => {
-  const names = Object.values(instanceToApplicationMap.value).map(
-    (a) => a?.name,
-  );
-  return [...new Set(names)].sort((a, b) => a.localeCompare(b));
 });
 
 const filters = ref();
@@ -300,12 +295,4 @@ onMounted(() => {
   filters.value.instance.value = pushFlattened([], route.query.instanceId);
   filters.value.type.value = pushFlattened([], route.query.type);
 });
-
-const expandedRows = ref([]);
-
-function getApplication(instanceId: string) {
-  return props.applications.find((application) =>
-    application.findInstance(instanceId),
-  );
-}
 </script>

@@ -26,7 +26,7 @@ import {
   tap,
 } from 'rxjs';
 
-import Application from './services/application.js';
+import Application from './services/application';
 
 export const findInstance = (
   applications: Application[],

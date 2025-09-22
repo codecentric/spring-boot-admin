@@ -18,7 +18,7 @@ import { Text, VNode, h, markRaw, reactive, shallowRef, toRaw } from 'vue';
 import { Router, createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
-import { VIEW_GROUP, VIEW_GROUP_ICON } from './views/ViewGroup.js';
+import { VIEW_GROUP, VIEW_GROUP_ICON } from './views/ViewGroup';
 
 let router: Router;
 
@@ -29,7 +29,6 @@ const createI18nTextVNode = (label: string) =>
     },
   });
 
-// eslint-disable-next-line no-unused-vars
 type ViewFilterFunction = (view: SbaView) => boolean;
 type ViewConfig = {
   isEnabled?: (obj?) => boolean;

@@ -24,36 +24,14 @@ import { useApplicationStore } from '@/composables/useApplicationStore';
 import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import { render } from '@/test-utils';
+import { InstanceEvent } from '@/views/journal/InstanceEvent';
 
 vi.mock('@/composables/useApplicationStore', () => ({
   useApplicationStore: vi.fn(),
 }));
 
-class InstanceEvent {
-  constructor({ instance, version, type, timestamp, ...payload }) {
-    this.instance = instance;
-    this.version = version;
-    this.type = type;
-    this.timestamp = new Date(timestamp);
-    this.payload = payload;
-  }
-
-  get key() {
-    return `${this.instance}-${this.version}`;
-  }
-}
-
-InstanceEvent.REGISTERED = 'REGISTERED';
-InstanceEvent.REGISTRATION_UPDATED = 'REGISTRATION_UPDATED';
-
 describe('Journal View', () => {
   beforeEach(() => {
-    server.use(
-      http.get('/instances/events', () => {
-        return HttpResponse.json([{ event: '' }]);
-      }),
-    );
-
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     useApplicationStore.mockReturnValue({
@@ -75,91 +53,65 @@ describe('Journal View', () => {
   });
 
   it('should update instance names when registration is updated', async () => {
-    const events = [
-      new InstanceEvent({
-        instance: 'instance-1',
-        version: 1,
-        type: 'REGISTERED',
-        timestamp: '2023-01-01T10:00:00Z',
-        registration: { name: 'OLD APP NAME' },
+    server.use(
+      http.get('**/instances/events', () => {
+        return HttpResponse.json([
+          new InstanceEvent({
+            instance: 'instance-1',
+            version: 1,
+            type: 'REGISTERED',
+            timestamp: '2023-01-01T10:00:00Z',
+            registration: { name: 'OLD APP NAME' },
+          }),
+          new InstanceEvent({
+            instance: 'instance-1',
+            version: 2,
+            type: 'REGISTRATION_UPDATED',
+            timestamp: '2023-01-01T11:00:00Z',
+            registration: { name: 'NEW APP NAME' },
+          }),
+        ]);
       }),
-      new InstanceEvent({
-        instance: 'instance-1',
-        version: 2,
-        type: 'REGISTRATION_UPDATED',
-        timestamp: '2023-01-01T11:00:00Z',
-        registration: { name: 'NEW APP NAME' },
-      }),
-    ];
+    );
+    render(JournalView);
 
-    render(JournalView, {
-      data() {
-        return {
-          events: events,
-        };
-      },
-      global: {
-        mocks: {
-          $t: (key) => key,
-          $route: { query: {} },
-          $router: {
-            replace: () => {},
-          },
-        },
-      },
-    });
-
-    const allByNewText = await screen.findAllByText('App 1');
-
+    const allByNewText = await screen.findAllByText('NEW APP NAME');
     expect(allByNewText).toBeDefined();
   });
 
-  it('should handle both REGISTERED and REGISTRATION_UPDATED events', () => {
-    const events = [
-      new InstanceEvent({
-        instance: 'instance-1',
-        version: 1,
-        type: 'REGISTERED',
-        timestamp: '2023-01-01T10:00:00Z',
-        registration: { name: 'App One' },
+  it('should handle both REGISTERED and REGISTRATION_UPDATED events', async () => {
+    server.use(
+      http.get('**/instances/events', () => {
+        return HttpResponse.json([
+          new InstanceEvent({
+            instance: 'instance-1',
+            version: 1,
+            type: 'REGISTERED',
+            timestamp: '2023-01-01T10:00:00Z',
+            registration: { name: 'App One' },
+          }),
+          new InstanceEvent({
+            instance: 'instance-2',
+            version: 1,
+            type: 'REGISTERED',
+            timestamp: '2023-01-01T10:05:00Z',
+            registration: { name: 'App Two' },
+          }),
+          new InstanceEvent({
+            instance: 'instance-2',
+            version: 2,
+            type: 'REGISTRATION_UPDATED',
+            timestamp: '2023-01-01T11:00:00Z',
+            registration: { name: 'App Two Updated' },
+          }),
+        ]);
       }),
-      new InstanceEvent({
-        instance: 'instance-2',
-        version: 1,
-        type: 'REGISTERED',
-        timestamp: '2023-01-01T10:05:00Z',
-        registration: { name: 'App Two' },
-      }),
-      new InstanceEvent({
-        instance: 'instance-2',
-        version: 2,
-        type: 'REGISTRATION_UPDATED',
-        timestamp: '2023-01-01T11:00:00Z',
-        registration: { name: 'App Two Updated' },
-      }),
-    ];
+    );
+    render(JournalView);
 
-    render(JournalView, {
-      data() {
-        return {
-          events: events,
-        };
-      },
-      global: {
-        mocks: {
-          $t: (key) => key,
-          $route: { query: {} },
-          $router: { replace: () => {} },
-        },
-      },
-    });
-
-    const appOneText = screen.getAllByText('App 1');
-
+    const appOneText = await screen.findAllByText('App One');
     expect(appOneText).toBeDefined();
-
-    const appTwoText = screen.getAllByText('App 2');
-
+    const appTwoText = await screen.findAllByText('App Two Updated');
     expect(appTwoText).toBeDefined();
   });
 });

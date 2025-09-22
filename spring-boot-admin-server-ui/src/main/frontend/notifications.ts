@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { groupBy, values } from 'lodash-es';
+import { Subject, bufferTime, filter } from 'rxjs';
 
-import { HealthStatus } from './HealthStatus.js';
+import { HealthStatus } from './HealthStatus';
 import sbaConfig from './sba-config';
-import { Subject, bufferTime, filter } from './utils/rxjs';
 
 let granted = false;
 
@@ -26,7 +26,7 @@ const requestPermissions = async () => {
     granted = window.Notification.permission === 'granted';
     if (!granted && window.Notification.permission !== 'denied') {
       const permission = await window.Notification.requestPermission();
-      // eslint-disable-next-line require-atomic-updates
+
       granted = permission === 'granted';
     }
   }
