@@ -14,7 +14,6 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "6.0.1",
-    "@vue-macros/reactivity-transform": "^1.0.0",
     "vite": "7.1.7",
     "vite-plugin-static-copy": "^3.0.0"
   },
