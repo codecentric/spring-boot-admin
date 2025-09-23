@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.values;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,6 +39,9 @@ import org.springframework.util.StringUtils;
 @lombok.Data
 @ToString(exclude = "metadata")
 public final class Registration implements Serializable {
+
+	@Serial
+	private static final long serialVersionUID = -4021660222452471078L;
 
 	private static final Logger log = LoggerFactory.getLogger(Registration.class);
 
