@@ -18,6 +18,7 @@ import Aura from '@primeuix/themes/aura';
 import { usePrimeVue } from '@primevue/core';
 import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
 import moment from 'moment';
+import { Tooltip } from 'primevue';
 import PrimeVue from 'primevue/config';
 import * as Vue from 'vue';
 import {
@@ -144,6 +145,7 @@ app.use(NotificationcenterPlugin, {
 });
 app.use(SbaModalPlugin, { i18n });
 app.use(viewRegistry.createRouter());
+app.directive('tooltip', Tooltip);
 app.use(PrimeVue, {
   theme: {
     preset: definePreset(Aura, {
