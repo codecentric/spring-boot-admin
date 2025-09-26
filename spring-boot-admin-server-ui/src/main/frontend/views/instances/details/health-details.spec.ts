@@ -49,6 +49,14 @@ describe('HealthDetails', () => {
               exists: false,
             },
           },
+          ssl: {
+            status: 'UP',
+            details: {
+              validChains: JSON.parse(
+                '[{"status": "VALID", "chain": [{"subject": "CN=example.com, OU=IT, O=Example Corp, L=San Francisco, ST=CA, C=US", "issuer": "CN=R3, O=Let\'s Encrypt, C=US"}]}]',
+              ),
+            },
+          },
         },
       };
 
@@ -104,6 +112,26 @@ describe('HealthDetails', () => {
       expect(
         await dsi.findByRole('definition', { name: 'exists' }),
       ).toHaveTextContent('false');
+    });
+
+    it('should format object details correctly', async () => {
+      const sslInfo = await screen.findByRole('definition', {
+        name: 'validChains',
+      });
+      expect(sslInfo).toHaveTextContent(
+        `[
+  {
+    "status": "VALID",
+    "chain": [
+      {
+        "subject": "CN=example.com, OU=IT, O=Example Corp, L=San Francisco, ST=CA, C=US",
+        "issuer": "CN=R3, O=Let's Encrypt, C=US"
+      }
+    ]
+  }
+]`,
+        { normalizeWhitespace: false },
+      );
     });
   });
 

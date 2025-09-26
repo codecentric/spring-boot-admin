@@ -31,8 +31,8 @@
       <dl v-if="details && details.length > 0" class="grid grid-cols-2 mt-2">
         <template v-for="detail in details" :key="detail.name">
           <dt
-            class="font-medium"
             :id="`health-detail-${id}__${detail.name}`"
+            class="font-medium"
             v-text="detail.name"
           />
           <dd
@@ -48,8 +48,8 @@
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
           >
             <pre
-              class="break-words whitespace-pre-wrap"
-              v-text="JSON.stringify(detail.value)"
+              class="overflow-auto"
+              v-text="JSON.stringify(detail.value, null, 2)"
             />
           </dd>
           <dd
