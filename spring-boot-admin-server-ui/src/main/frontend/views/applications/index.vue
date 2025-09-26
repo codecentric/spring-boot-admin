@@ -450,7 +450,10 @@ async function removeFilter(activeFilter) {
 }
 
 function toggleNotificationFilterSettings(obj) {
-  popoverRef.value.toggle(obj?.event);
+  if (obj) {
+    popoverRef.value.toggle(obj.event);
+  }
+
   showNotificationFilterSettingsObject.value = obj?.item ?? null;
 }
 </script>
