@@ -163,20 +163,16 @@
             </sba-panel>
           </template>
 
-          <NotificationFilterSettings
-            v-if="showNotificationFilterSettingsObject"
-            v-on-clickaway="() => toggleNotificationFilterSettings(null)"
-            v-popper="
-              `nf-settings-${
-                showNotificationFilterSettingsObject.id ||
-                showNotificationFilterSettingsObject.name
-              }`
-            "
-            :notification-filters="notificationFilters"
-            :object="showNotificationFilterSettingsObject"
-            @filter-add="addFilter"
-            @filter-remove="removeFilter"
-          />
+          <Popover ref="popoverRef">
+            <NotificationFilterSettings
+              v-if="showNotificationFilterSettingsObject"
+              v-on-clickaway="() => toggleNotificationFilterSettings(null)"
+              :notification-filters="notificationFilters"
+              :object="showNotificationFilterSettingsObject"
+              @filter-add="addFilter"
+              @filter-remove="removeFilter"
+            />
+          </Popover>
         </template>
       </div>
     </section>
@@ -187,6 +183,7 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { groupBy, sortBy, transform } from 'lodash-es';
+import { Popover } from 'primevue';
 import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
@@ -222,6 +219,8 @@ const props = defineProps({
     default: null,
   },
 });
+
+const popoverRef = ref();
 
 const instanceMatchesFilter = (term: string, instance: Instance) => {
   const predicate = (value: string | number) =>
@@ -451,7 +450,8 @@ async function removeFilter(activeFilter) {
 }
 
 function toggleNotificationFilterSettings(obj) {
-  showNotificationFilterSettingsObject.value = obj ? obj : null;
+  popoverRef.value.toggle(obj?.event);
+  showNotificationFilterSettingsObject.value = obj?.item ?? null;
 }
 </script>
 
@@ -459,11 +459,10 @@ function toggleNotificationFilterSettings(obj) {
 import { defineComponent } from 'vue';
 import { directive as onClickaway } from 'vue3-click-away';
 
-import Popper from '@/directives/popper';
 import handle from '@/views/applications/handle.vue';
 
 export default defineComponent({
-  directives: { Popper, onClickaway },
+  directives: { onClickaway },
   install({ viewRegistry }) {
     viewRegistry.addView({
       path: '/applications/:selected?',

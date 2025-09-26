@@ -15,72 +15,70 @@
   -->
 
 <template>
-  <sba-panel class="shadow-xl">
-    <template v-if="!activeFilter">
-      <div class="field">
-        <p class="control has-inline-text">
-          <span
-            v-html="
-              t('applications.suppress_notifications_on', {
-                name: object.id || object.name,
-              })
-            "
-          />&nbsp;
-          <sba-select
-            v-model="ttl"
-            class="inline-flex"
-            name="ttl"
-            :options="ttlOptions"
-            @click.stop
+  <template v-if="!activeFilter">
+    <div class="field">
+      <p class="control has-inline-text">
+        <span
+          v-html="
+            t('applications.suppress_notifications_on', {
+              name: object.id || object.name,
+            })
+          "
+        />&nbsp;
+        <sba-select
+          v-model="ttl"
+          class="inline-flex"
+          name="ttl"
+          :options="ttlOptions"
+          @click.stop
+        />
+      </p>
+    </div>
+    <div class="field is-grouped is-grouped-right">
+      <div class="control">
+        <sba-button
+          :class="{ 'is-loading': actionState === 'executing' }"
+          @click.stop="addFilter"
+        >
+          <font-awesome-icon icon="bell-slash" />&nbsp;<span
+            v-text="t('term.suppress')"
           />
-        </p>
+        </sba-button>
       </div>
-      <div class="field is-grouped is-grouped-right">
-        <div class="control">
-          <sba-button
-            :class="{ 'is-loading': actionState === 'executing' }"
-            @click.stop="addFilter"
-          >
-            <font-awesome-icon icon="bell-slash" />&nbsp;<span
-              v-text="t('term.suppress')"
-            />
-          </sba-button>
-        </div>
+    </div>
+  </template>
+  <template v-else>
+    <div class="field">
+      <p class="control has-inline-text">
+        <span
+          v-html="
+            t('applications.notifications_suppressed_for', {
+              name: object.id || object.name,
+            })
+          "
+        />&nbsp;
+        <strong
+          v-text="
+            activeFilter.expiry
+              ? activeFilter.expiry.locale(currentLocale).fromNow(true)
+              : t('term.ever')
+          "
+        />.
+      </p>
+    </div>
+    <div class="field is-grouped is-grouped-right">
+      <div class="control">
+        <sba-button
+          :class="{ 'is-loading': actionState === 'executing' }"
+          @click.stop="deleteActiveFilter"
+        >
+          <font-awesome-icon icon="bell" />&nbsp;<span
+            v-text="t('term.unsuppress')"
+          />
+        </sba-button>
       </div>
-    </template>
-    <template v-else>
-      <div class="field">
-        <p class="control has-inline-text">
-          <span
-            v-html="
-              t('applications.notifications_suppressed_for', {
-                name: object.id || object.name,
-              })
-            "
-          />&nbsp;
-          <strong
-            v-text="
-              activeFilter.expiry
-                ? activeFilter.expiry.locale(currentLocale).fromNow(true)
-                : t('term.ever')
-            "
-          />.
-        </p>
-      </div>
-      <div class="field is-grouped is-grouped-right">
-        <div class="control">
-          <sba-button
-            :class="{ 'is-loading': actionState === 'executing' }"
-            @click.stop="deleteActiveFilter"
-          >
-            <font-awesome-icon icon="bell" />&nbsp;<span
-              v-text="t('term.unsuppress')"
-            />
-          </sba-button>
-        </div>
-      </div>
-    </template>
-  </sba-panel>
+    </div>
+  </template>
 </template>
 <script>
 import { useI18n } from 'vue-i18n';

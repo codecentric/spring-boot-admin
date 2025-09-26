@@ -10,9 +10,14 @@
     </router-link>
     <sba-button
       v-if="hasNotificationFiltersSupport"
-      :id="`nf-settings-${item.name || item.id}`"
       :title="$t('applications.actions.notification_filters')"
-      @click.stop="$emit('filter-settings', item)"
+      @click.stop="
+        (event) =>
+          $emit('filter-settings', {
+            event,
+            item,
+          })
+      "
     >
       <font-awesome-icon
         :icon="hasActiveNotificationFilter ? faBellSlash : faBell"
