@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HealthDetails > Health .details > should format object details correctly 1`] = `
+<dd
+  aria-labelledby="health-detail-v-7__validChains"
+>
+  <pre
+    class="formatted overflow-auto !whitespace-pre"
+    data-v-4fb4748a=""
+  >
+    - status: VALID
+  chain:
+    - subject: CN=example.com, OU=IT, O=Example Corp, L=San Francisco, ST=CA, C=US
+      issuer: CN=R3, O=Let's Encrypt, C=US
+
+  </pre>
+</dd>
+`;

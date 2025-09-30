@@ -47,9 +47,9 @@
             v-else-if="typeof detail.value === 'object'"
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
           >
-            <pre
-              class="overflow-auto"
-              v-text="JSON.stringify(detail.value, null, 2)"
+            <sba-formatted-obj
+              class="overflow-auto !whitespace-pre"
+              :value="detail.value"
             />
           </dd>
           <dd
@@ -75,6 +75,8 @@
 <script lang="ts" setup>
 import prettyBytes from 'pretty-bytes';
 import { computed, useId } from 'vue';
+
+import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
 
 const id = useId();
 

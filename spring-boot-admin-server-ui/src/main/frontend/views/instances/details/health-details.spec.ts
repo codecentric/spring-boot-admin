@@ -118,20 +118,7 @@ describe('HealthDetails', () => {
       const sslInfo = await screen.findByRole('definition', {
         name: 'validChains',
       });
-      expect(sslInfo).toHaveTextContent(
-        `[
-  {
-    "status": "VALID",
-    "chain": [
-      {
-        "subject": "CN=example.com, OU=IT, O=Example Corp, L=San Francisco, ST=CA, C=US",
-        "issuer": "CN=R3, O=Let's Encrypt, C=US"
-      }
-    ]
-  }
-]`,
-        { normalizeWhitespace: false },
-      );
+      expect(sslInfo).toMatchSnapshot();
     });
   });
 
