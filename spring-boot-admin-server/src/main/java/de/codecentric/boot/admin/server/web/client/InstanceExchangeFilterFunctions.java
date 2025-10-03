@@ -63,7 +63,7 @@ public final class InstanceExchangeFilterFunctions {
 	private InstanceExchangeFilterFunctions() {
 	}
 
-	public static InstanceExchangeFilterFunction addHeaders(final HttpHeadersProvider httpHeadersProvider) {
+	public static InstanceExchangeFilterFunction addHeaders(HttpHeadersProvider httpHeadersProvider) {
 		return (instance, request, next) -> {
 			request = ClientRequest.from(request)
 				.headers((headers) -> headers.addAll(httpHeadersProvider.getHeaders(instance)))
@@ -72,10 +72,9 @@ public final class InstanceExchangeFilterFunctions {
 		};
 	}
 
-	public static InstanceExchangeFilterFunction addHeadersReactive(
-			final ReactiveHttpHeadersProvider httpHeadersProvider) {
+	public static InstanceExchangeFilterFunction addHeadersReactive(ReactiveHttpHeadersProvider httpHeadersProvider) {
 		return (instance, request, next) -> httpHeadersProvider.getHeaders(instance).flatMap((httpHeaders) -> {
-			final ClientRequest requestWithAdditionalHeaders = ClientRequest.from(request)
+			ClientRequest requestWithAdditionalHeaders = ClientRequest.from(request)
 				.headers((headers) -> headers.addAll(httpHeaders))
 				.build();
 
@@ -95,19 +94,19 @@ public final class InstanceExchangeFilterFunctions {
 				return next.exchange(request);
 			}
 
-			final UriComponents requestUrl = UriComponentsBuilder.fromUri(request.url()).build();
+			UriComponents requestUrl = UriComponentsBuilder.fromUri(request.url()).build();
 			if (requestUrl.getPathSegments().isEmpty()) {
 				return Mono.error(new ResolveEndpointException("No endpoint specified"));
 			}
 
-			final String endpointId = requestUrl.getPathSegments().get(0);
-			final Optional<Endpoint> endpoint = instance.getEndpoints().get(endpointId);
+			String endpointId = requestUrl.getPathSegments().get(0);
+			Optional<Endpoint> endpoint = instance.getEndpoints().get(endpointId);
 
 			if (endpoint.isEmpty()) {
 				return Mono.error(new ResolveEndpointException("Endpoint '" + endpointId + "' not found"));
 			}
 
-			final URI rewrittenUrl = rewriteUrl(requestUrl, endpoint.get().getUrl());
+			URI rewrittenUrl = rewriteUrl(requestUrl, endpoint.get().getUrl());
 			log.trace("URL '{}' for Endpoint {} of instance {} rewritten to {}", requestUrl, endpoint.get().getId(),
 					instance.getId(), rewrittenUrl);
 			request = ClientRequest.from(request)
@@ -118,8 +117,8 @@ public final class InstanceExchangeFilterFunctions {
 		};
 	}
 
-	private static URI rewriteUrl(final UriComponents oldUrl, final String targetUrl) {
-		final String[] newPathSegments = oldUrl.getPathSegments()
+	private static URI rewriteUrl(UriComponents oldUrl, String targetUrl) {
+		String[] newPathSegments = oldUrl.getPathSegments()
 			.subList(1, oldUrl.getPathSegments().size())
 			.toArray(new String[] {});
 		return UriComponentsBuilder.fromUriString(targetUrl)
@@ -129,17 +128,16 @@ public final class InstanceExchangeFilterFunctions {
 			.toUri();
 	}
 
-	public static InstanceExchangeFilterFunction convertLegacyEndpoints(
-			final List<LegacyEndpointConverter> converters) {
+	public static InstanceExchangeFilterFunction convertLegacyEndpoints(List<LegacyEndpointConverter> converters) {
 		return (instance, request, next) -> {
-			final Mono<ClientResponse> clientResponse = next.exchange(request);
+			Mono<ClientResponse> clientResponse = next.exchange(request);
 
-			final Optional<Object> endpoint = request.attribute(ATTRIBUTE_ENDPOINT);
+			Optional<Object> endpoint = request.attribute(ATTRIBUTE_ENDPOINT);
 			if (endpoint.isEmpty()) {
 				return clientResponse;
 			}
 
-			for (final LegacyEndpointConverter converter : converters) {
+			for (LegacyEndpointConverter converter : converters) {
 				if (converter.canConvert(endpoint.get())) {
 					return clientResponse.map((response) -> {
 						if (isLegacyResponse(response)) {
@@ -153,15 +151,14 @@ public final class InstanceExchangeFilterFunctions {
 		};
 	}
 
-	private static Boolean isLegacyResponse(final ClientResponse response) {
+	private static Boolean isLegacyResponse(ClientResponse response) {
 		return response.headers()
 			.contentType()
 			.filter((t) -> V1_ACTUATOR_JSON.isCompatibleWith(t) || MediaType.APPLICATION_JSON.isCompatibleWith(t))
 			.isPresent();
 	}
 
-	private static ClientResponse convertLegacyResponse(final LegacyEndpointConverter converter,
-			final ClientResponse response) {
+	private static ClientResponse convertLegacyResponse(LegacyEndpointConverter converter, ClientResponse response) {
 		return response.mutate().headers((headers) -> {
 			headers.setContentType(MediaType.asMediaType(ApiVersion.LATEST.getProducedMimeType()));
 			headers.remove(HttpHeaders.CONTENT_LENGTH);
@@ -171,10 +168,10 @@ public final class InstanceExchangeFilterFunctions {
 	public static InstanceExchangeFilterFunction setDefaultAcceptHeader() {
 		return (instance, request, next) -> {
 			if (request.headers().getAccept().isEmpty()) {
-				final Boolean isRequestForLogfile = request.attribute(ATTRIBUTE_ENDPOINT)
+				Boolean isRequestForLogfile = request.attribute(ATTRIBUTE_ENDPOINT)
 					.map(Endpoint.LOGFILE::equals)
 					.orElse(false);
-				final List<MediaType> acceptedHeaders = isRequestForLogfile ? DEFAULT_LOGFILE_ACCEPT_MEDIA_TYPES
+				List<MediaType> acceptedHeaders = isRequestForLogfile ? DEFAULT_LOGFILE_ACCEPT_MEDIA_TYPES
 						: DEFAULT_ACCEPT_MEDIA_TYPES;
 				request = ClientRequest.from(request).headers((headers) -> headers.setAccept(acceptedHeaders)).build();
 			}
@@ -182,8 +179,7 @@ public final class InstanceExchangeFilterFunctions {
 		};
 	}
 
-	public static InstanceExchangeFilterFunction retry(final int defaultRetries,
-			final Map<String, Integer> retriesPerEndpoint) {
+	public static InstanceExchangeFilterFunction retry(int defaultRetries, Map<String, Integer> retriesPerEndpoint) {
 		return (instance, request, next) -> {
 			int retries = 0;
 			if (!request.method().equals(HttpMethod.DELETE) && !request.method().equals(HttpMethod.PATCH)
@@ -194,10 +190,10 @@ public final class InstanceExchangeFilterFunctions {
 		};
 	}
 
-	public static InstanceExchangeFilterFunction timeout(final Duration defaultTimeout,
-			final Map<String, Duration> timeoutPerEndpoint) {
+	public static InstanceExchangeFilterFunction timeout(Duration defaultTimeout,
+			Map<String, Duration> timeoutPerEndpoint) {
 		return (instance, request, next) -> {
-			final Duration timeout = request.attribute(ATTRIBUTE_ENDPOINT)
+			Duration timeout = request.attribute(ATTRIBUTE_ENDPOINT)
 				.map(timeoutPerEndpoint::get)
 				.orElse(defaultTimeout);
 			return next.exchange(request).timeout(timeout);
@@ -209,7 +205,7 @@ public final class InstanceExchangeFilterFunctions {
 	public static InstanceExchangeFilterFunction logfileAcceptWorkaround() {
 		return (instance, request, next) -> {
 			if (request.attribute(ATTRIBUTE_ENDPOINT).map(Endpoint.LOGFILE::equals).orElse(false)) {
-				final List<MediaType> newAcceptHeaders = Stream
+				List<MediaType> newAcceptHeaders = Stream
 					.concat(request.headers().getAccept().stream(), Stream.of(MediaType.ALL))
 					.toList();
 				request = ClientRequest.from(request).headers((h) -> h.setAccept(newAcceptHeaders)).build();

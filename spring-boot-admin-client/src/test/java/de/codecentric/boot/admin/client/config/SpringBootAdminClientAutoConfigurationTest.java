@@ -185,7 +185,7 @@ class SpringBootAdminClientAutoConfigurationTest {
 
 		@Bean
 		public RegistrationClient registrationClient() {
-			return registrationClient;
+			return this.registrationClient;
 		}
 
 	}

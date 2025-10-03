@@ -32,21 +32,21 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 
 	private final String adminContextPath;
 
-	public AdminControllerHandlerMapping(final String adminContextPath) {
+	public AdminControllerHandlerMapping(String adminContextPath) {
 		this.adminContextPath = adminContextPath;
 	}
 
 	@Override
-	protected boolean isHandler(final Class<?> beanType) {
+	protected boolean isHandler(Class<?> beanType) {
 		return AnnotatedElementUtils.hasAnnotation(beanType, AdminController.class);
 	}
 
 	@Override
-	protected void registerHandlerMethod(final Object handler, final Method method, final RequestMappingInfo mapping) {
+	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
 		super.registerHandlerMethod(handler, method, withPrefix(mapping));
 	}
 
-	private RequestMappingInfo withPrefix(final RequestMappingInfo mapping) {
+	private RequestMappingInfo withPrefix(RequestMappingInfo mapping) {
 		if (!StringUtils.hasText(adminContextPath)) {
 			return mapping;
 		}
