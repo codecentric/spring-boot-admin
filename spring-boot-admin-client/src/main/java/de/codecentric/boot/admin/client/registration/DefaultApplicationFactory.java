@@ -63,9 +63,9 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	@Nullable
 	private Integer localManagementPort;
 
-	public DefaultApplicationFactory(final InstanceProperties instance, final ManagementServerProperties management,
-			final ServerProperties server, final PathMappedEndpoints pathMappedEndpoints,
-			final WebEndpointProperties webEndpoint, final MetadataContributor metadataContributor) {
+	public DefaultApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
+			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
+			MetadataContributor metadataContributor) {
 		this.instance = instance;
 		this.management = management;
 		this.server = server;
@@ -97,7 +97,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected String getServiceBaseUrl() {
-		final String baseUrl = this.instance.getServiceBaseUrl();
+		String baseUrl = this.instance.getServiceBaseUrl();
 
 		if (StringUtils.hasText(baseUrl)) {
 			return baseUrl;
@@ -111,7 +111,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected String getServicePath() {
-		final String path = this.instance.getServicePath();
+		String path = this.instance.getServicePath();
 
 		if (StringUtils.hasText(path)) {
 			return path;
@@ -132,7 +132,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected String getManagementBaseUrl() {
-		final String baseUrl = this.instance.getManagementBaseUrl();
+		String baseUrl = this.instance.getManagementBaseUrl();
 
 		if (StringUtils.hasText(baseUrl)) {
 			return baseUrl;
@@ -142,7 +142,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 			return this.getServiceUrl();
 		}
 
-		final Ssl ssl = (this.management.getSsl() != null) ? this.management.getSsl() : this.server.getSsl();
+		Ssl ssl = (this.management.getSsl() != null) ? this.management.getSsl() : this.server.getSsl();
 		return UriComponentsBuilder.newInstance()
 			.scheme(getScheme(ssl))
 			.host(getManagementHost())
@@ -169,7 +169,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected Map<String, String> getMetadata() {
-		final Map<String, String> metadata = new LinkedHashMap<>();
+		Map<String, String> metadata = new LinkedHashMap<>();
 		metadata.putAll(this.metadataContributor.getMetadata());
 		metadata.putAll(this.instance.getMetadata());
 		return metadata;
@@ -184,7 +184,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected String getManagementHost() {
-		final InetAddress address = this.management.getAddress();
+		InetAddress address = this.management.getAddress();
 		if (address != null) {
 			return getHost(address);
 		}
@@ -195,7 +195,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		try {
 			return InetAddress.getLocalHost();
 		}
-		catch (final UnknownHostException ex) {
+		catch (UnknownHostException ex) {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
 		}
 	}
@@ -216,22 +216,22 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	protected String getHealthEndpointPath() {
-		final String health = this.pathMappedEndpoints.getPath(EndpointId.of("health"));
+		String health = this.pathMappedEndpoints.getPath(EndpointId.of("health"));
 		if (StringUtils.hasText(health)) {
 			return health;
 		}
-		final String status = this.pathMappedEndpoints.getPath(EndpointId.of("status"));
+		String status = this.pathMappedEndpoints.getPath(EndpointId.of("status"));
 		if (StringUtils.hasText(status)) {
 			return status;
 		}
 		throw new IllegalStateException("Either health or status endpoint must be enabled!");
 	}
 
-	protected String getScheme(@Nullable final Ssl ssl) {
+	protected String getScheme(@Nullable Ssl ssl) {
 		return ((ssl != null) && ssl.isEnabled()) ? "https" : "http";
 	}
 
-	protected String getHost(final InetAddress address) {
+	protected String getHost(InetAddress address) {
 		if (this.instance.isPreferIp()) {
 			return address.getHostAddress();
 		}
@@ -244,8 +244,8 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	}
 
 	@EventListener
-	public void onWebServerInitialized(final WebServerInitializedEvent event) {
-		final String name = event.getApplicationContext().getServerNamespace();
+	public void onWebServerInitialized(WebServerInitializedEvent event) {
+		String name = event.getApplicationContext().getServerNamespace();
 		if ("server".equals(name) || !StringUtils.hasText(name)) {
 			this.localServerPort = event.getWebServer().getPort();
 		}

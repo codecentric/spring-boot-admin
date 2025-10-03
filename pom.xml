@@ -30,7 +30,7 @@
     <url>https://github.com/codecentric/spring-boot-admin/</url>
 
     <properties>
-        <revision>3.5.2-springboot4-SNAPSHOT</revision>
+        <revision>3.5.6-springboot4-SNAPSHOT</revision>
 
         <java.version>17</java.version>
         <node.version>v22.14.0</node.version>
@@ -44,10 +44,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>4.0.0-M1</spring-boot.version>
-        <spring-cloud.version>2025.1.0-M1</spring-cloud.version>
+        <spring-boot.version>4.0.0-M3</spring-boot.version>
+        <spring-cloud.version>2025.1.0-M2</spring-cloud.version>
 
-        <jolokia-support-spring.version>2.3.0</jolokia-support-spring.version>
+        <jolokia-support-spring.version>2.3.1-springboot4-SNAPSHOT</jolokia-support-spring.version>
 
         <checkstyle.version>10.26.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>

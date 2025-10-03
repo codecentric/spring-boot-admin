@@ -35,25 +35,25 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 
 	private final String adminContextPath;
 
-	public AdminControllerHandlerMapping(final String adminContextPath) {
+	public AdminControllerHandlerMapping(String adminContextPath) {
 		this.adminContextPath = adminContextPath;
 	}
 
 	@Override
-	protected boolean isHandler(final Class<?> beanType) {
+	protected boolean isHandler(Class<?> beanType) {
 		return AnnotatedElementUtils.hasAnnotation(beanType, AdminController.class);
 	}
 
 	@Override
-	protected void registerHandlerMethod(final Object handler, final Method method, final RequestMappingInfo mapping) {
+	protected void registerHandlerMethod(Object handler, Method method, RequestMappingInfo mapping) {
 		super.registerHandlerMethod(handler, method, withPrefix(mapping));
 	}
 
-	private RequestMappingInfo withPrefix(final RequestMappingInfo mapping) {
+	private RequestMappingInfo withPrefix(RequestMappingInfo mapping) {
 		if (!StringUtils.hasText(adminContextPath)) {
 			return mapping;
 		}
-		final PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
+		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
 				withNewPatterns(mapping.getPatternsCondition().getPatterns()));
 		return RequestMappingInfo.paths(patternsCondition.getPatterns().toArray(new String[0]))
 			.methods(mapping.getMethodsCondition().getMethods().toArray(new RequestMethod[0]))
@@ -64,7 +64,7 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 			.build();
 	}
 
-	private List<PathPattern> withNewPatterns(final Set<PathPattern> patterns) {
+	private List<PathPattern> withNewPatterns(Set<PathPattern> patterns) {
 		return patterns.stream()
 			.map((pattern) -> getPathPatternParser().parse(PathUtils.normalizePath(adminContextPath + pattern)))
 			.toList();

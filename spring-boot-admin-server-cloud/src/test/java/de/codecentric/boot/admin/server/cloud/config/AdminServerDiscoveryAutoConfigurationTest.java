@@ -94,7 +94,7 @@ class AdminServerDiscoveryAutoConfigurationTest {
 	public static class CustomServiceInstanceConverter implements ServiceInstanceConverter {
 
 		@Override
-		public Registration convert(final ServiceInstance instance) {
+		public Registration convert(ServiceInstance instance) {
 			return null;
 		}
 

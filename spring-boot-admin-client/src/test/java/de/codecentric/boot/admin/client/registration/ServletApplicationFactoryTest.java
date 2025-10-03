@@ -55,23 +55,24 @@ class ServletApplicationFactoryTest {
 
 	private final DispatcherServletPath dispatcherServletPath = mock(DispatcherServletPath.class);
 
-	private final ServletApplicationFactory factory = new ServletApplicationFactory(instance, management, server,
-			servletContext, pathMappedEndpoints, webEndpoint, Collections::emptyMap, dispatcherServletPath);
+	private final ServletApplicationFactory factory = new ServletApplicationFactory(this.instance, this.management,
+			this.server, this.servletContext, this.pathMappedEndpoints, this.webEndpoint, Collections::emptyMap,
+			this.dispatcherServletPath);
 
 	@BeforeEach
 	void setup() {
-		instance.setName("test");
-		when(dispatcherServletPath.getPrefix()).thenReturn("");
+		this.instance.setName("test");
+		when(this.dispatcherServletPath.getPrefix()).thenReturn("");
 	}
 
 	@Test
 	void test_contextPath_mgmtPath() {
-		servletContext.setContextPath("app");
-		webEndpoint.setBasePath("/admin");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
-		publishApplicationReadyEvent(factory, 8080, null);
+		this.servletContext.setContextPath("app");
+		this.webEndpoint.setBasePath("/admin");
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
+		publishApplicationReadyEvent(this.factory, 8080, null);
 
-		final Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
@@ -79,12 +80,12 @@ class ServletApplicationFactoryTest {
 
 	@Test
 	void test_contextPath_mgmtPortPath() {
-		servletContext.setContextPath("app");
-		webEndpoint.setBasePath("/admin");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
-		publishApplicationReadyEvent(factory, 8080, 8081);
+		this.servletContext.setContextPath("app");
+		this.webEndpoint.setBasePath("/admin");
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
+		publishApplicationReadyEvent(this.factory, 8080, 8081);
 
-		final Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/admin");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/admin/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
@@ -92,11 +93,11 @@ class ServletApplicationFactoryTest {
 
 	@Test
 	void test_contextPath() {
-		servletContext.setContextPath("app");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-		publishApplicationReadyEvent(factory, 80, null);
+		this.servletContext.setContextPath("app");
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		publishApplicationReadyEvent(this.factory, 80, null);
 
-		final Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/app/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/app/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/app");
@@ -104,12 +105,12 @@ class ServletApplicationFactoryTest {
 
 	@Test
 	void test_servletPath() {
-		when(dispatcherServletPath.getPrefix()).thenReturn("app");
-		servletContext.setContextPath("srv");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-		publishApplicationReadyEvent(factory, 80, null);
+		when(this.dispatcherServletPath.getPrefix()).thenReturn("app");
+		this.servletContext.setContextPath("srv");
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		publishApplicationReadyEvent(this.factory, 80, null);
 
-		final Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/srv/app/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/srv");
@@ -117,12 +118,12 @@ class ServletApplicationFactoryTest {
 
 	@Test
 	void test_servicePath() {
-		servletContext.setContextPath("app");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-		publishApplicationReadyEvent(factory, 80, null);
-		instance.setServicePath("/servicePath/");
+		this.servletContext.setContextPath("app");
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		publishApplicationReadyEvent(this.factory, 80, null);
+		this.instance.setServicePath("/servicePath/");
 
-		final Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/servicePath/app/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/servicePath/app/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/servicePath/app");
@@ -132,13 +133,13 @@ class ServletApplicationFactoryTest {
 		try {
 			return InetAddress.getLocalHost().getCanonicalHostName();
 		}
-		catch (final UnknownHostException ex) {
+		catch (UnknownHostException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	private void publishApplicationReadyEvent(final DefaultApplicationFactory factory, final Integer serverport,
-			final Integer managementport) {
+	private void publishApplicationReadyEvent(DefaultApplicationFactory factory, Integer serverport,
+			Integer managementport) {
 		factory.onWebServerInitialized(new TestWebServerInitializedEvent("server", serverport));
 		factory.onWebServerInitialized(new TestWebServerInitializedEvent("management",
 				(managementport != null) ? managementport : serverport));
@@ -150,15 +151,15 @@ class ServletApplicationFactoryTest {
 
 		private final WebServerApplicationContext context = mock(WebServerApplicationContext.class);
 
-		private TestWebServerInitializedEvent(final String name, final int port) {
+		private TestWebServerInitializedEvent(String name, int port) {
 			super(mock(WebServer.class));
-			when(server.getPort()).thenReturn(port);
-			when(context.getServerNamespace()).thenReturn(name);
+			when(this.server.getPort()).thenReturn(port);
+			when(this.context.getServerNamespace()).thenReturn(name);
 		}
 
 		@Override
 		public WebServerApplicationContext getApplicationContext() {
-			return context;
+			return this.context;
 		}
 
 		@Override
