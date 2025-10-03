@@ -56,7 +56,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 @Slf4j
 public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
-	private static final String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
+	private static String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 
@@ -90,44 +90,44 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 	 */
 	private Card card = new Card();
 
-	public FeiShuNotifier(final InstanceRepository repository, final RestTemplate restTemplate) {
+	public FeiShuNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
 		this.message = this.parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
-	protected Mono<Void> doNotify(final InstanceEvent event, final Instance instance) {
+	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
 		if (this.webhookUrl == null) {
 			return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
 		}
 		return Mono.fromRunnable(() -> {
-			final ResponseEntity<String> responseEntity = this.restTemplate.postForEntity(this.webhookUrl,
+			ResponseEntity<String> responseEntity = this.restTemplate.postForEntity(this.webhookUrl,
 					this.createNotification(event, instance), String.class);
 			log.debug("Send a notification message to the FeiShu group,returns the parameter：{}",
 					responseEntity.getBody());
 		});
 	}
 
-	private String generateSign(final String secret, final long timestamp) {
+	private String generateSign(String secret, long timestamp) {
 		try {
-			final String stringToSign = timestamp + "\n" + secret;
-			final javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+			String stringToSign = timestamp + "\n" + secret;
+			javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
 			mac.init(new javax.crypto.spec.SecretKeySpec(stringToSign.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-			final byte[] signData = mac.doFinal(new byte[] {});
+			byte[] signData = mac.doFinal(new byte[] {});
 			return new String(Base64.getEncoder().encode(signData));
 		}
-		catch (final Exception ex) {
+		catch (Exception ex) {
 			log.error("Description Failed to generate the Webhook signature of the FeiShu：{}", ex.getMessage());
 		}
 		return null;
 	}
 
-	protected HttpEntity<Map<String, Object>> createNotification(final InstanceEvent event, final Instance instance) {
-		final Map<String, Object> body = new HashMap<>();
+	protected HttpEntity<Map<String, Object>> createNotification(InstanceEvent event, Instance instance) {
+		Map<String, Object> body = new HashMap<>();
 		body.put("receive_id", UUID.randomUUID().toString());
 		if (StringUtils.hasText(this.secret)) {
-			final long timestamp = Instant.now().getEpochSecond();
+			long timestamp = Instant.now().getEpochSecond();
 			body.put("timestamp", timestamp);
 			body.put("sign", this.generateSign(this.secret, timestamp));
 		}
@@ -140,24 +140,24 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 			default:
 				body.put("content", this.createTextContent(event, instance));
 		}
-		final HttpHeaders headers = new HttpHeaders();
+		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.add("User-Agent", "Codecentric's Spring Boot Admin");
 		return new HttpEntity<>(body, headers);
 	}
 
-	private String createContent(final InstanceEvent event, final Instance instance) {
-		final Map<String, Object> root = new HashMap<>();
+	private String createContent(InstanceEvent event, Instance instance) {
+		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", this.getLastStatus(event.getInstance()));
-		final StandardEvaluationContext context = new StandardEvaluationContext(root);
+		StandardEvaluationContext context = new StandardEvaluationContext(root);
 		context.addPropertyAccessor(new MapAccessor());
 		return this.message.getValue(context, String.class);
 	}
 
-	private String createTextContent(final InstanceEvent event, final Instance instance) {
-		final Map<String, Object> textContent = new HashMap<>();
+	private String createTextContent(InstanceEvent event, Instance instance) {
+		Map<String, Object> textContent = new HashMap<>();
 		String content = this.createContent(event, instance);
 		if (this.atAll) {
 			content += "\n<at user_id=\"all\">@all</at>";
@@ -166,47 +166,47 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.toJsonString(textContent);
 	}
 
-	private String createCardContent(final InstanceEvent event, final Instance instance) {
-		final String content = this.createContent(event, instance);
+	private String createCardContent(InstanceEvent event, Instance instance) {
+		String content = this.createContent(event, instance);
 
-		final Map<String, Object> header = new HashMap<>();
+		Map<String, Object> header = new HashMap<>();
 		header.put("template", StringUtils.hasText(this.card.getThemeColor()) ? "red" : this.card.getThemeColor());
-		final Map<String, String> titleContent = new HashMap<>();
+		Map<String, String> titleContent = new HashMap<>();
 		titleContent.put("tag", "plain_text");
 		titleContent.put("content", this.card.getTitle());
 		header.put("title", titleContent);
 
-		final List<Map<String, Object>> elements = new ArrayList<>();
-		final Map<String, Object> item = new HashMap<>();
+		List<Map<String, Object>> elements = new ArrayList<>();
+		Map<String, Object> item = new HashMap<>();
 		item.put("tag", "div");
 
-		final Map<String, String> text = new HashMap<>();
+		Map<String, String> text = new HashMap<>();
 		text.put("tag", "plain_text");
 		text.put("content", content);
 		item.put("text", text);
 		elements.add(item);
 
 		if (this.atAll) {
-			final Map<String, Object> atItem = new HashMap<>();
+			Map<String, Object> atItem = new HashMap<>();
 			atItem.put("tag", "div");
-			final Map<String, String> atText = new HashMap<>();
+			Map<String, String> atText = new HashMap<>();
 			atText.put("tag", "lark_md");
 			atText.put("content", "<at id=all></at>");
 			atItem.put("text", atText);
 			elements.add(atItem);
 		}
-		final Map<String, Object> cardContent = new HashMap<>();
+		Map<String, Object> cardContent = new HashMap<>();
 		cardContent.put("header", header);
 		cardContent.put("elements", elements);
 		return this.toJsonString(cardContent);
 	}
 
-	private String toJsonString(final Object o) {
+	private String toJsonString(Object o) {
 		try {
 			ObjectMapper objectMapper = JsonMapper.builder().build();
 			return objectMapper.writeValueAsString(o);
 		}
-		catch (final Exception ex) {
+		catch (Exception ex) {
 			log.warn("Failed to serialize JSON object", ex);
 		}
 		return null;
@@ -216,7 +216,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.webhookUrl;
 	}
 
-	public void setWebhookUrl(final URI webhookUrl) {
+	public void setWebhookUrl(URI webhookUrl) {
 		this.webhookUrl = webhookUrl;
 	}
 
@@ -224,11 +224,11 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.message.getExpressionString();
 	}
 
-	public void setMessage(final String message) {
+	public void setMessage(String message) {
 		this.message = this.parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	public void setRestTemplate(final RestTemplate restTemplate) {
+	public void setRestTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
 
@@ -236,7 +236,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.atAll;
 	}
 
-	public void setAtAll(final boolean atAll) {
+	public void setAtAll(boolean atAll) {
 		this.atAll = atAll;
 	}
 
@@ -244,7 +244,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.secret;
 	}
 
-	public void setSecret(final String secret) {
+	public void setSecret(String secret) {
 		this.secret = secret;
 	}
 
@@ -252,7 +252,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.messageType;
 	}
 
-	public void setMessageType(final MessageType messageType) {
+	public void setMessageType(MessageType messageType) {
 		this.messageType = messageType;
 	}
 
@@ -260,7 +260,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return this.card;
 	}
 
-	public void setCard(final Card card) {
+	public void setCard(Card card) {
 		this.card = card;
 	}
 
@@ -283,7 +283,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 			return this.title;
 		}
 
-		public void setTitle(final String title) {
+		public void setTitle(String title) {
 			this.title = title;
 		}
 
@@ -291,7 +291,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 			return this.themeColor;
 		}
 
-		public void setThemeColor(final String themeColor) {
+		public void setThemeColor(String themeColor) {
 			this.themeColor = themeColor;
 		}
 

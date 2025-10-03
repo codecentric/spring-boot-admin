@@ -30,13 +30,13 @@ class CompositeReactiveHttpHeadersProviderTest {
 
 	@Test
 	void should_return_all_headers() {
-		final ReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(asList((i) -> {
-			final HttpHeaders headers = new HttpHeaders();
+		ReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(asList((i) -> {
+			HttpHeaders headers = new HttpHeaders();
 			headers.set("a", "1");
 			headers.set("b", "2-a");
 			return Mono.just(headers);
 		}, (i) -> {
-			final HttpHeaders headers = new HttpHeaders();
+			HttpHeaders headers = new HttpHeaders();
 			headers.set("b", "2-b");
 			headers.set("c", "3");
 			return Mono.just(headers);
@@ -52,7 +52,7 @@ class CompositeReactiveHttpHeadersProviderTest {
 
 	@Test
 	void should_return_empty_headers() {
-		final CompositeReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(emptyList());
+		CompositeReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(emptyList());
 
 		StepVerifier.create(provider.getHeaders(null)).thenConsumeWhile((headers) -> {
 			assertThat(headers.toSingleValueMap()).isEmpty();
