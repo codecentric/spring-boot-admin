@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SbaFormattedObject > processes json > autolinks urls 1`] = `
+"<div><pre data-v-4fb4748a="" class="formatted">a:
+  nested:
+    object:
+      key: &gt;-
+        This is a text with a link <a href="https://www.codecentric.de" target="_blank">https://www.codecentric.de</a> that is
+        automagically created.
+</pre></div>"
+`;
+
+exports[`SbaFormattedObject > processes json > does not render unsafe <script> in html 1`] = `
+"<div><pre data-v-4fb4748a="" class="formatted">a:
+  nested:
+    object:
+      key:
+</pre></div>"
+`;
+
+exports[`SbaFormattedObject > processes simple text > autolinks urls 1`] = `"<div><pre data-v-4fb4748a="" class="formatted">This is a text with a link <a href="https://www.codecentric.de" target="_blank">https://www.codecentric.de</a> that is automagically created.</pre></div>"`;
+
+exports[`SbaFormattedObject > processes simple text > does not render unsafe <img> in html 1`] = `"<div><pre data-v-4fb4748a="" class="formatted"></pre></div>"`;
+
+exports[`SbaFormattedObject > processes simple text > does not render unsafe <script> in html 1`] = `"<div><pre data-v-4fb4748a="" class="formatted"></pre></div>"`;
+
+exports[`SbaFormattedObject > processes simple text > does render (safe) html 1`] = `"<div><pre data-v-4fb4748a="" class="formatted">This is a text with <a href="https://www.codecentric.de" target="_blank">a link</a> and a bold text <b>bold</b>.</pre></div>"`;
