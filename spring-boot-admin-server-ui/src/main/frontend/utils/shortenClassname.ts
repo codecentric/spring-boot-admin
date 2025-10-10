@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+/**
+ * Shortens a fully qualified class name to fit within a target length.
+ * Example:
+ *   shortenClassname('org.springframework.boot.actuate.health.HealthEndpoint', 20)
+ *   // returns: "o.s.b.a.h.HealthEndpoint"
+ *
+ * @param {string} fullName - The fully qualified class name.
+ * @param {number} targetLength - The maximum allowed length for the shortened name.
+ * @returns {string} The shortened class name.
+ */
 export default (fullName, targetLength) => {
   if (!fullName || fullName.length < targetLength) {
     return fullName;

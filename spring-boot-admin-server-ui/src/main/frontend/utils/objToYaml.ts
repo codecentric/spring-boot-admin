@@ -17,6 +17,12 @@ import { dump } from 'js-yaml';
 
 /**
  * Convert JSON to YAML.
+ *
+ * Example:
+ *   objToYaml({foo: "bar"})
+ * Output:
+ *   foo: bar
+ *
  * @param input  A JSON object or a JSON string.
  * @param options Optional js-yaml dump options.
  * @returns YAML string.

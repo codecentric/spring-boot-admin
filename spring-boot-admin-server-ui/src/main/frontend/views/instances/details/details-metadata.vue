@@ -34,6 +34,7 @@
 import { computed, ref } from 'vue';
 
 import Instance from '@/services/instance';
+import { sortObject } from '@/utils/sortObject';
 import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 const { instance } = defineProps<{
@@ -43,7 +44,7 @@ const { instance } = defineProps<{
 const panelOpen = ref(true);
 
 const metadata = computed(() => {
-  return instance.registration.metadata;
+  return sortObject(instance.registration.metadata);
 });
 
 const isEmptyMetadata = computed(() => {
