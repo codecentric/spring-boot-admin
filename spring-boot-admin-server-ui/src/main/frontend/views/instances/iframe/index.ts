@@ -1,4 +1,3 @@
-import { VIEW_GROUP } from '@/views/ViewGroup';
 import IframeView from '@/views/instances/iframe/IframeView.vue';
 
 export default {
