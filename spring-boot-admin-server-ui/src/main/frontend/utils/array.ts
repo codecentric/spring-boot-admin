@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+/**
+ * Adds values to an array and recursively flattens nested arrays.
+ * Ignores null and undefined values.
+ *
+ * @example
+ *   const arr: number[] = [];
+ *   pushFlattened(arr, 1, [2, [3, null]], undefined, 4);
+ *   arr = [1, 2, 3, 4]
+ *
+ * @template T Type of array elements
+ * @param {T[]} target Target array to which values are added
+ * @param {...(T | T[] | null | undefined)} values Values or arrays of values to add and flatten
+ * @returns {T[]} The target array with added and flattened values
+ */
 export const pushFlattened = <T>(
   target: T[],
   ...values: (T | T[] | null | undefined)[]
