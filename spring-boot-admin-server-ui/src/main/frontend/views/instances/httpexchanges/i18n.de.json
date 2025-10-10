@@ -20,6 +20,9 @@
         "server_errors": "Server-Fehler",
         "success": "erfolgreich"
       },
+      "button": {
+        "load_new": "{count} neue Exchanges laden"
+      },
       "length_response": "Response Größe",
       "length_request": "Request Größe",
       "method": "Methode",
