@@ -21,6 +21,9 @@
         "server_errors": "server errors",
         "success": "success"
       },
+      "button": {
+        "load_new": "Load {count} new exchanges"
+      },
       "length_response": "Response Length",
       "method": "Method",
       "no_exchanges_found": "No exchanges found.",

@@ -58,12 +58,17 @@
     </thead>
     <tbody>
       <tr v-if="newExchangesCount > 0" key="new-exchanges">
-        <td
-          colspan="9"
-          class="text-center"
-          @click="$emit('show-new-exchanges')"
-          v-text="`${newExchangesCount} new exchanges`"
-        />
+        <td colspan="9" class="text-center">
+          <Button
+            outlined
+            @click="$emit('show-new-exchanges')"
+            v-text="
+              $t('instances.httpexchanges.button.load_new', {
+                count: newExchangesCount,
+              })
+            "
+          />
+        </td>
       </tr>
     </tbody>
     <transition-group tag="tbody" name="fade-in">
@@ -160,6 +165,7 @@
 <script setup lang="ts">
 import { parse } from 'iso8601-duration';
 import prettyBytes from 'pretty-bytes';
+import { Button } from 'primevue';
 import { ref } from 'vue';
 
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
@@ -202,14 +208,12 @@ const toJson = (obj: any) => JSON.stringify(obj, null, 4);
   width: 130px;
 }
 .httpexchanges__exchange-method {
-  @apply font-mono;
   width: 100px;
 }
 .httpexchanges__exchange-uri {
   width: auto;
 }
 .httpexchanges__exchange-status {
-  @apply font-mono;
   width: 80px;
 }
 .httpexchanges__exchange-contentType {
