@@ -14,7 +14,7 @@ exports[`SbaFormattedObject > processes json > does not render unsafe <script> i
 "<div><pre data-v-4fb4748a="" class="formatted">a:
   nested:
     object:
-      key:
+      key: 
 </pre></div>"
 `;
 
