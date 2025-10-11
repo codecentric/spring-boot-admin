@@ -46,7 +46,7 @@
 
       <!-- The actual nav -->
       <li
-        v-for="group in enabledGroupedViews"
+        v-for="group in groups"
         :key="group.name"
         :data-sba-group="group.id"
         class="relative mb-1"
@@ -110,96 +110,156 @@
           </li>
         </ul>
       </li>
+
+      <template v-if="customLinksFromMetadata?.length > 0">
+        <Divider align="center" class="!my-2">
+          <small class="bold">
+            {{ $t('sidebar.custom-link.title') }}
+          </small>
+        </Divider>
+
+        <li>
+          <ul
+            :class="{ 'hidden md:block': !sidebarOpen }"
+            class="relative block"
+          >
+            <li
+              v-for="view in customLinksFromMetadata"
+              :key="view.name"
+              :data-sba-view="view.name"
+            >
+              <router-link
+                v-if="view.iframe"
+                :to="{
+                  name: 'instances/custom-link-view',
+                  params: { instanceId: instance.id, url: view.href },
+                }"
+                active-class="navbar-link__active"
+                class="navbar-link navbar-link--custom navbar-link__group_item"
+                exact-active-class=""
+              >
+                <component :is="view.handle" />
+              </router-link>
+              <a
+                v-else-if="view.href"
+                :href="view.href"
+                class="navbar-link navbar-link--custom navbar-link__group_item"
+                target="_blank"
+                rel="noopener"
+              >
+                <component :is="view.handle" />
+                <font-awesome-icon
+                  :icon="faArrowUpRightFromSquare"
+                  class="w-2 ml-1"
+                />
+              </a>
+            </li>
+          </ul>
+        </li>
+      </template>
     </ul>
   </aside>
 </template>
 
-<script lang="ts">
-import { defineComponent, toRaw } from 'vue';
-
-import SbaButton from '@/components/sba-button.vue';
+<script lang="ts" setup>
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { Divider } from 'primevue';
+import { computed, h, ref, toRaw, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
-import { VIEW_GROUP_ICON } from '@/views/ViewGroup';
+import { VIEW_GROUP, VIEW_GROUP_ICON } from '@/views/ViewGroup';
 
-export default defineComponent({
-  components: { SbaButton },
-  props: {
-    views: {
-      type: Array,
-      default: () => [],
-    },
-    instance: {
-      type: Instance,
-      default: null,
-    },
-    application: {
-      type: Application,
-      default: null,
-    },
-  },
-  data() {
+const props = defineProps<{
+  views: any[];
+  instance: Instance;
+  application: Application;
+}>();
+
+const { t } = useI18n();
+const route = useRoute();
+const sidebarOpen = ref(false);
+
+const customLinksFromMetadata = computed(() => {
+  const newVar = props.instance.metadataParsed?.sidebar?.links || [];
+  return newVar.map((view) => {
     return {
-      sidebarOpen: false,
-    };
-  },
-  computed: {
-    enabledViews() {
-      if (!this.instance) {
-        return [];
-      }
-
-      return [...this.views]
-        .filter(
-          (view) =>
-            typeof view.isEnabled === 'undefined' ||
-            view.isEnabled({ instance: this.instance }),
-        )
-        .sort(compareBy((v) => v.order));
-    },
-    enabledGroupedViews() {
-      const groups = new Map();
-      this.enabledViews.forEach((view) => {
-        const groupName = view.group;
-        const group = groups.get(groupName) || {
-          id: groupName,
-          order: Number.MAX_SAFE_INTEGER,
-          views: [],
-        };
-        groups.set(groupName, {
-          ...group,
-          order: Math.min(group.order, view.order),
-          icon: VIEW_GROUP_ICON[groupName],
-          views: [...group.views, view],
-        });
-      });
-      return Array.from(groups.values());
-    },
-  },
-  watch: {
-    $route() {
-      this.sidebarOpen = false;
-    },
-  },
-  methods: {
-    toggleSidebar() {
-      this.sidebarOpen = !this.sidebarOpen;
-    },
-    getGroupTitle(groupId) {
-      const key = 'sidebar.' + groupId + '.title';
-      const translated = this.$t(key);
-      return key === translated ? groupId : translated;
-    },
-    isActiveGroup(group) {
-      return group.views.some((v) => toRaw(v) === this.$route.meta.view);
-    },
-    hasMultipleViews(group) {
-      return group.views.length > 1;
-    },
-  },
+      handle: () => h('span', { innerHTML: view.label }),
+      href: view.url,
+      iframe: view.iframe || false,
+      order: Number.MAX_SAFE_INTEGER,
+    } satisfies SbaView;
+  });
 });
+
+const enabledViews = computed(() => {
+  if (!props.instance) {
+    return [];
+  }
+  return [...props.views]
+    .filter(
+      (view) =>
+        typeof view.isEnabled === 'undefined' ||
+        view.isEnabled({ instance: props.instance }),
+    )
+    .sort(compareBy((v: any) => v.order));
+});
+
+const groups = computed(() => {
+  const groups = new Map();
+
+  [...enabledViews.value].forEach((view: SbaView) => {
+    const groupName = view.group;
+    const group = groups.get(groupName) || {
+      id: groupName,
+      order: Number.MAX_SAFE_INTEGER,
+      views: [],
+    };
+    groups.set(groupName, {
+      ...group,
+      order: Math.min(group.order, view.order),
+      icon: VIEW_GROUP_ICON[groupName],
+      views: [...group.views, view],
+    });
+  });
+  return Array.from(groups.values());
+});
+
+watch(
+  () => route.fullPath,
+  () => {
+    sidebarOpen.value = false;
+  },
+);
+
+function toggleSidebar() {
+  sidebarOpen.value = !sidebarOpen.value;
+}
+
+function getGroupTitle(groupId: string) {
+  const key = 'sidebar.' + groupId + '.title';
+  const translated = t(key);
+  return key === translated ? groupId : translated;
+}
+
+function isActiveGroup(group: any) {
+  if (group.id === VIEW_GROUP.CUSTOM_LINK) {
+    return true;
+  }
+
+  const result = group.views.some(
+    (view: any) => toRaw(view) === route.meta.view,
+  );
+  return result;
+}
+
+function hasMultipleViews(group: any) {
+  return group.views.length > 1;
+}
 </script>
 
 <style scoped>
@@ -207,9 +267,15 @@ export default defineComponent({
   @apply bg-sba-50 bg-opacity-40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
 }
 
+a.navbar-link {
+  @apply cursor-pointer;
+}
 .navbar-link {
-  @apply cursor-pointer bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
+  @apply bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
   @apply text-gray-700;
+}
+.navbar-link--custom {
+  @apply !px-6;
 }
 
 .navbar-link:hover,
