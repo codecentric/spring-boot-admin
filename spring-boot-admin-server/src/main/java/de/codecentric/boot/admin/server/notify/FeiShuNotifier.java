@@ -75,7 +75,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 	private URI webhookUrl;
 
 	/**
-	 * @ all.
+	 * {@literal @}all
 	 */
 	private boolean atAll = true;
 
