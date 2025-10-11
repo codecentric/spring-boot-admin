@@ -27,6 +27,7 @@ import uri from '../utils/uri';
 
 import { useSbaConfig } from '@/sba-config';
 import { actuatorMimeTypes } from '@/services/spring-mime-types';
+import { transformToJSON } from '@/utils/transformToJSON';
 
 const isInstanceActuatorRequest = (url: string) =>
   url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
@@ -61,6 +62,11 @@ class Instance {
 
   get metadata() {
     return this.registration.metadata;
+  }
+
+  get metadataParsed() {
+    const metadata = this.registration.metadata || {};
+    return transformToJSON(metadata);
   }
 
   get isUnregisterable() {

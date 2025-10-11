@@ -25,7 +25,9 @@
         :instance="instance"
         :views="sidebarViews"
       />
-      <main class="min-h-full relative z-0 ml-10 md:ml-60 transition-all">
+      <main
+        class="min-h-full h-full relative z-0 ml-10 md:ml-60 transition-all"
+      >
         <router-view
           v-if="instance"
           :application="application"
