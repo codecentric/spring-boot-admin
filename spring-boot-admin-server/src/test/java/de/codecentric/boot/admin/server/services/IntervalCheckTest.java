@@ -17,18 +17,23 @@
 package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -49,9 +54,8 @@ class IntervalCheckTest {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.start();
-		await().atMost(Duration.ofMillis(100))
-			.pollInterval(Duration.ofMillis(10))
-			.untilAsserted(() -> verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID));
+		await().atMost(Duration.ofMillis(100)).pollInterval(Duration.ofMillis(10))
+				.untilAsserted(() -> verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID));
 	}
 
 	@Test
@@ -77,9 +81,8 @@ class IntervalCheckTest {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.start();
-		await().atMost(Duration.ofMillis(100))
-			.pollInterval(Duration.ofMillis(10))
-			.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID));
+		await().atMost(Duration.ofMillis(100)).pollInterval(Duration.ofMillis(10))
+				.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID));
 	}
 
 	@Test
@@ -103,7 +106,43 @@ class IntervalCheckTest {
 
 		this.intervalCheck.start();
 		await().atMost(Duration.ofMillis(1500))
-			.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test")));
+				.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test")));
+	}
+
+	@Test
+	void should_not_overflow_when_checks_timeout_randomly() {
+		Duration CHECK_INTERVAL = Duration.ofMillis(500);
+
+		@SuppressWarnings("unchecked")
+		Function<InstanceId, Mono<Void>> timeoutCheckFn = mock(Function.class);
+
+		doAnswer(invocation -> {
+			if (Math.random() < 0.5) {
+				// Sometimes succeed quickly
+				return Mono.empty();
+			}
+			else {
+				// Sometimes timeout
+				return Mono.just("slow response").delayElement(CHECK_INTERVAL.plus(Duration.ofMillis(100))).then();
+			}
+		}).when(timeoutCheckFn).apply(any());
+
+		IntervalCheck timeoutCheck = new IntervalCheck("overflow-test", timeoutCheckFn, CHECK_INTERVAL, CHECK_INTERVAL,
+				Duration.ofMillis(1000));
+
+		List<Throwable> errors = new CopyOnWriteArrayList<>();
+
+		timeoutCheck.setErrorConsumer(errors::add);
+		timeoutCheck.markAsChecked(INSTANCE_ID);
+		timeoutCheck.start();
+		try {
+			await().pollDelay(Duration.ofSeconds(5)).until(() -> errors.stream().noneMatch(er -> "OverflowException".equalsIgnoreCase(er.getClass().getSimpleName())));
+
+			assertThat(errors).noneMatch(e -> "OverflowException".equalsIgnoreCase(e.getClass().getSimpleName()));
+		}
+		finally {
+			timeoutCheck.stop();
+		}
 	}
 
 	@AfterEach
