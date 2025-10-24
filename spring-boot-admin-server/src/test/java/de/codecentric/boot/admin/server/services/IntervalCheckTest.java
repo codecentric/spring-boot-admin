@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -116,7 +115,7 @@ class IntervalCheckTest {
 		@SuppressWarnings("unchecked")
 		Function<InstanceId, Mono<Void>> timeoutCheckFn = mock(Function.class);
 
-		doAnswer(invocation -> {
+		doAnswer((invocation) -> {
 			if (Math.random() < 0.5) {
 				// Sometimes succeed quickly
 				return Mono.empty();
@@ -136,9 +135,9 @@ class IntervalCheckTest {
 		timeoutCheck.markAsChecked(INSTANCE_ID);
 		timeoutCheck.start();
 		try {
-			await().pollDelay(Duration.ofSeconds(5)).until(() -> errors.stream().noneMatch(er -> "OverflowException".equalsIgnoreCase(er.getClass().getSimpleName())));
+			await().pollDelay(Duration.ofSeconds(5)).until(() -> errors.stream().noneMatch((Throwable er) -> "OverflowException".equalsIgnoreCase(er.getClass().getSimpleName())));
 
-			assertThat(errors).noneMatch(e -> "OverflowException".equalsIgnoreCase(e.getClass().getSimpleName()));
+			assertThat(errors).noneMatch((Throwable e) -> "OverflowException".equalsIgnoreCase(e.getClass().getSimpleName()));
 		}
 		finally {
 			timeoutCheck.stop();

@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.server.services;
 
-// SPDX-License-Identifier: Apache-2.0
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
@@ -76,7 +75,7 @@ public class IntervalCheck {
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn, Duration interval,
 			Duration minRetention, Duration maxBackoff) {
 		this.name = name;
-		this.errorConsumer = throwable -> log.error("Unexpected error in {}-check", this.name, throwable);
+		this.errorConsumer = (Throwable throwable) -> log.error("Unexpected error in {}-check", this.name, throwable);
 		this.checkFn = checkFn;
 		this.interval = interval;
 		this.minRetention = minRetention;
