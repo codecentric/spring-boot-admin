@@ -53,8 +53,9 @@ class IntervalCheckTest {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.start();
-		await().atMost(Duration.ofMillis(100)).pollInterval(Duration.ofMillis(10))
-				.untilAsserted(() -> verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID));
+		await().atMost(Duration.ofMillis(100))
+			.pollInterval(Duration.ofMillis(10))
+			.untilAsserted(() -> verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID));
 	}
 
 	@Test
@@ -80,8 +81,9 @@ class IntervalCheckTest {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.start();
-		await().atMost(Duration.ofMillis(100)).pollInterval(Duration.ofMillis(10))
-				.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID));
+		await().atMost(Duration.ofMillis(100))
+			.pollInterval(Duration.ofMillis(10))
+			.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID));
 	}
 
 	@Test
@@ -105,7 +107,7 @@ class IntervalCheckTest {
 
 		this.intervalCheck.start();
 		await().atMost(Duration.ofMillis(1500))
-				.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test")));
+			.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test")));
 	}
 
 	@Test
@@ -135,9 +137,12 @@ class IntervalCheckTest {
 		timeoutCheck.markAsChecked(INSTANCE_ID);
 		timeoutCheck.start();
 		try {
-			await().pollDelay(Duration.ofSeconds(5)).until(() -> errors.stream().noneMatch((Throwable er) -> "OverflowException".equalsIgnoreCase(er.getClass().getSimpleName())));
+			await().pollDelay(Duration.ofSeconds(5))
+				.until(() -> errors.stream()
+					.noneMatch((Throwable er) -> "OverflowException".equalsIgnoreCase(er.getClass().getSimpleName())));
 
-			assertThat(errors).noneMatch((Throwable e) -> "OverflowException".equalsIgnoreCase(e.getClass().getSimpleName()));
+			assertThat(errors)
+				.noneMatch((Throwable e) -> "OverflowException".equalsIgnoreCase(e.getClass().getSimpleName()));
 		}
 		finally {
 			timeoutCheck.stop();

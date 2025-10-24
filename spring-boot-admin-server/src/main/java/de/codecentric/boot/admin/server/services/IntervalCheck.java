@@ -89,14 +89,17 @@ public class IntervalCheck {
 			.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
 			.log(log.getName(), Level.FINEST)
 			.subscribeOn(this.scheduler)
-			.concatMap((i) -> this.checkAllInstances())
-			.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
-				.maxBackoff(maxBackoff)
-				.doBeforeRetry((s) -> {
-					log.warn("Unexpected error in {}-check", this.name, s.failure());
-					this.errorConsumer.accept(s.failure());
-				}))
+			.flatMap((i) -> this.checkAllInstances()) // Allow concurrent check cycles
+														// if previous is slow
+			.retryWhen(createRetrySpec())
 			.subscribe(null, this.errorConsumer);
+	}
+
+	private Retry createRetrySpec() {
+		return Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1)).maxBackoff(maxBackoff).doBeforeRetry((s) -> {
+			log.warn("Unexpected error in {}-check", this.name, s.failure());
+			this.errorConsumer.accept(s.failure());
+		});
 	}
 
 	public void markAsChecked(InstanceId instanceId) {
