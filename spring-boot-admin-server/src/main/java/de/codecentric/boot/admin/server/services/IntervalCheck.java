@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 
@@ -68,9 +69,13 @@ public class IntervalCheck {
 	@Nullable
 	private Scheduler scheduler;
 
+	@Setter
+	private Consumer<Throwable> errorConsumer;
+
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn, Duration interval,
 			Duration minRetention, Duration maxBackoff) {
 		this.name = name;
+		this.errorConsumer = (Throwable throwable) -> log.error("Unexpected error in {}-check", this.name, throwable);
 		this.checkFn = checkFn;
 		this.interval = interval;
 		this.minRetention = minRetention;
@@ -80,14 +85,21 @@ public class IntervalCheck {
 	public void start() {
 		this.scheduler = Schedulers.newSingle(this.name + "-check");
 		this.subscription = Flux.interval(this.interval)
+			.onBackpressureDrop((tick) -> log.debug("Dropped check tick due to overload"))
 			.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
 			.log(log.getName(), Level.FINEST)
 			.subscribeOn(this.scheduler)
-			.concatMap((i) -> this.checkAllInstances())
-			.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
-				.maxBackoff(maxBackoff)
-				.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
-			.subscribe(null, (error) -> log.error("Unexpected error in {}-check", name, error));
+			.flatMap((i) -> this.checkAllInstances()) // Allow concurrent check cycles
+														// if previous is slow
+			.retryWhen(createRetrySpec())
+			.subscribe(null, this.errorConsumer);
+	}
+
+	private Retry createRetrySpec() {
+		return Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1)).maxBackoff(maxBackoff).doBeforeRetry((s) -> {
+			log.warn("Unexpected error in {}-check", this.name, s.failure());
+			this.errorConsumer.accept(s.failure());
+		});
 	}
 
 	public void markAsChecked(InstanceId instanceId) {
