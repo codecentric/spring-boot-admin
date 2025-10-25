@@ -49,7 +49,6 @@ public class IntervalCheck {
 
 	private final String name;
 
-	@Getter
 	private final Map<InstanceId, Instant> lastChecked = new ConcurrentHashMap<>();
 
 	private final Function<InstanceId, Mono<Void>> checkFn;
@@ -73,10 +72,13 @@ public class IntervalCheck {
 	@Setter
 	private Consumer<Throwable> errorConsumer;
 
+	@Setter
+	private Consumer<Throwable> retryConsumer;
+
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn, Duration interval,
 			Duration minRetention, Duration maxBackoff) {
 		this.name = name;
-		this.errorConsumer = (Throwable throwable) -> log.error("Unexpected error in {}-check", this.name, throwable);
+		this.retryConsumer = (Throwable throwable) -> log.warn("Unexpected error in {}-check", this.name, throwable);
 		this.checkFn = checkFn;
 		this.interval = interval;
 		this.minRetention = minRetention;
@@ -86,22 +88,22 @@ public class IntervalCheck {
 	public void start() {
 		this.scheduler = Schedulers.newSingle(this.name + "-check");
 		this.subscription = Flux.interval(this.interval)
-			// ensure the most recent interval tick is always processed, preventing lost checks under overload.
+			// ensure the most recent interval tick is always processed, preventing
+			// lost checks under overload.
 			.onBackpressureLatest()
 			.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
-			.log(log.getName(), Level.FINEST)
-			.subscribeOn(this.scheduler)
+			.log(log.getName(), Level.FINEST) //
+			.subscribeOn(this.scheduler) //
 			.flatMap((i) -> this.checkAllInstances()) // Allow concurrent check cycles
 														// if previous is slow
 			.retryWhen(createRetrySpec())
-			.subscribe(null, this.errorConsumer);
+			.subscribe(null, (Throwable error) -> log.error("Unexpected error in {}-check", this.name, error));
 	}
 
 	private Retry createRetrySpec() {
-		return Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1)).maxBackoff(maxBackoff).doBeforeRetry((s) -> {
-			log.warn("Unexpected error in {}-check", this.name, s.failure());
-			this.errorConsumer.accept(s.failure());
-		});
+		return Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
+			.maxBackoff(maxBackoff)
+			.doBeforeRetry((s) -> this.retryConsumer.accept(s.failure()));
 	}
 
 	public void markAsChecked(InstanceId instanceId) {

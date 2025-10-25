@@ -18,11 +18,17 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.invocation.InvocationOnMock;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -99,8 +105,6 @@ class IntervalCheckTest {
 		await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> verify(this.checkFn, atLeast(7)).apply(INSTANCE_ID));
 	}
 
-
-
 	@Test
 	void should_check_after_error() {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
@@ -126,25 +130,25 @@ class IntervalCheckTest {
 			}
 			else {
 				// Sometimes timeout
-				return Mono.just("slow response").delayElement(CHECK_INTERVAL.plus(Duration.ofMillis(100))).then();
+				return Mono.just("slow response").delayElement(CHECK_INTERVAL.plus(Duration.ofSeconds(1))).then();
 			}
 		}).when(timeoutCheckFn).apply(any());
 
 		IntervalCheck timeoutCheck = new IntervalCheck("overflow-test", timeoutCheckFn, CHECK_INTERVAL, CHECK_INTERVAL,
-				Duration.ofMillis(1000));
+				Duration.ofSeconds(1));
 
-		List<Throwable> errors = new CopyOnWriteArrayList<>();
+		List<Throwable> retryErrors = new CopyOnWriteArrayList<>();
 
-		timeoutCheck.setErrorConsumer(errors::add);
+		timeoutCheck.setRetryConsumer(retryErrors::add);
 		timeoutCheck.markAsChecked(INSTANCE_ID);
 		timeoutCheck.start();
 		try {
 			await().pollDelay(Duration.ofSeconds(5))
-				.until(() -> errors.stream()
+				.until(() -> retryErrors.stream()
 					.noneMatch((Throwable er) -> "OverflowException".equalsIgnoreCase(er.getClass().getSimpleName())));
 
-			assertThat(errors)
-				.noneMatch((Throwable e) -> "OverflowException".equalsIgnoreCase(e.getClass().getSimpleName()));
+			assertThat(retryErrors).noneMatch(
+					(Throwable e) -> "OverflowException".equalsIgnoreCase(e.getCause().getClass().getSimpleName()));
 		}
 		finally {
 			timeoutCheck.stop();
@@ -161,7 +165,7 @@ class IntervalCheckTest {
 			.apply(any());
 
 		IntervalCheck slowCheck = new IntervalCheck("backpressure-test", slowCheckFn, CHECK_INTERVAL,
-			Duration.ofMillis(50), Duration.ofSeconds(1));
+				Duration.ofMillis(50), Duration.ofSeconds(1));
 
 		List<Long> checkTimes = new CopyOnWriteArrayList<>();
 		doAnswer((invocation) -> {
@@ -183,9 +187,59 @@ class IntervalCheckTest {
 		}
 	}
 
+	@Test
+	void should_not_lose_checks_under_backpressure_latest() {
+		Duration CHECK_INTERVAL = Duration.ofMillis(100);
+
+		@SuppressWarnings("unchecked")
+		Function<InstanceId, Mono<Void>> slowCheckFn = mock(Function.class);
+		doAnswer((invocation) -> Mono.delay(CHECK_INTERVAL.plus(Duration.ofMillis(50))).then()).when(slowCheckFn)
+			.apply(any());
+
+		IntervalCheck slowCheck = new IntervalCheck("backpressure-test", slowCheckFn, CHECK_INTERVAL, CHECK_INTERVAL,
+				Duration.ofSeconds(1));
+
+		// Add multiple instances to increase load and cause drops
+		Set<InstanceId> instanceIds = IntStream.range(0, 50)
+			.mapToObj((i) -> InstanceId.of("Test" + i))
+			.collect(Collectors.toSet());
+
+		instanceIds.forEach(slowCheck::markAsChecked);
+
+		List<Long> checkTimes = new CopyOnWriteArrayList<>();
+		Map<String, List<Long>> checkTimesPerInstance = new ConcurrentHashMap<>();
+
+		doAnswer((invocation) -> {
+			long checkTime = System.currentTimeMillis();
+			String instanceId = instanceIdString(invocation);
+			List<Long> checkTimesList = checkTimesPerInstance.computeIfAbsent(instanceId,
+					(String k) -> new CopyOnWriteArrayList<>());
+			checkTimesList.add(checkTime);
+			checkTimes.add(checkTime);
+			return Mono.empty();
+		}).when(slowCheckFn).apply(any());
+
+		slowCheck.start();
+
+		try {
+			await().atMost(Duration.ofSeconds(2)).until(() -> checkTimes.size() > 50);
+			// With onBackpressureLatest, we should process more checks without drops
+			assertThat(checkTimes).hasSizeGreaterThanOrEqualTo(100);
+			instanceIds.forEach((InstanceId instanceId) -> assertThat(checkTimesPerInstance.get(instanceId.getValue()))
+				.hasSizeGreaterThanOrEqualTo(2)); // Expect more checks
+		}
+		finally {
+			slowCheck.stop();
+		}
+	}
+
 	@AfterEach
 	void tearDown() {
 		this.intervalCheck.stop();
+	}
+
+	private static String instanceIdString(InvocationOnMock invocation) {
+		return invocation.getArguments()[0].toString();
 	}
 
 }
