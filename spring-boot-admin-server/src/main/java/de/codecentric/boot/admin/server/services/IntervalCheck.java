@@ -49,6 +49,7 @@ public class IntervalCheck {
 
 	private final String name;
 
+	@Getter
 	private final Map<InstanceId, Instant> lastChecked = new ConcurrentHashMap<>();
 
 	private final Function<InstanceId, Mono<Void>> checkFn;
@@ -85,7 +86,8 @@ public class IntervalCheck {
 	public void start() {
 		this.scheduler = Schedulers.newSingle(this.name + "-check");
 		this.subscription = Flux.interval(this.interval)
-			.onBackpressureDrop((tick) -> log.debug("Dropped check tick due to overload"))
+			// ensure the most recent interval tick is always processed, preventing lost checks under overload.
+			.onBackpressureLatest()
 			.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
 			.log(log.getName(), Level.FINEST)
 			.subscribeOn(this.scheduler)

@@ -99,6 +99,8 @@ class IntervalCheckTest {
 		await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> verify(this.checkFn, atLeast(7)).apply(INSTANCE_ID));
 	}
 
+
+
 	@Test
 	void should_check_after_error() {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
@@ -146,6 +148,38 @@ class IntervalCheckTest {
 		}
 		finally {
 			timeoutCheck.stop();
+		}
+	}
+
+	@Test
+	void should_not_lose_checks_under_backpressure() {
+		Duration CHECK_INTERVAL = Duration.ofMillis(100);
+
+		@SuppressWarnings("unchecked")
+		Function<InstanceId, Mono<Void>> slowCheckFn = mock(Function.class);
+		doAnswer((invocation) -> Mono.delay(CHECK_INTERVAL.plus(Duration.ofMillis(50))).then()).when(slowCheckFn)
+			.apply(any());
+
+		IntervalCheck slowCheck = new IntervalCheck("backpressure-test", slowCheckFn, CHECK_INTERVAL,
+			Duration.ofMillis(50), Duration.ofSeconds(1));
+
+		List<Long> checkTimes = new CopyOnWriteArrayList<>();
+		doAnswer((invocation) -> {
+			checkTimes.add(System.currentTimeMillis());
+			return Mono.empty();
+		}).when(slowCheckFn).apply(any());
+
+		slowCheck.markAsChecked(INSTANCE_ID);
+		slowCheck.start();
+
+		try {
+			await().atMost(Duration.ofSeconds(2)).until(() -> checkTimes.size() >= 5);
+			// With onBackpressureLatest, we should have processed multiple checks without
+			// drops
+			assertThat(checkTimes).hasSizeGreaterThanOrEqualTo(5);
+		}
+		finally {
+			slowCheck.stop();
 		}
 	}
 
