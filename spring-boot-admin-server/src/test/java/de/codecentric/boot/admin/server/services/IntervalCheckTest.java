@@ -195,8 +195,8 @@ class IntervalCheckTest {
 		@SuppressWarnings("unchecked")
 		Function<InstanceId, Mono<Void>> slowCheckFn = mock(Function.class);
 
-		IntervalCheck slowCheck = new IntervalCheck("backpressure-test", slowCheckFn, CHECK_INTERVAL,
-				Duration.ofMillis(50), Duration.ofSeconds(1));
+		IntervalCheck slowCheck = new IntervalCheck("backpressure-test", slowCheckFn, CHECK_INTERVAL, CHECK_INTERVAL,
+				Duration.ofSeconds(1));
 
 		// Add multiple instances to increase load and cause drops
 		Set<InstanceId> instanceIds = IntStream.range(0, 50)
@@ -222,7 +222,7 @@ class IntervalCheckTest {
 			}
 			else {
 				// Sometimes slow
-				return Mono.delay(CHECK_INTERVAL.plus(Duration.ofMillis(100))).then();
+				return Mono.delay(CHECK_INTERVAL.plus(Duration.ofMillis(500))).then();
 			}
 		}).when(slowCheckFn).apply(any());
 

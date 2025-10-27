@@ -71,9 +71,6 @@ public class IntervalCheck {
 	private Scheduler scheduler;
 
 	@Setter
-	private Consumer<Throwable> errorConsumer;
-
-	@Setter
 	private Consumer<Throwable> retryConsumer;
 
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn, Duration interval,
@@ -95,8 +92,8 @@ public class IntervalCheck {
 			.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
 			.log(log.getName(), Level.FINEST) //
 			.subscribeOn(this.scheduler) //
-			.flatMap((i) -> this.checkAllInstances()) // Allow concurrent check cycles
-														// if previous is slow
+			// Allow concurrent check cycles if previous is slow
+			.flatMap((i) -> this.checkAllInstances(), Math.max(1, Runtime.getRuntime().availableProcessors() / 2))
 			.retryWhen(createRetrySpec())
 			.subscribe(null, (Throwable error) -> log.error("Unexpected error in {}-check", this.name, error));
 	}
