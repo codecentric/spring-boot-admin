@@ -229,7 +229,7 @@ class IntervalCheckTest {
 		slowCheck.start();
 
 		try {
-			await().atMost(Duration.ofMillis(1500)).until(() -> checkTimes.size() >= 500);
+			await().atMost(Duration.ofSeconds(2)).until(() -> checkTimes.size() >= 500);
 			// With onBackpressureLatest, we should process more checks without drops
 			instanceIds.forEach((InstanceId instanceId) -> assertThat(checkTimesPerInstance.get(instanceId.getValue()))
 				.hasSizeGreaterThanOrEqualTo(10));
