@@ -49,6 +49,7 @@ public class IntervalCheck {
 
 	private final String name;
 
+	@Getter
 	private final Map<InstanceId, Instant> lastChecked = new ConcurrentHashMap<>();
 
 	private final Function<InstanceId, Mono<Void>> checkFn;
