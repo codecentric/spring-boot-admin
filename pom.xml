@@ -52,7 +52,7 @@
 
         <jolokia-support-spring.version>2.4.0</jolokia-support-spring.version>
 
-        <checkstyle.version>12.1.0</checkstyle.version>
+        <checkstyle.version>12.1.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
 
         <wiremock.version>3.13.1</wiremock.version>
@@ -77,7 +77,7 @@
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-        <maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+        <maven-war-plugin.version>3.5.0</maven-war-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <frontend-maven-plugin.version>1.15.4</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
