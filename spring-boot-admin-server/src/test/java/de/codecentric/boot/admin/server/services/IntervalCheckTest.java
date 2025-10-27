@@ -214,12 +214,10 @@ class IntervalCheckTest {
 			checkTimes.add(checkTime);
 			if (Math.random() < 0.5) {
 				// Sometimes succeed quickly
-				System.out.printf("%s succeeds quickly\n", instanceId);
 				return Mono.empty();
 			}
 			else {
 				// Sometimes slow
-				System.out.printf("%s succeeds slowly\n", instanceId);
 				return Mono.delay(CHECK_INTERVAL.plus(Duration.ofMillis(100))).then();
 			}
 		}).when(slowCheckFn).apply(any());
