@@ -60,8 +60,9 @@ class IntervalCheckTest {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.start();
-		await().atMost(Duration.ofMillis(100)).pollInterval(Duration.ofMillis(10))
-				.untilAsserted(() -> verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID));
+		await().atMost(Duration.ofMillis(100))
+			.pollInterval(Duration.ofMillis(10))
+			.untilAsserted(() -> verify(this.checkFn, atLeastOnce()).apply(INSTANCE_ID));
 	}
 
 	@Test
@@ -87,8 +88,9 @@ class IntervalCheckTest {
 		this.intervalCheck.markAsChecked(INSTANCE_ID);
 
 		this.intervalCheck.start();
-		await().atMost(Duration.ofMillis(100)).pollInterval(Duration.ofMillis(10))
-				.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID));
+		await().atMost(Duration.ofMillis(100))
+			.pollInterval(Duration.ofMillis(10))
+			.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(INSTANCE_ID));
 	}
 
 	@Test
@@ -112,7 +114,7 @@ class IntervalCheckTest {
 
 		this.intervalCheck.start();
 		await().atMost(Duration.ofMillis(1500))
-				.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test")));
+			.untilAsserted(() -> verify(this.checkFn, atLeast(2)).apply(InstanceId.of("Test")));
 	}
 
 	@Test
@@ -142,7 +144,8 @@ class IntervalCheckTest {
 		timeoutCheck.markAsChecked(INSTANCE_ID);
 		timeoutCheck.start();
 		try {
-			await().pollDelay(Duration.ofSeconds(5)).until(() -> retryErrors.stream()
+			await().pollDelay(Duration.ofSeconds(5))
+				.until(() -> retryErrors.stream()
 					.noneMatch((Throwable er) -> "OverflowException".equalsIgnoreCase(er.getClass().getSimpleName())));
 
 			assertThat(retryErrors).noneMatch(
@@ -160,7 +163,7 @@ class IntervalCheckTest {
 		@SuppressWarnings("unchecked")
 		Function<InstanceId, Mono<Void>> slowCheckFn = mock(Function.class);
 		doAnswer((invocation) -> Mono.delay(CHECK_INTERVAL.plus(Duration.ofMillis(50))).then()).when(slowCheckFn)
-				.apply(any());
+			.apply(any());
 
 		IntervalCheck slowCheck = new IntervalCheck("backpressure-test", slowCheckFn, CHECK_INTERVAL,
 				Duration.ofMillis(50), Duration.ofSeconds(1));
@@ -192,15 +195,16 @@ class IntervalCheckTest {
 		@SuppressWarnings("unchecked")
 		Function<InstanceId, Mono<Void>> slowCheckFn = mock(Function.class);
 
-		IntervalCheck slowCheck = new IntervalCheck("backpressure-test", slowCheckFn, CHECK_INTERVAL, Duration.ofMillis(50),
-				Duration.ofSeconds(1));
+		IntervalCheck slowCheck = new IntervalCheck("backpressure-test", slowCheckFn, CHECK_INTERVAL,
+				Duration.ofMillis(50), Duration.ofSeconds(1));
 
 		// Add multiple instances to increase load and cause drops
-		Set<InstanceId> instanceIds = IntStream.range(0, 50).mapToObj((i) -> InstanceId.of("Test" + i))
-				.collect(Collectors.toSet());
+		Set<InstanceId> instanceIds = IntStream.range(0, 50)
+			.mapToObj((i) -> InstanceId.of("Test" + i))
+			.collect(Collectors.toSet());
 
-		instanceIds
-				.forEach(instanceId -> slowCheck.getLastChecked().put(instanceId, Instant.now().minusMillis(1000)));
+		instanceIds.forEach(
+				(InstanceId instanceId) -> slowCheck.getLastChecked().put(instanceId, Instant.now().minusMillis(1000)));
 
 		List<Long> checkTimes = new CopyOnWriteArrayList<>();
 		Map<String, List<Long>> checkTimesPerInstance = new ConcurrentHashMap<>();
@@ -225,10 +229,10 @@ class IntervalCheckTest {
 		slowCheck.start();
 
 		try {
-			await().atMost(Duration.ofMillis(1500) ).until(() -> checkTimes.size() >= 500);
+			await().atMost(Duration.ofMillis(1500)).until(() -> checkTimes.size() >= 500);
 			// With onBackpressureLatest, we should process more checks without drops
 			instanceIds.forEach((InstanceId instanceId) -> assertThat(checkTimesPerInstance.get(instanceId.getValue()))
-					.hasSizeGreaterThanOrEqualTo(10));
+				.hasSizeGreaterThanOrEqualTo(10));
 		}
 		finally {
 			slowCheck.stop();
