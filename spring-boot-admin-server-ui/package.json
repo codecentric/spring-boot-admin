@@ -120,7 +120,7 @@
     "> .5%, last 2 versions"
   ],
   "engines": {
-    "node": "22.21.1"
+    "node": "24.11.0"
   },
   "msw": {
     "workerDirectory": [
@@ -130,6 +130,6 @@
     ]
   },
   "overrides": {
-    "esbuild": "0.25.11"
+    "esbuild": "0.25.12"
   }
 }
