@@ -124,13 +124,14 @@ class IntervalCheckTest {
 		@SuppressWarnings("unchecked")
 		Function<InstanceId, Mono<Void>> timeoutCheckFn = mock(Function.class);
 
+		java.util.concurrent.atomic.AtomicInteger invocationCount = new java.util.concurrent.atomic.AtomicInteger(0);
 		doAnswer((invocation) -> {
-			if (Math.random() < 0.5) {
-				// Sometimes succeed quickly
+			if (invocationCount.getAndIncrement() % 2 == 0) {
+				// Succeed quickly on even invocations
 				return Mono.empty();
 			}
 			else {
-				// Sometimes timeout
+				// Timeout on odd invocations
 				return Mono.just("slow response").delayElement(CHECK_INTERVAL.plus(Duration.ofSeconds(1))).then();
 			}
 		}).when(timeoutCheckFn).apply(any());
