@@ -145,7 +145,7 @@ class IntervalCheckTest {
 		timeoutCheck.markAsChecked(INSTANCE_ID);
 		timeoutCheck.start();
 		try {
-			await().pollDelay(Duration.ofSeconds(5))
+			await().atMost(Duration.ofSeconds(5))
 				.until(() -> retryErrors.stream()
 					.noneMatch((Throwable er) -> "OverflowException".equalsIgnoreCase(er.getClass().getSimpleName())));
 
