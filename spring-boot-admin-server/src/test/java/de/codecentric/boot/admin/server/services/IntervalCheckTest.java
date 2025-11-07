@@ -148,8 +148,8 @@ class IntervalCheckTest {
 				.until(() -> retryErrors.stream()
 					.noneMatch((Throwable er) -> "OverflowException".equalsIgnoreCase(er.getClass().getSimpleName())));
 
-			assertThat(retryErrors).noneMatch(
-					(Throwable e) -> e.getCause() != null && "OverflowException".equalsIgnoreCase(e.getCause().getClass().getSimpleName()));
+			assertThat(retryErrors).noneMatch((Throwable e) -> e.getCause() != null
+					&& "OverflowException".equalsIgnoreCase(e.getCause().getClass().getSimpleName()));
 		}
 		finally {
 			timeoutCheck.stop();
