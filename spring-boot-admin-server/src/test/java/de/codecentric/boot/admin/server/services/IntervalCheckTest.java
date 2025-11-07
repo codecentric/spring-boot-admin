@@ -210,6 +210,8 @@ class IntervalCheckTest {
 		List<Long> checkTimes = new CopyOnWriteArrayList<>();
 		Map<String, List<Long>> checkTimesPerInstance = new ConcurrentHashMap<>();
 
+		java.util.concurrent.atomic.AtomicInteger invocationCount = new java.util.concurrent.atomic.AtomicInteger(0);
+		sdfsdf
 		doAnswer((invocation) -> {
 			long checkTime = System.currentTimeMillis();
 			String instanceId = instanceIdString(invocation);
@@ -217,7 +219,7 @@ class IntervalCheckTest {
 					(String k) -> new CopyOnWriteArrayList<>());
 			checkTimesInstance.add(checkTime);
 			checkTimes.add(checkTime);
-			if (Math.random() < 0.5) {
+			if (invocationCount.getAndIncrement() % 2 == 0) {
 				// Sometimes succeed quickly
 				return Mono.empty();
 			}
