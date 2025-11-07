@@ -205,7 +205,7 @@ class IntervalCheckTest {
 			.collect(Collectors.toSet());
 
 		instanceIds.forEach(
-				(InstanceId instanceId) -> slowCheck.getLastChecked().put(instanceId, Instant.now().minusMillis(1000)));
+				(InstanceId instanceId) -> slowCheck.markAsChecked(instanceId));
 
 		List<Long> checkTimes = new CopyOnWriteArrayList<>();
 		Map<String, List<Long>> checkTimesPerInstance = new ConcurrentHashMap<>();
