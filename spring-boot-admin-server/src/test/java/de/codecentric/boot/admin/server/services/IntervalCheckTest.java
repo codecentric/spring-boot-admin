@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -201,8 +200,7 @@ class IntervalCheckTest {
 			.mapToObj((i) -> InstanceId.of("Test" + i))
 			.collect(Collectors.toSet());
 
-		instanceIds.forEach(
-				(InstanceId instanceId) -> slowCheck.markAsChecked(instanceId));
+		instanceIds.forEach((InstanceId instanceId) -> slowCheck.markAsChecked(instanceId));
 
 		List<Long> checkTimes = new CopyOnWriteArrayList<>();
 		Map<String, List<Long>> checkTimesPerInstance = new ConcurrentHashMap<>();

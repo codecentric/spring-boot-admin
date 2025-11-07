@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -25,6 +26,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -49,7 +51,6 @@ public class IntervalCheck {
 
 	private final String name;
 
-	@Getter
 	private final Map<InstanceId, Instant> lastChecked = new ConcurrentHashMap<>();
 
 	private final Function<InstanceId, Mono<Void>> checkFn;
@@ -71,6 +72,7 @@ public class IntervalCheck {
 	private Scheduler scheduler;
 
 	@Setter
+	@NonNull
 	private Consumer<Throwable> retryConsumer;
 
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn, Duration interval,
@@ -116,6 +118,10 @@ public class IntervalCheck {
 			.map(Map.Entry::getKey)
 			.flatMap(this.checkFn)
 			.then();
+	}
+
+	protected Map<InstanceId, Instant> getLastChecked() {
+		return Collections.unmodifiableMap(lastChecked);
 	}
 
 	public void stop() {
