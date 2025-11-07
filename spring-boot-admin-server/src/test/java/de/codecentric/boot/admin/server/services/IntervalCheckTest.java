@@ -163,9 +163,6 @@ class IntervalCheckTest {
 
 		@SuppressWarnings("unchecked")
 		Function<InstanceId, Mono<Void>> slowCheckFn = mock(Function.class);
-		doAnswer((invocation) -> Mono.delay(CHECK_INTERVAL.plus(Duration.ofMillis(50))).then()).when(slowCheckFn)
-			.apply(any());
-
 		IntervalCheck slowCheck = new IntervalCheck("backpressure-test", slowCheckFn, CHECK_INTERVAL,
 				Duration.ofMillis(50), Duration.ofSeconds(1));
 
