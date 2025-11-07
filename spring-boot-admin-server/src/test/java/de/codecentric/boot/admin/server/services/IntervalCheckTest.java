@@ -211,7 +211,6 @@ class IntervalCheckTest {
 		Map<String, List<Long>> checkTimesPerInstance = new ConcurrentHashMap<>();
 
 		java.util.concurrent.atomic.AtomicInteger invocationCount = new java.util.concurrent.atomic.AtomicInteger(0);
-		sdfsdf
 		doAnswer((invocation) -> {
 			long checkTime = System.currentTimeMillis();
 			String instanceId = instanceIdString(invocation);
