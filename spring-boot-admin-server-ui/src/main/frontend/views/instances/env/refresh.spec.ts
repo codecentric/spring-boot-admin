@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/vue';
-import _ from 'lodash';
+import { cloneDeep } from 'lodash-es';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { applications } from '../../../mocks/applications/data';
@@ -39,7 +39,7 @@ describe('Refresh', () => {
   }
 
   function createApplication() {
-    const application = new Application(_.cloneDeep(applications[1]));
+    const application = new Application(cloneDeep(applications[1]));
     application.instances.push(createInstance());
     application.refreshContext = refreshApplicationContext;
     return application;
