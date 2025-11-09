@@ -13,7 +13,9 @@ describe('store', () => {
   let applicationStore;
 
   let mockSubject;
-  vi.spyOn(Application, 'getStream').mockImplementation(() => mockSubject);
+  vi.spyOn(Application, 'getStream').mockImplementation(function () {
+    return mockSubject;
+  });
 
   let changedListener;
   let addedListener;
