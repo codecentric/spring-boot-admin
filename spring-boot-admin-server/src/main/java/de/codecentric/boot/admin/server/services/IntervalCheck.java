@@ -29,6 +29,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.lang.Nullable;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -110,7 +111,7 @@ public class IntervalCheck {
 		this.lastChecked.put(instanceId, Instant.now());
 	}
 
-	protected Mono<Void> checkAllInstances() {
+	protected Publisher<Void> checkAllInstances() {
 		log.debug("check {} for all instances", this.name);
 		Instant expiration = Instant.now().minus(this.minRetention);
 		return Flux.fromIterable(this.lastChecked.entrySet())
@@ -119,11 +120,6 @@ public class IntervalCheck {
 			.flatMap(this.checkFn)
 			.then();
 	}
-
-	protected Map<InstanceId, Instant> getLastChecked() {
-		return Collections.unmodifiableMap(lastChecked);
-	}
-
 	public void stop() {
 		if (this.subscription != null) {
 			this.subscription.dispose();
