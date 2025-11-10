@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEqual } from 'lodash-es';
 import qs from 'qs';
 import { UnwrapNestedRefs, reactive, watch } from 'vue';
 import { LocationQuery, useRoute, useRouter } from 'vue-router';
@@ -35,7 +35,7 @@ export function useRouterState<T extends object>(
     };
     const routerQueryKeys = Object.keys(route.query);
     const newRouterQueryKeys = Object.keys({ ...route.query, ...newValue });
-    if (_.isEqual(routerQueryKeys, newRouterQueryKeys)) {
+    if (isEqual(routerQueryKeys, newRouterQueryKeys)) {
       router.replace(to);
     } else {
       router.push(to);
