@@ -47,7 +47,7 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
  */
 public class MattermostNotifier extends AbstractStatusChangeNotifier {
 
-	private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
+	private static final String DEFAULT_MESSAGE = "**#{instance.registration.name}** (#{instance.id}) is **#{event.statusInfo.status}**";
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 
@@ -72,7 +72,7 @@ public class MattermostNotifier extends AbstractStatusChangeNotifier {
 	private String channelId;
 
 	/**
-	 * Message formatted using Slack markups. SpEL template using event as root
+	 * Message formatted using Mattermost markups. SpEL template using event as root
 	 */
 	private Expression message;
 
@@ -100,14 +100,15 @@ public class MattermostNotifier extends AbstractStatusChangeNotifier {
 			messageJson.put("channel_id", channelId);
 		}
 
-		Map<String, Object> props = new HashMap<>();
 		Map<String, Object> attachments = new HashMap<>();
 		attachments.put("text", getText(event, instance));
 		attachments.put("fallback", getText(event, instance));
 		attachments.put("color", getColor(event));
 
-		props.put("attachments", attachments);
-		messageJson.put("props", Collections.singletonList(props));
+		Map<String, Object> props = new HashMap<>();
+		props.put("attachments", Collections.singletonList(attachments));
+
+		messageJson.put("props", props);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
