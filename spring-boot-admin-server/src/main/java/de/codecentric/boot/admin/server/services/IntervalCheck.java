@@ -18,7 +18,6 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
