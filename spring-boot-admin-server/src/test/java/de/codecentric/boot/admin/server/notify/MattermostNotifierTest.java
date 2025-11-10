@@ -133,14 +133,15 @@ class MattermostNotifierTest {
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("channel_id", channelId);
 
-		Map<String, Object> props = new HashMap<>();
 		Map<String, Object> attachments = new HashMap<>();
 		attachments.put("text", message);
 		attachments.put("fallback", message);
 		attachments.put("color", color);
 
-		props.put("attachments", attachments);
-		messageJson.put("props", Collections.singletonList(props));
+		Map<String, Object> props = new HashMap<>();
+		props.put("attachments", Collections.singletonList(attachments));
+
+		messageJson.put("props", props);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -149,7 +150,7 @@ class MattermostNotifierTest {
 	}
 
 	private String standardMessage(String status) {
-		return "*" + INSTANCE.getRegistration().getName() + "* (" + INSTANCE.getId() + ") is *" + status + "*";
+		return "**" + INSTANCE.getRegistration().getName() + "** (" + INSTANCE.getId() + ") is **" + status + "**";
 	}
 
 }
