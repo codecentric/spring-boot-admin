@@ -119,6 +119,7 @@ public class IntervalCheck {
 			.flatMap(this.checkFn)
 			.then();
 	}
+
 	public void stop() {
 		if (this.subscription != null) {
 			this.subscription.dispose();
