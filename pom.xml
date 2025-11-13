@@ -52,14 +52,14 @@
 
         <jolokia-support-spring.version>2.4.1</jolokia-support-spring.version>
 
-        <checkstyle.version>12.1.1</checkstyle.version>
+        <checkstyle.version>12.1.2</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
 
         <wiremock.version>3.13.1</wiremock.version>
         <hazelcast.version>5.6.0</hazelcast.version>
         <awaitility.version>4.3.0</awaitility.version>
         <testcontainers.version>1.21.3</testcontainers.version>
-        <jetty.version>12.1.3</jetty.version>
+        <jetty.version>12.1.4</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
