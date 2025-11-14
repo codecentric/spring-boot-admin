@@ -105,7 +105,7 @@
     "rollup-plugin-visualizer": "6.0.5",
     "sass": "^1.57.1",
     "storybook": "10.0.7",
-    "storybook-vue3-router": "^6.0.0",
+    "storybook-vue3-router": "^7.0.0",
     "tailwindcss": "3.4.18",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
