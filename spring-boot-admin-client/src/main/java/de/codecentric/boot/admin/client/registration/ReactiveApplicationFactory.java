@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.client.registration;
 
+import java.util.Optional;
+
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
@@ -40,12 +42,20 @@ public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 
 	public ReactiveApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
 			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
-			MetadataContributor metadataContributor, WebFluxProperties webFluxProperties) {
-		super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor);
+			MetadataContributor metadataContributor, WebFluxProperties webFluxProperties, Optional<?> inetUtils) {
+		super(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor, inetUtils);
 		this.management = management;
 		this.server = server;
 		this.webflux = webFluxProperties;
 		this.instance = instance;
+	}
+
+	// Backward-compatible constructor for tests and callers that don't provide InetUtils
+	public ReactiveApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
+			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
+			MetadataContributor metadataContributor, WebFluxProperties webFluxProperties) {
+		this(instance, management, server, pathMappedEndpoints, webEndpoint, metadataContributor, webFluxProperties,
+				Optional.empty());
 	}
 
 	@Override
