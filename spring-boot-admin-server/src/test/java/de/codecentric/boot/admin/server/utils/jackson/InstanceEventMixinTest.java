@@ -40,10 +40,8 @@ public class InstanceEventMixinTest {
 	private final JsonMapper objectMapper;
 
 	protected InstanceEventMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
-		objectMapper = JsonMapper.builder()
-			.addModule(adminServerModule)
-			.build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
 	}
 
 	@Nested
@@ -95,7 +93,7 @@ public class InstanceEventMixinTest {
 				.put("timestamp", 1587751031.000000000)
 				.put("type", "REGISTERED")
 				.put("registration",
-					new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
+						new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
 				.toString();
 
 			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
@@ -108,7 +106,7 @@ public class InstanceEventMixinTest {
 				.put("timestamp", 1587751031.000000000)
 				.put("type", "REGISTRATION_UPDATED")
 				.put("registration",
-					new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
+						new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
 				.toString();
 
 			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);

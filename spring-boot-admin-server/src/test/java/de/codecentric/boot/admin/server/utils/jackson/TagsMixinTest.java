@@ -41,10 +41,8 @@ class TagsMixinTest {
 	private JacksonTester<Tags> jsonTester;
 
 	protected TagsMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
-		objectMapper = JsonMapper.builder()
-			.addModule(adminServerModule)
-			.build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
 	}
 
 	@BeforeEach

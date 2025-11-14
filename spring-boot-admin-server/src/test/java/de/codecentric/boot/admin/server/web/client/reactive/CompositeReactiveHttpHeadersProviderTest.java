@@ -43,8 +43,7 @@ class CompositeReactiveHttpHeadersProviderTest {
 		}));
 
 		StepVerifier.create(provider.getHeaders(null)).thenConsumeWhile((headers) -> {
-			assertThat(headers.asMultiValueMap())
-				.containsEntry("a", singletonList("1"))
+			assertThat(headers.asMultiValueMap()).containsEntry("a", singletonList("1"))
 				.containsEntry("b", asList("2-a", "2-b"))
 				.containsEntry("c", singletonList("3"));
 			return true;

@@ -45,10 +45,8 @@ class InstanceRegisteredEventMixinTest {
 	private JacksonTester<InstanceRegisteredEvent> jsonTester;
 
 	protected InstanceRegisteredEventMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
-		objectMapper = JsonMapper.builder()
-			.addModule(adminServerModule)
-			.build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
 	}
 
 	@BeforeEach
@@ -63,12 +61,12 @@ class InstanceRegisteredEventMixinTest {
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "REGISTERED")
 			.put("registration",
-				new JSONObject().put("name", "test")
-					.put("managementUrl", "http://localhost:9080/")
-					.put("healthUrl", "http://localhost:9080/heath")
-					.put("serviceUrl", "http://localhost:8080/")
-					.put("source", "http-api")
-					.put("metadata", new JSONObject().put("PASSWORD", "******").put("user", "humptydumpty")))
+					new JSONObject().put("name", "test")
+						.put("managementUrl", "http://localhost:9080/")
+						.put("healthUrl", "http://localhost:9080/heath")
+						.put("serviceUrl", "http://localhost:8080/")
+						.put("source", "http-api")
+						.put("metadata", new JSONObject().put("PASSWORD", "******").put("user", "humptydumpty")))
 			.toString();
 
 		InstanceRegisteredEvent event = objectMapper.readValue(json, InstanceRegisteredEvent.class);

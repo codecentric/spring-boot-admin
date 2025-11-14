@@ -33,7 +33,7 @@ class RegistrationDeserializerTest {
 	private final ObjectMapper objectMapper;
 
 	protected RegistrationDeserializerTest() {
-		AdminServerModule module = new AdminServerModule(new String[]{".*password$"});
+		AdminServerModule module = new AdminServerModule(new String[] { ".*password$" });
 		objectMapper = JsonMapper.builder().addModule(module).build();
 	}
 

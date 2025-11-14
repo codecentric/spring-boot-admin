@@ -116,7 +116,7 @@ class HipchatNotifierTest {
 			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders().toSingleValueMap()).containsEntry("Content-Type",
-			"application/json");
+				"application/json");
 		Map<String, Object> body = httpRequest.getValue().getBody();
 		assertThat(body).containsEntry("color", "red");
 		assertThat(body).containsEntry("message", "<strong>App</strong>/-id- is <strong>DOWN</strong>");

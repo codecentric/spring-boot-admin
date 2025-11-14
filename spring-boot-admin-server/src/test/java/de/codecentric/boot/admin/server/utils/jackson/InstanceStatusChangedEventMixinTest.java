@@ -46,10 +46,8 @@ class InstanceStatusChangedEventMixinTest {
 	private JacksonTester<InstanceStatusChangedEvent> jsonTester;
 
 	protected InstanceStatusChangedEventMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
-		objectMapper = JsonMapper.builder()
-			.addModule(adminServerModule)
-			.build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
 	}
 
 	@BeforeEach
@@ -64,7 +62,7 @@ class InstanceStatusChangedEventMixinTest {
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "STATUS_CHANGED")
 			.put("statusInfo",
-				new JSONObject().put("status", "OFFLINE").put("details", new JSONObject().put("foo", "bar")))
+					new JSONObject().put("status", "OFFLINE").put("details", new JSONObject().put("foo", "bar")))
 			.toString();
 
 		InstanceStatusChangedEvent event = objectMapper.readValue(json, InstanceStatusChangedEvent.class);

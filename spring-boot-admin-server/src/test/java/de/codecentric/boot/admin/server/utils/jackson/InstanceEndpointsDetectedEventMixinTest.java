@@ -44,10 +44,8 @@ class InstanceEndpointsDetectedEventMixinTest {
 	private JacksonTester<InstanceEndpointsDetectedEvent> jsonTester;
 
 	protected InstanceEndpointsDetectedEventMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
-		objectMapper = JsonMapper.builder()
-			.addModule(adminServerModule)
-			.build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
 	}
 
 	@BeforeEach
@@ -62,8 +60,8 @@ class InstanceEndpointsDetectedEventMixinTest {
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "ENDPOINTS_DETECTED")
 			.put("endpoints",
-				new JSONArray().put(new JSONObject().put("id", "info").put("url", "http://localhost:8080/info"))
-					.put(new JSONObject().put("id", "health").put("url", "http://localhost:8080/health")))
+					new JSONArray().put(new JSONObject().put("id", "info").put("url", "http://localhost:8080/info"))
+						.put(new JSONObject().put("id", "health").put("url", "http://localhost:8080/health")))
 			.toString();
 
 		InstanceEndpointsDetectedEvent event = objectMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
@@ -72,7 +70,7 @@ class InstanceEndpointsDetectedEventMixinTest {
 		assertThat(event.getVersion()).isEqualTo(12345678L);
 		assertThat(event.getTimestamp()).isEqualTo(Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS));
 		assertThat(event.getEndpoints()).containsExactlyInAnyOrder(Endpoint.of("info", "http://localhost:8080/info"),
-			Endpoint.of("health", "http://localhost:8080/health"));
+				Endpoint.of("health", "http://localhost:8080/health"));
 	}
 
 	@Test

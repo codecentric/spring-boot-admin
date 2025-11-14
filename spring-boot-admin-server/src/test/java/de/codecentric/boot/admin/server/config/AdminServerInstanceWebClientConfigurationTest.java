@@ -35,9 +35,9 @@ class AdminServerInstanceWebClientConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(
-			AutoConfigurations.of(RestTemplateAutoConfiguration.class, ReactiveHttpClientAutoConfiguration.class,
-				WebClientAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				AdminServerAutoConfiguration.class, AdminServerInstanceWebClientConfiguration.class))
+				AutoConfigurations.of(RestTemplateAutoConfiguration.class, ReactiveHttpClientAutoConfiguration.class,
+						WebClientAutoConfiguration.class, WebMvcAutoConfiguration.class,
+						AdminServerAutoConfiguration.class, AdminServerInstanceWebClientConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
@@ -48,16 +48,16 @@ class AdminServerInstanceWebClientConfigurationTest {
 			assertThat(context).hasSingleBean(BasicAuthHttpHeaderProvider.class);
 			assertThat(context).getBeanNames(InstanceExchangeFilterFunction.class)
 				.containsExactly("addHeadersInstanceExchangeFilter", "rewriteEndpointUrlInstanceExchangeFilter",
-					"setDefaultAcceptHeaderInstanceExchangeFilter", "legacyEndpointConverterInstanceExchangeFilter",
-					"logfileAcceptWorkaround", "cookieHandlingInstanceExchangeFilter",
-					"retryInstanceExchangeFilter", "timeoutInstanceExchangeFilter");
+						"setDefaultAcceptHeaderInstanceExchangeFilter", "legacyEndpointConverterInstanceExchangeFilter",
+						"logfileAcceptWorkaround", "cookieHandlingInstanceExchangeFilter",
+						"retryInstanceExchangeFilter", "timeoutInstanceExchangeFilter");
 			assertThat(context).getBeanNames(LegacyEndpointConverter.class)
 				.containsExactly("healthLegacyEndpointConverter", "infoLegacyEndpointConverter",
-					"envLegacyEndpointConverter", "httptraceLegacyEndpointConverter",
-					"threaddumpLegacyEndpointConverter", "liquibaseLegacyEndpointConverter",
-					"flywayLegacyEndpointConverter", "beansLegacyEndpointConverter",
-					"configpropsLegacyEndpointConverter", "mappingsLegacyEndpointConverter",
-					"startupLegacyEndpointConverter");
+						"envLegacyEndpointConverter", "httptraceLegacyEndpointConverter",
+						"threaddumpLegacyEndpointConverter", "liquibaseLegacyEndpointConverter",
+						"flywayLegacyEndpointConverter", "beansLegacyEndpointConverter",
+						"configpropsLegacyEndpointConverter", "mappingsLegacyEndpointConverter",
+						"startupLegacyEndpointConverter");
 		});
 	}
 

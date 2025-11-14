@@ -41,10 +41,8 @@ class InstanceDeregisteredEventMixinTest {
 	private JacksonTester<InstanceDeregisteredEvent> jsonTester;
 
 	protected InstanceDeregisteredEventMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
-		objectMapper = JsonMapper.builder()
-			.addModule(adminServerModule)
-			.build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
 	}
 
 	@BeforeEach

@@ -46,10 +46,8 @@ class InstanceInfoChangedEventMixinTest {
 	private JacksonTester<InstanceInfoChangedEvent> jsonTester;
 
 	protected InstanceInfoChangedEventMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
-		objectMapper = JsonMapper.builder()
-			.addModule(adminServerModule)
-			.build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
 	}
 
 	@BeforeEach
@@ -75,7 +73,7 @@ class InstanceInfoChangedEventMixinTest {
 		Info info = event.getInfo();
 		assertThat(info).isNotNull();
 		assertThat(info.getValues()).containsOnly(entry("build", Collections.singletonMap("version", "1.0.0")),
-			entry("foo", "bar"));
+				entry("foo", "bar"));
 	}
 
 	@Test
@@ -152,7 +150,7 @@ class InstanceInfoChangedEventMixinTest {
 		InstanceId id = InstanceId.of("test123");
 		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
 		InstanceInfoChangedEvent event = new InstanceInfoChangedEvent(id, 12345678L, timestamp,
-			Info.from(Collections.emptyMap()));
+				Info.from(Collections.emptyMap()));
 
 		JsonContent<InstanceInfoChangedEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");

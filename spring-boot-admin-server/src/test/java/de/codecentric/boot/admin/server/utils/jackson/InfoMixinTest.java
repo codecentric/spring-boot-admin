@@ -42,10 +42,8 @@ class InfoMixinTest {
 	private JacksonTester<Info> jsonTester;
 
 	protected InfoMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
-		objectMapper = JsonMapper.builder()
-			.addModule(adminServerModule)
-			.build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
 	}
 
 	@BeforeEach
@@ -62,7 +60,7 @@ class InfoMixinTest {
 		Info info = objectMapper.readValue(json, Info.class);
 		assertThat(info).isNotNull();
 		assertThat(info.getValues()).containsOnly(entry("build", Collections.singletonMap("version", "1.0.0")),
-			entry("foo", "bar"));
+				entry("foo", "bar"));
 	}
 
 	@Test

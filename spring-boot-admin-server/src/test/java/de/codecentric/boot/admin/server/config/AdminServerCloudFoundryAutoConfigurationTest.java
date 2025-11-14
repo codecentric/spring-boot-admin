@@ -36,7 +36,7 @@ class AdminServerCloudFoundryAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-			ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class,
+				ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class,
 				HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
 				AdminServerCloudFoundryAutoConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);

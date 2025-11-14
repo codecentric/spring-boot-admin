@@ -40,10 +40,8 @@ class EndpointsMixinTest {
 	private JacksonTester<Endpoints> jsonTester;
 
 	protected EndpointsMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
-		objectMapper = JsonMapper.builder()
-			.addModule(adminServerModule)
-			.build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
 	}
 
 	@BeforeEach
@@ -60,7 +58,7 @@ class EndpointsMixinTest {
 		Endpoints endpoints = objectMapper.readValue(json, Endpoints.class);
 		assertThat(endpoints).isNotNull()
 			.containsExactlyInAnyOrder(Endpoint.of("info", "http://localhost:8080/info"),
-				Endpoint.of("health", "http://localhost:8080/health"));
+					Endpoint.of("health", "http://localhost:8080/health"));
 	}
 
 	@Test

@@ -81,11 +81,11 @@ public class FeiShuNotifierTest {
 			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders().toSingleValueMap()).containsEntry("Content-Type",
-			"application/json");
+				"application/json");
 
 		Map<String, Object> body = httpRequest.getValue().getBody();
 		assertThat(body).containsEntry("card",
-			"{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [DOWN] to [UP]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
+				"{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [DOWN] to [UP]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
 		assertThat(body).containsEntry("msg_type", FeiShuNotifier.MessageType.interactive);
 	}
 
@@ -109,10 +109,10 @@ public class FeiShuNotifierTest {
 			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders().toSingleValueMap()).containsEntry("Content-Type",
-			"application/json");
+				"application/json");
 		Map<String, Object> body = httpRequest.getValue().getBody();
 		assertThat(body).containsEntry("card",
-			"{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [UP] to [DOWN]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
+				"{\"elements\":[{\"tag\":\"div\",\"text\":{\"tag\":\"plain_text\",\"content\":\"ServiceName: App(-id-) \\nServiceUrl:  \\nStatus: changed status from [UP] to [DOWN]\"}},{\"tag\":\"div\",\"text\":{\"tag\":\"lark_md\",\"content\":\"<at id=all></at>\"}}],\"header\":{\"template\":\"red\",\"title\":{\"tag\":\"plain_text\",\"content\":\"Codecentric's Spring Boot Admin notice\"}}}");
 		assertThat(body).containsEntry("msg_type", FeiShuNotifier.MessageType.interactive);
 	}
 

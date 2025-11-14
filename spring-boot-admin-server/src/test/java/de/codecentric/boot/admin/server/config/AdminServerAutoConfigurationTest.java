@@ -44,9 +44,9 @@ class AdminServerAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-			ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class,
-			HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class))
+				ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class,
+				HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
