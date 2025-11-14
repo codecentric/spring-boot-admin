@@ -17,15 +17,12 @@
 package de.codecentric.boot.admin.server.web.reactive;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Set;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.result.condition.PatternsRequestCondition;
 import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.util.pattern.PathPattern;
 
 import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.PathUtils;
@@ -52,17 +49,13 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 		if (!StringUtils.hasText(adminContextPath)) {
 			return mapping;
 		}
-		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(
-				withNewPatterns(mapping.getPatternsCondition().getPatterns()));
-		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
-				mapping.getHeadersCondition(), mapping.getConsumesCondition(), mapping.getProducesCondition(),
-				mapping.getCustomCondition());
+		return mapping.mutate().paths(withNewPatterns(mapping.getPatternsCondition())).build();
 	}
 
-	private List<PathPattern> withNewPatterns(Set<PathPattern> patterns) {
-		return patterns.stream()
-			.map((pattern) -> getPathPatternParser().parse(PathUtils.normalizePath(adminContextPath + pattern)))
-			.toList();
+	private String[] withNewPatterns(PatternsRequestCondition patternsRequestCondition) {
+		return patternsRequestCondition.getPatterns().stream()
+			.map(pattern -> PathUtils.normalizePath(adminContextPath + pattern))
+			.toArray(String[]::new);
 	}
 
 }
