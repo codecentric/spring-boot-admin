@@ -247,11 +247,6 @@ public class AdminServerUiAutoConfiguration {
 				this.applicationContext = applicationContext;
 			}
 
-			@Override
-			public void configurePathMatch(PathMatchConfigurer configurer) {
-				configurer.setUseTrailingSlashMatch(true);
-			}
-
 			@Bean
 			public HomepageForwardingFilterConfig homepageForwardingFilterConfig() throws IOException {
 				String homepage = normalizeHomepageUrl(this.adminServer.path("/"));
