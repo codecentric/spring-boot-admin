@@ -54,7 +54,7 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 
 		if (node.has("metadata")) {
 			node.get("metadata").properties()
-				.forEach(entry -> builder.metadata(entry.getKey(), entry.getValue().asText()));
+				.forEach((entry) -> builder.metadata(entry.getKey(), entry.getValue().asText()));
 		}
 
 		builder.source(firstNonNullAsText(node, "source"));
