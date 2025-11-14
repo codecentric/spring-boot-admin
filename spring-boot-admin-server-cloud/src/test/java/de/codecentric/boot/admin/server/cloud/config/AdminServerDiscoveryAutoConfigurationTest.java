@@ -44,9 +44,9 @@ import static org.mockito.Mockito.mock;
 class AdminServerDiscoveryAutoConfigurationTest {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(UtilAutoConfiguration.class,
-			ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class,
-				AdminServerAutoConfiguration.class, AdminServerDiscoveryAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(UtilAutoConfiguration.class, ReactiveHttpClientAutoConfiguration.class,
+				WebClientAutoConfiguration.class, AdminServerAutoConfiguration.class,
+				AdminServerDiscoveryAutoConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
@@ -65,18 +65,10 @@ class AdminServerDiscoveryAutoConfigurationTest {
 	}
 
 	@Test
-	void officialKubernetesServiceInstanceConverter() {
+	void kubernetesServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(KubernetesDiscoveryPropertiesConfiguration.class)
 			.withBean(CoreV1Api.class, () -> mock(CoreV1Api.class))
-			.withBean(KubernetesInformerDiscoveryClient.class, () -> mock(KubernetesInformerDiscoveryClient.class))
-			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
-				.isInstanceOf(KubernetesServiceInstanceConverter.class));
-	}
-
-	@Test
-	void fabric8KubernetesServiceInstanceConverter() {
-		this.contextRunner.withUserConfiguration(KubernetesDiscoveryPropertiesConfiguration.class)
-			.withBean(KubernetesDiscoveryClient.class, () -> mock(KubernetesDiscoveryClient.class))
+			.withPropertyValues("spring.main.cloud-platform=KUBERNETES")
 			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
 				.isInstanceOf(KubernetesServiceInstanceConverter.class));
 	}
