@@ -39,6 +39,7 @@ import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.lang.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.cfg.DateTimeFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -72,7 +73,10 @@ public final class LegacyEndpointConverters {
 		.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 	static {
-		var om = JsonMapper.builder().disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
+		var om = JsonMapper.builder()
+			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+			.disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
+
 		DECODER = new JacksonJsonDecoder(om);
 		ENCODER = new JacksonJsonEncoder(om);
 	}

@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.utils.jackson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -33,8 +34,11 @@ class RegistrationDeserializerTest {
 	private final ObjectMapper objectMapper;
 
 	protected RegistrationDeserializerTest() {
-		AdminServerModule module = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder().addModule(module).build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
+		objectMapper = JsonMapper.builder()
+			.addModule(adminServerModule)
+			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+			.build();
 	}
 
 	@Test

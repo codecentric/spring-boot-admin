@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
@@ -45,7 +46,10 @@ class InstanceEndpointsDetectedEventMixinTest {
 
 	protected InstanceEndpointsDetectedEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder().addModule(adminServerModule).build();
+		objectMapper = JsonMapper.builder()
+			.addModule(adminServerModule)
+			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+			.build();
 	}
 
 	@BeforeEach
@@ -116,7 +120,7 @@ class InstanceEndpointsDetectedEventMixinTest {
 		JsonContent<InstanceEndpointsDetectedEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");
 		assertThat(jsonContent).extractingJsonPathNumberValue("$.version").isEqualTo(12345678);
-		assertThat(jsonContent).extractingJsonPathNumberValue("$.timestamp").isEqualTo(1587751031.000000000);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.timestamp").isEqualTo("2020-04-24T17:57:11Z");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.type").isEqualTo("ENDPOINTS_DETECTED");
 		assertThat(jsonContent).extractingJsonPathArrayValue("$.endpoints").hasSize(2);
 
@@ -138,7 +142,7 @@ class InstanceEndpointsDetectedEventMixinTest {
 		JsonContent<InstanceEndpointsDetectedEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");
 		assertThat(jsonContent).extractingJsonPathNumberValue("$.version").isEqualTo(0);
-		assertThat(jsonContent).extractingJsonPathNumberValue("$.timestamp").isEqualTo(1587751031.000000000);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.timestamp").isEqualTo("2020-04-24T17:57:11Z");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.type").isEqualTo("ENDPOINTS_DETECTED");
 		assertThat(jsonContent).extractingJsonPathArrayValue("$.endpoints").isNull();
 	}
@@ -152,7 +156,7 @@ class InstanceEndpointsDetectedEventMixinTest {
 		JsonContent<InstanceEndpointsDetectedEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");
 		assertThat(jsonContent).extractingJsonPathNumberValue("$.version").isEqualTo(0);
-		assertThat(jsonContent).extractingJsonPathNumberValue("$.timestamp").isEqualTo(1587751031.000000000);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.timestamp").isEqualTo("2020-04-24T17:57:11Z");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.type").isEqualTo("ENDPOINTS_DETECTED");
 		assertThat(jsonContent).extractingJsonPathArrayValue("$.endpoints").isEmpty();
 	}
