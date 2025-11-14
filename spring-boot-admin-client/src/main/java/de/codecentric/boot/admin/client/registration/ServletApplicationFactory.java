@@ -74,7 +74,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 		}
 
 		if (isManagementPortEqual()) {
-			return UriComponentsBuilder.fromHttpUrl(getServiceUrl())
+			return UriComponentsBuilder.fromUriString(getServiceUrl())
 				.path("/")
 				.path(getDispatcherServletPrefix())
 				.path(getManagementContextPath())
