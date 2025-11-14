@@ -29,7 +29,6 @@ import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
@@ -40,10 +39,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -207,7 +207,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	private String toJsonString(Object o) {
 		try {
-			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+			ObjectMapper objectMapper = JsonMapper.builder().build();
 			return objectMapper.writeValueAsString(o);
 		}
 		catch (Exception ex) {

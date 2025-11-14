@@ -19,10 +19,8 @@ package de.codecentric.boot.admin.server.utils.jackson;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
@@ -30,12 +28,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class InstanceIdMixinTest {
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper objectMapper;
 
 	protected InstanceIdMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		JavaTimeModule javaTimeModule = new JavaTimeModule();
-		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
+		objectMapper = JsonMapper.builder()
+			.addModule(adminServerModule)
+			.build();
 	}
 
 	@Test

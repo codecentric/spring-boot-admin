@@ -23,15 +23,13 @@ import java.util.Collections;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -43,14 +41,15 @@ import static org.assertj.core.api.Assertions.entry;
 
 class InstanceStatusChangedEventMixinTest {
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper objectMapper;
 
 	private JacksonTester<InstanceStatusChangedEvent> jsonTester;
 
 	protected InstanceStatusChangedEventMixinTest() {
-		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		JavaTimeModule javaTimeModule = new JavaTimeModule();
-		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
+		AdminServerModule adminServerModule = new AdminServerModule(new String[]{".*password$"});
+		objectMapper = JsonMapper.builder()
+			.addModule(adminServerModule)
+			.build();
 	}
 
 	@BeforeEach
@@ -65,7 +64,7 @@ class InstanceStatusChangedEventMixinTest {
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "STATUS_CHANGED")
 			.put("statusInfo",
-					new JSONObject().put("status", "OFFLINE").put("details", new JSONObject().put("foo", "bar")))
+				new JSONObject().put("status", "OFFLINE").put("details", new JSONObject().put("foo", "bar")))
 			.toString();
 
 		InstanceStatusChangedEvent event = objectMapper.readValue(json, InstanceStatusChangedEvent.class);

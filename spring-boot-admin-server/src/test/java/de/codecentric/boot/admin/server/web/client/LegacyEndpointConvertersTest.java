@@ -30,7 +30,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.JacksonJsonDecoder;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -38,23 +38,23 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 
 	private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 
-	private final Jackson2JsonDecoder decoder = new Jackson2JsonDecoder();
+	private final JacksonJsonDecoder decoder = new JacksonJsonDecoder();
 
 	private final ResolvableType type = ResolvableType.forType(new ParameterizedTypeReference<Map<String, Object>>() {
 	});
 
 	public static Stream<Arguments> methodSignatureToExpectedMap() {
 		return Stream.of(
-				Arguments.of("public java.lang.Object bar.Handler.handle(java.util.List<java.lang.String>)",
-						Map.of("className", "bar.Handler", "descriptor", "(Ljava/util/List;)Ljava/lang/Object;", "name",
-								"handle")),
+			Arguments.of("public java.lang.Object bar.Handler.handle(java.util.List<java.lang.String>)",
+				Map.of("className", "bar.Handler", "descriptor", "(Ljava/util/List;)Ljava/lang/Object;", "name",
+					"handle")),
 
-				Arguments.of("public SomeBean bar.Handler.handle(java.util.List)",
-						Map.of("className", "bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;", "name",
-								"handle")),
+			Arguments.of("public SomeBean bar.Handler.handle(java.util.List)",
+				Map.of("className", "bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;", "name",
+					"handle")),
 
-				Arguments.of("public synchronized SomeBean bar.Handler.handle(java.util.List)", Map.of("className",
-						"bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;", "name", "handle")));
+			Arguments.of("public synchronized SomeBean bar.Handler.handle(java.util.List)", Map.of("className",
+				"bar.Handler", "descriptor", "(Ljava/util/List;)LSomeBean;", "name", "handle")));
 	}
 
 	@Test
@@ -207,7 +207,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 	@ParameterizedTest
 	@MethodSource("methodSignatureToExpectedMap")
 	void convertMappingHandlerMethod__should_map_method_signature_to_Handler_method_description_map(
-			String methodDeclaration, Map<String, Object> expectedHandlerDescriptionMap) {
+		String methodDeclaration, Map<String, Object> expectedHandlerDescriptionMap) {
 		Map<String, Object> convertMappingHandlerMethodMap = LegacyEndpointConverters
 			.convertMappingHandlerMethod(methodDeclaration);
 
@@ -220,7 +220,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 
 	private Flux<DataBuffer> read(String resourceName) {
 		return DataBufferUtils.readInputStream(
-				() -> LegacyEndpointConvertersTest.class.getResourceAsStream(resourceName), bufferFactory, 10);
+			() -> LegacyEndpointConvertersTest.class.getResourceAsStream(resourceName), bufferFactory, 10);
 	}
 
 }

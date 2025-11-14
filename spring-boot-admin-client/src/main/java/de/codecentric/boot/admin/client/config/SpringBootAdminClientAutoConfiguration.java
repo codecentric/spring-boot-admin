@@ -32,7 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
+import org.springframework.boot.http.client.HttpClientSettings;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
@@ -166,7 +166,7 @@ public class SpringBootAdminClientAutoConfiguration {
 		@ConditionalOnMissingBean
 		public RegistrationClient registrationClient(ClientProperties client, RestClient.Builder restClientBuilder,
 				ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder) {
-			var factorySettings = ClientHttpRequestFactorySettings.defaults()
+			var factorySettings = HttpClientSettings.defaults()
 				.withConnectTimeout(client.getConnectTimeout())
 				.withReadTimeout(client.getReadTimeout());
 			var clientHttpRequestFactory = clientHttpRequestFactoryBuilder.build(factorySettings);

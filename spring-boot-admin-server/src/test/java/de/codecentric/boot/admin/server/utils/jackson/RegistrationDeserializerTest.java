@@ -17,10 +17,10 @@
 package de.codecentric.boot.admin.server.utils.jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
@@ -33,8 +33,8 @@ class RegistrationDeserializerTest {
 	private final ObjectMapper objectMapper;
 
 	protected RegistrationDeserializerTest() {
-		AdminServerModule module = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = Jackson2ObjectMapperBuilder.json().modules(module).build();
+		AdminServerModule module = new AdminServerModule(new String[]{".*password$"});
+		objectMapper = JsonMapper.builder().addModule(module).build();
 	}
 
 	@Test

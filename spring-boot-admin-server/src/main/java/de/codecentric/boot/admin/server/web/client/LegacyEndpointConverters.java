@@ -30,18 +30,17 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.codec.json.JacksonJsonDecoder;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.lang.Nullable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 
@@ -65,19 +64,17 @@ public final class LegacyEndpointConverters {
 	private static final ParameterizedTypeReference<List<Map<String, Object>>> RESPONSE_TYPE_LIST_MAP = new ParameterizedTypeReference<>() {
 	};
 
-	private static final Jackson2JsonDecoder DECODER;
+	private static final JacksonJsonDecoder DECODER;
 
-	private static final Jackson2JsonEncoder ENCODER;
+	private static final JacksonJsonEncoder ENCODER;
 
 	private static final DateTimeFormatter TIMESTAMP_PATTERN = DateTimeFormatter
 		.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 	static {
-		ObjectMapper om = Jackson2ObjectMapperBuilder.json()
-			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-			.build();
-		DECODER = new Jackson2JsonDecoder(om);
-		ENCODER = new Jackson2JsonEncoder(om);
+		var om = JsonMapper.builder().disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
+		DECODER = new JacksonJsonDecoder(om);
+		ENCODER = new JacksonJsonEncoder(om);
 	}
 
 	private LegacyEndpointConverters() {
