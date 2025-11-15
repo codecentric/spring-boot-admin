@@ -20,10 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ser.std.ClassSerializer;
-import com.fasterxml.jackson.databind.ser.std.FileSerializer;
-import com.fasterxml.jackson.databind.ser.std.StdJdkSerializers;
-import com.fasterxml.jackson.databind.ser.std.TokenBufferSerializer;
 import lombok.SneakyThrows;
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.MemberCategory;
@@ -32,6 +28,8 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.databind.ser.jackson.TokenBufferSerializer;
+import tools.jackson.databind.ser.jdk.JDKMiscSerializers;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
@@ -194,9 +192,10 @@ public class ServerRuntimeHints implements RuntimeHintsRegistrar {
 			.registerConstructor(Registration.Builder.class.getDeclaredConstructor(), ExecutableMode.INVOKE)
 			.registerMethod(Registration.Builder.class.getMethod("build"), ExecutableMode.INVOKE)
 			.registerMethod(Registration.class.getMethod("toBuilder"), ExecutableMode.INVOKE)
-			.registerTypes(TypeReference.listOf(StdJdkSerializers.AtomicBooleanSerializer.class,
-					StdJdkSerializers.AtomicIntegerSerializer.class, StdJdkSerializers.AtomicLongSerializer.class,
-					FileSerializer.class, ClassSerializer.class, TokenBufferSerializer.class),
+			.registerTypes(
+					TypeReference.listOf(JDKMiscSerializers.AtomicBooleanSerializer.class,
+							JDKMiscSerializers.AtomicIntegerSerializer.class,
+							JDKMiscSerializers.AtomicLongSerializer.class, TokenBufferSerializer.class),
 					TypeHint.builtWith(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
 	}
 
