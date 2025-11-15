@@ -159,22 +159,25 @@ public class SpringBootAdminClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({ RestClient.Builder.class, ClientHttpRequestFactoryBuilder.class })
+	@ConditionalOnBean(RestClient.Builder.class)
 	public static class RestClientRegistrationClientConfig {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RegistrationClient registrationClient(ClientProperties client, RestClient.Builder restClientBuilder,
-				ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder) {
+		public RegistrationClient registrationClient(ClientProperties client, RestClient.Builder restClientBuilder) {
 			var factorySettings = HttpClientSettings.defaults()
 				.withConnectTimeout(client.getConnectTimeout())
 				.withReadTimeout(client.getReadTimeout());
-			var clientHttpRequestFactory = clientHttpRequestFactoryBuilder.build(factorySettings);
+
+			var clientHttpRequestFactory = ClientHttpRequestFactoryBuilder.detect().build(factorySettings);
+
 			restClientBuilder = restClientBuilder.requestFactory(clientHttpRequestFactory);
+
 			if (client.getUsername() != null && client.getPassword() != null) {
 				restClientBuilder = restClientBuilder
 					.requestInterceptor(new BasicAuthenticationInterceptor(client.getUsername(), client.getPassword()));
 			}
+
 			var restClient = restClientBuilder.build();
 			return new RestClientRegistrationClient(restClient);
 		}
