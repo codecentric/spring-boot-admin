@@ -41,6 +41,16 @@
         :title="context.name"
       >
         <sba-panel
+          v-if="context.unconditionalClasses.length"
+          :title="$t('instances.conditions.unconditionalClasses')"
+        >
+          <conditions-list
+            :key="`${context.name}-positiveMatches`"
+            :conditional-beans="context.unconditionalClasses"
+          />
+        </sba-panel>
+
+        <sba-panel
           v-if="context.positiveMatches.length"
           :title="$t('instances.conditions.positive-matches')"
         >
@@ -63,7 +73,7 @@
   </sba-instance-section>
 </template>
 
-<script>
+<script lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { isEmpty } from 'lodash-es';
 
@@ -72,46 +82,30 @@ import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
 import { VIEW_GROUP } from '@/views/ViewGroup';
+import { ConditionalBean } from '@/views/instances/beans/ConditionalBean';
 import ConditionsList from '@/views/instances/conditions/conditions-list.vue';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
-class ConditionalBean {
-  constructor(name, positiveMatches, negativeMatches) {
-    this.name = name;
-    this.matched = positiveMatches.map((condition) => new Condition(condition));
-    this.notMatched = negativeMatches.map(
-      (condition) => new Condition(condition),
-    );
-  }
-}
-
-class Condition {
-  constructor(condition) {
-    this.condition = condition.condition;
-    this.message = condition.message;
-  }
-}
-
 const mapPositiveMatches = (positiveMatches) => {
-  return Object.keys(positiveMatches).map(
-    (matchedBeanName) =>
-      new ConditionalBean(
-        matchedBeanName,
-        positiveMatches[matchedBeanName],
-        [],
-      ),
-  );
+  return Object.keys(positiveMatches).map((matchedBeanName) => {
+    return {
+      name: matchedBeanName,
+      matched: positiveMatches[matchedBeanName],
+      notMatched: [],
+    } as ConditionalBean;
+  });
 };
 
 const mapNegativeMatches = (negativeMatches) => {
-  return Object.keys(negativeMatches).map(
-    (matchedBeanName) =>
-      new ConditionalBean(
-        matchedBeanName,
-        negativeMatches[matchedBeanName].matched,
-        negativeMatches[matchedBeanName].notMatched,
-      ),
-  );
+  return Object.keys(negativeMatches).map((matchedBeanName) => ({
+    name: matchedBeanName,
+    matched: negativeMatches[matchedBeanName].matched,
+    notMatched: negativeMatches[matchedBeanName].notMatched,
+  }));
+};
+
+const mapUnconditionalClasses = (unconditionalClasses) => {
+  return (unconditionalClasses || []).map((bean) => ({ name: bean }));
 };
 
 const mapContexts = (conditionsData) => {
@@ -124,6 +118,9 @@ const mapContexts = (conditionsData) => {
     ),
     negativeMatches: mapNegativeMatches(
       conditionsData.contexts[contextName].negativeMatches,
+    ),
+    unconditionalClasses: mapUnconditionalClasses(
+      conditionsData.contexts[contextName].unconditionalClasses,
     ),
     name: contextName,
     parent: conditionsData.contexts[contextName].parentId,

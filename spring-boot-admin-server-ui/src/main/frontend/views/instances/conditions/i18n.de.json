@@ -4,6 +4,7 @@
       "label": "Bedingungen",
       "positive-matches": "Übereinstimmungen",
       "negative-matches": "Keine Übereinstimmungen",
+      "unconditionalClasses": "Klassen ohne Bedingung",
       "condition": "Bedingung",
       "message": "Hinweis",
       "not-matched": "Nicht übereinstimmend",

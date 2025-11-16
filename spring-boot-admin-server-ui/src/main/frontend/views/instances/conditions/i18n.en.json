@@ -4,6 +4,7 @@
       "label": "Conditions",
       "positive-matches": "Positive matches",
       "negative-matches": "Negative matches",
+      "unconditionalClasses": "Unconditional classes",
       "condition": "Condition",
       "message": "Message",
       "not-matched": "Not matched",

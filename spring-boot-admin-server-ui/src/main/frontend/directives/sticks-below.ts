@@ -26,6 +26,7 @@ const mounted = (el, binding) => {
 
     el.style.top = `${top}px`;
     el.style.position = 'sticky';
+    el.style.zIndex = '1000';
   }
 };
 

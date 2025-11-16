@@ -27,19 +27,30 @@
           :class="{
             'bg-gray-50':
               index % 2 === 0 || showDetails[conditionalBean.name] === true,
-            'px-3 pt-2': showDetails[conditionalBean.name] === true,
-            'px-4 py-3': showDetails[conditionalBean.name] !== true,
+            'px-4 py-3': true,
           }"
         >
           <div class="flex-1 sm:break-all">
-            <h4
+            <component
+              :is="hasEntries(conditionalBean) ? 'button' : 'div'"
+              v-sticks-below="'#subnavigation'"
               :class="{
-                'font-bold': showDetails[conditionalBean.name] === true,
+                'pb-2': showDetails[conditionalBean.name] === true,
+                'cursor-pointer': hasEntries(conditionalBean),
               }"
               :title="conditionalBean.name"
               @click="toggle(conditionalBean.name)"
-              v-text="conditionalBean.name"
-            />
+            >
+              <font-awesome-icon
+                v-if="hasEntries(conditionalBean)"
+                :icon="faChevronRight"
+                class="transition-[transform] rotate-0"
+                :class="{
+                  'rotate-90': showDetails[conditionalBean.name],
+                }"
+              />
+              {{ conditionalBean.name }}
+            </component>
             <template v-if="showDetails[conditionalBean.name] === true">
               <h5
                 v-if="
@@ -77,23 +88,35 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { PropType } from 'vue';
+
+import { ConditionalBean } from '@/views/instances/beans/ConditionalBean';
 import ConditionsListDetails from '@/views/instances/conditions/conditions-list-details.vue';
 
 export default {
-  components: { ConditionsListDetails },
+  components: { FontAwesomeIcon, ConditionsListDetails },
   props: {
     conditionalBeans: {
-      type: Array,
+      type: Array as PropType<ConditionalBean[]>,
       default: () => [],
     },
   },
   data() {
     return {
+      faChevronRight,
       showDetails: {},
     };
   },
   methods: {
+    hasEntries(conditionalBean: ConditionalBean) {
+      return (
+        conditionalBean.notMatched?.length > 0 ||
+        conditionalBean.matched?.length > 0
+      );
+    },
     toggle(name) {
       if (this.showDetails[name]) {
         this.showDetails = {
