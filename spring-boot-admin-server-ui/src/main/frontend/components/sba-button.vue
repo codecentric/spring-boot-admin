@@ -1,7 +1,7 @@
 <template>
   <component
     :is="as"
-    class="btn relative"
+    class="btn relative items-center"
     v-bind="componentAttrs"
     @click="handleClick"
   >
