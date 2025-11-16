@@ -33,15 +33,9 @@
       class="border-l-4"
       :title="$t('term.fetch_failed')"
     />
-    <div v-else class="content info -mx-4 -my-3">
-      <table v-if="!isEmptyInfo" class="table table-full table-striped">
-        <tr v-for="(value, key) in info" :key="key">
-          <td class="info__key" v-text="key" />
-          <td>
-            <sba-formatted-obj :value="value" />
-          </td>
-        </tr>
-      </table>
+
+    <div class="content info -mx-4 -my-3">
+      <sba-key-value-table v-if="!isEmptyInfo" :map="info" />
       <p
         v-else
         class="is-muted"
@@ -54,8 +48,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 
-import SbaAlert from '@/components/sba-alert.vue';
-import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
+import SbaKeyValueTable from '@/components/sba-key-value-table.vue';
 
 import Instance from '@/services/instance';
 import SbaAccordion from '@/views/instances/details/sba-accordion.vue';

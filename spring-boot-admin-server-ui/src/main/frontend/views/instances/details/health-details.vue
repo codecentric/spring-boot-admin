@@ -56,7 +56,7 @@
             v-else
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
             class="break-words whitespace-pre-wrap"
-            v-text="detail.value"
+            v-html="autolink(detail.value)"
           />
         </template>
       </dl>
@@ -77,6 +77,8 @@ import prettyBytes from 'pretty-bytes';
 import { computed, useId } from 'vue';
 
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
+
+import autolink from '@/utils/autolink';
 
 const id = useId();
 
@@ -112,3 +114,9 @@ const childHealth = computed(() => {
   return [];
 });
 </script>
+
+<style scoped>
+:deep(a[href]) {
+  @apply underline;
+}
+</style>
