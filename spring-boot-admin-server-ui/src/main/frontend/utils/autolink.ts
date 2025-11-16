@@ -33,7 +33,9 @@ export const defaults: AutolinkerConfig = {
   className: '',
 };
 const autolinker = new _Autolinker(defaults);
-export default (s: string) => {
+export default (s: any) => {
+  if (typeof s !== 'string') return s;
+
   try {
     return autolinker.link(s);
   } catch {

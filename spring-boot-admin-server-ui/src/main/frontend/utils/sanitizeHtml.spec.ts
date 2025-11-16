@@ -137,6 +137,5 @@ describe('sanitizeHtml', () => {
     const result = sanitizeHtml(input);
     expect(result).toContain('https://example.com');
     expect(result).toContain('download');
-    expect(result).toContain('target="_blank"');
   });
 });

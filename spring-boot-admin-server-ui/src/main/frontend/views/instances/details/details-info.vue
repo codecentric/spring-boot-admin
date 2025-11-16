@@ -27,6 +27,13 @@
       </div>
     </template>
 
+    <sba-alert
+      v-if="error"
+      :error="error"
+      class="border-l-4"
+      :title="$t('term.fetch_failed')"
+    />
+
     <div class="content info -mx-4 -my-3">
       <sba-key-value-table v-if="!isEmptyInfo" :map="info" />
       <p
@@ -41,8 +48,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 
-import SbaAlert from '@/components/sba-alert.vue';
-import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
 import SbaKeyValueTable from '@/components/sba-key-value-table.vue';
 
 import Instance from '@/services/instance';
