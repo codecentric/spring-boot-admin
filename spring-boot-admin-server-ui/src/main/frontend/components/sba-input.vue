@@ -55,7 +55,7 @@
           :value="modelValue"
           :aria-label="label || placeholder"
           :autofocus="autofocus"
-          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none bg-opacity-40 backdrop-blur-sm"
+          class="focus:z-10 px-2 py-1.5 relative flex-1 block w-full rounded-none bg-opacity-40 backdrop-blur-sm"
           @input="handleInput"
         />
         <!-- APPEND -->
