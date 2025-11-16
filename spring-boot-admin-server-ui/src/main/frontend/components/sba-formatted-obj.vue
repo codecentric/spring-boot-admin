@@ -38,8 +38,8 @@ const autolinkFn = createAutolink({
 
 const formatted = computed(() => {
   const yaml = objToYaml(props.value);
-  const yamlWithLinks = autolinkFn(yaml);
-  return sanitizeHtml(yamlWithLinks);
+  const sanitized = sanitizeHtml(yaml);
+  return autolinkFn(sanitized);
 });
 </script>
 
@@ -48,7 +48,7 @@ const formatted = computed(() => {
   @apply whitespace-break-spaces break-words;
 
   &:deep(a[href]) {
-    @apply text-sba-500 underline font-bold;
+    @apply underline;
   }
 }
 </style>
