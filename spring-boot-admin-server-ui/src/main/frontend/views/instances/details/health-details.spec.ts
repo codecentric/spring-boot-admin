@@ -40,11 +40,29 @@ describe('HealthDetails', () => {
               exists: true,
             },
           },
+          diskSpace2: {
+            status: 'UP',
+            details: {
+              total: 1024,
+              free: 2048,
+              threshold: 4096,
+              exists: false,
+            },
+          },
+          ssl: {
+            status: 'UP',
+            details: {
+              validChains: JSON.parse(
+                '[{"status": "VALID", "chain": [{"subject": "CN=example.com, OU=IT, O=Example Corp, L=San Francisco, ST=CA, C=US", "issuer": "CN=R3, O=Let\'s Encrypt, C=US"}]}]',
+              ),
+            },
+          },
         },
       };
 
       render(HealthDetails, {
         props: {
+          name: 'Name',
           health: healthMock,
         },
       });
@@ -67,6 +85,41 @@ describe('HealthDetails', () => {
         ).toHaveTextContent(status);
       },
     );
+
+    it('should format diskSpace details correctly', async () => {
+      const diskSpaceInfo = await screen.findByRole('definition', {
+        name: 'diskSpace2',
+      });
+
+      // Assert pretty-printed numbers via pretty-bytes and other primitive values
+      const dsi = within(diskSpaceInfo);
+      // total: 994662584320 bytes -> 995 GB (rounded)
+      expect(
+        await dsi.findByRole('definition', { name: 'total' }),
+      ).toHaveTextContent('1.02 kB');
+
+      // free: 300063879168 bytes -> 300 GB (rounded)
+      expect(
+        await dsi.findByRole('definition', { name: 'free' }),
+      ).toHaveTextContent('2.05 kB');
+
+      // threshold: 10485760 bytes -> 10 MB
+      expect(
+        await dsi.findByRole('definition', { name: 'threshold' }),
+      ).toHaveTextContent('4.1 kB');
+
+      // exists: boolean unchanged
+      expect(
+        await dsi.findByRole('definition', { name: 'exists' }),
+      ).toHaveTextContent('false');
+    });
+
+    it('should format object details correctly', async () => {
+      const sslInfo = await screen.findByRole('definition', {
+        name: 'validChains',
+      });
+      expect(sslInfo).toMatchSnapshot();
+    });
   });
 
   describe('Health .components', () => {

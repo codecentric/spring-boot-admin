@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import Mappings from './index.vue';
 
 import { mappings } from '@/mocks/instance/mappings/data';
-import Instance from '@/services/instance.js';
+import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 
 const mockedMapping =

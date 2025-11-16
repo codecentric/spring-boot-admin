@@ -32,8 +32,8 @@
     </parent>
 
     <properties>
-        <zstd-jni.version>1.5.7-4</zstd-jni.version>
-        <native-build-tools-plugin.version>0.11.0</native-build-tools-plugin.version>
+        <zstd-jni.version>1.5.7-6</zstd-jni.version>
+        <native-build-tools-plugin.version>0.11.3</native-build-tools-plugin.version>
 
         <maven.javadoc.skip>true</maven.javadoc.skip>
     </properties>

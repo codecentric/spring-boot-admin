@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 class HealthStatusEnum {
   static DOWN = 'DOWN';
   static UP = 'UP';

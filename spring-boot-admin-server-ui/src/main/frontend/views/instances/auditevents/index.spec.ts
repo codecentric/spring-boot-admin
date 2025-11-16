@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import Instance from '@/services/instance.js';
+import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 import Auditevents from '@/views/instances/auditevents/index.vue';
 

@@ -74,6 +74,7 @@ declare global {
     enableToasts: boolean;
     hideInstanceUrl: boolean;
     disableInstanceUrl: boolean;
+    allowUnsafeHtml: boolean;
   };
 
   type SBASettings = {

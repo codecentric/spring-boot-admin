@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { definePreset } from '@primeuix/themes';
+import Aura from '@primeuix/themes/aura';
+import { usePrimeVue } from '@primevue/core';
 import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
 import moment from 'moment';
+import { Tooltip } from 'primevue';
+import PrimeVue from 'primevue/config';
 import * as Vue from 'vue';
-import { createApp, h, onBeforeMount, onBeforeUnmount, reactive } from 'vue';
+import {
+  createApp,
+  h,
+  onBeforeMount,
+  onBeforeUnmount,
+  reactive,
+  watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -25,28 +37,23 @@ import {
   CUSTOM_ROUTES_ADDED_EVENT,
   createViewRegistry,
   useViewRegistry,
-} from './composables/ViewRegistry.js';
+} from './composables/ViewRegistry';
 import {
   createApplicationStore,
   useApplicationStore,
-} from './composables/useApplicationStore.js';
+} from './composables/useApplicationStore';
 import i18n from './i18n';
-import { worker } from './mocks/browser';
-import Notifications from './notifications.js';
+import Notifications from './notifications';
 import SbaModalPlugin from './plugins/modal';
 import sbaConfig from './sba-config';
 import views from './views';
 
+import { PrimeLocale } from '@/i18n/PrimeLocale';
 import eventBus from '@/services/bus';
 import sbaShell from '@/shell';
 
 const applicationStore = createApplicationStore();
 const viewRegistry = createViewRegistry();
-
-if (process.env.NODE_ENV === 'development') {
-  globalThis.__VUE_OPTIONS_API__ = true;
-  globalThis.__VUE_PROD_DEVTOOLS__ = true;
-}
 
 globalThis.Vue = Vue;
 globalThis.SBA.viewRegistry = useViewRegistry();
@@ -75,16 +82,16 @@ sbaConfig.extensions.css.forEach((extension) => {
 
 moment.locale(navigator.language.split('-')[0]);
 
-if (process.env.NODE_ENV === 'development') {
-  await worker.start();
-}
-
 const installables = [Notifications, ...views];
 installables.forEach((installable) => {
-  installable.install({
-    viewRegistry,
-    applicationStore,
-  });
+  try {
+    installable.install({
+      viewRegistry,
+      applicationStore,
+    });
+  } catch (e) {
+    console.error('Error while installing ', installable, e);
+  }
 });
 
 const app = createApp({
@@ -93,7 +100,8 @@ const app = createApp({
     const route = useRoute();
     const { applications, applicationsInitialized, error } =
       useApplicationStore();
-    const { t } = useI18n();
+    const { t, locale } = useI18n();
+    const primevue = usePrimeVue();
 
     onBeforeMount(() => {
       applicationStore.start();
@@ -102,6 +110,14 @@ const app = createApp({
     onBeforeUnmount(() => {
       applicationStore.stop();
     });
+
+    watch(
+      locale,
+      () => {
+        PrimeLocale.setLocale(primevue, locale.value);
+      },
+      { immediate: true },
+    );
 
     const routesAddedEventHandler = async () => {
       eventBus.off(CUSTOM_ROUTES_ADDED_EVENT, routesAddedEventHandler);
@@ -129,4 +145,28 @@ app.use(NotificationcenterPlugin, {
 });
 app.use(SbaModalPlugin, { i18n });
 app.use(viewRegistry.createRouter());
+app.directive('tooltip', Tooltip);
+app.use(PrimeVue, {
+  theme: {
+    preset: definePreset(Aura, {
+      semantic: {
+        primary: {
+          50: 'rgb(var(--main-50))',
+          100: 'rgb(var(--main-100))',
+          200: 'rgb(var(--main-200))',
+          300: 'rgb(var(--main-300))',
+          400: 'rgb(var(--main-400))',
+          500: 'rgb(var(--main-500))',
+          600: 'rgb(var(--main-600))',
+          700: 'rgb(var(--main-700))',
+          800: 'rgb(var(--main-800))',
+          900: 'rgb(var(--main-900))',
+        },
+      },
+    }),
+    options: {
+      darkModeSelector: false,
+    },
+  },
+});
 app.mount('#app');

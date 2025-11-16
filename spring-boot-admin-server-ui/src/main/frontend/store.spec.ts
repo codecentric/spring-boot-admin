@@ -9,11 +9,13 @@ import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import ApplicationStore from '@/store';
 
-describe('store.js', () => {
+describe('store', () => {
   let applicationStore;
 
   let mockSubject;
-  vi.spyOn(Application, 'getStream').mockImplementation(() => mockSubject);
+  vi.spyOn(Application, 'getStream').mockImplementation(function () {
+    return mockSubject;
+  });
 
   let changedListener;
   let addedListener;

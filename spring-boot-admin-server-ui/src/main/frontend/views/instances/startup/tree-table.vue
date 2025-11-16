@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import orderBy from 'lodash/orderBy';
+import { orderBy } from 'lodash-es';
 
 import { StartupActuatorEventTree } from '@/services/startup-activator-tree';
 import TreeItem from '@/views/instances/startup/tree-item';

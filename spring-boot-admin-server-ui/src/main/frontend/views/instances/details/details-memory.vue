@@ -15,10 +15,25 @@
   -->
 
 <template>
-  <sba-panel
+  <sba-accordion
     v-if="hasLoaded"
+    :id="`memory-details-panel__${type}__${instance.id}`"
+    v-model="panelOpen"
     :title="$t('instances.details.memory.title') + `: ${name}`"
   >
+    <template #title>
+      <div
+        class="ml-2 text-xs font-mono transition-opacity flex-1 justify-items-end"
+        :class="{ 'opacity-0': !panelOpen }"
+      >
+        <div class="flex">
+          {{ prettyBytes(current.used) }} /
+          {{ prettyBytes(current.committed) }} /
+          {{ prettyBytes(current.max) }}
+        </div>
+      </div>
+    </template>
+
     <div>
       <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
 
@@ -71,7 +86,7 @@
 
       <MemChart v-if="chartData.length > 0" :data="chartData" />
     </div>
-  </sba-panel>
+  </sba-accordion>
 </template>
 
 <script lang="ts">
@@ -85,10 +100,11 @@ import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import MemChart from '@/views/instances/details/mem-chart.vue';
+import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 export default defineComponent({
   name: 'DetailsMemory',
-  components: { MemChart },
+  components: { SbaAccordion, MemChart },
   mixins: [subscribing],
   props: {
     instance: {
@@ -101,10 +117,12 @@ export default defineComponent({
     },
   },
   data: () => ({
+    panelOpen: true,
     hasLoaded: false,
     error: null,
     current: null,
     chartData: [],
+    currentInstanceId: null,
   }),
   computed: {
     name() {
@@ -118,7 +136,22 @@ export default defineComponent({
       }
     },
   },
+  watch: {
+    instance: {
+      handler: 'initMetrics',
+      immediate: true,
+    },
+  },
   methods: {
+    initMetrics() {
+      if (this.instance.id !== this.currentInstanceId) {
+        this.currentInstanceId = this.instance.id;
+        this.hasLoaded = false;
+        this.error = null;
+        this.current = null;
+        this.chartData = [];
+      }
+    },
     prettyBytes,
     async fetchMetrics() {
       const responseMax = this.instance.fetchMetric('jvm.memory.max', {

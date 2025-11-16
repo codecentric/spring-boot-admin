@@ -37,7 +37,7 @@ describe('Instance', () => {
         },
       });
 
-      expect(instance.showUrl()).toBe(expectUrlToBeShownOnUI);
+      expect(instance.showUrl()).toEqual(expectUrlToBeShownOnUI);
     },
   );
 });

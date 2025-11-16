@@ -18,37 +18,37 @@
   <pre class="formatted" v-html="formatted" />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
 
 import { createAutolink } from '@/utils/autolink';
 import { objToYaml } from '@/utils/objToYaml';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 
-const autolink = createAutolink({
+const props = defineProps<{
+  value: unknown;
+}>();
+
+const autolinkFn = createAutolink({
   truncate: {
     length: 50,
     location: 'smart',
   },
 });
 
-export default defineComponent({
-  props: {
-    value: {
-      type: null,
-      required: true,
-    },
-  },
-  computed: {
-    formatted() {
-      return autolink(objToYaml(this.value));
-    },
-  },
+const formatted = computed(() => {
+  const yaml = objToYaml(props.value);
+  const sanitized = sanitizeHtml(yaml);
+  return autolinkFn(sanitized);
 });
 </script>
 
-<style>
+<style scoped>
 .formatted {
-  white-space: break-spaces;
-  word-break: break-word;
+  @apply whitespace-break-spaces break-words;
+
+  &:deep(a[href]) {
+    @apply underline;
+  }
 }
 </style>

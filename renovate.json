@@ -6,6 +6,7 @@
     "bot",
     "dependencies"
   ],
+
   "packageRules": [
     {
       "description": "Automatically merge minor and patch-level updates when checks pass, creates a PR otherwise",
@@ -21,7 +22,7 @@
     {
       "matchPackageNames": [
         "org.apache.maven.plugins:maven-site-plugin",
-        "^de\\.codecentric:spring-boot-admin.*"
+        "spring-boot-admin"
       ],
       "enabled": false
     }

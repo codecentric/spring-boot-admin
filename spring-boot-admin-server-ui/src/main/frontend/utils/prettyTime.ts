@@ -12,6 +12,17 @@ export const enum PrettyTimeUnit {
   milliseconds = 'milliseconds',
 }
 
+/**
+ * usePrettyTime provides utility functions for formatting time durations and date-times.
+ *
+ * - formatTime: Converts a duration in milliseconds to a human-readable string (e.g., "2 days 3 hours").
+ * - formatDateTime: Formats a Date or ISO string to a localized date-time string.
+ *
+ * Example:
+ * const { formatTime, formatDateTime } = usePrettyTime();
+ * formatTime(90061000); // "1 days 1 hours 1 minutes 1 seconds"
+ * formatDateTime("2024-06-01T12:34:56Z"); // "Jun 1, 2024, 12:34:56 PM" (locale-dependent)
+ */
 export const usePrettyTime = () => {
   const { t, locale } = useI18n();
 

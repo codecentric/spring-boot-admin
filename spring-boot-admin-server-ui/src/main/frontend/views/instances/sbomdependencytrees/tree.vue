@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash';
+import { debounce } from 'lodash-es';
 import { computed, onMounted, ref, watch } from 'vue';
 
 import SbaPanel from '@/components/sba-panel.vue';

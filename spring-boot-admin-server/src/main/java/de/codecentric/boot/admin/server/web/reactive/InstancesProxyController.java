@@ -97,9 +97,10 @@ public class InstancesProxyController {
 			@PathVariable("applicationName") String applicationName, ServerHttpRequest request) {
 
 		Flux<DataBuffer> cachedBody = request.getBody().map((b) -> {
-			int readableByteCount = b.readableByteCount();
-			DataBuffer dataBuffer = this.bufferFactory.allocateBuffer(readableByteCount);
-			dataBuffer.write(b.asByteBuffer());
+			DataBuffer dataBuffer = this.bufferFactory.allocateBuffer(b.readableByteCount());
+			try (var iterator = b.readableByteBuffers()) {
+				iterator.forEachRemaining(dataBuffer::write);
+			}
 			DataBufferUtils.release(b);
 			return dataBuffer;
 		}).cache();

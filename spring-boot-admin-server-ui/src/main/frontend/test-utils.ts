@@ -2,10 +2,11 @@ import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
 import { RenderResult, render as tlRender } from '@testing-library/vue';
 import { RouterLinkStub } from '@vue/test-utils';
 import { merge } from 'lodash-es';
+import PrimeVue from 'primevue/config';
 import { createI18n } from 'vue-i18n';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-import components from './components/index.js';
+import components from './components/index';
 import SbaModalPlugin from './plugins/modal';
 
 import { createViewRegistry } from '@/composables/ViewRegistry';
@@ -55,6 +56,16 @@ export const render = (testComponent, options?): RenderResult => {
           }),
           NotificationcenterPlugin,
           SbaModalPlugin,
+          [
+            PrimeVue,
+            {
+              theme: {
+                options: {
+                  darkModeSelector: false,
+                },
+              },
+            },
+          ],
           components,
         ],
         stubs: { RouterLink: RouterLinkStub },

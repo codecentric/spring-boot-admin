@@ -34,8 +34,6 @@ management:
         enabled: true
     health:
       show-details: ALWAYS
-  server:
-    port: 9999
 
 
 spring:
@@ -47,7 +45,7 @@ spring:
         simple:
           instances:
             SBA:
-              - uri: http://localhost:9999
+              - uri: http://localhost:8080
                 metadata:
                   management.context-path: /actuator
                   service-url: http://localhost:8080

@@ -19,35 +19,44 @@
     class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
     :class="{ 'bg-white': index % 2 === 0, 'bg-gray-50': index % 2 !== 0 }"
   >
-    <dt
-      :id="'health-detail__' + name"
-      class="text-sm font-medium text-gray-500"
-    >
+    <dt :id="`health-${id}__${name}`" class="text-sm font-medium text-gray-500">
       {{ name }}
     </dt>
     <dd
       class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
-      :aria-labelledby="'health-detail__' + name"
+      :aria-labelledby="`health-${id}__` + name"
     >
       <sba-status-badge v-if="health.status" :status="health.status" />
 
       <dl v-if="details && details.length > 0" class="grid grid-cols-2 mt-2">
         <template v-for="detail in details" :key="detail.name">
-          <dt class="font-medium" v-text="detail.name" />
+          <dt
+            :id="`health-detail-${id}__${detail.name}`"
+            class="font-medium"
+            v-text="detail.name"
+          />
           <dd
-            v-if="name === 'diskSpace' && typeof detail.value === 'number'"
+            v-if="
+              name.toLowerCase().startsWith('diskspace') &&
+              typeof detail.value === 'number'
+            "
+            :aria-labelledby="`health-detail-${id}__${detail.name}`"
             v-text="prettyBytes(detail.value)"
           />
-          <dd v-else-if="typeof detail.value === 'object'">
-            <pre
-              class="break-words whitespace-pre-wrap"
-              v-text="toJson(detail.value)"
+          <dd
+            v-else-if="typeof detail.value === 'object'"
+            :aria-labelledby="`health-detail-${id}__${detail.name}`"
+          >
+            <sba-formatted-obj
+              class="overflow-auto !whitespace-pre"
+              :value="detail.value"
             />
           </dd>
           <dd
             v-else
+            :aria-labelledby="`health-detail-${id}__${detail.name}`"
             class="break-words whitespace-pre-wrap"
-            v-text="detail.value"
+            v-html="autolink(detail.value)"
           />
         </template>
       </dl>
@@ -63,52 +72,51 @@
   />
 </template>
 
-<script>
+<script lang="ts" setup>
 import prettyBytes from 'pretty-bytes';
+import { computed, useId } from 'vue';
+
+import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
+
+import autolink from '@/utils/autolink';
+
+const id = useId();
 
 const isChildHealth = (value) => {
   return value !== null && typeof value === 'object' && 'status' in value;
 };
 
-export default {
-  name: 'HealthDetails',
-  props: {
-    name: {
-      type: String,
-      required: true,
-    },
-    health: {
-      type: Object,
-      required: true,
-    },
-    index: {
-      type: Number,
-      default: 0,
-    },
-  },
-  computed: {
-    details() {
-      if (this.health.details || this.health.components) {
-        return Object.entries(this.health.details || this.health.components)
-          .filter(([, value]) => !isChildHealth(value))
-          .map(([name, value]) => ({ name, value }));
-      }
-      return [];
-    },
-    childHealth() {
-      if (this.health.details || this.health.components) {
-        return Object.entries(this.health.details || this.health.components)
-          .filter(([, value]) => isChildHealth(value))
-          .map(([name, value]) => ({ name, value }));
-      }
-      return [];
-    },
-  },
-  methods: {
-    prettyBytes,
-    toJson(obj) {
-      return JSON.stringify(obj, null, 2);
-    },
-  },
-};
+const {
+  health,
+  name,
+  index = 0,
+} = defineProps<{
+  name: string;
+  health: Record<string, any>;
+  index?: number;
+}>();
+
+const details = computed(() => {
+  if (health.details || health.components) {
+    return Object.entries(health.details || health.components)
+      .filter(([, value]) => !isChildHealth(value))
+      .map(([name, value]) => ({ name, value }));
+  }
+  return [];
+});
+
+const childHealth = computed(() => {
+  if (health.details || health.components) {
+    return Object.entries(health.details || health.components)
+      .filter(([, value]) => isChildHealth(value))
+      .map(([name, value]) => ({ name, value }));
+  }
+  return [];
+});
 </script>
+
+<style scoped>
+:deep(a[href]) {
+  @apply underline;
+}
+</style>

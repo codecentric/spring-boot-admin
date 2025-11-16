@@ -60,6 +60,7 @@ import de.codecentric.boot.admin.server.notify.FeiShuNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.notify.MattermostNotifier;
 import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
@@ -218,6 +219,22 @@ public class AdminServerNotifierAutoConfiguration {
 		@ConfigurationProperties("spring.boot.admin.notify.slack")
 		public SlackNotifier slackNotifier(InstanceRepository repository, NotifierProxyProperties proxyProperties) {
 			return new SlackNotifier(repository, createNotifierRestTemplate(proxyProperties));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.mattermost", name = "api-url")
+	@AutoConfigureBefore({ NotifierTriggerConfiguration.class, CompositeNotifierConfiguration.class })
+	@Lazy(false)
+	public static class MattermostNotifierConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		@ConfigurationProperties("spring.boot.admin.notify.mattermost")
+		public MattermostNotifier mattermostNotifier(InstanceRepository repository,
+				NotifierProxyProperties proxyProperties) {
+			return new MattermostNotifier(repository, createNotifierRestTemplate(proxyProperties));
 		}
 
 	}

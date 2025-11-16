@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+/**
+ * URI template tag function that encodes interpolated values using encodeURIComponent.
+ *
+ * Usage example:
+ *   const userId = 'john/doe';
+ *   const url = uri`/api/users/${userId}/profile`;
+ *   // url === "/api/users/john%2Fdoe/profile"
+ *
+ * @param strings Template string array
+ * @param values Interpolated values to encode
+ * @returns Encoded URI string
+ */
 export default (strings, ...values) => {
   let result = strings[0];
   for (let i = 0; i < values.length; ++i) {

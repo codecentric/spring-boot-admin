@@ -1,12 +1,12 @@
 import { setupWorker } from 'msw/browser';
 
-import auditEventsEndpoint from './instance/auditevents/index.js';
-import flywayEndpoints from './instance/flyway/index.js';
-import httpTraceEndpoints from './instance/httptrace/index.js';
-import liquibaseEndpoints from './instance/liquibase/index.js';
-import mappingsEndpoint from './instance/mappings/index.js';
-import metricsEndpoint from './instance/metrics/index.js';
-import sessionEndpoints from './instance/sessions/index.js';
+import auditEventsEndpoint from './instance/auditevents/index';
+import flywayEndpoints from './instance/flyway/index';
+import httpTraceEndpoints from './instance/httptrace/index';
+import liquibaseEndpoints from './instance/liquibase/index';
+import mappingsEndpoint from './instance/mappings/index';
+import metricsEndpoint from './instance/metrics/index';
+import sessionEndpoints from './instance/sessions/index';
 
 const handler = [
   ...mappingsEndpoint,
