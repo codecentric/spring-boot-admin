@@ -52,4 +52,10 @@ describe('autolink should', () => {
       '{"name":"John Smith","links":[{"rel":"random-link1","href":"<a href="https://localhost:8000/api/123/query?action=do_something&age=21" target="_blank" rel="noopener noreferrer">https://localhost:8000/api/123/query?action=do_something&age=21</a>","hreflang":null,"media":null,"title":null,"type":null,"deprecation":null}]}',
     );
   });
+
+  it('does not take version numbers as as link', () => {
+    const str = '1.2.3.4';
+
+    expect(autolink(str)).toBe('1.2.3.4');
+  });
 });
