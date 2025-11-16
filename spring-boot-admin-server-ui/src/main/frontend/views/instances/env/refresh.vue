@@ -3,18 +3,16 @@
     :instance-count="instanceCount"
     :action-fn="refreshContext"
     :show-info="false"
+    :label="$t('instances.env.context_refresh')"
   >
-    <template #default="slotProps">
-      <span
-        v-if="slotProps.refreshStatus === 'completed'"
-        class="is-success"
-        v-text="$t('instances.env.context_refreshed')"
-      />
-      <span
-        v-else-if="slotProps.refreshStatus === 'failed'"
-        v-text="$t('instances.env.context_refresh_failed')"
-      />
-      <span v-else v-text="$t('instances.env.context_refresh')" />
+    <template #default>
+      {{ $t('instances.env.context_refresh') }}
+    </template>
+    <template #completed>
+      <span v-text="$t('instances.env.context_refreshed')" />
+    </template>
+    <template #failed>
+      <span v-text="$t('instances.env.context_refresh_failed')" />
     </template>
   </sba-action-button-scoped>
 
