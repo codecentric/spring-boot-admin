@@ -19,6 +19,7 @@ export const defaults: AutolinkerConfig = {
   urls: {
     schemeMatches: true,
     tldMatches: false,
+    ipV4Matches: false,
   },
   email: false,
   phone: false,
@@ -29,17 +30,24 @@ export const defaults: AutolinkerConfig = {
   stripTrailingSlash: false,
   newWindow: true,
 
-  truncate: {
-    length: 0,
-    location: 'smart',
-  },
-
   className: '',
 };
 const autolinker = new _Autolinker(defaults);
-export default (s) => autolinker.link(s);
+export default (s: string) => {
+  try {
+    return autolinker.link(s);
+  } catch {
+    return s;
+  }
+};
 
 export function createAutolink(cfg) {
   const autolinker = new _Autolinker({ ...defaults, ...cfg });
-  return (s) => autolinker.link(s);
+  return (s) => {
+    try {
+      return autolinker.link(s);
+    } catch {
+      return s;
+    }
+  };
 }
