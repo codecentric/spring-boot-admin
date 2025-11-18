@@ -1,7 +1,12 @@
 {
   "instances": {
     "sbom": {
-      "label": "Dependency trees"
+      "label": "Dependency trees",
+      "legend": {
+        "title": "Legend",
+        "node": "Dependency with no further dependencies",
+        "node_with_children": "Dependency with other dependencies"
+      }
     }
   }
 }
