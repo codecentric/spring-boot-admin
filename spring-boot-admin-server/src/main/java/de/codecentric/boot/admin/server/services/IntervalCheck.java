@@ -20,12 +20,15 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.lang.Nullable;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -68,9 +71,14 @@ public class IntervalCheck {
 	@Nullable
 	private Scheduler scheduler;
 
+	@Setter
+	@NonNull
+	private Consumer<Throwable> retryConsumer;
+
 	public IntervalCheck(String name, Function<InstanceId, Mono<Void>> checkFn, Duration interval,
 			Duration minRetention, Duration maxBackoff) {
 		this.name = name;
+		this.retryConsumer = (Throwable throwable) -> log.warn("Unexpected error in {}-check", this.name, throwable);
 		this.checkFn = checkFn;
 		this.interval = interval;
 		this.minRetention = minRetention;
@@ -80,21 +88,29 @@ public class IntervalCheck {
 	public void start() {
 		this.scheduler = Schedulers.newSingle(this.name + "-check");
 		this.subscription = Flux.interval(this.interval)
+			// ensure the most recent interval tick is always processed, preventing
+			// lost checks under overload.
+			.onBackpressureLatest()
 			.doOnSubscribe((s) -> log.debug("Scheduled {}-check every {}", this.name, this.interval))
-			.log(log.getName(), Level.FINEST)
-			.subscribeOn(this.scheduler)
-			.concatMap((i) -> this.checkAllInstances())
-			.retryWhen(Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
-				.maxBackoff(maxBackoff)
-				.doBeforeRetry((s) -> log.warn("Unexpected error in {}-check", this.name, s.failure())))
-			.subscribe(null, (error) -> log.error("Unexpected error in {}-check", name, error));
+			.log(log.getName(), Level.FINEST) //
+			.subscribeOn(this.scheduler) //
+			// Allow concurrent check cycles if previous is slow
+			.flatMap((i) -> this.checkAllInstances(), Math.max(1, Runtime.getRuntime().availableProcessors() / 2))
+			.retryWhen(createRetrySpec())
+			.subscribe(null, (Throwable error) -> log.error("Unexpected error in {}-check", this.name, error));
+	}
+
+	private Retry createRetrySpec() {
+		return Retry.backoff(Long.MAX_VALUE, Duration.ofSeconds(1))
+			.maxBackoff(maxBackoff)
+			.doBeforeRetry((s) -> this.retryConsumer.accept(s.failure()));
 	}
 
 	public void markAsChecked(InstanceId instanceId) {
 		this.lastChecked.put(instanceId, Instant.now());
 	}
 
-	protected Mono<Void> checkAllInstances() {
+	protected Publisher<Void> checkAllInstances() {
 		log.debug("check {} for all instances", this.name);
 		Instant expiration = Instant.now().minus(this.minRetention);
 		return Flux.fromIterable(this.lastChecked.entrySet())
