@@ -66,7 +66,7 @@ class Instance {
 
   get metadataParsed() {
     const metadata = this.registration.metadata || {};
-    return transformToJSON(metadata);
+    return transformToJSON(metadata, 'LAX');
   }
 
   get isUnregisterable() {
