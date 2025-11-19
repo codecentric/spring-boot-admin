@@ -43,7 +43,7 @@ class CloudFoundryHttpHeaderProviderTest {
 	void test_no_header() {
 		Registration registration = Registration.create("foo", "https://health").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(headersProvider.getHeaders(instance)).isEmpty();
+		assertThat(headersProvider.getHeaders(instance).toSingleValueMap()).isEmpty();
 	}
 
 }

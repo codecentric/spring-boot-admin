@@ -21,16 +21,15 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -42,14 +41,16 @@ import static org.assertj.core.api.Assertions.entry;
 
 class InstanceRegisteredEventMixinTest {
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper objectMapper;
 
 	private JacksonTester<InstanceRegisteredEvent> jsonTester;
 
 	protected InstanceRegisteredEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		JavaTimeModule javaTimeModule = new JavaTimeModule();
-		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
+		objectMapper = JsonMapper.builder()
+			.addModule(adminServerModule)
+			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+			.build();
 	}
 
 	@BeforeEach
@@ -139,7 +140,7 @@ class InstanceRegisteredEventMixinTest {
 			.toString();
 
 		assertThatThrownBy(() -> objectMapper.readValue(json, InstanceRegisteredEvent.class))
-			.isInstanceOf(JsonMappingException.class)
+			.isInstanceOf(DatabindException.class)
 			.hasCauseInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("must not be empty");
 	}
@@ -161,7 +162,7 @@ class InstanceRegisteredEventMixinTest {
 		JsonContent<InstanceRegisteredEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");
 		assertThat(jsonContent).extractingJsonPathNumberValue("$.version").isEqualTo(12345678);
-		assertThat(jsonContent).extractingJsonPathNumberValue("$.timestamp").isEqualTo(1587751031.000000000);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.timestamp").isEqualTo("2020-04-24T17:57:11Z");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.type").isEqualTo("REGISTERED");
 		assertThat(jsonContent).extractingJsonPathValue("$.registration").isNotNull();
 
@@ -188,7 +189,7 @@ class InstanceRegisteredEventMixinTest {
 		JsonContent<InstanceRegisteredEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");
 		assertThat(jsonContent).extractingJsonPathNumberValue("$.version").isEqualTo(0);
-		assertThat(jsonContent).extractingJsonPathNumberValue("$.timestamp").isEqualTo(1587751031.000000000);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.timestamp").isEqualTo("2020-04-24T17:57:11Z");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.type").isEqualTo("REGISTERED");
 		assertThat(jsonContent).extractingJsonPathValue("$.registration").isNotNull();
 
@@ -210,7 +211,7 @@ class InstanceRegisteredEventMixinTest {
 		JsonContent<InstanceRegisteredEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");
 		assertThat(jsonContent).extractingJsonPathNumberValue("$.version").isEqualTo(12345678);
-		assertThat(jsonContent).extractingJsonPathNumberValue("$.timestamp").isEqualTo(1587751031.000000000);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.timestamp").isEqualTo("2020-04-24T17:57:11Z");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.type").isEqualTo("REGISTERED");
 		assertThat(jsonContent).extractingJsonPathValue("$.registration").isNull();
 	}
