@@ -47,7 +47,7 @@
         <maven.site.skip>true</maven.site.skip>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>4.0.0-RC2</spring-boot.version>
+        <spring-boot.version>4.0.0</spring-boot.version>
         <spring-cloud.version>2025.1.0-RC1</spring-cloud.version>
 
         <jolokia-support-spring.version>2.4.1</jolokia-support-spring.version>
