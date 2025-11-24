@@ -23,6 +23,9 @@
     },
     "web": {
       "title": "Web"
+    },
+    "custom-link": {
+      "title": "Links"
     }
   }
 }

@@ -39,7 +39,7 @@ describe('InstanceDetails', () => {
       const application = new Application(applications[0]);
       const instance = application.instances[0];
 
-      instance.hasEndpoint = vi.fn().mockImplementation((endpoint) => {
+      instance.hasEndpoint = vi.fn().mockImplementation(function (endpoint) {
         return endpoint !== 'metrics';
       });
 

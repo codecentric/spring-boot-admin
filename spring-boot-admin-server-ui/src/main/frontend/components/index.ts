@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import FontAwesomeIcon from './font-awesome-icon.js';
+import FontAwesomeIcon from './font-awesome-icon';
 import SbaActionButtonScoped from './sba-action-button-scoped.vue';
 import SbaAlert from './sba-alert.vue';
 import SbaButtonGroup from './sba-button-group.vue';

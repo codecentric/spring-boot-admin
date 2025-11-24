@@ -16,7 +16,7 @@
 import { render } from '@testing-library/vue';
 import { describe, it } from 'vitest';
 
-import { HealthStatus } from '../HealthStatus.js';
+import { HealthStatus } from '../HealthStatus';
 import sbaStatusBadge from './sba-status-badge.vue';
 
 describe('sba-status-badge.vue', () => {

@@ -1184,7 +1184,7 @@ export const mappings = {
                   headers: [],
                   methods: ['GET'],
                   params: [],
-                  patterns: ['/sba-settings.js'],
+                  patterns: ['/sba-settings'],
                   produces: [
                     { mediaType: 'application/javascript', negated: false },
                   ],

@@ -1,6 +1,6 @@
 import { HttpResponse, http } from 'msw';
 
-import { liquibase } from './data.js';
+import { liquibase } from './data';
 
 const liquibaseEndpoints = [
   http.get('/instances/:instanceId/actuator/liquibase', () => {

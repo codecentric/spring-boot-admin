@@ -48,6 +48,9 @@ import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
 import { InstanceEvent } from '@/views/journal/InstanceEvent';
 import { deduplicateInstanceEvents } from '@/views/journal/deduplicate-events';
+import {
+  InstanceEventType,
+} from '@/views/journal/InstanceEvent';
 import JournalTable from '@/views/journal/JournalTable.vue';
 
 export default {
@@ -81,8 +84,8 @@ export default {
       return this.events
         .filter(
           (event) =>
-            event.type === InstanceEvent.REGISTERED ||
-            event.type === InstanceEvent.REGISTRATION_UPDATED,
+            event.type === InstanceEventType.REGISTERED ||
+            event.type === InstanceEventType.REGISTRATION_UPDATED,
         )
         .sort((a, b) => b.timestamp - a.timestamp)
         .reduceRight((names, event) => {

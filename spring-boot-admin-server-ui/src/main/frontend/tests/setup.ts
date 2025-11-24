@@ -6,20 +6,28 @@ import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { server } from '@/mocks/server';
 import sbaConfig from '@/sba-config';
 
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+global.IntersectionObserver = vi.fn().mockImplementation(function () {
+  return {
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  };
+});
+global.ResizeObserver = vi.fn().mockImplementation(function () {
+  return {
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  };
+});
 global.matchMedia = vi.fn().mockReturnValue({
   addEventListener: vi.fn(),
   removeEventListener: vi.fn(),
 });
+global.EventSource = class {
+  constructor() {}
+  close() {}
+};
 
 global.SBA = sbaConfig;
 

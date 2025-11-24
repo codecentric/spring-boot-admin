@@ -31,8 +31,8 @@
       <dl v-if="details && details.length > 0" class="grid grid-cols-2 mt-2">
         <template v-for="detail in details" :key="detail.name">
           <dt
-            class="font-medium"
             :id="`health-detail-${id}__${detail.name}`"
+            class="font-medium"
             v-text="detail.name"
           />
           <dd
@@ -47,16 +47,16 @@
             v-else-if="typeof detail.value === 'object'"
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
           >
-            <pre
-              class="break-words whitespace-pre-wrap"
-              v-text="JSON.stringify(detail.value)"
+            <sba-formatted-obj
+              class="overflow-auto !whitespace-pre"
+              :value="detail.value"
             />
           </dd>
           <dd
             v-else
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
             class="break-words whitespace-pre-wrap"
-            v-text="detail.value"
+            v-html="autolink(detail.value)"
           />
         </template>
       </dl>
@@ -75,6 +75,10 @@
 <script lang="ts" setup>
 import prettyBytes from 'pretty-bytes';
 import { computed, useId } from 'vue';
+
+import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
+
+import autolink from '@/utils/autolink';
 
 const id = useId();
 
@@ -110,3 +114,9 @@ const childHealth = computed(() => {
   return [];
 });
 </script>
+
+<style scoped>
+:deep(a[href]) {
+  @apply underline;
+}
+</style>

@@ -19,12 +19,29 @@
     <sba-panel :title="sbomId">
       <div ref="treeContainer" class="x-scroller"></div>
     </sba-panel>
+
+    <div
+      class="flex flex-wrap items-center justify-center gap-6 p-4 bg-white rounded-lg shadow-sm border text-sm"
+    >
+      <div class="flex items-center gap-2">
+        {{ t('instances.sbom.legend.title') }}
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="node w-3 h-3 rounded-full shadow-sm"></div>
+        <span>{{ t('instances.sbom.legend.node') }}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="node-with-children w-3 h-3 rounded-full shadow-sm"></div>
+        <span>{{ t('instances.sbom.legend.node_with_children') }}</span>
+      </div>
+    </div>
   </sba-instance-section>
 </template>
 
-<script lang="ts">
-import { debounce } from 'lodash';
+<script setup lang="ts">
+import { debounce } from 'lodash-es';
 import { computed, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import SbaPanel from '@/components/sba-panel.vue';
 
@@ -41,103 +58,101 @@ import {
 } from '@/views/instances/sbomdependencytrees/sbomUtils';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
 
-export default {
-  name: 'TreeGraph',
-  components: { SbaInstanceSection, SbaPanel },
-  props: {
-    sbomId: {
-      type: String,
-      required: true,
-    },
-    instance: {
-      type: Instance,
-      required: true,
-    },
-    filter: {
-      type: String,
-      default: '',
-    },
-  },
-  setup(props) {
-    const treeContainer = ref<HTMLElement | null>(null);
-    const dependencies = ref<SbomDependency[]>([]);
-    const rootNode = ref<D3DependencyTree | null>(null);
-    const error = ref<string | null>(null);
-    const isLoading = ref<boolean | null>(false);
+const props = defineProps<{
+  sbomId: string;
+  instance: Instance;
+  filter?: string;
+}>();
+const { t } = useI18n();
 
-    const normalizedData = computed(() => normalizeData(dependencies.value));
-    const filteredData = computed(() =>
-      filterTree(normalizedData.value, props.filter),
-    );
+const treeContainer = ref<HTMLElement | null>(null);
+const dependencies = ref<SbomDependency[]>([]);
+const rootNode = ref<D3DependencyTree | null>(null);
+const error = ref<string | null>(null);
+const isLoading = ref<boolean | null>(false);
 
-    const fetchSbomDependencies = async (sbomId: string): Promise<void> => {
-      error.value = null;
-      isLoading.value = true;
-      try {
-        const res = await props.instance.fetchSbom(sbomId);
-        dependencies.value = res.data.dependencies;
-        await renderTree();
-      } catch (err) {
-        console.warn('Fetching sbom failed:', err);
-        error.value = err;
-      } finally {
-        isLoading.value = false;
-      }
-    };
+const normalizedData = computed(() => normalizeData(dependencies.value));
+const filteredData = computed(() =>
+  filterTree(normalizedData.value, props.filter || ''),
+);
 
-    const renderTree = async (): Promise<void> => {
-      rootNode.value = await createDependencyTree(
-        treeContainer.value!,
-        filteredData.value,
-      );
-    };
-
-    const updateTree = async (): Promise<void> => {
-      isLoading.value = true;
-      await rerenderDependencyTree(rootNode.value, filteredData.value);
-      isLoading.value = false;
-    };
-
-    const rerenderOrUpdateTree = async (
-      newVal: string,
-      oldVal: string,
-    ): Promise<void> => {
-      if (dependencies.value.length > 0) {
-        if (!newVal.trim() || newVal === oldVal) {
-          await renderTree();
-        } else {
-          await updateTree();
-        }
-      }
-    };
-
-    const debouncedRerenderOrUpdateTree = debounce(rerenderOrUpdateTree, 1000);
-
-    watch(
-      () => props.filter,
-      (newVal, oldVal) => {
-        if (newVal !== oldVal && treeContainer.value !== null) {
-          debouncedRerenderOrUpdateTree(newVal, oldVal);
-        }
-      },
-      { immediate: true },
-    );
-
-    onMounted(() => {
-      fetchSbomDependencies(props.sbomId);
-    });
-
-    return {
-      treeContainer,
-      error,
-      isLoading,
-    };
-  },
+const fetchSbomDependencies = async (sbomId: string): Promise<void> => {
+  error.value = null;
+  isLoading.value = true;
+  try {
+    const res = await props.instance.fetchSbom(sbomId);
+    dependencies.value = res.data.dependencies;
+    await renderTree();
+  } catch (err) {
+    console.warn('Fetching sbom failed:', err);
+    error.value = err;
+  } finally {
+    isLoading.value = false;
+  }
 };
+
+const renderTree = async (): Promise<void> => {
+  rootNode.value = await createDependencyTree(
+    treeContainer.value!,
+    filteredData.value,
+  );
+};
+
+const updateTree = async (): Promise<void> => {
+  isLoading.value = true;
+  await rerenderDependencyTree(rootNode.value, filteredData.value);
+  isLoading.value = false;
+};
+
+const rerenderOrUpdateTree = async (
+  newVal: string,
+  oldVal: string,
+): Promise<void> => {
+  if (dependencies.value.length > 0) {
+    if (!newVal.trim() || newVal === oldVal) {
+      await renderTree();
+    } else {
+      await updateTree();
+    }
+  }
+};
+
+const debouncedRerenderOrUpdateTree = debounce(rerenderOrUpdateTree, 1000);
+
+watch(
+  () => props.filter,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal && treeContainer.value !== null) {
+      debouncedRerenderOrUpdateTree(newVal || '', oldVal || '');
+    }
+  },
+  { immediate: true },
+);
+
+onMounted(() => {
+  fetchSbomDependencies(props.sbomId);
+});
 </script>
 
 <style scoped>
 .x-scroller {
-  overflow-x: scroll;
+  overflow-x: auto;
+}
+
+:deep(.node) {
+  --color: #d0f7df;
+  fill: var(--color);
+  background-color: var(--color);
+}
+
+:deep(.node-with-children) {
+  --color: #91e8e0;
+  fill: var(--color);
+  background-color: var(--color);
+}
+
+:deep(.edge) {
+  stroke: #cccccc;
+  stroke-width: 1;
 }
 </style>

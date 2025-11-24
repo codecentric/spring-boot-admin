@@ -121,7 +121,6 @@ import handle from '@/views/about/handle.vue';
 export default defineComponent({
   components: { SbaWave, SbaButton },
   data: () => ({
-    // eslint-disable-next-line no-undef
     version: __PROJECT_VERSION__,
   }),
   computed: {

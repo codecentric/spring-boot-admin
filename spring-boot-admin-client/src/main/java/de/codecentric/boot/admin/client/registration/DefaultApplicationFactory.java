@@ -162,7 +162,7 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		if (this.instance.getHealthUrl() != null) {
 			return this.instance.getHealthUrl();
 		}
-		return UriComponentsBuilder.fromHttpUrl(getManagementBaseUrl())
+		return UriComponentsBuilder.fromUriString(getManagementBaseUrl())
 			.path("/")
 			.path(getHealthEndpointPath())
 			.toUriString();

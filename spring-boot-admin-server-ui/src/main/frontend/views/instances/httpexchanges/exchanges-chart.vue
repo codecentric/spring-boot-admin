@@ -179,6 +179,8 @@ export default {
     },
     hovered: {
       handler(newVal) {
+        if (!this.hover) return;
+
         if (newVal) {
           this.hover
             .attr('opacity', 1)

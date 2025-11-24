@@ -18,8 +18,6 @@ package de.codecentric.boot.admin.server.utils.jackson;
 
 import java.io.IOException;
 import java.io.Serial;
-import java.util.Iterator;
-import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -55,11 +53,9 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 		}
 
 		if (node.has("metadata")) {
-			Iterator<Map.Entry<String, JsonNode>> it = node.get("metadata").fields();
-			while (it.hasNext()) {
-				Map.Entry<String, JsonNode> entry = it.next();
-				builder.metadata(entry.getKey(), entry.getValue().asText());
-			}
+			node.get("metadata")
+				.properties()
+				.forEach((entry) -> builder.metadata(entry.getKey(), entry.getValue().asText()));
 		}
 
 		builder.source(firstNonNullAsText(node, "source"));

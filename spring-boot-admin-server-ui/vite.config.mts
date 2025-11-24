@@ -86,7 +86,7 @@ export default defineConfig(({ mode }) => {
           target: 'http://localhost:8080',
           changeOrigin: true,
         },
-        '^/(applications|instances|notifications|extensions/)': {
+        '^/(applications|instances|notifications|extensions)(?:/.*)?$': {
           target: 'http://localhost:8080',
           changeOrigin: true,
           bypass: (req) => {

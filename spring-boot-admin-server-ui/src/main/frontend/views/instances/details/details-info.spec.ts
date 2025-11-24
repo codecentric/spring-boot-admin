@@ -26,8 +26,6 @@ describe('DetailsInfo', () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
     instance.hasEndpoint = () => true;
-    // Use AxiosResponse type for the mock
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
 
     instance.fetchInfo = async () => ({
       data: {

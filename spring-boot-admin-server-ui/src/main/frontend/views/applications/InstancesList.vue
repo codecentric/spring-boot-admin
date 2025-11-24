@@ -29,109 +29,36 @@
           :status="instance.statusInfo.status"
         />
       </div>
-      <div class="flex-1 overflow-hidden">
-        <section class="flex gap-2 items-center">
-          <div class="w-80" data-name="">
-            <!-- Section when URL is visible -->
-            <template v-if="instance.showUrl()">
-              <div class="flex gap-1">
-                <div
-                  class="overflow-hidden text-ellipsis"
-                  v-text="
-                    instance.registration.serviceUrl ||
-                    instance.registration.healthUrl
-                  "
-                />
-                <div class="ml-1 inline-flex gap-1">
-                  <template v-if="!instance.isUrlDisabled()">
-                    <sba-button
-                      as="a"
-                      :href="instance.registration.serviceUrl"
-                      size="2xs"
-                      referrerpolicy="no-referrer"
-                      target="_blank"
-                      :aria-label="t('term.homepage')"
-                    >
-                      <font-awesome-icon :icon="faHome" size="xs" />
-                    </sba-button>
-                  </template>
-                  <sba-button
-                    as="a"
-                    :href="instance.registration.managementUrl"
-                    size="2xs"
-                    referrerpolicy="no-referrer"
-                    target="_blank"
-                    :aria-label="t('term.actuator_endpoint')"
-                  >
-                    <font-awesome-icon :icon="faClipboardList" size="xs" />
-                  </sba-button>
-                  <sba-button
-                    as="a"
-                    :href="instance.registration.healthUrl"
-                    size="2xs"
-                    referrerpolicy="no-referrer"
-                    target="_blank"
-                    :aria-label="t('health.label')"
-                  >
-                    <font-awesome-icon :icon="faHeart" size="xs" />
-                  </sba-button>
-                </div>
-              </div>
-              <sba-tag
-                v-if="instance.registration.metadata?.['group']"
-                class="ml-2"
-                :value="instance.registration.metadata?.['group']"
-                small
-              />
-              <span class="text-sm italic" v-text="instance.id" />
-            </template>
-            <!-- URL are hidden -->
-            <template v-else>
-              <div v-text="instance.id"></div>
-              <sba-tag
-                v-if="instance.registration.metadata?.['group']"
-                class="ml-2"
-                :value="instance.registration.metadata?.['group']"
-                small
-              />
-            </template>
-          </div>
-          <div class="flex-1 hidden lg:block" v-text="instance.buildVersion" />
-          <div class="hidden lg:block text-right">
+      <div class="flex-1">
+        <div
+          class="flex gap-2 items-center instance-item"
+          :class="{ 'instance--show-url': instance.showUrl() }"
+        >
+          <ItemInformation
+            class="instance-item-information"
+            :instance="instance"
+          />
+          <div class="hidden lg:block">
             <slot :instance="instance" name="actions" />
           </div>
-        </section>
-        <section
-          v-if="Object.keys(instance.tags ?? {})?.length > 0"
-          class="mt-2 hidden lg:block overflow-x-auto"
-        >
-          <sba-tags :small="true" :tags="instance.tags" />
-        </section>
+        </div>
+        <ItemTags :instance="instance" />
       </div>
     </li>
   </ul>
 </template>
 
 <script lang="ts" setup>
-import {
-  faClipboardList,
-  faHeart,
-  faHome,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { PropType } from 'vue';
-import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-import SbaButton from '@/components/sba-button.vue';
 import SbaStatus from '@/components/sba-status.vue';
-import SbaTag from '@/components/sba-tag.vue';
-import SbaTags from '@/components/sba-tags.vue';
 
 import Instance from '@/services/instance';
+import ItemInformation from '@/views/applications/listItem/ItemInformation.vue';
+import ItemTags from '@/views/applications/listItem/ItemTags.vue';
 
 const router = useRouter();
-const { t } = useI18n();
 
 defineProps({
   instances: {
@@ -156,8 +83,22 @@ const showDetails = (instance: Instance) => {
 };
 </script>
 
-<style lang="css">
-.instances-list td {
-  vertical-align: middle;
+<style scoped>
+.instance--show-url {
+  .instance-item-information {
+    @apply gap-1;
+    grid-area: 1 / 1 / 1 / 3;
+  }
+}
+</style>
+
+<style>
+.instance-item.instance--show-url {
+  .instance-id {
+    @apply text-xs font-light;
+  }
+  .instance-version {
+    @apply text-xs font-light;
+  }
 }
 </style>

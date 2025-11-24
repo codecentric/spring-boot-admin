@@ -1,7 +1,5 @@
 # Foster Security
 
-## Securing Spring Boot Admin Server
-
 Since there are several approaches on solving authentication and authorization in distributed web applications Spring Boot Admin doesn’t ship a default one. By default `spring-boot-admin-server-ui` provides a login page and a logout button.
 
 A Spring Security configuration for your server could look like this:

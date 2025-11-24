@@ -14,28 +14,39 @@
  * limitations under the License.
  */
 
-export class InstanceEvent {
-  public readonly instance: string;
-  public readonly version: string;
-  public readonly type: string;
-  public readonly timestamp: Date;
-  public readonly payload: any;
+interface IInstanceEvent {
+  instance: string;
+  version: number;
+  type: InstanceEventType;
+  timestamp: Date | string;
+  [key: string]: any;
+}
 
-  constructor({ instance, version, type, timestamp, ...payload }) {
+export class InstanceEvent implements IInstanceEvent {
+  public readonly instance: string;
+  public readonly version: number;
+  public readonly type: InstanceEventType;
+  public readonly timestamp: Date;
+
+  constructor({ instance, version, type, timestamp, ...rest }: IInstanceEvent) {
     this.instance = instance;
     this.version = version;
     this.type = type;
     this.timestamp = new Date(timestamp);
-    this.payload = payload;
+
+    Object.assign(this, rest);
   }
 
   get key() {
     return `${this.instance}-${this.version}`;
   }
 }
-InstanceEvent.STATUS_CHANGED = 'STATUS_CHANGED';
-InstanceEvent.REGISTERED = 'REGISTERED';
-InstanceEvent.DEREGISTERED = 'DEREGISTERED';
-InstanceEvent.REGISTRATION_UPDATED = 'REGISTRATION_UPDATED';
-InstanceEvent.INFO_CHANGED = 'INFO_CHANGED';
-InstanceEvent.ENDPOINTS_DETECTED = 'ENDPOINTS_DETECTED';
+
+export enum InstanceEventType {
+  STATUS_CHANGED = 'STATUS_CHANGED',
+  REGISTERED = 'REGISTERED',
+  DEREGISTERED = 'DEREGISTERED',
+  REGISTRATION_UPDATED = 'REGISTRATION_UPDATED',
+  INFO_CHANGED = 'INFO_CHANGED',
+  ENDPOINTS_DETECTED = 'ENDPOINTS_DETECTED',
+}
