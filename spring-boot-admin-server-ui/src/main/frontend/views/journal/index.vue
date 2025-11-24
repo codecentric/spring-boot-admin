@@ -47,6 +47,7 @@ import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
 import { InstanceEvent } from '@/views/journal/InstanceEvent';
+import { deduplicateInstanceEvents } from '@/views/journal/deduplicate-events';
 import JournalTable from '@/views/journal/JournalTable.vue';
 
 export default {
@@ -64,6 +65,7 @@ export default {
   data: () => ({
     Event,
     events: [],
+    seenEventKeys: new Set(),
     listOffset: 0,
     showPayload: {},
     pageSize: 25,
@@ -101,7 +103,9 @@ export default {
         .reverse()
         .map((e) => new InstanceEvent(e));
 
-      this.events = Object.freeze(events);
+      const deduplicated = deduplicateInstanceEvents(events);
+      this.seenEventKeys = new Set(deduplicated.map((event) => event.key));
+      this.events = Object.freeze(deduplicated);
       this.error = null;
     } catch (error) {
       console.warn('Fetching events failed:', error);
@@ -116,10 +120,12 @@ export default {
       return Instance.getEventStream().subscribe({
         next: (message) => {
           this.error = null;
-          this.events = Object.freeze([
-            new InstanceEvent(message.data),
-            ...this.events,
-          ]);
+          const incomingEvent = new InstanceEvent(message.data);
+          if (this.seenEventKeys.has(incomingEvent.key)) {
+            return;
+          }
+          this.seenEventKeys.add(incomingEvent.key);
+          this.events = Object.freeze([incomingEvent, ...this.events]);
           this.listOffset += 1;
         },
         error: (error) => {
