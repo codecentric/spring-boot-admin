@@ -18,8 +18,6 @@ package de.codecentric.boot.admin.server.services.endpoints;
 
 import java.time.Duration;
 
-import javax.net.ssl.SSLException;
-
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.http.Fault;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -72,12 +70,12 @@ class QueryIndexEndpointStrategyTest {
 
 	@BeforeEach
 	void setUp() {
-		wireMock.start();
+		this.wireMock.start();
 	}
 
 	@AfterEach
 	void tearDown() {
-		wireMock.stop();
+		this.wireMock.stop();
 	}
 
 	@Test
@@ -268,7 +266,7 @@ class QueryIndexEndpointStrategyTest {
 					.trustManager(InsecureTrustManagerFactory.INSTANCE);
 				ssl.sslContext(sslCtx.build());
 			}
-			catch (SSLException ex) {
+			catch (javax.net.ssl.SSLException ex) {
 				throw new RuntimeException(ex);
 			}
 		});

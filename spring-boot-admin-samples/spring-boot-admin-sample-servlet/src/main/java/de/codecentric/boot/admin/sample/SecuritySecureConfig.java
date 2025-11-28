@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.sample;
 import java.util.UUID;
 
 import jakarta.servlet.DispatcherType;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.security.autoconfigure.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -68,7 +68,8 @@ public class SecuritySecureConfig {
 			.requestMatchers(
 					PathPatternRequestMatcher.withDefaults().matcher((this.adminServer.path("/actuator/info"))))
 			.permitAll()
-			.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher(adminServer.path("/actuator/health")))
+			.requestMatchers(
+					PathPatternRequestMatcher.withDefaults().matcher(this.adminServer.path("/actuator/health")))
 			.permitAll()
 			.requestMatchers(PathPatternRequestMatcher.withDefaults().matcher(this.adminServer.path("/login")))
 			.permitAll()

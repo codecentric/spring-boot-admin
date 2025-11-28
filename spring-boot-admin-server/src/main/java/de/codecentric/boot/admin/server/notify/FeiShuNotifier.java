@@ -26,10 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
@@ -40,10 +36,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -55,12 +52,11 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
  * @author sweeter
  * @see <a href=
  * "https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN">https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN</a>
- *
  */
 @Slf4j
 public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
-	private static final String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
+	private static String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 
@@ -102,7 +98,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	@Override
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
-		if (webhookUrl == null) {
+		if (this.webhookUrl == null) {
 			return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
 		}
 		return Mono.fromRunnable(() -> {
@@ -116,8 +112,8 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 	private String generateSign(String secret, long timestamp) {
 		try {
 			String stringToSign = timestamp + "\n" + secret;
-			Mac mac = Mac.getInstance("HmacSHA256");
-			mac.init(new SecretKeySpec(stringToSign.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+			javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+			mac.init(new javax.crypto.spec.SecretKeySpec(stringToSign.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
 			byte[] signData = mac.doFinal(new byte[] {});
 			return new String(Base64.getEncoder().encode(signData));
 		}
@@ -207,7 +203,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	private String toJsonString(Object o) {
 		try {
-			ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+			ObjectMapper objectMapper = JsonMapper.builder().build();
 			return objectMapper.writeValueAsString(o);
 		}
 		catch (Exception ex) {
@@ -237,7 +233,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	public boolean isAtAll() {
-		return atAll;
+		return this.atAll;
 	}
 
 	public void setAtAll(boolean atAll) {
@@ -245,7 +241,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	public String getSecret() {
-		return secret;
+		return this.secret;
 	}
 
 	public void setSecret(String secret) {
@@ -253,7 +249,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	public MessageType getMessageType() {
-		return messageType;
+		return this.messageType;
 	}
 
 	public void setMessageType(MessageType messageType) {
@@ -261,7 +257,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	public Card getCard() {
-		return card;
+		return this.card;
 	}
 
 	public void setCard(Card card) {
@@ -284,7 +280,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		private String themeColor = "red";
 
 		public String getTitle() {
-			return title;
+			return this.title;
 		}
 
 		public void setTitle(String title) {
@@ -292,7 +288,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		}
 
 		public String getThemeColor() {
-			return themeColor;
+			return this.themeColor;
 		}
 
 		public void setThemeColor(String themeColor) {

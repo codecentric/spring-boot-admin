@@ -25,11 +25,11 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointPr
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
-import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.web.server.context.WebServerApplicationContext;
+import org.springframework.boot.web.server.context.WebServerInitializedEvent;
+import org.springframework.boot.webflux.autoconfigure.WebFluxProperties;
 
 import de.codecentric.boot.admin.client.config.InstanceProperties;
 
@@ -52,22 +52,23 @@ class ReactiveApplicationFactoryTest {
 
 	private final WebFluxProperties webflux = new WebFluxProperties();
 
-	private final ReactiveApplicationFactory factory = new ReactiveApplicationFactory(instanceProperties, management,
-			server, pathMappedEndpoints, webEndpoint, () -> singletonMap("contributor", "test"), webflux);
+	private final ReactiveApplicationFactory factory = new ReactiveApplicationFactory(this.instanceProperties,
+			this.management, this.server, this.pathMappedEndpoints, this.webEndpoint,
+			() -> singletonMap("contributor", "test"), this.webflux);
 
 	@BeforeEach
 	void setup() {
-		instanceProperties.setName("test");
+		this.instanceProperties.setName("test");
 	}
 
 	@Test
 	void test_contextPath_mgmtPath() {
-		webflux.setBasePath("/app");
-		webEndpoint.setBasePath("/admin");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
-		publishApplicationReadyEvent(factory, 8080, null);
+		this.webflux.setBasePath("/app");
+		this.webEndpoint.setBasePath("/admin");
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
+		publishApplicationReadyEvent(this.factory, 8080, null);
 
-		Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8080/app/admin/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
@@ -75,12 +76,12 @@ class ReactiveApplicationFactoryTest {
 
 	@Test
 	void test_contextPath_mgmtPortPath() {
-		webflux.setBasePath("/app");
-		webEndpoint.setBasePath("/admin");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
-		publishApplicationReadyEvent(factory, 8080, 8081);
+		this.webflux.setBasePath("/app");
+		this.webEndpoint.setBasePath("/admin");
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/admin/health");
+		publishApplicationReadyEvent(this.factory, 8080, 8081);
 
-		Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/admin");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/admin/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
@@ -88,11 +89,11 @@ class ReactiveApplicationFactoryTest {
 
 	@Test
 	void test_basePath() {
-		webflux.setBasePath("/app");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-		publishApplicationReadyEvent(factory, 80, null);
+		this.webflux.setBasePath("/app");
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		publishApplicationReadyEvent(this.factory, 80, null);
 
-		Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/app/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/app/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/app");
@@ -100,10 +101,10 @@ class ReactiveApplicationFactoryTest {
 
 	@Test
 	void test_noBasePath() {
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-		publishApplicationReadyEvent(factory, 80, null);
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		publishApplicationReadyEvent(this.factory, 80, null);
 
-		Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":80/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":80/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":80/");
@@ -111,12 +112,12 @@ class ReactiveApplicationFactoryTest {
 
 	@Test
 	void test_mgmtBasePath_mgmtPortPath() {
-		webflux.setBasePath("/app");
-		management.setBasePath("/mgnt");
-		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
-		publishApplicationReadyEvent(factory, 8080, 8081);
+		this.webflux.setBasePath("/app");
+		this.management.setBasePath("/mgnt");
+		when(this.pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		publishApplicationReadyEvent(this.factory, 8080, 8081);
 
-		Application app = factory.createApplication();
+		Application app = this.factory.createApplication();
 		assertThat(app.getManagementUrl()).isEqualTo("http://" + getHostname() + ":8081/mgnt/actuator");
 		assertThat(app.getHealthUrl()).isEqualTo("http://" + getHostname() + ":8081/mgnt/actuator/health");
 		assertThat(app.getServiceUrl()).isEqualTo("http://" + getHostname() + ":8080/app");
@@ -146,13 +147,13 @@ class ReactiveApplicationFactoryTest {
 
 		private TestWebServerInitializedEvent(String name, int port) {
 			super(mock(WebServer.class));
-			when(server.getPort()).thenReturn(port);
-			when(context.getServerNamespace()).thenReturn(name);
+			when(this.server.getPort()).thenReturn(port);
+			when(this.context.getServerNamespace()).thenReturn(name);
 		}
 
 		@Override
 		public WebServerApplicationContext getApplicationContext() {
-			return context;
+			return this.context;
 		}
 
 		@Override

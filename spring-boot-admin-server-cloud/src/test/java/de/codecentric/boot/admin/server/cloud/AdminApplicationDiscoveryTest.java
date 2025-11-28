@@ -31,8 +31,8 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
+import org.springframework.cloud.client.discovery.simple.InstanceProperties;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -104,11 +104,10 @@ class AdminApplicationDiscoveryTest {
 		// We register the instance by setting static values for the SimpleDiscoveryClient
 		// and issuing a
 		// InstanceRegisteredEvent that makes sure the instance gets registered.
-		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-		serviceInstance.setServiceId("Test-Instance");
-		serviceInstance.setUri(URI.create("http://localhost:" + this.port));
-		serviceInstance.getMetadata().put("management.context-path", "/mgmt");
-		this.simpleDiscovery.getInstances().put("Test-Application", singletonList(serviceInstance));
+		InstanceProperties instanceProps = new InstanceProperties();
+		instanceProps.setUri(URI.create("http://localhost:" + this.port));
+		instanceProps.getMetadata().put("management.context-path", "/mgmt");
+		this.simpleDiscovery.getInstances().put("Test-Instance", singletonList(instanceProps));
 
 		this.instance.publishEvent(new InstanceRegisteredEvent<>(new Object(), null));
 

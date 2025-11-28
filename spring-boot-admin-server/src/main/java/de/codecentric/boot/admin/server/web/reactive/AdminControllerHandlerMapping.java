@@ -46,7 +46,7 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 	}
 
 	private RequestMappingInfo withPrefix(RequestMappingInfo mapping) {
-		if (!StringUtils.hasText(adminContextPath)) {
+		if (!StringUtils.hasText(this.adminContextPath)) {
 			return mapping;
 		}
 		return mapping.mutate().paths(withNewPatterns(mapping.getPatternsCondition())).build();
@@ -55,7 +55,7 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 	private String[] withNewPatterns(PatternsRequestCondition patternsRequestCondition) {
 		return patternsRequestCondition.getPatterns()
 			.stream()
-			.map((pattern) -> PathUtils.normalizePath(adminContextPath + pattern))
+			.map((pattern) -> PathUtils.normalizePath(this.adminContextPath + pattern))
 			.toArray(String[]::new);
 	}
 
