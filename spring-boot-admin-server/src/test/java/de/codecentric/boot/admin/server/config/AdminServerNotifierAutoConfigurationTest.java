@@ -34,6 +34,7 @@ import de.codecentric.boot.admin.server.notify.DiscordNotifier;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
+import de.codecentric.boot.admin.server.notify.MattermostNotifier;
 import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
@@ -92,6 +93,12 @@ class AdminServerNotifierAutoConfigurationTest {
 	void test_slack() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.notify.slack.webhook-url:https://example.com")
 			.run((context) -> assertThat(context).hasSingleBean(SlackNotifier.class));
+	}
+
+	@Test
+	void test_mattermost() {
+		this.contextRunner.withPropertyValues("spring.boot.admin.notify.mattermost.api-url:https://example.com")
+			.run((context) -> assertThat(context).hasSingleBean(MattermostNotifier.class));
 	}
 
 	@Test

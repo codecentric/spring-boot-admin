@@ -20,7 +20,7 @@
     "asciidoctor": "^3.0.4",
     "clsx": "^2.1.1",
     "dotenv": "^17.0.0",
-    "glob": "^11.0.0",
+    "glob": "^13.0.0",
     "lodash.merge": "^4.6.2",
     "node-html-markdown": "^2.0.0",
     "prism-react-renderer": "^2.4.0",
