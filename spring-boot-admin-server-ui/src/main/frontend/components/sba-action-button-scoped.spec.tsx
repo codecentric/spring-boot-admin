@@ -28,8 +28,10 @@ describe('SbaActionButtonScoped', function () {
     render(SbaActionButtonScoped, {
       props: {
         instanceCount: 10,
-        label: 'Execute',
         actionFn,
+      },
+      slots: {
+        default: 'Execute',
       },
     });
   });

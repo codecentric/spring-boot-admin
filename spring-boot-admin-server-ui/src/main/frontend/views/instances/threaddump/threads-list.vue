@@ -15,7 +15,7 @@
   -->
 
 <template>
-  <table class="table-auto w-full">
+  <table class="threads">
     <thead>
       <tr>
         <th class="threads__thread-name" v-text="$t('term.name')" />
@@ -202,6 +202,7 @@ export default {
 <style lang="css">
 .threads {
   table-layout: fixed;
+  width: 100%;
 }
 .threads__thread-name {
   width: 250px;

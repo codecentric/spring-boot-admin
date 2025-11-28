@@ -25,19 +25,15 @@
             :show-info="false"
             @scope-changed="changeScope"
           >
-            <template #default="slotProps">
-              <span
-                v-if="slotProps.refreshStatus === 'completed'"
-                v-text="$t('term.execution_successful')"
-              />
-              <span
-                v-else-if="slotProps.refreshStatus === 'failed'"
-                v-text="$t('term.execution_failed')"
-              />
-              <span v-else>
-                <font-awesome-icon icon="trash" />&nbsp;
-                <span v-text="$t('term.clear')" />
-              </span>
+            <template #completed>
+              <span v-text="$t('term.execution_successful')" />
+            </template>
+            <template #failed>
+              <span v-text="$t('term.execution_failed')" />
+            </template>
+            <template #default>
+              <font-awesome-icon icon="trash" />&nbsp;
+              <span v-text="$t('term.clear')" />
             </template>
           </sba-action-button-scoped>
 
