@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.web.servlet;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -32,16 +31,12 @@ class InstancesProxyControllerIntegrationTest extends AbstractInstancesProxyCont
 	@Nullable
 	private static ConfigurableApplicationContext context;
 
-	@BeforeAll
-	static void setUpContext() {
+	@BeforeEach
+	void setUpClient() {
 		context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
 			.web(WebApplicationType.SERVLET)
 			.run("--server.port=0", "--spring.boot.admin.monitor.default-timeout=2500");
 
-	}
-
-	@BeforeEach
-	void setUpClient() {
 		super.setUpClient(context);
 	}
 
