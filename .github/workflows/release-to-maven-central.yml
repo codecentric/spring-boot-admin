@@ -34,7 +34,7 @@ jobs:
           fi
           df -h
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up settings.xml for Maven Central Repository
         uses: actions/setup-java@v5
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: free disk space
         continue-on-error: true
