@@ -57,14 +57,14 @@ class HipchatNotifierTest {
 	@BeforeEach
 	void setUp() {
 		InstanceRepository repository = mock(InstanceRepository.class);
-		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
+		when(repository.find(this.instance.getId())).thenReturn(Mono.just(this.instance));
 
-		restTemplate = mock(RestTemplate.class);
-		notifier = new HipchatNotifier(repository, restTemplate);
-		notifier.setNotify(true);
-		notifier.setAuthToken("--token-");
-		notifier.setRoomId("-room-");
-		notifier.setUrl(URI.create("http://localhost/v2"));
+		this.restTemplate = mock(RestTemplate.class);
+		this.notifier = new HipchatNotifier(repository, this.restTemplate);
+		this.notifier.setNotify(true);
+		this.notifier.setAuthToken("--token-");
+		this.notifier.setRoomId("-room-");
+		this.notifier.setUrl(URI.create("http://localhost/v2"));
 	}
 
 	@Test
@@ -73,20 +73,20 @@ class HipchatNotifierTest {
 		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
 			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
-		when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
+		when(this.restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
 			.thenReturn(ResponseEntity.ok().build());
 
 		StepVerifier
-			.create(notifier
-				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.create(this.notifier.notify(new InstanceStatusChangedEvent(this.instance.getId(),
+					this.instance.getVersion(), StatusInfo.ofDown())))
 			.verifyComplete();
 		StepVerifier
-			.create(notifier
-				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.create(this.notifier.notify(new InstanceStatusChangedEvent(this.instance.getId(),
+					this.instance.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders().asMultiValueMap()).containsEntry("Content-Type",
-			.containsAll(Collections.singletonList("application/json"));
+				Collections.singletonList("application/json"));
 
 		Map<String, Object> body = httpRequest.getValue().getBody();
 		assertThat(body).containsEntry("color", "green");
@@ -104,15 +104,16 @@ class HipchatNotifierTest {
 		ArgumentCaptor<HttpEntity<Map<String, Object>>> httpRequest = ArgumentCaptor
 			.forClass((Class<HttpEntity<Map<String, Object>>>) (Class<?>) HttpEntity.class);
 
-		when(restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
+		when(this.restTemplate.postForEntity(isA(String.class), httpRequest.capture(), eq(Void.class)))
 			.thenReturn(ResponseEntity.ok().build());
 
 		StepVerifier
-			.create(notifier
-				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofUp())))
+			.create(this.notifier.notify(new InstanceStatusChangedEvent(this.instance.getId(),
+					this.instance.getVersion(), StatusInfo.ofUp())))
 			.verifyComplete();
 		StepVerifier
-			.create(notifier.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), infoDown)))
+			.create(this.notifier
+				.notify(new InstanceStatusChangedEvent(this.instance.getId(), this.instance.getVersion(), infoDown)))
 			.verifyComplete();
 
 		assertThat(httpRequest.getValue().getHeaders().toSingleValueMap()).containsEntry("Content-Type",

@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.result.condition.PatternsRequestCondition;
 import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
@@ -47,7 +46,7 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 	}
 
 	private RequestMappingInfo withPrefix(RequestMappingInfo mapping) {
-		if (!StringUtils.hasText(adminContextPath)) {
+		if (!StringUtils.hasText(this.adminContextPath)) {
 			return mapping;
 		}
 		return mapping.mutate().paths(withNewPatterns(mapping.getPatternsCondition())).build();
@@ -56,7 +55,7 @@ public class AdminControllerHandlerMapping extends RequestMappingHandlerMapping 
 	private String[] withNewPatterns(PatternsRequestCondition patternsRequestCondition) {
 		return patternsRequestCondition.getPatterns()
 			.stream()
-			.map((pattern) -> PathUtils.normalizePath(adminContextPath + pattern))
+			.map((pattern) -> PathUtils.normalizePath(this.adminContextPath + pattern))
 			.toArray(String[]::new);
 	}
 

@@ -41,7 +41,7 @@ class CompositeHttpHeadersProviderTest {
 		}));
 
 		HttpHeaders headers = provider.getHeaders(null);
-		assertThat(headers.asMultiValueMap()).containsEntry("a", singletonList("1"))
+		assertThat(headers.asMultiValueMap()).containsEntry("a", singletonList("1"));
 		assertThat(headers.get("b")).containsAll(asList("2-a", "2-b"));
 		assertThat(headers.get("c")).containsAll(singletonList("3"));
 	}
