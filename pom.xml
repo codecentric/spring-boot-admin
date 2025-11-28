@@ -30,7 +30,7 @@
     <url>https://github.com/codecentric/spring-boot-admin/</url>
 
     <properties>
-        <revision>4.0.0-M1</revision>
+        <revision>4.0.0-M1-SNAPSHOT</revision>
 
         <java.version>17</java.version>
         <node.version>v22.14.0</node.version>
