@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.client;
 
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
