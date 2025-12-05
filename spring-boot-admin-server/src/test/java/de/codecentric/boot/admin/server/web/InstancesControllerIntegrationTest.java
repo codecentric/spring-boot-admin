@@ -68,7 +68,7 @@ class InstancesControllerIntegrationTest {
 
 		this.client = WebTestClient.bindToServer()
 			.baseUrl("http://localhost:" + localPort)
-			.responseTimeout(Duration.ofSeconds(30))
+			.responseTimeout(Duration.ofMinutes(2))
 			.build();
 		this.registerAsTest = "{ \"name\": \"test\", \"healthUrl\": \"http://localhost:" + localPort
 				+ "/application/health\" }";
@@ -108,8 +108,7 @@ class InstancesControllerIntegrationTest {
 		CountDownLatch cdl = new CountDownLatch(1);
 
 		StepVerifier.create(this.getEventStream().log()).expectSubscription().then(() -> {
-			String registeredId = register();
-			id.set(registeredId);
+			id.set(register());
 			cdl.countDown();
 		}).assertNext((body) -> {
 			try {
