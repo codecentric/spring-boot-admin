@@ -62,6 +62,8 @@
         <testcontainers.version>1.21.3</testcontainers.version>
         <jetty.version>12.1.5</jetty.version>
 
+        <projectreactor-blockhound.version>1.0.15.RELEASE</projectreactor-blockhound.version>
+
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>

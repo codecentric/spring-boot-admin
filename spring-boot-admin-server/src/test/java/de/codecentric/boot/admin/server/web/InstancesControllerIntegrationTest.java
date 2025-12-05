@@ -34,6 +34,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -60,14 +61,19 @@ class InstancesControllerIntegrationTest {
 	private final ParameterizedTypeReference<Map<String, Object>> responseType = new ParameterizedTypeReference<>() {
 	};
 
-	@AfterAll
-	static void tearDown() {
-		StepVerifier.resetDefaultTimeout();
-	}
-
 	@BeforeAll
-	static void beforeAll() {
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(600));
+	static void setUpBlockHound() {
+		// Install BlockHound to detect blocking calls in reactive threads
+		// Allow blocking in this integration test's HTTP client calls - these are
+		// intentional
+		// for testing purposes and documented as necessary blocking operations
+		BlockHound.builder()
+			.allowBlockingCallsInside("org.springframework.test.web.reactive.server.DefaultWebTestClient", "exchange")
+			.allowBlockingCallsInside(
+					"org.springframework.test.web.reactive.server.DefaultWebTestClient$DefaultResponseSpec",
+					"expectBody")
+			.allowBlockingCallsInside("reactor.core.publisher.BlockingSingleSubscriber", "blockingGet")
+			.install();
 	}
 
 	@BeforeEach
