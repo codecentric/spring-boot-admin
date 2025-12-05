@@ -60,16 +60,16 @@ class AdminServerDiscoveryAutoConfigurationTest {
 	void eurekaServiceInstanceConverter() {
 		this.contextRunner.withBean(EurekaClient.class, () -> mock(EurekaClient.class))
 			.withBean(DiscoveryClient.class, () -> mock(DiscoveryClient.class))
-			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
+			.run((context) -> assertThat(context.getBean(ServiceInstanceConverter.class))
 				.isInstanceOf(EurekaServiceInstanceConverter.class));
 	}
 
 	@Test
 	void kubernetesServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(KubernetesDiscoveryPropertiesConfiguration.class)
-			.withBean(CoreV1Api.class, () -> mock(CoreV1Api.class))
+			.withBean(DiscoveryClient.class, () -> mock(DiscoveryClient.class))
 			.withPropertyValues("spring.main.cloud-platform=KUBERNETES")
-			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
+			.run((context) -> assertThat(context.getBean(ServiceInstanceConverter.class))
 				.isInstanceOf(KubernetesServiceInstanceConverter.class));
 	}
 
@@ -77,7 +77,7 @@ class AdminServerDiscoveryAutoConfigurationTest {
 	void customServiceInstanceConverter() {
 		this.contextRunner.withUserConfiguration(SimpleDiscoveryClientAutoConfiguration.class)
 			.withBean(CustomServiceInstanceConverter.class)
-			.run((context) -> assertThat(context).getBean(ServiceInstanceConverter.class)
+			.run((context) -> assertThat(context.getBean(ServiceInstanceConverter.class))
 				.isInstanceOf(CustomServiceInstanceConverter.class));
 	}
 
