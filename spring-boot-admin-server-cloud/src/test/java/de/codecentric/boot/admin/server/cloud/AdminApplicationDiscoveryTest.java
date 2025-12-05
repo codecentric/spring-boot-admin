@@ -105,6 +105,7 @@ class AdminApplicationDiscoveryTest {
 		// and issuing a
 		// InstanceRegisteredEvent that makes sure the instance gets registered.
 		InstanceProperties instanceProps = new InstanceProperties();
+		instanceProps.setServiceId("Test-Instance");
 		instanceProps.setUri(URI.create("http://localhost:" + this.port));
 		instanceProps.getMetadata().put("management.context-path", "/mgmt");
 		this.simpleDiscovery.getInstances().put("Test-Instance", singletonList(instanceProps));
