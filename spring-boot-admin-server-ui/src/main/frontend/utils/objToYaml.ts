@@ -38,6 +38,7 @@ export function objToYaml(
   return dump(input, {
     noRefs: true,
     indent: 2,
+    lineWidth: -1,
     ...options,
   });
 }
