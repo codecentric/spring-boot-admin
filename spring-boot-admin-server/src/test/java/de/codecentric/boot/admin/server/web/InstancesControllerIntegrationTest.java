@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.WebApplicationType;
@@ -34,6 +35,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -58,6 +60,21 @@ class InstancesControllerIntegrationTest {
 	private final ParameterizedTypeReference<Map<String, Object>> responseType = new ParameterizedTypeReference<>() {
 	};
 
+	@BeforeAll
+	static void setUpBlockHound() {
+		// Install BlockHound to detect blocking calls in reactive threads
+		// Allow blocking in this integration test's HTTP client calls - these are
+		// intentional
+		// for testing purposes and documented as necessary blocking operations
+		BlockHound.builder()
+			.allowBlockingCallsInside("org.springframework.test.web.reactive.server.DefaultWebTestClient", "exchange")
+			.allowBlockingCallsInside(
+					"org.springframework.test.web.reactive.server.DefaultWebTestClient$DefaultResponseSpec",
+					"expectBody")
+			.allowBlockingCallsInside("reactor.core.publisher.BlockingSingleSubscriber", "blockingGet")
+			.install();
+	}
+
 	@BeforeEach
 	void setUp() {
 		instance = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
@@ -66,10 +83,7 @@ class InstancesControllerIntegrationTest {
 
 		localPort = instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
 
-		this.client = WebTestClient.bindToServer()
-			.baseUrl("http://localhost:" + localPort)
-			.responseTimeout(Duration.ofMinutes(2))
-			.build();
+		this.client = WebTestClient.bindToServer().baseUrl("http://localhost:" + localPort).build();
 		this.registerAsTest = "{ \"name\": \"test\", \"healthUrl\": \"http://localhost:" + localPort
 				+ "/application/health\" }";
 		this.registerAsTwice = "{ \"name\": \"twice\", \"healthUrl\": \"http://localhost:" + localPort
