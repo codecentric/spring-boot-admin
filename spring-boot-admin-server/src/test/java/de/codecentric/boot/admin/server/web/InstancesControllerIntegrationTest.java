@@ -108,14 +108,15 @@ class InstancesControllerIntegrationTest {
 		CountDownLatch cdl = new CountDownLatch(1);
 
 		StepVerifier.create(this.getEventStream().log()).expectSubscription().then(() -> {
-			id.set(register());
+			String registeredId = register();
+			id.set(registeredId);
 			cdl.countDown();
 		}).assertNext((body) -> {
 			try {
 				cdl.await();
 			}
 			catch (InterruptedException ex) {
-				Thread.interrupted();
+				Thread.currentThread().interrupt();
 			}
 			assertThat(body).containsEntry("instance", id.get())
 				.containsEntry("version", 0)
