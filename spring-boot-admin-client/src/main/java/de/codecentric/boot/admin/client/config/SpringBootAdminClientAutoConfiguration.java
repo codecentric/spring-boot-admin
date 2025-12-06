@@ -29,17 +29,18 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.client.RestClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.restclient.RestTemplateBuilder;
+import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
+import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
+import org.springframework.boot.webflux.autoconfigure.WebFluxProperties;
+import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
+import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -64,7 +65,6 @@ import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataC
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadataContributor;
 
-import static org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 @Configuration(proxyBeanMethods = false)
@@ -159,22 +159,25 @@ public class SpringBootAdminClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean({ RestClient.Builder.class, ClientHttpRequestFactoryBuilder.class })
+	@ConditionalOnBean(RestClient.Builder.class)
 	public static class RestClientRegistrationClientConfig {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RegistrationClient registrationClient(ClientProperties client, RestClient.Builder restClientBuilder,
-				ClientHttpRequestFactoryBuilder<?> clientHttpRequestFactoryBuilder) {
-			var factorySettings = ClientHttpRequestFactorySettings.defaults()
+		public RegistrationClient registrationClient(ClientProperties client, RestClient.Builder restClientBuilder) {
+			var factorySettings = HttpClientSettings.defaults()
 				.withConnectTimeout(client.getConnectTimeout())
 				.withReadTimeout(client.getReadTimeout());
-			var clientHttpRequestFactory = clientHttpRequestFactoryBuilder.build(factorySettings);
+
+			var clientHttpRequestFactory = ClientHttpRequestFactoryBuilder.detect().build(factorySettings);
+
 			restClientBuilder = restClientBuilder.requestFactory(clientHttpRequestFactory);
+
 			if (client.getUsername() != null && client.getPassword() != null) {
 				restClientBuilder = restClientBuilder
 					.requestInterceptor(new BasicAuthenticationInterceptor(client.getUsername(), client.getPassword()));
 			}
+
 			var restClient = restClientBuilder.build();
 			return new RestClientRegistrationClient(restClient);
 		}

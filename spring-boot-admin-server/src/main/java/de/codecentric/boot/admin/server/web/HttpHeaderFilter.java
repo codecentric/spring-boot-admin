@@ -48,7 +48,7 @@ public class HttpHeaderFilter {
 
 	public HttpHeaders filterHeaders(HttpHeaders headers) {
 		HttpHeaders filtered = new HttpHeaders();
-		filtered.putAll(headers.entrySet()
+		filtered.putAll(headers.headerSet()
 			.stream()
 			.filter((e) -> this.includeHeader(e.getKey()))
 			.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));

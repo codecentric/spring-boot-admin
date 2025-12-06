@@ -17,14 +17,15 @@
 package de.codecentric.boot.admin.server.web;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.WebApplicationType;
@@ -32,9 +33,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.AdminReactiveApplicationTest;
@@ -43,6 +44,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 class InstancesControllerIntegrationTest {
 
 	private int localPort;
@@ -57,6 +59,16 @@ class InstancesControllerIntegrationTest {
 
 	private final ParameterizedTypeReference<Map<String, Object>> responseType = new ParameterizedTypeReference<>() {
 	};
+
+	@AfterAll
+	static void tearDown() {
+		StepVerifier.resetDefaultTimeout();
+	}
+
+	@BeforeAll
+	static void beforeAll() {
+		StepVerifier.setDefaultTimeout(Duration.ofSeconds(600));
+	}
 
 	@BeforeEach
 	void setUp() {
@@ -90,7 +102,7 @@ class InstancesControllerIntegrationTest {
 			.exchange()
 			.expectStatus()
 			.isOk()
-			.expectBody(List.class)
+			.expectBody(java.util.List.class)
 			.isEqualTo(emptyList());
 	}
 
@@ -102,58 +114,52 @@ class InstancesControllerIntegrationTest {
 	@Test
 	void should_return_registered_instances() {
 		AtomicReference<String> id = new AtomicReference<>();
-		CountDownLatch cdl = new CountDownLatch(1);
 
-		StepVerifier.create(this.getEventStream().log()).expectSubscription().then(() -> {
-			id.set(register());
-			cdl.countDown();
-		}).assertNext((body) -> {
-			try {
-				cdl.await();
-			}
-			catch (InterruptedException ex) {
-				Thread.interrupted();
-			}
-			assertThat(body).containsEntry("instance", id.get())
-				.containsEntry("version", 0)
-				.containsEntry("type", "REGISTERED");
-		}).then(() -> {
-			assertInstances(id.get());
-			assertInstancesByName("test", id.get());
-			assertInstanceById(id.get());
-		})
+		StepVerifier.create(this.getEventStream().log())
+			.expectSubscription()
+			.then(() -> StepVerifier.create(register()).consumeNextWith(id::set).verifyComplete())
+			.assertNext((body) -> {
+				assertThat(body).containsEntry("version", 0).containsEntry("type", "REGISTERED");
+				// The id might not be set yet if event arrives before registration
+				// completes
+				if (id.get() == null) {
+					id.set((String) body.get("instance"));
+				}
+				assertThat(body).containsEntry("instance", id.get());
+			})
+			.then(() -> {
+				StepVerifier.create(assertInstances(id.get())).expectNext(true).verifyComplete();
+				StepVerifier.create(assertInstancesByName("test", id.get())).expectNext(true).verifyComplete();
+				StepVerifier.create(assertInstanceById(id.get())).expectNext(true).verifyComplete();
+			})
 			.assertNext((body) -> assertThat(body).containsEntry("instance", id.get())
 				.containsEntry("version", 1)
 				.containsEntry("type", "STATUS_CHANGED"))
-			.then(() -> registerSecondTime(id.get()))
+			.then(() -> StepVerifier.create(registerSecondTime(id.get())).expectNext(true).verifyComplete())
 			.assertNext((body) -> assertThat(body).containsEntry("instance", id.get())
 				.containsEntry("version", 2)
 				.containsEntry("type", "REGISTRATION_UPDATED"))
-			.then(() -> deregister(id.get()))
-
+			.then(() -> StepVerifier.create(deregister(id.get())).expectNext(true).verifyComplete())
 			.assertNext((body) -> assertThat(body).containsEntry("instance", id.get())
 				.containsEntry("version", 3)
 				.containsEntry("type", "DEREGISTERED"))
 			.then(() -> {
-				assertInstanceNotFound(id.get());
-				assertEvents(id.get());
+				StepVerifier.create(assertInstanceNotFound(id.get())).expectNext(true).verifyComplete();
+				StepVerifier.create(assertEvents(id.get())).expectNext(true).verifyComplete();
 			})
 			.thenCancel()
-			.verify(Duration.ofSeconds(60));
+			.verify();
 	}
 
-	private void assertEvents(String id) {
-		this.client.get()
+	private Mono<Boolean> assertEvents(String id) {
+		//@formatter:off
+		return this.client.get()
 			.uri("/instances/events")
 			.accept(MediaType.APPLICATION_JSON)
 			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectHeader()
-			.contentType(MediaType.APPLICATION_JSON)
-			.expectBody(String.class)
-			.consumeWith((response) -> {
-				DocumentContext json = JsonPath.parse(response.getResponseBody());
+			.returnResult(String.class).getResponseBody().single()
+			.map((responseBody) -> {
+				DocumentContext json = JsonPath.parse(responseBody);
 				assertThat(json.read("$[0].instance", String.class)).isEqualTo(id);
 				assertThat(json.read("$[0].version", Long.class)).isZero();
 				assertThat(json.read("$[0].type", String.class)).isEqualTo("REGISTERED");
@@ -166,88 +172,112 @@ class InstancesControllerIntegrationTest {
 				assertThat(json.read("$[3].instance", String.class)).isEqualTo(id);
 				assertThat(json.read("$[3].version", Long.class)).isEqualTo(3L);
 				assertThat(json.read("$[3].type", String.class)).isEqualTo("DEREGISTERED");
+				return true;
 			});
+		//@formatter:on
 	}
 
-	private void assertInstanceNotFound(String id) {
-		this.client.get().uri(getLocation(id)).exchange().expectStatus().isNotFound();
-	}
-
-	private void deregister(String id) {
-		this.client.delete().uri(getLocation(id)).exchange().expectStatus().isNoContent();
-	}
-
-	private void assertInstanceById(String id) {
-		this.client.get()
+	private Mono<Boolean> assertInstanceNotFound(String id) {
+		//@formatter:off
+		return this.client.get()
 			.uri(getLocation(id))
 			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectHeader()
-			.contentType(MediaType.APPLICATION_JSON)
-			.expectBody()
-			.jsonPath("$.id")
-			.isEqualTo(id);
+			.expectStatus().isNotFound()
+			.returnResult(Void.class).getResponseBody()
+			.then(Mono.just(true));
+		//@formatter:on
 	}
 
-	private void assertInstancesByName(String name, String id) {
-		this.client.get()
+	private Mono<Boolean> deregister(String id) {
+		//@formatter:off
+		return this.client.delete()
+			.uri(getLocation(id))
+			.exchange()
+			.expectStatus().isNoContent()
+			.returnResult(Void.class).getResponseBody()
+			.then(Mono.just(true));
+		//@formatter:on
+	}
+
+	private Mono<Boolean> assertInstanceById(String id) {
+		//@formatter:off
+		return this.client.get()
+			.uri(getLocation(id))
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.returnResult(String.class).getResponseBody().single()
+			.map((body) -> {
+				DocumentContext json = JsonPath.parse(body);
+				assertThat(json.read("$.id", String.class)).isEqualTo(id);
+				return true;
+			});
+		//@formatter:on
+	}
+
+	private Mono<Boolean> assertInstancesByName(String name, String id) {
+		//@formatter:off
+		return this.client.get()
 			.uri("/instances?name=" + name)
+			.accept(MediaType.APPLICATION_JSON)
 			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectHeader()
-			.contentType(MediaType.APPLICATION_JSON)
-			.expectBody()
-			.jsonPath("$[0].id")
-			.isEqualTo(id);
+			.returnResult(String.class).getResponseBody().single()
+			.map((body) -> {
+				DocumentContext json = JsonPath.parse(body);
+				assertThat(json.read("$[0].id", String.class)).isEqualTo(id);
+				return true;
+			});
+		//@formatter:on
 	}
 
-	private void assertInstances(String id) {
-		this.client.get()
+	private Mono<Boolean> assertInstances(String id) {
+		//@formatter:off
+		return this.client.get()
 			.uri("/instances")
+			.accept(MediaType.APPLICATION_JSON)
 			.exchange()
-			.expectStatus()
-			.isOk()
-			.expectHeader()
-			.contentType(MediaType.APPLICATION_JSON)
-			.expectBody()
-			.jsonPath("$[0].id")
-			.isEqualTo(id);
+			.returnResult(String.class).getResponseBody().single()
+			.map((body) -> {
+				DocumentContext json = JsonPath.parse(body);
+				assertThat(json.read("$[0].id", String.class)).isEqualTo(id);
+				return true;
+			});
+		//@formatter:on
 	}
 
-	private void registerSecondTime(String id) {
-		this.client.post()
+	private Mono<Boolean> registerSecondTime(String id) {
+		//@formatter:off
+		return this.client.post()
 			.uri("/instances")
 			.accept(MediaType.APPLICATION_JSON)
 			.contentType(MediaType.APPLICATION_JSON)
 			.bodyValue(registerAsTwice)
 			.exchange()
-			.expectStatus()
-			.isCreated()
-			.expectHeader()
-			.contentType(MediaType.APPLICATION_JSON)
-			.expectHeader()
-			.valueEquals("location", getLocation(id))
-			.expectBody(Map.class)
-			.isEqualTo(singletonMap("id", id));
+			.expectStatus().isCreated()
+			.expectHeader().valueEquals("location", getLocation(id))
+			.returnResult(responseType).getResponseBody().single()
+			.map((body) -> {
+				assertThat(body).isEqualTo(singletonMap("id", id));
+				return true;
+			});
+		//@formatter:on
 	}
 
-	private String register() {
+	private Mono<String> register() {
 		//@formatter:off
-		EntityExchangeResult<Map<String, Object>> result = client.post()
-																.uri("/instances")
-																.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
-																.bodyValue(registerAsTest)
-																.exchange()
-																.expectStatus().isCreated()
-																.expectHeader().contentType(MediaType.APPLICATION_JSON)
-																.expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
-																.expectBody(responseType)
-																.returnResult();
+		return this.client.post()
+			.uri("/instances")
+			.accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
+			.bodyValue(registerAsTest)
+			.exchange()
+			.expectStatus().isCreated()
+			.expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
+			.returnResult(responseType).getResponseBody().single()
+			.map((body) -> {
+				assertThat(body).containsKeys("id");
+				return body.get("id").toString();
+			});
 		//@formatter:on
-		assertThat(result.getResponseBody()).containsKeys("id");
-		return result.getResponseBody().get("id").toString();
 	}
 
 	private String getLocation(String id) {
