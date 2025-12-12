@@ -34,7 +34,7 @@ jobs:
           fi
           df -h
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up settings.xml for Maven Central Repository
         uses: actions/setup-java@v5
@@ -53,7 +53,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-node-modules
         with:
@@ -78,7 +78,7 @@ jobs:
         run: ./mvnw -B --no-transfer-progress  -pl spring-boot-admin-docs site
 
       - name: Deploy documentation to GitHub Pages for version ${{ github.event.inputs.releaseversion }}
-        uses: JamesIves/github-pages-deploy-action@v4.7.4
+        uses: JamesIves/github-pages-deploy-action@v4.7.6
         with:
           branch: gh-pages
           folder: spring-boot-admin-docs/target/generated-docs/build
@@ -86,7 +86,7 @@ jobs:
           clean: true
 
       - name: Deploy redirect for /current to /${{ github.event.inputs.releaseversion }}
-        uses: JamesIves/github-pages-deploy-action@v4.7.4
+        uses: JamesIves/github-pages-deploy-action@v4.7.6
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages
@@ -95,7 +95,7 @@ jobs:
           clean: true
 
       - name: Deploy deeplink redirect for /current/* to /${{ github.event.inputs.releaseversion }}/*
-        uses: JamesIves/github-pages-deploy-action@v4.7.4
+        uses: JamesIves/github-pages-deploy-action@v4.7.6
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: free disk space
         continue-on-error: true

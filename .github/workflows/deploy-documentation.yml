@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: refs/tags/${{ github.event.inputs.releaseversion }}
 
@@ -50,7 +50,7 @@ jobs:
         run: ./mvnw -B --no-transfer-progress  -pl spring-boot-admin-docs site
 
       - name: Deploy documentation to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4.7.4
+        uses: JamesIves/github-pages-deploy-action@v4.7.6
         with:
           branch: gh-pages
           folder: spring-boot-admin-docs/target/generated-docs/build
@@ -58,7 +58,7 @@ jobs:
           clean: true
 
       - name: Deploy redirect for /current to /${{ github.event.inputs.releaseversion }}
-        uses: JamesIves/github-pages-deploy-action@v4.7.4
+        uses: JamesIves/github-pages-deploy-action@v4.7.6
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages
@@ -67,7 +67,7 @@ jobs:
           clean: true
 
       - name: Deploy deeplink redirect for /current/* to /${{ github.event.inputs.releaseversion }}/*
-        uses: JamesIves/github-pages-deploy-action@v4.7.4
+        uses: JamesIves/github-pages-deploy-action@v4.7.6
         if: github.event.inputs.copyDocsToCurrent == 'true'
         with:
           branch: gh-pages
