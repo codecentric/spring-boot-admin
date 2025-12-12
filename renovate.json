@@ -6,7 +6,11 @@
     "bot",
     "dependencies"
   ],
-
+  "npm": {
+    "minimumReleaseAge": "5 days",
+    "internalChecksFilter": "strict",
+    "prCreation": "not-pending"
+  },
   "packageRules": [
     {
       "description": "Automatically merge minor and patch-level updates when checks pass, creates a PR otherwise",
