@@ -26,16 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.expression.MapAccessor;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -48,6 +42,7 @@ import reactor.core.publisher.Mono;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.notify.filter.AbstractContentNotifier;
 
 /**
  * Notifier submitting events to FeiShu by webhooks.
@@ -58,15 +53,9 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
  *
  */
 @Slf4j
-public class FeiShuNotifier extends AbstractStatusChangeNotifier {
-
-	private static final String DEFAULT_MESSAGE = "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
-
-	private final SpelExpressionParser parser = new SpelExpressionParser();
+public class FeiShuNotifier extends AbstractContentNotifier {
 
 	private RestTemplate restTemplate;
-
-	private Expression message;
 
 	/**
 	 * Webhook URL for the FeiShu(飞书) chat group API (i.e.
@@ -97,7 +86,6 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 	public FeiShuNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.message = this.parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
@@ -107,9 +95,9 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		}
 		return Mono.fromRunnable(() -> {
 			ResponseEntity<String> responseEntity = this.restTemplate.postForEntity(this.webhookUrl,
-					this.createNotification(event, instance), String.class);
+				this.createNotification(event, instance), String.class);
 			log.debug("Send a notification message to the FeiShu group,returns the parameter：{}",
-					responseEntity.getBody());
+				responseEntity.getBody());
 		});
 	}
 
@@ -118,7 +106,7 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 			String stringToSign = timestamp + "\n" + secret;
 			Mac mac = Mac.getInstance("HmacSHA256");
 			mac.init(new SecretKeySpec(stringToSign.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-			byte[] signData = mac.doFinal(new byte[] {});
+			byte[] signData = mac.doFinal(new byte[]{});
 			return new String(Base64.getEncoder().encode(signData));
 		}
 		catch (Exception ex) {
@@ -150,14 +138,18 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 		return new HttpEntity<>(body, headers);
 	}
 
-	private String createContent(InstanceEvent event, Instance instance) {
+	@Override
+	protected Map<String, Object> getContent(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
 		root.put("lastStatus", this.getLastStatus(event.getInstance()));
-		StandardEvaluationContext context = new StandardEvaluationContext(root);
-		context.addPropertyAccessor(new MapAccessor());
-		return this.message.getValue(context, String.class);
+		return root;
+	}
+
+	@Override
+	protected String getDefaultMessage() {
+		return "ServiceName: #{instance.registration.name}(#{instance.id}) \nServiceUrl: #{instance.registration.serviceUrl} \nStatus: changed status from [#{lastStatus}] to [#{event.statusInfo.status}]";
 	}
 
 	private String createTextContent(InstanceEvent event, Instance instance) {
@@ -222,14 +214,6 @@ public class FeiShuNotifier extends AbstractStatusChangeNotifier {
 
 	public void setWebhookUrl(URI webhookUrl) {
 		this.webhookUrl = webhookUrl;
-	}
-
-	public String getMessage() {
-		return this.message.getExpressionString();
-	}
-
-	public void setMessage(String message) {
-		this.message = this.parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {
