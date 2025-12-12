@@ -26,9 +26,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -95,9 +96,9 @@ public class FeiShuNotifier extends AbstractContentNotifier {
 		}
 		return Mono.fromRunnable(() -> {
 			ResponseEntity<String> responseEntity = this.restTemplate.postForEntity(this.webhookUrl,
-				this.createNotification(event, instance), String.class);
+					this.createNotification(event, instance), String.class);
 			log.debug("Send a notification message to the FeiShu group,returns the parameter：{}",
-				responseEntity.getBody());
+					responseEntity.getBody());
 		});
 	}
 
@@ -106,7 +107,7 @@ public class FeiShuNotifier extends AbstractContentNotifier {
 			String stringToSign = timestamp + "\n" + secret;
 			Mac mac = Mac.getInstance("HmacSHA256");
 			mac.init(new SecretKeySpec(stringToSign.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-			byte[] signData = mac.doFinal(new byte[]{});
+			byte[] signData = mac.doFinal(new byte[] {});
 			return new String(Base64.getEncoder().encode(signData));
 		}
 		catch (Exception ex) {
@@ -139,7 +140,7 @@ public class FeiShuNotifier extends AbstractContentNotifier {
 	}
 
 	@Override
-	protected Map<String, Object> getContent(InstanceEvent event, Instance instance) {
+	protected Map<String, Object> buildContentModel(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);

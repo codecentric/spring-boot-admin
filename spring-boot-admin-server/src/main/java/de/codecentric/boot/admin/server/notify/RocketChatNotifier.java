@@ -20,12 +20,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.context.expression.MapAccessor;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
-import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -37,17 +31,17 @@ import reactor.core.publisher.Mono;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.notify.filter.AbstractContentNotifier;
 
 /**
  * Notifier submitting events to RocketChat.
  *
  * @author Nicolas Badenne
  */
-public class RocketChatNotifier extends AbstractStatusChangeNotifier {
+public class RocketChatNotifier extends AbstractContentNotifier {
 
-	private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
-
-	private final SpelExpressionParser parser = new SpelExpressionParser();
+	private static final String DEFAULT_MESSAGE = "*#{name}* (#{id}) is *#{status}*";
 
 	private RestTemplate restTemplate;
 
@@ -74,15 +68,9 @@ public class RocketChatNotifier extends AbstractStatusChangeNotifier {
 	 */
 	private String userId;
 
-	/**
-	 * Message template. SpEL template using event as root
-	 */
-	private Expression message;
-
 	public RocketChatNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
@@ -105,24 +93,22 @@ public class RocketChatNotifier extends AbstractStatusChangeNotifier {
 	protected Object createMessage(InstanceEvent event, Instance instance) {
 		Map<String, String> messageJsonData = new HashMap<>();
 		messageJsonData.put("rid", roomId);
-		messageJsonData.put("msg", getText(event, instance));
+		messageJsonData.put("msg", createContent(event, instance));
 		Map<String, Object> messageJson = new HashMap<>();
 		messageJson.put("message", messageJsonData);
 		return messageJson;
 	}
 
-	@Nullable
-	protected String getText(InstanceEvent event, Instance instance) {
-		Map<String, Object> root = new HashMap<>();
-		root.put("roomId", roomId);
-		root.put("event", event);
-		root.put("instance", instance);
-		root.put("lastStatus", getLastStatus(event.getInstance()));
-		SimpleEvaluationContext context = SimpleEvaluationContext
-			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-			.withRootObject(root)
-			.build();
-		return message.getValue(context, String.class);
+	@Override
+	protected Map<String, Object> buildContentModel(InstanceEvent event, Instance instance) {
+		var content = super.buildContentModel(event, instance);
+		content.put("roomId", roomId);
+		return content;
+	}
+
+	@Override
+	protected String getDefaultMessage() {
+		return DEFAULT_MESSAGE;
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {
@@ -163,14 +149,6 @@ public class RocketChatNotifier extends AbstractStatusChangeNotifier {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
-	}
-
-	public Expression getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 }
