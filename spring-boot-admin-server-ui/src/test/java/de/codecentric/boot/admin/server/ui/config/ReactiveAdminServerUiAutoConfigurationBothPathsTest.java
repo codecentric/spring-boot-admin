@@ -17,8 +17,8 @@
 package de.codecentric.boot.admin.server.ui.config;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.webflux.autoconfigure.WebFluxProperties;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 

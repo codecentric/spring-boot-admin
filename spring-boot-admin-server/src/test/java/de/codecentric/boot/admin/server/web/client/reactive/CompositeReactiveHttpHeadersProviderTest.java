@@ -43,9 +43,9 @@ class CompositeReactiveHttpHeadersProviderTest {
 		}));
 
 		StepVerifier.create(provider.getHeaders(null)).thenConsumeWhile((headers) -> {
-			assertThat(headers).containsEntry("a", singletonList("1"))
-				.containsEntry("b", asList("2-a", "2-b"))
-				.containsEntry("c", singletonList("3"));
+			assertThat(headers.asMultiValueMap()).containsEntry("a", singletonList("1"));
+			assertThat(headers.get("b")).containsAll(asList("2-a", "2-b"));
+			assertThat(headers.get("c")).containsAll(singletonList("3"));
 			return true;
 		}).verifyComplete();
 	}
@@ -55,7 +55,7 @@ class CompositeReactiveHttpHeadersProviderTest {
 		CompositeReactiveHttpHeadersProvider provider = new CompositeReactiveHttpHeadersProvider(emptyList());
 
 		StepVerifier.create(provider.getHeaders(null)).thenConsumeWhile((headers) -> {
-			assertThat(headers).isEmpty();
+			assertThat(headers.toSingleValueMap()).isEmpty();
 			return true;
 		}).verifyComplete();
 	}

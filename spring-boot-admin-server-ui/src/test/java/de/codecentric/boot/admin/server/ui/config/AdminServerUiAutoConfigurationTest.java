@@ -27,9 +27,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.webflux.autoconfigure.WebFluxProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -86,7 +86,7 @@ class AdminServerUiAutoConfigurationTest implements WithAssertions {
 						AdminServerMarkerConfiguration.Marker.class)
 				.run((context) -> {
 					HomepageForwardingFilter bean = context.getBean(HomepageForwardingFilter.class);
-					bean.filter(serverWebExchange, webFilterChain);
+					bean.filter(serverWebExchange, this.webFilterChain);
 
 					verify(serverWebExchange, never()).mutate();
 				});
@@ -107,7 +107,7 @@ class AdminServerUiAutoConfigurationTest implements WithAssertions {
 						AdminServerMarkerConfiguration.Marker.class)
 				.run((context) -> {
 					HomepageForwardingFilter bean = context.getBean(HomepageForwardingFilter.class);
-					bean.filter(serverWebExchange, webFilterChain);
+					bean.filter(serverWebExchange, this.webFilterChain);
 
 					verify(serverWebExchange, atMostOnce()).mutate();
 				});

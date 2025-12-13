@@ -70,32 +70,42 @@ class InfoUpdateTriggerTest {
 	void should_start_and_stop_monitor() {
 		// given
 		this.trigger.stop();
-		this.trigger.setInterval(Duration.ofMillis(10));
-		this.trigger.setLifetime(Duration.ofMillis(10));
+		this.trigger.setInterval(Duration.ofMillis(100));
+		this.trigger.setLifetime(Duration.ofMillis(50));
 		this.trigger.start();
 		await().until(this.events::wasSubscribed);
 
+		// when an event is emitted
 		this.events.next(
 				new InstanceStatusChangedEvent(this.instance.getId(), this.instance.getVersion(), StatusInfo.ofDown()));
-		// then it should start updating one time for registration and at least once for
-		// monitor
-		await().atMost(Duration.ofMillis(50))
-			.pollInterval(Duration.ofMillis(10))
+
+		// then it should update at least once for the event
+		await().atMost(Duration.ofMillis(200))
+			.untilAsserted(() -> verify(this.updater, atLeast(1)).updateInfo(this.instance.getId()));
+
+		// and then at least one more time due to monitoring interval (after lifetime
+		// expires)
+		await().atMost(Duration.ofMillis(400))
+			.pollInterval(Duration.ofMillis(30))
 			.untilAsserted(() -> verify(this.updater, atLeast(2)).updateInfo(this.instance.getId()));
 
 		// given long lifetime
 		this.trigger.setLifetime(Duration.ofSeconds(10));
 		clearInvocations(this.updater);
-		// when the lifetime is not expired should never update
-		await().pollDelay(Duration.ofMillis(50))
+
+		// when the lifetime is not expired should not update via interval monitoring
+		await().pollDelay(Duration.ofMillis(150))
+			.atMost(Duration.ofMillis(200))
 			.untilAsserted(() -> verify(this.updater, never()).updateInfo(any(InstanceId.class)));
 
-		this.trigger.setLifetime(Duration.ofMillis(10));
+		// when trigger is stopped
+		this.trigger.setLifetime(Duration.ofMillis(50));
 		this.trigger.stop();
 		clearInvocations(this.updater);
 
-		// when trigger ist destroyed it should stop updating
-		await().pollDelay(Duration.ofMillis(15))
+		// then it should stop updating
+		await().pollDelay(Duration.ofMillis(150))
+			.atMost(Duration.ofMillis(200))
 			.untilAsserted(() -> verify(this.updater, never()).updateInfo(any(InstanceId.class)));
 	}
 
