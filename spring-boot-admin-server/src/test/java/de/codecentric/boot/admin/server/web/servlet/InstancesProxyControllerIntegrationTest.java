@@ -16,39 +16,34 @@
 
 package de.codecentric.boot.admin.server.web.servlet;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.lang.Nullable;
 
 import de.codecentric.boot.admin.server.AdminServletApplicationTest;
 import de.codecentric.boot.admin.server.web.AbstractInstancesProxyControllerIntegrationTest;
 
 class InstancesProxyControllerIntegrationTest extends AbstractInstancesProxyControllerIntegrationTest {
 
-	@Nullable
-	private static ConfigurableApplicationContext context;
+	@Nullable private ConfigurableApplicationContext context;
 
-	@BeforeAll
-	static void setUpContext() {
+	@BeforeEach
+	void setUpClient() {
 		context = new SpringApplicationBuilder().sources(AdminServletApplicationTest.TestAdminApplication.class)
 			.web(WebApplicationType.SERVLET)
 			.run("--server.port=0", "--spring.boot.admin.monitor.default-timeout=2500");
 
-	}
-
-	@BeforeEach
-	void setUpClient() {
 		super.setUpClient(context);
 	}
 
-	@AfterAll
-	static void tearDownContext() {
+	@AfterEach
+	void tearDownContext() {
 		if (context != null) {
 			context.close();
+			context = null;
 		}
 	}
 
