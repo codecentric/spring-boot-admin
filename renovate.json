@@ -8,8 +8,7 @@
   ],
   "npm": {
     "minimumReleaseAge": "5 days",
-    "internalChecksFilter": "strict",
-    "prCreation": "not-pending"
+    "internalChecksFilter": "strict"
   },
   "packageRules": [
     {
