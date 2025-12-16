@@ -16,8 +16,9 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
+import com.hazelcast.config.Config;
+import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.test.TestHazelcastInstanceFactory;
 
 public class HazelcastEventStoreTest extends AbstractEventStoreTest {
 
@@ -25,14 +26,19 @@ public class HazelcastEventStoreTest extends AbstractEventStoreTest {
 
 	@Override
 	protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
-		hazelcast = new TestHazelcastInstanceFactory(1).newHazelcastInstance();
+		Config config = new Config();
+		config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+		config.getNetworkConfig().getJoin().getAutoDetectionConfig().setEnabled(false);
+		hazelcast = Hazelcast.newHazelcastInstance(config);
 		return new HazelcastEventStore(maxLogSizePerAggregate,
 				hazelcast.getMap("testList" + System.currentTimeMillis()));
 	}
 
 	@Override
 	protected void shutdownStore() {
-		this.hazelcast.shutdown();
+		if (this.hazelcast != null) {
+			this.hazelcast.shutdown();
+		}
 	}
 
 }
