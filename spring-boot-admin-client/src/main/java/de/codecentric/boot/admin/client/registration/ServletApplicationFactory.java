@@ -20,9 +20,9 @@ import jakarta.servlet.ServletContext;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -55,8 +55,8 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 
 	@Override
 	protected String getServiceUrl() {
-		if (instance.getServiceUrl() != null) {
-			return instance.getServiceUrl();
+		if (this.instance.getServiceUrl() != null) {
+			return this.instance.getServiceUrl();
 		}
 
 		return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
@@ -67,7 +67,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 
 	@Override
 	protected String getManagementBaseUrl() {
-		String baseUrl = instance.getManagementBaseUrl();
+		String baseUrl = this.instance.getManagementBaseUrl();
 
 		if (StringUtils.hasText(baseUrl)) {
 			return baseUrl;
@@ -81,7 +81,7 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 				.toUriString();
 		}
 
-		Ssl ssl = (management.getSsl() != null) ? management.getSsl() : server.getSsl();
+		Ssl ssl = (this.management.getSsl() != null) ? this.management.getSsl() : this.server.getSsl();
 		return UriComponentsBuilder.newInstance()
 			.scheme(getScheme(ssl))
 			.host(getManagementHost())
@@ -91,11 +91,11 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 	}
 
 	protected String getManagementContextPath() {
-		return management.getBasePath();
+		return this.management.getBasePath();
 	}
 
 	protected String getServerContextPath() {
-		return servletContext.getContextPath();
+		return this.servletContext.getContextPath();
 	}
 
 	protected String getDispatcherServletPrefix() {

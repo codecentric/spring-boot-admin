@@ -7,6 +7,7 @@ target/
 .project
 .factorypath
 .apt_generated/
+.checkstyle
 
 # Intellij
 .idea/
@@ -28,3 +29,4 @@ node/
 
 .DS_Store
 mockServiceWorker.js
+/.github/agents/

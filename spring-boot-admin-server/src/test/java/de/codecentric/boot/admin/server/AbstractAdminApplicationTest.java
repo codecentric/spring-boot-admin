@@ -31,6 +31,7 @@ import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
@@ -54,7 +55,7 @@ public abstract class AbstractAdminApplicationTest {
 		AtomicReference<URI> location = new AtomicReference<>();
 
 		StepVerifier.create(getEventStream().log()).expectSubscription().then(() -> {
-			listEmptyInstances();
+			StepVerifier.create(listEmptyInstances()).expectNext(true).verifyComplete();
 			location.set(registerInstance());
 		})
 			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("REGISTERED"))
@@ -62,12 +63,12 @@ public abstract class AbstractAdminApplicationTest {
 			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("ENDPOINTS_DETECTED"))
 			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("INFO_CHANGED"))
 			.then(() -> {
-				getInstance(location.get());
-				listInstances();
-				deregisterInstance(location.get());
+				StepVerifier.create(getInstance(location.get())).expectNext(true).verifyComplete();
+				StepVerifier.create(listInstances()).expectNext(true).verifyComplete();
+				StepVerifier.create(deregisterInstance(location.get())).expectNext(true).verifyComplete();
 			})
 			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("DEREGISTERED"))
-			.then(this::listEmptyInstances)
+			.then(() -> StepVerifier.create(listEmptyInstances()).expectNext(true).verifyComplete())
 			.thenCancel()
 			.verify(Duration.ofSeconds(120));
 	}
@@ -95,44 +96,58 @@ public abstract class AbstractAdminApplicationTest {
 		//@formatter:on
 	}
 
-	protected void getInstance(URI uri) {
+	protected Mono<Boolean> getInstance(URI uri) {
 		//@formatter:off
-		this.webClient.get().uri(uri)
+		return this.webClient.get().uri(uri)
 					.accept(MediaType.APPLICATION_JSON)
 					.exchange()
-					.expectStatus().isOk()
-					.expectBody()
-					.jsonPath("$.registration.name").isEqualTo("Test-Instance")
-					.jsonPath("$.statusInfo.status").isEqualTo("UP")
-					.jsonPath("$.info.test").isEqualTo("foobar");
+					.returnResult(String.class).getResponseBody().single()
+					.map((body) -> {
+						assertThat(body).contains("\"name\":\"Test-Instance\"");
+						assertThat(body).contains("\"status\":\"UP\"");
+						assertThat(body).contains("\"test\":\"foobar\"");
+						return true;
+					});
 		//@formatter:on
 	}
 
-	protected void listInstances() {
+	protected Mono<Boolean> listInstances() {
 		//@formatter:off
-		this.webClient.get().uri("/instances")
+		return this.webClient.get().uri("/instances")
 					.accept(MediaType.APPLICATION_JSON)
 					.exchange()
-					.expectStatus().isOk()
-					.expectBody()
-						.jsonPath("$[0].registration.name").isEqualTo("Test-Instance")
-						.jsonPath("$[0].statusInfo.status").isEqualTo("UP")
-						.jsonPath("$[0].info.test").isEqualTo("foobar");
+					.returnResult(String.class).getResponseBody().single()
+					.map((body) -> {
+						assertThat(body).contains("\"name\":\"Test-Instance\"");
+						assertThat(body).contains("\"status\":\"UP\"");
+						assertThat(body).contains("\"test\":\"foobar\"");
+						return true;
+					});
 		//@formatter:on
 	}
 
-	protected void listEmptyInstances() {
+	protected Mono<Boolean> listEmptyInstances() {
 		//@formatter:off
-		this.webClient.get().uri("/instances")
+		return this.webClient.get().uri("/instances")
 					.accept(MediaType.APPLICATION_JSON)
 					.exchange()
-					.expectStatus().isOk()
-					.expectBody().json("[]");
+					.returnResult(String.class).getResponseBody()
+					.collectList()
+					.map((list) -> {
+						assertThat(list).hasSize(1);
+						assertThat(list.get(0)).isEqualTo("[]");
+						return true;
+					});
 		//@formatter:on
 	}
 
-	protected void deregisterInstance(URI uri) {
-		this.webClient.delete().uri(uri).exchange().expectStatus().isNoContent();
+	protected Mono<Boolean> deregisterInstance(URI uri) {
+		//@formatter:off
+		return this.webClient.delete().uri(uri)
+					.exchange()
+					.returnResult(Void.class).getResponseBody()
+					.then(Mono.just(true));
+		//@formatter:on
 	}
 
 	private Registration createRegistration() {
