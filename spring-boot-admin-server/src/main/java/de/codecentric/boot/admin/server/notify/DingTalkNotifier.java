@@ -26,12 +26,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.utils.Base64;
-import org.springframework.context.expression.MapAccessor;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
-import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -42,6 +36,7 @@ import reactor.core.publisher.Mono;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.notify.filter.AbstractContentNotifier;
 
 /**
  * Notifier submitting events to DingTalk.
@@ -49,11 +44,9 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
  * @author Mask
  */
 @Slf4j
-public class DingTalkNotifier extends AbstractStatusChangeNotifier {
+public class DingTalkNotifier extends AbstractContentNotifier {
 
-	private static final String DEFAULT_MESSAGE = "#{instance.registration.name} #{instance.id} is #{event.statusInfo.status}";
-
-	private final SpelExpressionParser parser = new SpelExpressionParser();
+	private static final String DEFAULT_MESSAGE = "#{name} #{id} is #{status}";
 
 	private RestTemplate restTemplate;
 
@@ -68,12 +61,9 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 	@Nullable
 	private String secret;
 
-	private Expression message;
-
 	public DingTalkNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
@@ -92,7 +82,7 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		messageJson.put("msgtype", "text");
 
 		Map<String, Object> content = new HashMap<>();
-		content.put("content", getText(event, instance));
+		content.put("content", createContent(event, instance));
 		messageJson.put("text", content);
 
 		HttpHeaders headers = new HttpHeaders();
@@ -100,16 +90,9 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 		return new HttpEntity<>(messageJson, headers);
 	}
 
-	private Object getText(InstanceEvent event, Instance instance) {
-		Map<String, Object> root = new HashMap<>();
-		root.put("event", event);
-		root.put("instance", instance);
-		root.put("lastStatus", getLastStatus(event.getInstance()));
-		SimpleEvaluationContext context = SimpleEvaluationContext
-			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-			.withRootObject(root)
-			.build();
-		return message.getValue(context, String.class);
+	@Override
+	protected String getDefaultMessage() {
+		return DEFAULT_MESSAGE;
 	}
 
 	private String getSign(Long timestamp) {
@@ -145,14 +128,6 @@ public class DingTalkNotifier extends AbstractStatusChangeNotifier {
 
 	public void setSecret(@Nullable String secret) {
 		this.secret = secret;
-	}
-
-	public String getMessage() {
-		return message.getExpressionString();
-	}
-
-	public void setMessage(String message) {
-		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 }
