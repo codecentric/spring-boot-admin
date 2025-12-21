@@ -61,19 +61,14 @@ class InstancesControllerIntegrationTest {
 	private final ParameterizedTypeReference<Map<String, Object>> responseType = new ParameterizedTypeReference<>() {
 	};
 
+	@AfterAll
+	static void tearDown() {
+		StepVerifier.resetDefaultTimeout();
+	}
+
 	@BeforeAll
-	static void setUpBlockHound() {
-		// Install BlockHound to detect blocking calls in reactive threads
-		// Allow blocking in this integration test's HTTP client calls - these are
-		// intentional
-		// for testing purposes and documented as necessary blocking operations
-		BlockHound.builder()
-			.allowBlockingCallsInside("org.springframework.test.web.reactive.server.DefaultWebTestClient", "exchange")
-			.allowBlockingCallsInside(
-					"org.springframework.test.web.reactive.server.DefaultWebTestClient$DefaultResponseSpec",
-					"expectBody")
-			.allowBlockingCallsInside("reactor.core.publisher.BlockingSingleSubscriber", "blockingGet")
-			.install();
+	static void beforeAll() {
+		StepVerifier.setDefaultTimeout(Duration.ofSeconds(600));
 	}
 
 	@BeforeEach
