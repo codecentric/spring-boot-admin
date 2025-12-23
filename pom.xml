@@ -35,7 +35,7 @@
         <java.version>17</java.version>
         <node.version>v22.12.0</node.version>
 
-        <require.maven.version>[4.0.0-rc-4,)</require.maven.version>
+        <require.maven.version>[4.0.0-rc-5,)</require.maven.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
