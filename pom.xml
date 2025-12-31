@@ -52,7 +52,7 @@
 
         <jolokia-support-spring.version>2.4.2</jolokia-support-spring.version>
 
-        <checkstyle.version>12.3.0</checkstyle.version>
+        <checkstyle.version>12.3.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
 
         <wiremock.version>3.13.2</wiremock.version>
