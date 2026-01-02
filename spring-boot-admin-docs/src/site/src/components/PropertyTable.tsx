@@ -18,6 +18,9 @@ export function PropertyTable({
                                 additionalProperties = [] as Array<SpringPropertyDefinition>,
                               }: Readonly<Props>) {
   const filteredProperties = filterPropertiesByName(properties, filter, exclusive)
+    .filter((property, index, self) =>
+      index === self.findIndex((p) => p.name === property.name)
+    )
     .sort((a, b) => {
       return a.name.length - b.name.length || a.name.localeCompare(b.name);
     });
