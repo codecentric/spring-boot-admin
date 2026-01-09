@@ -47,7 +47,7 @@
         <maven.site.skip>true</maven.site.skip>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>4.0.0</spring-boot.version>
+        <spring-boot.version>4.0.1</spring-boot.version>
         <spring-cloud.version>2025.1.0</spring-cloud.version>
 
         <!-- FIXME downgrade to 2.1.0 until a compatible version is released -->
