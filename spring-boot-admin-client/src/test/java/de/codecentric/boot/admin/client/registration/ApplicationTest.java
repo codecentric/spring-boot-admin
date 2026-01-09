@@ -16,12 +16,9 @@
 
 package de.codecentric.boot.admin.client.registration;
 
-import java.io.IOException;
-
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Test;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,8 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ApplicationTest {
 
 	@Test
-	void test_json_format() throws IOException {
-		ObjectMapper objectMapper = JsonMapper.builder().build();
+	void test_json_format() {
+		JsonMapper jsonMapper = JsonMapper.builder().build();
 
 		Application app = Application.create("test")
 			.healthUrl("http://health")
@@ -38,7 +35,7 @@ class ApplicationTest {
 			.managementUrl("http://management")
 			.build();
 
-		DocumentContext json = JsonPath.parse(objectMapper.writeValueAsString(app));
+		DocumentContext json = JsonPath.parse(jsonMapper.writeValueAsString(app));
 
 		assertThat((String) json.read("$.name")).isEqualTo("test");
 		assertThat((String) json.read("$.serviceUrl")).isEqualTo("http://service");

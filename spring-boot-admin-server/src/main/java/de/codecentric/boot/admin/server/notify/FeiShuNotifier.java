@@ -37,7 +37,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -200,8 +199,8 @@ public class FeiShuNotifier extends AbstractContentNotifier {
 
 	private String toJsonString(Object o) {
 		try {
-			ObjectMapper objectMapper = JsonMapper.builder().build();
-			return objectMapper.writeValueAsString(o);
+			JsonMapper jsonMapper = JsonMapper.builder().build();
+			return jsonMapper.writeValueAsString(o);
 		}
 		catch (Exception ex) {
 			log.warn("Failed to serialize JSON object", ex);
