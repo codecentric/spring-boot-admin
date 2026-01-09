@@ -34,7 +34,24 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-classic</artifactId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <!-- FIXME optional -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webclient</artifactId>
+            <optional>false</optional>
+        </dependency>
+        <!-- FIXME optional -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-restclient</artifactId>
+            <optional>false</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hazelcast</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -67,10 +84,11 @@
             <optional>true</optional>
         </dependency>
         <!-- Optional Mail Starter for mail-notifications -->
+        <!-- FIXME optional -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
-            <optional>true</optional>
+            <optional>false</optional>
         </dependency>
         <!-- Optional Hazelcast-Support -->
         <dependency>
