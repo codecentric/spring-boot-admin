@@ -41,13 +41,13 @@ import static org.assertj.core.api.Assertions.entry;
 
 class InstanceRegisteredEventMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<InstanceRegisteredEvent> jsonTester;
 
 	protected InstanceRegisteredEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -55,7 +55,7 @@ class InstanceRegisteredEventMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class InstanceRegisteredEventMixinTest {
 						.put("metadata", new JSONObject().put("PASSWORD", "******").put("user", "humptydumpty")))
 			.toString();
 
-		InstanceRegisteredEvent event = objectMapper.readValue(json, InstanceRegisteredEvent.class);
+		InstanceRegisteredEvent event = jsonMapper.readValue(json, InstanceRegisteredEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -97,7 +97,7 @@ class InstanceRegisteredEventMixinTest {
 			.put("registration", new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
 			.toString();
 
-		InstanceRegisteredEvent event = objectMapper.readValue(json, InstanceRegisteredEvent.class);
+		InstanceRegisteredEvent event = jsonMapper.readValue(json, InstanceRegisteredEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isZero();
@@ -121,7 +121,7 @@ class InstanceRegisteredEventMixinTest {
 			.put("type", "REGISTERED")
 			.toString();
 
-		InstanceRegisteredEvent event = objectMapper.readValue(json, InstanceRegisteredEvent.class);
+		InstanceRegisteredEvent event = jsonMapper.readValue(json, InstanceRegisteredEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -139,7 +139,7 @@ class InstanceRegisteredEventMixinTest {
 			.put("registration", new JSONObject())
 			.toString();
 
-		assertThatThrownBy(() -> objectMapper.readValue(json, InstanceRegisteredEvent.class))
+		assertThatThrownBy(() -> jsonMapper.readValue(json, InstanceRegisteredEvent.class))
 			.isInstanceOf(DatabindException.class)
 			.hasCauseInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("must not be empty");

@@ -34,13 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EndpointMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<Endpoint> jsonTester;
 
 	protected EndpointMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -48,14 +48,14 @@ class EndpointMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
 	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("id", "info").put("url", "http://localhost:8080/info").toString();
 
-		Endpoint endpoint = objectMapper.readValue(json, Endpoint.class);
+		Endpoint endpoint = jsonMapper.readValue(json, Endpoint.class);
 		assertThat(endpoint).isNotNull();
 		assertThat(endpoint.getId()).isEqualTo("info");
 		assertThat(endpoint.getUrl()).isEqualTo("http://localhost:8080/info");

@@ -28,11 +28,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BuildVersionMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	protected BuildVersionMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -40,7 +40,7 @@ class BuildVersionMixinTest {
 
 	@Test
 	void verifyDeserialize() throws JsonProcessingException {
-		BuildVersion buildVersion = objectMapper.readValue("\"1.0.0\"", BuildVersion.class);
+		BuildVersion buildVersion = jsonMapper.readValue("\"1.0.0\"", BuildVersion.class);
 		assertThat(buildVersion).isEqualTo(BuildVersion.valueOf("1.0.0"));
 	}
 
@@ -48,7 +48,7 @@ class BuildVersionMixinTest {
 	void verifySerialize() throws JsonProcessingException {
 		BuildVersion buildVersion = BuildVersion.valueOf("1.0.0");
 
-		String result = objectMapper.writeValueAsString(buildVersion);
+		String result = jsonMapper.writeValueAsString(buildVersion);
 		assertThat(result).isEqualTo("\"1.0.0\"");
 	}
 
@@ -56,7 +56,7 @@ class BuildVersionMixinTest {
 	void verifySerializeWithMapEntryVersion() throws JsonProcessingException {
 		BuildVersion buildVersion = BuildVersion.from(singletonMap("version", "1.0.0"));
 
-		String result = objectMapper.writeValueAsString(buildVersion);
+		String result = jsonMapper.writeValueAsString(buildVersion);
 		assertThat(result).isEqualTo("\"1.0.0\"");
 	}
 
@@ -64,7 +64,7 @@ class BuildVersionMixinTest {
 	void verifySerializeWithNestedMapEntryVersion() throws JsonProcessingException {
 		BuildVersion buildVersion = BuildVersion.from(singletonMap("build", singletonMap("version", "1.0.0")));
 
-		String result = objectMapper.writeValueAsString(buildVersion);
+		String result = jsonMapper.writeValueAsString(buildVersion);
 		assertThat(result).isEqualTo("\"1.0.0\"");
 	}
 

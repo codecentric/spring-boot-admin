@@ -42,13 +42,13 @@ import static org.assertj.core.api.Assertions.entry;
 
 class InstanceInfoChangedEventMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<InstanceInfoChangedEvent> jsonTester;
 
 	protected InstanceInfoChangedEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -56,7 +56,7 @@ class InstanceInfoChangedEventMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class InstanceInfoChangedEventMixinTest {
 			.put("info", new JSONObject().put("build", new JSONObject().put("version", "1.0.0")).put("foo", "bar"))
 			.toString();
 
-		InstanceInfoChangedEvent event = objectMapper.readValue(json, InstanceInfoChangedEvent.class);
+		InstanceInfoChangedEvent event = jsonMapper.readValue(json, InstanceInfoChangedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -87,7 +87,7 @@ class InstanceInfoChangedEventMixinTest {
 			.put("type", "INFO_CHANGED")
 			.toString();
 
-		InstanceInfoChangedEvent event = objectMapper.readValue(json, InstanceInfoChangedEvent.class);
+		InstanceInfoChangedEvent event = jsonMapper.readValue(json, InstanceInfoChangedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isZero();
@@ -104,7 +104,7 @@ class InstanceInfoChangedEventMixinTest {
 			.put("info", new JSONObject())
 			.toString();
 
-		InstanceInfoChangedEvent event = objectMapper.readValue(json, InstanceInfoChangedEvent.class);
+		InstanceInfoChangedEvent event = jsonMapper.readValue(json, InstanceInfoChangedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);

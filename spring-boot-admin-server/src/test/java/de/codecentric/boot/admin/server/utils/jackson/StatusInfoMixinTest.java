@@ -36,13 +36,13 @@ import static org.assertj.core.api.Assertions.entry;
 
 class StatusInfoMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<StatusInfo> jsonTester;
 
 	protected StatusInfoMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -50,7 +50,7 @@ class StatusInfoMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class StatusInfoMixinTest {
 			.put("details", new JSONObject().put("foo", "bar"))
 			.toString();
 
-		StatusInfo statusInfo = objectMapper.readValue(json, StatusInfo.class);
+		StatusInfo statusInfo = jsonMapper.readValue(json, StatusInfo.class);
 		assertThat(statusInfo).isNotNull();
 		assertThat(statusInfo.getStatus()).isEqualTo("OFFLINE");
 		assertThat(statusInfo.getDetails()).containsOnly(entry("foo", "bar"));

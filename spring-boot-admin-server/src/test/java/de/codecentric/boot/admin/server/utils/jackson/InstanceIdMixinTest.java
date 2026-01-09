@@ -29,11 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class InstanceIdMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	protected InstanceIdMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -41,7 +41,7 @@ class InstanceIdMixinTest {
 
 	@Test
 	void verifyDeserialize() throws JsonProcessingException {
-		InstanceId id = objectMapper.readValue("\"abc\"", InstanceId.class);
+		InstanceId id = jsonMapper.readValue("\"abc\"", InstanceId.class);
 		assertThat(id).isEqualTo(InstanceId.of("abc"));
 	}
 
@@ -49,7 +49,7 @@ class InstanceIdMixinTest {
 	void verifySerialize() throws IOException {
 		InstanceId id = InstanceId.of("abc");
 
-		String result = objectMapper.writeValueAsString(id);
+		String result = jsonMapper.writeValueAsString(id);
 		assertThat(result).isEqualTo("\"abc\"");
 	}
 

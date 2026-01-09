@@ -36,13 +36,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class EndpointsMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<Endpoints> jsonTester;
 
 	protected EndpointsMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -50,7 +50,7 @@ class EndpointsMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class EndpointsMixinTest {
 			.put(new JSONObject().put("id", "health").put("url", "http://localhost:8080/health"))
 			.toString();
 
-		Endpoints endpoints = objectMapper.readValue(json, Endpoints.class);
+		Endpoints endpoints = jsonMapper.readValue(json, Endpoints.class);
 		assertThat(endpoints).isNotNull()
 			.containsExactlyInAnyOrder(Endpoint.of("info", "http://localhost:8080/info"),
 					Endpoint.of("health", "http://localhost:8080/health"));

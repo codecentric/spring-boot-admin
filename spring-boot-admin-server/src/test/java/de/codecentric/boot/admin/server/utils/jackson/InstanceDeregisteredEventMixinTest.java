@@ -37,13 +37,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class InstanceDeregisteredEventMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<InstanceDeregisteredEvent> jsonTester;
 
 	protected InstanceDeregisteredEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -51,7 +51,7 @@ class InstanceDeregisteredEventMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
@@ -62,7 +62,7 @@ class InstanceDeregisteredEventMixinTest {
 			.put("type", "DEREGISTERED")
 			.toString();
 
-		InstanceDeregisteredEvent event = objectMapper.readValue(json, InstanceDeregisteredEvent.class);
+		InstanceDeregisteredEvent event = jsonMapper.readValue(json, InstanceDeregisteredEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -76,7 +76,7 @@ class InstanceDeregisteredEventMixinTest {
 			.put("type", "DEREGISTERED")
 			.toString();
 
-		InstanceDeregisteredEvent event = objectMapper.readValue(json, InstanceDeregisteredEvent.class);
+		InstanceDeregisteredEvent event = jsonMapper.readValue(json, InstanceDeregisteredEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isZero();

@@ -38,11 +38,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class InstanceEventMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	protected InstanceEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -55,7 +55,7 @@ public class InstanceEventMixinTest {
 
 		@BeforeEach
 		void setup() {
-			JacksonTester.initFields(this, objectMapper);
+			JacksonTester.initFields(this, jsonMapper);
 		}
 
 		@Test
@@ -65,7 +65,7 @@ public class InstanceEventMixinTest {
 				.put("type", "DEREGISTERED")
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceDeregisteredEvent.class);
 		}
 
@@ -76,7 +76,7 @@ public class InstanceEventMixinTest {
 				.put("type", "ENDPOINTS_DETECTED")
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceEndpointsDetectedEvent.class);
 		}
 
@@ -87,7 +87,7 @@ public class InstanceEventMixinTest {
 				.put("type", "INFO_CHANGED")
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class);
 		}
 
@@ -100,7 +100,7 @@ public class InstanceEventMixinTest {
 						new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceRegisteredEvent.class);
 		}
 
@@ -113,7 +113,7 @@ public class InstanceEventMixinTest {
 						new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceRegistrationUpdatedEvent.class);
 		}
 
@@ -125,7 +125,7 @@ public class InstanceEventMixinTest {
 				.put("statusInfo", new JSONObject().put("status", "OFFLINE"))
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class);
 		}
 

@@ -37,13 +37,13 @@ import static org.assertj.core.api.Assertions.entry;
 
 class TagsMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<Tags> jsonTester;
 
 	protected TagsMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -51,14 +51,14 @@ class TagsMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
 	void verifyDeserialize() throws JSONException, JsonProcessingException {
 		String json = new JSONObject().put("env", "test").put("foo", "bar").toString();
 
-		Tags tags = objectMapper.readValue(json, Tags.class);
+		Tags tags = jsonMapper.readValue(json, Tags.class);
 		assertThat(tags).isNotNull();
 		assertThat(tags.getValues()).containsOnly(entry("env", "test"), entry("foo", "bar"));
 	}

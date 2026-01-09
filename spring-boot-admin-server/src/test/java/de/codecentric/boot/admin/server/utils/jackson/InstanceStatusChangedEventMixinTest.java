@@ -42,13 +42,13 @@ import static org.assertj.core.api.Assertions.entry;
 
 class InstanceStatusChangedEventMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<InstanceStatusChangedEvent> jsonTester;
 
 	protected InstanceStatusChangedEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -56,7 +56,7 @@ class InstanceStatusChangedEventMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
@@ -69,7 +69,7 @@ class InstanceStatusChangedEventMixinTest {
 					new JSONObject().put("status", "OFFLINE").put("details", new JSONObject().put("foo", "bar")))
 			.toString();
 
-		InstanceStatusChangedEvent event = objectMapper.readValue(json, InstanceStatusChangedEvent.class);
+		InstanceStatusChangedEvent event = jsonMapper.readValue(json, InstanceStatusChangedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -89,7 +89,7 @@ class InstanceStatusChangedEventMixinTest {
 			.put("statusInfo", new JSONObject().put("status", "OFFLINE"))
 			.toString();
 
-		InstanceStatusChangedEvent event = objectMapper.readValue(json, InstanceStatusChangedEvent.class);
+		InstanceStatusChangedEvent event = jsonMapper.readValue(json, InstanceStatusChangedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isZero();
@@ -109,7 +109,7 @@ class InstanceStatusChangedEventMixinTest {
 			.put("type", "STATUS_CHANGED")
 			.toString();
 
-		InstanceStatusChangedEvent event = objectMapper.readValue(json, InstanceStatusChangedEvent.class);
+		InstanceStatusChangedEvent event = jsonMapper.readValue(json, InstanceStatusChangedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -126,7 +126,7 @@ class InstanceStatusChangedEventMixinTest {
 			.put("statusInfo", new JSONObject())
 			.toString();
 
-		assertThatThrownBy(() -> objectMapper.readValue(json, InstanceStatusChangedEvent.class))
+		assertThatThrownBy(() -> jsonMapper.readValue(json, InstanceStatusChangedEvent.class))
 			.isInstanceOf(DatabindException.class)
 			.hasCauseInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("must not be empty");

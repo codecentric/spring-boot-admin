@@ -38,13 +38,13 @@ import static org.assertj.core.api.Assertions.entry;
 
 class InfoMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<Info> jsonTester;
 
 	protected InfoMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -52,7 +52,7 @@ class InfoMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class InfoMixinTest {
 			.put("foo", "bar")
 			.toString();
 
-		Info info = objectMapper.readValue(json, Info.class);
+		Info info = jsonMapper.readValue(json, Info.class);
 		assertThat(info).isNotNull();
 		assertThat(info.getValues()).containsOnly(entry("build", Collections.singletonMap("version", "1.0.0")),
 				entry("foo", "bar"));

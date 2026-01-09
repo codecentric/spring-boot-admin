@@ -40,13 +40,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class InstanceEndpointsDetectedEventMixinTest {
 
-	private final JsonMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<InstanceEndpointsDetectedEvent> jsonTester;
 
 	protected InstanceEndpointsDetectedEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -54,7 +54,7 @@ class InstanceEndpointsDetectedEventMixinTest {
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class InstanceEndpointsDetectedEventMixinTest {
 						.put(new JSONObject().put("id", "health").put("url", "http://localhost:8080/health")))
 			.toString();
 
-		InstanceEndpointsDetectedEvent event = objectMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
+		InstanceEndpointsDetectedEvent event = jsonMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -86,7 +86,7 @@ class InstanceEndpointsDetectedEventMixinTest {
 			.put("endpoints", new JSONArray())
 			.toString();
 
-		InstanceEndpointsDetectedEvent event = objectMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
+		InstanceEndpointsDetectedEvent event = jsonMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -101,7 +101,7 @@ class InstanceEndpointsDetectedEventMixinTest {
 			.put("type", "ENDPOINTS_DETECTED")
 			.toString();
 
-		InstanceEndpointsDetectedEvent event = objectMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
+		InstanceEndpointsDetectedEvent event = jsonMapper.readValue(json, InstanceEndpointsDetectedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isZero();

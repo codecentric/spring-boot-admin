@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.DeserializationFeature;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
@@ -31,11 +30,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class RegistrationDeserializerTest {
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	protected RegistrationDeserializerTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		objectMapper = JsonMapper.builder()
+		jsonMapper = JsonMapper.builder()
 			.addModule(adminServerModule)
 			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
 			.build();
@@ -44,7 +43,7 @@ class RegistrationDeserializerTest {
 	@Test
 	void test_1_2_json_format() throws Exception {
 		String json = new JSONObject().put("name", "test").put("url", "https://test").toString();
-		Registration value = objectMapper.readValue(json, Registration.class);
+		Registration value = jsonMapper.readValue(json, Registration.class);
 		assertThat(value.getName()).isEqualTo("test");
 		assertThat(value.getManagementUrl()).isEqualTo("https://test");
 		assertThat(value.getHealthUrl()).isEqualTo("https://test/health");
@@ -59,7 +58,7 @@ class RegistrationDeserializerTest {
 			.put("serviceUrl", "https://service")
 			.put("statusInfo", new JSONObject().put("status", "UNKNOWN"))
 			.toString();
-		Registration value = objectMapper.readValue(json, Registration.class);
+		Registration value = jsonMapper.readValue(json, Registration.class);
 		assertThat(value.getName()).isEqualTo("test");
 		assertThat(value.getManagementUrl()).isEqualTo("https://test");
 		assertThat(value.getHealthUrl()).isEqualTo("https://health");
@@ -74,7 +73,7 @@ class RegistrationDeserializerTest {
 			.put("serviceUrl", "https://service")
 			.put("metadata", new JSONObject().put("labels", "foo,bar"))
 			.toString();
-		Registration value = objectMapper.readValue(json, Registration.class);
+		Registration value = jsonMapper.readValue(json, Registration.class);
 		assertThat(value.getName()).isEqualTo("test");
 		assertThat(value.getManagementUrl()).isEqualTo("https://test");
 		assertThat(value.getHealthUrl()).isEqualTo("https://health");
@@ -85,7 +84,7 @@ class RegistrationDeserializerTest {
 	@Test
 	void test_onlyHealthUrl() throws Exception {
 		String json = new JSONObject().put("name", "test").put("healthUrl", "https://test").toString();
-		Registration value = objectMapper.readValue(json, Registration.class);
+		Registration value = jsonMapper.readValue(json, Registration.class);
 		assertThat(value.getName()).isEqualTo("test");
 		assertThat(value.getHealthUrl()).isEqualTo("https://test");
 		assertThat(value.getManagementUrl()).isNull();
@@ -100,7 +99,7 @@ class RegistrationDeserializerTest {
 			.put("serviceUrl", "https://service")
 			.toString();
 
-		assertThatThrownBy(() -> objectMapper.readValue(json, Registration.class))
+		assertThatThrownBy(() -> jsonMapper.readValue(json, Registration.class))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 
@@ -111,7 +110,7 @@ class RegistrationDeserializerTest {
 			.put("healthUrl", "")
 			.put("serviceUrl", "https://service")
 			.toString();
-		assertThatThrownBy(() -> objectMapper.readValue(json, Registration.class))
+		assertThatThrownBy(() -> jsonMapper.readValue(json, Registration.class))
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 
@@ -121,7 +120,7 @@ class RegistrationDeserializerTest {
 			.metadata("PASSWORD", "qwertz123")
 			.metadata("user", "humptydumpty")
 			.build();
-		String json = objectMapper.writeValueAsString(app);
+		String json = jsonMapper.writeValueAsString(app);
 
 		assertThat(json).doesNotContain("qwertz123").contains("humptydumpty");
 	}
@@ -134,7 +133,7 @@ class RegistrationDeserializerTest {
 			.put("service_url", "https://service")
 			.put("metadata", new JSONObject().put("labels", "foo,bar"))
 			.toString();
-		Registration value = objectMapper.readValue(json, Registration.class);
+		Registration value = jsonMapper.readValue(json, Registration.class);
 		assertThat(value.getName()).isEqualTo("test");
 		assertThat(value.getManagementUrl()).isEqualTo("https://test");
 		assertThat(value.getHealthUrl()).isEqualTo("https://health");
