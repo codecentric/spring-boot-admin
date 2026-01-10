@@ -18,9 +18,12 @@ package de.codecentric.boot.admin.server.domain.values;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import org.springframework.lang.Nullable;
 
 /**
@@ -33,15 +36,25 @@ public final class Info implements Serializable {
 
 	private static final Info EMPTY = new Info(Collections.emptyMap());
 
-	private final Map<String, Object> values;
+	private Map<String, Object> values = new HashMap<>();
+
+	public Info() {
+	}
 
 	private Info(Map<String, Object> values) {
-		if (values.isEmpty()) {
-			this.values = Collections.emptyMap();
-		}
-		else {
+		if (!values.isEmpty()) {
 			this.values = Collections.unmodifiableMap(new LinkedHashMap<>(values));
 		}
+	}
+
+	@JsonAnySetter
+	public void put(String key, Object value) {
+		this.values.put(key, value);
+	}
+
+	@JsonAnyGetter
+	public Map<String, Object> getValues() {
+		return Collections.unmodifiableMap(values);
 	}
 
 	public static Info from(@Nullable Map<String, Object> values) {

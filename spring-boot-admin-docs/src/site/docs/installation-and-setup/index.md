@@ -40,7 +40,7 @@ Boot Starter. In this example, we'll use the Servlet Web Starter.
 ### Setting up the Spring Boot Admin Server
 
 To set up Spring Boot Admin Server, you need to add the dependency `spring-boot-admin-starter-server` as well as
-`spring-boot-starter-web` to your project (either in your `pom.xml` or `build.gradle(.kts)`).
+`spring-boot-starter-webmvc` to your project (either in your `pom.xml` or `build.gradle(.kts)`).
 
 ```xml title="pom.xml"
 
@@ -52,7 +52,7 @@ To set up Spring Boot Admin Server, you need to add the dependency `spring-boot-
     </dependency>
     <dependency>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
+        <artifactId>spring-boot-starter-webmvc</artifactId>
     </dependency>
 </project>
 ```

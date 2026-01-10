@@ -1499,7 +1499,7 @@ export const applicationSbomResponse = {
     {
       publisher: 'VMware, Inc.',
       group: 'org.springframework.boot',
-      name: 'spring-boot-starter-web',
+      name: 'spring-boot-starter-webmvc',
       version: '3.3.0-RC1',
       description:
         'Starter for building web, including RESTful, applications using Spring MVC. Uses Tomcat as the default embedded container',
@@ -1551,7 +1551,7 @@ export const applicationSbomResponse = {
           },
         },
       ],
-      purl: 'pkg:maven/org.springframework.boot/spring-boot-starter-web@3.3.0-RC1?type=jar',
+      purl: 'pkg:maven/org.springframework.boot/spring-boot-starter-webmvc@3.3.0-RC1?type=jar',
       externalReferences: [
         {
           type: 'website',
@@ -1568,7 +1568,7 @@ export const applicationSbomResponse = {
       ],
       type: 'library',
       'bom-ref':
-        'pkg:maven/org.springframework.boot/spring-boot-starter-web@3.3.0-RC1?type=jar',
+        'pkg:maven/org.springframework.boot/spring-boot-starter-webmvc@3.3.0-RC1?type=jar',
     },
     {
       publisher: 'VMware, Inc.',
@@ -1883,7 +1883,7 @@ export const applicationSbomResponse = {
       name: 'spring-boot-starter-tomcat',
       version: '3.3.0-RC1',
       description:
-        'Starter for using Tomcat as the embedded servlet container. Default servlet container starter used by spring-boot-starter-web',
+        'Starter for using Tomcat as the embedded servlet container. Default servlet container starter used by spring-boot-starter-webmvc',
       scope: 'required',
       hashes: [
         {
@@ -4633,7 +4633,7 @@ export const applicationSbomResponse = {
         'pkg:maven/de.codecentric/spring-boot-admin-sample-custom-ui@3.2.4-SNAPSHOT?type=jar',
         'pkg:maven/de.codecentric/spring-boot-admin-starter-server@3.2.4-SNAPSHOT?type=jar',
         'pkg:maven/org.springframework.boot/spring-boot-starter-security@3.3.0-RC1?type=jar',
-        'pkg:maven/org.springframework.boot/spring-boot-starter-web@3.3.0-RC1?type=jar',
+        'pkg:maven/org.springframework.boot/spring-boot-starter-webmvc@3.3.0-RC1?type=jar',
         'pkg:maven/org.springframework.cloud/spring-cloud-starter@4.1.2?type=jar',
         'pkg:maven/org.springframework.boot/spring-boot-starter-mail@3.3.0-RC1?type=jar',
         'pkg:maven/de.codecentric/spring-boot-admin-starter-client@3.2.4-SNAPSHOT?type=jar',
@@ -4820,7 +4820,7 @@ export const applicationSbomResponse = {
       ],
     },
     {
-      ref: 'pkg:maven/org.springframework.boot/spring-boot-starter-web@3.3.0-RC1?type=jar',
+      ref: 'pkg:maven/org.springframework.boot/spring-boot-starter-webmvc@3.3.0-RC1?type=jar',
       dependsOn: [
         'pkg:maven/org.springframework.boot/spring-boot-starter@3.3.0-RC1?type=jar',
         'pkg:maven/org.springframework.boot/spring-boot-starter-json@3.3.0-RC1?type=jar',

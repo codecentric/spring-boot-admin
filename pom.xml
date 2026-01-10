@@ -30,7 +30,7 @@
     <url>https://github.com/codecentric/spring-boot-admin/</url>
 
     <properties>
-        <revision>3.5.7-SNAPSHOT</revision>
+        <revision>4.0.0-M1</revision>
 
         <java.version>17</java.version>
         <node.version>v22.12.0</node.version>
@@ -47,10 +47,11 @@
         <maven.site.skip>true</maven.site.skip>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>3.5.9</spring-boot.version>
-        <spring-cloud.version>2025.0.0</spring-cloud.version>
+        <spring-boot.version>4.0.1</spring-boot.version>
+        <spring-cloud.version>2025.1.0</spring-cloud.version>
 
-        <jolokia-support-spring.version>2.4.2</jolokia-support-spring.version>
+        <!-- FIXME downgrade to 2.1.0 until a compatible version is released -->
+        <jolokia-support-spring.version>2.1.0</jolokia-support-spring.version>
 
         <checkstyle.version>12.3.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
