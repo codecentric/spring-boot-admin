@@ -59,7 +59,6 @@
         <wiremock.version>3.13.2</wiremock.version>
         <hazelcast.version>5.6.0</hazelcast.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <testcontainers.version>2.0.3</testcontainers.version>
         <jetty.version>12.1.5</jetty.version>
 
         <!-- plugin versions -->
