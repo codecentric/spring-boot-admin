@@ -19,7 +19,6 @@ package de.codecentric.boot.admin.server.config;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
-import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
@@ -34,10 +33,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AdminServerInstanceWebClientConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-		.withConfiguration(
-				AutoConfigurations.of(RestTemplateAutoConfiguration.class, ReactiveHttpClientAutoConfiguration.class,
-						WebClientAutoConfiguration.class, WebMvcAutoConfiguration.class,
-						AdminServerAutoConfiguration.class, AdminServerInstanceWebClientConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(ReactiveHttpClientAutoConfiguration.class,
+				WebClientAutoConfiguration.class, WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
+				AdminServerInstanceWebClientConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test

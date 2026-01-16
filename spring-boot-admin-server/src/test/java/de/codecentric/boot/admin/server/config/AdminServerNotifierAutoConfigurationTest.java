@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
-import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
@@ -53,10 +52,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AdminServerNotifierAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-				ReactiveHttpClientAutoConfiguration.class, WebClientAutoConfiguration.class,
-				HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
-				AdminServerNotifierAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(ReactiveHttpClientAutoConfiguration.class,
+				WebClientAutoConfiguration.class, HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				AdminServerAutoConfiguration.class, AdminServerNotifierAutoConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
