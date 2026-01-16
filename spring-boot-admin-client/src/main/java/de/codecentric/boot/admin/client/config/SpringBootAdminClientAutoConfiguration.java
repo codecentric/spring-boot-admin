@@ -33,11 +33,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.http.client.HttpClientSettings;
-import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
-import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
-import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
@@ -47,16 +44,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
-import de.codecentric.boot.admin.client.registration.BlockingRegistrationClient;
 import de.codecentric.boot.admin.client.registration.DefaultApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.ReactiveApplicationFactory;
-import de.codecentric.boot.admin.client.registration.ReactiveRegistrationClient;
 import de.codecentric.boot.admin.client.registration.RegistrationApplicationListener;
 import de.codecentric.boot.admin.client.registration.RegistrationClient;
 import de.codecentric.boot.admin.client.registration.RestClientRegistrationClient;
@@ -65,13 +60,10 @@ import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataC
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadataContributor;
 
-import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
-
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
-@AutoConfigureAfter({ WebEndpointAutoConfiguration.class, RestClientAutoConfiguration.class,
-		RestTemplateAutoConfiguration.class, WebClientAutoConfiguration.class })
+@AutoConfigureAfter({ WebEndpointAutoConfiguration.class, RestClientAutoConfiguration.class })
 @EnableConfigurationProperties({ ClientProperties.class, InstanceProperties.class, ServerProperties.class,
 		ManagementServerProperties.class })
 public class SpringBootAdminClientAutoConfiguration {
@@ -139,62 +131,33 @@ public class SpringBootAdminClientAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(RestTemplateBuilder.class)
-	public static class BlockingRegistrationClientConfig {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public RegistrationClient registrationClient(ClientProperties client) {
-			RestTemplateBuilder builder = new RestTemplateBuilder().connectTimeout(client.getConnectTimeout())
-				.readTimeout(client.getReadTimeout());
-
-			if (client.getUsername() != null && client.getPassword() != null) {
-				builder = builder.basicAuthentication(client.getUsername(), client.getPassword());
-			}
-
-			RestTemplate build = builder.build();
-			return new BlockingRegistrationClient(build);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(RestClient.Builder.class)
 	public static class RestClientRegistrationClientConfig {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public RegistrationClient registrationClient(ClientProperties client, RestClient.Builder restClientBuilder) {
+		public RegistrationClient registrationClient(ClientProperties client, RestClient.Builder restClientBuilder,
+				ObjectProvider<JsonMapper> objectMapper) {
 			var factorySettings = HttpClientSettings.defaults()
 				.withConnectTimeout(client.getConnectTimeout())
 				.withReadTimeout(client.getReadTimeout());
 
 			var clientHttpRequestFactory = ClientHttpRequestFactoryBuilder.detect().build(factorySettings);
 
-			restClientBuilder = restClientBuilder.requestFactory(clientHttpRequestFactory);
+			restClientBuilder.requestFactory(clientHttpRequestFactory);
+
+			objectMapper.ifAvailable((mapper) -> restClientBuilder.messageConverters((configurer) -> {
+				configurer.removeIf(JacksonJsonHttpMessageConverter.class::isInstance);
+				configurer.add(new JacksonJsonHttpMessageConverter(mapper));
+			}));
 
 			if (client.getUsername() != null && client.getPassword() != null) {
-				restClientBuilder = restClientBuilder
+				restClientBuilder
 					.requestInterceptor(new BasicAuthenticationInterceptor(client.getUsername(), client.getPassword()));
 			}
 
 			var restClient = restClientBuilder.build();
 			return new RestClientRegistrationClient(restClient);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(WebClient.Builder.class)
-	public static class ReactiveRegistrationClientConfig {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public RegistrationClient registrationClient(ClientProperties client, WebClient.Builder webClient) {
-			if (client.getUsername() != null && client.getPassword() != null) {
-				webClient = webClient.filter(basicAuthentication(client.getUsername(), client.getPassword()));
-			}
-			return new ReactiveRegistrationClient(webClient.build(), client.getReadTimeout());
 		}
 
 	}
