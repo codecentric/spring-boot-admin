@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.config;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.restclient.autoconfigure.RestTemplateAutoConfiguration;
@@ -166,6 +167,30 @@ class AdminServerNotifierAutoConfigurationTest {
 	void test_notifierProxyProperties() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.notify.proxy.host")
 			.run((context) -> assertThat(context).hasSingleBean(NotifierProxyProperties.class));
+	}
+
+	@Test
+	void test_autoConfigureAfterAnnotationReferencesExistingClass() {
+		// Get the @AutoConfigureAfter annotation from
+		// AdminServerNotifierAutoConfiguration
+		AutoConfigureAfter autoConfigureAfter = AdminServerNotifierAutoConfiguration.class
+			.getAnnotation(org.springframework.boot.autoconfigure.AutoConfigureAfter.class);
+		assertThat(autoConfigureAfter).isNotNull();
+
+		// Get the class names from the annotation
+		String[] classNames = autoConfigureAfter.name();
+		assertThat(classNames).isNotEmpty();
+
+		// Verify that the class can be loaded
+		for (String className : classNames) {
+			try {
+				Class.forName(className);
+			}
+			catch (ClassNotFoundException ex) {
+				throw new AssertionError(
+						"Class referenced in @AutoConfigureAfter annotation does not exist: " + className, ex);
+			}
+		}
 	}
 
 	public static class TestSingleNotifierConfig {

@@ -84,11 +84,10 @@
             <optional>true</optional>
         </dependency>
         <!-- Optional Mail Starter for mail-notifications -->
-        <!-- FIXME optional -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
-            <optional>false</optional>
+            <optional>true</optional>
         </dependency>
         <!-- Optional Hazelcast-Support -->
         <dependency>
