@@ -28,6 +28,13 @@
         "spring-boot-admin"
       ],
       "enabled": false
+    },
+    {
+      "description": "Checkstyle 13+ requires Java 21, stay on 12.x",
+      "matchPackageNames": [
+        "com.puppycrawl.tools:checkstyle"
+      ],
+      "allowedVersions": "<13"
     }
   ]
 }
