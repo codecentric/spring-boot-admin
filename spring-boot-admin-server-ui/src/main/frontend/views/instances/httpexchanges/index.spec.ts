@@ -137,8 +137,8 @@ describe('HttpExchanges - excludeActuator', () => {
       });
     });
 
-    it('calculates actuator path correctly', async () => {
-      render(HttpExchanges, {
+    it('calculates actuator path from managementUrl and serviceUrl', async () => {
+      const { container } = render(HttpExchanges, {
         props: {
           instance: createInstance(
             fetchHttpExchanges,
@@ -150,11 +150,105 @@ describe('HttpExchanges - excludeActuator', () => {
 
       await waitFor(() => expect(fetchHttpExchanges).toHaveBeenCalled());
 
-      // Check that the checkbox exists (which means actuatorPath was calculated)
+      // Check that the checkbox exists
       const checkbox = await screen.findByLabelText(
         'instances.httpexchanges.filter.exclude_actuator',
       );
       expect(checkbox).toBeDefined();
+
+      // Verify the component calculated actuatorPath as '/actuator'
+      // by checking that it filters URIs containing '/actuator'
+      await waitFor(() => {
+        expect(
+          screen.queryByText('http://127.0.0.1:8080/actuator/health'),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it('calculates actuator path with leading slash when missing', async () => {
+      const exchanges = [
+        createExchange('http://localhost:9090/api/users', 200),
+        createExchange('http://localhost:9090/management/health', 200),
+      ];
+
+      const fetchHttpExchanges = vi.fn().mockResolvedValue({
+        data: {
+          exchanges: exchanges.map((e) => ({
+            timestamp: e.timestamp.toISOString(),
+            request: e.request,
+            response: e.response,
+          })),
+        },
+      });
+
+      render(HttpExchanges, {
+        props: {
+          instance: createInstance(
+            fetchHttpExchanges,
+            'http://localhost:9090',
+            'http://localhost:9090management', // No leading slash
+          ),
+        },
+      });
+
+      await waitFor(() => expect(fetchHttpExchanges).toHaveBeenCalled());
+
+      // Should add leading slash, so actuatorPath becomes '/management'
+      // and filter should work on '/management/health'
+      await waitFor(() => {
+        expect(
+          screen.getByText('http://localhost:9090/api/users'),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByText('http://localhost:9090/management/health'),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it('returns null actuator path when managementUrl is empty appendix', async () => {
+      const exchanges = [
+        createExchange('http://localhost:8080/api/users', 200),
+        createExchange('http://localhost:8080/actuator/health', 200),
+      ];
+
+      const fetchHttpExchanges = vi.fn().mockResolvedValue({
+        data: {
+          exchanges: exchanges.map((e) => ({
+            timestamp: e.timestamp.toISOString(),
+            request: e.request,
+            response: e.response,
+          })),
+        },
+      });
+
+      render(HttpExchanges, {
+        props: {
+          instance: createInstance(
+            fetchHttpExchanges,
+            'http://localhost:8080',
+            'http://localhost:8080', // Same as serviceUrl, no appendix
+          ),
+        },
+      });
+
+      await waitFor(() => expect(fetchHttpExchanges).toHaveBeenCalled());
+
+      // When there's no appendix, actuatorPath should be null
+      // so the checkbox should not be shown
+      const checkbox = screen.queryByLabelText(
+        'instances.httpexchanges.filter.exclude_actuator',
+      );
+      expect(checkbox).toBeNull();
+
+      // Both exchanges should be visible (no filtering)
+      await waitFor(() => {
+        expect(
+          screen.getByText('http://localhost:8080/api/users'),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('http://localhost:8080/actuator/health'),
+        ).toBeInTheDocument();
+      });
     });
 
     it('toggles actuator filter on and off', async () => {
@@ -212,6 +306,59 @@ describe('HttpExchanges - excludeActuator', () => {
         'instances.httpexchanges.filter.exclude_actuator',
       );
       expect(checkbox).toBeNull();
+    });
+  });
+
+  describe('error handling', () => {
+    it('keeps exchanges with malformed URIs when filtering actuator endpoints', async () => {
+      // Test that exchanges with malformed URIs that can't be parsed by URL()
+      // are kept (not filtered out) even when excludeActuator is enabled
+      const exchanges = [
+        createExchange('http://127.0.0.1:8080/api/users', 200),
+        createExchange('/relative/path/without/host', 200), // Malformed - not a valid URL
+        createExchange('not-a-valid-url', 200), // Malformed - not a valid URL
+        createExchange('http://127.0.0.1:8080/actuator/health', 200),
+      ];
+
+      const fetchHttpExchanges = vi.fn().mockResolvedValue({
+        data: {
+          exchanges: exchanges.map((e) => ({
+            timestamp: e.timestamp.toISOString(),
+            request: e.request,
+            response: e.response,
+          })),
+        },
+      });
+
+      render(HttpExchanges, {
+        props: {
+          instance: createInstance(fetchHttpExchanges),
+        },
+      });
+
+      await waitFor(() => expect(fetchHttpExchanges).toHaveBeenCalled());
+
+      // With excludeActuator enabled, verify that:
+      // 1. Valid non-actuator URIs are shown
+      // 2. Malformed URIs are shown (not filtered out)
+      // 3. Valid actuator URIs are filtered out
+      await waitFor(() => {
+        // Valid non-actuator URI should be visible
+        expect(
+          screen.getByText('http://127.0.0.1:8080/api/users'),
+        ).toBeInTheDocument();
+
+        // Malformed URIs should be visible (kept despite excludeActuator filter)
+        expect(
+          screen.getByText('/relative/path/without/host'),
+        ).toBeInTheDocument();
+        expect(screen.getByText('not-a-valid-url')).toBeInTheDocument();
+
+        // Valid actuator URI should be hidden
+        expect(
+          screen.queryByText('http://127.0.0.1:8080/actuator/health'),
+        ).not.toBeInTheDocument();
+      });
     });
   });
 
