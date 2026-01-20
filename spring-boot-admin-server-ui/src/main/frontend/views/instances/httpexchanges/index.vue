@@ -233,10 +233,14 @@ export default {
     filterExchanges(exchanges) {
       let filterFn = null;
       if (this.actuatorPath !== null && this.filter.excludeActuator) {
-        filterFn = addToFilter(
-          filterFn,
-          (exchange) => !exchange.request.uri.includes(this.actuatorPath),
-        );
+        filterFn = addToFilter(filterFn, (exchange) => {
+          try {
+            const uri = exchange.request.uri;
+            return !new URL(uri).pathname.includes(this.actuatorPath);
+          } catch {
+            return true;
+          }
+        });
       }
       if (this.filter.uri) {
         const normalizedFilter = this.filter.uri.toLowerCase();
