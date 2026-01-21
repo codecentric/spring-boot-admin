@@ -138,7 +138,7 @@ describe('HttpExchanges - excludeActuator', () => {
     });
 
     it('calculates actuator path from managementUrl and serviceUrl', async () => {
-      const { container } = render(HttpExchanges, {
+      render(HttpExchanges, {
         props: {
           instance: createInstance(
             fetchHttpExchanges,
