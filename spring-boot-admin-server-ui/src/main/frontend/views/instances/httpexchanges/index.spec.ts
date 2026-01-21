@@ -368,9 +368,12 @@ describe('HttpExchanges - excludeActuator', () => {
       // itself is not an actuator endpoint
       const exchanges = [
         createExchange('http://actuator.localhost/weather', 200),
+        createExchange('http://localhost/actuator-demo/health', 200),
+        createExchange('http://localhost/actuatordemo', 200),
         createExchange('http://127.0.0.1:8080/weather', 200),
         createExchange('http://127.0.0.1:8080/api/data', 200),
         createExchange('http://127.0.0.1:8080/actuator/health', 200),
+        createExchange('http://127.0.0.1:8080/actuator', 200),
       ];
 
       const fetchHttpExchanges = vi.fn().mockResolvedValue({
@@ -407,10 +410,19 @@ describe('HttpExchanges - excludeActuator', () => {
         expect(
           screen.getByText('http://127.0.0.1:8080/api/data'),
         ).toBeInTheDocument();
+        expect(
+          screen.getByText('http://localhost/actuator-demo/health'),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText('http://localhost/actuatordemo'),
+        ).toBeInTheDocument();
 
         // This should be hidden - it has /actuator in the path
         expect(
           screen.queryByText('http://127.0.0.1:8080/actuator/health'),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByText('http://127.0.0.1:8080/actuator'),
         ).not.toBeInTheDocument();
       });
 

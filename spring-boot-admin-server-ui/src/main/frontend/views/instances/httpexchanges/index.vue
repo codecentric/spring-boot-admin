@@ -236,7 +236,11 @@ export default {
         filterFn = addToFilter(filterFn, (exchange) => {
           try {
             const uri = exchange.request.uri;
-            return !new URL(uri).pathname.includes(this.actuatorPath);
+            const pathname = new URL(uri).pathname;
+            const raw = this.actuatorPath.replace(/^\/+/, '');
+            const escaped = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(?:^|/)${escaped}(?:$|/)`);
+            return !regex.test(pathname);
           } catch {
             return true;
           }
