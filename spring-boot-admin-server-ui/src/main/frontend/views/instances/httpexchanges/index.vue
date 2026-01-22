@@ -233,10 +233,18 @@ export default {
     filterExchanges(exchanges) {
       let filterFn = null;
       if (this.actuatorPath !== null && this.filter.excludeActuator) {
-        filterFn = addToFilter(
-          filterFn,
-          (exchange) => !exchange.request.uri.includes(this.actuatorPath),
-        );
+        filterFn = addToFilter(filterFn, (exchange) => {
+          try {
+            const uri = exchange.request.uri;
+            const pathname = new URL(uri).pathname;
+            const raw = this.actuatorPath.replace(/^\/+/, '');
+            const escaped = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(?:^|/)${escaped}(?:$|/)`);
+            return !regex.test(pathname);
+          } catch {
+            return true;
+          }
+        });
       }
       if (this.filter.uri) {
         const normalizedFilter = this.filter.uri.toLowerCase();
