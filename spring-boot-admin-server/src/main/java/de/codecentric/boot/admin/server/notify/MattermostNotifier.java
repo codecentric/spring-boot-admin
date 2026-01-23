@@ -21,12 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.context.expression.MapAccessor;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
-import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -39,17 +33,16 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import de.codecentric.boot.admin.server.notify.filter.AbstractContentNotifier;
 
 /**
  * Notifier submitting events to Mattermost.
  *
  * @author Emir Boyaci
  */
-public class MattermostNotifier extends AbstractStatusChangeNotifier {
+public class MattermostNotifier extends AbstractContentNotifier {
 
-	private static final String DEFAULT_MESSAGE = "**#{instance.registration.name}** (#{instance.id}) is **#{event.statusInfo.status}**";
-
-	private final SpelExpressionParser parser = new SpelExpressionParser();
+	private static final String DEFAULT_MESSAGE = "**#{name}** (#{id}) is **#{status}**";
 
 	private RestTemplate restTemplate;
 
@@ -71,15 +64,9 @@ public class MattermostNotifier extends AbstractStatusChangeNotifier {
 	@Nullable
 	private String channelId;
 
-	/**
-	 * Message formatted using Mattermost markups. SpEL template using event as root
-	 */
-	private Expression message;
-
 	public MattermostNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
@@ -101,8 +88,8 @@ public class MattermostNotifier extends AbstractStatusChangeNotifier {
 		}
 
 		Map<String, Object> attachments = new HashMap<>();
-		attachments.put("text", getText(event, instance));
-		attachments.put("fallback", getText(event, instance));
+		attachments.put("text", createContent(event, instance));
+		attachments.put("fallback", createContent(event, instance));
 		attachments.put("color", getColor(event));
 
 		Map<String, Object> props = new HashMap<>();
@@ -116,18 +103,9 @@ public class MattermostNotifier extends AbstractStatusChangeNotifier {
 		return new HttpEntity<>(messageJson, headers);
 	}
 
-	@Nullable
-	protected String getText(InstanceEvent event, Instance instance) {
-		Map<String, Object> root = new HashMap<>();
-		root.put("event", event);
-		root.put("instance", instance);
-		root.put("lastStatus", getLastStatus(event.getInstance()));
-		SimpleEvaluationContext context = SimpleEvaluationContext
-			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-			.withRootObject(root)
-			.build();
-
-		return message.getValue(context, String.class);
+	@Override
+	protected String getDefaultMessage() {
+		return DEFAULT_MESSAGE;
 	}
 
 	protected String getColor(InstanceEvent event) {
@@ -164,14 +142,6 @@ public class MattermostNotifier extends AbstractStatusChangeNotifier {
 
 	public void setBotAccessToken(@Nullable String botAccessToken) {
 		this.botAccessToken = botAccessToken;
-	}
-
-	public String getMessage() {
-		return message.getExpressionString();
-	}
-
-	public void setMessage(String message) {
-		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 }

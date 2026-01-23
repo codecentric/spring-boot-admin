@@ -22,12 +22,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.expression.MapAccessor;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
-import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -38,6 +32,7 @@ import reactor.core.publisher.Mono;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.notify.filter.AbstractContentNotifier;
 
 // The following class, `WebexNotifier`, is responsible for sending notifications through the Webex API
 // whenever events related to the state of instances within the Spring Boot Admin server occur.
@@ -47,13 +42,13 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
  * part of the spring-boot-admin-server which is used for monitoring and managing Spring
  * Boot applications.
  */
-public class WebexNotifier extends AbstractStatusChangeNotifier {
+public class WebexNotifier extends AbstractContentNotifier {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebexNotifier.class);
 
 	private static final URI DEFAULT_URL = URI.create("https://webexapis.com/v1/messages");
 
-	private static final String DEFAULT_MESSAGE = "<strong>#{instance.registration.name}</strong>/#{instance.id} is <strong>#{event.statusInfo.status}</strong>";
+	private static final String DEFAULT_MESSAGE = "<strong>#{name}</strong>/#{id} is <strong>#{status}</strong>";
 
 	private RestTemplate restTemplate;
 
@@ -74,13 +69,6 @@ public class WebexNotifier extends AbstractStatusChangeNotifier {
 	@Nullable
 	private String roomId;
 
-	private final SpelExpressionParser parser = new SpelExpressionParser();
-
-	/**
-	 * Template for the message to be sent
-	 */
-	private Expression message;
-
 	/**
 	 * Creates a new WebexNotifier with the given repository and restTemplate.
 	 * @param repository the instance repository responsible for storing instances
@@ -89,7 +77,6 @@ public class WebexNotifier extends AbstractStatusChangeNotifier {
 	public WebexNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	/**
@@ -126,28 +113,13 @@ public class WebexNotifier extends AbstractStatusChangeNotifier {
 	protected Object createMessage(InstanceEvent event, Instance instance) {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("roomId", this.roomId);
-		parameters.put("markdown", getText(event, instance));
+		parameters.put("markdown", createContent(event, instance));
 		return parameters;
 	}
 
-	/**
-	 * Retrieves the text for the given event and instance.
-	 * @param event the instance event for which the text is being retrieved
-	 * @param instance the instance associated with the event
-	 * @return the text for the event and instance, or null if not available
-	 */
-	@Nullable
-	protected String getText(InstanceEvent event, Instance instance) {
-		Map<String, Object> root = new HashMap<>();
-		root.put("event", event);
-		root.put("instance", instance);
-		root.put("lastStatus", getLastStatus(event.getInstance()));
-		SimpleEvaluationContext context = SimpleEvaluationContext
-			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-			.withRootObject(root)
-			.build();
-
-		return message.getValue(context, String.class);
+	@Override
+	protected String getDefaultMessage() {
+		return DEFAULT_MESSAGE;
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {
@@ -178,14 +150,6 @@ public class WebexNotifier extends AbstractStatusChangeNotifier {
 
 	public void setRoomId(@Nullable String roomId) {
 		this.roomId = roomId;
-	}
-
-	public Expression getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 }
