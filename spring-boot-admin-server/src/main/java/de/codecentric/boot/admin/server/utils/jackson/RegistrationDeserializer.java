@@ -34,33 +34,33 @@ public class RegistrationDeserializer extends StdDeserializer<Registration> {
 		JsonNode node = p.readValueAsTree();
 		Registration.Builder builder = Registration.builder();
 
-		builder.name(firstNonNullAsText(node, "name"));
+		builder.name(firstNonNullAsString(node, "name"));
 
 		if (node.hasNonNull("url")) {
-			String url = firstNonNullAsText(node, "url");
+			String url = firstNonNullAsString(node, "url");
 			builder.healthUrl(url.replaceFirst("/+$", "") + "/health").managementUrl(url);
 		}
 		else {
-			builder.healthUrl(firstNonNullAsText(node, "healthUrl", "health_url"));
-			builder.managementUrl(firstNonNullAsText(node, "managementUrl", "management_url"));
-			builder.serviceUrl(firstNonNullAsText(node, "serviceUrl", "service_url"));
+			builder.healthUrl(firstNonNullAsString(node, "healthUrl", "health_url"));
+			builder.managementUrl(firstNonNullAsString(node, "managementUrl", "management_url"));
+			builder.serviceUrl(firstNonNullAsString(node, "serviceUrl", "service_url"));
 		}
 
 		if (node.has("metadata")) {
 			node.get("metadata")
 				.properties()
-				.forEach((entry) -> builder.metadata(entry.getKey(), entry.getValue().asText()));
+				.forEach((entry) -> builder.metadata(entry.getKey(), entry.getValue().asString()));
 		}
 
-		builder.source(firstNonNullAsText(node, "source"));
+		builder.source(firstNonNullAsString(node, "source"));
 
 		return builder.build();
 	}
 
-	private String firstNonNullAsText(JsonNode node, String... fieldNames) {
+	private String firstNonNullAsString(JsonNode node, String... fieldNames) {
 		for (String fieldName : fieldNames) {
 			if (node.hasNonNull(fieldName)) {
-				return node.get(fieldName).asText();
+				return node.get(fieldName).asString();
 			}
 		}
 		return null;
