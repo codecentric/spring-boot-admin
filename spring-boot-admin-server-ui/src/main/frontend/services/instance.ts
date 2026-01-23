@@ -36,6 +36,7 @@ class Instance {
   public readonly id: string;
   public registration: Registration;
   public endpoints: any[] = [];
+  public availableMetrics: string[] = [];
   public tags: { [key: string]: string }[];
   public statusTimestamp: string;
   public buildVersion: string;
@@ -163,10 +164,27 @@ class Instance {
   }
 
   async fetchMetrics() {
-    return this.axios.get(uri`actuator/metrics`);
+    const response = await this.axios.get(uri`actuator/metrics`);
+    this.availableMetrics = response?.data?.names ?? [];
+    return response;
   }
 
-  async fetchMetric(metric, tags) {
+  async fetchMetric(metric: string, tags: Record<string, any>) {
+    if (this.availableMetrics.length === 0) {
+      try {
+        await this.fetchMetrics();
+      } catch (e) {
+        console.error('Available metrics could not be determined.', e);
+      }
+    }
+
+    if (!this.availableMetrics.includes(metric)) {
+      console.warn(
+        `Metric '${metric}' seems not to be available on instance '${this.id}'.`,
+      );
+      return;
+    }
+
     const params = new URLSearchParams();
     if (tags) {
       let firstElementDuplicated = false;
