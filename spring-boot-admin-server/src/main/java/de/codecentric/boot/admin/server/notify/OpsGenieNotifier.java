@@ -20,11 +20,11 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.MapAccessor;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
