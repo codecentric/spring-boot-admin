@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -30,7 +31,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -63,40 +63,34 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 	/**
 	 * Integration ApiKey
 	 */
-	@Nullable
-	private String apiKey;
+	@Nullable private String apiKey;
 
 	/**
 	 * Comma separated list of actions that can be executed.
 	 */
-	@Nullable
-	private String actions;
+	@Nullable private String actions;
 
 	/**
 	 * Field to specify source of alert. By default, it will be assigned to IP address of
 	 * incoming request
 	 */
-	@Nullable
-	private String source;
+	@Nullable private String source;
 
 	/**
 	 * Comma separated list of labels attached to the alert
 	 */
-	@Nullable
-	private String tags;
+	@Nullable private String tags;
 
 	/**
 	 * The entity the alert is related to.
 	 */
-	@Nullable
-	private String entity;
+	@Nullable private String entity;
 
 	/**
 	 * Default owner of the execution. If user is not specified, the system becomes owner
 	 * of the execution.
 	 */
-	@Nullable
-	private String user;
+	@Nullable private String user;
 
 	/**
 	 * Trigger description. SpEL template using event as root;
@@ -166,8 +160,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		return instance.getRegistration().getName() + "_" + instance.getId();
 	}
 
-	@Nullable
-	protected String getMessage(InstanceEvent event, Instance instance) {
+	@Nullable protected String getMessage(InstanceEvent event, Instance instance) {
 		Map<String, Object> root = new HashMap<>();
 		root.put("event", event);
 		root.put("instance", instance);
@@ -185,8 +178,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 				((InstanceStatusChangedEvent) event).getStatusInfo().getStatus());
 	}
 
-	@Nullable
-	public String getApiKey() {
+	@Nullable public String getApiKey() {
 		return apiKey;
 	}
 
@@ -206,8 +198,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	@Nullable
-	public String getActions() {
+	@Nullable public String getActions() {
 		return actions;
 	}
 
@@ -215,8 +206,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.actions = actions;
 	}
 
-	@Nullable
-	public String getSource() {
+	@Nullable public String getSource() {
 		return source;
 	}
 
@@ -224,8 +214,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.source = source;
 	}
 
-	@Nullable
-	public String getTags() {
+	@Nullable public String getTags() {
 		return tags;
 	}
 
@@ -233,8 +222,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.tags = tags;
 	}
 
-	@Nullable
-	public String getEntity() {
+	@Nullable public String getEntity() {
 		return entity;
 	}
 
@@ -242,8 +230,7 @@ public class OpsGenieNotifier extends AbstractStatusChangeNotifier {
 		this.entity = entity;
 	}
 
-	@Nullable
-	public String getUser() {
+	@Nullable public String getUser() {
 		return user;
 	}
 

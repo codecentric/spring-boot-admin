@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.StdSerializer;
@@ -48,8 +48,7 @@ public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> 
 		gen.writeEndObject();
 	}
 
-	@Nullable
-	private String sanitize(String key, @Nullable String value) {
+	@Nullable private String sanitize(String key, @Nullable String value) {
 		if (value == null) {
 			return null;
 		}

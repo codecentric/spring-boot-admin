@@ -24,7 +24,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the info fetched from the info actuator endpoint
@@ -47,16 +47,6 @@ public final class Info implements Serializable {
 		}
 	}
 
-	@JsonAnySetter
-	public void put(String key, Object value) {
-		this.values.put(key, value);
-	}
-
-	@JsonAnyGetter
-	public Map<String, Object> getValues() {
-		return Collections.unmodifiableMap(values);
-	}
-
 	public static Info from(@Nullable Map<String, Object> values) {
 		if (values == null || values.isEmpty()) {
 			return empty();
@@ -66,6 +56,16 @@ public final class Info implements Serializable {
 
 	public static Info empty() {
 		return EMPTY;
+	}
+
+	@JsonAnySetter
+	public void put(String key, Object value) {
+		this.values.put(key, value);
+	}
+
+	@JsonAnyGetter
+	public Map<String, Object> getValues() {
+		return Collections.unmodifiableMap(values);
 	}
 
 }

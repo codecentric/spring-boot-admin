@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
@@ -62,8 +62,7 @@ public final class Instance implements Serializable {
 
 	private final long version;
 
-	@Nullable
-	private final Registration registration;
+	@Nullable private final Registration registration;
 
 	private final boolean registered;
 
@@ -77,8 +76,7 @@ public final class Instance implements Serializable {
 
 	private final Endpoints endpoints;
 
-	@Nullable
-	private final BuildVersion buildVersion;
+	@Nullable private final BuildVersion buildVersion;
 
 	private final Tags tags;
 

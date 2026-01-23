@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.server.notify;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -45,15 +45,13 @@ public class TelegramNotifier extends AbstractContentNotifier {
 	/**
 	 * Unique identifier for the target chat or username of the target channel
 	 */
-	@Nullable
-	private String chatId;
+	@Nullable private String chatId;
 
 	/**
 	 * The token identifying und authorizing your Telegram bot (e.g.
 	 * `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
 	 */
-	@Nullable
-	private String authToken;
+	@Nullable private String authToken;
 
 	/**
 	 * Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width
@@ -108,8 +106,7 @@ public class TelegramNotifier extends AbstractContentNotifier {
 		this.apiUrl = apiUrl;
 	}
 
-	@Nullable
-	public String getChatId() {
+	@Nullable public String getChatId() {
 		return chatId;
 	}
 
@@ -117,8 +114,7 @@ public class TelegramNotifier extends AbstractContentNotifier {
 		this.chatId = chatId;
 	}
 
-	@Nullable
-	public String getAuthToken() {
+	@Nullable public String getAuthToken() {
 		return authToken;
 	}
 

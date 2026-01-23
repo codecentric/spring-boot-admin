@@ -21,8 +21,8 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -41,11 +41,9 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
 	private static final String[] PASSWORD_KEYS = { "user.password", "user-password", "userpassword" };
 
-	@Nullable
-	private final String defaultUserName;
+	@Nullable private final String defaultUserName;
 
-	@Nullable
-	private final String defaultPassword;
+	@Nullable private final String defaultPassword;
 
 	private final Map<String, InstanceCredentials> serviceMap;
 
@@ -58,6 +56,25 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 
 	public BasicAuthHttpHeaderProvider() {
 		this(null, null, Collections.emptyMap());
+	}
+
+	private static @Nullable String getMetadataValue(Instance instance, String[] keys) {
+		Map<String, String> metadata = instance.getRegistration().getMetadata();
+		for (String key : keys) {
+			String value = metadata.get(key);
+			if (value != null) {
+				return value;
+			}
+		}
+		return null;
+	}
+
+	private static String base64Encode(byte[] src) {
+		if (src.length == 0) {
+			return "";
+		}
+		byte[] dest = Base64.getEncoder().encode(src);
+		return new String(dest, StandardCharsets.UTF_8);
 	}
 
 	@Override
@@ -88,25 +105,6 @@ public class BasicAuthHttpHeaderProvider implements HttpHeadersProvider {
 	protected String encode(String username, String password) {
 		String token = base64Encode((username + ":" + password).getBytes(StandardCharsets.UTF_8));
 		return "Basic " + token;
-	}
-
-	private static @Nullable String getMetadataValue(Instance instance, String[] keys) {
-		Map<String, String> metadata = instance.getRegistration().getMetadata();
-		for (String key : keys) {
-			String value = metadata.get(key);
-			if (value != null) {
-				return value;
-			}
-		}
-		return null;
-	}
-
-	private static String base64Encode(byte[] src) {
-		if (src.length == 0) {
-			return "";
-		}
-		byte[] dest = Base64.getEncoder().encode(src);
-		return new String(dest, StandardCharsets.UTF_8);
 	}
 
 	@lombok.Data

@@ -27,6 +27,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.jspecify.annotations.Nullable;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
@@ -37,7 +38,6 @@ import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -79,8 +79,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	 * Webhook url for Microsoft Teams Channel Webhook connector (i.e.
 	 * <a href="https://outlook.office.com/webhook/">...</a>{webhook-id})
 	 */
-	@Nullable
-	private URI webhookUrl;
+	@Nullable private URI webhookUrl;
 
 	/**
 	 * Theme Color is the color of the accent on the message that appears in Microsoft
@@ -233,8 +232,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 			.build();
 	}
 
-	@Nullable
-	public URI getWebhookUrl() {
+	@Nullable public URI getWebhookUrl() {
 		return webhookUrl;
 	}
 
