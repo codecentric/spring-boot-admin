@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import static java.util.Arrays.asList;
@@ -97,26 +97,6 @@ public final class StatusInfo implements Serializable {
 		return valueOf(STATUS_OFFLINE, details);
 	}
 
-	public Map<String, Object> getDetails() {
-		return Collections.unmodifiableMap(details);
-	}
-
-	public boolean isUp() {
-		return STATUS_UP.equals(status);
-	}
-
-	public boolean isOffline() {
-		return STATUS_OFFLINE.equals(status);
-	}
-
-	public boolean isDown() {
-		return STATUS_DOWN.equals(status);
-	}
-
-	public boolean isUnknown() {
-		return STATUS_UNKNOWN.equals(status);
-	}
-
 	public static Comparator<String> severity() {
 		return Comparator.comparingInt(STATUS_ORDER::indexOf);
 	}
@@ -137,6 +117,26 @@ public final class StatusInfo implements Serializable {
 		}
 
 		return StatusInfo.valueOf((String) body.get("status"), details);
+	}
+
+	public Map<String, Object> getDetails() {
+		return Collections.unmodifiableMap(details);
+	}
+
+	public boolean isUp() {
+		return STATUS_UP.equals(status);
+	}
+
+	public boolean isOffline() {
+		return STATUS_OFFLINE.equals(status);
+	}
+
+	public boolean isDown() {
+		return STATUS_DOWN.equals(status);
+	}
+
+	public boolean isUnknown() {
+		return STATUS_UNKNOWN.equals(status);
 	}
 
 }

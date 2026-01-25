@@ -46,7 +46,14 @@ describe('DetailsMemory', () => {
           MemChart: true,
         },
         props: {
-          instance: new Instance({ id: '1' }),
+          instance: new Instance({
+            id: '1',
+            availableMetrics: [
+              'jvm.memory.used',
+              'jvm.memory.max',
+              'jvm.memory.committed',
+            ],
+          }),
           type: 'heap',
         },
       });
@@ -86,7 +93,14 @@ describe('DetailsMemory', () => {
           MemChart: true,
         },
         props: {
-          instance: new Instance({ id: '1' }),
+          instance: new Instance({
+            id: '1',
+            availableMetrics: [
+              'jvm.memory.used',
+              'jvm.memory.max',
+              'jvm.memory.committed',
+            ],
+          }),
           type: 'nonheap',
         },
       });

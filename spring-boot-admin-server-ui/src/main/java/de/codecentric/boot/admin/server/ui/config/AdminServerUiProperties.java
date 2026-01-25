@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.Data;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.http.CacheControl;
-import org.springframework.lang.Nullable;
 
 import de.codecentric.boot.admin.server.ui.web.UiController;
 
@@ -85,8 +85,7 @@ public class AdminServerUiProperties {
 	 * correct self references. If the host/port is omitted it will be inferred from the
 	 * request.
 	 */
-	@Nullable
-	private String publicUrl = null;
+	@Nullable private String publicUrl = null;
 
 	/**
 	 * Wether the thymeleaf templates should be cached.

@@ -17,15 +17,14 @@
 package de.codecentric.boot.admin.server.utils.jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
@@ -39,12 +38,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class InstanceEventMixinTest {
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	protected InstanceEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		JavaTimeModule javaTimeModule = new JavaTimeModule();
-		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
+		jsonMapper = JsonMapper.builder()
+			.addModule(adminServerModule)
+			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+			.build();
 	}
 
 	@Nested
@@ -54,7 +55,7 @@ public class InstanceEventMixinTest {
 
 		@BeforeEach
 		void setup() {
-			JacksonTester.initFields(this, objectMapper);
+			JacksonTester.initFields(this, jsonMapper);
 		}
 
 		@Test
@@ -64,7 +65,7 @@ public class InstanceEventMixinTest {
 				.put("type", "DEREGISTERED")
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceDeregisteredEvent.class);
 		}
 
@@ -75,7 +76,7 @@ public class InstanceEventMixinTest {
 				.put("type", "ENDPOINTS_DETECTED")
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceEndpointsDetectedEvent.class);
 		}
 
@@ -86,7 +87,7 @@ public class InstanceEventMixinTest {
 				.put("type", "INFO_CHANGED")
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceInfoChangedEvent.class);
 		}
 
@@ -99,7 +100,7 @@ public class InstanceEventMixinTest {
 						new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceRegisteredEvent.class);
 		}
 
@@ -112,7 +113,7 @@ public class InstanceEventMixinTest {
 						new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceRegistrationUpdatedEvent.class);
 		}
 
@@ -124,7 +125,7 @@ public class InstanceEventMixinTest {
 				.put("statusInfo", new JSONObject().put("status", "OFFLINE"))
 				.toString();
 
-			InstanceEvent event = objectMapper.readValue(json, InstanceEvent.class);
+			InstanceEvent event = jsonMapper.readValue(json, InstanceEvent.class);
 			assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class);
 		}
 

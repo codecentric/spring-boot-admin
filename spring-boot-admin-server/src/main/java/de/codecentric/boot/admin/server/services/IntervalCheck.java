@@ -28,8 +28,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
-import org.springframework.lang.Nullable;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -65,11 +65,9 @@ public class IntervalCheck {
 	@Setter
 	private Duration minRetention;
 
-	@Nullable
-	private Disposable subscription;
+	@Nullable private Disposable subscription;
 
-	@Nullable
-	private Scheduler scheduler;
+	@Nullable private Scheduler scheduler;
 
 	@Setter
 	@NonNull
