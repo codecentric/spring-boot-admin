@@ -85,6 +85,14 @@ public final class StatusInfo implements Serializable {
 		return ofOffline(null);
 	}
 
+	public static StatusInfo ofOutOfService() {
+		return ofOutOfService(null);
+	}
+
+	public static StatusInfo ofRestricted() {
+		return ofRestricted(null);
+	}
+
 	public static StatusInfo ofUp(@Nullable Map<String, Object> details) {
 		return valueOf(STATUS_UP, details);
 	}
@@ -95,6 +103,14 @@ public final class StatusInfo implements Serializable {
 
 	public static StatusInfo ofOffline(@Nullable Map<String, Object> details) {
 		return valueOf(STATUS_OFFLINE, details);
+	}
+
+	public static StatusInfo ofOutOfService(@Nullable Map<String, Object> details) {
+		return valueOf(STATUS_OUT_OF_SERVICE, details);
+	}
+
+	public static StatusInfo ofRestricted(@Nullable Map<String, Object> details) {
+		return valueOf(STATUS_RESTRICTED, details);
 	}
 
 	public Map<String, Object> getDetails() {
@@ -115,6 +131,14 @@ public final class StatusInfo implements Serializable {
 
 	public boolean isUnknown() {
 		return STATUS_UNKNOWN.equals(status);
+	}
+
+	public boolean isOutOfService() {
+		return STATUS_OUT_OF_SERVICE.equals(status);
+	}
+
+	public boolean isRestricted() {
+		return STATUS_RESTRICTED.equals(status);
 	}
 
 	public static Comparator<String> severity() {
