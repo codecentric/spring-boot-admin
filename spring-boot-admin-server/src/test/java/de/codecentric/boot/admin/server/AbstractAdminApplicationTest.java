@@ -20,7 +20,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import lombok.Getter;
 import org.json.JSONObject;
@@ -160,7 +160,7 @@ public abstract class AbstractAdminApplicationTest {
 	}
 
 	protected WebTestClient createWebClient(int port) {
-		ObjectMapper mapper = new ObjectMapper().registerModule(new JsonOrgModule());
+		JsonMapper mapper = JsonMapper.builder().addModule(new JsonOrgModule()).build();
 		return WebTestClient.bindToServer()
 			.baseUrl("http://localhost:" + port)
 			.exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
