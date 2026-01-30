@@ -20,7 +20,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
@@ -187,7 +187,7 @@ class AdminApplicationDiscoveryTest {
 	}
 
 	private WebTestClient createWebClient(int port) {
-		ObjectMapper mapper = new ObjectMapper().registerModule(new JsonOrgModule());
+		JsonMapper mapper = JsonMapper.builder().addModule(new JsonOrgModule()).build();
 		return WebTestClient.bindToServer()
 			.baseUrl("http://localhost:" + port)
 			.exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
