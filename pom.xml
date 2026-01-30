@@ -48,7 +48,7 @@
 
         <!-- used dependencies versions -->
         <spring-boot.version>4.0.2</spring-boot.version>
-        <spring-cloud.version>2025.1.0</spring-cloud.version>
+        <spring-cloud.version>2025.1.1</spring-cloud.version>
 
         <!-- FIXME downgrade to 2.1.0 until a compatible version is released -->
         <jolokia-support-spring.version>2.1.0</jolokia-support-spring.version>
