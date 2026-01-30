@@ -20,8 +20,6 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +34,8 @@ import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperti
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.http.codec.json.JacksonJsonDecoder;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -46,6 +44,8 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.datatype.jsonorg.JsonOrgModule;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
@@ -191,8 +191,8 @@ class AdminApplicationDiscoveryTest {
 		return WebTestClient.bindToServer()
 			.baseUrl("http://localhost:" + port)
 			.exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
-				configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(mapper));
-				configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));
+				configurer.defaultCodecs().jacksonJsonDecoder(new JacksonJsonDecoder(mapper));
+				configurer.defaultCodecs().jacksonJsonEncoder(new JacksonJsonEncoder(mapper));
 			}).build())
 			.build();
 	}
