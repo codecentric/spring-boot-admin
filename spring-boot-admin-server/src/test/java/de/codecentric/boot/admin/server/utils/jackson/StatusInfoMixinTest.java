@@ -19,13 +19,13 @@ package de.codecentric.boot.admin.server.utils.jackson;
 import java.io.IOException;
 import java.util.Collections;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -54,7 +54,7 @@ class StatusInfoMixinTest {
 	}
 
 	@Test
-	void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JacksonException {
 		String json = new JSONObject().put("status", "OFFLINE")
 			.put("details", new JSONObject().put("foo", "bar"))
 			.toString();

@@ -16,9 +16,9 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -115,7 +115,7 @@ class RegistrationDeserializerTest {
 	}
 
 	@Test
-	void test_sanitize_metadata() throws JsonProcessingException {
+	void test_sanitize_metadata() throws JacksonException {
 		Registration app = Registration.create("test", "https://health")
 			.metadata("PASSWORD", "qwertz123")
 			.metadata("user", "humptydumpty")

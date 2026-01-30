@@ -18,13 +18,13 @@ package de.codecentric.boot.admin.server.utils.jackson;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -52,7 +52,7 @@ class EndpointMixinTest {
 	}
 
 	@Test
-	void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JacksonException {
 		String json = new JSONObject().put("id", "info").put("url", "http://localhost:8080/info").toString();
 
 		Endpoint endpoint = jsonMapper.readValue(json, Endpoint.class);

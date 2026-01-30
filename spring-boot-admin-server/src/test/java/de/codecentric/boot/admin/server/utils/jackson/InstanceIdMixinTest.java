@@ -18,8 +18,8 @@ package de.codecentric.boot.admin.server.utils.jackson;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -40,7 +40,7 @@ class InstanceIdMixinTest {
 	}
 
 	@Test
-	void verifyDeserialize() throws JsonProcessingException {
+	void verifyDeserialize() throws JacksonException {
 		InstanceId id = jsonMapper.readValue("\"abc\"", InstanceId.class);
 		assertThat(id).isEqualTo(InstanceId.of("abc"));
 	}

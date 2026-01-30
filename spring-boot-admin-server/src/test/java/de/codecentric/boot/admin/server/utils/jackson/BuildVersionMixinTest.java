@@ -16,8 +16,8 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -39,13 +39,13 @@ class BuildVersionMixinTest {
 	}
 
 	@Test
-	void verifyDeserialize() throws JsonProcessingException {
+	void verifyDeserialize() throws JacksonException {
 		BuildVersion buildVersion = jsonMapper.readValue("\"1.0.0\"", BuildVersion.class);
 		assertThat(buildVersion).isEqualTo(BuildVersion.valueOf("1.0.0"));
 	}
 
 	@Test
-	void verifySerialize() throws JsonProcessingException {
+	void verifySerialize() throws JacksonException {
 		BuildVersion buildVersion = BuildVersion.valueOf("1.0.0");
 
 		String result = jsonMapper.writeValueAsString(buildVersion);
@@ -53,7 +53,7 @@ class BuildVersionMixinTest {
 	}
 
 	@Test
-	void verifySerializeWithMapEntryVersion() throws JsonProcessingException {
+	void verifySerializeWithMapEntryVersion() throws JacksonException {
 		BuildVersion buildVersion = BuildVersion.from(singletonMap("version", "1.0.0"));
 
 		String result = jsonMapper.writeValueAsString(buildVersion);
@@ -61,7 +61,7 @@ class BuildVersionMixinTest {
 	}
 
 	@Test
-	void verifySerializeWithNestedMapEntryVersion() throws JsonProcessingException {
+	void verifySerializeWithNestedMapEntryVersion() throws JacksonException {
 		BuildVersion buildVersion = BuildVersion.from(singletonMap("build", singletonMap("version", "1.0.0")));
 
 		String result = jsonMapper.writeValueAsString(buildVersion);

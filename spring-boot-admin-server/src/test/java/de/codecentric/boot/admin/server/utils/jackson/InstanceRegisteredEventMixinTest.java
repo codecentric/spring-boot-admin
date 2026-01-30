@@ -20,13 +20,13 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DatabindException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
@@ -59,7 +59,7 @@ class InstanceRegisteredEventMixinTest {
 	}
 
 	@Test
-	void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JacksonException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -90,7 +90,7 @@ class InstanceRegisteredEventMixinTest {
 	}
 
 	@Test
-	void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JacksonException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "REGISTERED")
@@ -114,7 +114,7 @@ class InstanceRegisteredEventMixinTest {
 	}
 
 	@Test
-	void verifyDeserializeWithoutRegistration() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithoutRegistration() throws JSONException, JacksonException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
