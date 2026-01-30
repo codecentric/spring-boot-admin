@@ -32,12 +32,11 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.datatype.jsonorg.JsonOrgModule;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import tools.jackson.datatype.jsonorg.JsonOrgModule;
 
 @Getter
 public abstract class AbstractAdminApplicationTest {
