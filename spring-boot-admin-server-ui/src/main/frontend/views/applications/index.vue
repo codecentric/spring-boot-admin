@@ -97,7 +97,7 @@
               "
             >
               <template #title>
-                <div class="inline-flex flex-row min-w-[29rem]">
+                <div class="items-center inline-flex flex-row min-w-[29rem]">
                   <font-awesome-icon
                     icon="chevron-down"
                     :class="{
