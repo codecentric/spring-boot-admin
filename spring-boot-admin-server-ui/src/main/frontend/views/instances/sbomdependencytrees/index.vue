@@ -53,7 +53,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import SbaAlert from '@/components/sba-alert.vue';
 import SbaInput from '@/components/sba-input';
-import SbaPanel from '@/components/sba-panel.vue';
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 
 import Instance from '@/services/instance';
@@ -64,7 +63,6 @@ import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 export default {
   components: {
     SbaAlert,
-    SbaPanel,
     TreeGraph,
     FontAwesomeIcon,
     SbaStickySubnav,
