@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.Scanner;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.StringUtils;
 
 @lombok.Data
@@ -43,8 +43,7 @@ public final class BuildVersion implements Serializable, Comparable<BuildVersion
 		return new BuildVersion(s);
 	}
 
-	@Nullable
-	public static BuildVersion from(Map<String, ?> map) {
+	@Nullable public static BuildVersion from(Map<String, ?> map) {
 		if (map.isEmpty()) {
 			return null;
 		}

@@ -38,7 +38,7 @@
       <sba-key-value-table v-if="!isEmptyInfo" :map="info" />
       <p
         v-else
-        class="is-muted"
+        class="mx-4 my-3"
         v-text="$t('instances.details.info.no_info_provided')"
       />
     </div>
@@ -48,10 +48,10 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 
+import SbaAccordion from '@/components/sba-accordion.vue';
 import SbaKeyValueTable from '@/components/sba-key-value-table.vue';
 
 import Instance from '@/services/instance';
-import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 const props = defineProps({
   instance: {

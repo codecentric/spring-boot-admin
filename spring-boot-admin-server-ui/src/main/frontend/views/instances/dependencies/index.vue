@@ -14,56 +14,61 @@
         </sba-input>
       </sba-sticky-subnav>
     </template>
-    <template v-for="sbomId in sboms" :key="sbomId">
+    <template v-if="sboms.length === 0">
+      <sba-alert
+        severity="WARN"
+        :error="$t('instances.dependencies.no_data_provided')"
+      />
+    </template>
+    <template v-for="sbomId in sboms" v-else :key="sbomId">
       <sbom-list :instance="instance" :sbom-id="sbomId" :filter="filter" />
     </template>
   </sba-instance-section>
 </template>
-<script>
+<script setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { onMounted, ref } from 'vue';
 
+import SbaAlert from '@/components/sba-alert.vue';
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 
 import Instance from '@/services/instance';
-import { VIEW_GROUP } from '@/views/ViewGroup';
 import SbomList from '@/views/instances/dependencies/SbomList.vue';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section.vue';
 
+const props = defineProps({
+  instance: {
+    type: Instance,
+    required: true,
+  },
+});
+
+const hasLoaded = ref(false);
+const error = ref(null);
+const sboms = ref([]);
+const filter = ref('');
+
+const fetchSbomIds = async () => {
+  error.value = null;
+  try {
+    const res = await props.instance.fetchSbomIds();
+    sboms.value = res.data.ids;
+  } catch (err) {
+    console.warn('Fetching sbom ids failed:', err);
+    error.value = err;
+  }
+  hasLoaded.value = true;
+};
+
+onMounted(() => {
+  fetchSbomIds();
+});
+</script>
+
+<script>
+import { VIEW_GROUP } from '@/views/ViewGroup';
+
 export default {
-  components: {
-    FontAwesomeIcon,
-    SbaStickySubnav,
-    SbomList,
-    SbaInstanceSection,
-  },
-  props: {
-    instance: {
-      type: Instance,
-      required: true,
-    },
-  },
-  data: () => ({
-    hasLoaded: false,
-    error: null,
-    sboms: [],
-    filter: '',
-  }),
-  created() {
-    this.fetchSbomIds();
-  },
-  methods: {
-    async fetchSbomIds() {
-      this.error = null;
-      try {
-        const res = await this.instance.fetchSbomIds();
-        this.sboms = res.data.ids;
-      } catch (error) {
-        console.warn('Fetching sbom ids failed:', error);
-        this.error = error;
-      }
-      this.hasLoaded = true;
-    },
-  },
   install({ viewRegistry }) {
     viewRegistry.addView({
       name: 'instances/dependencies',

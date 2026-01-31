@@ -26,10 +26,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.client5.http.utils.Base64;
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -58,8 +58,7 @@ public class DingTalkNotifier extends AbstractContentNotifier {
 	/**
 	 * Secret for DingTalk.
 	 */
-	@Nullable
-	private String secret;
+	@Nullable private String secret;
 
 	public DingTalkNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
@@ -121,8 +120,7 @@ public class DingTalkNotifier extends AbstractContentNotifier {
 		this.webhookUrl = webhookUrl;
 	}
 
-	@Nullable
-	public String getSecret() {
+	@Nullable public String getSecret() {
 		return secret;
 	}
 

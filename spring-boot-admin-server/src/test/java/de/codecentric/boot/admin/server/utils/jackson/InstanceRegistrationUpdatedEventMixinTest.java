@@ -20,17 +20,16 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -42,23 +41,26 @@ import static org.assertj.core.api.Assertions.entry;
 
 class InstanceRegistrationUpdatedEventMixinTest {
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	private JacksonTester<InstanceRegistrationUpdatedEvent> jsonTester;
 
 	protected InstanceRegistrationUpdatedEventMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		JavaTimeModule javaTimeModule = new JavaTimeModule();
-		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
+		jsonMapper = JsonMapper.builder()
+			.addModule(adminServerModule)
+			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+
+			.build();
 	}
 
 	@BeforeEach
 	void setup() {
-		JacksonTester.initFields(this, objectMapper);
+		JacksonTester.initFields(this, jsonMapper);
 	}
 
 	@Test
-	void verifyDeserialize() throws JSONException, JsonProcessingException {
+	void verifyDeserialize() throws JSONException, JacksonException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
@@ -72,7 +74,7 @@ class InstanceRegistrationUpdatedEventMixinTest {
 						.put("metadata", new JSONObject().put("PASSWORD", "******").put("user", "humptydumpty")))
 			.toString();
 
-		InstanceRegistrationUpdatedEvent event = objectMapper.readValue(json, InstanceRegistrationUpdatedEvent.class);
+		InstanceRegistrationUpdatedEvent event = jsonMapper.readValue(json, InstanceRegistrationUpdatedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -89,14 +91,14 @@ class InstanceRegistrationUpdatedEventMixinTest {
 	}
 
 	@Test
-	void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithOnlyRequiredProperties() throws JSONException, JacksonException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "REGISTRATION_UPDATED")
 			.put("registration", new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/heath"))
 			.toString();
 
-		InstanceRegistrationUpdatedEvent event = objectMapper.readValue(json, InstanceRegistrationUpdatedEvent.class);
+		InstanceRegistrationUpdatedEvent event = jsonMapper.readValue(json, InstanceRegistrationUpdatedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isZero();
@@ -113,14 +115,14 @@ class InstanceRegistrationUpdatedEventMixinTest {
 	}
 
 	@Test
-	void verifyDeserializeWithoutRegistration() throws JSONException, JsonProcessingException {
+	void verifyDeserializeWithoutRegistration() throws JSONException, JacksonException {
 		String json = new JSONObject().put("instance", "test123")
 			.put("version", 12345678L)
 			.put("timestamp", 1587751031.000000000)
 			.put("type", "REGISTRATION_UPDATED")
 			.toString();
 
-		InstanceRegistrationUpdatedEvent event = objectMapper.readValue(json, InstanceRegistrationUpdatedEvent.class);
+		InstanceRegistrationUpdatedEvent event = jsonMapper.readValue(json, InstanceRegistrationUpdatedEvent.class);
 		assertThat(event).isNotNull();
 		assertThat(event.getInstance()).isEqualTo(InstanceId.of("test123"));
 		assertThat(event.getVersion()).isEqualTo(12345678L);
@@ -137,8 +139,8 @@ class InstanceRegistrationUpdatedEventMixinTest {
 			.put("registration", new JSONObject())
 			.toString();
 
-		assertThatThrownBy(() -> objectMapper.readValue(json, InstanceRegistrationUpdatedEvent.class))
-			.isInstanceOf(JsonMappingException.class)
+		assertThatThrownBy(() -> jsonMapper.readValue(json, InstanceRegistrationUpdatedEvent.class))
+			.isInstanceOf(DatabindException.class)
 			.hasCauseInstanceOf(IllegalArgumentException.class)
 			.hasMessageContaining("must not be empty");
 	}
@@ -161,7 +163,7 @@ class InstanceRegistrationUpdatedEventMixinTest {
 		JsonContent<InstanceRegistrationUpdatedEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");
 		assertThat(jsonContent).extractingJsonPathNumberValue("$.version").isEqualTo(12345678);
-		assertThat(jsonContent).extractingJsonPathNumberValue("$.timestamp").isEqualTo(1587751031.000000000);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.timestamp").isEqualTo("2020-04-24T17:57:11Z");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.type").isEqualTo("REGISTRATION_UPDATED");
 		assertThat(jsonContent).extractingJsonPathValue("$.registration").isNotNull();
 
@@ -188,7 +190,7 @@ class InstanceRegistrationUpdatedEventMixinTest {
 		JsonContent<InstanceRegistrationUpdatedEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");
 		assertThat(jsonContent).extractingJsonPathNumberValue("$.version").isEqualTo(0);
-		assertThat(jsonContent).extractingJsonPathNumberValue("$.timestamp").isEqualTo(1587751031.000000000);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.timestamp").isEqualTo("2020-04-24T17:57:11Z");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.type").isEqualTo("REGISTRATION_UPDATED");
 		assertThat(jsonContent).extractingJsonPathValue("$.registration").isNotNull();
 
@@ -210,7 +212,7 @@ class InstanceRegistrationUpdatedEventMixinTest {
 		JsonContent<InstanceRegistrationUpdatedEvent> jsonContent = jsonTester.write(event);
 		assertThat(jsonContent).extractingJsonPathStringValue("$.instance").isEqualTo("test123");
 		assertThat(jsonContent).extractingJsonPathNumberValue("$.version").isEqualTo(12345678);
-		assertThat(jsonContent).extractingJsonPathNumberValue("$.timestamp").isEqualTo(1587751031.000000000);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.timestamp").isEqualTo("2020-04-24T17:57:11Z");
 		assertThat(jsonContent).extractingJsonPathStringValue("$.type").isEqualTo("REGISTRATION_UPDATED");
 		assertThat(jsonContent).extractingJsonPathMapValue("$.registration").isNull();
 	}
