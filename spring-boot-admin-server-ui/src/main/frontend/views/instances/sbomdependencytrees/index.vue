@@ -31,8 +31,15 @@
       </sba-sticky-subnav>
     </template>
 
+    <template v-if="sboms.length === 0">
+      <sba-alert
+        severity="WARN"
+        :error="$t('instances.dependencies.no_data_provided')"
+      />
+    </template>
     <tree-graph
       v-for="sbomId in sboms"
+      v-else
       :key="sbomId"
       :instance="instance"
       :sbom-id="sbomId"
@@ -44,7 +51,9 @@
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+import SbaAlert from '@/components/sba-alert.vue';
 import SbaInput from '@/components/sba-input';
+import SbaPanel from '@/components/sba-panel.vue';
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 
 import Instance from '@/services/instance';
@@ -54,6 +63,8 @@ import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
   components: {
+    SbaAlert,
+    SbaPanel,
     TreeGraph,
     FontAwesomeIcon,
     SbaStickySubnav,
