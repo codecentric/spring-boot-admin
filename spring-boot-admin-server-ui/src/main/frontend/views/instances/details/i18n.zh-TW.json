@@ -1,62 +1,68 @@
 {
   "instances": {
     "details": {
-      "label": "細節",
+      "label": "詳細資訊",
       "cache": {
         "hit_ratio": "命中率",
         "hits": "命中次數",
-        "misses": "未命中",
-        "size": "粒度"
+        "misses": "未命中次數",
+        "size": "大小"
       },
       "datasource": {
-        "active_connections": "活動連接數",
-        "min_connections": "最小連接數",
-        "max_connections": "最大連接數",
-        "title": "資料來源: {dataSource}",
-        "unlimited": "unlimited"
+        "active_connections": "使用中連線數",
+        "min_connections": "最小連線數",
+        "max_connections": "最大連線數",
+        "title": "資料來源：{dataSource}",
+        "unlimited": "無限制"
       },
       "gc": {
-        "count": "總計",
+        "count": "次數",
+        "count_short": "#",
         "time_spent_max": "最大耗時",
+        "time_spent_max_short": "最大",
         "time_spent_total": "總耗時",
-        "title": "垃圾回收"
+        "time_spent_total_short": "總計",
+        "title": "垃圾回收暫停"
       },
       "health": {
-        "title": "健康"
+        "title": "健康狀態"
       },
       "health_group": {
-        "title": "健康組"
+        "title": "健康群組"
       },
       "info": {
-        "no_info_provided": "未提供任何訊息。",
-        "title": "訊息"
+        "no_info_provided": "未提供任何資訊。",
+        "title": "資訊"
       },
       "memory": {
-        "max": "最大",
-        "metaspace": "初始空間",
-        "size": "當前可用",
+        "max": "最大值",
+        "metaspace": "Metaspace",
+        "size": "大小",
         "title": "記憶體",
-        "used": "已用",
-        "committed": "已提交"
+        "used": "已使用",
+        "committed": "已配置"
       },
       "metadata": {
-        "no_data_provided": "未提供Metadata。",
-        "title": "Metadata"
+        "no_data_provided": "未提供中繼資料。",
+        "title": "中繼資料"
       },
       "process": {
-        "cpus": "CPU核心數",
-        "pid": "Process ID",
-        "parent_pid": "父程序ID",
+        "cpus": "CPU 核心數",
+        "pid": "PID",
+        "parent_pid": "父程序 PID",
         "owner": "擁有者",
-        "process_cpu_usage": "ProcessCPU使用率",
-        "system_cpu_usage": "係統CPU使用率",
-        "title": "Process",
-        "uptime": "執行時間"
+        "process_cpu_usage": "程序 CPU 使用率",
+        "process_cpu_usage_short": "CPU",
+        "system_cpu_usage": "系統 CPU 使用率",
+        "system_cpu_usage_short": "系統",
+        "title": "程序",
+        "uptime": "運作時間",
+        "uptime_short": "運作"
       },
       "threads": {
         "daemon": "Daemon",
-        "live": "活動執行緒",
-        "peak_live": "執行緒峰值",
+        "live": "執行中",
+        "peak_live": "峰值",
         "title": "執行緒"
       }
     }

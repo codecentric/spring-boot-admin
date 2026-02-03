@@ -1,0 +1,17 @@
+{
+  "instances": {
+    "dependencies": {
+      "label": "相依元件",
+      "list": {
+        "header": {
+          "group": "Group",
+          "name": "名稱",
+          "version": "版本",
+          "publisher": "發布者",
+          "description": "說明",
+          "licenses": "授權條款"
+        }
+      }
+    }
+  }
+}

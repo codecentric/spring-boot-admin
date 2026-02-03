@@ -1,5 +1,6 @@
 {
   "navbar": {
+    "signedInAs": "目前登入身分",
     "logout": "登出"
   }
 }

@@ -1,18 +1,18 @@
 {
   "instances": {
     "threaddump": {
-      "label": "執行緒轉存",
-      "download": "下載執行緒",
+      "label": "Thread Dump",
+      "download": "下載 Thread Dump",
 
-      "download_failed": "執行緒無法下載。",
-      "thread_details_blocked_count": "阻塞數",
+      "download_failed": "下載 Thread Dump 失敗。",
+      "thread_details_blocked_count": "阻塞次數",
       "thread_details_blocked_time": "阻塞時間",
-      "thread_details_lock_name": "Lock名稱",
-      "thread_details_lock_owner_id": "Lock擁有者ID",
-      "thread_details_lock_owner_name": "Lock擁有者名稱",
-      "thread_details_waited_count": "等待數",
+      "thread_details_lock_name": "Lock 名稱",
+      "thread_details_lock_owner_id": "Lock 擁有者 ID",
+      "thread_details_lock_owner_name": "Lock 擁有者名稱",
+      "thread_details_waited_count": "等待次數",
       "thread_details_waited_time": "等待時間",
-      "thread_id": "執行緒ID",
+      "thread_id": "執行緒 ID",
       "thread_name": "執行緒名稱",
       "thread_state": "執行緒狀態"
     }

@@ -4,22 +4,28 @@
       "title": "資料"
     },
     "insights": {
-      "title": "Insights"
+      "title": "洞察"
     },
     "instances_caches": {
-      "title": "暫存"
+      "title": "快取"
+    },
+    "dependencies": {
+      "title": "相依元件"
     },
     "jvm": {
       "title": "JVM"
     },
     "logging": {
-      "title": "日志"
+      "title": "日誌"
     },
     "security": {
-      "title": "網路安全"
+      "title": "安全性"
     },
     "web": {
       "title": "Web"
+    },
+    "custom-link": {
+      "title": "連結"
     }
   }
 }
