@@ -1,17 +1,21 @@
 {
   "instances": {
     "loggers": {
-      "label": "日誌配置",
+      "label": "日誌設定",
       "application": "應用程式",
+      "fetch_failed_some_instances": "取得 {failed}/{count} 個執行個體的日誌設定失敗。對這些執行個體設定日誌等級可能會失敗。",
       "filter": {
-        "class_only": "只顯示類型",
-        "configured": "已配置"
+        "class_only": "只限類別",
+        "configured": "已設定"
       },
-      "instance": "實例",
-      "new": "新",
-      "no_loggers_found": "未找到日誌配置。",
-      "unset": "重置",
-      "setting_loglevel_failed": "設定 {logger} {loglevel} 失敗。"
+      "group": {
+        "label": "日誌群組"
+      },
+      "instance": "執行個體",
+      "new": "新增",
+      "no_loggers_found": "找不到日誌設定。",
+      "unset": "取消設定",
+      "setting_loglevel_failed": "將 {logger} 設定為 {loglevel} 失敗。"
     }
   }
 }

@@ -1,11 +1,11 @@
 {
   "instances": {
     "caches": {
-      "label": "暫存",
-      "cache_manager": "暫存管理",
-      "loading": "下載暫存中...",
+      "label": "快取",
+      "cache_manager": "快取管理",
+      "loading": "正在載入快取...",
       "name": "名稱",
-      "no_caches_found": "找不到暫存。"
+      "no_caches_found": "找不到快取。"
     }
   }
 }

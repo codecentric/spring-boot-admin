@@ -1,10 +1,10 @@
 {
   "instances": {
     "heapdump": {
-      "label": "記憶體轉存",
-      "download": "下載記憶體轉存文件",
-      "warn_dump_expensive": "從CPU和硬碟空間來看，記憶體轉存文件可能很大。",
-      "warn_sensitive_data": "記憶體轉存文件可能包含敏感資料。請小心處理。"
+      "label": "堆積傾印",
+      "download": "下載堆積傾印",
+      "warn_dump_expensive": "進行堆積傾印可能會消耗大量 CPU 和磁碟空間。",
+      "warn_sensitive_data": "堆積傾印可能包含敏感資料，請謹慎處理。"
     }
   }
 }

@@ -1,8 +1,9 @@
 {
   "instances": {
     "logfile": {
-      "label": "日誌文件",
-      "download": "下載"
+      "label": "日誌檔案",
+      "download": "下載",
+      "wrap_lines": "自動換行"
     }
   }
 }
