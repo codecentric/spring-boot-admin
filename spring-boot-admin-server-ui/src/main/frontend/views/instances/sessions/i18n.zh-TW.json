@@ -1,7 +1,7 @@
 {
   "instances": {
     "sessions": {
-      "label": "Sessions",
+      "label": "工作階段",
       "attributes": "屬性",
       "created_at": "建立時間",
       "expired": "已過期",

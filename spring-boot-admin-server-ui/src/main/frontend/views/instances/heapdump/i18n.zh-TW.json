@@ -1,10 +1,10 @@
 {
   "instances": {
     "heapdump": {
-      "label": "Heap Dump",
-      "download": "下載 Heap Dump",
-      "warn_dump_expensive": "進行 Heap Dump 可能會消耗大量 CPU 和磁碟空間。",
-      "warn_sensitive_data": "Heap Dump 可能包含敏感資料，請謹慎處理。"
+      "label": "堆積傾印",
+      "download": "下載堆積傾印",
+      "warn_dump_expensive": "進行堆積傾印可能會消耗大量 CPU 和磁碟空間。",
+      "warn_sensitive_data": "堆積傾印可能包含敏感資料，請謹慎處理。"
     }
   }
 }

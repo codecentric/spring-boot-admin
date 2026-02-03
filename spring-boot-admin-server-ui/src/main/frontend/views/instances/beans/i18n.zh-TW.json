@@ -1,7 +1,7 @@
 {
   "instances": {
     "beans": {
-      "label": "Beans",
+      "label": "Bean",
       "name": "名稱",
       "aliases": "別名",
       "type": "類型",

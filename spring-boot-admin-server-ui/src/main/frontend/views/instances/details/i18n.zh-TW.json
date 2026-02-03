@@ -60,7 +60,7 @@
         "uptime_short": "運作"
       },
       "threads": {
-        "daemon": "Daemon",
+        "daemon": "背景執行緒",
         "live": "執行中",
         "peak_live": "峰值",
         "title": "執行緒"

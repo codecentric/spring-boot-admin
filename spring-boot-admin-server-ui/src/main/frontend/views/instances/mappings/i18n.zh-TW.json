@@ -5,9 +5,9 @@
       "class": "類別",
       "consumes": "接收內容類型",
 
-      "filter_name": "Filter 名稱",
+      "filter_name": "篩選器名稱",
       "handler": "處理器",
-      "headers": "Headers",
+      "headers": "標頭",
       "http-verb": "方法",
       "mappings_not_supported_spring_boot_1": "Spring Boot 1.x 的應用程式不支援端點對應。",
       "parameters": "參數",

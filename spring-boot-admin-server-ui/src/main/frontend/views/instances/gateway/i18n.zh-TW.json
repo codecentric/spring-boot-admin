@@ -1,7 +1,7 @@
 {
   "instances": {
     "gateway": {
-      "label": "Gateway",
+      "label": "閘道",
       "route": {
         "add_route": "新增路由",
         "adding_failed": "新增路由失敗。",
@@ -11,7 +11,7 @@
         "deleted": "已刪除",
         "delete": "刪除",
         "delete_failed": "失敗",
-        "filters": "Filters",
+        "filters": "篩選器",
         "id": "ID",
         "loading": "正在載入路由...",
         "no_definition_provided": "未提供路由定義。",
@@ -21,9 +21,9 @@
         "uri": "URI"
       },
       "filters": {
-        "filter_name": "Filter 名稱",
-        "loading": "正在載入全域 Filters...",
-        "no_filters_found": "找不到全域 Filter。",
+        "filter_name": "篩選器名稱",
+        "loading": "正在載入全域篩選器...",
+        "no_filters_found": "找不到全域篩選器。",
         "order": "順序"
       }
     }

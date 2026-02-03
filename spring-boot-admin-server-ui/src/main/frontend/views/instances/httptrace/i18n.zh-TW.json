@@ -1,7 +1,7 @@
 {
   "instances": {
     "httptrace": {
-      "label": "HTTP Traces",
+      "label": "HTTP 追蹤",
       "chart": {
         "avg_time": "平均時長",
         "max_time": "最大時長",

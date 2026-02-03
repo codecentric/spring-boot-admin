@@ -1,10 +1,10 @@
 {
   "instances": {
     "threaddump": {
-      "label": "Thread Dump",
-      "download": "下載 Thread Dump",
+      "label": "執行緒傾印",
+      "download": "下載執行緒傾印",
 
-      "download_failed": "下載 Thread Dump 失敗。",
+      "download_failed": "下載執行緒傾印失敗。",
       "thread_details_blocked_count": "阻塞次數",
       "thread_details_blocked_time": "阻塞時間",
       "thread_details_lock_name": "Lock 名稱",
