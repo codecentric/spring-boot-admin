@@ -1,7 +1,7 @@
 {
   "instances": {
     "configprops": {
-      "label": "配置屬性",
+      "label": "設定屬性",
 
       "no_properties_set": "未設定屬性"
     }

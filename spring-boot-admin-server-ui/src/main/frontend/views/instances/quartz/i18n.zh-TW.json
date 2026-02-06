@@ -2,7 +2,7 @@
   "instances": {
     "quartz": {
       "label": "Quartz",
-      "no_data": "沒有可用的石英信息"
+      "no_data": "沒有可用的 Quartz 資訊"
     }
   }
 }

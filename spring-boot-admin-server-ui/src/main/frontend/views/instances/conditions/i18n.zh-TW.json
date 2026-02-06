@@ -1,0 +1,13 @@
+{
+  "instances": {
+    "conditions": {
+      "label": "條件評估",
+      "positive-matches": "符合條件",
+      "negative-matches": "不符合條件",
+      "condition": "條件",
+      "message": "訊息",
+      "not-matched": "不符合",
+      "matched": "符合"
+    }
+  }
+}

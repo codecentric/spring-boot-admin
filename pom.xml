@@ -59,11 +59,11 @@
         <wiremock.version>3.13.2</wiremock.version>
         <hazelcast.version>5.6.0</hazelcast.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <jetty.version>12.1.5</jetty.version>
+        <jetty.version>12.1.6</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
-        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <!-- because of https://github.com/mojohaus/versions/issues/855 -->
         <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>

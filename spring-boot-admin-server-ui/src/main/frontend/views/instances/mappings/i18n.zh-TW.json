@@ -1,19 +1,19 @@
 {
   "instances": {
     "mappings": {
-      "label": "映射",
-      "class": "類型",
-      "consumes": "提交內容類型",
+      "label": "端點對應",
+      "class": "類別",
+      "consumes": "接收內容類型",
 
-      "filter_name": "過濾器名稱",
-      "handler": "處理程式",
-      "headers": "請求頭",
+      "filter_name": "篩選器名稱",
+      "handler": "處理器",
+      "headers": "標頭",
       "http-verb": "方法",
-      "mappings_not_supported_spring_boot_1": "Spring Boot 1.x的應用不支援映射。",
+      "mappings_not_supported_spring_boot_1": "Spring Boot 1.x 的應用程式不支援端點對應。",
       "parameters": "參數",
-      "produces": "返回內容類型",
-      "servlet_name": "程式名稱",
-      "url_pattern": "URL模式"
+      "produces": "回傳內容類型",
+      "servlet_name": "Servlet 名稱",
+      "url_pattern": "URL 模式"
     }
   }
 }
