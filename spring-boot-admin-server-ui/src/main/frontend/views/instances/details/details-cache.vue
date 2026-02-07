@@ -166,10 +166,14 @@ export default {
     async fetchCacheHits() {
       if (this.shouldFetchCacheHits) {
         try {
-          const response = await this.instance.fetchMetric('cache.gets', {
-            name: this.cacheName,
-            result: 'hit',
-          });
+          const response = await this.instance.fetchMetric(
+            'cache.gets',
+            {
+              name: this.cacheName,
+              result: 'hit',
+            },
+            { suppressToast: true },
+          );
           return response.data.measurements[0].value;
         } catch (error) {
           this.shouldFetchCacheHits = false;
@@ -184,10 +188,14 @@ export default {
     async fetchCacheMisses() {
       if (this.shouldFetchCacheMisses) {
         try {
-          const response = await this.instance.fetchMetric('cache.gets', {
-            name: this.cacheName,
-            result: 'miss',
-          });
+          const response = await this.instance.fetchMetric(
+            'cache.gets',
+            {
+              name: this.cacheName,
+              result: 'miss',
+            },
+            { suppressToast: true },
+          );
           return response.data.measurements[0].value;
         } catch (error) {
           this.shouldFetchCacheMisses = false;
@@ -202,9 +210,13 @@ export default {
     async fetchCacheSize() {
       if (this.shouldFetchCacheSize) {
         try {
-          const response = await this.instance.fetchMetric('cache.size', {
-            name: this.cacheName,
-          });
+          const response = await this.instance.fetchMetric(
+            'cache.size',
+            {
+              name: this.cacheName,
+            },
+            { suppressToast: true },
+          );
           return response.data.measurements[0].value;
         } catch (error) {
           this.shouldFetchCacheSize = false;

@@ -13,9 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import axios, { AxiosError } from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { redirectOn401 } from './axios';
+import { redirectOn401, registerErrorToastInterceptor } from './axios';
+
+// Initialize errorSpy BEFORE any mocks or imports
+globalThis.errorSpy = vi.fn();
+
+// Mock sba-config to enable toasts
+vi.mock('../sba-config', () => ({
+  default: {
+    uiSettings: {
+      enableToasts: true,
+    },
+    csrf: {
+      parameterName: '_csrf',
+      headerName: 'X-XSRF-TOKEN',
+    },
+  },
+}));
+
+// Use manual mock for @stekoe/vue-toast-notificationcenter
+vi.mock('@stekoe/vue-toast-notificationcenter');
 
 describe('redirectOn401', () => {
   beforeEach(() => {
@@ -76,5 +97,65 @@ describe('redirectOn401', () => {
     }
 
     expect(window.location.assign).not.toBeCalled();
+  });
+});
+
+describe('registerErrorToastInterceptor', () => {
+  let axiosInstance;
+  let mock;
+
+  beforeEach(() => {
+    globalThis.errorSpy.mockClear();
+    axiosInstance = axios.create();
+    // Pass a mock notification center directly
+    registerErrorToastInterceptor(axiosInstance, {
+      error: globalThis.errorSpy,
+    });
+    mock = new MockAdapter(axiosInstance);
+  });
+
+  afterEach(() => {
+    if (mock) mock.restore();
+    vi.restoreAllMocks();
+  });
+
+  it('shows toast by default', async () => {
+    mock.onGet('/fail').reply(500);
+    await expect(axiosInstance.get('/fail')).rejects.toBeDefined();
+    expect(globalThis.errorSpy).toHaveBeenCalled();
+  });
+
+  it('suppresses toast if suppressToast is true', async () => {
+    mock.onGet('/fail').reply(500);
+    await expect(
+      axiosInstance.get('/fail', { suppressToast: true }),
+    ).rejects.toBeDefined();
+    expect(globalThis.errorSpy).not.toHaveBeenCalled();
+  });
+
+  it('shows toast if suppressToast is false', async () => {
+    mock.onGet('/fail').reply(500);
+    await expect(
+      axiosInstance.get('/fail', { suppressToast: false }),
+    ).rejects.toBeDefined();
+    expect(globalThis.errorSpy).toHaveBeenCalled();
+  });
+
+  it('suppresses toast if suppressToast function returns true', async () => {
+    mock.onGet('/fail').reply(404);
+    const suppressFn = (err: AxiosError) => err.response?.status === 404;
+    await expect(
+      axiosInstance.get('/fail', { suppressToast: suppressFn }),
+    ).rejects.toBeDefined();
+    expect(globalThis.errorSpy).not.toHaveBeenCalled();
+  });
+
+  it('shows toast if suppressToast function returns false', async () => {
+    mock.onGet('/fail').reply(500);
+    const suppressFn = (err: AxiosError) => err.response?.status === 404;
+    await expect(
+      axiosInstance.get('/fail', { suppressToast: suppressFn }),
+    ).rejects.toBeDefined();
+    expect(globalThis.errorSpy).toHaveBeenCalled();
   });
 });
