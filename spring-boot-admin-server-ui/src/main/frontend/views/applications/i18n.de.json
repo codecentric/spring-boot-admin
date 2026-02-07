@@ -3,9 +3,12 @@
     "actions": {
       "journal": "Journal",
       "notification_filters": "Benachrichtigungsfilter",
-      "unregister": "Deregistrieren",
+      "refresh_applications": "Anwendungen aktualisieren",
+      "restart": "Neu starten",
       "shutdown": "Herunterfahren",
-      "restart": "Neu starten"
+      "switch_to_grouping_by_application": "Aggregiere Instanzen zu Applikationen (gleiche Namen)",
+      "switch_to_grouping_by_group": "Gruppiere Instanzen anhand des Gruppennamens",
+      "unregister": "Deregistrieren"
     },
     "all_up": "Alle verfügbar",
     "all_down": "Alle Instanzen sind ausgefallen",

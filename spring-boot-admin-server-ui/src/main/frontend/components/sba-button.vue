@@ -33,7 +33,7 @@ const props = defineProps({
     type: String,
     default: 'sm',
     validator(value) {
-      return ['xs', 'sm', 'base'].includes(value);
+      return ['2xs', 'xs', 'sm', 'base'].includes(value);
     },
   },
   disabled: {
@@ -101,7 +101,7 @@ const handleClick = (event) => {
 }
 
 .btn:disabled {
-  @apply text-gray-300;
+  @apply text-gray-500 cursor-not-allowed bg-gray-100 hover:bg-gray-100;
 }
 
 .btn.is-danger {

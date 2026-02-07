@@ -20,7 +20,7 @@
       v-for="instance in instances"
       :key="instance.id"
       :data-testid="instance.id"
-      class="flex p-2 sm:pr-6 hover:bg-gray-100 gap-2 odd:bg-gray-50 items-center"
+      class="flex p-2 pr-4 hover:bg-gray-100 gap-2 odd:bg-gray-50 items-center"
       @click.stop="showDetails(instance)"
     >
       <div class="pt-1 md:w-16 text-center">

@@ -3,9 +3,12 @@
     "actions": {
       "journal": "Journal",
       "notification_filters": "Notification filters",
-      "unregister": "Unregister",
+      "refresh_applications": "Refresh applications",
+      "restart": "Restart",
       "shutdown": "Shutdown",
-      "restart": "Restart"
+      "switch_to_grouping_by_application": "Aggregate same instances as application",
+      "switch_to_grouping_by_group": "Group same instance by same group name",
+      "unregister": "Unregister"
     },
     "all_up": "all up",
     "all_down": "all down",
