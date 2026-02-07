@@ -92,9 +92,10 @@
 <script lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+import SbaAccordion from '@/components/sba-accordion.vue';
+
 import Instance from '@/services/instance';
 import healthDetails from '@/views/instances/details/health-details';
-import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 export default {
   components: { SbaAccordion, FontAwesomeIcon, healthDetails },

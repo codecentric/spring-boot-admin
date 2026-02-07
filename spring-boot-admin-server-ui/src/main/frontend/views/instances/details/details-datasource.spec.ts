@@ -43,6 +43,15 @@ describe('DetailsDatasource', () => {
     })();
 
     server.use(
+      http.get('/instances/:instanceId/actuator/metrics', () => {
+        return HttpResponse.json({
+          names: [
+            'jdbc.connections.active',
+            'jdbc.connections.min',
+            'jdbc.connections.max',
+          ],
+        });
+      }),
       http.get(
         '/instances/:instanceId/actuator/metrics/jdbc.connections.active',
         () => {

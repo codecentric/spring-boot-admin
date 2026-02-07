@@ -79,7 +79,10 @@
           <div :key="application.name" class="hex__body application">
             <div class="application__status-indicator" />
             <div class="application__header application__time-ago is-muted">
-              <sba-time-ago :date="application.statusTimestamp" />
+              <sba-time-ago
+                :date="application.statusTimestamp"
+                :precision="true"
+              />
             </div>
             <div class="application__body">
               <h1 class="application__name" v-text="application.name" />
@@ -266,6 +269,7 @@ export default {
 .wallboard .application__header {
   width: 90%;
   margin-bottom: 0.5em;
+  font-style: italic;
 }
 
 .wallboard .application__footer {
@@ -273,13 +277,13 @@ export default {
   margin-top: 0.5em;
 }
 
-.up > polygon {
+.up > path {
   stroke: theme('colors.green.400');
   fill: theme('colors.green.400');
 }
 
-.down > polygon,
-.offline > polygon {
+.down > path,
+.offline > path {
   stroke: theme('colors.red.400');
   fill: theme('colors.red.400');
   stroke-width: 2;
@@ -308,7 +312,7 @@ export default {
 
 .hex.down .hex__body::after {
   content: '!';
-  color: theme('colors.red.400');
+  color: theme('colors.red.500');
 }
 
 .hex.unknown .hex__body::after {
@@ -316,8 +320,8 @@ export default {
   color: theme('colors.gray.500');
 }
 
-.restricted > polygon {
-  stroke: theme('colors.yellow.400');
-  fill: theme('colors.yellow.400');
+.restricted > path {
+  stroke: theme('colors.yellow.500');
+  fill: theme('colors.yellow.500');
 }
 </style>

@@ -19,9 +19,9 @@ package de.codecentric.boot.admin.client.config;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.lang.Nullable;
 
 @lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client.instance")
@@ -31,43 +31,37 @@ public class InstanceProperties {
 	 * Management-url to register with. Inferred at runtime, can be overridden in case the
 	 * reachable URL is different (e.g. Docker).
 	 */
-	@Nullable
-	private String managementUrl;
+	@Nullable private String managementUrl;
 
 	/**
 	 * Base url for computing the management-url to register with. The path is inferred at
 	 * runtime, and appended to the base url.
 	 */
-	@Nullable
-	private String managementBaseUrl;
+	@Nullable private String managementBaseUrl;
 
 	/**
 	 * Client-service-URL register with. Inferred at runtime, can be overridden in case
 	 * the reachable URL is different (e.g. Docker).
 	 */
-	@Nullable
-	private String serviceUrl;
+	@Nullable private String serviceUrl;
 
 	/**
 	 * Base url for computing the service-url to register with. The path is inferred at
 	 * runtime, and appended to the base url.
 	 */
-	@Nullable
-	private String serviceBaseUrl;
+	@Nullable private String serviceBaseUrl;
 
 	/**
 	 * Path for computing the service-url to register with. If not specified, defaults to
 	 * "/"
 	 */
-	@Nullable
-	private String servicePath;
+	@Nullable private String servicePath;
 
 	/**
 	 * Client-health-URL to register with. Inferred at runtime, can be overridden in case
 	 * the reachable URL is different (e.g. Docker). Must be unique all services registry.
 	 */
-	@Nullable
-	private String healthUrl;
+	@Nullable private String healthUrl;
 
 	/**
 	 * Name to register with. Defaults to ${spring.application.name}

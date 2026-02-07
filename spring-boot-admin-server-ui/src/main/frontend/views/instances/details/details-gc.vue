@@ -78,11 +78,12 @@
 import moment from 'moment';
 import { take } from 'rxjs/operators';
 
+import SbaAccordion from '@/components/sba-accordion.vue';
+
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
-import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 import { toMillis } from '@/views/instances/metrics/metric';
 
 export default {

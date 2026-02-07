@@ -65,7 +65,7 @@ describe('TreeGraph', () => {
       'org.hsqldb',
       'spring-boot-starter-mail',
       'spring-boot-starter-security',
-      'spring-boot-starter-web',
+      'spring-boot-starter-webmvc',
       'spring-cloud-starter-config',
       'spring-session-core',
       'spring-session-jdbc',

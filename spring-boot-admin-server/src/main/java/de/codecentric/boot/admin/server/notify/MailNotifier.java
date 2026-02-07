@@ -23,7 +23,7 @@ import java.util.Map;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.thymeleaf.TemplateEngine;
@@ -70,8 +70,7 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
 	/**
 	 * Base-URL used for hyperlinks in mail
 	 */
-	@Nullable
-	private String baseUrl;
+	@Nullable private String baseUrl;
 
 	/**
 	 * Thymeleaf template for mail
@@ -150,8 +149,7 @@ public class MailNotifier extends AbstractStatusChangeNotifier {
 		this.template = template;
 	}
 
-	@Nullable
-	public String getBaseUrl() {
+	@Nullable public String getBaseUrl() {
 		return baseUrl;
 	}
 

@@ -20,10 +20,10 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -49,8 +49,7 @@ public class DiscordNotifier extends AbstractContentNotifier {
 	 * Webhook URI for the Discord API (i.e.
 	 * https://discordapp.com/api/webhooks/{webhook.id}/{webhook.token})
 	 */
-	@Nullable
-	private URI webhookUrl;
+	@Nullable private URI webhookUrl;
 
 	/**
 	 * If the message is a text to speech message. False by default.
@@ -60,14 +59,12 @@ public class DiscordNotifier extends AbstractContentNotifier {
 	/**
 	 * Optional username. Default is set in Discord.
 	 */
-	@Nullable
-	private String username;
+	@Nullable private String username;
 
 	/**
 	 * Optional URL to avatar.
 	 */
-	@Nullable
-	private String avatarUrl;
+	@Nullable private String avatarUrl;
 
 	public DiscordNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
@@ -106,8 +103,7 @@ public class DiscordNotifier extends AbstractContentNotifier {
 		return DEFAULT_MESSAGE;
 	}
 
-	@Nullable
-	public URI getWebhookUrl() {
+	@Nullable public URI getWebhookUrl() {
 		return webhookUrl;
 	}
 
@@ -123,8 +119,7 @@ public class DiscordNotifier extends AbstractContentNotifier {
 		this.tts = tts;
 	}
 
-	@Nullable
-	public String getUsername() {
+	@Nullable public String getUsername() {
 		return username;
 	}
 
@@ -132,8 +127,7 @@ public class DiscordNotifier extends AbstractContentNotifier {
 		this.username = username;
 	}
 
-	@Nullable
-	public String getAvatarUrl() {
+	@Nullable public String getAvatarUrl() {
 		return avatarUrl;
 	}
 

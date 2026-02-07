@@ -15,8 +15,8 @@
   -->
 
 <template>
-  <div class="inline-flex">
-    <div class="btn-group">
+  <div class="inline-flex gap-1">
+    <sba-button-group>
       <sba-button
         v-for="levelOption in levelOptions"
         :key="levelOption"
@@ -24,10 +24,9 @@
         @click.stop="selectLevel(levelOption)"
         v-text="levelOption"
       />
-    </div>
+    </sba-button-group>
     <sba-button
       v-if="allowReset"
-      class="ml-3"
       :class="{ 'is-loading': getStatusForLevel(null) === 'executing' }"
       :disabled="!isConfigured"
       @click.stop="selectLevel(null)"

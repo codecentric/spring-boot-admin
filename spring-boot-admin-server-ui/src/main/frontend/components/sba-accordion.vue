@@ -18,10 +18,14 @@
   <sba-panel
     v-bind="$attrs"
     :aria-expanded="_open"
-    :class="{
-      'transition-[height] h-auto': true,
-      '!p-0 !h-0 overflow-hidden': !_open,
-    }"
+    :class="
+      classNames(
+        {
+          '!p-0 !h-0 overflow-hidden': !_open,
+        },
+        'transition-[height] h-auto',
+      )
+    "
     @title-click="handleTitleClick"
   >
     <template #title>
@@ -31,10 +35,14 @@
     <template #prefix>
       <font-awesome-icon
         icon="chevron-down"
-        :class="{
-          '-rotate-90': !_open,
-          'mr-2 transition-[transform]': true,
-        }"
+        :class="
+          classNames(
+            {
+              '-rotate-90': !_open,
+            },
+            'mr-2 transition-[transform]',
+          )
+        "
       />
     </template>
     <template #actions>
@@ -49,6 +57,7 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import classNames from 'classnames';
 import { onMounted, ref } from 'vue';
 
 const { id = null } = defineProps<{

@@ -16,7 +16,7 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.module.SimpleModule;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
@@ -28,7 +28,6 @@ import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
-import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
@@ -36,11 +35,10 @@ import de.codecentric.boot.admin.server.domain.values.Tags;
 
 /**
  * Jackson module for Spring Boot Admin Server. <br>
- * In order to use this module just add these modules into your ObjectMapper
- * configuration. <pre>
- *     ObjectMapper mapper = new ObjectMapper();
- *     mapper.registerModule(new AdminServerModule());
- *     mapper.registerModule(new JavaTimeModule());
+ * To use this module, add it to your JsonMapper builder: <pre>
+ *     JsonMapper.Builder builder = JsonMapper.builder();
+ *     builder.addModule(new AdminServerModule(...));
+ *     return builder.build();
  * </pre>
  *
  * @author Stefan Rempfer
@@ -69,7 +67,6 @@ public class AdminServerModule extends SimpleModule {
 		setMixInAnnotation(BuildVersion.class, BuildVersionMixin.class);
 		setMixInAnnotation(Endpoint.class, EndpointMixin.class);
 		setMixInAnnotation(Endpoints.class, EndpointsMixin.class);
-		setMixInAnnotation(Info.class, InfoMixin.class);
 		setMixInAnnotation(InstanceId.class, InstanceIdMixin.class);
 		setMixInAnnotation(StatusInfo.class, StatusInfoMixin.class);
 		setMixInAnnotation(Tags.class, TagsMixin.class);
