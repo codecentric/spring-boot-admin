@@ -70,6 +70,7 @@ export default {
   data: () => ({
     showDetails: {},
     lastEndPosition: 0,
+    resizeObserver: null,
   }),
   watch: {
     threadTimelines: {
@@ -77,6 +78,20 @@ export default {
       handler: 'drawTimelines',
       immediate: true,
     },
+  },
+  mounted() {
+    this.resizeObserver = new ResizeObserver(() => {
+      this.drawTimelines(this.threadTimelines);
+    });
+    const scaleElement = this.$el.querySelector('.threads__scale');
+    if (scaleElement) {
+      this.resizeObserver.observe(scaleElement);
+    }
+  },
+  beforeUnmount() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
   },
   methods: {
     getThreadDetails(thread, start) {
@@ -137,12 +152,17 @@ export default {
           .range([0, width])
           .domain([start, Math.max(start + (totalSeconds + 1) * 1000, end)]);
 
+        const approxWidthOfDateLabel = 60;
+        const tickCount = Math.max(
+          2,
+          Math.floor((width - approxWidthOfDateLabel) / approxWidthOfDateLabel),
+        );
         d3.select('.threads__scale')
           .attr('width', width)
           .call(
             d3
               .axisBottom(x)
-              .ticks(Math.max(2, Math.floor(width / 50)))
+              .ticks(Math.min(tickCount, 20))
               .tickFormat((d) => moment(d).format('HH:mm:ss')),
           );
 
