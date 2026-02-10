@@ -1,6 +1,21 @@
 {
   "journal": {
     "title": "事件日誌",
-    "label": "日誌報表"
+    "label": "日誌",
+    "per_page": {
+      "per_page": "每頁：",
+      "all": "全部"
+    },
+    "filter": {
+      "application": {
+        "any": "全部"
+      },
+      "event_type": {
+        "any": "全部"
+      },
+      "instance_id": {
+        "any": "全部"
+      }
+    }
   }
 }

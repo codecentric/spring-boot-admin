@@ -20,12 +20,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.context.expression.MapAccessor;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
-import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -38,17 +32,16 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import de.codecentric.boot.admin.server.notify.filter.AbstractContentNotifier;
 
 /**
  * Notifier submitting events to HipChat.
  *
  * @author Jamie Brown
  */
-public class HipchatNotifier extends AbstractStatusChangeNotifier {
+public class HipchatNotifier extends AbstractContentNotifier {
 
-	private static final String DEFAULT_DESCRIPTION = "<strong>#{instance.registration.name}</strong>/#{instance.id} is <strong>#{event.statusInfo.status}</strong>";
-
-	private final SpelExpressionParser parser = new SpelExpressionParser();
+	private static final String DEFAULT_DESCRIPTION = "<strong>#{name}</strong>/#{id} is <strong>#{status}</strong>";
 
 	private RestTemplate restTemplate;
 
@@ -75,15 +68,9 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 	 */
 	private boolean notify = false;
 
-	/**
-	 * Trigger description. SpEL template using event as root;
-	 */
-	private Expression description;
-
 	public HipchatNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.description = parser.parseExpression(DEFAULT_DESCRIPTION, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
@@ -102,7 +89,7 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 	protected HttpEntity<Map<String, Object>> createHipChatNotification(InstanceEvent event, Instance instance) {
 		Map<String, Object> body = new HashMap<>();
 		body.put("color", getColor(event));
-		body.put("message", getMessage(event, instance));
+		body.put("message", createContent(event, instance));
 		body.put("notify", getNotify());
 		body.put("message_format", "html");
 
@@ -115,17 +102,9 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 		return notify;
 	}
 
-	@Nullable
-	protected String getMessage(InstanceEvent event, Instance instance) {
-		Map<String, Object> root = new HashMap<>();
-		root.put("event", event);
-		root.put("instance", instance);
-		root.put("lastStatus", getLastStatus(event.getInstance()));
-		SimpleEvaluationContext context = SimpleEvaluationContext
-			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-			.withRootObject(root)
-			.build();
-		return description.getValue(context, String.class);
+	@Override
+	protected String getDefaultMessage() {
+		return DEFAULT_DESCRIPTION;
 	}
 
 	protected String getColor(InstanceEvent event) {
@@ -170,14 +149,6 @@ public class HipchatNotifier extends AbstractStatusChangeNotifier {
 
 	public void setNotify(boolean notify) {
 		this.notify = notify;
-	}
-
-	public String getDescription() {
-		return description.getExpressionString();
-	}
-
-	public void setDescription(String description) {
-		this.description = parser.parseExpression(description, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {

@@ -10,11 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "3.5.25"
+    "vue": "3.5.27"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "6.0.2",
-    "vite": "7.2.6",
+    "@vitejs/plugin-vue": "6.0.4",
+    "vite": "7.3.1",
     "vite-plugin-static-copy": "^3.0.0"
   },
   "browserslist": [

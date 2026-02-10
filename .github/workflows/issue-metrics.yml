@@ -1,0 +1,50 @@
+name: Monthly issue metrics
+on:
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: 'Start date (YYYY-MM-DD)'
+        required: false
+        type: string
+      end_date:
+        description: 'End date (YYYY-MM-DD)'
+        required: false
+        type: string
+  schedule:
+    - cron: "3 2 1 * *"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: issue metrics
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Get dates for last month
+        shell: bash
+        run: |
+          # Use input dates if provided, otherwise calculate the previous month
+          if [ -n "${{ inputs.start_date }}" ] && [ -n "${{ inputs.end_date }}" ]; then
+            first_day="${{ inputs.start_date }}"
+            last_day="${{ inputs.end_date }}"
+          else
+            # Calculate the first day of the previous month
+            first_day=$(date -d "last month" +%Y-%m-01)
+
+            # Calculate the last day of the previous month
+            last_day=$(date -d "$first_day +1 month -1 day" +%Y-%m-%d)
+          fi
+
+          #Set an environment variable with the date range
+          echo "$first_day..$last_day"
+          echo "last_month=$first_day..$last_day" >> "$GITHUB_ENV"
+
+      - name: Run issue-metrics tool
+        uses: github/issue-metrics@v3
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SEARCH_QUERY: 'spring-boot-admin:codecentric/spring-boot-admin is:issue created:${{ env.last_month }} -reason:"not planned"'

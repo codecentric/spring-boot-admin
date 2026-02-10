@@ -22,12 +22,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.context.expression.MapAccessor;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParserContext;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
-import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,17 +33,16 @@ import reactor.core.publisher.Mono;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.notify.filter.AbstractContentNotifier;
 
 /**
  * Notifier submitting events to let´s Chat.
  *
  * @author Rico Pahlisch
  */
-public class LetsChatNotifier extends AbstractStatusChangeNotifier {
+public class LetsChatNotifier extends AbstractContentNotifier {
 
-	private static final String DEFAULT_MESSAGE = "*#{instance.registration.name}* (#{instance.id}) is *#{event.statusInfo.status}*";
-
-	private final SpelExpressionParser parser = new SpelExpressionParser();
+	private static final String DEFAULT_MESSAGE = "*#{name}* (#{id}) is *#{status}*";
 
 	private RestTemplate restTemplate;
 
@@ -76,15 +69,9 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 	 */
 	private String username = "Spring Boot Admin";
 
-	/**
-	 * Message template. SpEL template using event as root
-	 */
-	private Expression message;
-
 	public LetsChatNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.message = parser.parseExpression(DEFAULT_MESSAGE, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Override
@@ -109,21 +96,13 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 
 	protected Object createMessage(InstanceEvent event, Instance instance) {
 		Map<String, String> messageJson = new HashMap<>();
-		messageJson.put("text", getText(event, instance));
+		messageJson.put("text", createContent(event, instance));
 		return messageJson;
 	}
 
-	@Nullable
-	protected String getText(InstanceEvent event, Instance instance) {
-		Map<String, Object> root = new HashMap<>();
-		root.put("event", event);
-		root.put("instance", instance);
-		root.put("lastStatus", getLastStatus(event.getInstance()));
-		SimpleEvaluationContext context = SimpleEvaluationContext
-			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
-			.withRootObject(root)
-			.build();
-		return message.getValue(context, String.class);
+	@Override
+	protected String getDefaultMessage() {
+		return DEFAULT_MESSAGE;
 	}
 
 	public void setRestTemplate(RestTemplate restTemplate) {
@@ -163,14 +142,6 @@ public class LetsChatNotifier extends AbstractStatusChangeNotifier {
 
 	public void setToken(@Nullable String token) {
 		this.token = token;
-	}
-
-	public String getMessage() {
-		return message.getExpressionString();
-	}
-
-	public void setMessage(String message) {
-		this.message = parser.parseExpression(message, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 }

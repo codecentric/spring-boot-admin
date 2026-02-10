@@ -1,0 +1,14 @@
+{
+  "instances": {
+    "startup": {
+      "label": "啟動",
+      "expand_all": "全部展開",
+
+      "column": {
+        "name": "名稱",
+        "duration": "時長 (毫秒)",
+        "details": "詳細資訊"
+      }
+    }
+  }
+}

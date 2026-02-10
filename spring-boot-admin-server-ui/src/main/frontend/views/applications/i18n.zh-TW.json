@@ -1,25 +1,58 @@
 {
   "applications": {
+    "actions": {
+      "journal": "日誌",
+      "notification_filters": "通知篩選器",
+      "unregister": "取消註冊",
+      "shutdown": "關閉",
+      "restart": "重新啟動"
+    },
     "all_up": "全部正常",
-    "applications": "應用數",
-    "instances": "實例數",
-    "some_down": "離線實例",
-    "loading_applications": "應用下載中...",
-    "no_applications_registered": "暫無應用註冊。",
-    "notifications_suppressed_for": "Notifications on <code>{name}</code> are suppressed for",
-    "restricted": "受限的",
-    "server_connection_failed": "伺服器連接失敗。",
-    "suppress_notifications_on": "Suppress notifications on <code>{name}</code> for",
-    "status": "實例狀態",
-    "label": "應用",
+    "all_down": "全部停止",
+    "all_unknown": "全部狀態未知",
+    "some_unknown": "部分執行個體狀態未知",
+    "some_down": "部分執行個體已停止",
+    "applications": "應用程式",
+    "fetching_notification_filters_failed": "取得通知篩選器失敗。",
+    "notification_filter": {
+      "none": "未設定通知篩選器。",
+      "removed": "已移除通知篩選器。"
+    },
+    "instances": "執行個體",
+    "loading_applications": "正在載入應用程式...",
+    "no_applications_registered": "目前沒有已註冊的應用程式。",
+    "notifications_suppressed_for": "<code>{name}</code> 的通知已隱藏，期間為",
+    "restricted": "受限",
+    "server_connection_failed": "伺服器連線失敗。",
+    "suppress_notifications_on": "隱藏 <code>{name}</code> 的通知，期間為",
+    "status": "狀態",
+    "label": "應用程式",
     "up": "正常",
-    "shutdown": "Shutdown application <code>{name}</code>?",
-    "restart": "Restart application <code>{name}</code>?",
-    "restarted": "Successfully restarted application <code>{name}</code>"
+    "down": "停止",
+    "offline": "離線",
+    "shutdown": "確定要關閉應用程式 <code>{name}</code>？",
+    "shutdown_successful": "應用程式 {name} 已成功關閉。",
+    "refreshed": "應用程式已重新整理。",
+    "restart": "確定要重新啟動應用程式 <code>{name}</code>？",
+    "restarted": "應用程式 <code>{name}</code> 已成功重新啟動。",
+    "unregister": "確定要取消註冊應用程式 <code>{name}</code>？",
+    "unregister_successful": "應用程式 <code>{name}</code> 已成功取消註冊。",
+    "unregister_failed": "取消註冊應用程式 <code>{name}</code> 失敗 ({error})。"
   },
   "instances": {
-    "shutdown": "Shutdown instance <code>{name}</code>?",
-    "restart": "Restart instance <code>{name}</code>?",
-    "restarted": "Successfully restarted instance"
+    "shutdown": "確定要關閉執行個體 <code>{name}</code>？",
+    "shutdown_successful": "執行個體 {name} 已成功關閉。",
+    "shutdown_failed": "關閉執行個體 {name} 失敗。",
+    "restart": "確定要重新啟動執行個體 <code>{name}</code>？",
+    "restarted": "執行個體 {name} 已成功重新啟動。",
+    "unregister": "確定要取消註冊執行個體 <code>{name}</code>？",
+    "unregister_successful": "執行個體 <code>{name}</code> 已成功取消註冊。",
+    "unregister_failed": "取消註冊執行個體 <code>{name}</code> 失敗 ({error})。"
+  },
+  "notification_filter_center": {
+    "description": "以下應用程式或執行個體的通知將被隱藏。"
+  },
+  "filter": {
+    "no_results": "沒有符合篩選條件的結果。"
   }
 }

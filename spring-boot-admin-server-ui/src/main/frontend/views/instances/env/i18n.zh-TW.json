@@ -1,23 +1,28 @@
 {
   "instances": {
     "env": {
-      "label": "環境",
-      "manager": "環境管理",
-      "active_profile": "配置文件",
-      "context_refresh": "刷新內容",
+      "label": "環境變數",
+      "manager": "環境變數管理",
+      "active_profile": "Profile",
+      "context_refresh": "重新整理 Context",
+      "bus_refresh": "Spring Cloud Bus 重新整理",
+      "bus_refresh_success": "Spring Cloud Bus 已成功重新整理。",
+      "bus_refresh_failure": "失敗：無法觸發 Spring Cloud Bus 重新整理！",
+      "bus_refresh_title": "向已設定的 Spring Cloud Bus 發送重新整理訊息，廣播至所有監聽的節點",
       "context_refresh_failed": "失敗",
-      "context_refreshed": "內容已刷新",
-      "context_reset": "重置",
+      "context_refreshed": "Context 已重新整理",
+      "context_reset": "重設",
       "context_reset_failed": "失敗",
-      "context_resetted": "已重置",
+      "context_resetted": "已重設",
       "context_update": "更新",
       "context_update_failed": "失敗",
       "context_updated": "已更新",
-      "no_properties": "屬性未設定。",
-      "title": "環境管理",
-      "refresh": "Refresh environment",
-      "application": "Application",
-      "instance": "Instance"
+      "no_properties": "未設定屬性",
+      "title": "環境變數管理",
+      "refresh": "重新整理環境變數",
+      "application": "應用程式",
+      "instance": "執行個體",
+      "refreshed_configurations": "已重新整理的設定："
     }
   }
 }
