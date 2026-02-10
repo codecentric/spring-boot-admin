@@ -6,6 +6,9 @@ trim_trailing_whitespace = true
 
 [*.md]
 trim_trailing_whitespace = false
+max_line_length = 120
+ij_markdown_wrap_text_if_long = true
+ij_markdown_format_tables = true
 
 [*.java]
 indent_style = tab
