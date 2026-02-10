@@ -50,8 +50,7 @@
         <spring-boot.version>4.0.2</spring-boot.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
 
-        <!-- FIXME downgrade to 2.1.0 until a compatible version is released -->
-        <jolokia-support-spring.version>2.1.0</jolokia-support-spring.version>
+        <jolokia-support-springboot.version>2.5.0</jolokia-support-springboot.version>
 
         <checkstyle.version>12.3.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>

@@ -78,7 +78,7 @@
         </dependency>
         <dependency>
             <groupId>org.jolokia</groupId>
-            <artifactId>jolokia-support-spring</artifactId>
+            <artifactId>jolokia-support-springboot</artifactId>
         </dependency>
         <!-- Test -->
         <dependency>

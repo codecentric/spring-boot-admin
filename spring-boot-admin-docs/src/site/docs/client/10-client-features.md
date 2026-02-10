@@ -44,6 +44,19 @@ expose it via the actuator endpoint. As Jolokia is servlet based there is no sup
 
 You might want to set spring.jmx.enabled=true if you want to expose Spring beans via JMX.
 
+### Spring Boot 4 App
+
+Spring Boot 4 does not support Jolokia directly, you need a separate dependency for Spring Boot 4-based applications.
+See https://jolokia.org/reference/html/manual/spring.html for more details.
+
+```xml title="pom.xml"
+<dependency>
+    <groupId>org.jolokia</groupId>
+    <artifactId>jolokia-support-springboot</artifactId>
+    <version>2.5.0</version>
+</dependency>
+```
+
 ### Spring Boot 3 App
 
 Spring Boot 3 does not support Jolokia directly, you need a separate dependency for Spring Boot 3-based applications.
@@ -52,8 +65,8 @@ See https://jolokia.org/reference/html/manual/spring.html for more details.
 ```xml title="pom.xml"
 <dependency>
     <groupId>org.jolokia</groupId>
-    <artifactId>jolokia-support-spring</artifactId>
-    <version>2.1.0</version>
+    <artifactId>jolokia-support-springboot-3</artifactId>
+    <version>2.5.0</version>
 </dependency>
 ```
 

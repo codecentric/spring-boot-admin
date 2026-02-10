@@ -51,8 +51,8 @@
             </dependency>
             <dependency>
                 <groupId>org.jolokia</groupId>
-                <artifactId>jolokia-support-spring</artifactId>
-                <version>${jolokia-support-spring.version}</version>
+                <artifactId>jolokia-support-springboot</artifactId>
+                <version>${jolokia-support-springboot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.wiremock</groupId>
