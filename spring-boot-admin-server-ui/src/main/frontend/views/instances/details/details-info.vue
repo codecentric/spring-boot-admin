@@ -52,6 +52,7 @@ import SbaAccordion from '@/components/sba-accordion.vue';
 import SbaKeyValueTable from '@/components/sba-key-value-table.vue';
 
 import Instance from '@/services/instance';
+import { formatWithDataTypes } from '@/utils/formatWithDataTypes';
 
 const props = defineProps({
   instance: {
@@ -66,7 +67,7 @@ const loading = ref(false);
 const liveInfo = ref(null);
 const currentInstanceId = ref(null);
 
-const info = computed(() => liveInfo.value || props.instance.info);
+const info = computed(() => formatInfo(liveInfo.value || props.instance.info));
 const isEmptyInfo = computed(() => Object.keys(info.value).length <= 0);
 
 async function fetchInfo() {
@@ -91,6 +92,20 @@ function reloadInfo() {
   if (props.instance.id !== currentInstanceId.value) {
     fetchInfo();
   }
+}
+
+function formatInfo(info) {
+  return formatWithDataTypes(info, {
+    'build.time': 'date',
+    'process.memory.heap.committed': 'bytes',
+    'process.memory.heap.init': 'bytes',
+    'process.memory.heap.max': 'bytes',
+    'process.memory.heap.used': 'bytes',
+    'process.memory.nonHeap.committed': 'bytes',
+    'process.memory.nonHeap.init': 'bytes',
+    'process.memory.nonHeap.max': 'bytes',
+    'process.memory.nonHeap.used': 'bytes',
+  });
 }
 
 watch(
