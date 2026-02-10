@@ -38,7 +38,7 @@ export class InstanceEvent implements IInstanceEvent {
   }
 
   get key() {
-    return `${this.instance}-${this.version}`;
+    return `${this.instance}-${this.version}-${this.type}-${this.timestamp.getTime()}`;
   }
 }
 

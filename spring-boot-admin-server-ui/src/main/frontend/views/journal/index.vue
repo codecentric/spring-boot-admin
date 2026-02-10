@@ -109,6 +109,7 @@ export default {
       const deduplicated = deduplicateInstanceEvents(events);
       this.seenEventKeys = new Set(deduplicated.map((event) => event.key));
       this.events = Object.freeze(deduplicated);
+      this.listOffset = events.length - deduplicated.length;
       this.error = null;
     } catch (error) {
       console.warn('Fetching events failed:', error);
