@@ -47,11 +47,9 @@ import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
 import { InstanceEvent } from '@/views/journal/InstanceEvent';
-import { deduplicateInstanceEvents } from '@/views/journal/deduplicate-events';
-import {
-  InstanceEventType,
-} from '@/views/journal/InstanceEvent';
+import { InstanceEventType } from '@/views/journal/InstanceEvent';
 import JournalTable from '@/views/journal/JournalTable.vue';
+import { deduplicateInstanceEvents } from '@/views/journal/deduplicate-events';
 
 export default {
   components: { JournalTable, SbaAlert },
