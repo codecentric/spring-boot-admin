@@ -241,6 +241,20 @@ export default {
 
     this.drawChart(this.chartData);
   },
+  beforeUnmount() {
+    if (this.brushGroup) {
+      this.brushGroup.on('.brush', null);
+      this.brushGroup.on('mousemove', null);
+      this.brushGroup.on('mouseout', null);
+    }
+
+    if (this.chartLayer) {
+      this.chartLayer.selectAll('*').remove();
+    }
+
+    this.brushGroup = null;
+    this.chartLayer = null;
+  },
   methods: {
     drawChart(data) {
       ///setup x and y scale

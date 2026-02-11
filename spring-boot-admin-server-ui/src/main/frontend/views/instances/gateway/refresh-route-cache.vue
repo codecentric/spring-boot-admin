@@ -54,7 +54,14 @@ export default {
   emits: ['routes-refreshed'],
   data: () => ({
     refreshingRouteCache: null,
+    refreshTimeout: null,
   }),
+  beforeUnmount() {
+    if (this.refreshTimeout) {
+      clearTimeout(this.refreshTimeout);
+      this.refreshTimeout = null;
+    }
+  },
   methods: {
     refreshRoutesCache() {
       from(this.instance.refreshGatewayRoutesCache())
@@ -62,7 +69,7 @@ export default {
         .subscribe({
           complete: () => {
             this.$emit('routes-refreshed');
-            return setTimeout(() => (this.refreshingRouteCache = null), 2500);
+            this.refreshTimeout = setTimeout(() => (this.refreshingRouteCache = null), 2500);
           },
         });
     },

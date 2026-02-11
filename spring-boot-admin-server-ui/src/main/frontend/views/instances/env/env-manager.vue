@@ -145,7 +145,19 @@ export default {
         validation: null,
       },
     ],
+    updateTimeout: null,
+    resetTimeout: null,
   }),
+  beforeUnmount() {
+    if (this.updateTimeout) {
+      clearTimeout(this.updateTimeout);
+      this.updateTimeout = null;
+    }
+    if (this.resetTimeout) {
+      clearTimeout(this.resetTimeout);
+      this.resetTimeout = null;
+    }
+  },
   computed: {
     allPropertyNames() {
       return uniq(
@@ -251,7 +263,7 @@ export default {
         )
         .subscribe({
           complete: () => {
-            setTimeout(() => (this.updateStatus = null), 2500);
+            this.updateTimeout = setTimeout(() => (this.updateStatus = null), 2500);
             return this.$emit('update');
           },
           error: () => this.$emit('update'),
@@ -279,7 +291,7 @@ export default {
                 validation: null,
               },
             ];
-            setTimeout(() => (this.resetStatus = null), 2500);
+            this.resetTimeout = setTimeout(() => (this.resetStatus = null), 2500);
             return this.$emit('refresh');
           },
           error: () => this.$emit('refresh'),

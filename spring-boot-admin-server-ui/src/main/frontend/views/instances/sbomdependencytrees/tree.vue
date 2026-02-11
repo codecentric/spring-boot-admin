@@ -39,8 +39,9 @@
 </template>
 
 <script setup lang="ts">
+import * as d3 from 'd3';
 import { debounce } from 'lodash-es';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import SbaPanel from '@/components/sba-panel.vue';
@@ -131,6 +132,16 @@ watch(
 
 onMounted(() => {
   fetchSbomDependencies(props.sbomId);
+});
+
+onBeforeUnmount(() => {
+  debouncedRerenderOrUpdateTree.cancel();
+
+  // Clean up D3 elements
+  if (rootNode.value && treeContainer.value) {
+    d3.select(treeContainer.value).select('#tooltip').remove();
+    d3.select(treeContainer.value).select('svg').selectAll('*').on('.', null);
+  }
 });
 </script>
 
