@@ -96,6 +96,105 @@ class InstancesControllerIntegrationTest {
 	}
 
 	@Test
+	void should_reject_invalid_json() {
+		this.client.post()
+			.uri("/instances")
+			.accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
+			.bodyValue("{")
+			.exchange()
+			.expectStatus()
+			.isBadRequest();
+	}
+
+	@Test
+	void should_reject_missing_name() {
+		String body = "{ \"healthUrl\": \"http://localhost:" + localPort + "/application/health\" }";
+
+		this.client.post()
+			.uri("/instances")
+			.accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus()
+			.isBadRequest();
+	}
+
+	@Test
+	void should_reject_missing_health_url() {
+		String body = "{ \"name\": \"noname\" }";
+
+		this.client.post()
+			.uri("/instances")
+			.accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus()
+			.isBadRequest();
+	}
+
+	@Test
+	void should_create_distinct_ids_for_different_health_urls() {
+		String id1 = register();
+
+		String other = "{ \"name\": \"other\", \"healthUrl\": \"http://localhost:" + localPort + "/other/health\" }";
+		String id2 = registerWithBody(other);
+
+		assertThat(id2).isNotEqualTo(id1);
+
+		assertInstanceById(id1);
+		assertInstanceById(id2);
+	}
+
+	@Test
+	void should_remove_instance_after_delete() {
+		String id = register();
+
+		this.client.delete().uri(getLocation(id)).exchange().expectStatus().isNoContent();
+
+		this.client.get().uri(getLocation(id)).exchange().expectStatus().isNotFound();
+
+		this.client.get()
+			.uri("/instances")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.APPLICATION_JSON)
+			.expectBody(String.class)
+			.consumeWith((response) -> {
+				DocumentContext json = JsonPath.parse(response.getResponseBody());
+				List<String> ids = json.read("$[?(@.id == '" + id + "')].id");
+				assertThat(ids).isEmpty();
+			});
+
+	}
+
+	@Test
+	void should_not_create_duplicate_instance_on_reregister() {
+		String id = register();
+
+		registerSecondTime(id);
+
+		this.client.get()
+			.uri("/instances")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.APPLICATION_JSON)
+			.expectBody(String.class)
+			.consumeWith((response) -> {
+				DocumentContext json = JsonPath.parse(response.getResponseBody());
+				List<String> ids = json.read("$[?(@.id == '" + id + "')].id");
+				assertThat(ids).hasSize(1);
+			});
+
+	}
+
+	@Test
 	void should_return_empty_list() {
 		this.client.get()
 			.uri("/instances?name=unknown")
@@ -278,6 +377,23 @@ class InstancesControllerIntegrationTest {
 				return body.get("id").toString();
 			});
 		//@formatter:on
+	}
+
+	private String registerWithBody(String body) {
+		//@formatter:off
+		EntityExchangeResult<Map<String, Object>> result = client.post()
+			.uri("/instances")
+			.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+			.bodyValue(body)
+			.exchange()
+			.expectStatus().isCreated()
+			.expectHeader().contentType(MediaType.APPLICATION_JSON)
+			.expectHeader().valueMatches("location", "http://localhost:" + localPort + "/instances/[0-9a-f]+")
+			.expectBody(responseType)
+			.returnResult();
+		//@formatter:on
+		assertThat(result.getResponseBody()).containsKeys("id");
+		return result.getResponseBody().get("id").toString();
 	}
 
 	private String getLocation(String id) {

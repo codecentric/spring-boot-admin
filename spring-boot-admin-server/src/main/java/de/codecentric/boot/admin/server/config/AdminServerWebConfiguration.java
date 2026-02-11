@@ -31,6 +31,7 @@ import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
+import de.codecentric.boot.admin.server.web.AdminControllerExceptionHandler;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
 import de.codecentric.boot.admin.server.web.InstancesController;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
@@ -60,6 +61,12 @@ public class AdminServerWebConfiguration {
 	public ApplicationsController applicationsController(ApplicationRegistry applicationRegistry,
 			ApplicationEventPublisher applicationEventPublisher) {
 		return new ApplicationsController(applicationRegistry, applicationEventPublisher);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public AdminControllerExceptionHandler adminControllerExceptionHandler() {
+		return new AdminControllerExceptionHandler();
 	}
 
 	@Configuration(proxyBeanMethods = false)
