@@ -17,14 +17,17 @@
     stroke-opacity: 0.8;
     pointer-events: none;
 
+    cursor: pointer;
+
     &.hasContent {
         cursor: pointer;
         --fill-color: var(--ifm-color-primary);
         --stroke-color: var(--ifm-color-primary);
 
         &:hover {
-            --fill-color: var(--ifm-color-primary-lightest);
-            --stroke-color: var(--ifm-color-primary-lightest);
+            fill-opacity: 0.25;
+            stroke-opacity: 1;
+            stroke-width: 2;
         }
     }
 
@@ -38,6 +41,7 @@
         pointer-events: auto;
         position: fixed;
         z-index: 10;
+        font-size: 100%;
         width: 100%;
         height: 100%;
         display: flex;
@@ -62,15 +66,16 @@
     }
 
     :global(.hex__body__title) {
-        width: 95%;
-        font-size: 1.75rem;
+        width: 85%;
+        font-size: 1.75em;
         font-weight: bold;
         text-align: center;
-        line-height: 1.75rem;
+        line-height: 1em;
     }
 
     :global(.hex__body__description) {
         font-style: italic;
+        font-size: 1em;
     }
 }
 

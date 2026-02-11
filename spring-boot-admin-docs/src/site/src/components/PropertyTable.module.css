@@ -1,5 +1,6 @@
 .propertyTable {
     display: table;
+    width: 100%;
 
     caption {
         text-align: left;
