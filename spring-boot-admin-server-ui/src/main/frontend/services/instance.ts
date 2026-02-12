@@ -34,16 +34,16 @@ const isInstanceActuatorRequest = (url: string) =>
 
 class Instance {
   public readonly id: string;
+  private readonly axios: AxiosInstance;
   public registration: Registration;
-  public endpoints: any[] = [];
+  public endpoints: Endpoint[] = [];
   public availableMetrics: string[] = [];
   public tags: { [key: string]: string }[];
   public statusTimestamp: string;
   public buildVersion: string;
   public statusInfo: StatusInfo;
-  private readonly axios: AxiosInstance;
 
-  constructor({ id, ...instance }: InstanceType<typeof Instance>) {
+  constructor({ id, ...instance }: InstanceData) {
     Object.assign(this, instance);
     this.id = id;
     this.axios = axios.create({
@@ -98,10 +98,10 @@ class Instance {
     );
   }
 
-  static async get(id) {
+  static async get(id: string) {
     return axios.get(uri`instances/${id}`, {
       headers: { Accept: 'application/json' },
-      transformResponse(data) {
+      transformResponse(data: string) {
         if (!data) {
           return data;
         }
@@ -111,17 +111,19 @@ class Instance {
     });
   }
 
-  static _toMBeans(data) {
+  private static _toMBeans(data: string) {
     if (!data) {
       return data;
     }
     const raw = JSON.parse(data);
     return Object.entries(raw.value).map(([domain, mBeans]) => ({
       domain,
-      mBeans: Object.entries(mBeans).map(([descriptor, mBean]) => ({
-        descriptor: descriptor,
-        ...mBean,
-      })),
+      mBeans: Object.entries(mBeans as Record<string, any>).map(
+        ([descriptor, mBean]) => ({
+          descriptor: descriptor,
+          ...mBean,
+        }),
+      ),
     }));
   }
 
@@ -145,11 +147,7 @@ class Instance {
     return disableUrl === 'true';
   }
 
-  getId() {
-    return this.id;
-  }
-
-  hasEndpoint(endpointId) {
+  hasEndpoint(endpointId: string): boolean {
     return this.endpoints.some((endpoint) => endpoint.id === endpointId);
   }
 
@@ -209,7 +207,9 @@ class Instance {
   }
 
   async fetchHealth() {
-    return await this.axios.get(uri`actuator/health`, { validateStatus: null });
+    return await this.axios.get(uri`actuator/health`, {
+      validateStatus: null,
+    });
   }
 
   async fetchHealthGroup(groupName: string) {
@@ -218,7 +218,7 @@ class Instance {
     });
   }
 
-  async fetchEnv(name) {
+  async fetchEnv(name?: string) {
     return this.axios.get(uri`actuator/env/${name || ''}`);
   }
 
@@ -237,7 +237,7 @@ class Instance {
     return this.axios.delete(uri`actuator/env`);
   }
 
-  async setEnv(name, value) {
+  async setEnv(name: string, value: string) {
     return this.axios.post(
       uri`actuator/env`,
       { name, value },
@@ -267,7 +267,7 @@ class Instance {
     return this.axios.get(uri`actuator/gateway/globalfilters`);
   }
 
-  async addGatewayRoute(route) {
+  async addGatewayRoute(route: { id: string; [key: string]: any }) {
     return this.axios.post(uri`actuator/gateway/routes/${route.id}`, route, {
       headers: { 'Content-Type': 'application/json' },
     });
@@ -277,7 +277,7 @@ class Instance {
     return this.axios.get(uri`actuator/gateway/routes`);
   }
 
-  async deleteGatewayRoute(routeId) {
+  async deleteGatewayRoute(routeId: string) {
     return this.axios.delete(uri`actuator/gateway/routes/${routeId}`);
   }
 
@@ -293,7 +293,7 @@ class Instance {
     return this.axios.delete(uri`actuator/caches`);
   }
 
-  async clearCache(name, cacheManager) {
+  async clearCache(name: string, cacheManager?: string) {
     return this.axios.delete(uri`actuator/caches/${name}`, {
       params: { cacheManager: cacheManager },
     });
@@ -307,7 +307,7 @@ class Instance {
     return this.axios.get(uri`actuator/loggers`);
   }
 
-  async configureLogger(name, level) {
+  async configureLogger(name: string, level: string | null) {
     await this.axios.post(
       uri`actuator/loggers/${name}`,
       level === null ? {} : { configuredLevel: level },
@@ -345,29 +345,37 @@ class Instance {
     saveAs(blob, this.registration.name + '-threaddump.txt');
   }
 
-  async fetchAuditevents({ after, type, principal }) {
+  async fetchAuditevents({
+    after,
+    type,
+    principal,
+  }: {
+    after: Date;
+    type?: string;
+    principal?: string;
+  }) {
     return this.axios.get(uri`actuator/auditevents`, {
       params: {
         after: after.toISOString(),
-        type: type || undefined,
-        principal: principal || undefined,
+        type: type,
+        principal: principal,
       },
     });
   }
 
-  async fetchSessionsByUsername(username) {
+  async fetchSessionsByUsername(username?: string) {
     return this.axios.get(uri`actuator/sessions`, {
       params: {
-        username: username || undefined,
+        username: username,
       },
     });
   }
 
-  async fetchSession(sessionId) {
+  async fetchSession(sessionId: string) {
     return this.axios.get(uri`actuator/sessions/${sessionId}`);
   }
 
-  async deleteSession(sessionId) {
+  async deleteSession(sessionId: string) {
     return this.axios.delete(uri`actuator/sessions/${sessionId}`);
   }
 
@@ -383,7 +391,7 @@ class Instance {
     return this.axios.post(uri`actuator/startup`);
   }
 
-  streamLogfile(interval) {
+  streamLogfile(interval: number) {
     return logtail(
       (opt) => this.axios.get(uri`actuator/logfile`, opt),
       interval,
@@ -398,7 +406,7 @@ class Instance {
     });
   }
 
-  async readMBeanAttributes(domain, mBean) {
+  async readMBeanAttributes(domain: string, mBean: string) {
     const body = {
       type: 'read',
       mbean: `${domain}:${mBean}`,
@@ -412,7 +420,12 @@ class Instance {
     });
   }
 
-  async writeMBeanAttribute(domain, mBean, attribute, value) {
+  async writeMBeanAttribute(
+    domain: string,
+    mBean: string,
+    attribute: string,
+    value: any,
+  ) {
     const body = {
       type: 'write',
       mbean: `${domain}:${mBean}`,
@@ -427,7 +440,12 @@ class Instance {
     });
   }
 
-  async invokeMBeanOperation(domain, mBean, operation, args) {
+  async invokeMBeanOperation(
+    domain: string,
+    mBean: string,
+    operation: string,
+    args: any[],
+  ) {
     const body = {
       type: 'exec',
       mbean: `${domain}:${mBean}`,
@@ -476,7 +494,7 @@ class Instance {
     });
   }
 
-  async fetchSbom(id) {
+  async fetchSbom(id: string) {
     return this.axios.get(uri`actuator/sbom/${id}`, {
       headers: { Accept: '*/*' },
     });
@@ -512,6 +530,22 @@ type StatusInfo = {
     | 'RESTRICTED'
     | string;
   details: { [key: string]: string };
+};
+
+type InstanceData = {
+  id: string;
+  registration: Registration;
+  endpoints?: Endpoint[];
+  availableMetrics?: string[];
+  tags?: { [key: string]: string }[];
+  statusTimestamp?: string;
+  buildVersion?: string;
+  statusInfo?: StatusInfo;
+};
+
+type Endpoint = {
+  id: string;
+  url: string;
 };
 
 export const DOWN_STATES = ['OUT_OF_SERVICE', 'DOWN', 'OFFLINE', 'RESTRICTED'];
