@@ -69,7 +69,10 @@ export default {
         .subscribe({
           complete: () => {
             this.$emit('routes-refreshed');
-            this.refreshTimeout = setTimeout(() => (this.refreshingRouteCache = null), 2500);
+            this.refreshTimeout = setTimeout(
+              () => (this.refreshingRouteCache = null),
+              2500,
+            );
           },
         });
     },

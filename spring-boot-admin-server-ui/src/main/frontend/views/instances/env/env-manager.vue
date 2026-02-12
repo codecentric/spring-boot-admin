@@ -148,16 +148,6 @@ export default {
     updateTimeout: null,
     resetTimeout: null,
   }),
-  beforeUnmount() {
-    if (this.updateTimeout) {
-      clearTimeout(this.updateTimeout);
-      this.updateTimeout = null;
-    }
-    if (this.resetTimeout) {
-      clearTimeout(this.resetTimeout);
-      this.resetTimeout = null;
-    }
-  },
   computed: {
     allPropertyNames() {
       return uniq(
@@ -227,6 +217,16 @@ export default {
       },
     },
   },
+  beforeUnmount() {
+    if (this.updateTimeout) {
+      clearTimeout(this.updateTimeout);
+      this.updateTimeout = null;
+    }
+    if (this.resetTimeout) {
+      clearTimeout(this.resetTimeout);
+      this.resetTimeout = null;
+    }
+  },
   methods: {
     handlePropertyNameChange: debounce(function (prop, idx) {
       if (prop.name && idx === this.managedProperties.length - 1) {
@@ -263,7 +263,10 @@ export default {
         )
         .subscribe({
           complete: () => {
-            this.updateTimeout = setTimeout(() => (this.updateStatus = null), 2500);
+            this.updateTimeout = setTimeout(
+              () => (this.updateStatus = null),
+              2500,
+            );
             return this.$emit('update');
           },
           error: () => this.$emit('update'),
@@ -291,7 +294,10 @@ export default {
                 validation: null,
               },
             ];
-            this.resetTimeout = setTimeout(() => (this.resetStatus = null), 2500);
+            this.resetTimeout = setTimeout(
+              () => (this.resetStatus = null),
+              2500,
+            );
             return this.$emit('refresh');
           },
           error: () => this.$emit('refresh'),
