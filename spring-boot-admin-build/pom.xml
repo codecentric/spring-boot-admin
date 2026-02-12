@@ -30,7 +30,7 @@
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-dependencies</artifactId>
         <version>${revision}</version>
-        <relativePath>../spring-boot-admin-dependencies</relativePath>
+        <relativePath>../spring-boot-admin-dependencies/pom.xml</relativePath>
     </parent>
 
     <dependencyManagement>
@@ -38,14 +38,16 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
+                <!-- hardcoded to fix issues with cyclonedx-maven-plugin, should be ${spring-boot.version} -->
+                <version>3.5.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
+                <!-- hardcoded to fix issues with cyclonedx-maven-plugin, should be ${spring-cloud.version} -->
+                <version>2025.0.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -97,6 +99,14 @@
                 <version>${testcontainers.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <!-- Maven 4 related fixes: delete as soon as not needed! -->
+            <dependency>
+                <groupId>org.springframework.retry</groupId>
+                <artifactId>spring-retry</artifactId>
+                <version>2.0.12</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
