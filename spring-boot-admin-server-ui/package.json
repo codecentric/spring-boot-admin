@@ -73,7 +73,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.33.0",
+    "@eslint/js": "^10.0.0",
     "@storybook/addon-docs": "^10.0.0",
     "@storybook/addon-links": "10.2.7",
     "@storybook/vue3-vite": "10.2.7",
@@ -90,7 +90,7 @@
     "@vue/test-utils": "2.4.6",
     "autoprefixer": "10.4.24",
     "babel-loader": "10.0.0",
-    "eslint": "^9.0.0",
+    "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-storybook": "10.2.7",
@@ -98,7 +98,7 @@
     "globals": "^17.0.0",
     "happy-dom": "^20.0.0",
     "jsdom": "^28.0.0",
-    "msw": "2.12.8",
+    "msw": "2.12.9",
     "msw-storybook-addon": "2.0.6",
     "postcss": "8.5.6",
     "prettier": "^3.0.3",
@@ -130,6 +130,6 @@
     ]
   },
   "overrides": {
-    "esbuild": "0.27.2"
+    "esbuild": "0.27.3"
   }
 }
