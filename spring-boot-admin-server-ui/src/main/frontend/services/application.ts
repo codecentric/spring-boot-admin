@@ -83,7 +83,15 @@ class Application {
 
   private readonly axios: AxiosInstance;
 
-  constructor({ name, instances, ...application }: { name: string; instances: any[]; [key: string]: any }) {
+  constructor({
+    name,
+    instances,
+    ...application
+  }: {
+    name: string;
+    instances: any[];
+    [key: string]: any;
+  }) {
     Object.assign(this, application);
     this.name = name;
     this.axios = axios.create({
@@ -231,7 +239,12 @@ class Application {
     return this.axios.post(uri`actuator/restart`);
   }
 
-  async writeMBeanAttribute(domain: string, mBean: string, attribute: string, value: any) {
+  async writeMBeanAttribute(
+    domain: string,
+    mBean: string,
+    attribute: string,
+    value: any,
+  ) {
     const body = {
       type: 'write',
       mbean: `${domain}:${mBean}`,
@@ -246,7 +259,12 @@ class Application {
     });
   }
 
-  async invokeMBeanOperation(domain: string, mBean: string, operation: string, args: any[]) {
+  async invokeMBeanOperation(
+    domain: string,
+    mBean: string,
+    operation: string,
+    args: any[],
+  ) {
     const body = {
       type: 'exec',
       mbean: `${domain}:${mBean}`,
