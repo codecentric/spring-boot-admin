@@ -76,11 +76,7 @@ jobs:
           cache-dependency-path: '**/package-lock.json'
 
       - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
-        run: ./mvnw -B deploy --no-transfer-progress -P central-deploy -DskipTests
-        env:
-          MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: ./mvnw -B deploy --no-transfer-progress -DskipTests
 
       - name: Extract Maven project version for Asciidoc GitHub Pages directory naming
         run: echo ::set-output name=version::$(./mvnw -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
