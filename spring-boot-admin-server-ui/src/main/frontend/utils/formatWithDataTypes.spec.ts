@@ -67,13 +67,13 @@ describe('formatWithDataTypes', () => {
   it('formats date from timestamp', () => {
     const input = { timestamp: 1717243496000 };
     const output = formatWithDataTypes(input, { timestamp: 'date' });
-    expect(output.timestamp).toMatch(/01.06.2024, 14:04:56/);
+    expect(output.timestamp).toMatch(/01\.06\.2024, 14:04:56/);
   });
 
   it('formats date from ISO string', () => {
     const input = { created: '2024-06-01T12:34:56Z' };
     const output = formatWithDataTypes(input, { created: 'date' });
-    expect(output.created).toMatch(/01.06.2024, 14:34:56/);
+    expect(output.created).toMatch(/01\.06\.2024, 14:34:56/);
   });
 
   it('handles formatting errors gracefully', () => {

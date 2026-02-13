@@ -53,9 +53,13 @@ export default defineConfig(({ mode }) => {
     test: {
       root: __dirname,
       globals: true,
-      globalSetup: './vitest.global-setup.ts',
       environment: 'jsdom',
       setupFiles: [resolve(frontendDir, 'tests/setup.ts')],
+      env: {
+        LANG: 'de_DE.UTF-8',
+        LC_ALL: 'de_DE.UTF-8',
+        TZ: 'Europe/Berlin',
+      },
       include: [
         resolve(
           frontendDir,
