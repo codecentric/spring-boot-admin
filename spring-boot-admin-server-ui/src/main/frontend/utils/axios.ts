@@ -42,21 +42,34 @@ axios.interceptors.response.use((response) => response, redirectOn401());
 
 export default axios;
 
-export const registerErrorToastInterceptor = (axios) => {
-  if (sbaConfig.uiSettings.enableToasts === true) {
+export const registerErrorToastInterceptor = (
+  axios,
+  notificationCenter = nc,
+) => {
+  if (sbaConfig.uiSettings.enableToasts) {
     axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        const data = error.request;
-        const message = `
-                Request failed: ${data.statusText}<br>
-                <small>${data.responseURL}</small>
+        const suppress = error.config?.suppressToast;
+        let shouldSuppress = false;
+        if (typeof suppress === 'function') {
+          shouldSuppress = suppress(error);
+        } else {
+          shouldSuppress = !!suppress;
+        }
+        if (!shouldSuppress) {
+          const data = error.response;
+          const message = `
+                Request failed: ${data?.statusText}<br>
+                <small>${data?.config?.url || data?.request?.responseURL || ''}</small>
         `;
-        nc.error(message, {
-          context: data.status ?? 'axios',
-          title: `Error ${data.status}`,
-          duration: 10000,
-        });
+          notificationCenter.error(message, {
+            context: data?.status ?? 'axios',
+            title: `Error ${data?.status}`,
+            duration: 10000,
+          });
+        }
+        return Promise.reject(error);
       },
     );
   }
