@@ -137,4 +137,4 @@ management:
   endpoint:
     sbom:
       application:
-        location: classpath:bom.json
+        location: optional:classpath:bom.json

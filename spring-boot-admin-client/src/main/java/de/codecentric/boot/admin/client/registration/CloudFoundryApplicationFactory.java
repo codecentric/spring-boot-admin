@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.client.registration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
 import org.springframework.util.StringUtils;
 
 import de.codecentric.boot.admin.client.config.CloudFoundryApplicationProperties;

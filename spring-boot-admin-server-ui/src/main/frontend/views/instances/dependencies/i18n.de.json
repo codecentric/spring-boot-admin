@@ -2,6 +2,7 @@
   "instances": {
     "dependencies": {
       "label": "Abhängigkeiten",
+      "no_data_provided": "Es wurden keine Daten bereitgestellt. Bitte überprüfen Sie, ob Sie die software bill of materials (SBOM) korrekt konfiguriert haben.",
       "list": {
         "header": {
           "group": "Gruppe",

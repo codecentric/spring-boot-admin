@@ -31,7 +31,7 @@ export const hasMatchingContentType = (
   Boolean(contentType) &&
   compatibleContentTypes.includes(contentType.replace(/;.*$/, ''));
 
-export const convertBody = (responses) =>
+export const convertBody = (responses: any[]) =>
   responses.map((res) => {
     if (
       res.body &&
@@ -83,7 +83,15 @@ class Application {
 
   private readonly axios: AxiosInstance;
 
-  constructor({ name, instances, ...application }) {
+  constructor({
+    name,
+    instances,
+    ...application
+  }: {
+    name: string;
+    instances: any[];
+    [key: string]: any;
+  }) {
     Object.assign(this, application);
     this.name = name;
     this.axios = axios.create({
@@ -140,7 +148,7 @@ class Application {
     );
   }
 
-  static _transformResponse(data) {
+  static _transformResponse(data: string) {
     if (!data) {
       return data;
     }
@@ -152,19 +160,19 @@ class Application {
     return new Application(json);
   }
 
-  filterInstances(predicate) {
+  filterInstances(predicate: (instance: Instance) => boolean) {
     return new Application({
       ...this,
       instances: this.instances.filter(predicate),
     });
   }
 
-  hasEndpoint(endpointId) {
+  hasEndpoint(endpointId: string): boolean {
     return this.instances.some((i) => i.hasEndpoint(endpointId));
   }
 
-  findInstance(instanceId) {
-    return this.instances.find((instance) => instance.getId() === instanceId);
+  findInstance(instanceId: string): Instance | undefined {
+    return this.instances.find((instance) => instance.id === instanceId);
   }
 
   async unregister() {
@@ -184,7 +192,7 @@ class Application {
     return { responses };
   }
 
-  async configureLogger(name, level) {
+  async configureLogger(name: string, level: string | null) {
     const responses = (
       await this.axios.post(
         uri`actuator/loggers/${name}`,
@@ -195,7 +203,7 @@ class Application {
     return { responses };
   }
 
-  async setEnv(name, value) {
+  async setEnv(name: string, value: string) {
     return this.axios.post(
       uri`actuator/env`,
       { name, value },
@@ -217,7 +225,7 @@ class Application {
     return this.axios.delete(uri`actuator/caches`);
   }
 
-  async clearCache(name, cacheManager) {
+  async clearCache(name: string, cacheManager?: string) {
     return this.axios.delete(uri`actuator/caches/${name}`, {
       params: { cacheManager: cacheManager },
     });
@@ -231,7 +239,12 @@ class Application {
     return this.axios.post(uri`actuator/restart`);
   }
 
-  async writeMBeanAttribute(domain, mBean, attribute, value) {
+  async writeMBeanAttribute(
+    domain: string,
+    mBean: string,
+    attribute: string,
+    value: any,
+  ) {
     const body = {
       type: 'write',
       mbean: `${domain}:${mBean}`,
@@ -246,7 +259,12 @@ class Application {
     });
   }
 
-  async invokeMBeanOperation(domain, mBean, operation, args) {
+  async invokeMBeanOperation(
+    domain: string,
+    mBean: string,
+    operation: string,
+    args: any[],
+  ) {
     const body = {
       type: 'exec',
       mbean: `${domain}:${mBean}`,

@@ -1,21 +1,18 @@
 <template>
   <sba-panel>
-    <template v-if="applicationsCount > 0">
-      <div class="flex flex-row md:flex-col items-center justify-center">
+    <div class="flex flex-row items-center justify-center my-2">
+      <template v-if="applicationsCount > 0">
         <template v-if="statusInfo.allUp">
           <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
           <div class="text-center">
-            <h1 class="font-bold text-2xl" v-text="$t('applications.all_up')" />
+            <h1 class="status-label" v-text="$t('applications.all_up')" />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
         </template>
         <template v-else-if="statusInfo.allDown">
           <font-awesome-icon icon="minus-circle" class="text-red-500 icon" />
           <div class="text-center">
-            <h1
-              class="font-bold text-2xl"
-              v-text="$t('applications.all_down')"
-            />
+            <h1 class="status-label" v-text="$t('applications.all_down')" />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
         </template>
@@ -25,20 +22,14 @@
             class="text-gray-300 icon"
           />
           <div class="text-center">
-            <h1
-              class="font-bold text-2xl"
-              v-text="$t('applications.all_unknown')"
-            />
+            <h1 class="status-label" v-text="$t('applications.all_unknown')" />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
         </template>
         <template v-else-if="someInstancesDown">
           <font-awesome-icon icon="minus-circle" class="text-red-500 icon" />
           <div class="text-center">
-            <h1
-              class="font-bold text-2xl"
-              v-text="$t('applications.some_down')"
-            />
+            <h1 class="status-label" v-text="$t('applications.some_down')" />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
         </template>
@@ -49,27 +40,19 @@
             class="text-gray-300 icon"
           />
           <div class="text-center">
-            <h1
-              class="font-bold text-2xl"
-              v-text="$t('applications.some_unknown')"
-            />
+            <h1 class="status-label" v-text="$t('applications.some_unknown')" />
             <p class="text-gray-400" v-text="lastUpdate" />
           </div>
         </template>
-      </div>
-    </template>
-    <template v-else>
-      <div class="flex flex-col items-center">
-        <font-awesome-icon
-          icon="frown-open"
-          class="text-gray-500 text-9xl pb-4"
-        />
+      </template>
+      <template v-else>
+        <font-awesome-icon icon="frown-open" class="text-gray-500 icon" />
         <h1
-          class="font-bold text-2xl"
+          class="status-label"
           v-text="$t('applications.no_applications_registered')"
         />
-      </div>
-    </template>
+      </template>
+    </div>
   </sba-panel>
 </template>
 
@@ -81,7 +64,6 @@ import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import { getStatusInfo } from '@/services/application';
 
 const { applications } = useApplicationStore();
-
 const { formatDateTime } = useDateTimeFormatter();
 
 const lastUpdate = ref(formatDateTime(new Date()));
@@ -108,7 +90,10 @@ const someInstancesUnknown = computed(() => {
 </script>
 
 <style scoped>
+.status-label {
+  @apply font-bold text-2xl;
+}
 .icon {
-  @apply text-9xl pr-4 md:pb-4 md:pr-0;
+  @apply text-6xl pr-4;
 }
 </style>

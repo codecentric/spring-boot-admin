@@ -26,15 +26,11 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.http.client.ClientHttpRequestFactoryBuilder;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import de.codecentric.boot.admin.client.registration.BlockingRegistrationClient;
-import de.codecentric.boot.admin.client.registration.ReactiveRegistrationClient;
 import de.codecentric.boot.admin.client.registration.RegistrationClient;
 import de.codecentric.boot.admin.client.registration.RestClientRegistrationClient;
 
@@ -46,7 +42,7 @@ public class SpringBootAdminClientRegistrationClientAutoConfigurationTest {
 	@MethodSource("contextRunnerCustomizations")
 	void autoConfiguresRegistrationClient(String testCaseName,
 			Function<WebApplicationContextRunner, WebApplicationContextRunner> customizer,
-			Class<RegistrationClient> expectedRegistrationClient) {
+			Class<? extends RegistrationClient> expectedRegistrationClient) {
 		WebApplicationContextRunner webApplicationContextRunner = new WebApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
@@ -62,107 +58,21 @@ public class SpringBootAdminClientRegistrationClientAutoConfigurationTest {
 			});
 	}
 
-	/**
-	 * <img src="doc-files/RegistrationClientTestCases.png" alt="">
-	 * @return context runner customizations
-	 */
 	public static Stream<Arguments> contextRunnerCustomizations() {
 		return Stream.of(//
 				Arguments.of(//
-						"Test case 01", //
-						customizer() //
-							.withRestTemplateBuilder()
-							.withRestClientBuilder()
-							.withClientHttpRequestFactoryBuilder()
-							.withWebClientBuilder()
-							.build(), //
-						ReactiveRegistrationClient.class),
-				Arguments.of(//
-						"Test case 02", //
-						customizer() //
-							.withRestTemplateBuilder()
-							.withRestClientBuilder()
-							.withClientHttpRequestFactoryBuilder()
-							.build(), //
-						RestClientRegistrationClient.class),
-				Arguments.of(//
-						"Test case 03", //
-						customizer() //
-							.withRestTemplateBuilder()
-							.withRestClientBuilder()
-							.withWebClientBuilder()
-							.build(), //
-						ReactiveRegistrationClient.class),
-				Arguments.of(//
-						"Test case 04", //
-						customizer() //
-							.withRestTemplateBuilder()
-							.withRestClientBuilder()
-							.build(), //
-						BlockingRegistrationClient.class),
-				Arguments.of(//
-						"Test case 05", //
-						customizer() //
-							.withRestTemplateBuilder()
-							.withClientHttpRequestFactoryBuilder()
-							.withWebClientBuilder()
-							.build(), //
-						ReactiveRegistrationClient.class),
-				Arguments.of(//
-						"Test case 06", //
-						customizer() //
-							.withRestTemplateBuilder()
-							.withClientHttpRequestFactoryBuilder()
-							.build(), //
-						BlockingRegistrationClient.class),
-				Arguments.of(//
-						"Test case 07", //
-						customizer() //
-							.withRestTemplateBuilder()
-							.withWebClientBuilder()
-							.build(), //
-						ReactiveRegistrationClient.class),
-				Arguments.of(//
-						"Test case 08", //
-						customizer() //
-							.withRestTemplateBuilder()
-							.build(), //
-						BlockingRegistrationClient.class),
-				Arguments.of(//
-						"Test case 09", //
-						customizer() //
-							.withRestClientBuilder()
-							.withClientHttpRequestFactoryBuilder()
-							.withWebClientBuilder()
-							.build(), //
-						ReactiveRegistrationClient.class),
-				Arguments.of(//
-						"Test case 10", //
+						"RestClientBuilder with ClientHttpRequestFactoryBuilder", //
 						customizer() //
 							.withRestClientBuilder()
 							.withClientHttpRequestFactoryBuilder()
 							.build(), //
 						RestClientRegistrationClient.class),
 				Arguments.of(//
-						"Test case 11", //
+						"RestClientBuilder only", //
 						customizer() //
 							.withRestClientBuilder()
-							.withWebClientBuilder()
 							.build(), //
-						ReactiveRegistrationClient.class),
-				Arguments.of(//
-						"Test case 13", //
-						customizer() //
-							.withClientHttpRequestFactoryBuilder()
-							.withWebClientBuilder()
-							.build(), //
-						ReactiveRegistrationClient.class),
-				Arguments.of(//
-						"Test case 15", //
-						customizer() //
-							.withWebClientBuilder()
-							.build(), //
-						ReactiveRegistrationClient.class) //
+						RestClientRegistrationClient.class) //
 		);
 	}
 
@@ -174,12 +84,6 @@ public class SpringBootAdminClientRegistrationClientAutoConfigurationTest {
 
 		private Function<WebApplicationContextRunner, WebApplicationContextRunner> customizer = (runner) -> runner;
 
-		ContextRunnerCustomizerBuilder withRestTemplateBuilder() {
-			customizer = customizer
-				.andThen((runner) -> runner.withBean(RestTemplateBuilder.class, RestTemplateBuilder::new));
-			return this;
-		}
-
 		ContextRunnerCustomizerBuilder withRestClientBuilder() {
 			customizer = customizer.andThen((runner) -> runner.withBean(RestClient.Builder.class, RestClient::builder));
 			return this;
@@ -188,11 +92,6 @@ public class SpringBootAdminClientRegistrationClientAutoConfigurationTest {
 		ContextRunnerCustomizerBuilder withClientHttpRequestFactoryBuilder() {
 			customizer = customizer.andThen((runner) -> runner.withBean(ClientHttpRequestFactoryBuilder.class,
 					ClientHttpRequestFactoryBuilder::detect));
-			return this;
-		}
-
-		ContextRunnerCustomizerBuilder withWebClientBuilder() {
-			customizer = customizer.andThen((runner) -> runner.withBean(WebClient.Builder.class, WebClient::builder));
 			return this;
 		}
 

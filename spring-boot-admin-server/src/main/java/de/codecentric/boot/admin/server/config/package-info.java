@@ -15,9 +15,7 @@
  */
 
 // Spring Boot Admin Server - core configuration package.
-@NonNullApi
-@NonNullFields
+@NullMarked
 package de.codecentric.boot.admin.server.config;
 
-import org.springframework.lang.NonNullApi;
-import org.springframework.lang.NonNullFields;
+import org.jspecify.annotations.NullMarked;

@@ -49,10 +49,12 @@ export const useModal = (globalProps = {}) => {
       );
 
       return new Promise((resolve) => {
-        eventBus.on('sba-modal-close', (result) => {
+        const handler = (result) => {
+          eventBus.off('sba-modal-close', handler);
           destroy();
           resolve(result);
-        });
+        };
+        eventBus.on('sba-modal-close', handler);
       });
     },
   };

@@ -5,6 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
+    "swizzle": "docusaurus swizzle",
     "build:current-version-redirect": "mkdir -p build/current/ && sed \"s/@@VERSION@@/$VERSION/g\" current/index.template.html > build/current/index.html && sed \"s/@@VERSION@@/$VERSION/g\" current/404.template.html > build/current/404.html",
     "build": "docusaurus build",
     "build:prod": "npm run build && npm run build:current-version-redirect && rsync -a --delete-before ./build ../../target/generated-docs"
@@ -13,10 +14,12 @@
     "@docusaurus/core": "^3.6.3",
     "@docusaurus/module-type-aliases": "^3.6.3",
     "@docusaurus/preset-classic": "^3.6.3",
+    "@docusaurus/theme-mermaid": "^3.9.2",
     "@docusaurus/tsconfig": "^3.6.3",
     "@docusaurus/types": "^3.6.3",
     "@iconify/react": "^6.0.0",
     "@mdx-js/react": "^3.1.0",
+    "@signalwire/docusaurus-plugin-llms-txt": "^1.2.2",
     "asciidoctor": "^3.0.4",
     "clsx": "^2.1.1",
     "dotenv": "^17.0.0",

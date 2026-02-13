@@ -88,11 +88,18 @@ export default {
       status: null,
       refreshStatus: '',
       currentScope: ActionScope.INSTANCE,
+      refreshTimeout: null,
     };
+  },
+  beforeUnmount() {
+    if (this.refreshTimeout) {
+      clearTimeout(this.refreshTimeout);
+      this.refreshTimeout = null;
+    }
   },
   methods: {
     resetRefreshState() {
-      setTimeout(() => {
+      this.refreshTimeout = setTimeout(() => {
         this.refreshStatus = null;
       }, 2000);
     },

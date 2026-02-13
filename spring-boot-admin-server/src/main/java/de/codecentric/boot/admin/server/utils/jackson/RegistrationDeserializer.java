@@ -16,57 +16,51 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import java.io.IOException;
-import java.io.Serial;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 public class RegistrationDeserializer extends StdDeserializer<Registration> {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	public RegistrationDeserializer() {
 		super(Registration.class);
 	}
 
 	@Override
-	public Registration deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+	public Registration deserialize(JsonParser p, DeserializationContext ctxt) {
 		JsonNode node = p.readValueAsTree();
 		Registration.Builder builder = Registration.builder();
 
-		builder.name(firstNonNullAsText(node, "name"));
+		builder.name(firstNonNullAsString(node, "name"));
 
 		if (node.hasNonNull("url")) {
-			String url = firstNonNullAsText(node, "url");
+			String url = firstNonNullAsString(node, "url");
 			builder.healthUrl(url.replaceFirst("/+$", "") + "/health").managementUrl(url);
 		}
 		else {
-			builder.healthUrl(firstNonNullAsText(node, "healthUrl", "health_url"));
-			builder.managementUrl(firstNonNullAsText(node, "managementUrl", "management_url"));
-			builder.serviceUrl(firstNonNullAsText(node, "serviceUrl", "service_url"));
+			builder.healthUrl(firstNonNullAsString(node, "healthUrl", "health_url"));
+			builder.managementUrl(firstNonNullAsString(node, "managementUrl", "management_url"));
+			builder.serviceUrl(firstNonNullAsString(node, "serviceUrl", "service_url"));
 		}
 
 		if (node.has("metadata")) {
 			node.get("metadata")
 				.properties()
-				.forEach((entry) -> builder.metadata(entry.getKey(), entry.getValue().asText()));
+				.forEach((entry) -> builder.metadata(entry.getKey(), entry.getValue().asString()));
 		}
 
-		builder.source(firstNonNullAsText(node, "source"));
+		builder.source(firstNonNullAsString(node, "source"));
 
 		return builder.build();
 	}
 
-	private String firstNonNullAsText(JsonNode node, String... fieldNames) {
+	private String firstNonNullAsString(JsonNode node, String... fieldNames) {
 		for (String fieldName : fieldNames) {
 			if (node.hasNonNull(fieldName)) {
-				return node.get(fieldName).asText();
+				return node.get(fieldName).asString();
 			}
 		}
 		return null;

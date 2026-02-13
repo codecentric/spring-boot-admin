@@ -19,11 +19,11 @@ package de.codecentric.boot.admin.client.config;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.env.Environment;
-import org.springframework.lang.Nullable;
 
 @lombok.Data
 @ConfigurationProperties(prefix = "spring.boot.admin.client")
@@ -60,21 +60,18 @@ public class ClientProperties {
 	/**
 	 * Username for basic authentication on admin server
 	 */
-	@Nullable
-	private String username;
+	@Nullable private String username;
 
 	/**
 	 * Password for basic authentication on admin server
 	 */
-	@Nullable
-	private String password;
+	@Nullable private String password;
 
 	/**
 	 * Enable automatic deregistration on shutdown If not set it defaults to true if an
 	 * active {@link CloudPlatform} is present;
 	 */
-	@Nullable
-	private Boolean autoDeregistration = null;
+	@Nullable private Boolean autoDeregistration = null;
 
 	/**
 	 * Enable automatic registration when the application is ready.

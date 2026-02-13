@@ -1,4 +1,4 @@
-import { ref } from 'vue';
+import { onUnmounted, ref } from 'vue';
 
 import SbaNavbar from './sba-navbar.vue';
 
@@ -25,9 +25,12 @@ const Template = (args) => {
     },
     setup() {
       const random = ref(0);
-      setInterval(() => {
+      const intervalId = setInterval(() => {
         random.value = Math.round(Math.random() * 10);
       }, 1000);
+
+      onUnmounted(() => clearInterval(intervalId)); // ✅ Cleanup
+
       return { ...args, random, username: 'Admin' };
     },
     template: `

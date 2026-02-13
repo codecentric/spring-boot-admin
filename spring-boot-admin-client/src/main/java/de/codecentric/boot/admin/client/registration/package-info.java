@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-@NonNullApi
-@NonNullFields
+@NullMarked
 package de.codecentric.boot.admin.client.registration;
 
-import org.springframework.lang.NonNullApi;
-import org.springframework.lang.NonNullFields;
+import org.jspecify.annotations.NullMarked;

@@ -21,11 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jakarta.annotation.Nullable;
-import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.MapAccessor;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
