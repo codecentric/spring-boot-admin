@@ -6,6 +6,7 @@
     --ifm-color-primary-light: #1a7156;
     --ifm-color-primary-lighter: #1c765a;
     --ifm-color-primary-lightest: #1f8665;
+    --ifm-background-color: #fff;
 }
 
 [data-theme='dark'] {
@@ -20,6 +21,10 @@
 
 main[class^='docMainContainer'] {
     position: relative;
+}
+
+main > .container {
+    max-width: initial !important;
 }
 
 .dl-horizontal {

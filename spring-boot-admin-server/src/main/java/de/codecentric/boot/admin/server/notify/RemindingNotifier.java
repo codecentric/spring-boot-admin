@@ -22,9 +22,9 @@ import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
@@ -59,11 +59,9 @@ public class RemindingNotifier extends AbstractEventNotifier {
 
 	private String[] reminderStatuses = { "DOWN", "OFFLINE" };
 
-	@Nullable
-	private Disposable subscription;
+	@Nullable private Disposable subscription;
 
-	@Nullable
-	private Scheduler reminderScheduler;
+	@Nullable private Scheduler reminderScheduler;
 
 	public RemindingNotifier(Notifier delegate, InstanceRepository repository) {
 		super(repository);
@@ -158,12 +156,12 @@ public class RemindingNotifier extends AbstractEventNotifier {
 			this.lastNotification = event.getTimestamp();
 		}
 
-		public void setLastNotification(Instant lastNotification) {
-			this.lastNotification = lastNotification;
-		}
-
 		public Instant getLastNotification() {
 			return this.lastNotification;
+		}
+
+		public void setLastNotification(Instant lastNotification) {
+			this.lastNotification = lastNotification;
 		}
 
 		public InstanceEvent getEvent() {

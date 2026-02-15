@@ -39,6 +39,11 @@ describe('DetailsThreads', () => {
     })();
 
     server.use(
+      http.get('/instances/:instanceId/actuator/metrics', () => {
+        return HttpResponse.json({
+          names: ['jvm.threads.live', 'jvm.threads.peak', 'jvm.threads.daemon'],
+        });
+      }),
       http.get(
         '/instances/:instanceId/actuator/metrics/jvm.threads.live',
         () => {

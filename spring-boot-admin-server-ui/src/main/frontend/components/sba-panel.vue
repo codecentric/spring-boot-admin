@@ -24,9 +24,13 @@
       v-if="hasTitle"
       ref="header"
       v-sticks-below="headerSticksBelow"
-      class="rounded-t flex justify-between px-4 pt-5 pb-5 border-b sm:px-6 items-center bg-white transition-all"
+      :class="
+        classNames(
+          'rounded-t flex justify-between px-4 py-2.5 border-b items-center bg-white transition-all',
+        )
+      "
     >
-      <h3 class="text-lg leading-6 font-medium text-gray-900 flex-1">
+      <h3 class="font-medium text-gray-900 flex-1 order border-blue-300">
         <button class="flex items-center w-full" @click="$emit('title-click')">
           <slot v-if="'prefix' in $slots" name="prefix" />
           <span v-text="title" />

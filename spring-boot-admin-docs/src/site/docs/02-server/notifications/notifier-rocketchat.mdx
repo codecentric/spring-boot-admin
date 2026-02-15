@@ -1,0 +1,17 @@
+---
+sidebar_custom_props:
+  icon: 'notifications'
+---
+import metadata from "@sba/spring-boot-admin-server/target/classes/META-INF/spring-configuration-metadata.json";
+import { PropertyTable } from "@sba/spring-boot-admin-docs/src/site/src/components/PropertyTable";
+
+# RocketChat Notifications
+
+To enable [Rocket.Chat](https://www.rocket.chat/) notifications you need a personal token access and create a room to send message with this token
+
+<PropertyTable
+  title="RocketChat notifications configuration options"
+  properties={metadata.properties}
+  filter={['notify.rocketchat']}
+  includeOnly={true}
+/>

@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import reactor.core.publisher.Mono;
@@ -41,6 +42,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,8 +53,14 @@ class IntervalCheckTest {
 	@SuppressWarnings("unchecked")
 	private final Function<InstanceId, Mono<Void>> checkFn = mock(Function.class, (i) -> Mono.empty());
 
-	private final IntervalCheck intervalCheck = new IntervalCheck("test", this.checkFn, Duration.ofMillis(10),
-			Duration.ofMillis(10), Duration.ofSeconds(1));
+	private IntervalCheck intervalCheck;
+
+	@BeforeEach
+	void setUp() {
+		reset(this.checkFn);
+		this.intervalCheck = new IntervalCheck("test", this.checkFn, Duration.ofMillis(10), Duration.ofMillis(10),
+				Duration.ofSeconds(1));
+	}
 
 	@Test
 	void should_check_after_being_started() {

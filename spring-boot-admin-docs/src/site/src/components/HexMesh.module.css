@@ -1,0 +1,81 @@
+.hexMesh {
+    width: 100%;
+    height: 75vh;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.hex {
+    --fill-color: #4a4a4a;
+    --stroke-color: transparent;
+
+    fill: var(--fill-color);
+    fill-opacity: 0.05;
+    stroke: var(--stroke-color);
+    stroke-width: 0.5;
+    stroke-opacity: 0.8;
+    pointer-events: none;
+
+    cursor: pointer;
+
+    &.hasContent {
+        cursor: pointer;
+        --fill-color: var(--ifm-color-primary);
+        --stroke-color: var(--ifm-color-primary);
+
+        &:hover {
+            fill-opacity: 0.25;
+            stroke-opacity: 1;
+            stroke-width: 2;
+        }
+    }
+
+    :hover path {
+        fill-opacity: 0.25;
+        stroke-opacity: 1;
+        stroke-width: 2;
+    }
+
+    :global(.hex__body) {
+        pointer-events: auto;
+        position: fixed;
+        z-index: 10;
+        font-size: 100%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: var(--ifm-font-color-base);
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    :global(.hex__body::after) {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        font-size: 15em;
+        position: absolute;
+        z-index: -1;
+        width: 100%;
+    }
+
+    :global(.hex__body__title) {
+        width: 85%;
+        font-size: 1.75em;
+        font-weight: bold;
+        text-align: center;
+        line-height: 1em;
+    }
+
+    :global(.hex__body__description) {
+        font-style: italic;
+        font-size: 1em;
+    }
+}
+

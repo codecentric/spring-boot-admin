@@ -16,11 +16,10 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 
@@ -29,41 +28,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BuildVersionMixinTest {
 
-	private final ObjectMapper objectMapper;
+	private final JsonMapper jsonMapper;
 
 	protected BuildVersionMixinTest() {
 		AdminServerModule adminServerModule = new AdminServerModule(new String[] { ".*password$" });
-		JavaTimeModule javaTimeModule = new JavaTimeModule();
-		objectMapper = Jackson2ObjectMapperBuilder.json().modules(adminServerModule, javaTimeModule).build();
+		jsonMapper = JsonMapper.builder()
+			.addModule(adminServerModule)
+			.disable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+			.build();
 	}
 
 	@Test
-	void verifyDeserialize() throws JsonProcessingException {
-		BuildVersion buildVersion = objectMapper.readValue("\"1.0.0\"", BuildVersion.class);
+	void verifyDeserialize() throws JacksonException {
+		BuildVersion buildVersion = jsonMapper.readValue("\"1.0.0\"", BuildVersion.class);
 		assertThat(buildVersion).isEqualTo(BuildVersion.valueOf("1.0.0"));
 	}
 
 	@Test
-	void verifySerialize() throws JsonProcessingException {
+	void verifySerialize() throws JacksonException {
 		BuildVersion buildVersion = BuildVersion.valueOf("1.0.0");
 
-		String result = objectMapper.writeValueAsString(buildVersion);
+		String result = jsonMapper.writeValueAsString(buildVersion);
 		assertThat(result).isEqualTo("\"1.0.0\"");
 	}
 
 	@Test
-	void verifySerializeWithMapEntryVersion() throws JsonProcessingException {
+	void verifySerializeWithMapEntryVersion() throws JacksonException {
 		BuildVersion buildVersion = BuildVersion.from(singletonMap("version", "1.0.0"));
 
-		String result = objectMapper.writeValueAsString(buildVersion);
+		String result = jsonMapper.writeValueAsString(buildVersion);
 		assertThat(result).isEqualTo("\"1.0.0\"");
 	}
 
 	@Test
-	void verifySerializeWithNestedMapEntryVersion() throws JsonProcessingException {
+	void verifySerializeWithNestedMapEntryVersion() throws JacksonException {
 		BuildVersion buildVersion = BuildVersion.from(singletonMap("build", singletonMap("version", "1.0.0")));
 
-		String result = objectMapper.writeValueAsString(buildVersion);
+		String result = jsonMapper.writeValueAsString(buildVersion);
 		assertThat(result).isEqualTo("\"1.0.0\"");
 	}
 

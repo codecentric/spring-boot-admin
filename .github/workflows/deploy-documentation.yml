@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       releaseversion:
-        description: 'Release version'
+        description: 'Version to publish the documentation for. This should be a tag that exists in the repository.'
+        type: string
         required: true
-        default: '3.0.0'
       copyDocsToCurrent:
-        description: "Should the docs be published at https://docs.spring-boot-admin.com? Otherwise they will be accessible by version number only."
+        description: "Mark docs as 'latest'? This will create a redirect from /current to the version being published. This should only be set for the latest version of the documentation."
         required: true
         type: boolean
         default: false

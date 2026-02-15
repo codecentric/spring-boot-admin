@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
@@ -32,8 +32,7 @@ public final class Application {
 
 	private final String name;
 
-	@Nullable
-	private final BuildVersion buildVersion;
+	@Nullable private final BuildVersion buildVersion;
 
 	private final String status;
 

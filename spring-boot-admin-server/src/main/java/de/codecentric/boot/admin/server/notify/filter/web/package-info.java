@@ -16,9 +16,7 @@
 
 // Spring Boot Admin Server - notifications filter package.
 
-@NonNullApi
-@NonNullFields
+@NullMarked
 package de.codecentric.boot.admin.server.notify.filter.web;
 
-import org.springframework.lang.NonNullApi;
-import org.springframework.lang.NonNullFields;
+import org.jspecify.annotations.NullMarked;

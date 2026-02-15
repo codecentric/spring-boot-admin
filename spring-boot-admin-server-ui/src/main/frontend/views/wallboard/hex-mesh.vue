@@ -23,7 +23,7 @@
     >
       <defs>
         <clipPath id="hex-clip">
-          <polygon :points="hexPath" />
+          <path :d="hexPath" />
         </clipPath>
       </defs>
       <template v-for="row in rows">
@@ -35,7 +35,7 @@
           class="hex"
           @click="click($event, col, row)"
         >
-          <polygon :points="hexPath" />
+          <path :d="hexPath" />
           <foreignObject
             v-if="item(col, row)"
             :height="hexHeight"
@@ -88,9 +88,93 @@ export default {
       return this.items.length;
     },
     hexPath() {
-      return `${this.point(0)} ${this.point(1)} ${this.point(2)} ${this.point(
-        3,
-      )} ${this.point(4)} ${this.point(5)}`;
+      const points = [
+        this.point(0),
+        this.point(1),
+        this.point(2),
+        this.point(3),
+        this.point(4),
+        this.point(5),
+      ];
+
+      // Radius for the rounded corners
+      const cornerRadius = this.sideLength * 0.05;
+
+      // Parse points into coordinate pairs
+      const coords = points.map((p) => {
+        const [x, y] = p.split(',').map(Number);
+        return { x, y };
+      });
+
+      // Helper function to calculate distance between two points
+      const distance = (p1, p2) =>
+        Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+
+      // Helper function to move along a line from p1 towards p2 by a given distance
+      const moveAlong = (p1, p2, dist) => {
+        const d = distance(p1, p2);
+        const ratio = dist / d;
+        return {
+          x: p1.x + (p2.x - p1.x) * ratio,
+          y: p1.y + (p2.y - p1.y) * ratio,
+        };
+      };
+
+      // Build the path
+      let path = '';
+
+      for (let i = 0; i < coords.length; i++) {
+        const current = coords[i];
+        const prev = coords[(i - 1 + coords.length) % coords.length];
+        const next = coords[(i + 1) % coords.length];
+
+        // Point after current corner (moving from current towards next)
+        const nextEdgeLength = distance(current, next);
+        const afterCorner = moveAlong(
+          current,
+          next,
+          Math.min(cornerRadius, nextEdgeLength / 2),
+        );
+
+        // Point before current corner (moving from current towards prev)
+        const prevEdgeLength = distance(current, prev);
+        const beforeCorner = moveAlong(
+          current,
+          prev,
+          Math.min(cornerRadius, prevEdgeLength / 2),
+        );
+
+        if (i === 0) {
+          // Start at the point after the first corner
+          path += `M ${afterCorner.x},${afterCorner.y} `;
+        } else {
+          // Draw line to the point before this corner
+          path += `L ${beforeCorner.x},${beforeCorner.y} `;
+          // Draw quadratic bezier curve around this corner using the corner as control point
+          path += `Q ${current.x},${current.y} ${afterCorner.x},${afterCorner.y} `;
+        }
+      }
+
+      // Close the path (draws line back to start and bezier around first corner)
+      const firstCorner = coords[0];
+      const lastCorner = coords[coords.length - 1];
+      const firstEdgeLength = distance(firstCorner, lastCorner);
+      const beforeFirstCorner = moveAlong(
+        firstCorner,
+        lastCorner,
+        Math.min(cornerRadius, firstEdgeLength / 2),
+      );
+      path += `L ${beforeFirstCorner.x},${beforeFirstCorner.y} `;
+
+      const afterFirstCorner = moveAlong(
+        firstCorner,
+        coords[1],
+        Math.min(cornerRadius, distance(firstCorner, coords[1]) / 2),
+      );
+      path += `Q ${firstCorner.x},${firstCorner.y} ${afterFirstCorner.x},${afterFirstCorner.y} `;
+
+      path += 'Z';
+      return path;
     },
     hexHeight() {
       return this.sideLength * 2;
@@ -130,9 +214,11 @@ export default {
       const innerSideLength = this.sideLength * 0.95;
       const marginTop = this.hexHeight / 2;
       const marginLeft = this.hexWidth / 2;
-      return `${
-        marginLeft + innerSideLength * Math.cos(((1 + i * 2) * Math.PI) / 6)
-      },${marginTop + innerSideLength * Math.sin(((1 + i * 2) * Math.PI) / 6)}`;
+      const x =
+        marginLeft + innerSideLength * Math.cos(((1 + i * 2) * Math.PI) / 6);
+      const y =
+        marginTop + innerSideLength * Math.sin(((1 + i * 2) * Math.PI) / 6);
+      return `${x},${y}`;
     },
     click(event, col, row) {
       const item = this.item(col, row);
@@ -181,12 +267,7 @@ export default {
   stroke-opacity: 0.8;
 }
 
-.hex polygon {
-  fill: transparent;
-  transition: all ease-out 250ms;
-}
-
-.hex:hover polygon {
+.hex:hover path {
   fill-opacity: 0.25;
   stroke-opacity: 1;
   stroke-width: 2;

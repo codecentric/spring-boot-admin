@@ -1,0 +1,4 @@
+{
+  "label": "Notifications",
+  "description": "Configure notifications to alert teams about instance status changes via email, Slack, Teams, and other channels."
+}

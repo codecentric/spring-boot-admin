@@ -16,9 +16,7 @@
 
 // Spring Boot Admin Server - client exceptions package.
 
-@NonNullApi
-@NonNullFields
+@NullMarked
 package de.codecentric.boot.admin.server.web.client.exception;
 
-import org.springframework.lang.NonNullApi;
-import org.springframework.lang.NonNullFields;
+import org.jspecify.annotations.NullMarked;

@@ -96,11 +96,12 @@ import { concatMap, delay, retryWhen, timer } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { defineComponent } from 'vue';
 
+import SbaAccordion from '@/components/sba-accordion.vue';
+
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import MemChart from '@/views/instances/details/mem-chart.vue';
-import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 export default defineComponent({
   name: 'DetailsMemory',

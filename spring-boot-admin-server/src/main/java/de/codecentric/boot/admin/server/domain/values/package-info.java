@@ -16,9 +16,7 @@
 
 // Spring Boot Admin Server - domain objects package.
 
-@NonNullApi
-@NonNullFields
+@NullMarked
 package de.codecentric.boot.admin.server.domain.values;
 
-import org.springframework.lang.NonNullApi;
-import org.springframework.lang.NonNullFields;
+import org.jspecify.annotations.NullMarked;
