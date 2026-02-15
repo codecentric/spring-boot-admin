@@ -43,12 +43,12 @@ describe('Instance', () => {
   );
 
   describe('fetchMetric', () => {
+    const instance = new Instance({
+      id: 'test-id',
+      registration: { name: 'test' },
+      availableMetrics: ['test.metric', 'cache.size', 'cache.gets'],
+    });
     test('should pass suppressToast option to axios config', async () => {
-      const instance = new Instance({
-        id: 'test-id',
-        registration: { name: 'test' },
-      });
-
       // Spy on axios.get
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
@@ -77,11 +77,6 @@ describe('Instance', () => {
     });
 
     test('should work without options parameter for backward compatibility', async () => {
-      const instance = new Instance({
-        id: 'test-id',
-        registration: { name: 'test' },
-      });
-
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
       axiosGetSpy.mockResolvedValue({
@@ -102,11 +97,6 @@ describe('Instance', () => {
     });
 
     test('should pass suppressToast=false when explicitly set to false', async () => {
-      const instance = new Instance({
-        id: 'test-id',
-        registration: { name: 'test' },
-      });
-
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
       axiosGetSpy.mockResolvedValue({
@@ -132,11 +122,6 @@ describe('Instance', () => {
     });
 
     test('should include tags in request parameters', async () => {
-      const instance = new Instance({
-        id: 'test-id',
-        registration: { name: 'test' },
-      });
-
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
       axiosGetSpy.mockResolvedValue({
@@ -159,11 +144,6 @@ describe('Instance', () => {
     });
 
     test('should pass suppressToast function to axios config', async () => {
-      const instance = new Instance({
-        id: 'test-id',
-        registration: { name: 'test' },
-      });
-
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
       axiosGetSpy.mockResolvedValue({
