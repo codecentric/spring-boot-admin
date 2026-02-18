@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
-import axios, { type AxiosError, type AxiosInstance } from 'axios';
+import axios, { type AxiosError } from 'axios';
 
 import sbaConfig from '../sba-config';
 
@@ -51,7 +51,7 @@ export const registerErrorToastInterceptor = (
       (response) => response,
       (error: AxiosError) => {
         const suppress = error.config?.suppressToast;
-        let shouldSuppress = false;
+        let shouldSuppress: boolean;
         if (typeof suppress === 'function') {
           shouldSuppress = suppress(error);
         } else {
