@@ -48,7 +48,7 @@ describe('DetailsCache', () => {
     const instance = application.instances[0];
     return render(DetailsCache, {
       global: {
-        stubs,
+        stubs: { cacheChart: stubChart, ...stubs },
       },
       props: {
         instance,

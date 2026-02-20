@@ -31,6 +31,17 @@ global.EventSource = class {
 
 global.SBA = sbaConfig;
 
+// Mock localStorage globally for all tests
+Object.defineProperty(global, 'localStorage', {
+  value: {
+    getItem: vi.fn(),
+    setItem: vi.fn(),
+    removeItem: vi.fn(),
+    clear: vi.fn(),
+  },
+  writable: true,
+});
+
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterAll(() => server.close());
 afterEach(() => server.resetHandlers());

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AxiosInstance } from 'axios';
+import { AxiosError, AxiosInstance } from 'axios';
 import saveAs from 'file-saver';
 import { Observable, concat, from, ignoreElements } from 'rxjs';
 
@@ -28,6 +28,17 @@ import uri from '../utils/uri';
 import { useSbaConfig } from '@/sba-config';
 import { actuatorMimeTypes } from '@/services/spring-mime-types';
 import { transformToJSON } from '@/utils/transformToJSON';
+
+// Extend AxiosRequestConfig to allow suppressToast
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    suppressToast?: boolean | ((error: AxiosError) => boolean);
+  }
+}
+
+export type FetchMetricOptions = {
+  suppressToast?: boolean | ((error: AxiosError) => boolean);
+};
 
 const isInstanceActuatorRequest = (url: string) =>
   url.match(/^instances[/][^/]+[/]actuator([/].*)?$/);
@@ -167,7 +178,11 @@ class Instance {
     return response;
   }
 
-  async fetchMetric(metric: string, tags: Record<string, any>) {
+  async fetchMetric(
+    metric: string,
+    tags?: Record<string, string>,
+    options?: FetchMetricOptions,
+  ) {
     if (this.availableMetrics.length === 0) {
       try {
         await this.fetchMetrics();
@@ -203,6 +218,7 @@ class Instance {
     }
     return this.axios.get(uri`actuator/metrics/${metric}`, {
       params,
+      suppressToast: options?.suppressToast,
     });
   }
 

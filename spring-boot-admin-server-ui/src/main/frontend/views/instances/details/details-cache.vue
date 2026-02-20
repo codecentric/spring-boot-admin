@@ -202,9 +202,14 @@ export default {
     async fetchCacheSize() {
       if (this.shouldFetchCacheSize) {
         try {
-          const response = await this.instance.fetchMetric('cache.size', {
-            name: this.cacheName,
-          });
+          const suppressFn = (err) => err.response?.status === 404;
+          const response = await this.instance.fetchMetric(
+            'cache.size',
+            {
+              name: this.cacheName,
+            },
+            { suppressToast: suppressFn },
+          );
           return response.data.measurements[0].value;
         } catch (error) {
           this.shouldFetchCacheSize = false;
