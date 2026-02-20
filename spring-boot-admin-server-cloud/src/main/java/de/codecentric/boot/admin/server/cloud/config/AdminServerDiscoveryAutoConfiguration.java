@@ -80,6 +80,7 @@ public class AdminServerDiscoveryAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(KubernetesDiscoveryProperties.class)
 	@ConditionalOnMissingBean({ ServiceInstanceConverter.class })
 	@ConditionalOnCloudPlatform(CloudPlatform.KUBERNETES)
 	public static class KubernetesConverterConfiguration {
