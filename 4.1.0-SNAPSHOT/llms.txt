@@ -1,0 +1,66 @@
+# Spring Boot Admin
+
+
+## 4.1.0-SNAPSHOT
+
+- [Registering Clients](/docs/client.md): Spring Boot Admin is built on top of the mechanisms provided by Spring Cloud. This means that it can integrate
+- [Features](/docs/client/client-features.md): Show Version in Application List
+- [Configuration](/docs/client/configuration.md): In addition to discovering and registering services, Spring Boot Admin makes use of metadata to control how individual
+- [Metadata and Tags](/docs/client/metadata.md): Metadata allows you to attach custom information to your application registration, which can be used for filtering,
+- [Properties](/docs/client/properties.md): <PropertyTable
+- [Application Registration](/docs/client/registration.md): The Spring Boot Admin Client handles the registration of your application with the Admin Server through the
+- [Service Discovery Integration](/docs/client/service-discovery.md): Spring Boot Admin integrates seamlessly with Spring Cloud Discovery services, allowing automatic registration without
+- [Customization](/docs/customization.md)
+- [Custom Health Status](/docs/customization/monitoring/custom-health-status.md): Customize how Spring Boot Admin Server retrieves and interprets health status from instances.
+- [Instance Filters](/docs/customization/monitoring/instance-filters.md): Filter which instances are visible and managed by Spring Boot Admin Server.
+- [Custom Endpoint Detection](/docs/customization/server/endpoint-detection.md): Customize how Spring Boot Admin Server discovers actuator endpoints from registered instances.
+- [Getting Started](/docs/getting-started.md): Spring Boot Admin follows a server-client architecture designed to provide centralized monitoring and management of
+- [Client Registration](/docs/getting-started/client-registration.md): To monitor your applications with Spring Boot Admin, they need to register with the Admin Server. There are three main
+- [Server Setup](/docs/getting-started/server-setup.md): Setting up a Spring Boot Admin Server is straightforward and requires only a few steps. The server acts as the central
+- [SNAPSHOT-Versions](/docs/getting-started/snapshots.md): If you want to use a snapshot version of Spring Boot Admin Server you most likely need to include the spring and
+- [Integration](/docs/integration.md): Spring Boot Admin integrates seamlessly with various service discovery solutions and clustering technologies. This
+- [Consul Integration](/docs/integration/consul.md): HashiCorp Consul is a service mesh solution that provides service discovery, health checking, and key-value storage.
+- [Eureka Integration](/docs/integration/eureka.md): Netflix Eureka is a service discovery and registration solution that integrates seamlessly with Spring Boot Admin. This
+- [Hazelcast Clustering](/docs/integration/hazelcast.md): Hazelcast provides distributed data structures for clustering multiple Spring Boot Admin Server instances. This enables
+- [Zookeeper Integration](/docs/integration/zookeeper.md): Apache Zookeeper is a centralized coordination service that can be used for service discovery with Spring Cloud
+- [Reference Documentation](/docs/reference.md): Comprehensive reference material for Spring Boot Admin including event types, REST API, and configuration properties.
+- [Supported Spring Boot Actuator Endpoints](/docs/reference/actuator-endpoints.md): Below is a comprehensive list of actuator endpoints which are supported by Spring Boot Admin.
+- [Event Types Reference](/docs/reference/event-types.md): Complete reference of all InstanceEvent types emitted by Spring Boot Admin Server during instance lifecycle.
+- [REST API Reference](/docs/reference/rest-api.md): Complete HTTP API reference for Spring Boot Admin Server.
+- [Sample Projects](/docs/samples.md): Spring Boot Admin includes several sample projects demonstrating different deployment scenarios and integration
+- [Consul Sample](/docs/samples/sample-consul.md): The Consul sample demonstrates Spring Boot Admin Server integration with HashiCorp Consul for service discovery. This
+- [Custom UI Sample](/docs/samples/sample-custom-ui.md): Demonstrates how to create custom UI extensions for Spring Boot Admin using Vue.js components. This sample shows how to
+- [Eureka Sample](/docs/samples/sample-eureka.md): The Eureka sample demonstrates Spring Boot Admin Server integration with Netflix Eureka service discovery. This sample
+- [Hazelcast Sample](/docs/samples/sample-hazelcast.md): Clustered Spring Boot Admin Server deployment using Hazelcast for distributed event storage. This sample demonstrates
+- [Reactive Sample](/docs/samples/sample-reactive.md): The Reactive sample demonstrates a Spring Boot Admin Server deployment using Spring WebFlux, the reactive, non-blocking
+- [Servlet Sample](/docs/samples/sample-servlet.md): The Servlet sample demonstrates a complete Spring Boot Admin Server deployment using traditional servlet-based Spring
+- [Zookeeper Sample](/docs/samples/sample-zookeeper.md): Spring Boot Admin Server integration with Apache Zookeeper for service discovery. This sample shows how to use Zookeeper
+- [Security](/docs/security.md): Spring Boot Admin Server and Client can be secured using Spring Security. This section covers all aspects of securing
+- [Actuator Security](/docs/security/actuator-security.md): Secure your client application's actuator endpoints and configure Spring Boot Admin Server to access them.
+- [CSRF Protection](/docs/security/csrf-protection.md): Configure Cross-Site Request Forgery (CSRF) protection for Spring Boot Admin while allowing client registration.
+- [Server Authentication](/docs/security/server-authentication.md): Secure your Spring Boot Admin Server using Spring Security to protect the UI and API endpoints.
+- [Spring Boot Admin Server](/docs/server.md): The Spring Boot Admin Server acts as the core component for managing and monitoring multiple Spring Boot applications.
+- [Clustering](/docs/server/Clustering.md): Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a HazelcastConfig\- or HazelcastInstance\-Bean is present.
+- [Server(-Sent) Events](/docs/server/Events.md): Spring Boot Admin uses event sourcing per default to track changes of registered applications.
+- [Instance Registry](/docs/server/instance-registry.md): The Instance Registry is the core component responsible for managing registered applications in Spring Boot Admin. It
+- [Notifications](/docs/server/notifications.md): You can add your own Notifiers by adding Spring Beans which implement the Notifier interface, at best by extendingAbstractEventNotifier or AbstractStatusChangeNotifier.
+- [Creating Custom Notifiers](/docs/server/notifications/custom-notifiers.md): Spring Boot Admin makes it easy to create custom notifiers to integrate with your preferred notification channels. You
+- [DingTalk Notifications](/docs/server/notifications/notifier-dingtalk.md): To enable DingTalk notifications you need to create and authorize a dingtalk bot and set the appropriate configuration properties for webhookUrl and secret.
+- [Discord Notifications](/docs/server/notifications/notifier-discord.md): To enable Discord notifications you need to create a webhook and set the appropriate configuration property.
+- [Hipchat Notifications](/docs/server/notifications/notifier-hipchat.md): To enable Hipchat notifications you need to create an API token on your Hipchat account and set the appropriate configuration properties.
+- [Let’s Chat Notifications](/docs/server/notifications/notifier-lets-chat.md): To enable Let’s Chat notifications you need to add the host url and add the API token and username from Let’s Chat
+- [Mail Notifications](/docs/server/notifications/notifier-mail.md): Mail notifications will be delivered as HTML emails rendered using https://www.thymeleaf.org/[Thymeleaf] templates.
+- [Mattermost Notifications](/docs/server/notifications/notifier-mattermost.md): To enable Mattermost notifications you need to add a bot account under integrations on your Mattermost server and configure it appropriately.
+- [Microsoft Teams Notifications](/docs/server/notifications/notifier-msteams.md): To enable Microsoft Teams notifications you need to set up a connector webhook url and set the appropriate configuration property.
+- [RocketChat Notifications](/docs/server/notifications/notifier-rocketchat.md): To enable Rocket.Chat notifications you need a personal token access and create a room to send message with this token
+- [Slack Notifications](/docs/server/notifications/notifier-slack.md): To enable Slack notifications you need to add an incoming Webhook under custom integrations on your Slack account and configure it appropriately.
+- [Telegram Notifications](/docs/server/notifications/notifier-telegram.md): To enable Telegram notifications you need to create and authorize a telegram bot and set the appropriate configuration properties for auth-token and chat-id.
+- [Webex Notifications](/docs/server/notifications/notifier-webex.md): To enable Webex notifications, you need to set the appropriate configuration properties for auth-token and room-id.
+- [Persistence and Event Store](/docs/server/persistence.md): Spring Boot Admin uses an event-sourced architecture to track the state of registered applications. All changes to
+- [Foster Security](/docs/server/security.md): Since there are several approaches on solving authentication and authorization in distributed web applications Spring
+- [Set up server](/docs/server/server.md): Running Behind a Front-end Proxy Server
+- [Properties](/docs/server/server-properties.md): <PropertyTable
+- [Third Party Integrations](/docs/third-party.md)
+- [Pyctuator](/docs/third-party/pyctuator.md): You can easily integrate Spring Boot Admin with Flask
+- [Upgrading](/docs/upgrading.md)
+- [To Spring Boot Admin 4](/docs/upgrading/spring-boot-admin-4.md): This guide covers the breaking changes, deprecated features, and migration steps required to upgrade from Spring Boot
