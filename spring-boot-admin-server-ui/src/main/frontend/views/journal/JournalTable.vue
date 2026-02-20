@@ -95,7 +95,14 @@
       class="w-48"
     >
       <template #body="{ data }">
-        {{ data.instance }}
+        <router-link
+          :to="{
+            name: 'instances/details',
+            params: { instanceId: data.instance },
+          }"
+        >
+          {{ data.instance }}
+        </router-link>
       </template>
       <template #filter="{ filterModel }">
         <MultiSelect
