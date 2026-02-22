@@ -58,13 +58,16 @@
               :label="$t('instances.httpexchanges.filter.server_errors')"
             />
             <sba-checkbox
-              v-if="actuatorPath"
               v-model="filter.excludeActuator"
               :label="
                 $t('instances.httpexchanges.filter.exclude_actuator', {
-                  actuator: actuatorPath,
+                  actuator: '/actuator',
                 })
               "
+            />
+            <sba-checkbox
+              v-model="autoFollow"
+              :label="$t('instances.httpexchanges.auto_follow')"
             />
           </div>
         </div>
@@ -77,12 +80,10 @@
         class="mb-6"
         @selected="updateSelection"
       />
+    </sba-panel>
 
-      <sba-exchanges-list
-        :exchanges="listedExchanges"
-        :new-exchanges-count="newExchangesCount"
-        @show-new-exchanges="showNewExchanges"
-      />
+    <sba-panel seamless>
+      <sba-exchanges-list :exchanges="listedExchanges" />
     </sba-panel>
   </sba-instance-section>
 </template>
@@ -136,30 +137,11 @@ export default {
     },
     limit: 1000,
     selection: null,
+    autoFollow: false,
   }),
   computed: {
-    actuatorPath() {
-      if (
-        this.instance.registration.managementUrl.includes(
-          this.instance.registration.serviceUrl,
-        )
-      ) {
-        const appendix = this.instance.registration.managementUrl.substring(
-          this.instance.registration.serviceUrl.length,
-        );
-        if (appendix.length > 0) {
-          return appendix.startsWith('/') ? appendix : `/${appendix}`;
-        }
-      }
-      return null;
-    },
     filteredExchanges() {
       return this.filterExchanges(this.exchanges);
-    },
-    newExchangesCount() {
-      return this.selection
-        ? 0
-        : this.filterExchanges(this.exchanges.slice(0, this.listOffset)).length;
     },
     listedExchanges() {
       const exchanges = this.filterExchanges(
@@ -222,6 +204,9 @@ export default {
               0,
               this.limit,
             );
+            if (this.autoFollow && exchanges.length > 0) {
+              this.showNewExchanges();
+            }
           },
           error: (error) => {
             this.hasLoaded = true;
@@ -232,14 +217,13 @@ export default {
     },
     filterExchanges(exchanges) {
       let filterFn = null;
-      if (this.actuatorPath !== null && this.filter.excludeActuator) {
+      if (this.filter.excludeActuator) {
         filterFn = addToFilter(filterFn, (exchange) => {
           try {
             const uri = exchange.request.uri;
             const pathname = new URL(uri).pathname;
-            const raw = this.actuatorPath.replace(/^\/+/, '');
-            const escaped = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`(?:^|/)${escaped}(?:$|/)`);
+            const regex = /^\/instances\/[^\/]+\/actuator\//;
+
             return !regex.test(pathname);
           } catch {
             return true;
