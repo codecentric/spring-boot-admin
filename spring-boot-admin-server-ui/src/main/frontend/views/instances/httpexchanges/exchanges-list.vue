@@ -18,6 +18,7 @@
   <DataTable
     v-model:expanded-rows="expandedRows"
     striped-rows
+    size="small"
     :value="exchanges"
     paginator
     :rows="50"
@@ -40,7 +41,28 @@
       field="request.method"
       :header="$t('instances.httpexchanges.method')"
     />
-    <Column field="request.uri" :header="$t('instances.httpexchanges.uri')" />
+    <Column
+      field="request.uri"
+      :header="$t('instances.httpexchanges.uri_parts')"
+    >
+      <template #body="{ data }">
+        <div>
+          <div>
+            {{ getLastPathSegment(data.request.uri) }}
+          </div>
+          <div class="text-xs text-gray-500">
+            {{ getPrecedingPath(data.request.uri) }}
+          </div>
+        </div>
+      </template>
+    </Column>
+    <Column field="request.uri" :header="$t('instances.httpexchanges.uri')">
+      <template #body="{ data }">
+        <div v-tooltip.top="data.request.uri" class="truncate">
+          {{ data.request.uri }}
+        </div>
+      </template>
+    </Column>
     <Column field="status" :header="$t('instances.httpexchanges.status')">
       <template #body="{ data }">
         <code v-text="data.response ? data.response.status : 'pending'" />
@@ -111,4 +133,34 @@ withDefaults(defineProps<Props>(), {
 });
 
 const expandedRows = ref([]);
+
+const getLastPathSegment = (uri: string): string => {
+  try {
+    const url = new URL(uri);
+    const pathSegments = url.pathname.split('/').filter((segment) => segment);
+    return pathSegments.length > 0
+      ? pathSegments[pathSegments.length - 1]
+      : '/';
+  } catch {
+    // If URL parsing fails, try to extract from path directly
+    const pathSegments = uri.split('/').filter((segment) => segment);
+    return pathSegments.length > 0
+      ? pathSegments[pathSegments.length - 1]
+      : '/';
+  }
+};
+
+const getPrecedingPath = (uri: string): string => {
+  try {
+    const url = new URL(uri);
+    const pathSegments = url.pathname.split('/').filter((segment) => segment);
+    if (pathSegments.length <= 1) return '';
+    return '/' + pathSegments.slice(0, -1).join('/');
+  } catch {
+    // If URL parsing fails, try to extract from path directly
+    const pathSegments = uri.split('/').filter((segment) => segment);
+    if (pathSegments.length <= 1) return '';
+    return '/' + pathSegments.slice(0, -1).join('/');
+  }
+};
 </script>

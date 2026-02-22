@@ -29,8 +29,7 @@
       "no_exchanges_found": "Keine Exchanges gefunden.",
       "status": "Status",
       "time": "Dauer",
-      "timestamp": "Zeitstempel",
-      "uri": "Pfad"
+      "timestamp": "Zeitstempel"
     }
   }
 }

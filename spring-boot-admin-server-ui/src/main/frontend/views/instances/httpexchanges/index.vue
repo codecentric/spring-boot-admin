@@ -46,6 +46,10 @@
 
           <div class="grid grid-rows-2 grid-flow-col gap-x-2 text-sm">
             <sba-checkbox
+              v-model="autoFollow"
+              :label="$t('instances.httpexchanges.auto_follow')"
+            />
+            <sba-checkbox
               v-model="filter.showSuccess"
               :label="$t('instances.httpexchanges.filter.success')"
             />
@@ -64,10 +68,6 @@
                   actuator: '/actuator',
                 })
               "
-            />
-            <sba-checkbox
-              v-model="autoFollow"
-              :label="$t('instances.httpexchanges.auto_follow')"
             />
           </div>
         </div>
@@ -137,7 +137,7 @@ export default {
     },
     limit: 1000,
     selection: null,
-    autoFollow: false,
+    autoFollow: true,
   }),
   computed: {
     filteredExchanges() {

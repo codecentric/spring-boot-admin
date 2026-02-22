@@ -25,8 +25,7 @@
       "no_exchanges_found": "Fundið engin spor.",
       "status": "Staða",
       "time": "Tímalengd",
-      "timestamp": "Tímapunktur",
-      "uri": "URI"
+      "timestamp": "Tímapunktur"
     }
   }
 }
