@@ -26,7 +26,7 @@
     :rows="50"
     :rows-per-page-options="[5, 10, 20, 50, 100, 250, 500]"
     filter-display="menu"
-    :global-filter-fields="['application.name', 'instance', 'type']"
+    :global-filter-fields="['application', 'instance', 'type']"
   >
     <template #header>
       <div class="flex justify-between">
@@ -55,24 +55,23 @@
     <Column
       :header="$t('term.application')"
       :sortable="true"
-      field="application.name"
+      field="application"
       :show-filter-match-modes="false"
-      filter-field="application.name"
+      filter-field="application"
       :filter-menu-style="{
         minWidth: '16rem',
       }"
     >
       <template #body="{ data }">
-        {{ applicationNamesByInstanceId[data.instance] }}
+        {{ data.application }}
       </template>
-      <template #filter="{ filterModel, filterCallback }">
+      <template #filter="{ filterModel }">
         <MultiSelect
           v-model="filterModel.value"
           :options="applicationNames"
           :placeholder="t('journal.filter.application.any')"
           :show-toggle-all="false"
           :max-selected-labels="1"
-          @change="filterCallback()"
         >
           <template #option="slotProps">
             <div class="flex items-center gap-2">
@@ -154,14 +153,13 @@
       <template #body="{ data }">
         {{ data.type }}
       </template>
-      <template #filter="{ filterModel, filterCallback }">
+      <template #filter="{ filterModel }">
         <MultiSelect
           v-model="filterModel.value"
           :options="eventTypes"
           :placeholder="t('journal.filter.event_type.any')"
           :show-toggle-all="false"
           :max-selected-labels="1"
-          @change="filterCallback()"
         >
           <template #option="slotProps">
             <div class="flex items-center gap-2">
@@ -248,7 +246,7 @@ const filters = ref();
 const initFilters = () => {
   filters.value = {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    'application.name': {
+    application: {
       value: null,
       matchMode: FilterMatchMode.IN,
     },
@@ -279,8 +277,8 @@ watch(
     if (filters.value.global.value) {
       query.q = filters.value.global.value;
     }
-    if (filters.value['application.name']?.value?.length) {
-      query.application = filters.value['application.name'].value;
+    if (filters.value.application?.value?.length) {
+      query.application = filters.value.application.value;
     }
     if (filters.value.instance?.value?.length) {
       query.instanceId = filters.value.instance.value;
@@ -295,10 +293,7 @@ watch(
 
 onMounted(() => {
   filters.value.global.value = route.query.q || null;
-  filters.value['application.name'].value = pushFlattened(
-    [],
-    route.query.application,
-  );
+  filters.value.application.value = pushFlattened([], route.query.application);
   filters.value.instance.value = pushFlattened([], route.query.instanceId);
   filters.value.type.value = pushFlattened([], route.query.type);
 });
