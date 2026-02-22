@@ -33,7 +33,7 @@ import {
 import 'chartjs-adapter-moment';
 import { parse } from 'iso8601-duration';
 import moment from 'moment';
-import { markRaw, toRaw } from 'vue';
+import { markRaw } from 'vue';
 
 import { toMilliseconds } from '@/utils/iso8601-duration';
 

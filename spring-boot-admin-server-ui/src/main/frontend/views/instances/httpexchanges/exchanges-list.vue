@@ -111,7 +111,7 @@
 <script setup lang="ts">
 import { parse } from 'iso8601-duration';
 import { Column, DataTable } from 'primevue';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 import ContentColumn from './content-column.vue';
 
