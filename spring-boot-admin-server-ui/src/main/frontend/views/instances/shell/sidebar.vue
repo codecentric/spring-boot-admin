@@ -16,10 +16,9 @@
 
 <template>
   <aside
-    :class="{ 'w-60': sidebarOpen }"
-    class="h-full flex flex-col bg-white border-r backdrop-filter backdrop-blur-lg bg-opacity-80 z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
+    class="flex flex-col bg-white backdrop-filter backdrop-blur-lg bg-opacity-80 transition-all"
   >
-    <ul class="relative px-1 py-1 overflow-y-auto">
+    <ul class="relative px-1 py-1">
       <!-- Instance info block -->
       <li class="relative mb-1 hidden md:block">
         <router-link
@@ -35,13 +34,6 @@
             <small><em v-text="instance.id" /></small>
           </span>
         </router-link>
-      </li>
-
-      <!-- sm: button toggle navigation -->
-      <li class="block md:hidden mb-1">
-        <a class="navbar-link navbar-link__group" @click.stop="toggleSidebar">
-          <font-awesome-icon :icon="['fas', 'bars']" />
-        </a>
       </li>
 
       <!-- The actual nav -->
@@ -91,7 +83,6 @@
         <!-- Le subnav -->
         <ul
           v-if="hasMultipleViews(group) && isActiveGroup(group)"
-          :class="{ 'hidden md:block': !sidebarOpen }"
           class="relative block"
         >
           <li
@@ -119,10 +110,7 @@
         </Divider>
 
         <li>
-          <ul
-            :class="{ 'hidden md:block': !sidebarOpen }"
-            class="relative block"
-          >
+          <ul class="relative block">
             <li
               v-for="view in customLinksFromMetadata"
               :key="view.name"
@@ -165,7 +153,7 @@
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Divider } from 'primevue';
-import { computed, h, ref, toRaw, watch } from 'vue';
+import { computed, h, toRaw } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 
@@ -182,7 +170,6 @@ const props = defineProps<{
 
 const { t } = useI18n();
 const route = useRoute();
-const sidebarOpen = ref(false);
 
 const customLinksFromMetadata = computed(() => {
   const newVar = props.instance.metadataParsed?.sidebar?.links || [];
@@ -228,17 +215,6 @@ const groups = computed(() => {
   });
   return Array.from(groups.values());
 });
-
-watch(
-  () => route.fullPath,
-  () => {
-    sidebarOpen.value = false;
-  },
-);
-
-function toggleSidebar() {
-  sidebarOpen.value = !sidebarOpen.value;
-}
 
 function getGroupTitle(groupId: string) {
   const key = 'sidebar.' + groupId + '.title';
