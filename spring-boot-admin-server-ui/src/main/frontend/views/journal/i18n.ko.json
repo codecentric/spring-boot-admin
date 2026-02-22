@@ -1,6 +1,21 @@
 {
   "journal": {
     "title": "이벤트 일지",
-    "label": "일지"
+    "label": "일지",
+    "auto_update": "이벤트 자동 업데이트",
+    "error": {
+      "generic": "서버에서 새 이벤트를 가져오는 중 오류가 발생했습니다"
+    },
+    "filter": {
+      "application": {
+        "any": "전체"
+      },
+      "event_type": {
+        "any": "전체"
+      },
+      "instance_id": {
+        "any": "전체"
+      }
+    }
   }
 }

@@ -1,6 +1,21 @@
 {
   "journal": {
     "title": "事件日志",
-    "label": "日志报表"
+    "label": "日志报表",
+    "auto_update": "自动更新事件",
+    "error": {
+      "generic": "从服务器检索新事件时出错"
+    },
+    "filter": {
+      "application": {
+        "any": "任意"
+      },
+      "event_type": {
+        "any": "任意"
+      },
+      "instance_id": {
+        "any": "任意"
+      }
+    }
   }
 }
