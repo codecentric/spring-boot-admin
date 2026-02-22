@@ -169,6 +169,11 @@ export default {
         this.exchanges = Object.freeze(this.exchanges.slice(0, value));
       }
     }, 250),
+    autoFollow: function (value) {
+      if (value) {
+        this.showNewExchanges();
+      }
+    },
   },
   methods: {
     updateSelection(selection) {
@@ -202,7 +207,7 @@ export default {
             }
             this.exchanges = [...exchanges, ...this.exchanges].slice(
               0,
-              this.limit,
+              this.limit ?? 1000,
             );
             if (this.autoFollow && exchanges.length > 0) {
               this.showNewExchanges();

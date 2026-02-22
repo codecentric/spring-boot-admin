@@ -1,7 +1,6 @@
 {
   "instances": {
     "httpexchanges": {
-      "label": "HTTP Exchanges",
       "chart": {
         "avg_time": "ø duração",
         "max_time": "duração máxima",
@@ -10,10 +9,6 @@
         "successful_requests": "Requisições sucedidas",
         "total_requests": "total de requisições"
       },
-      "content_type_response": "Response Content-Type",
-      "content_type_request": "Request Content-Type",
-      "length_request": "Request Length",
-      "fetching_failed": "Falha na busca de exchanges.",
       "limit": "limite",
       "filter": {
         "client_errors": "erros de cliente",
@@ -21,12 +16,8 @@
         "server_errors": "erros do servidor",
         "success": "sucesso"
       },
-      "length_response": "Response Tamanho",
       "method": "Metodo",
-      "no_exchanges_found": "Nenhum exchange encontrado.",
-      "status": "Status",
       "time": "Tempo",
-      "timestamp": "Timestamp",
       "uri": "Caminho"
     }
   }

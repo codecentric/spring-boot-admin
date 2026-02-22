@@ -10,10 +10,6 @@
         "successful_requests": "成功請求數",
         "total_requests": "總請求數"
       },
-      "content_type_response": "回應 Content-Type",
-      "content_type_request": "請求 Content-Type",
-      "length_request": "請求長度",
-      "fetching_failed": "取得 Exchanges 失敗。",
       "limit": "限制",
       "filter": {
         "client_errors": "用戶端錯誤",
@@ -21,12 +17,7 @@
         "server_errors": "伺服器錯誤",
         "success": "成功"
       },
-      "button": {
-        "load_new": "載入 {count} 筆新 Exchanges"
-      },
-      "length_response": "回應長度",
       "method": "方法",
-      "no_exchanges_found": "找不到 Exchanges。",
       "status": "狀態",
       "time": "時長",
       "timestamp": "時間戳記",

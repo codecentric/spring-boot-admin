@@ -18,6 +18,7 @@
   <DataTable
     v-model:expanded-rows="expandedRows"
     striped-rows
+    data-key="key"
     size="small"
     :value="exchanges"
     paginator
@@ -34,72 +35,63 @@
 
     <Column field="timestamp" :header="$t('instances.httpexchanges.timestamp')">
       <template #body="{ data }">
-        {{ formatDateTime(data.timestamp) }}
+        <span class="whitespace-nowrap">
+          {{ formatDateTime(data.timestamp) }}
+        </span>
       </template>
     </Column>
-    <Column
-      field="request.method"
-      :header="$t('instances.httpexchanges.method')"
-    />
+
     <Column
       field="request.uri"
       :header="$t('instances.httpexchanges.uri_parts')"
     >
       <template #body="{ data }">
         <div>
-          <div>
+          <div class="whitespace-nowrap">
             {{ getLastPathSegment(data.request.uri) }}
           </div>
-          <div class="text-xs text-gray-500">
+          <div class="text-xs text-gray-500 whitespace-nowrap">
             {{ getPrecedingPath(data.request.uri) }}
           </div>
         </div>
       </template>
     </Column>
-    <Column field="request.uri" :header="$t('instances.httpexchanges.uri')">
+    <Column
+      field="request.uri"
+      style="max-width: 200px"
+      :header="$t('instances.httpexchanges.uri')"
+    >
       <template #body="{ data }">
-        <div v-tooltip.top="data.request.uri" class="truncate">
+        <div
+          v-tooltip.top="data.request.uri"
+          class="overflow-hidden text-ellipsis whitespace-nowrap text-left"
+          style="direction: rtl"
+        >
           {{ data.request.uri }}
         </div>
       </template>
     </Column>
+    <Column
+      field="request.method"
+      :header="$t('instances.httpexchanges.method')"
+    />
     <Column field="status" :header="$t('instances.httpexchanges.status')">
       <template #body="{ data }">
-        <code v-text="data.response ? data.response.status : 'pending'" />
+        <code>{{ data.response.status }}</code>
+        <div class="text-xs text-gray-500 whitespace-nowrap">
+          {{ getHttpStatusText(data.response.status) }}
+        </div>
       </template>
     </Column>
     <Column
-      field="contentTypeRequest"
-      :header="$t('instances.httpexchanges.content_type_request')"
-    />
-    <Column
-      field="contentLengthRequest"
-      :header="$t('instances.httpexchanges.length_request')"
+      class="whitespace-nowrap"
+      :header="$t('instances.httpexchanges.content')"
     >
       <template #body="{ data }">
-        {{
-          data.contentLengthRequest
-            ? prettyBytes(data.contentLengthRequest)
-            : ''
-        }}
+        <ContentColumn :data="data" />
       </template>
     </Column>
-    <Column
-      field="contentTypeResponse"
-      :header="$t('instances.httpexchanges.content_type_response')"
-    />
-    <Column
-      field="contentLengthResponse"
-      :header="$t('instances.httpexchanges.length_response')"
-    >
-      <template #body="{ data }">
-        {{
-          data.contentLengthResponse
-            ? prettyBytes(data.contentLengthResponse)
-            : ''
-        }}
-      </template>
-    </Column>
+
     <Column field="time" :header="$t('instances.httpexchanges.time')">
       <template #body="{ data }">
         {{
@@ -109,16 +101,22 @@
         }}
       </template>
     </Column>
+
+    <template #empty>
+      <div class="text-center" v-text="$t('instances.httpexchanges.no_data')" />
+    </template>
   </DataTable>
 </template>
 
 <script setup lang="ts">
 import { parse } from 'iso8601-duration';
-import prettyBytes from 'pretty-bytes';
 import { Column, DataTable } from 'primevue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+
+import ContentColumn from './content-column.vue';
 
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
+import { getHttpStatusText } from '@/utils/http-status';
 import { toMilliseconds } from '@/utils/iso8601-duration';
 import { Exchange } from '@/views/instances/httpexchanges/Exchange';
 
