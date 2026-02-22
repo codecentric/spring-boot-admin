@@ -38,7 +38,13 @@
             </template>
           </sba-input>
 
-          <sba-input v-model="limit" :min="0" class="w-32" type="number">
+          <sba-input
+            v-model="limit"
+            name="limit"
+            :min="0"
+            class="w-32"
+            type="number"
+          >
             <template #prepend>
               {{ $t('instances.httpexchanges.limit') }}
             </template>
@@ -227,7 +233,7 @@ export default {
           try {
             const uri = exchange.request.uri;
             const pathname = new URL(uri).pathname;
-            const regex = /^\/instances\/[^\/]+\/actuator\//;
+            const regex = /(^|\/instances\/[^\/]+)\/actuator(\/|$|\?)/;
 
             return !regex.test(pathname);
           } catch {
