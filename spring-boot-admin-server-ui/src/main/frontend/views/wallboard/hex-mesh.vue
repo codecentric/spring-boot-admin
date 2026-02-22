@@ -262,9 +262,15 @@ export default {
 
 .hex {
   cursor: pointer;
+  fill: transparent;
   fill-opacity: 0.05;
   stroke-width: 0.5;
   stroke-opacity: 0.8;
+
+  &:has(foreignObject) {
+    fill: black;
+    stroke: black;
+  }
 }
 
 .hex:hover path {

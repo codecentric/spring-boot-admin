@@ -19,7 +19,6 @@ package de.codecentric.boot.admin.server.cloud.config;
 import com.netflix.discovery.EurekaClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
@@ -65,8 +64,8 @@ class AdminServerDiscoveryAutoConfigurationTest {
 
 	@Test
 	void kubernetesServiceInstanceConverter() {
-		this.contextRunner.withUserConfiguration(KubernetesDiscoveryPropertiesConfiguration.class)
-			.withBean(DiscoveryClient.class, () -> mock(DiscoveryClient.class))
+		this.contextRunner.withBean(DiscoveryClient.class, () -> mock(DiscoveryClient.class))
+			.withBean(KubernetesDiscoveryProperties.class, () -> mock(KubernetesDiscoveryProperties.class))
 			.withPropertyValues("spring.main.cloud-platform=KUBERNETES")
 			.run((context) -> assertThat(context.getBean(ServiceInstanceConverter.class))
 				.isInstanceOf(KubernetesServiceInstanceConverter.class));
@@ -86,11 +85,6 @@ class AdminServerDiscoveryAutoConfigurationTest {
 		public Registration convert(ServiceInstance instance) {
 			return null;
 		}
-
-	}
-
-	@EnableConfigurationProperties(KubernetesDiscoveryProperties.class)
-	public static class KubernetesDiscoveryPropertiesConfiguration {
 
 	}
 
