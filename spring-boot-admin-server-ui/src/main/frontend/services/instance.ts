@@ -517,7 +517,7 @@ export type Registration = {
   healthUrl: string;
   serviceUrl?: string;
   source: string;
-  metadata?: { [key: string]: string }[];
+  metadata?: { [key: string]: string };
 };
 
 type StatusInfo = {
