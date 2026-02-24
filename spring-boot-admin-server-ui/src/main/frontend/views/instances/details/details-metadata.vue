@@ -26,7 +26,7 @@
         ({{ Object.keys(metadata).length }})
       </div>
     </template>
-    <sba-key-value-table v-if="isEmptyMetadata" :map="metadata" />
+    <sba-key-value-table v-if="!isEmptyMetadata" :map="metadata" />
     <p
       v-else
       class="mx-4 my-3"
@@ -54,6 +54,6 @@ const metadata = computed(() => {
 });
 
 const isEmptyMetadata = computed(() => {
-  return Object.keys(instance.registration.metadata).length <= 0;
+  return Object.keys(metadata.value).length <= 0;
 });
 </script>
