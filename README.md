@@ -1,3 +1,14 @@
+# FORKED REPOSITORY
+
+This fork was made to create a version compatible with Spring Boot 4 but using Jackson 2.
+This is required because the mere presence of Jackson 3 on the classpath can trigger autoconfiguration or feature detection
+in some parts of Spring/Spring Boot.
+While we can decorrelate the upgrade to Spring Boot 4 from the upgrade to Jackson 3, to Apps are encouraged to migrate to Jackson 3 soon.
+
+Deploy to our Maven repo with `mvn deploy -DaltDeploymentRepository=<repoId_from_settings.xml>::default::<repoUrl> (-DskipTests)`.
+
+We won't maintain this fork for longer than necessary for internal use and support only our internal use cases.
+
 # Spring Boot Admin by [codecentric](https://codecentric.de)
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 ![Build Status](https://github.com/codecentric/spring-boot-admin/actions/workflows/build-main.yml/badge.svg?branch=master)
