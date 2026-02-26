@@ -118,7 +118,7 @@ public abstract class AbstractClientApplicationTest {
 
 	@Test
 	public void test_context_with_snake_case() throws InterruptedException, UnknownHostException {
-		setUpApplicationContext("--spring.jackson.property-naming-strategy=SNAKE_CASE");
+		setUpApplicationContext("--spring.jackson2.property-naming-strategy=SNAKE_CASE");
 
 		String hostName = InetAddress.getLocalHost().getCanonicalHostName();
 		String serviceHost = "http://" + hostName + ":" + getServerPort();

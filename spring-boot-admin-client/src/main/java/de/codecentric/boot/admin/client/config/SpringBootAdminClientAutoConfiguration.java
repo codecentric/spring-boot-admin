@@ -45,8 +45,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestClient;
-import tools.jackson.databind.json.JsonMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
@@ -137,7 +139,7 @@ public class SpringBootAdminClientAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public RegistrationClient registrationClient(ClientProperties client, RestClient.Builder restClientBuilder,
-				ObjectProvider<JsonMapper> objectMapper) {
+				ObjectProvider<ObjectMapper> objectMapper) {
 			var factorySettings = HttpClientSettings.defaults()
 				.withConnectTimeout(client.getConnectTimeout())
 				.withReadTimeout(client.getReadTimeout());
@@ -148,7 +150,7 @@ public class SpringBootAdminClientAutoConfiguration {
 
 			objectMapper.ifAvailable((mapper) -> restClientBuilder.messageConverters((configurer) -> {
 				configurer.removeIf(JacksonJsonHttpMessageConverter.class::isInstance);
-				configurer.add(new JacksonJsonHttpMessageConverter(mapper));
+				configurer.add(new MappingJackson2HttpMessageConverter(mapper));
 			}));
 
 			if (client.getUsername() != null && client.getPassword() != null) {
