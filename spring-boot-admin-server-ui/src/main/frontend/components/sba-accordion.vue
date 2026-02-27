@@ -58,16 +58,13 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import classNames from 'classnames';
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 
 const { id = null } = defineProps<{
   id?: string;
 }>();
 
 const open = defineModel({ default: true, type: Boolean });
-const emit = defineEmits<{
-  (e: 'update:modelValue', payload: boolean): void;
-}>();
 
 onMounted(() => {
   if (id) {
@@ -76,20 +73,20 @@ onMounted(() => {
     );
     if (storedValue !== null) {
       open.value = storedValue === 'true';
-      emit('update:modelValue', !open.value);
     }
+  }
+});
+
+watch(open, (newValue) => {
+  if (id) {
+    localStorage.setItem(
+      `de.codecentric.spring-boot-admin.accordion.${id}.open`,
+      newValue.toString(),
+    );
   }
 });
 
 const handleTitleClick = () => {
   open.value = !open.value;
-  emit('update:modelValue', !open.value);
-
-  if (id) {
-    localStorage.setItem(
-      `de.codecentric.spring-boot-admin.accordion.${id}.open`,
-      open.value.toString(),
-    );
-  }
 };
 </script>
