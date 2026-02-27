@@ -1,7 +1,7 @@
 {
   "instances": {
     "httpexchanges": {
-      "auto_follow": "Follow tail",
+      "auto_follow": "Auto update",
       "label": "HTTP Exchanges",
       "chart": {
         "avg_time": "ø duration",

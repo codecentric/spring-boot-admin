@@ -52,10 +52,6 @@
 
           <div class="grid grid-rows-2 grid-flow-col gap-x-2 text-sm">
             <sba-checkbox
-              v-model="autoFollow"
-              :label="$t('instances.httpexchanges.auto_follow')"
-            />
-            <sba-checkbox
               v-model="filter.showSuccess"
               :label="$t('instances.httpexchanges.filter.success')"
             />
@@ -76,16 +72,25 @@
               "
             />
           </div>
+          <div>
+            <sba-button
+              :title="$t('instances.httpexchanges.auto_follow')"
+              :primary="autoFollow"
+              @click="autoFollow = !autoFollow"
+            >
+              <font-awesome-icon :icon="faArrowsDownToLine" />
+              <span
+                class="sr-only"
+                v-text="$t('instances.httpexchanges.auto_follow')"
+              />
+            </sba-button>
+          </div>
         </div>
       </sba-sticky-subnav>
     </template>
 
     <sba-panel>
-      <sba-exchanges-chart
-        :exchanges="filteredExchanges"
-        class="mb-6"
-        @selected="updateSelection"
-      />
+      <sba-exchanges-chart :exchanges="listedExchanges" class="mb-6" />
     </sba-panel>
 
     <sba-panel seamless>
@@ -95,6 +100,7 @@
 </template>
 
 <script>
+import { faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons';
 import { debounce } from 'lodash-es';
 import moment from 'moment';
 import { take } from 'rxjs/operators';
@@ -134,6 +140,7 @@ export default {
     error: null,
     exchanges: [],
     listOffset: 0,
+    faArrowsDownToLine,
     filter: {
       excludeActuator: true,
       showSuccess: true,
@@ -182,10 +189,6 @@ export default {
     },
   },
   methods: {
-    updateSelection(selection) {
-      this.selection = selection;
-      this.showNewExchanges();
-    },
     showNewExchanges() {
       this.listOffset = 0;
     },

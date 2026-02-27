@@ -32,7 +32,6 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-moment';
 import { parse } from 'iso8601-duration';
-import moment from 'moment';
 import { markRaw } from 'vue';
 
 import { toMilliseconds } from '@/utils/iso8601-duration';
@@ -55,7 +54,6 @@ export default {
       default: () => [],
     },
   },
-  emits: ['selected'],
   data: () => ({
     chart: null,
     cachedChartData: [],
@@ -66,14 +64,14 @@ export default {
         return [];
       }
       const chartData = [];
-      const now = moment().valueOf();
       let idx = this.exchanges.length - 1;
       const oldest =
         this.exchanges[this.exchanges.length - 1].timestamp.valueOf();
+      const newest = this.exchanges[0].timestamp.valueOf();
 
       for (
         let time = Math.floor(oldest.valueOf() / interval) * interval;
-        time < now;
+        time <= newest;
         time += interval
       ) {
         const bucket = {

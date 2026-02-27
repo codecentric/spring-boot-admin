@@ -13,9 +13,9 @@
       "limit": "Limit",
       "filter": {
         "client_errors": "Client-Fehler",
-        "exclude_actuator": "ignoriere  {actuator}/**",
+        "exclude_actuator": "Ignoriere {actuator}/**",
         "server_errors": "Server-Fehler",
-        "success": "erfolgreich"
+        "success": "Erfolgreich"
       },
       "method": "Methode",
       "no_data": "Keine Anzeigedaten vorhanden.",
