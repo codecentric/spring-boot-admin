@@ -18,24 +18,7 @@
   <aside
     class="flex flex-col bg-white backdrop-filter backdrop-blur-lg bg-opacity-80 transition-all"
   >
-    <ul class="relative px-1 py-1">
-      <!-- Instance info block -->
-      <li class="relative mb-1 hidden md:block">
-        <router-link
-          :class="`instance-summary--${instance.statusInfo.status}`"
-          :to="{
-            name: 'instances/details',
-            params: { instanceId: instance.id },
-          }"
-          class="instance-info-block"
-        >
-          <span class="overflow-hidden text-ellipsis">
-            <span class="font-bold" v-text="instance.registration.name" /><br />
-            <small><em v-text="instance.id" /></small>
-          </span>
-        </router-link>
-      </li>
-
+    <ul class="relative px-1 pb-1">
       <!-- The actual nav -->
       <li
         v-for="group in groups"
@@ -150,7 +133,10 @@
 </template>
 
 <script lang="ts" setup>
-import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowUpRightFromSquare,
+  faSquareCaretLeft,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Divider } from 'primevue';
 import { computed, h, toRaw } from 'vue';
@@ -166,10 +152,12 @@ const props = defineProps<{
   views: any[];
   instance: Instance;
   application: Application;
+  open: boolean;
 }>();
 
 const { t } = useI18n();
 const route = useRoute();
+defineEmits(['toggle-sidebar']);
 
 const customLinksFromMetadata = computed(() => {
   const newVar = props.instance.metadataParsed?.sidebar?.links || [];
@@ -239,10 +227,6 @@ function hasMultipleViews(group: any) {
 </script>
 
 <style scoped>
-.instance-info-block {
-  @apply bg-sba-50 bg-opacity-40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
-}
-
 a.navbar-link {
   @apply cursor-pointer;
 }

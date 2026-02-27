@@ -18,38 +18,54 @@
   <div class="flex h-full">
     <sba-wave />
     <div
-      class="flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out bg-white border-r relative overflow-hidden pb-14"
+      class="flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out bg-white border-r relative overflow-hidden"
       :class="{
-        'w-8': !sidebarOpen,
-        'w-64 overflow-y-auto': sidebarOpen,
+        'w-10': !sidebarOpen,
+        'w-64': sidebarOpen,
       }"
     >
-      <button
-        aria-label="Toggle sidebar"
-        class="bg-sba-50 mx-[0.25rem] mt-[0.25rem] p-1 text-xs"
-        :class="{
-          'text-center': !sidebarOpen,
-          'text-right': sidebarOpen,
-        }"
-        @click="toggleSidebar"
-      >
-        <font-awesome-icon
-          :icon="faAngleDoubleLeft"
-          class="transition-all"
-          :class="{
-            'rotate-0': sidebarOpen,
-            'rotate-180': !sidebarOpen,
-          }"
+      <div v-if="instance" class="px-1 py-1">
+        <div
+          v-if="!sidebarOpen"
+          class="rounded-full bg-sba-50 text-center aspect-square flex items-center overflow-hidden text-xs"
+        >
+          {{ createInitials(instance.registration.name) }}
+        </div>
+        <div
+          v-if="sidebarOpen"
+          class="relative hidden md:block bg-sba-50 bg-opacity-40 text-sba-900 text-sm py-4 pl-6 pr-2 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer"
+        >
+          <router-link
+            :to="{
+              name: 'instances/details',
+              params: { instanceId: instance.id },
+            }"
+          >
+            <span class="overflow-hidden text-ellipsis">
+              <div class="font-bold" v-text="instance.registration.name" />
+              <div>
+                <small><em v-text="instance.id" /></small>
+              </div>
+            </span>
+          </router-link>
+          <button
+            class="absolute top-1 right-1 p-1 rounded focus:outline-none focus:ring focus:ring-sba-300"
+            @click="toggleSidebar"
+          >
+            t
+          </button>
+        </div>
+      </div>
+      <div class="fex-1 overflow-y-auto">
+        <Sidebar
+          v-if="instance"
+          :key="instanceId"
+          :open="sidebarOpen"
+          :application="application"
+          :instance="instance"
+          :views="sidebarViews"
         />
-      </button>
-      <Sidebar
-        v-if="instance"
-        v-show="sidebarOpen"
-        :key="instanceId"
-        :application="application"
-        :instance="instance"
-        :views="sidebarViews"
-      />
+      </div>
     </div>
     <main class="flex-1 overflow-y-auto relative">
       <router-view
@@ -62,21 +78,21 @@
 </template>
 
 <script lang="ts" setup>
-import { faAngleDoubleLeft } from '@fortawesome/free-solid-svg-icons';
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { useViewRegistry } from '@/composables/ViewRegistry';
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import { findApplicationForInstance, findInstance } from '@/store';
-import Sidebar from '@/views/instances/shell/sidebar';
+import { createInitials } from '@/utils/createInitials';
+import Sidebar from '@/views/instances/shell/sidebar.vue';
 
 const { applications } = useApplicationStore();
 const { views } = useViewRegistry();
 const route = useRoute();
 
 const SIDEBAR_STORAGE_KEY = 'de.codecentric.spring-boot-admin.sidebar';
-const sidebarOpen = ref(
+const sidebarOpen = ref<boolean>(
   localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true' || true,
 );
 
