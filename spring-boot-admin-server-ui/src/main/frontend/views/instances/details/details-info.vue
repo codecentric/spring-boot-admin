@@ -22,7 +22,7 @@
     :loading="loading"
   >
     <template #title>
-      <div class="ml-2 transition-opacity" :class="{ 'opacity-0': !panelOpen }">
+      <div class="ml-2 transition-opacity" :class="{ 'opacity-0': panelOpen }">
         ({{ Object.keys(info).length }})
       </div>
     </template>
