@@ -30,11 +30,15 @@
           v-text="`${getName(filter.instanceId)} (${filter.instanceId})`"
         />
       </div>
-      <div class="flex items-center">
-        <label class="flex items-center cursor-pointer">
-          <input v-model="autoUpdate" type="checkbox" class="mr-2" />
-          <span v-text="$t('journal.auto_update')" />
-        </label>
+      <div class="flex items-center gap-2">
+        <span class="hidden md:inline" v-text="$t('journal.auto_update')" />
+        <sba-button
+          :title="$t('journal.auto_update')"
+          :primary="autoUpdate"
+          @click="autoUpdate = !autoUpdate"
+        >
+          <font-awesome-icon :icon="faArrowsDownToLine" />
+        </sba-button>
       </div>
     </div>
 
@@ -45,6 +49,7 @@
 </template>
 
 <script>
+import { faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons';
 import { useI18n } from 'vue-i18n';
 
 import SbaAlert from '@/components/sba-alert';
@@ -72,6 +77,7 @@ export default {
     return {
       t: i18n.t,
       formatDate: formatDateTime,
+      faArrowsDownToLine,
       applications,
     };
   },
