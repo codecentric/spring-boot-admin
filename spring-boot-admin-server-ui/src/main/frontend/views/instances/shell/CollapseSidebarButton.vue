@@ -2,10 +2,17 @@
 import { faSquareCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-defineEmits(['toggle-sidebar']);
-defineProps<{
-  open: boolean;
+defineEmits<{
+  (e: 'toggle-sidebar'): void;
 }>();
+withDefaults(
+  defineProps<{
+    open?: boolean;
+  }>(),
+  {
+    open: false,
+  },
+);
 </script>
 
 <template>

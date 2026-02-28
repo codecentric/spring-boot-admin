@@ -17,6 +17,7 @@
 <template>
   <aside
     class="flex flex-col bg-white backdrop-filter backdrop-blur-lg bg-opacity-80 transition-all"
+    :class="{ 'navbar--open': open }"
   >
     <ul class="relative px-1 pb-1">
       <!-- The actual nav -->
@@ -27,15 +28,20 @@
         class="relative mb-1"
       >
         <router-link
-          :class="{ 'navbar-link__active': isActiveGroup(group) }"
+          :class="{
+            'bg-sba-50 bg-opacity-80 text-sba-900': isActiveGroup(group),
+            'px-1 justify-center': !open,
+            'px-2 md:px-6': open,
+          }"
           :to="{
             name: group.views[0].name,
             params: { instanceId: instance.id },
           }"
-          class="navbar-link navbar-link__group"
+          class="bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap text-gray-700 hover:bg-sba-50 hover:bg-opacity-80 hover:text-sba-900 h-12"
         >
-          <span v-html="group.icon" />
+          <span :class="{ '!m-0': !open }" v-html="group.icon" />
           <span
+            v-if="open"
             v-text="
               hasMultipleViews(group)
                 ? getGroupTitle(group.id)
@@ -43,7 +49,7 @@
             "
           />
           <svg
-            v-if="hasMultipleViews(group)"
+            v-if="hasMultipleViews(group) && open"
             :class="{
               '-rotate-90': !isActiveGroup(group),
               '': isActiveGroup(group),
@@ -65,7 +71,7 @@
 
         <!-- Le subnav -->
         <ul
-          v-if="hasMultipleViews(group) && isActiveGroup(group)"
+          v-if="hasMultipleViews(group) && isActiveGroup(group) && open"
           class="relative block"
         >
           <li
@@ -75,8 +81,8 @@
           >
             <router-link
               :to="{ name: view.name, params: { instanceId: instance.id } }"
-              active-class="navbar-link__active"
-              class="navbar-link navbar-link__group_item"
+              active-class="bg-sba-50 bg-opacity-80 text-sba-900"
+              class="bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap text-gray-700 hover:bg-sba-50 hover:bg-opacity-80 hover:text-sba-900 h-6 mb-1 mt-1 pl-12 pr-6"
               exact-active-class=""
             >
               <component :is="view.handle" />
@@ -85,7 +91,7 @@
         </ul>
       </li>
 
-      <template v-if="customLinksFromMetadata?.length > 0">
+      <template v-if="customLinksFromMetadata?.length > 0 && open">
         <Divider align="center" class="!my-2">
           <small class="bold">
             {{ $t('sidebar.custom-link.title') }}
@@ -105,8 +111,8 @@
                   name: 'instances/custom-link-view',
                   params: { instanceId: instance.id, url: view.href },
                 }"
-                active-class="navbar-link__active"
-                class="navbar-link navbar-link--custom navbar-link__group_item"
+                active-class="bg-sba-50 bg-opacity-80 text-sba-900"
+                class="bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap text-gray-700 hover:bg-sba-50 hover:bg-opacity-80 hover:text-sba-900 h-6 mb-1 mt-1 pl-12 pr-6 !px-6"
                 exact-active-class=""
               >
                 <component :is="view.handle" />
@@ -114,7 +120,7 @@
               <a
                 v-else-if="view.href"
                 :href="view.href"
-                class="navbar-link navbar-link--custom navbar-link__group_item"
+                class="bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap text-gray-700 hover:bg-sba-50 hover:bg-opacity-80 hover:text-sba-900 h-6 mb-1 mt-1 pl-12 pr-6 !px-6"
                 target="_blank"
                 rel="noopener"
               >
@@ -133,10 +139,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  faArrowUpRightFromSquare,
-  faSquareCaretLeft,
-} from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Divider } from 'primevue';
 import { computed, h, toRaw } from 'vue';
@@ -148,12 +151,17 @@ import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
 import { VIEW_GROUP, VIEW_GROUP_ICON } from '@/views/ViewGroup';
 
-const props = defineProps<{
-  views: any[];
-  instance: Instance;
-  application: Application;
-  open: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    views: any[];
+    instance: Instance;
+    application: Application;
+    open?: boolean;
+  }>(),
+  {
+    open: true,
+  },
+);
 
 const { t } = useI18n();
 const route = useRoute();
@@ -225,29 +233,3 @@ function hasMultipleViews(group: any) {
   return group.views.length > 1;
 }
 </script>
-
-<style scoped>
-a.navbar-link {
-  @apply cursor-pointer;
-}
-.navbar-link {
-  @apply bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
-  @apply text-gray-700;
-}
-.navbar-link--custom {
-  @apply !px-6;
-}
-
-.navbar-link:hover,
-.navbar-link__active {
-  @apply bg-sba-50 bg-opacity-80 text-sba-900;
-}
-
-.navbar-link__group_item {
-  @apply h-6 mb-1 mt-1 pl-12 pr-6;
-}
-
-.navbar-link__group {
-  @apply h-12 px-2 md:px-6;
-}
-</style>

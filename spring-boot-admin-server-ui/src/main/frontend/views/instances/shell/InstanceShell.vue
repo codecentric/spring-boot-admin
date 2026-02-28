@@ -20,16 +20,16 @@
     <div
       class="flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out bg-white border-r relative overflow-hidden"
       :class="{
-        'w-10': !sidebarOpen,
+        'w-12': !sidebarOpen,
         'w-64': sidebarOpen,
       }"
     >
       <div v-if="instance" class="px-1 py-1">
         <div
           v-if="!sidebarOpen"
-          class="rounded-full bg-sba-50 text-center aspect-square flex items-center overflow-hidden text-xs"
+          class="rounded bg-sba-50 text-center aspect-square flex items-center overflow-hidden text-xs"
         >
-          {{ createInitials(instance.registration.name) }}
+          <CollapseSidebarButton @toggle-sidebar="toggleSidebar" />
         </div>
         <div
           v-if="sidebarOpen"
@@ -48,12 +48,11 @@
               </div>
             </span>
           </router-link>
-          <button
+          <CollapseSidebarButton
             class="absolute top-1 right-1 p-1 rounded focus:outline-none focus:ring focus:ring-sba-300"
-            @click="toggleSidebar"
-          >
-            t
-          </button>
+            open
+            @toggle-sidebar="toggleSidebar"
+          />
         </div>
       </div>
       <div class="fex-1 overflow-y-auto">
@@ -85,6 +84,7 @@ import { useViewRegistry } from '@/composables/ViewRegistry';
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import { findApplicationForInstance, findInstance } from '@/store';
 import { createInitials } from '@/utils/createInitials';
+import CollapseSidebarButton from '@/views/instances/shell/CollapseSidebarButton.vue';
 import Sidebar from '@/views/instances/shell/sidebar.vue';
 
 const { applications } = useApplicationStore();
