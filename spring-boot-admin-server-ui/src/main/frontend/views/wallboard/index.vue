@@ -105,7 +105,6 @@
 </template>
 
 <script lang="ts">
-import classNames from 'classnames';
 import Fuse from 'fuse.js';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -191,7 +190,6 @@ export default {
     };
   },
   methods: {
-    classNames,
     classForApplication(application: Application) {
       if (!application) {
         return;
