@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import { debounce } from 'lodash-es';
 import { ref } from 'vue';
 
 import onResize from '@/directives/on-resize';
@@ -226,7 +227,7 @@ export default {
         this.$emit('click', item, event);
       }
     },
-    updateLayout() {
+    updateLayout: debounce(function () {
       if (this.root) {
         const boundingClientRect = this.root.getBoundingClientRect();
         const layout = calcLayout(
@@ -238,7 +239,7 @@ export default {
         this.rows = layout.rows;
         this.sideLength = layout.sideLength;
       }
-    },
+    }, 150),
     onResize(entries) {
       for (let e of entries) {
         if (e.target === this.root) {
