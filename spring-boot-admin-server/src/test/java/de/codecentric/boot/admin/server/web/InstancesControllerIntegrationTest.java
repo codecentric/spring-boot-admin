@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.web;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -33,6 +34,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -137,7 +139,7 @@ class InstancesControllerIntegrationTest {
 
 	@Test
 	void should_create_distinct_ids_for_different_health_urls() {
-		String id1 = register();
+		String id1 = register().block();
 
 		String other = "{ \"name\": \"other\", \"healthUrl\": \"http://localhost:" + localPort + "/other/health\" }";
 		String id2 = registerWithBody(other);
@@ -150,7 +152,7 @@ class InstancesControllerIntegrationTest {
 
 	@Test
 	void should_remove_instance_after_delete() {
-		String id = register();
+		String id = register().block();
 
 		this.client.delete().uri(getLocation(id)).exchange().expectStatus().isNoContent();
 
@@ -174,7 +176,7 @@ class InstancesControllerIntegrationTest {
 
 	@Test
 	void should_not_create_duplicate_instance_on_reregister() {
-		String id = register();
+		String id = register().block(Duration.ofSeconds(5));
 
 		registerSecondTime(id);
 
