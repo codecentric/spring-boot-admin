@@ -18,45 +18,26 @@ const hour = 60 * minute;
 const day = 24 * hour;
 const week = 7 * day;
 
-function shortFormat(
-  aMoment,
-  withoutPreOrSuffix,
-  now = moment(),
-  withPrecision = false,
-) {
+function shortFormat(aMoment, withoutPreOrSuffix, now = moment()) {
   let diff = Math.abs(aMoment.diff(now));
   let unit;
-  let secondaryUnit;
 
   if (diff < minute) {
     unit = 'seconds';
   } else if (diff < hour) {
     unit = 'minutes';
-    secondaryUnit = 'seconds';
   } else if (diff < day) {
     unit = 'hours';
-    secondaryUnit = 'minutes';
   } else if (diff < week) {
     unit = 'days';
-    secondaryUnit = 'hours';
   } else if (aMoment.year() !== now.year()) {
     return aMoment.format('MMM D, YYYY');
   } else {
     unit = 'weeks';
-    secondaryUnit = 'days';
   }
 
   let num = Math.max(1, moment.duration(diff)[unit]());
   let result = num + unit.charAt(0);
-
-  if (withPrecision && secondaryUnit) {
-    let secondaryNum =
-      moment.duration(diff)[secondaryUnit]() %
-      (unit === 'weeks' ? 7 : unit === 'days' ? 24 : 60);
-    if (secondaryNum > 0) {
-      result += ' ' + secondaryNum + secondaryUnit.charAt(0);
-    }
-  }
 
   if (!withoutPreOrSuffix) {
     result = moment.localeData().pastFuture(aMoment.diff(now), result);
@@ -70,10 +51,6 @@ export default {
       type: [String, Date, Number, moment],
       default: null,
     },
-    precision: {
-      type: Boolean,
-      default: false,
-    },
   },
   data: () => ({
     now: moment(),
@@ -81,7 +58,7 @@ export default {
   }),
   computed: {
     timeAgo() {
-      return shortFormat(moment(this.date), true, this.now, this.precision);
+      return shortFormat(moment(this.date), true, this.now);
     },
   },
   created() {

@@ -79,10 +79,7 @@
           <div :key="application.name" class="hex__body application">
             <div class="application__status-indicator" />
             <div class="application__header application__time-ago is-muted">
-              <sba-time-ago
-                :date="application.statusTimestamp"
-                :precision="true"
-              />
+              <sba-time-ago :date="application.statusTimestamp" />
             </div>
             <div class="application__body">
               <h1 class="application__name" v-text="application.name" />
