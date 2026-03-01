@@ -116,6 +116,15 @@ import Application from '@/services/application';
 import { useRouterState } from '@/utils/useRouterState';
 import hexMesh from '@/views/wallboard/hex-mesh.vue';
 
+const STATUS_CLASS_MAP = Object.freeze({
+  [HealthStatus.UP]: 'up',
+  [HealthStatus.RESTRICTED]: 'restricted',
+  [HealthStatus.DOWN]: 'down',
+  [HealthStatus.OUT_OF_SERVICE]: 'down',
+  [HealthStatus.OFFLINE]: 'down',
+  [HealthStatus.UNKNOWN]: 'unknown',
+});
+
 export default {
   components: { hexMesh },
   setup() {
@@ -185,27 +194,9 @@ export default {
     classNames,
     classForApplication(application: Application) {
       if (!application) {
-        return null;
+        return;
       }
-      if (application.status === HealthStatus.UP) {
-        return 'up';
-      }
-      if (application.status === HealthStatus.RESTRICTED) {
-        return 'restricted';
-      }
-      if (application.status === HealthStatus.DOWN) {
-        return 'down';
-      }
-      if (application.status === HealthStatus.OUT_OF_SERVICE) {
-        return 'down';
-      }
-      if (application.status === HealthStatus.OFFLINE) {
-        return 'down';
-      }
-      if (application.status === HealthStatus.UNKNOWN) {
-        return 'unknown';
-      }
-      return '';
+      return STATUS_CLASS_MAP[application.status];
     },
     select(application: Application) {
       if (application.instances.length === 1) {
