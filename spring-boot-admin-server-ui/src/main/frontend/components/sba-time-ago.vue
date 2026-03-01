@@ -85,13 +85,33 @@ export default {
     },
   },
   created() {
-    this.timer = window.setInterval(() => {
+    const tick = () => {
       this.now = moment();
-    }, 1000);
+
+      // Calculate age of the timestamp
+      const age = Math.abs(moment().diff(moment(this.date)));
+
+      // Adaptive interval based on timestamp age
+      let interval;
+      if (age < minute) {
+        interval = 1000; // < 1 min: update every 1s
+      } else if (age < 10 * minute) {
+        interval = 10000; // 1-10 min: update every 10s
+      } else if (age < hour) {
+        interval = 30000; // 10-60 min: update every 30s
+      } else if (age < day) {
+        interval = 60000; // 1-24 hours: update every 1 min
+      } else {
+        interval = 300000; // > 1 day: update every 5 min
+      }
+
+      this.timer = setTimeout(tick, interval);
+    };
+    tick();
   },
   beforeUnmount() {
     if (this.timer) {
-      window.clearInterval(this.timer);
+      window.clearTimeout(this.timer);
     }
   },
 };
