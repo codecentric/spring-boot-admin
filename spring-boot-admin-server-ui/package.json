@@ -88,7 +88,7 @@
     "@vitejs/plugin-vue": "6.0.4",
     "@vue/eslint-config-typescript": "^14.0.0",
     "@vue/test-utils": "2.4.6",
-    "autoprefixer": "10.4.25",
+    "autoprefixer": "10.4.27",
     "babel-loader": "10.0.0",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.0.0",
