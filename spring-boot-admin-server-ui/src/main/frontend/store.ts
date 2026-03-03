@@ -15,7 +15,7 @@
  */
 import {
   Subscription,
-  bufferTime,
+  bufferWhen,
   concat,
   concatMap,
   defer,
@@ -24,6 +24,7 @@ import {
   map,
   retryWhen,
   tap,
+  timer,
 } from 'rxjs';
 
 import Application from './services/application';
@@ -106,7 +107,7 @@ export default class ApplicationStore {
             delay(5000),
           ),
         ),
-        bufferTime(250),
+        bufferWhen(() => timer(250)),
         filter((a) => a.length > 0),
       )
       .subscribe({
