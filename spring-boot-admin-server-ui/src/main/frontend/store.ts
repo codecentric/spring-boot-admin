@@ -15,16 +15,17 @@
  */
 import {
   Subscription,
-  bufferWhen,
+  buffer,
   concat,
   concatMap,
+  debounceTime,
   defer,
   delay,
   filter,
   map,
   retryWhen,
+  share,
   tap,
-  timer,
 } from 'rxjs';
 
 import Application from './services/application';
@@ -99,15 +100,19 @@ export default class ApplicationStore {
 
     const stream = Application.getStream().pipe(map((message) => message.data));
 
-    this.subscription = concat(list, stream)
-      .pipe(
-        retryWhen((errors) =>
-          errors.pipe(
-            tap((error) => this._dispatchEvent('error', error)),
-            delay(5000),
-          ),
+    const source$ = concat(list, stream).pipe(
+      retryWhen((errors) =>
+        errors.pipe(
+          tap((error) => this._dispatchEvent('error', error)),
+          delay(5000),
         ),
-        bufferWhen(() => timer(250)),
+      ),
+      share(),
+    );
+
+    this.subscription = source$
+      .pipe(
+        buffer(source$.pipe(debounceTime(250))),
         filter((a) => a.length > 0),
       )
       .subscribe({
