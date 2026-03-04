@@ -43,6 +43,7 @@ declare global {
     memory: number;
     threads: number;
     logfile: number;
+    metrics: number;
   };
 
   type ViewSettings = {

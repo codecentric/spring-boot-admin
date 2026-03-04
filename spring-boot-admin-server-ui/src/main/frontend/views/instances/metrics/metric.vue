@@ -123,6 +123,7 @@ import SbaPanel from '@/components/sba-panel.vue';
 
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import { concatMap, delay, from, retryWhen, timer } from '@/utils/rxjs';
 
@@ -289,7 +290,7 @@ export default {
       return from(this.tagSelections || []).pipe(concatMap(this.fetchMetric));
     },
     createSubscription() {
-      return timer(0, 2500)
+      return timer(0, sbaConfig.uiSettings.pollTimer.metrics)
         .pipe(
           concatMap(this.fetchAllTags),
           retryWhen((err) => err.pipe(delay(1000), take(2))),
