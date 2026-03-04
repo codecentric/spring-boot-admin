@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 import { groupBy, values } from 'lodash-es';
-import { Subject, bufferTime, filter } from 'rxjs';
+import { Subject, buffer, debounceTime, filter, share } from 'rxjs';
 
 import { HealthStatus } from './HealthStatus';
 import sbaConfig from './sba-config';
+
+import { tap } from '@/utils/rxjs';
 
 let granted = false;
 
@@ -82,9 +84,12 @@ export default {
     requestPermissions();
 
     const queue = new Subject();
-    queue
+    const queue$ = queue.pipe(share());
+
+    queue$
       .pipe(
-        bufferTime(1000),
+        buffer(queue$.pipe(debounceTime(1000))),
+        tap(() => console.log('notifications')),
         filter((n) => n.length > 0),
       )
       .subscribe({
