@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
-import axios, { type AxiosError } from 'axios';
+import axios, { type AxiosError, AxiosInstance } from 'axios';
 
 import sbaConfig from '../sba-config';
 
@@ -43,7 +43,7 @@ axios.interceptors.response.use((response) => response, redirectOn401());
 export default axios;
 
 export const registerErrorToastInterceptor = (
-  axios,
+  axios: AxiosInstance,
   notificationCenter = nc,
 ) => {
   if (sbaConfig.uiSettings.enableToasts) {
