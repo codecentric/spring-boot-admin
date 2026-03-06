@@ -19,6 +19,7 @@
     v-model:filters="filters"
     v-model:expanded-rows="expandedRows"
     striped-rows
+    data-key="key"
     :value="mappedEvents"
     paginator
     sort-field="date"
@@ -225,6 +226,7 @@ const applicationNamesByInstanceId = computed(() => {
 const mappedEvents = computed(() => {
   return events.map((e) => ({
     ...e,
+    key: e.key,
     date: new Date(e.timestamp),
     application: applicationNamesByInstanceId.value[e.instance],
   }));

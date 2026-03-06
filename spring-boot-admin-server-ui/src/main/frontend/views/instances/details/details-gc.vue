@@ -24,7 +24,7 @@
     <template #title>
       <div
         class="ml-2 text-xs font-mono transition-opacity flex-1 justify-items-end"
-        :class="{ 'opacity-0': !panelOpen }"
+        :class="{ 'opacity-0': panelOpen }"
       >
         <ul class="flex gap-4">
           <li>

@@ -2,9 +2,20 @@
   "journal": {
     "title": "Journal d'évènements",
     "label": "Journal",
-    "per_page": {
-      "per_page": "Par page:",
-      "all": "Tous"
+    "auto_update": "Mise à jour automatique des événements",
+    "error": {
+      "generic": "Erreur lors de la récupération de nouveaux événements du serveur"
+    },
+    "filter": {
+      "application": {
+        "any": "Tous"
+      },
+      "event_type": {
+        "any": "Tous"
+      },
+      "instance_id": {
+        "any": "Tous"
+      }
     }
   }
 }

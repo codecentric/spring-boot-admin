@@ -10,27 +10,17 @@
         "successful_requests": "Erfolgreiche Anfragen",
         "total_requests": "Anfragen insgesamt"
       },
-      "content_type_response": "Response Content-Type",
-      "content_type_request": "Request Content-Type",
-      "fetching_failed": "Das Laden der Exchange-Informationen ist fehlgeschlagen.",
       "limit": "Limit",
       "filter": {
         "client_errors": "Client-Fehler",
-        "exclude_actuator": "ignoriere  {actuator}/**",
+        "exclude_actuator": "Ignoriere {actuator}/**",
         "server_errors": "Server-Fehler",
-        "success": "erfolgreich"
+        "success": "Erfolgreich"
       },
-      "button": {
-        "load_new": "{count} neue Exchanges laden"
-      },
-      "length_response": "Response Größe",
-      "length_request": "Request Größe",
       "method": "Methode",
-      "no_exchanges_found": "Keine Exchanges gefunden.",
-      "status": "Status",
+      "no_data": "Keine Anzeigedaten vorhanden.",
       "time": "Dauer",
-      "timestamp": "Zeitstempel",
-      "uri": "Pfad"
+      "timestamp": "Zeitstempel"
     }
   }
 }

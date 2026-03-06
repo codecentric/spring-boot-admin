@@ -2,9 +2,9 @@
   "journal": {
     "title": "Ereignis-Journal",
     "label": "Journal",
-    "per_page": {
-      "per_page": "Pro Seite:",
-      "all": "Alle"
+    "auto_update": "Ereignisse automatisch aktualisieren",
+    "error": {
+      "generic": "Fehler beim Abrufen neuer Ereignisse vom Server"
     },
     "filter": {
       "application": {

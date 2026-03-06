@@ -22,11 +22,11 @@
     :seamless="true"
   >
     <template #title>
-      <div class="ml-2 transition-opacity" :class="{ 'opacity-0': !panelOpen }">
+      <div class="ml-2 transition-opacity" :class="{ 'opacity-0': panelOpen }">
         ({{ Object.keys(metadata).length }})
       </div>
     </template>
-    <sba-key-value-table v-if="isEmptyMetadata" :map="metadata" />
+    <sba-key-value-table v-if="hasMetadata" :map="metadata" />
     <p
       v-else
       class="mx-4 my-3"
@@ -53,7 +53,7 @@ const metadata = computed(() => {
   return sortObject(instance.registration.metadata);
 });
 
-const isEmptyMetadata = computed(() => {
-  return Object.keys(instance.registration.metadata).length <= 0;
+const hasMetadata = computed(() => {
+  return Object.keys(metadata.value).length > 0;
 });
 </script>

@@ -17,11 +17,11 @@
 <template>
   <sba-panel
     v-bind="$attrs"
-    :aria-expanded="_open"
+    :aria-expanded="open"
     :class="
       classNames(
         {
-          '!p-0 !h-0 overflow-hidden': !_open,
+          '!p-0 !h-0 overflow-hidden': !open,
         },
         'transition-[height] h-auto',
       )
@@ -38,7 +38,7 @@
         :class="
           classNames(
             {
-              '-rotate-90': !_open,
+              '-rotate-90': !open,
             },
             'mr-2 transition-[transform]',
           )
@@ -58,18 +58,13 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import classNames from 'classnames';
-import { onMounted, ref } from 'vue';
+import { onMounted, watch } from 'vue';
 
 const { id = null } = defineProps<{
   id?: string;
 }>();
 
 const open = defineModel({ default: true, type: Boolean });
-const emit = defineEmits<{
-  (e: 'update:modelValue', payload: boolean): void;
-}>();
-
-const _open = ref(open.value);
 
 onMounted(() => {
   if (id) {
@@ -77,21 +72,21 @@ onMounted(() => {
       `de.codecentric.spring-boot-admin.accordion.${id}.open`,
     );
     if (storedValue !== null) {
-      _open.value = storedValue === 'true';
-      emit('update:modelValue', !_open.value);
+      open.value = storedValue === 'true';
     }
   }
 });
 
-const handleTitleClick = () => {
-  _open.value = !_open.value;
-  emit('update:modelValue', !_open.value);
-
+watch(open, (newValue) => {
   if (id) {
     localStorage.setItem(
       `de.codecentric.spring-boot-admin.accordion.${id}.open`,
-      _open.value.toString(),
+      newValue.toString(),
     );
   }
+});
+
+const handleTitleClick = () => {
+  open.value = !open.value;
 };
 </script>

@@ -1,6 +1,7 @@
 {
   "instances": {
     "httpexchanges": {
+      "auto_follow": "Auto update",
       "label": "HTTP Exchanges",
       "chart": {
         "avg_time": "ø duration",
@@ -10,10 +11,7 @@
         "successful_requests": "successful requests",
         "total_requests": "total requests"
       },
-      "content_type_response": "Response Content-Type",
-      "content_type_request": "Request Content-Type",
-      "length_request": "Request Length",
-      "fetching_failed": "Fetching exchanges failed.",
+      "content": "Content-Type / Size",
       "limit": "limit",
       "filter": {
         "client_errors": "client errors",
@@ -21,16 +19,13 @@
         "server_errors": "server errors",
         "success": "success"
       },
-      "button": {
-        "load_new": "Load {count} new exchanges"
-      },
-      "length_response": "Response Length",
       "method": "Method",
-      "no_exchanges_found": "No exchanges found.",
+      "no_data": "There is no data to display.",
       "status": "Status",
       "time": "Time",
       "timestamp": "Timestamp",
-      "uri": "Path"
+      "uri": "Url",
+      "uri_parts": "Name"
     }
   }
 }

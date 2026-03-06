@@ -2,9 +2,9 @@
   "journal": {
     "title": "事件日誌",
     "label": "日誌",
-    "per_page": {
-      "per_page": "每頁：",
-      "all": "全部"
+    "auto_update": "自動更新事件",
+    "error": {
+      "generic": "從伺服器檢索新事件時發生錯誤"
     },
     "filter": {
       "application": {

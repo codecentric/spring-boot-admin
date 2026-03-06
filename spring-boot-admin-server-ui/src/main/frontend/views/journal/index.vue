@@ -30,15 +30,28 @@
           v-text="`${getName(filter.instanceId)} (${filter.instanceId})`"
         />
       </div>
+      <div class="flex items-center gap-2">
+        <span class="hidden md:inline" v-text="$t('journal.auto_update')" />
+        <sba-button
+          :title="$t('journal.auto_update')"
+          :primary="autoUpdate"
+          @click="autoUpdate = !autoUpdate"
+        >
+          <font-awesome-icon :icon="faArrowsDownToLine" />
+        </sba-button>
+      </div>
     </div>
 
     <sba-alert :error="error" />
 
-    <JournalTable :events="events" :applications="applications" />
+    <JournalTable :events="listedEvents" :applications="applications" />
   </div>
 </template>
 
 <script>
+import { faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons';
+import { useI18n } from 'vue-i18n';
+
 import SbaAlert from '@/components/sba-alert';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
@@ -46,8 +59,10 @@ import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
-import { InstanceEvent } from '@/views/journal/InstanceEvent';
-import { InstanceEventType } from '@/views/journal/InstanceEvent';
+import {
+  InstanceEvent,
+  InstanceEventType,
+} from '@/views/journal/InstanceEvent';
 import JournalTable from '@/views/journal/JournalTable.vue';
 import { deduplicateInstanceEvents } from '@/views/journal/deduplicate-events';
 
@@ -57,9 +72,12 @@ export default {
   setup() {
     const { formatDateTime } = useDateTimeFormatter();
     const { applications } = useApplicationStore();
+    const i18n = useI18n();
 
     return {
+      t: i18n.t,
       formatDate: formatDateTime,
+      faArrowsDownToLine,
       applications,
     };
   },
@@ -72,12 +90,16 @@ export default {
     pageSize: 25,
     current: 1,
     error: null,
+    autoUpdate: true,
     filter: {
       application: undefined,
       instanceId: undefined,
     },
   }),
   computed: {
+    listedEvents() {
+      return this.events.slice(this.listOffset);
+    },
     instanceNames() {
       return this.events
         .filter(
@@ -90,6 +112,13 @@ export default {
           names[event.instance] = event.payload.registration.name;
           return names;
         }, {});
+    },
+  },
+  watch: {
+    autoUpdate: function (value) {
+      if (value) {
+        this.listOffset = 0;
+      }
     },
   },
   async created() {
@@ -111,7 +140,7 @@ export default {
       this.error = null;
     } catch (error) {
       console.warn('Fetching events failed:', error);
-      this.error = error;
+      this.error = this.t('journal.error.generic');
     }
   },
   methods: {
@@ -128,11 +157,13 @@ export default {
           }
           this.seenEventKeys.add(incomingEvent.key);
           this.events = Object.freeze([incomingEvent, ...this.events]);
-          this.listOffset += 1;
+          if (!this.autoUpdate) {
+            this.listOffset += 1;
+          }
         },
         error: (error) => {
           console.warn('Listening for events failed:', error);
-          this.error = error;
+          this.error = this.t('journal.error.generic');
         },
       });
     },

@@ -26,7 +26,7 @@
         v-if="health.status"
         :status="health.status"
         class="ml-2 transition-opacity"
-        :class="{ 'opacity-0': !panelOpen }"
+        :class="{ 'opacity-0': panelOpen }"
       />
     </template>
 

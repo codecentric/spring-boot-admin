@@ -16,56 +16,37 @@
 
 <template>
   <div class="exchange-chart">
-    <div
-      v-if="tooltipSelection"
-      :class="`exchange-chart__tooltip--${
-        x(tooltipSelection[0]) > width / 2 ? 'left' : 'right'
-      }`"
-      class="exchange-chart__tooltip"
-    >
-      <table class="is-narrow is-size-7">
-        <tbody>
-          <tr>
-            <th v-text="$t('instances.httpexchanges.chart.total_requests')" />
-            <td v-text="tooltipContent.totalCount" />
-          </tr>
-          <tr>
-            <th
-              v-text="$t('instances.httpexchanges.chart.successful_requests')"
-            />
-            <td v-text="tooltipContent.totalSuccess" />
-          </tr>
-          <tr>
-            <th v-text="$t('instances.httpexchanges.chart.status_4xx')" />
-            <td v-text="tooltipContent.totalClientErrors" />
-          </tr>
-          <tr>
-            <th v-text="$t('instances.httpexchanges.chart.status_5xx')" />
-            <td v-text="tooltipContent.totalServerErrors" />
-          </tr>
-          <tr>
-            <th v-text="$t('instances.httpexchanges.chart.max_time')" />
-            <td v-text="`${tooltipContent.maxTime.toFixed(0)}ms`" />
-          </tr>
-          <tr>
-            <th v-text="$t('instances.httpexchanges.chart.avg_time')" />
-            <td v-text="`${tooltipContent.avgTime.toFixed(0)}ms`" />
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <svg class="exchange-chart__svg" />
+    <canvas ref="chartCanvas" />
   </div>
 </template>
 
 <script>
+import {
+  BarController,
+  BarElement,
+  CategoryScale,
+  Chart,
+  LinearScale,
+  TimeScale,
+  Tooltip,
+} from 'chart.js';
+import 'chartjs-adapter-moment';
 import { parse } from 'iso8601-duration';
-import moment from 'moment';
+import { markRaw } from 'vue';
 
-import d3 from '@/utils/d3';
 import { toMilliseconds } from '@/utils/iso8601-duration';
 
+Chart.register(
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+  Tooltip,
+);
+
 const interval = 1000;
+
 export default {
   props: {
     exchanges: {
@@ -73,10 +54,9 @@ export default {
       default: () => [],
     },
   },
-  emits: ['selected'],
   data: () => ({
-    brushSelection: null,
-    hovered: null,
+    chart: null,
+    cachedChartData: [],
   }),
   computed: {
     chartData() {
@@ -84,14 +64,14 @@ export default {
         return [];
       }
       const chartData = [];
-      const now = moment().valueOf();
       let idx = this.exchanges.length - 1;
       const oldest =
         this.exchanges[this.exchanges.length - 1].timestamp.valueOf();
+      const newest = this.exchanges[0].timestamp.valueOf();
 
       for (
         let time = Math.floor(oldest.valueOf() / interval) * interval;
-        time < now;
+        time <= newest;
         time += interval
       ) {
         const bucket = {
@@ -130,322 +110,144 @@ export default {
 
       return chartData;
     },
-    tooltipSelection() {
-      return this.brushSelection
-        ? this.brushSelection
-        : this.hovered
-          ? [this.hovered, this.hovered + interval]
-          : null;
-    },
-    tooltipContent() {
-      const selection = this.tooltipSelection;
-      const totals = this.chartData
-        .filter(
-          (bucket) =>
-            bucket.timeStart.valueOf() >= selection[0] &&
-            bucket.timeStart.valueOf() < selection[1],
-        )
-        .reduce(
-          (current, next) => ({
-            totalCount: current.totalCount + next.totalCount,
-            totalSuccess: current.totalSuccess + next.totalSuccess,
-            totalClientErrors:
-              current.totalClientErrors + next.totalClientErrors,
-            totalServerErrors:
-              current.totalServerErrors + next.totalServerErrors,
-            totalTime: current.totalTime + next.totalTime,
-            maxTime: Math.max(current.maxTime, next.maxTime),
-          }),
-          {
-            totalCount: 0,
-            totalSuccess: 0,
-            totalClientErrors: 0,
-            totalServerErrors: 0,
-            totalTime: 0,
-            maxTime: 0,
-          },
-        );
-      return {
-        ...totals,
-        avgTime:
-          totals.totalCount > 0
-            ? Math.floor(totals.totalTime / totals.totalCount)
-            : 0,
-      };
-    },
   },
   watch: {
     chartData: {
-      handler: 'drawChart',
+      handler(newData) {
+        this.cachedChartData = JSON.parse(JSON.stringify(newData));
+        this.updateChart();
+      },
       deep: true,
-    },
-    hovered: {
-      handler(newVal) {
-        if (!this.hover) return;
-
-        if (newVal) {
-          this.hover
-            .attr('opacity', 1)
-            .attr('d', `M${this.x(newVal)},${this.height} ${this.x(newVal)},0`);
-        } else {
-          this.hover.attr('opacity', 0);
-        }
-      },
-      immediate: true,
-    },
-    brushSelection: {
-      handler(newVal) {
-        this.$emit('selected', newVal);
-      },
-      immediate: true,
     },
   },
   mounted() {
-    const margin = {
-      top: 20,
-      right: 20,
-      bottom: 30,
-      left: 20,
-    };
-
-    this.width =
-      this.$el.getBoundingClientRect().width - margin.left - margin.right;
-    this.height =
-      this.$el.getBoundingClientRect().height - margin.top - margin.bottom;
-
-    this.chartLayer = d3
-      .select(this.$el.querySelector('.exchange-chart__svg'))
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
-
-    this.xAxis = this.chartLayer
-      .append('g')
-      .attr('class', 'exchange-chart__axis-x')
-      .attr('transform', `translate(0,${this.height})`);
-
-    this.yAxis = this.chartLayer
-      .append('g')
-      .attr('class', 'exchange-chart__axis-y')
-      .attr('stroke', null);
-
-    this.areas = this.chartLayer.append('g');
-
-    this.hover = this.chartLayer
-      .append('path')
-      .attr('class', 'exchange-chart__hover')
-      .attr('opacity', 0);
-
-    this.brushGroup = this.chartLayer
-      .append('g')
-      .attr('class', 'exchange-chart__brush');
-
-    this.drawChart(this.chartData);
+    this.cachedChartData = JSON.parse(JSON.stringify(this.chartData));
+    this.initChart();
   },
   beforeUnmount() {
-    if (this.brushGroup) {
-      this.brushGroup.on('.brush', null);
-      this.brushGroup.on('mousemove', null);
-      this.brushGroup.on('mouseout', null);
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
     }
-
-    if (this.chartLayer) {
-      this.chartLayer.selectAll('*').remove();
-    }
-
-    this.brushGroup = null;
-    this.chartLayer = null;
   },
   methods: {
-    drawChart(data) {
-      ///setup x and y scale
-      const x = d3
-        .scaleTime()
-        .range([0, this.width])
-        .domain(d3.extent(data, (d) => d.timeStart));
-      this.x = x;
+    initChart() {
+      const ctx = this.$refs.chartCanvas.getContext('2d');
+      const chartDataRef = this.cachedChartData;
 
-      const y = d3
-        .scaleLinear()
-        .range([this.height, 0])
-        .domain([0, d3.max(data, (d) => d.totalCount)]);
+      this.chart = markRaw(
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: [],
+            datasets: [
+              {
+                label: this.$t(
+                  'instances.httpexchanges.chart.successful_requests',
+                ),
+                data: [],
+                backgroundColor: 'rgba(72, 199, 142, 0.8)',
+                stack: 'stack0',
+              },
+              {
+                label: this.$t('instances.httpexchanges.chart.status_4xx'),
+                data: [],
+                backgroundColor: 'rgba(255, 224, 138, 0.8)',
+                stack: 'stack0',
+              },
+              {
+                label: this.$t('instances.httpexchanges.chart.status_5xx'),
+                data: [],
+                backgroundColor: 'rgba(241, 70, 104, 0.8)',
+                stack: 'stack0',
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                type: 'time',
+                time: {
+                  unit: 'second',
+                  displayFormats: {
+                    second: 'HH:mm:ss',
+                  },
+                },
+                grid: {
+                  display: false,
+                },
+              },
+              y: {
+                stacked: true,
+                beginAtZero: true,
+                grid: {
+                  color: 'rgba(181, 181, 181, 0.2)',
+                  drawBorder: false,
+                },
+                ticks: {
+                  precision: 0,
+                },
+              },
+            },
+            plugins: {
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                  footer: (tooltipItems) => {
+                    const index = tooltipItems[0].dataIndex;
+                    const bucket = chartDataRef[index];
+                    if (!bucket) return '';
 
-      //draw areas
-      const area = d3
-        .area()
-        .x((d) => x(d.data.timeStart))
-        .y0((d) => y(d[0]))
-        .y1((d) => y(d[1]));
+                    const avgTime =
+                      bucket.totalCount > 0
+                        ? Math.floor(bucket.totalTime / bucket.totalCount)
+                        : 0;
 
-      const stack = d3
-        .stack()
-        .keys(['totalSuccess', 'totalClientErrors', 'totalServerErrors']);
-
-      const d = this.areas.selectAll('.exchange-chart__area').data(stack(data));
-
-      d.enter()
-        .append('path')
-        .merge(d)
-        .attr(
-          'class',
-          (d) => `exchange-chart__area exchange-chart__area--${d.key}`,
-        )
-        .attr('d', area);
-
-      d.exit().remove();
-
-      //draw axis
-      this.xAxis.call(
-        d3
-          .axisBottom(x)
-          .ticks(10)
-          .tickFormat((d) => moment(d).format('HH:mm:ss')),
+                    return [
+                      `${this.$t('instances.httpexchanges.chart.total_requests')}: ${bucket.totalCount}`,
+                      `${this.$t('instances.httpexchanges.chart.max_time')}: ${bucket.maxTime.toFixed(0)}ms`,
+                      `${this.$t('instances.httpexchanges.chart.avg_time')}: ${avgTime.toFixed(0)}ms`,
+                    ];
+                  },
+                },
+              },
+            },
+          },
+        }),
       );
 
-      this.yAxis
-        .call(
-          d3
-            .axisRight(y)
-            .ticks(
-              Math.min(
-                5,
-                d3.max(data, (d) => d.totalCount),
-              ),
-            )
-            .tickSize(this.width),
-        )
-        .call((axis) =>
-          axis
-            .selectAll('.tick text')
-            .attr('x', -2)
-            .attr('dy', 2)
-            .attr('text-anchor', 'end'),
-        );
+      this.updateChart();
+    },
+    updateChart() {
+      if (!this.chart || !this.cachedChartData) return;
 
-      //draw brush selection
-      const brush = d3
-        .brushX()
-        .extent([
-          [0, 0],
-          [this.width, this.height],
-        ])
-        .on('start', (event) => {
-          if (event.selection) {
-            this.isBrushing = true;
-            this.hovered = null;
-          }
-        })
-        .on('brush', (event) => {
-          if (!event.sourceEvent) {
-            return;
-          }
+      const data = this.cachedChartData;
+      const labels = data.map((d) => d.timeStart);
+      const successData = data.map((d) => d.totalSuccess);
+      const clientErrorData = data.map((d) => d.totalClientErrors);
+      const serverErrorData = data.map((d) => d.totalServerErrors);
 
-          if (event.selection) {
-            const floor =
-              Math.floor(x.invert(event.selection[0]) / interval) * interval;
-            const ceil =
-              Math.ceil(x.invert(event.selection[1]) / interval) * interval;
-            this.brushSelection = [floor, ceil];
-          }
-        })
-        .on('end', (event) => {
-          this.isBrushing = false;
-          if (!event.selection) {
-            this.brushSelection = null;
-          }
-        });
+      this.chart.data.labels = labels;
+      this.chart.data.datasets[0].data = successData;
+      this.chart.data.datasets[1].data = clientErrorData;
+      this.chart.data.datasets[2].data = serverErrorData;
 
-      this.brushGroup
-        .call(brush)
-        .on('mousemove', (event) => {
-          if (this.isBrushing) {
-            return;
-          }
-          const mouseX = d3.pointer(
-            event,
-            this.brushGroup.select('.overlay').node(),
-          )[0];
-          this.hovered = Math.floor(x.invert(mouseX) / interval) * interval;
-        })
-        .on('mouseout', () => {
-          this.hovered = null;
-        });
-
-      brush.move(
-        this.brushGroup,
-        this.brushSelection ? this.brushSelection.map(x) : null,
-      );
+      this.chart.update('none');
     },
   },
 };
 </script>
 
 <style lang="css">
-.exchange-chart__svg {
+.exchange-chart {
   height: 200px;
   width: 100%;
 }
 
-.exchange-chart__hover {
-  stroke: #b5b5b5;
-  stroke-width: 1px;
-}
-
-.exchange-chart__tooltip {
-  position: absolute;
-  background: #000;
-  opacity: 0.8;
-  pointer-events: none;
-  border-radius: 6px;
-  padding: 0.825em;
-  width: 200px;
-}
-
-.exchange-chart__tooltip table th,
-.exchange-chart__tooltip table td {
-  border: none;
-  color: #b5b5b5;
-  padding: 0.25em 0.75em;
-}
-
-.exchange-chart__tooltip table td {
-  text-align: right;
-}
-
-.exchange-chart__tooltip--left {
-  left: 5px;
-}
-
-.exchange-chart__tooltip--right {
-  right: 5px;
-}
-
-.exchange-chart .selection {
-  stroke: none;
-  fill: rgba(0, 0, 0, 0.2);
-  fill-opacity: 1;
-}
-
-.exchange-chart__axis-y .domain {
-  stroke: none;
-}
-
-.exchange-chart__axis-y .tick:not(:first-of-type) line {
-  stroke-dasharray: 2, 2;
-  stroke: #b5b5b5;
-}
-
-.exchange-chart__area--totalSuccess {
-  fill: #48c78e;
-  opacity: 0.8;
-}
-
-.exchange-chart__area--totalClientErrors {
-  fill: #ffe08a;
-  opacity: 0.8;
-}
-
-.exchange-chart__area--totalServerErrors {
-  fill: #f14668;
-  opacity: 0.8;
+.exchange-chart canvas {
+  max-height: 200px;
 }
 </style>
