@@ -50,11 +50,11 @@ describe('redirectOn401', () => {
   });
 
   it('should not redirect on 500', async () => {
-    const error = {
+    const error: AxiosError = {
       response: {
         status: 500,
       },
-    };
+    } as AxiosError;
 
     try {
       await redirectOn401()(error);
@@ -66,11 +66,11 @@ describe('redirectOn401', () => {
   });
 
   it('should redirect on 401', async () => {
-    const error = {
+    const error: AxiosError = {
       response: {
         status: 401,
       },
-    };
+    } as AxiosError;
 
     try {
       await redirectOn401()(error);
@@ -84,11 +84,11 @@ describe('redirectOn401', () => {
   });
 
   it('should not redirect on 401 for predicate yields false', async () => {
-    const error = {
+    const error: AxiosError = {
       response: {
         status: 401,
       },
-    };
+    } as AxiosError;
 
     try {
       await redirectOn401(() => false)(error);

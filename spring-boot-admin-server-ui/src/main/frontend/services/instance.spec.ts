@@ -31,6 +31,8 @@ describe('Instance', () => {
 
       const instance = new Instance({
         id: 'id',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
         registration: {
           metadata: {
             ['hide-url']: metadataHideUrl,
@@ -45,10 +47,16 @@ describe('Instance', () => {
   describe('fetchMetric', () => {
     const instance = new Instance({
       id: 'test-id',
-      registration: { name: 'test' },
+      registration: {
+        name: 'test',
+        healthUrl: '',
+        source: '',
+      },
       availableMetrics: ['test.metric', 'cache.size', 'cache.gets'],
     });
     test('should pass suppressToast option to axios config', async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       // Spy on axios.get
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
@@ -77,6 +85,8 @@ describe('Instance', () => {
     });
 
     test('should work without options parameter for backward compatibility', async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
       axiosGetSpy.mockResolvedValue({
@@ -97,6 +107,8 @@ describe('Instance', () => {
     });
 
     test('should pass suppressToast=false when explicitly set to false', async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
       axiosGetSpy.mockResolvedValue({
@@ -122,6 +134,8 @@ describe('Instance', () => {
     });
 
     test('should include tags in request parameters', async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
       axiosGetSpy.mockResolvedValue({
@@ -144,6 +158,8 @@ describe('Instance', () => {
     });
 
     test('should pass suppressToast function to axios config', async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       const axiosGetSpy = vi.spyOn(instance.axios, 'get');
 
       axiosGetSpy.mockResolvedValue({

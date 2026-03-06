@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
-import axios, { type AxiosError } from 'axios';
+import axios, { type AxiosError, AxiosInstance } from 'axios';
 
 import sbaConfig from '../sba-config';
 
