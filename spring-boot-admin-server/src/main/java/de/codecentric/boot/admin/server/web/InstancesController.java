@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -74,7 +75,7 @@ public class InstancesController {
 	 * @return the registered instance id;
 	 */
 	@PostMapping(path = "/instances", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<ResponseEntity<Map<String, InstanceId>>> register(@RequestBody Registration registration,
+	public Mono<ResponseEntity<Map<String, InstanceId>>> register(@Valid @RequestBody Registration registration,
 			UriComponentsBuilder builder) {
 		Registration withSource = Registration.copyOf(registration).source("http-api").build();
 		LOGGER.debug("Register instance {}", withSource);

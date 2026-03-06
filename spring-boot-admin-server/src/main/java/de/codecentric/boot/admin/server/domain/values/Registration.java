@@ -23,11 +23,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
 import lombok.ToString;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,6 +42,7 @@ public final class Registration implements Serializable {
 
 	private static final Logger log = LoggerFactory.getLogger(Registration.class);
 
+	@NotBlank
 	private final String name;
 
 	/**
@@ -55,6 +57,7 @@ public final class Registration implements Serializable {
 	 * Admin to determine the instance status. Example:
 	 * <code>https://example.com/actuator/health</code>
 	 */
+	@NotBlank
 	private final String healthUrl;
 
 	/**
@@ -71,13 +74,6 @@ public final class Registration implements Serializable {
 	@lombok.Builder(builderClassName = "Builder", toBuilder = true)
 	private Registration(String name, @Nullable String managementUrl, String healthUrl, @Nullable String serviceUrl,
 			String source, @lombok.Singular("metadata") Map<String, String> metadata) {
-		Assert.hasText(name, "'name' must not be empty.");
-		Assert.hasText(healthUrl, "'healthUrl' must not be empty.");
-		Assert.isTrue(checkUrl(healthUrl), "'healthUrl' is not valid: " + healthUrl);
-		Assert.isTrue(!StringUtils.hasText(managementUrl) || checkUrl(managementUrl),
-				"'managementUrl' is not valid: " + managementUrl);
-		Assert.isTrue(!StringUtils.hasText(serviceUrl) || checkUrl(serviceUrl),
-				"'serviceUrl' is not valid: " + serviceUrl);
 
 		this.name = name;
 		this.managementUrl = managementUrl;
@@ -126,6 +122,21 @@ public final class Registration implements Serializable {
 
 	public Map<String, String> getMetadata() {
 		return Collections.unmodifiableMap(this.metadata);
+	}
+
+	@AssertTrue(message = "'healthUrl' must be an absolute URL.")
+	public boolean isHealthUrlAbsolute() {
+		return StringUtils.hasText(this.healthUrl) && checkUrl(this.healthUrl);
+	}
+
+	@AssertTrue(message = "'managementUrl' must be an absolute URL when present.")
+	public boolean isManagementUrlAbsoluteWhenPresent() {
+		return !StringUtils.hasText(this.managementUrl) || checkUrl(this.managementUrl);
+	}
+
+	@AssertTrue(message = "'serviceUrl' must be an absolute URL when present.")
+	public boolean isServiceUrlAbsoluteWhenPresent() {
+		return !StringUtils.hasText(this.serviceUrl) || checkUrl(this.serviceUrl);
 	}
 
 	/**
