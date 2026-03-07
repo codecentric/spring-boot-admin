@@ -22,7 +22,7 @@ const mounted = (el, binding) => {
   const targetElement = document.querySelector(binding.value);
   if (targetElement) {
     const clientRect = targetElement.getBoundingClientRect();
-    const top = clientRect.height + clientRect.top;
+    const top = clientRect.height;
 
     el.style.top = `${top}px`;
     el.style.position = 'sticky';
