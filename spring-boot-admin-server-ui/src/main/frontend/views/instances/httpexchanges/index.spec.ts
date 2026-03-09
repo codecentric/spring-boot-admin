@@ -44,6 +44,7 @@ describe('HttpExchanges - excludeActuator', () => {
     const exchanges = [
       createExchange('http://127.0.0.1:8080/api/users'),
       createExchange('http://127.0.0.1:8080/actuator/health'),
+      createExchange('http://127.0.0.1:8080/MyTestSubPath/actuator/health'),
       createExchange('http://127.0.0.1:8080/actuator/metrics'),
       createExchange('http://127.0.0.1:8080/api/products'),
       createExchange('http://127.0.0.1:8080/actuator/info'),
@@ -85,6 +86,11 @@ describe('HttpExchanges - excludeActuator', () => {
         // Should NOT show actuator endpoints
         expect(
           screen.queryByText('http://127.0.0.1:8080/actuator/health'),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(
+            'http://127.0.0.1:8080/MyTestSubPath/actuator/health',
+          ),
         ).not.toBeInTheDocument();
         expect(
           screen.queryByText('http://127.0.0.1:8080/actuator/metrics'),
