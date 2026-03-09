@@ -58,7 +58,7 @@
         <wiremock.version>3.13.2</wiremock.version>
         <hazelcast.version>5.6.0</hazelcast.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <jetty.version>12.1.6</jetty.version>
+        <jetty.version>12.1.7</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
