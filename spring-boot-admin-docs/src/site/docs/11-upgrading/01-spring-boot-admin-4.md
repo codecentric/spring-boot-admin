@@ -185,10 +185,11 @@ Spring Boot Admin 4 uses **Jolokia 2.5.x**, which supports Spring Boot 4.
 **Action Required:**
 
 - Jolokia 2.5.x is compatible with Spring Boot 4 and Spring Boot Admin 4.
-- If you use **JMX-Bean Management**, you must add the `jolokia-support-springboot` dependency to each client
-  application (with an explicit version or via dependency management). See the
-  [JMX-Bean Management](../03-client/10-client-features.md#jmx-bean-management) section for the correct dependency
-  coordinates.
+- If you use **JMX-Bean Management**, you must add the appropriate Jolokia Spring Boot support dependency to each
+  client application, matching the client's Spring Boot major version (for example, `jolokia-support-springboot`
+  for Spring Boot 2.x clients and `jolokia-support-springboot3` for Spring Boot 3.x and later clients). See the
+  [JMX-Bean Management](../03-client/10-client-features.md#jmx-bean-management) section for the exact dependency
+  coordinates per Spring Boot version.
 
 ---
 
