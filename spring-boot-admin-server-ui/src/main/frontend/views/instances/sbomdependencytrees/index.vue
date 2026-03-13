@@ -31,7 +31,7 @@
       </sba-sticky-subnav>
     </template>
 
-    <template v-if="sboms.length === 0">
+    <template v-if="hasLoaded && sboms.length === 0">
       <sba-alert
         severity="WARN"
         :error="$t('instances.dependencies.no_data_provided')"
@@ -77,6 +77,7 @@ export default {
   },
   data: () => ({
     hasLoaded: false,
+    isLoading: true,
     error: null,
     contexts: [],
     sboms: [],
@@ -89,6 +90,7 @@ export default {
   methods: {
     async fetchSboms() {
       this.error = null;
+      this.hasLoaded = false;
       try {
         const res = await this.instance.fetchSbomIds();
         this.sboms = res.data.ids;
