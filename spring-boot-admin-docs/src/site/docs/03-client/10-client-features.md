@@ -62,7 +62,7 @@ an explicit `3` suffix (`jolokia-support-springboot3`).
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-support-springboot</artifactId>
-    <version>x.y.z</version> <!-- replace with the desired Jolokia Spring Boot 4 integration version -->
+    <version>x.y.z</version> <!-- replace with a concrete Jolokia Spring Boot integration version (for example, the latest from Maven Central), or omit this element if the version is already managed via a BOM in your <dependencyManagement> section -->
 </dependency>
 ```
 
