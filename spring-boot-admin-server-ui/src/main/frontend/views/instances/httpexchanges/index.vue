@@ -236,7 +236,7 @@ export default {
           try {
             const uri = exchange.request.uri;
             const pathname = new URL(uri).pathname;
-            const regex = /(^|\/instances\/[^\/]+)\/actuator(\/|$|\?)/;
+            const regex = /\/actuator(\/|$|\?)/;
 
             return !regex.test(pathname);
           } catch {
