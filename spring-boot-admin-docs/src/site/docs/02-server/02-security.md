@@ -13,6 +13,8 @@ A Spring Security configuration for your server could look like this:
 
 ```java title="SecuritySecureConfig.java"
 
+import org.springframework.http.HttpMethod;
+
 @Configuration(proxyBeanMethods = false)
 public class SecuritySecureConfig {
 
@@ -58,9 +60,9 @@ public class SecuritySecureConfig {
 						.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 						.ignoringRequestMatchers(
 								PathPatternRequestMatcher.withDefaults()
-										.matcher(POST, this.adminServer.path("/instances")), // (6)
+										.matcher(HttpMethod.POST, this.adminServer.path("/instances")), // (6)
 								PathPatternRequestMatcher.withDefaults()
-										.matcher(DELETE, this.adminServer.path("/instances/*")), // (6)
+										.matcher(HttpMethod.DELETE, this.adminServer.path("/instances/*")), // (6)
 								PathPatternRequestMatcher.withDefaults()
 										.matcher(this.adminServer.path("/actuator/**")) // (7)
 						));
