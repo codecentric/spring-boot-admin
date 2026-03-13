@@ -62,6 +62,7 @@ an explicit `3` suffix (`jolokia-support-springboot3`).
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-support-springboot</artifactId>
+    <version>x.y.z</version> <!-- replace with the desired Jolokia Spring Boot 4 integration version -->
 </dependency>
 ```
 
@@ -74,6 +75,7 @@ See https://jolokia.org/reference/html/manual/spring.html for more details.
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-support-springboot3</artifactId>
+    <version>x.y.z</version> <!-- replace with the desired Jolokia Spring Boot 3 integration version -->
 </dependency>
 ```
 
@@ -86,6 +88,7 @@ provided the actuator itself, so you only need the plain jolokia dependency.
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-core</artifactId>
+    <version>x.y.z</version> <!-- replace with the desired Jolokia core version -->
 </dependency>
 ```
 
