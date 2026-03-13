@@ -242,7 +242,6 @@ public class CustomHealthEndpointStatusUpdater extends StatusUpdater {
             .get()
             .uri(customHealthPath)
             .exchangeToMono(this::convertStatusInfo)
-            .timeout(getTimeoutWithMargin())
             .onErrorResume(this::handleError)
             .map(instance::withStatusInfo);
     }

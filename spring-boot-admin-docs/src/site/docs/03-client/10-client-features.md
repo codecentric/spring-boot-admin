@@ -52,6 +52,12 @@ You might want to set spring.jmx.enabled=true if you want to expose Spring beans
 Spring Boot 4 does not support Jolokia directly, you need a separate dependency for Spring Boot 4-based applications.
 See https://jolokia.org/reference/html/manual/spring.html for more details.
 
+:::note
+The artifact for Spring Boot 4 is named `jolokia-support-springboot` (no number suffix) — this is the
+current/latest Jolokia Spring Boot integration, intended for Spring Boot 4+. The Spring Boot 3 variant carries
+an explicit `3` suffix (`jolokia-support-springboot3`).
+:::
+
 ```xml title="pom.xml"
 <dependency>
     <groupId>org.jolokia</groupId>
@@ -68,7 +74,7 @@ See https://jolokia.org/reference/html/manual/spring.html for more details.
 ```xml title="pom.xml"
 <dependency>
     <groupId>org.jolokia</groupId>
-    <artifactId>jolokia-support-springboot-3</artifactId>
+    <artifactId>jolokia-support-springboot3</artifactId>
     <version>2.5.0</version>
 </dependency>
 ```

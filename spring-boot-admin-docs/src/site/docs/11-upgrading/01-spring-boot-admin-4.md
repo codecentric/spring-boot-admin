@@ -176,30 +176,17 @@ spring:
 - Search your configuration files for `prefer-ip`
 - Replace with `service-host-type: IP` (if `prefer-ip: true`) or `service-host-type: HOST_NAME` (if `prefer-ip: false`)
 
----
-
 ### 4. Jolokia Compatibility
 
 **What Changed:**
 
-The current stable Jolokia version (2.4.2) does not yet support Spring Boot 4. Spring Boot Admin 4 temporarily
-downgrades to **Jolokia 2.1.0** for basic JMX functionality.
-
-**Limitations:**
-
-- Some advanced Jolokia features may not be available
-- JMX operations work but with reduced functionality compared to Jolokia 2.4.2
-
-**Future Outlook:**
-
-Spring Boot Admin will upgrade to a newer Jolokia version once Spring Boot 4 support is added. Monitor
-the [Jolokia project](https://github.com/jolokia/jolokia) for updates on Spring Boot 4 compatibility.
+Spring Boot Admin 4 uses **Jolokia 2.5.x**, which supports Spring Boot 4. 
 
 **Action Required:**
 
-- **No immediate action needed** - Jolokia 2.1.0 is included automatically and provides basic JMX functionality
-- Test your JMX operations to ensure they work with the limited feature set
-- If JMX functionality is critical, consider waiting for full Jolokia support before upgrading
+- **No action needed** - Jolokia is included automatically via the `jolokia-support-springboot` dependency
+- See the [JMX-Bean Management](../03-client/10-client-features.md#jmx-bean-management) section for the
+  correct dependency to add to your client applications
 
 ---
 
@@ -281,7 +268,7 @@ mvn spring-boot:run
     - Health checks update correctly
     - Actuator endpoints are accessible
     - Notifications fire properly
-    - JMX operations work (with Jolokia 2.1.0 limitations)
+    - JMX operations work via Jolokia
 
 ### Step 5: Monitor Logs
 
@@ -314,7 +301,6 @@ If you encounter issues during the upgrade:
 - ✅ Replace `org.springframework.lang.Nullable` with `org.jspecify.annotations.Nullable`
 - ✅ Migrate client from `WebClient` to `RestClient`
 - ✅ Change `prefer-ip` to `service-host-type`
-- ⚠️ Accept Jolokia 2.1.0 limitations temporarily
 
 Most applications can upgrade with minimal code changes, primarily focused on configuration updates and dependency
 management.
