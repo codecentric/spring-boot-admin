@@ -77,7 +77,6 @@ export default {
   },
   data: () => ({
     hasLoaded: false,
-    isLoading: true,
     error: null,
     contexts: [],
     sboms: [],
