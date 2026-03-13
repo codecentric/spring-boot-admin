@@ -180,7 +180,7 @@ spring:
 
 **What Changed:**
 
-Spring Boot Admin 4 uses **Jolokia 2.5.x**, which supports Spring Boot 4. 
+Spring Boot Admin 4 uses **Jolokia 2.5.x**, which supports Spring Boot 4.
 
 **Action Required:**
 
