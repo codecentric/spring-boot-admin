@@ -75,7 +75,7 @@ See https://jolokia.org/reference/html/manual/spring.html for more details.
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-support-springboot3</artifactId>
-    <version>x.y.z</version> <!-- replace with the desired Jolokia Spring Boot 3 integration version -->
+    <version>x.y.z</version> <!-- replace with a concrete Jolokia Spring Boot 3 integration version (for example, the latest from Maven Central), or omit this element if the version is already managed via a BOM in your <dependencyManagement> section -->
 </dependency>
 ```
 
