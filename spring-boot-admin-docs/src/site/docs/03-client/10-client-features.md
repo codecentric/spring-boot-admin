@@ -62,7 +62,6 @@ an explicit `3` suffix (`jolokia-support-springboot3`).
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-support-springboot</artifactId>
-    <version>2.5.0</version>
 </dependency>
 ```
 
@@ -75,7 +74,6 @@ See https://jolokia.org/reference/html/manual/spring.html for more details.
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-support-springboot3</artifactId>
-    <version>2.5.0</version>
 </dependency>
 ```
 
