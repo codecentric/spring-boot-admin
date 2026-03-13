@@ -220,11 +220,14 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 public class CustomHealthEndpointStatusUpdater extends StatusUpdater {
 
+    private final InstanceWebClient instanceWebClient;
+
     public CustomHealthEndpointStatusUpdater(
             InstanceRepository repository,
             InstanceWebClient instanceWebClient,
             ApiMediaTypeHandler apiMediaTypeHandler) {
         super(repository, instanceWebClient, apiMediaTypeHandler);
+        this.instanceWebClient = instanceWebClient;
     }
 
     @Override
@@ -238,7 +241,7 @@ public class CustomHealthEndpointStatusUpdater extends StatusUpdater {
             .getMetadata()
             .getOrDefault("health-path", "/actuator/health");
 
-        return instanceWebClient.instance(instance)
+        return this.instanceWebClient.instance(instance)
             .get()
             .uri(customHealthPath)
             .exchangeToMono(this::convertStatusInfo)
