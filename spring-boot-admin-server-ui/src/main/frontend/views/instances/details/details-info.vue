@@ -67,35 +67,38 @@ const loading = ref(false);
 const liveInfo = ref(null);
 const currentInstanceId = ref(null);
 const currentInstanceUpdateKey = ref(null);
-const fetchToken = ref(0);
+const requestGen = ref(0);
 
 const info = computed(() => formatInfo(liveInfo.value || props.instance.info));
 const isEmptyInfo = computed(() => Object.keys(info.value).length <= 0);
 
 async function fetchInfo() {
   if (props.instance.hasEndpoint('info')) {
-    const token = ++fetchToken.value;
+    const gen = ++requestGen.value;
 
     currentInstanceId.value = props.instance.id;
     currentInstanceUpdateKey.value =
       props.instance.version ?? props.instance.statusTimestamp ?? props.instance.id;
     loading.value = true;
     error.value = null;
+
     try {
       const res = await props.instance.fetchInfo();
-      if (token !== fetchToken.value) {
+      // Verify this is still the latest request generation
+      if (gen !== requestGen.value) {
         return;
       }
       liveInfo.value = res.data;
     } catch (err) {
-      if (token !== fetchToken.value) {
+      // Stale error - ignore if a newer request was initiated
+      if (gen !== requestGen.value) {
         return;
       }
       error.value = err;
-
       console.warn('Fetching info failed:', err);
     } finally {
-      if (token !== fetchToken.value) {
+      // Don't clear loading state if new request started
+      if (gen !== requestGen.value) {
         return;
       }
       loading.value = false;
@@ -104,6 +107,8 @@ async function fetchInfo() {
 }
 
 function reloadInfo() {
+  // Increment generation to invalidate any in-flight requests
+  requestGen.value++;
   fetchInfo();
 }
 

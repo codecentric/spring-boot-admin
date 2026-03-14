@@ -92,7 +92,7 @@
 <script lang="ts">
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
-import { concatMap, delay, retryWhen, timer } from 'rxjs';
+import { Subject, concatMap, delay, retryWhen, takeUntil, timer } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { defineComponent } from 'vue';
 
@@ -147,7 +147,9 @@ export default defineComponent({
   methods: {
     initMetrics() {
       const updateKey =
-        this.instance.version ?? this.instance.statusTimestamp ?? this.instance.id;
+        this.instance.version ??
+        this.instance.statusTimestamp ??
+        this.instance.id;
       const firstInit = this.currentInstanceId === null;
       if (
         this.instance.id !== this.currentInstanceId ||
@@ -162,7 +164,10 @@ export default defineComponent({
 
         // Restart polling immediately so SSE updates refresh the view.
         if (!firstInit) {
+          // Stop old subscription and start fresh
           this.unsubscribe();
+          // Recreate destroy$ so new subscription can use takeUntil properly
+          this.destroy$ = new Subject();
           this.subscribe();
         }
       }
@@ -202,6 +207,8 @@ export default defineComponent({
       return timer(0, sbaConfig.uiSettings.pollTimer.memory)
         .pipe(
           concatMap(this.fetchMetrics),
+          // Stop polling when destroy$ emits (on unmount or instance update)
+          takeUntil(this.destroy$),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
           }),

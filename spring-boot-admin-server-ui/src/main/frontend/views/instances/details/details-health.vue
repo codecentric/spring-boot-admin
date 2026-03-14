@@ -126,7 +126,7 @@ export default {
   },
   watch: {
     instance: {
-      handler: 'reloadHealth',
+      handler: 'fetchHealth',
       immediate: true,
     },
   },
@@ -157,29 +157,58 @@ export default {
       const token = ++this.fetchToken;
       this.error = null;
       this.loading = true;
+
       try {
         const res = await this.instance.fetchHealth();
+        // Stale response - another fetch was initiated
         if (token !== this.fetchToken) {
           return;
         }
+
         this.currentInstanceId = this.instance.id;
         this.currentInstanceUpdateKey =
           this.instance.version ?? this.instance.statusTimestamp ?? this.instance.id;
         this.liveHealth = res.data;
 
         if (Array.isArray(res.data.groups)) {
-          this.healthGroups = (
-            await Promise.allSettled(
-              res.data.groups.map(async (group: string) => {
-                return {
-                  name: group,
-                  data: (await this.instance.fetchHealthGroup(group)).data,
-                };
-              }),
-            )
-          ).map((group) =>
-            group.status === 'fulfilled' ? group.value : group.reason,
-          );
+          // Capture token for group fetches to detect staleness
+          const groupToken = token;
+          const groupPromises = res.data.groups.map(async (group: string) => {
+            // Check if stale before starting fetch
+            if (groupToken !== this.fetchToken) {
+              throw new Error('Stale request');
+            }
+
+            try {
+              return {
+                name: group,
+                data: (await this.instance.fetchHealthGroup(group)).data,
+              };
+            } catch (e) {
+              // Only suppress error if this request became stale
+              if (groupToken !== this.fetchToken) {
+                throw e;
+              }
+              return null;
+            }
+          });
+
+          const groupResults = await Promise.allSettled(groupPromises);
+
+          // Final staleness check after all promises settle
+          if (groupToken !== this.fetchToken) {
+            return;
+          }
+
+          this.healthGroups = groupResults
+            .map((result) => {
+              // Verify still not stale after settlement
+              if (groupToken !== this.fetchToken) {
+                return null;
+              }
+              return result.status === 'fulfilled' ? result.value : null;
+            })
+            .filter((g) => g !== null);
 
           this.healthGroupOpenStatus = this.healthGroups
             .map(
@@ -198,6 +227,7 @@ export default {
             .reduce((acc, curr) => ({ ...acc, ...curr }), {});
         }
       } catch (error) {
+        // Stale error - ignore
         if (token !== this.fetchToken) {
           return;
         }

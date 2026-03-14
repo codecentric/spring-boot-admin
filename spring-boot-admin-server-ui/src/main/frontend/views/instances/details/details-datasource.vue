@@ -67,7 +67,7 @@
 
 <script>
 import moment from 'moment';
-import { concatMap, delay, retryWhen, timer } from 'rxjs';
+import { Subject, concatMap, delay, retryWhen, takeUntil, timer } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
@@ -105,28 +105,33 @@ export default {
     },
   },
   methods: {
-    initDatasourceMetrics() {
-      const updateKey =
-        this.instance.version ?? this.instance.statusTimestamp ?? this.instance.id;
-      const firstInit = this.currentInstanceId === null;
-      if (
-        this.instance.id !== this.currentInstanceId ||
-        updateKey !== this.currentInstanceUpdateKey
-      ) {
-        this.currentInstanceId = this.instance.id;
-        this.currentInstanceUpdateKey = updateKey;
-        this.hasLoaded = false;
-        this.error = null;
-        this.current = null;
-        this.chartData = [];
+     initDatasourceMetrics() {
+       const updateKey =
+         this.instance.version ??
+         this.instance.statusTimestamp ??
+         this.instance.id;
+       const firstInit = this.currentInstanceId === null;
+       if (
+         this.instance.id !== this.currentInstanceId ||
+         updateKey !== this.currentInstanceUpdateKey
+       ) {
+         this.currentInstanceId = this.instance.id;
+         this.currentInstanceUpdateKey = updateKey;
+         this.hasLoaded = false;
+         this.error = null;
+         this.current = null;
+         this.chartData = [];
 
-        // Restart polling immediately so SSE updates refresh the view.
-        if (!firstInit) {
-          this.unsubscribe();
-          this.subscribe();
-        }
-      }
-    },
+         // Restart polling immediately so SSE updates refresh the view.
+         if (!firstInit) {
+           // Stop old subscription and start fresh
+           this.unsubscribe();
+           // Recreate destroy$ so new subscription can use takeUntil properly
+           this.destroy$ = new Subject();
+           this.subscribe();
+         }
+       }
+     },
     async fetchMetrics() {
       const responseActive = this.instance.fetchMetric(
         'jdbc.connections.active',
@@ -145,30 +150,32 @@ export default {
         max: (await responseMax).data.measurements[0].value,
       };
     },
-    createSubscription() {
-      return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
-        .pipe(
-          concatMap(this.fetchMetrics),
-          retryWhen((err) => {
-            return err.pipe(delay(1000), take(5));
-          }),
-        )
-        .subscribe({
-          next: (data) => {
-            this.hasLoaded = true;
-            this.current = data;
-            this.chartData.push({ ...data, timestamp: moment().valueOf() });
-          },
-          error: (error) => {
-            this.hasLoaded = true;
-            console.warn(
-              `Fetching datasource ${this.dataSource} metrics failed:`,
-              error,
-            );
-            this.error = error;
-          },
-        });
-    },
+     createSubscription() {
+       return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
+         .pipe(
+           concatMap(this.fetchMetrics),
+           // Stop polling when destroy$ emits (on unmount or instance update)
+           takeUntil(this.destroy$),
+           retryWhen((err) => {
+             return err.pipe(delay(1000), take(5));
+           }),
+         )
+         .subscribe({
+           next: (data) => {
+             this.hasLoaded = true;
+             this.current = data;
+             this.chartData.push({ ...data, timestamp: moment().valueOf() });
+           },
+           error: (error) => {
+             this.hasLoaded = true;
+             console.warn(
+               `Fetching datasource ${this.dataSource} metrics failed:`,
+               error,
+             );
+             this.error = error;
+           },
+         });
+     },
   },
 };
 </script>
