@@ -116,6 +116,7 @@ export default {
     shouldFetchCacheMisses: true,
     chartData: [],
     currentInstanceId: null,
+    currentInstanceUpdateKey: null,
   }),
   computed: {
     ratio() {
@@ -139,8 +140,15 @@ export default {
   },
   methods: {
     initCacheMetrics() {
-      if (this.instance.id !== this.currentInstanceId) {
+      const updateKey =
+        this.instance.version ?? this.instance.statusTimestamp ?? this.instance.id;
+      const firstInit = this.currentInstanceId === null;
+      if (
+        this.instance.id !== this.currentInstanceId ||
+        updateKey !== this.currentInstanceUpdateKey
+      ) {
         this.currentInstanceId = this.instance.id;
+        this.currentInstanceUpdateKey = updateKey;
         this.hasLoaded = false;
         this.error = null;
         this.current = null;
@@ -148,6 +156,12 @@ export default {
         this.shouldFetchCacheSize = true;
         this.shouldFetchCacheHits = true;
         this.shouldFetchCacheMisses = true;
+
+        // Restart polling immediately so SSE updates refresh the view.
+        if (!firstInit) {
+          this.unsubscribe();
+          this.subscribe();
+        }
       }
     },
     async fetchMetrics() {

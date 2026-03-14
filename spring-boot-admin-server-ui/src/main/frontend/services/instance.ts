@@ -40,6 +40,7 @@ class Instance {
   public availableMetrics: string[] = [];
   public tags: { [key: string]: string }[];
   public statusTimestamp: string;
+  public version?: number;
   public buildVersion: string;
   public statusInfo: StatusInfo;
 
@@ -534,6 +535,7 @@ type StatusInfo = {
 
 type InstanceData = {
   id: string;
+  version?: number;
   registration: Registration;
   endpoints?: Endpoint[];
   availableMetrics?: string[];

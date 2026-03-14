@@ -120,4 +120,39 @@ describe('DetailsThreads', () => {
     expect(data[0].peak).toEqual(PEAK[0]);
     expect(data[0].daemon).toEqual(DAEMON[0]);
   });
+
+  it('should reinitialize metrics when instance version changes (SSE update)', async () => {
+    const stubChart = {
+      props: ['data'],
+      template: `<div data-testid="chart">{{ JSON.stringify($props.data) }}</div>`,
+    };
+
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+
+    const { rerender } = render(DetailsThreads, {
+      global: { stubs: { threadsChart: stubChart } },
+      props: { instance: instance1 },
+    });
+
+    const instance2 = new Application({
+      ...application,
+      instances: [
+        {
+          ...instance1,
+          id: instance1.id,
+          version: (instance1.version ?? 0) + 1,
+        },
+      ],
+    }).instances[0];
+
+    await rerender({ instance: instance2 });
+
+    const text = (await screen.findByTestId('chart')).textContent;
+    const data = JSON.parse(text);
+
+    expect(data[0].live).toEqual(LIVE[0]);
+    expect(data[0].peak).toEqual(PEAK[0]);
+    expect(data[0].daemon).toEqual(DAEMON[0]);
+  });
 });

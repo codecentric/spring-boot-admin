@@ -116,6 +116,8 @@ export default {
       collapsible: boolean;
     },
     currentInstanceId: null,
+    currentInstanceUpdateKey: null,
+    fetchToken: 0,
   }),
   computed: {
     health() {
@@ -128,12 +130,14 @@ export default {
       immediate: true,
     },
   },
-  created() {
-    this.fetchHealth();
-  },
   methods: {
     reloadHealth() {
-      if (this.instance.id !== this.currentInstanceId) {
+      const updateKey =
+        this.instance.version ?? this.instance.statusTimestamp ?? this.instance.id;
+      if (
+        this.instance.id !== this.currentInstanceId ||
+        updateKey !== this.currentInstanceUpdateKey
+      ) {
         this.fetchHealth();
       }
     },
@@ -150,11 +154,17 @@ export default {
       }
     },
     async fetchHealth() {
+      const token = ++this.fetchToken;
       this.error = null;
       this.loading = true;
       try {
         const res = await this.instance.fetchHealth();
+        if (token !== this.fetchToken) {
+          return;
+        }
         this.currentInstanceId = this.instance.id;
+        this.currentInstanceUpdateKey =
+          this.instance.version ?? this.instance.statusTimestamp ?? this.instance.id;
         this.liveHealth = res.data;
 
         if (Array.isArray(res.data.groups)) {
@@ -188,9 +198,15 @@ export default {
             .reduce((acc, curr) => ({ ...acc, ...curr }), {});
         }
       } catch (error) {
+        if (token !== this.fetchToken) {
+          return;
+        }
         console.warn('Fetching live health failed:', error);
         this.error = error;
       } finally {
+        if (token !== this.fetchToken) {
+          return;
+        }
         this.loading = false;
       }
     },

@@ -229,4 +229,39 @@ describe('DetailsCache', () => {
       expect(queryByText(`${HITS[0]}`)).not.toBeInTheDocument();
     });
   });
+
+  it('should reinitialize metrics when instance version changes (SSE update)', async () => {
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+
+    const { getByText, rerender, queryByText } = await render(DetailsCache, {
+      props: {
+        instance: instance1,
+        cacheName: CACHE_NAME,
+        index: 0,
+      },
+    });
+
+    // wait until initial fetch rendered a numeric value
+    await waitFor(() => {
+      expect(getByText(`${HITS[0]}`)).toBeTruthy();
+    });
+
+    const instance2 = new Application({
+      ...application,
+      instances: [
+        {
+          ...instance1,
+          id: instance1.id,
+          version: (instance1.version ?? 0) + 1,
+        },
+      ],
+    }).instances[0];
+
+    await rerender({ instance: instance2, cacheName: CACHE_NAME, index: 0 });
+
+    await waitFor(() => {
+      expect(queryByText(`${HITS[0]}`)).not.toBeInTheDocument();
+    });
+  });
 });

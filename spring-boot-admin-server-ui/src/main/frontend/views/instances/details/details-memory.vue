@@ -124,6 +124,7 @@ export default defineComponent({
     current: null,
     chartData: [],
     currentInstanceId: null,
+    currentInstanceUpdateKey: null,
   }),
   computed: {
     name() {
@@ -145,12 +146,25 @@ export default defineComponent({
   },
   methods: {
     initMetrics() {
-      if (this.instance.id !== this.currentInstanceId) {
+      const updateKey =
+        this.instance.version ?? this.instance.statusTimestamp ?? this.instance.id;
+      const firstInit = this.currentInstanceId === null;
+      if (
+        this.instance.id !== this.currentInstanceId ||
+        updateKey !== this.currentInstanceUpdateKey
+      ) {
         this.currentInstanceId = this.instance.id;
+        this.currentInstanceUpdateKey = updateKey;
         this.hasLoaded = false;
         this.error = null;
         this.current = null;
         this.chartData = [];
+
+        // Restart polling immediately so SSE updates refresh the view.
+        if (!firstInit) {
+          this.unsubscribe();
+          this.subscribe();
+        }
       }
     },
     prettyBytes,

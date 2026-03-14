@@ -66,32 +66,45 @@ const error = ref(null);
 const loading = ref(false);
 const liveInfo = ref(null);
 const currentInstanceId = ref(null);
+const currentInstanceUpdateKey = ref(null);
+const fetchToken = ref(0);
 
 const info = computed(() => formatInfo(liveInfo.value || props.instance.info));
 const isEmptyInfo = computed(() => Object.keys(info.value).length <= 0);
 
 async function fetchInfo() {
   if (props.instance.hasEndpoint('info')) {
+    const token = ++fetchToken.value;
+
     currentInstanceId.value = props.instance.id;
+    currentInstanceUpdateKey.value =
+      props.instance.version ?? props.instance.statusTimestamp ?? props.instance.id;
     loading.value = true;
     error.value = null;
     try {
       const res = await props.instance.fetchInfo();
+      if (token !== fetchToken.value) {
+        return;
+      }
       liveInfo.value = res.data;
     } catch (err) {
+      if (token !== fetchToken.value) {
+        return;
+      }
       error.value = err;
 
       console.warn('Fetching info failed:', err);
     } finally {
+      if (token !== fetchToken.value) {
+        return;
+      }
       loading.value = false;
     }
   }
 }
 
 function reloadInfo() {
-  if (props.instance.id !== currentInstanceId.value) {
-    fetchInfo();
-  }
+  fetchInfo();
 }
 
 function formatInfo(info) {
@@ -109,12 +122,13 @@ function formatInfo(info) {
 }
 
 watch(
-  () => props.instance,
+  () => [
+    props.instance.id,
+    props.instance.version ?? props.instance.statusTimestamp,
+  ],
   () => reloadInfo(),
   { immediate: true },
 );
-
-fetchInfo();
 </script>
 
 <style lang="css">

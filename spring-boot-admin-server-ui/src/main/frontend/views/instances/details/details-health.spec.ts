@@ -1,7 +1,7 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
 import { HttpResponse, http } from 'msw';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { applications } from '@/mocks/applications/data';
 import { server } from '@/mocks/server';
@@ -9,10 +9,24 @@ import Application from '@/services/application';
 import { render } from '@/test-utils';
 import DetailsHealth from '@/views/instances/details/details-health.vue';
 
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: any) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
 describe('DetailsHealth', () => {
+  const healthHandlerSpy = vi.fn();
+
   beforeEach(() => {
+    healthHandlerSpy.mockReset();
     server.use(
       http.get('/instances/:instanceId/actuator/health', () => {
+        healthHandlerSpy();
         return HttpResponse.json({
           instance: 'UP',
           groups: ['liveness'],
@@ -110,6 +124,94 @@ describe('DetailsHealth', () => {
         }),
       ).toBeVisible(),
     );
+  });
+
+  it('should refetch health when instance version changes (SSE update)', async () => {
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+
+    const { rerender } = render(DetailsHealth, {
+      props: {
+        instance: instance1,
+      },
+    });
+
+    await waitFor(() => {
+      expect(healthHandlerSpy).toHaveBeenCalledTimes(1);
+    });
+
+    const instance2 = new Application({
+      ...application,
+      instances: [
+        {
+          ...instance1,
+          id: instance1.id,
+          version: (instance1.version ?? 0) + 1,
+        },
+      ],
+    }).instances[0];
+
+    await rerender({ instance: instance2 });
+
+    await waitFor(() => {
+      expect(healthHandlerSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  it('should ignore stale health response when instance updates quickly', async () => {
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+
+    const p1 = deferred<{ data: any }>();
+    const p2 = deferred<{ data: any }>();
+    const fetchHealthSpy = vi
+      .fn()
+      .mockReturnValueOnce(p1.promise)
+      .mockReturnValueOnce(p2.promise);
+    instance1.fetchHealth = fetchHealthSpy;
+    instance1.fetchHealthGroup = vi.fn().mockResolvedValue({ data: {} });
+
+    const { rerender } = render(DetailsHealth, {
+      props: {
+        instance: instance1,
+      },
+    });
+
+    await waitFor(() => {
+      expect(fetchHealthSpy).toHaveBeenCalledTimes(1);
+    });
+
+    const instance2 = new Application({
+      ...application,
+      instances: [
+        {
+          ...instance1,
+          id: instance1.id,
+          version: (instance1.version ?? 0) + 1,
+        },
+      ],
+    }).instances[0];
+    instance2.fetchHealth = fetchHealthSpy;
+    instance2.fetchHealthGroup = instance1.fetchHealthGroup;
+
+    await rerender({ instance: instance2 });
+
+    await waitFor(() => {
+      expect(fetchHealthSpy).toHaveBeenCalledTimes(2);
+    });
+
+    // Resolve second (newer) response first.
+    p2.resolve({ data: { status: 'UP', groups: [] } });
+    await waitFor(() => {
+      expect(screen.getByText('UP')).toBeInTheDocument();
+    });
+
+    // Resolve first (older) response afterwards; UI must not regress.
+    p1.resolve({ data: { status: 'DOWN', groups: [] } });
+    await waitFor(() => {
+      expect(screen.queryByText('DOWN')).not.toBeInTheDocument();
+    });
+    expect(screen.getByText('UP')).toBeInTheDocument();
   });
 
   it('should not display health group button if no groups are present', async () => {
