@@ -36,7 +36,8 @@ export default {
 .up {
   @apply bg-green-200 text-green-700;
 }
-.down {
+.down,
+.out_of_service {
   @apply bg-red-200 text-red-700;
 }
 .restricted {
