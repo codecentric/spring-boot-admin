@@ -52,11 +52,17 @@ You might want to set spring.jmx.enabled=true if you want to expose Spring beans
 Spring Boot 4 does not support Jolokia directly, you need a separate dependency for Spring Boot 4-based applications.
 See https://jolokia.org/reference/html/manual/spring.html for more details.
 
+:::note
+The artifact for Spring Boot 4 is named `jolokia-support-springboot` (no number suffix) — this is the
+current/latest Jolokia Spring Boot integration, intended for Spring Boot 4+. The Spring Boot 3 variant carries
+an explicit `3` suffix (`jolokia-support-springboot3`).
+:::
+
 ```xml title="pom.xml"
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-support-springboot</artifactId>
-    <version>2.5.0</version>
+    <version>x.y.z</version> <!-- replace with a concrete Jolokia Spring Boot integration version (for example, the latest from Maven Central), or omit this element if the version is already managed via a BOM in your <dependencyManagement> section -->
 </dependency>
 ```
 
@@ -68,8 +74,8 @@ See https://jolokia.org/reference/html/manual/spring.html for more details.
 ```xml title="pom.xml"
 <dependency>
     <groupId>org.jolokia</groupId>
-    <artifactId>jolokia-support-springboot-3</artifactId>
-    <version>2.5.0</version>
+    <artifactId>jolokia-support-springboot3</artifactId>
+    <version>x.y.z</version> <!-- replace with a concrete Jolokia Spring Boot 3 integration version (for example, the latest from Maven Central), or omit this element if the version is already managed via a BOM in your <dependencyManagement> section -->
 </dependency>
 ```
 
@@ -82,6 +88,7 @@ provided the actuator itself, so you only need the plain jolokia dependency.
 <dependency>
     <groupId>org.jolokia</groupId>
     <artifactId>jolokia-core</artifactId>
+    <version>x.y.z</version> <!-- replace with the desired Jolokia core version -->
 </dependency>
 ```
 

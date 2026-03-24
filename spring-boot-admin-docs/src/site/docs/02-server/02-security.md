@@ -13,6 +13,8 @@ A Spring Security configuration for your server could look like this:
 
 ```java title="SecuritySecureConfig.java"
 
+import org.springframework.http.HttpMethod;
+
 @Configuration(proxyBeanMethods = false)
 public class SecuritySecureConfig {
 
@@ -32,13 +34,17 @@ public class SecuritySecureConfig {
 		successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
 		http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests //
-						.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/assets/**")))
+						.requestMatchers(PathPatternRequestMatcher.withDefaults()
+								.matcher(this.adminServer.path("/assets/**")))
 						.permitAll() // (1)
-						.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/actuator/info")))
+						.requestMatchers(PathPatternRequestMatcher.withDefaults()
+								.matcher(this.adminServer.path("/actuator/info")))
 						.permitAll()
-						.requestMatchers(new AntPathRequestMatcher(adminServer.path("/actuator/health")))
+						.requestMatchers(PathPatternRequestMatcher.withDefaults()
+								.matcher(this.adminServer.path("/actuator/health")))
 						.permitAll()
-						.requestMatchers(new AntPathRequestMatcher(this.adminServer.path("/login")))
+						.requestMatchers(PathPatternRequestMatcher.withDefaults()
+								.matcher(this.adminServer.path("/login")))
 						.permitAll()
 						.dispatcherTypeMatchers(DispatcherType.ASYNC)
 						.permitAll() // https://github.com/spring-projects/spring-security/issues/11027
@@ -53,9 +59,12 @@ public class SecuritySecureConfig {
 				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 						.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 						.ignoringRequestMatchers(
-								new AntPathRequestMatcher(this.adminServer.path("/instances"), POST.toString()), // (6)
-								new AntPathRequestMatcher(this.adminServer.path("/instances/*"), DELETE.toString()), // (6)
-								new AntPathRequestMatcher(this.adminServer.path("/actuator/**")) // (7)
+								PathPatternRequestMatcher.withDefaults()
+										.matcher(HttpMethod.POST, this.adminServer.path("/instances")), // (6)
+								PathPatternRequestMatcher.withDefaults()
+										.matcher(HttpMethod.DELETE, this.adminServer.path("/instances/*")), // (6)
+								PathPatternRequestMatcher.withDefaults()
+										.matcher(this.adminServer.path("/actuator/**")) // (7)
 						));
 
 		http.rememberMe((rememberMe) -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600));
