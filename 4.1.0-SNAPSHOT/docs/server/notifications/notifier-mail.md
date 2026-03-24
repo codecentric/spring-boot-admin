@@ -1,6 +1,6 @@
 # Mail Notifications
 
-Mail notifications will be delivered as HTML emails rendered using [https://www.thymeleaf.org/\[Thymeleaf](https://www.thymeleaf.org/%5BThymeleaf)] templates. To enable Mail notifications, configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
+Mail notifications will be delivered as HTML emails rendered using [Thymeleaf](https://www.thymeleaf.org/) templates. To enable Mail notifications, configure a `JavaMailSender` using `spring-boot-starter-mail` and set a recipient.
 
 ![mail-notification.png](/4.1.0-SNAPSHOT/assets/images/mail-notification-a2acdea4c13fd4e1f2b2e336c827f6a8.png)
 

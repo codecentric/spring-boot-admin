@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.9.2">
 <title data-rh="true">To Spring Boot Admin 4 | Spring Boot Admin</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://docs.spring-boot-admin.com/4.1.0-SNAPSHOT/img/social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://docs.spring-boot-admin.com/4.1.0-SNAPSHOT/img/social-card.jpg"><meta data-rh="true" property="og:url" content="https://docs.spring-boot-admin.com/4.1.0-SNAPSHOT/docs/upgrading/spring-boot-admin-4"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="To Spring Boot Admin 4 | Spring Boot Admin"><meta data-rh="true" name="description" content="This guide covers the breaking changes, deprecated features, and migration steps required to upgrade from Spring Boot"><meta data-rh="true" property="og:description" content="This guide covers the breaking changes, deprecated features, and migration steps required to upgrade from Spring Boot"><link data-rh="true" rel="icon" href="/4.1.0-SNAPSHOT/img/favicon.png"><link data-rh="true" rel="canonical" href="https://docs.spring-boot-admin.com/4.1.0-SNAPSHOT/docs/upgrading/spring-boot-admin-4"><link data-rh="true" rel="alternate" href="https://docs.spring-boot-admin.com/4.1.0-SNAPSHOT/docs/upgrading/spring-boot-admin-4" hreflang="en"><link data-rh="true" rel="alternate" href="https://docs.spring-boot-admin.com/4.1.0-SNAPSHOT/docs/upgrading/spring-boot-admin-4" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://GUDRYGX7B3-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Upgrading","item":"https://docs.spring-boot-admin.com/4.1.0-SNAPSHOT/docs/upgrading/"},{"@type":"ListItem","position":2,"name":"To Spring Boot Admin 4","item":"https://docs.spring-boot-admin.com/4.1.0-SNAPSHOT/docs/upgrading/spring-boot-admin-4"}]}</script><link rel="stylesheet" href="/4.1.0-SNAPSHOT/assets/css/styles.a55c2c0b.css">
-<script src="/4.1.0-SNAPSHOT/assets/js/runtime~main.997080a0.js" defer="defer"></script>
+<script src="/4.1.0-SNAPSHOT/assets/js/runtime~main.b7bdc249.js" defer="defer"></script>
 <script src="/4.1.0-SNAPSHOT/assets/js/main.735770f6.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -81,24 +81,18 @@ Java ecosystem.</p>
 <li class="">Search your configuration files for <code>prefer-ip</code></li>
 <li class="">Replace with <code>service-host-type: IP</code> (if <code>prefer-ip: true</code>) or <code>service-host-type: HOST_NAME</code> (if <code>prefer-ip: false</code>)</li>
 </ul>
-<hr>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="4-jolokia-compatibility">4. Jolokia Compatibility<a href="#4-jolokia-compatibility" class="hash-link" aria-label="Direct link to 4. Jolokia Compatibility" title="Direct link to 4. Jolokia Compatibility" translate="no">​</a></h3>
 <p><strong>What Changed:</strong></p>
-<p>The current stable Jolokia version (2.4.2) does not yet support Spring Boot 4. Spring Boot Admin 4 temporarily
-downgrades to <strong>Jolokia 2.1.0</strong> for basic JMX functionality.</p>
-<p><strong>Limitations:</strong></p>
-<ul>
-<li class="">Some advanced Jolokia features may not be available</li>
-<li class="">JMX operations work but with reduced functionality compared to Jolokia 2.4.2</li>
-</ul>
-<p><strong>Future Outlook:</strong></p>
-<p>Spring Boot Admin will upgrade to a newer Jolokia version once Spring Boot 4 support is added. Monitor
-the <a href="https://github.com/jolokia/jolokia" target="_blank" rel="noopener noreferrer" class="">Jolokia project</a> for updates on Spring Boot 4 compatibility.</p>
+<p>Spring Boot Admin 4 manages the Jolokia Spring Boot integration <strong><code>org.jolokia:jolokia-support-springboot</code> 2.5.x</strong>, which supports Spring Boot 4.</p>
 <p><strong>Action Required:</strong></p>
 <ul>
-<li class=""><strong>No immediate action needed</strong> - Jolokia 2.1.0 is included automatically and provides basic JMX functionality</li>
-<li class="">Test your JMX operations to ensure they work with the limited feature set</li>
-<li class="">If JMX functionality is critical, consider waiting for full Jolokia support before upgrading</li>
+<li class="">Jolokia 2.5.x is compatible with Spring Boot 4 and Spring Boot Admin 4.</li>
+<li class="">If you use <strong>JMX-Bean Management</strong>, you must add the appropriate Jolokia Spring Boot support dependency to each
+client application, matching the client&#x27;s Spring Boot major version (for example, <code>jolokia-support-springboot</code>
+for Spring Boot 4+ clients and <code>jolokia-support-springboot3</code> for Spring Boot 3.x clients). For Spring Boot 2.x
+applications managed by Spring Boot Admin 2 or 3, use <code>jolokia-core</code> as described in the corresponding SBA
+version documentation. See the <a class="" href="/4.1.0-SNAPSHOT/docs/client/client-features#jmx-bean-management">JMX-Bean Management</a>
+section for the exact dependency coordinates per Spring Boot version.</li>
 </ul>
 <hr>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="migration-checklist">Migration Checklist<a href="#migration-checklist" class="hash-link" aria-label="Direct link to Migration Checklist" title="Direct link to Migration Checklist" translate="no">​</a></h2>
@@ -137,7 +131,7 @@ the <a href="https://github.com/jolokia/jolokia" target="_blank" rel="noopener n
 <li class="">Health checks update correctly</li>
 <li class="">Actuator endpoints are accessible</li>
 <li class="">Notifications fire properly</li>
-<li class="">JMX operations work (with Jolokia 2.1.0 limitations)</li>
+<li class="">JMX operations work via Jolokia</li>
 </ul>
 </li>
 </ol>
@@ -163,7 +157,6 @@ the <a href="https://github.com/codecentric/spring-boot-admin/releases" target="
 <li class="">✅ Replace <code>org.springframework.lang.Nullable</code> with <code>org.jspecify.annotations.Nullable</code></li>
 <li class="">✅ Migrate client from <code>WebClient</code> to <code>RestClient</code></li>
 <li class="">✅ Change <code>prefer-ip</code> to <code>service-host-type</code></li>
-<li class="">⚠️ Accept Jolokia 2.1.0 limitations temporarily</li>
 </ul>
 <p>Most applications can upgrade with minimal code changes, primarily focused on configuration updates and dependency
 management.</p></div></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/4.1.0-SNAPSHOT/docs/upgrading/"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Upgrading</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#prerequisites" class="table-of-contents__link toc-highlight">Prerequisites</a></li><li><a href="#breaking-changes" class="table-of-contents__link toc-highlight">Breaking Changes</a><ul><li><a href="#1-nullable-annotations-change" class="table-of-contents__link toc-highlight">1. Nullable Annotations Change</a></li><li><a href="#2-http-client-configuration-changes" class="table-of-contents__link toc-highlight">2. HTTP Client Configuration Changes</a><ul><li><a href="#for-admin-client" class="table-of-contents__link toc-highlight">For Admin Client</a></li><li><a href="#for-admin-server" class="table-of-contents__link toc-highlight">For Admin Server</a></li></ul></li><li><a href="#3-property-rename-prefer-ip-removed" class="table-of-contents__link toc-highlight">3. Property Rename: <code>prefer-ip</code> Removed</a></li><li><a href="#4-jolokia-compatibility" class="table-of-contents__link toc-highlight">4. Jolokia Compatibility</a></li></ul></li><li><a href="#migration-checklist" class="table-of-contents__link toc-highlight">Migration Checklist</a><ul><li><a href="#step-1-update-dependencies" class="table-of-contents__link toc-highlight">Step 1: Update Dependencies</a></li><li><a href="#step-2-update-configuration" class="table-of-contents__link toc-highlight">Step 2: Update Configuration</a></li><li><a href="#step-3-update-code" class="table-of-contents__link toc-highlight">Step 3: Update Code</a></li><li><a href="#step-4-test" class="table-of-contents__link toc-highlight">Step 4: Test</a></li><li><a href="#step-5-monitor-logs" class="table-of-contents__link toc-highlight">Step 5: Monitor Logs</a></li></ul></li><li><a href="#getting-help" class="table-of-contents__link toc-highlight">Getting Help</a></li><li><a href="#summary" class="table-of-contents__link toc-highlight">Summary</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/4.1.0-SNAPSHOT/docs/getting-started/">Overview</a></li><li class="footer__item"><a class="footer__link-item" href="/4.1.0-SNAPSHOT/faq">FAQ</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/spring-boot-admin" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/codecentric/spring-boot-admin" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a class="footer__link-item" href="/4.1.0-SNAPSHOT/impressum">Impressum</a></li><li class="footer__item"><a class="footer__link-item" href="/4.1.0-SNAPSHOT/privacy">Privacy</a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">© 2026 <a href="https://www.codecentric.de/" target="_blank">codecentric AG</a></div></div></div></footer></div>

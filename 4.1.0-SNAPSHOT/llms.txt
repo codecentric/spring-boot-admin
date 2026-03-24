@@ -49,7 +49,7 @@
 - [Discord Notifications](/docs/server/notifications/notifier-discord.md): To enable Discord notifications you need to create a webhook and set the appropriate configuration property.
 - [Hipchat Notifications](/docs/server/notifications/notifier-hipchat.md): To enable Hipchat notifications you need to create an API token on your Hipchat account and set the appropriate configuration properties.
 - [Let’s Chat Notifications](/docs/server/notifications/notifier-lets-chat.md): To enable Let’s Chat notifications you need to add the host url and add the API token and username from Let’s Chat
-- [Mail Notifications](/docs/server/notifications/notifier-mail.md): Mail notifications will be delivered as HTML emails rendered using https://www.thymeleaf.org/[Thymeleaf] templates.
+- [Mail Notifications](/docs/server/notifications/notifier-mail.md): Mail notifications will be delivered as HTML emails rendered using Thymeleaf templates.
 - [Mattermost Notifications](/docs/server/notifications/notifier-mattermost.md): To enable Mattermost notifications you need to add a bot account under integrations on your Mattermost server and configure it appropriately.
 - [Microsoft Teams Notifications](/docs/server/notifications/notifier-msteams.md): To enable Microsoft Teams notifications you need to set up a connector webhook url and set the appropriate configuration property.
 - [RocketChat Notifications](/docs/server/notifications/notifier-rocketchat.md): To enable Rocket.Chat notifications you need a personal token access and create a room to send message with this token

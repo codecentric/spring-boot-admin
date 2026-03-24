@@ -2,7 +2,7 @@
 
 Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts. Also have a look at the [Spring Boot support for Hazelcast](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/).
 
-When using clustering, Spring Boot Admin Events and Notifications are replicated across the members in the cluster. The applications are not replicated, each instance of Spring Boot Admin will have its own set of applications. This means that each instance has to monitor all applications, which may lead to increased load on the monitored services. Otherwise, you would have to ensure that each application is only monitored by one instance of Spring Boot Admin.
+When using clustering, Spring Boot Admin Events and Notifications are replicated across the members in the cluster. The registered applications themselves are not replicated — each instance of Spring Boot Admin independently polls its own set of registered clients. This means each node monitors all applications, which may lead to increased load on the monitored services. If that is a concern, ensure that each application is registered with only one instance of Spring Boot Admin.
 
 ![Architecture](/4.1.0-SNAPSHOT/assets/images/hazelcast-component-diagram-b537943d08d375e4794dd200b5bcde4c.png)
 

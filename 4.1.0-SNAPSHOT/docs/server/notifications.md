@@ -169,7 +169,7 @@ This example combines the reminding and filtering notifiers. This allows you to 
 
 ## [<!-- -->Mail Notifications](/4.1.0-SNAPSHOT/docs/server/notifications/notifier-mail.md)
 
-[Mail notifications will be delivered as HTML emails rendered using https://www.thymeleaf.org/\[Thymeleaf\] templates.](/4.1.0-SNAPSHOT/docs/server/notifications/notifier-mail.md)
+[Mail notifications will be delivered as HTML emails rendered using Thymeleaf templates.](/4.1.0-SNAPSHOT/docs/server/notifications/notifier-mail.md)
 
 ## [<!-- -->Mattermost Notifications](/4.1.0-SNAPSHOT/docs/server/notifications/notifier-mattermost.md)
 

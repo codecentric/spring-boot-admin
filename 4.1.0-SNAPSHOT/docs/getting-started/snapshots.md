@@ -32,7 +32,7 @@ pom.xml
         <snapshots>
             <enabled>true</enabled>
         </snapshots>
-        <url>http:s//repo.spring.io/snapshot</url>
+        <url>https://repo.spring.io/snapshot</url>
     </repository>
 </repositories>
 ```
