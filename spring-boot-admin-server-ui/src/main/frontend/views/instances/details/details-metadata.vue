@@ -43,14 +43,14 @@ import SbaAccordion from '@/components/sba-accordion.vue';
 import Instance from '@/services/instance';
 import { sortObject } from '@/utils/sortObject';
 
-const { instance } = defineProps<{
+const props = defineProps<{
   instance: Instance;
 }>();
 
 const panelOpen = ref(true);
 
 const metadata = computed(() => {
-  return sortObject(instance.registration.metadata);
+  return sortObject(props.instance.registration.metadata);
 });
 
 const hasMetadata = computed(() => {

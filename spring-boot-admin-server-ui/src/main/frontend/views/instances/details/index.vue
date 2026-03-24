@@ -111,8 +111,16 @@ export default {
     hasLoaded: true,
     error: null,
     metrics: [],
+    metricFetchToken: 0,
   }),
   computed: {
+    instanceUpdateKey() {
+      return (
+        this.instance.version ??
+        this.instance.statusTimestamp ??
+        this.instance.id
+      );
+    },
     hasCaches() {
       return this.hasMetric('cache.gets');
     },
@@ -139,30 +147,47 @@ export default {
     },
   },
   watch: {
-    instance() {
-      this.fetchMetricIndex();
+    instanceUpdateKey: {
+      handler() {
+        this.fetchMetricIndex();
+      },
+      immediate: true,
     },
-  },
-  created() {
-    this.fetchMetricIndex();
   },
   methods: {
     hasMetric(metric) {
       return this.metrics && this.metrics.includes(metric);
     },
     async fetchMetricIndex() {
-      if (this.instance.hasEndpoint('metrics')) {
-        this.hasLoaded = false;
-        this.error = null;
-        try {
-          const res = await this.instance.fetchMetrics();
-          this.metrics = res.data.names;
-        } catch (error) {
-          console.warn('Fetching metric index failed:', error);
-          this.error = error;
-        } finally {
-          this.hasLoaded = true;
+      // Reset immediately so SSE updates can't leave stale gating behind.
+      this.metrics = [];
+      this.error = null;
+
+      if (!this.instance.hasEndpoint('metrics')) {
+        this.hasLoaded = true;
+        return;
+      }
+
+      const token = ++this.metricFetchToken;
+      this.hasLoaded = false;
+      this.error = null;
+      try {
+        const res = await this.instance.fetchMetrics();
+        if (token !== this.metricFetchToken) {
+          return;
         }
+        this.metrics = res.data.names;
+      } catch (error) {
+        if (token !== this.metricFetchToken) {
+          return;
+        }
+        console.warn('Fetching metric index failed:', error);
+        this.error = error;
+      } finally {
+        if (token !== this.metricFetchToken) {
+          return;
+        }
+        this.hasLoaded = true;
       }
     },
   },

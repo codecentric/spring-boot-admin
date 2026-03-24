@@ -163,4 +163,37 @@ describe('DetailsDatasource', () => {
       expect(screen.queryByText(`${ACTIVE[0]}`)).not.toBeInTheDocument();
     });
   });
+
+  it('should reinitialize metrics when instance version changes (SSE update)', async () => {
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+
+    const { rerender } = await render(DetailsDatasource, {
+      props: {
+        instance: instance1,
+        dataSource: DATA_SOURCE,
+      },
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(`${ACTIVE[0]}`)).toBeVisible();
+    });
+
+    const instance2 = new Application({
+      ...application,
+      instances: [
+        {
+          ...instance1,
+          id: instance1.id,
+          version: (instance1.version ?? 0) + 1,
+        },
+      ],
+    }).instances[0];
+
+    await rerender({ instance: instance2, dataSource: DATA_SOURCE });
+
+    await waitFor(() => {
+      expect(screen.queryByText(`${ACTIVE[0]}`)).not.toBeInTheDocument();
+    });
+  });
 });

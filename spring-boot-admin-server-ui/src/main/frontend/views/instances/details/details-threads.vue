@@ -80,7 +80,8 @@
 
 <script>
 import moment from 'moment';
-import { take } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
@@ -106,6 +107,7 @@ export default {
     current: null,
     chartData: [],
     currentInstanceId: null,
+    currentInstanceUpdateKey: null,
   }),
   watch: {
     instance: {
@@ -115,12 +117,30 @@ export default {
   },
   methods: {
     initMetrics() {
-      if (this.instance.id !== this.currentInstanceId) {
+      const updateKey =
+        this.instance.version ??
+        this.instance.statusTimestamp ??
+        this.instance.id;
+      const firstInit = this.currentInstanceId === null;
+      if (
+        this.instance.id !== this.currentInstanceId ||
+        updateKey !== this.currentInstanceUpdateKey
+      ) {
         this.currentInstanceId = this.instance.id;
+        this.currentInstanceUpdateKey = updateKey;
         this.error = null;
         this.hasLoaded = false;
         this.current = null;
         this.chartData = [];
+
+        // Restart polling immediately so SSE updates refresh the view.
+        if (!firstInit) {
+          // Stop old subscription and start fresh
+          this.unsubscribe();
+          // Recreate destroy$ so new subscription can use takeUntil properly
+          this.destroy$ = new Subject();
+          this.subscribe();
+        }
       }
     },
     async fetchMetrics() {
@@ -138,6 +158,8 @@ export default {
       return timer(0, sbaConfig.uiSettings.pollTimer.threads)
         .pipe(
           concatMap(this.fetchMetrics),
+          // Stop polling when destroy$ emits (on unmount or instance update)
+          takeUntil(this.destroy$),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
           }),

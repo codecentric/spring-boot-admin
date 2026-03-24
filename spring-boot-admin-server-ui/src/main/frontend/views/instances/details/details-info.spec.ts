@@ -10,6 +10,16 @@ import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import { render } from '@/test-utils';
 
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: any) => void;
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, resolve, reject };
+}
+
 describe('DetailsInfo', () => {
   beforeEach(() => {
     server.use(
@@ -103,12 +113,17 @@ describe('DetailsInfo', () => {
   it('should call fetchInfo when instance changes (watcher)', async () => {
     const application = new Application(applications[0]);
     const instance1 = application.instances[0];
-    const instance2 = {
-      ...instance1,
-      id: 'other-id',
-      hasEndpoint: () => true,
-      fetchInfo: async () => ({ data: { foo: 'bar' } }),
-    };
+    const instance2 = new Application({
+      ...application,
+      instances: [
+        {
+          ...instance1,
+          id: 'other-id',
+        },
+      ],
+    }).instances[0];
+    instance2.hasEndpoint = () => true;
+    instance2.fetchInfo = async () => ({ data: { foo: 'bar' } });
     instance1.hasEndpoint = () => true;
     const fetchInfoSpy = vi
       .fn()
@@ -129,5 +144,98 @@ describe('DetailsInfo', () => {
     // Should show the new info from instance2
     expect(await screen.findByText('foo')).toBeVisible();
     expect(await screen.findByText('bar')).toBeVisible();
+  });
+
+  it('should call fetchInfo when instance version changes (SSE update)', async () => {
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+    instance1.hasEndpoint = () => true;
+
+    const fetchInfoSpy = vi
+      .fn()
+      .mockResolvedValueOnce({ data: { app: { version: '1.0.0' } } })
+      .mockResolvedValueOnce({ data: { app: { version: '2.0.0' } } });
+    instance1.fetchInfo = fetchInfoSpy;
+
+    const { rerender } = render(DetailsInfo, {
+      props: { instance: instance1 },
+    });
+
+    await waitFor(() => {
+      expect(fetchInfoSpy).toHaveBeenCalledTimes(1);
+    });
+
+    const instance2 = new Application({
+      ...application,
+      instances: [
+        {
+          ...instance1,
+          id: instance1.id,
+          version: (instance1.version ?? 0) + 1,
+        },
+      ],
+    }).instances[0];
+    instance2.hasEndpoint = () => true;
+    instance2.fetchInfo = fetchInfoSpy;
+
+    await rerender({ instance: instance2 });
+
+    await waitFor(() => {
+      expect(fetchInfoSpy).toHaveBeenCalledTimes(2);
+    });
+
+    expect(await screen.findByText(/version: 2.0.0/)).toBeVisible();
+  });
+
+  it('should ignore stale info response when instance updates quickly', async () => {
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+    instance1.hasEndpoint = () => true;
+
+    const p1 = deferred<{ data: any }>();
+    const p2 = deferred<{ data: any }>();
+    const fetchInfoSpy = vi
+      .fn()
+      .mockReturnValueOnce(p1.promise)
+      .mockReturnValueOnce(p2.promise);
+    instance1.fetchInfo = fetchInfoSpy;
+
+    const { rerender } = render(DetailsInfo, {
+      props: { instance: instance1 },
+    });
+
+    await waitFor(() => {
+      expect(fetchInfoSpy).toHaveBeenCalledTimes(1);
+    });
+
+    const instance2 = new Application({
+      ...application,
+      instances: [
+        {
+          ...instance1,
+          id: instance1.id,
+          version: (instance1.version ?? 0) + 1,
+        },
+      ],
+    }).instances[0];
+    instance2.hasEndpoint = () => true;
+    instance2.fetchInfo = fetchInfoSpy;
+
+    await rerender({ instance: instance2 });
+
+    await waitFor(() => {
+      expect(fetchInfoSpy).toHaveBeenCalledTimes(2);
+    });
+
+    // Resolve second (newer) response first.
+    p2.resolve({ data: { app: { version: '2.0.0' } } });
+    expect(await screen.findByText(/version: 2.0.0/)).toBeVisible();
+
+    // Resolve first (older) response afterwards; UI must not regress.
+    p1.resolve({ data: { app: { version: '1.0.0' } } });
+    await waitFor(() => {
+      expect(screen.queryByText(/version: 1.0.0/)).not.toBeInTheDocument();
+    });
+    expect(await screen.findByText(/version: 2.0.0/)).toBeVisible();
   });
 });

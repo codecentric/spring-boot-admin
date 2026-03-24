@@ -66,32 +66,52 @@ const error = ref(null);
 const loading = ref(false);
 const liveInfo = ref(null);
 const currentInstanceId = ref(null);
+const currentInstanceUpdateKey = ref(null);
+const requestGen = ref(0);
 
 const info = computed(() => formatInfo(liveInfo.value || props.instance.info));
 const isEmptyInfo = computed(() => Object.keys(info.value).length <= 0);
 
 async function fetchInfo() {
   if (props.instance.hasEndpoint('info')) {
+    const gen = ++requestGen.value;
+
     currentInstanceId.value = props.instance.id;
+    currentInstanceUpdateKey.value =
+      props.instance.version ??
+      props.instance.statusTimestamp ??
+      props.instance.id;
     loading.value = true;
     error.value = null;
+
     try {
       const res = await props.instance.fetchInfo();
+      // Verify this is still the latest request generation
+      if (gen !== requestGen.value) {
+        return;
+      }
       liveInfo.value = res.data;
     } catch (err) {
+      // Stale error - ignore if a newer request was initiated
+      if (gen !== requestGen.value) {
+        return;
+      }
       error.value = err;
-
       console.warn('Fetching info failed:', err);
     } finally {
+      // Don't clear loading state if new request started
+      if (gen !== requestGen.value) {
+        return;
+      }
       loading.value = false;
     }
   }
 }
 
 function reloadInfo() {
-  if (props.instance.id !== currentInstanceId.value) {
-    fetchInfo();
-  }
+  // Increment generation to invalidate any in-flight requests
+  requestGen.value++;
+  fetchInfo();
 }
 
 function formatInfo(info) {
@@ -109,12 +129,13 @@ function formatInfo(info) {
 }
 
 watch(
-  () => props.instance,
+  () => [
+    props.instance.id,
+    props.instance.version ?? props.instance.statusTimestamp,
+  ],
   () => reloadInfo(),
   { immediate: true },
 );
-
-fetchInfo();
 </script>
 
 <style lang="css">
