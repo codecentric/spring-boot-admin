@@ -242,4 +242,27 @@ describe('DetailsHealth', () => {
       }),
     ).toBeNull();
   });
+
+  it('should fetch health details only once on startup', async () => {
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+
+    render(DetailsHealth, {
+      props: {
+        instance,
+      },
+    });
+
+    await waitFor(() => {
+      expect(healthHandlerSpy).toHaveBeenCalledTimes(1);
+    });
+
+    // Verify that the handler is not called again after the initial fetch
+    await waitFor(
+      () => {
+        expect(healthHandlerSpy).toHaveBeenCalledTimes(1);
+      },
+      { timeout: 1000 },
+    );
+  });
 });

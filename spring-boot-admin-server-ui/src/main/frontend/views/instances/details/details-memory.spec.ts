@@ -199,7 +199,11 @@ describe('DetailsMemory', () => {
     const instance1 = new Instance({
       id: '1',
       version: 1,
-      availableMetrics: ['jvm.memory.used', 'jvm.memory.max', 'jvm.memory.committed'],
+      availableMetrics: [
+        'jvm.memory.used',
+        'jvm.memory.max',
+        'jvm.memory.committed',
+      ],
     });
     instance1.fetchMetric = vi.fn().mockImplementation((name: string) => {
       if (name === 'jvm.memory.max') return pMax1.promise;
@@ -211,7 +215,11 @@ describe('DetailsMemory', () => {
     const instance2 = new Instance({
       id: '1',
       version: 2,
-      availableMetrics: ['jvm.memory.used', 'jvm.memory.max', 'jvm.memory.committed'],
+      availableMetrics: [
+        'jvm.memory.used',
+        'jvm.memory.max',
+        'jvm.memory.committed',
+      ],
     });
     instance2.fetchMetric = vi.fn().mockImplementation((name: string) => {
       const mk = (value: number) =>

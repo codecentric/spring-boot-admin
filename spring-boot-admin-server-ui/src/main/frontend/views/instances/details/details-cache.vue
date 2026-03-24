@@ -140,36 +140,36 @@ export default {
     },
   },
   methods: {
-     initCacheMetrics() {
-       const updateKey =
-         this.instance.version ??
-         this.instance.statusTimestamp ??
-         this.instance.id;
-       const firstInit = this.currentInstanceId === null;
-       if (
-         this.instance.id !== this.currentInstanceId ||
-         updateKey !== this.currentInstanceUpdateKey
-       ) {
-         this.currentInstanceId = this.instance.id;
-         this.currentInstanceUpdateKey = updateKey;
-         this.hasLoaded = false;
-         this.error = null;
-         this.current = null;
-         this.chartData = [];
-         this.shouldFetchCacheSize = true;
-         this.shouldFetchCacheHits = true;
-         this.shouldFetchCacheMisses = true;
+    initCacheMetrics() {
+      const updateKey =
+        this.instance.version ??
+        this.instance.statusTimestamp ??
+        this.instance.id;
+      const firstInit = this.currentInstanceId === null;
+      if (
+        this.instance.id !== this.currentInstanceId ||
+        updateKey !== this.currentInstanceUpdateKey
+      ) {
+        this.currentInstanceId = this.instance.id;
+        this.currentInstanceUpdateKey = updateKey;
+        this.hasLoaded = false;
+        this.error = null;
+        this.current = null;
+        this.chartData = [];
+        this.shouldFetchCacheSize = true;
+        this.shouldFetchCacheHits = true;
+        this.shouldFetchCacheMisses = true;
 
-         // Restart polling immediately so SSE updates refresh the view.
-         if (!firstInit) {
-           // Stop old subscription and start fresh
-           this.unsubscribe();
-           // Recreate destroy$ so new subscription can use takeUntil properly
-           this.destroy$ = new Subject();
-           this.subscribe();
-         }
-       }
-     },
+        // Restart polling immediately so SSE updates refresh the view.
+        if (!firstInit) {
+          // Stop old subscription and start fresh
+          this.unsubscribe();
+          // Recreate destroy$ so new subscription can use takeUntil properly
+          this.destroy$ = new Subject();
+          this.subscribe();
+        }
+      }
+    },
     async fetchMetrics() {
       const [hit, miss, size] = await Promise.all([
         this.fetchCacheHits(),
@@ -250,33 +250,33 @@ export default {
 
       return { ...data, hitsPerInterval, missesPerInterval, totalPerInterval };
     },
-     createSubscription() {
-       return timer(0, sbaConfig.uiSettings.pollTimer.cache)
-         .pipe(
-           concatMap(this.fetchMetrics),
-           map(this.calculateMetricsPerInterval),
-           // Stop polling when destroy$ emits (on unmount or instance update)
-           takeUntil(this.destroy$),
-           retryWhen((err) => {
-             return err.pipe(delay(1000), take(5));
-           }),
-         )
-         .subscribe({
-           next: (data) => {
-             this.hasLoaded = true;
-             this.current = data;
-             this.chartData.push({ ...data, timestamp: moment().valueOf() });
-           },
-           error: (error) => {
-             this.hasLoaded = true;
-             console.warn(
-               `Fetching cache ${this.cacheName} metrics failed:`,
-               error,
-             );
-             this.error = error;
-           },
-         });
-     },
+    createSubscription() {
+      return timer(0, sbaConfig.uiSettings.pollTimer.cache)
+        .pipe(
+          concatMap(this.fetchMetrics),
+          map(this.calculateMetricsPerInterval),
+          // Stop polling when destroy$ emits (on unmount or instance update)
+          takeUntil(this.destroy$),
+          retryWhen((err) => {
+            return err.pipe(delay(1000), take(5));
+          }),
+        )
+        .subscribe({
+          next: (data) => {
+            this.hasLoaded = true;
+            this.current = data;
+            this.chartData.push({ ...data, timestamp: moment().valueOf() });
+          },
+          error: (error) => {
+            this.hasLoaded = true;
+            console.warn(
+              `Fetching cache ${this.cacheName} metrics failed:`,
+              error,
+            );
+            this.error = error;
+          },
+        });
+    },
   },
 };
 </script>

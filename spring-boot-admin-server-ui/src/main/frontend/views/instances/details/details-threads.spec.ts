@@ -124,7 +124,8 @@ describe('DetailsThreads', () => {
   it('should reinitialize metrics when instance version changes (SSE update)', async () => {
     const stubChart = {
       props: ['data'],
-      template: `<div data-testid="chart">{{ JSON.stringify($props.data) }}</div>`,
+      template:
+        '<div data-testid="chart">{{ JSON.stringify($props.data) }}</div>',
     };
 
     const application = new Application(applications[0]);

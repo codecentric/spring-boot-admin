@@ -78,7 +78,9 @@ async function fetchInfo() {
 
     currentInstanceId.value = props.instance.id;
     currentInstanceUpdateKey.value =
-      props.instance.version ?? props.instance.statusTimestamp ?? props.instance.id;
+      props.instance.version ??
+      props.instance.statusTimestamp ??
+      props.instance.id;
     loading.value = true;
     error.value = null;
 

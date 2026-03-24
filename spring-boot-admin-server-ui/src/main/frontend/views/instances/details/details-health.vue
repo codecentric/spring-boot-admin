@@ -133,7 +133,9 @@ export default {
   methods: {
     reloadHealth() {
       const updateKey =
-        this.instance.version ?? this.instance.statusTimestamp ?? this.instance.id;
+        this.instance.version ??
+        this.instance.statusTimestamp ??
+        this.instance.id;
       if (
         this.instance.id !== this.currentInstanceId ||
         updateKey !== this.currentInstanceUpdateKey
@@ -167,7 +169,9 @@ export default {
 
         this.currentInstanceId = this.instance.id;
         this.currentInstanceUpdateKey =
-          this.instance.version ?? this.instance.statusTimestamp ?? this.instance.id;
+          this.instance.version ??
+          this.instance.statusTimestamp ??
+          this.instance.id;
         this.liveHealth = res.data;
 
         if (Array.isArray(res.data.groups)) {
