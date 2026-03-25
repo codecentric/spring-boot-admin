@@ -15,41 +15,86 @@
   -->
 
 <template>
-  <div class="h-full">
+  <div class="flex h-full">
     <sba-wave />
-    <div class="h-full">
-      <Sidebar
-        v-if="instance"
-        :key="instanceId"
-        :application="application"
-        :instance="instance"
-        :views="sidebarViews"
-      />
-      <main
-        class="min-h-full h-full relative z-0 ml-10 md:ml-60 transition-all"
-      >
-        <router-view
+    <div
+      class="flex-shrink-0 flex flex-col transition-all duration-300 ease-in-out bg-white border-r relative overflow-hidden"
+      :class="{
+        'w-12': !sidebarOpen,
+        'w-64': sidebarOpen,
+      }"
+    >
+      <div v-if="instance" class="px-1 py-1">
+        <div
+          v-if="!sidebarOpen"
+          class="rounded bg-sba-50 text-center aspect-square flex items-center overflow-hidden text-xs"
+        >
+          <CollapseSidebarButton @toggle-sidebar="toggleSidebar" />
+        </div>
+        <div
+          v-if="sidebarOpen"
+          class="relative hidden md:block bg-sba-50 bg-opacity-40 text-sba-900 text-sm py-4 pl-6 pr-2 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer"
+        >
+          <router-link
+            :to="{
+              name: 'instances/details',
+              params: { instanceId: instance.id },
+            }"
+          >
+            <span class="overflow-hidden text-ellipsis">
+              <div class="font-bold" v-text="instance.registration.name" />
+              <div>
+                <small><em v-text="instance.id" /></small>
+              </div>
+            </span>
+          </router-link>
+          <CollapseSidebarButton
+            class="absolute top-1 right-1 p-1 rounded focus:outline-none focus:ring focus:ring-sba-300"
+            open
+            @toggle-sidebar="toggleSidebar"
+          />
+        </div>
+      </div>
+      <div class="fex-1 overflow-y-auto">
+        <Sidebar
           v-if="instance"
+          :key="instanceId"
+          :open="sidebarOpen"
           :application="application"
           :instance="instance"
+          :views="sidebarViews"
         />
-      </main>
+      </div>
     </div>
+    <main class="flex-1 overflow-y-auto relative">
+      <router-view
+        v-if="instance"
+        :application="application"
+        :instance="instance"
+      />
+    </main>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import { useViewRegistry } from '@/composables/ViewRegistry';
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import { findApplicationForInstance, findInstance } from '@/store';
-import Sidebar from '@/views/instances/shell/sidebar';
+import { createInitials } from '@/utils/createInitials';
+import CollapseSidebarButton from '@/views/instances/shell/CollapseSidebarButton.vue';
+import Sidebar from '@/views/instances/shell/sidebar.vue';
 
 const { applications } = useApplicationStore();
 const { views } = useViewRegistry();
 const route = useRoute();
+
+const SIDEBAR_STORAGE_KEY = 'de.codecentric.spring-boot-admin.sidebar';
+const sidebarOpen = ref<boolean>(
+  localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true' || true,
+);
 
 const instanceId = computed(() => {
   return route.params.instanceId;
@@ -71,4 +116,9 @@ const application = computed(() => {
 const instance = computed(() => {
   return findInstance(applications.value, instanceId.value);
 });
+
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value;
+  localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarOpen.value));
+};
 </script>
