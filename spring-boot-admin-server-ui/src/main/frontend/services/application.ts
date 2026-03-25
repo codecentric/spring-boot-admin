@@ -124,6 +124,10 @@ class Application {
     return this.hasEndpoint('restart');
   }
 
+  static async refreshApplications() {
+    return axios.post('applications');
+  }
+
   static async list() {
     return axios.get('applications', {
       headers: { Accept: 'application/json', 'X-SBA-REQUEST': true },

@@ -24,7 +24,7 @@
           <sba-confirm-button
             class="mr-1"
             :title="$t('applications.actions.refresh_applications')"
-            @click="refreshContext"
+            @click="refreshApplications"
           >
             <font-awesome-icon :icon="'rotate-left'" />
           </sba-confirm-button>
@@ -213,7 +213,6 @@ import { useApplicationStore } from '@/composables/useApplicationStore';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import NotificationFilter from '@/services/notification-filter';
-import axios from '@/utils/axios';
 import { anyValueMatches } from '@/utils/collections';
 import { Subject, concatMap, mergeWith, timer } from '@/utils/rxjs';
 import { useRouterState } from '@/utils/useRouterState';
@@ -348,10 +347,13 @@ const grouped = computed(() => {
   return sortBy(list, [(item) => getApplicationStatus(item)]);
 });
 
-const refreshContext = () => {
-  axios.post('/applications').then(() => {
+const refreshApplications = async () => {
+  try {
+    await Application.refreshApplications();
     notificationCenter.success(t('applications.refreshed'));
-  });
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 function getApplicationStatus(item: InstancesListType): string {
