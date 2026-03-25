@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AxiosError, AxiosInstance } from "axios";
-import saveAs from "file-saver";
-import { concat, from, ignoreElements, Observable } from "rxjs";
+import { AxiosError, AxiosInstance } from 'axios';
+import saveAs from 'file-saver';
+import { Observable, concat, from, ignoreElements } from 'rxjs';
 
-import axios, { redirectOn401, registerErrorToastInterceptor } from "../utils/axios";
-import waitForPolyfill from "../utils/eventsource-polyfill";
-import logtail from "../utils/logtail";
-import uri from "../utils/uri";
+import axios, {
+  redirectOn401,
+  registerErrorToastInterceptor,
+} from '../utils/axios';
+import waitForPolyfill from '../utils/eventsource-polyfill';
+import logtail from '../utils/logtail';
+import uri from '../utils/uri';
 
-import { useSbaConfig } from "@/sba-config";
-import { actuatorMimeTypes } from "@/services/spring-mime-types";
-import { transformToJSON } from "@/utils/transformToJSON";
+import { useSbaConfig } from '@/sba-config';
+import { actuatorMimeTypes } from '@/services/spring-mime-types';
+import { transformToJSON } from '@/utils/transformToJSON';
 
 // Extend AxiosRequestConfig to allow suppressToast
 declare module 'axios' {
