@@ -223,6 +223,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+@reference "../../../index.css";
 .table-header-clickable {
   cursor: pointer;
 }

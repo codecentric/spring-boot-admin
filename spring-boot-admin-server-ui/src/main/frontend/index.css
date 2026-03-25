@@ -15,10 +15,7 @@
  */
 
 @import './toast-theme.css';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 body {
   font-family:

@@ -146,6 +146,7 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+@reference "../../../index.css";
 .x-scroller {
   overflow-x: auto;
 }

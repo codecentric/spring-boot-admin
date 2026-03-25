@@ -96,6 +96,7 @@ export default {
 </script>
 
 <style lang="css">
+@reference "../../../index.css";
 .route-definition {
   display: block;
   min-width: 12em;

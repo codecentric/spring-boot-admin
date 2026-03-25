@@ -242,6 +242,7 @@ export default {
 </script>
 
 <style lang="css">
+@reference "../../../index.css";
 .exchange-chart {
   height: 200px;
   width: 100%;

@@ -88,6 +88,7 @@ export default {
 </script>
 
 <style lang="css">
+@reference "../../../index.css";
 .heapdump {
   display: flex;
   justify-content: space-around;

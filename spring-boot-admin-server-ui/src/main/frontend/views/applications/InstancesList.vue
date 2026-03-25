@@ -84,6 +84,7 @@ const showDetails = (instance: Instance) => {
 </script>
 
 <style scoped>
+@reference "../../index.css";
 .instance--show-url {
   .instance-item-information {
     @apply gap-1;
@@ -93,6 +94,7 @@ const showDetails = (instance: Instance) => {
 </style>
 
 <style>
+@reference "../../index.css";
 .instance-item.instance--show-url {
   .instance-id {
     @apply text-xs font-light;

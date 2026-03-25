@@ -62,6 +62,7 @@ defineProps({
 </script>
 
 <style scoped>
+@reference "../../index.css";
 .submenu {
   @apply inline-block text-left text-white cursor-pointer lg:relative;
 }

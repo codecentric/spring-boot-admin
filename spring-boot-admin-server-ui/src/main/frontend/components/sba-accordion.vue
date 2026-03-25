@@ -21,7 +21,7 @@
     :class="
       classNames(
         {
-          '!p-0 !h-0 overflow-hidden': !open,
+          'p-0! h-0! overflow-hidden': !open,
         },
         'transition-[height] h-auto',
       )

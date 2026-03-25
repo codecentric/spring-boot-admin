@@ -142,6 +142,7 @@ export default {
 </script>
 
 <style lang="css">
+@reference "../../../index.css";
 .cache-chart__svg {
   height: 159px;
   width: 100%;

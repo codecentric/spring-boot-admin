@@ -112,7 +112,7 @@
       </li>
 
       <template v-if="customLinksFromMetadata?.length > 0">
-        <Divider align="center" class="!my-2">
+        <Divider align="center" class="my-2!">
           <small class="bold">
             {{ $t('sidebar.custom-link.title') }}
           </small>
@@ -263,6 +263,7 @@ function hasMultipleViews(group: any) {
 </script>
 
 <style scoped>
+@reference "../../../index.css";
 .instance-info-block {
   @apply bg-sba-50 bg-opacity-40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
 }

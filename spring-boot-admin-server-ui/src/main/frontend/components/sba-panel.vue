@@ -150,9 +150,9 @@ export default {
       const header = this.$refs.header;
       const boundingClientRect = header.getBoundingClientRect();
       if (boundingClientRect.top <= this.headerTopValue) {
-        header.classList.add('!rounded-none', '!py-2');
+        header.classList.add('rounded-none!', 'py-2!');
       } else {
-        header.classList.remove('!rounded-none', '!py-2');
+        header.classList.remove('rounded-none!', 'py-2!');
       }
     },
   },

@@ -251,6 +251,7 @@ export default {
 </script>
 
 <style>
+@reference "../../index.css";
 .hex-mesh {
   background-color: #4a4a4a;
   width: 100%;

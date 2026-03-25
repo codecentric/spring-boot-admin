@@ -31,7 +31,7 @@
           </select>
           <sba-input
             v-model="filter.value"
-            input-class="!rounded-l-none"
+            input-class="rounded-l-none!"
             name="filter"
             type="search"
             @paste="handlePaste"

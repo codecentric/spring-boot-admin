@@ -17,7 +17,7 @@
 <template>
   <section class="wallboard section">
     <div
-      class="flex gap-2 justify-end absolute w-full md:w-[28rem] top-14 right-0 bg-black/20 py-3 px-4 rounded-bl"
+      class="flex gap-2 justify-end absolute w-full md:w-md top-14 right-0 bg-black/20 py-3 px-4 rounded-bl"
     >
       <sba-input
         v-model="routerState.termFilter"
@@ -234,6 +234,7 @@ export default {
 </script>
 
 <style lang="postcss">
+@reference "../../index.css";
 .wallboard {
   background-color: #4a4a4a;
   height: calc(100vh - 52px);
