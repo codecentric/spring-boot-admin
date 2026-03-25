@@ -228,5 +228,67 @@ describe('Applications', () => {
         expect(indexRestricted).toBeLessThan(indexUp);
       });
     });
+
+    describe('refresh button', () => {
+      it('clicking the refresh button invokes Application.refreshApplications', async () => {
+        const refreshSpy = vi.spyOn(Application, 'refreshApplications');
+
+        const refreshButton = screen.getByTitle('Refresh applications');
+        // First click - enters confirm mode
+        await userEvent.click(refreshButton);
+
+        // Second click - confirms and executes
+        const confirmButton = await screen.findByText('Confirm');
+        await userEvent.click(confirmButton);
+
+        await waitFor(() => {
+          expect(refreshSpy).toHaveBeenCalled();
+        });
+      });
+
+      it('displays success toast when refresh completes successfully', async () => {
+        vi.spyOn(Application, 'refreshApplications').mockResolvedValue(
+          undefined,
+        );
+
+        const refreshButton = screen.getByTitle('Refresh applications');
+        // First click - enters confirm mode
+        await userEvent.click(refreshButton);
+
+        // Second click - confirms and executes
+        const confirmButton = await screen.findByText('Confirm');
+        await userEvent.click(confirmButton);
+
+        await waitFor(() => {
+          expect(
+            screen.getByText('Applications refreshed.'),
+          ).toBeInTheDocument();
+        });
+      });
+
+      it('logs error when refresh fails without throwing', async () => {
+        const consoleErrorSpy = vi
+          .spyOn(console, 'error')
+          .mockImplementation(() => {});
+        const testError = new Error('Refresh failed');
+        vi.spyOn(Application, 'refreshApplications').mockRejectedValue(
+          testError,
+        );
+
+        const refreshButton = screen.getByTitle('Refresh applications');
+        // First click - enters confirm mode
+        await userEvent.click(refreshButton);
+
+        // Second click - confirms and executes
+        const confirmButton = await screen.findByText('Confirm');
+        await userEvent.click(confirmButton);
+
+        await waitFor(() => {
+          expect(consoleErrorSpy).toHaveBeenCalledWith(testError);
+        });
+
+        consoleErrorSpy.mockRestore();
+      });
+    });
   });
 });

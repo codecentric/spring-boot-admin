@@ -24,7 +24,7 @@
           <sba-confirm-button
             class="mr-1"
             :title="$t('applications.actions.refresh_applications')"
-            @click="refreshContext"
+            @click="refreshApplications"
           >
             <font-awesome-icon :icon="'rotate-left'" />
           </sba-confirm-button>
