@@ -18,6 +18,7 @@ import saveAs from 'file-saver';
 import { Observable, concat, from, ignoreElements } from 'rxjs';
 
 import axios, {
+  addLanguageHeaderInterceptor,
   redirectOn401,
   registerErrorToastInterceptor,
 } from '../utils/axios';
@@ -63,6 +64,7 @@ class Instance {
       baseURL: uri`instances/${this.id}`,
       headers: { Accept: actuatorMimeTypes.join(',') },
     });
+    this.axios.interceptors.request.use(addLanguageHeaderInterceptor);
     this.axios.interceptors.response.use(
       (response) => response,
       redirectOn401(

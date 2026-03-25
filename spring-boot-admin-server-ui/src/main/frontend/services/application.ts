@@ -17,7 +17,10 @@ import { AxiosInstance } from 'axios';
 import { sortBy } from 'lodash-es';
 import { Observable, concat, from, ignoreElements } from 'rxjs';
 
-import axios, { redirectOn401 } from '../utils/axios';
+import axios, {
+  addLanguageHeaderInterceptor,
+  redirectOn401,
+} from '../utils/axios';
 import waitForPolyfill from '../utils/eventsource-polyfill';
 import uri from '../utils/uri';
 import Instance, { DOWN_STATES, UNKNOWN_STATES, UP_STATES } from './instance';
@@ -100,6 +103,7 @@ class Application {
         'X-SBA-REQUEST': true,
       },
     });
+    this.axios.interceptors.request.use(addLanguageHeaderInterceptor);
     this.axios.interceptors.response.use(
       (response) => response,
       redirectOn401(),
