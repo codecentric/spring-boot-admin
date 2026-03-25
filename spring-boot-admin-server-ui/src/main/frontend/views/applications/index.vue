@@ -347,7 +347,7 @@ const grouped = computed(() => {
   return sortBy(list, [(item) => getApplicationStatus(item)]);
 });
 
-const refreshContext = async () => {
+const refreshApplications = async () => {
   try {
     await Application.refreshApplications();
     notificationCenter.success(t('applications.refreshed'));
