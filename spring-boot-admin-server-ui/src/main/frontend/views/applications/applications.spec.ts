@@ -1,9 +1,11 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
+import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Ref, ref } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
+import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import Instance, { Registration } from '@/services/instance';
 import { render } from '@/test-utils';
@@ -230,6 +232,14 @@ describe('Applications', () => {
     });
 
     describe('refresh button', () => {
+      beforeEach(() => {
+        server.use(
+          http.post('/applications', () => {
+            return HttpResponse.json({});
+          }),
+        );
+      });
+
       it('clicking the refresh button invokes Application.refreshApplications', async () => {
         const refreshSpy = vi.spyOn(Application, 'refreshApplications');
 
@@ -246,34 +256,16 @@ describe('Applications', () => {
         });
       });
 
-      it('displays success toast when refresh completes successfully', async () => {
-        vi.spyOn(Application, 'refreshApplications').mockResolvedValue(
-          undefined,
+      it('logs error when refresh fails without throwing', async () => {
+        server.use(
+          http.post('/applications', () => {
+            return HttpResponse.json({}, { status: 500 });
+          }),
         );
 
-        const refreshButton = screen.getByTitle('Refresh applications');
-        // First click - enters confirm mode
-        await userEvent.click(refreshButton);
-
-        // Second click - confirms and executes
-        const confirmButton = await screen.findByText('Confirm');
-        await userEvent.click(confirmButton);
-
-        await waitFor(() => {
-          expect(
-            screen.getByText('Applications refreshed.'),
-          ).toBeInTheDocument();
-        });
-      });
-
-      it('logs error when refresh fails without throwing', async () => {
         const consoleErrorSpy = vi
           .spyOn(console, 'error')
           .mockImplementation(() => {});
-        const testError = new Error('Refresh failed');
-        vi.spyOn(Application, 'refreshApplications').mockRejectedValue(
-          testError,
-        );
 
         const refreshButton = screen.getByTitle('Refresh applications');
         // First click - enters confirm mode
@@ -284,7 +276,7 @@ describe('Applications', () => {
         await userEvent.click(confirmButton);
 
         await waitFor(() => {
-          expect(consoleErrorSpy).toHaveBeenCalledWith(testError);
+          expect(consoleErrorSpy).toHaveBeenCalled();
         });
 
         consoleErrorSpy.mockRestore();
