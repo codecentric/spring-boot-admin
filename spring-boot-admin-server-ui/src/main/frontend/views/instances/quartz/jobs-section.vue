@@ -1,12 +1,21 @@
 <template>
   <div v-if="hasJobs" class="mb-8">
     <!-- Header -->
-    <div class="mb-4 flex items-center justify-between">
-      <h2 class="flex items-center gap-3 text-2xl font-bold text-gray-900">
-        <font-awesome-icon icon="briefcase" class="h-6 w-6 text-blue-600" />
+    <div
+      class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <h2
+        class="flex items-center gap-3 text-xl sm:text-2xl font-bold text-gray-900"
+      >
+        <font-awesome-icon
+          icon="briefcase"
+          class="h-5 w-5 sm:h-6 sm:w-6 text-blue-600"
+        />
         {{ $t('instances.quartz.jobs') }}
       </h2>
-      <div class="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1">
+      <div
+        class="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1 w-fit"
+      >
         <span class="text-sm font-semibold text-gray-900">
           {{ jobs.length }}
         </span>
@@ -16,24 +25,24 @@
       </div>
     </div>
 
-    <!-- Table -->
-    <div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm">
-      <table class="w-full text-sm">
-        <thead>
+    <!-- Table - responsive with horizontal scroll on mobile -->
+    <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+      <table class="w-full text-xs sm:text-sm">
+        <thead class="hidden sm:table-header-group">
           <tr class="border-b border-gray-200 bg-gray-50">
-            <th class="px-6 py-3 text-left font-semibold text-gray-900 w-1/3">
+            <th class="px-3 sm:px-6 py-3 text-left font-semibold text-gray-900">
               {{ $t('instances.quartz.name') }}
             </th>
-            <th class="px-6 py-3 text-left font-semibold text-gray-900 w-1/4">
+            <th class="px-3 sm:px-6 py-3 text-left font-semibold text-gray-900">
               {{ $t('instances.quartz.description') }}
             </th>
-            <th class="px-6 py-3 text-left font-semibold text-gray-900 w-1/6">
+            <th class="px-3 sm:px-6 py-3 text-left font-semibold text-gray-900">
               {{ $t('instances.quartz.group') }}
             </th>
-            <th class="px-6 py-3 text-left font-semibold text-gray-900 w-1/12">
+            <th class="px-3 sm:px-6 py-3 text-left font-semibold text-gray-900">
               {{ $t('instances.quartz.durable') }}
             </th>
-            <th class="px-6 py-3 text-left font-semibold text-gray-900 w-1/6">
+            <th class="px-3 sm:px-6 py-3 text-left font-semibold text-gray-900">
               {{ $t('instances.quartz.recovery') }}
             </th>
           </tr>

@@ -104,11 +104,11 @@ const loadData = async (instance: Instance): Promise<void> => {
 
     state.jobDetails = jobsResults
       .filter((r) => r.status === 'fulfilled')
-      .map((r) => (r as PromiseFulfilledResult<JobDetail>).value);
+      .flatMap((r) => (r as PromiseFulfilledResult<JobDetail>).value);
 
     state.triggerDetails = triggersResults
       .filter((r) => r.status === 'fulfilled')
-      .map((r) => (r as PromiseFulfilledResult<TriggerDetail>).value);
+      .flatMap((r) => (r as PromiseFulfilledResult<TriggerDetail>).value);
   } catch (error) {
     console.warn('Fetching Quartz data failed:', error);
     state.error = error instanceof Error ? error : new Error(String(error));
