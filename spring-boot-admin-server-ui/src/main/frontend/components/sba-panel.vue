@@ -69,7 +69,7 @@
       </div>
     </div>
     <footer v-if="'footer' in $slots">
-      <div class="px-4 py-3 border-t bg-gray-50">
+      <div class="px-4 py-3 border-t border-gray-200 bg-gray-50">
         <slot name="footer" />
       </div>
     </footer>

@@ -21,7 +21,7 @@
     </sba-panel>
 
     <div
-      class="flex flex-wrap items-center justify-center gap-6 p-4 bg-white rounded-lg shadow-sm border text-sm"
+      class="flex flex-wrap items-center justify-center gap-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200 text-sm"
     >
       <div class="flex items-center gap-2">
         {{ t('instances.sbom.legend.title') }}

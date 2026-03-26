@@ -20,7 +20,7 @@
       v-for="(conditionalBean, index) in conditionalBeans"
       :key="conditionalBean.name"
     >
-      <div class="m-1 border rounded shadow-sm">
+      <div class="m-1 border border-gray-200 rounded shadow-sm">
         <div
           :key="conditionalBean.name"
           class="flex items-center"
@@ -54,7 +54,7 @@
                 v-for="matchedCondition in conditionalBean.matched"
                 :key="matchedCondition.condition"
               >
-                <div class="py-2 m-1 border rounded">
+                <div class="py-2 m-1 border border-gray-200 rounded">
                   <conditions-list-details :condition="matchedCondition" />
                 </div>
               </template>
@@ -65,7 +65,7 @@
                 v-for="notMatchedCondition in conditionalBean.notMatched"
                 :key="notMatchedCondition.condition"
               >
-                <div class="py-2 m-1 border rounded">
+                <div class="py-2 m-1 border border-gray-200 rounded">
                   <conditions-list-details :condition="notMatchedCondition" />
                 </div>
               </template>

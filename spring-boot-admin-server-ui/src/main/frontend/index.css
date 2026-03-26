@@ -16,6 +16,8 @@
 
 @import './toast-theme.css';
 @import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
 
 @theme {
     --color-sba-50: var(--main-50);

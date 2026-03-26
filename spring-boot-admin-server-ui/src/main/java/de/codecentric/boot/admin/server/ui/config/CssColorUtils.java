@@ -26,7 +26,7 @@ public class CssColorUtils {
 		if (!HEX_RGB_PATTERN.matcher(color).matches()) {
 			throw new IllegalArgumentException(String.format("Invalid hex rgb format %s", color));
 		}
-		return String.format("%s, %s, %s", Integer.valueOf(color.substring(1, 3), 16),
+		return String.format("rgb(%s, %s, %s)", Integer.valueOf(color.substring(1, 3), 16),
 				Integer.valueOf(color.substring(3, 5), 16), Integer.valueOf(color.substring(5, 7), 16));
 	}
 
