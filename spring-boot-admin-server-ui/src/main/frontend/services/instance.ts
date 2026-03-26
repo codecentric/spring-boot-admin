@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ const isInstanceActuatorRequest = (url: string) =>
 
 class Instance {
   public readonly id: string;
-  private readonly axios: AxiosInstance;
+  readonly axios: AxiosInstance;
   public registration: Registration;
   public endpoints: Endpoint[] = [];
   public availableMetrics: string[] = [];
@@ -479,30 +479,6 @@ class Instance {
 
   async fetchMappings() {
     return this.axios.get(uri`actuator/mappings`);
-  }
-
-  async fetchQuartzJobs() {
-    return this.axios.get(uri`actuator/quartz/jobs`, {
-      headers: { Accept: 'application/json' },
-    });
-  }
-
-  async fetchQuartzJob(group, name) {
-    return this.axios.get(uri`actuator/quartz/jobs/${group}/${name}`, {
-      headers: { Accept: 'application/json' },
-    });
-  }
-
-  async fetchQuartzTriggers() {
-    return this.axios.get(uri`actuator/quartz/triggers`, {
-      headers: { Accept: 'application/json' },
-    });
-  }
-
-  async fetchQuartzTrigger(group, name) {
-    return this.axios.get(uri`actuator/quartz/triggers/${group}/${name}`, {
-      headers: { Accept: 'application/json' },
-    });
   }
 
   async fetchSbomIds() {

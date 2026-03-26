@@ -75,6 +75,7 @@
 
 <script>
 import Instance from '@/services/instance';
+import { QuartzActuatorService } from '@/services/quartz-actuator';
 import '@/views/ViewGroup';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import TriggerRow from '@/views/instances/quartz/trigger-row';
@@ -101,57 +102,33 @@ export default {
     },
   },
   async created() {
-    this.fetchQuartzJobs();
-    this.fetchQuartzTriggers();
+    return this.loadData();
   },
   methods: {
-    async fetchQuartzJobs() {
+    async loadData() {
       this.hasLoaded = false;
       this.error = null;
       try {
-        const response = await this.instance.fetchQuartzJobs();
-        const jobList = response.data;
-        const promises = [];
-        for (const group in jobList.groups) {
-          promises.push(
-            ...jobList.groups[group].jobs.map((name) =>
-              this.instance
-                .fetchQuartzJob(group, name)
-                .then((response) => response.data),
-            ),
-          );
-        }
-        this.jobDetails = (await Promise.allSettled(promises)).map(
-          (result) => result.value,
-        );
+        // Load jobs and triggers in parallel
+        const [jobsResults, triggersResults] = await Promise.all([
+          Promise.allSettled([
+            QuartzActuatorService.fetchAllJobs(this.instance),
+          ]),
+          Promise.allSettled([
+            QuartzActuatorService.fetchAllTriggers(this.instance),
+          ]),
+        ]);
+
+        // Extract successful results
+        this.jobDetails = jobsResults
+          .filter((r) => r.status === 'fulfilled')
+          .map((r) => r.value);
+
+        this.triggerDetails = triggersResults
+          .filter((r) => r.status === 'fulfilled')
+          .map((r) => r.value);
       } catch (error) {
-        console.warn('Fetching Quartz Jobs failed:', error);
-        this.error = error;
-      } finally {
-        this.hasLoaded = true;
-      }
-    },
-    async fetchQuartzTriggers() {
-      this.hasLoaded = false;
-      this.error = null;
-      try {
-        const response = await this.instance.fetchQuartzTriggers();
-        const groupList = response.data;
-        const promises = [];
-        for (const group in groupList.groups) {
-          promises.push(
-            ...groupList.groups[group].triggers.map((name) =>
-              this.instance
-                .fetchQuartzTrigger(group, name)
-                .then((response) => response.data),
-            ),
-          );
-        }
-        this.triggerDetails = (await Promise.allSettled(promises)).map(
-          (result) => result.value,
-        );
-      } catch (error) {
-        console.warn('Fetching Quartz Triggers failed:', error);
+        console.warn('Fetching Quartz data failed:', error);
         this.error = error;
       } finally {
         this.hasLoaded = true;
