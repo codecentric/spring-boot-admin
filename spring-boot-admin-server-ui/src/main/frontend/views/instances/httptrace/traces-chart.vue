@@ -362,6 +362,7 @@ export default {
 </script>
 
 <style lang="css">
+@reference "../../../index.css";
 .trace-chart__svg {
   height: 200px;
   width: 100%;

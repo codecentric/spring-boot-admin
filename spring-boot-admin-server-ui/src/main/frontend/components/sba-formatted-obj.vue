@@ -44,6 +44,8 @@ const formatted = computed(() => {
 </script>
 
 <style scoped>
+@reference "../index.css";
+
 .formatted {
   @apply whitespace-break-spaces break-words;
 

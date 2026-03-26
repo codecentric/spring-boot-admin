@@ -17,7 +17,7 @@
 <template>
   <section class="wallboard section">
     <div
-      class="flex gap-2 justify-end absolute w-full md:w-[28rem] top-14 right-0 bg-black/20 py-3 px-4 rounded-bl"
+      class="flex gap-2 justify-end absolute w-full md:w-md top-14 right-0 bg-black/20 py-3 px-4 rounded-bl"
     >
       <sba-input
         v-model="routerState.termFilter"
@@ -233,7 +233,8 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style>
+@reference "../../index.css";
 .wallboard {
   background-color: #4a4a4a;
   height: calc(100vh - 52px);
@@ -278,14 +279,14 @@ export default {
 }
 
 .up > path {
-  stroke: theme('colors.green.400');
-  fill: theme('colors.green.400');
+  stroke: var(--color-green-400);
+  fill: var(--color-green-400);
 }
 
 .down > path,
 .offline > path {
-  stroke: theme('colors.red.400');
-  fill: theme('colors.red.400');
+  stroke: var(--color-red-400);
+  fill: var(--color-red-400);
   stroke-width: 2;
 }
 
@@ -312,16 +313,16 @@ export default {
 
 .hex.down .hex__body::after {
   content: '!';
-  color: theme('colors.red.500');
+  color: var(--color-red-500);
 }
 
 .hex.unknown .hex__body::after {
   content: '?';
-  color: theme('colors.gray.500');
+  color: var(--color-gray-500);
 }
 
 .restricted > path {
-  stroke: theme('colors.yellow.500');
-  fill: theme('colors.yellow.500');
+  stroke: var(--color-yellow-500);
+  fill: var(--color-yellow-500);
 }
 </style>

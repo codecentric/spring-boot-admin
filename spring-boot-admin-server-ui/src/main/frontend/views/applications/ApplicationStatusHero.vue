@@ -90,6 +90,7 @@ const someInstancesUnknown = computed(() => {
 </script>
 
 <style scoped>
+@reference "../../index.css";
 .status-label {
   @apply font-bold text-2xl;
 }

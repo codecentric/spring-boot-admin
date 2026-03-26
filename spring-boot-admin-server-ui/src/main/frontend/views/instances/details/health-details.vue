@@ -48,14 +48,14 @@
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
           >
             <sba-formatted-obj
-              class="overflow-auto !whitespace-pre"
+              class="overflow-auto whitespace-pre!"
               :value="detail.value"
             />
           </dd>
           <dd
             v-else
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
-            class="break-words whitespace-pre-wrap"
+            class="wrap-break-word whitespace-pre-wrap"
             v-html="autolink(detail.value)"
           />
         </template>
@@ -116,6 +116,7 @@ const childHealth = computed(() => {
 </script>
 
 <style scoped>
+@reference "../../../index.css";
 :deep(a[href]) {
   @apply underline;
 }

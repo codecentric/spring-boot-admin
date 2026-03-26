@@ -11,7 +11,9 @@
         <img v-if="icon" :src="icon" class="w-8 h-8 mr-2" />
         <h1 class="title has-text-primary" v-text="title" />
       </div>
-      <div class="relative border-t -ml-4 -mr-4 overflow-hidden">
+      <div
+        class="relative border-t border-gray-200 -ml-4 -mr-4 overflow-hidden"
+      >
         <sba-wave class="bg-wave--login" />
         <div class="ml-4 mr-4 pt-2 z-10 relative">
           <sba-alert :error="error" />
@@ -112,6 +114,8 @@ const logout = computed(() => {
 </script>
 
 <style scoped>
+@reference "../login.css";
+
 .bg-wave--login {
   @apply z-0 absolute left-0;
   min-width: 100%;

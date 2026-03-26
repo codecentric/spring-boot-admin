@@ -140,8 +140,10 @@ export default {
 </script>
 
 <style scoped>
+@reference "../index.css";
+
 .is-active {
-  @apply bg-indigo-50 border border-indigo-500 z-10 !important;
+  @apply bg-indigo-50 border border-indigo-500 z-10;
   @apply font-extrabold;
 }
 </style>

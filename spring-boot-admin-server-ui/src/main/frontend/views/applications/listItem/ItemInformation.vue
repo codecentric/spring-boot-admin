@@ -115,6 +115,7 @@ const instanceUrlToShow =
 </script>
 
 <style>
+@reference "../../../index.css";
 .p-tooltip {
   max-width: fit-content !important;
 }

@@ -106,9 +106,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.logger-control__level--inherited {
-  @apply bg-opacity-70 !important;
-}
-</style>

@@ -17,7 +17,7 @@
 <template>
   <div
     :id="$attrs.id"
-    class="shadow-sm border rounded break-inside-avoid mb-4"
+    class="shadow-sm border rounded border-gray-200 break-inside-avoid mb-4"
     :aria-expanded="$attrs.ariaExpanded"
   >
     <header
@@ -26,11 +26,11 @@
       v-sticks-below="headerSticksBelow"
       :class="
         classNames(
-          'rounded-t flex justify-between px-4 py-2.5 border-b items-center bg-white transition-all',
+          'rounded-t flex justify-between px-4 py-2.5 border-b border-gray-200 items-center bg-white transition-all',
         )
       "
     >
-      <h3 class="font-medium text-gray-900 flex-1 order border-blue-300">
+      <h3 class="font-medium text-gray-900 flex-1">
         <button class="flex items-center w-full" @click="$emit('title-click')">
           <slot v-if="'prefix' in $slots" name="prefix" />
           <span v-text="title" />
@@ -69,7 +69,7 @@
       </div>
     </div>
     <footer v-if="'footer' in $slots">
-      <div class="px-4 py-3 border-t bg-gray-50">
+      <div class="px-4 py-3 border-t border-gray-200 bg-gray-50">
         <slot name="footer" />
       </div>
     </footer>
@@ -150,9 +150,9 @@ export default {
       const header = this.$refs.header;
       const boundingClientRect = header.getBoundingClientRect();
       if (boundingClientRect.top <= this.headerTopValue) {
-        header.classList.add('!rounded-none', '!py-2');
+        header.classList.add('rounded-none!', 'py-2!');
       } else {
-        header.classList.remove('!rounded-none', '!py-2');
+        header.classList.remove('rounded-none!', 'py-2!');
       }
     },
   },

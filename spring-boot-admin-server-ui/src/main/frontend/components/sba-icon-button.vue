@@ -16,7 +16,7 @@
 
 <template>
   <sba-button
-    class="border-none sm:m-1 !bg-transparent"
+    class="border-none sm:m-1 bg-transparent!"
     :title="title"
     size="xs"
     v-on="$attrs"

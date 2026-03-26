@@ -17,7 +17,7 @@
 <template>
   <aside
     :class="{ 'w-60': sidebarOpen }"
-    class="h-full flex flex-col bg-white border-r backdrop-filter backdrop-blur-lg bg-opacity-80 z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
+    class="h-full flex flex-col bg-white/80 border-r border-gray-200 backdrop-filter backdrop-blur-lg z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
   >
     <ul class="relative px-1 py-1 overflow-y-auto">
       <!-- Instance info block -->
@@ -112,7 +112,7 @@
       </li>
 
       <template v-if="customLinksFromMetadata?.length > 0">
-        <Divider align="center" class="!my-2">
+        <Divider align="center" class="my-2!">
           <small class="bold">
             {{ $t('sidebar.custom-link.title') }}
           </small>
@@ -263,15 +263,17 @@ function hasMultipleViews(group: any) {
 </script>
 
 <style scoped>
+@reference "../../../index.css";
+
 .instance-info-block {
-  @apply bg-sba-50 bg-opacity-40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
+  @apply bg-sba-50/40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
 }
 
 a.navbar-link {
   @apply cursor-pointer;
 }
 .navbar-link {
-  @apply bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
+  @apply bg-sba-50/40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
   @apply text-gray-700;
 }
 .navbar-link--custom {
@@ -280,7 +282,7 @@ a.navbar-link {
 
 .navbar-link:hover,
 .navbar-link__active {
-  @apply bg-sba-50 bg-opacity-80 text-sba-900;
+  @apply bg-sba-50/80 text-sba-900;
 }
 
 .navbar-link__group_item {

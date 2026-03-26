@@ -213,6 +213,7 @@ export default {
 </script>
 
 <style scoped>
+@reference "../../../index.css";
 .modal-card-title {
   word-break: break-all;
 }

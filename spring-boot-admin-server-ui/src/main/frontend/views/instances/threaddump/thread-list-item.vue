@@ -1,6 +1,6 @@
 <template>
   <table
-    class="table-auto table-wide table-striped w-full my-2 border shadow bg-white"
+    class="table-auto table-wide table-striped w-full my-2 border border-gray-200 shadow bg-white"
   >
     <colgroup>
       <col class="w-60" />

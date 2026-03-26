@@ -94,6 +94,8 @@ const handleClick = (event) => {
 </script>
 
 <style scoped>
+@reference "../index.css";
+
 .btn {
   @apply rounded-l rounded-r font-medium text-sm text-center text-black border-gray-300 border bg-white;
   @apply focus:ring-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500;
@@ -142,11 +144,5 @@ const handleClick = (event) => {
 
 .btn.is-primary {
   @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-300;
-}
-
-@supports (-moz-appearance: none) {
-  .backdrop-filter.bg-opacity-40 {
-    --tw-bg-opacity: 1 !important;
-  }
 }
 </style>
