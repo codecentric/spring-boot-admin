@@ -2,7 +2,21 @@
   "instances": {
     "quartz": {
       "label": "Quartz",
-      "no_data": "Keine Quartz Informationen vorhanden"
+      "no_data": "Keine Quartz Informationen vorhanden",
+      "jobs": "Aufträge",
+      "triggers": "Auslöser",
+      "active_triggers": "Aktive Auslöser",
+      "paused_triggers": "Unterbrochene Auslöser",
+      "total": "insgesamt",
+      "name": "Name",
+      "description": "Beschreibung",
+      "group": "Gruppe",
+      "durable": "Persistent",
+      "recovery": "Wiederherstellung",
+      "state": "Status",
+      "type": "Typ",
+      "priority": "Priorität",
+      "next_fire_time": "Nächste Ausführungszeit"
     }
   }
 }

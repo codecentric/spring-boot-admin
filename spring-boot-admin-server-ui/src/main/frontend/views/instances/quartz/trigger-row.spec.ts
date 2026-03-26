@@ -26,14 +26,14 @@ describe('trigger-row.vue', () => {
   });
 
   it('should render with closed details initially', async () => {
-    const intervalElement = await screen.queryByText('interval');
-    expect(intervalElement).toBeNull();
+    const detailsElement = await screen.queryByText('Interval');
+    expect(detailsElement).toBeNull();
   });
 
   it('should render details when clicking on arrow', async () => {
     const toggleArrow = await screen.findByRole('button');
     await userEvent.click(toggleArrow);
-    const intervalElement = await screen.findByText('interval');
-    expect(intervalElement).toBeVisible();
+    const detailsElement = await screen.findByText('Interval');
+    expect(detailsElement).toBeVisible();
   });
 });
