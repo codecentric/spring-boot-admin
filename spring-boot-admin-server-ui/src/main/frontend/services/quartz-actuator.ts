@@ -154,6 +154,25 @@ export class QuartzActuatorService {
             .data,
       );
   }
+
+  /**
+   * Trigger (fire) a job immediately
+   *
+   * @param instance The Instance to operate on
+   * @param groupName The job group name
+   * @param jobName The job name
+   * @returns Promise with the operation result containing job details and trigger time
+   */
+  static async triggerJob(
+    instance: Instance,
+    groupName: string,
+    jobName: string,
+  ): Promise<AxiosResponse<TriggerJobResponse>> {
+    return instance.axios.post(
+      uri`actuator/quartz/jobs/${groupName}/${jobName}`,
+      { state: 'running' },
+    );
+  }
 }
 
 /**
@@ -193,6 +212,17 @@ export interface TriggerGroupsResponse {
       triggers: string[];
     };
   };
+}
+
+/**
+ * Response structure from POST /actuator/quartz/jobs/{groupName}/{jobName}
+ * Returned when triggering a job to run immediately
+ */
+export interface TriggerJobResponse {
+  group: string;
+  name: string;
+  className: string;
+  triggerTime: string;
 }
 
 /**

@@ -22,7 +22,7 @@
         />
 
         <!-- Jobs Section -->
-        <jobs-section :jobs="state.jobDetails" />
+        <jobs-section :jobs="state.jobDetails" :instance="props.instance" />
 
         <!-- Triggers Section -->
         <triggers-section :triggers="state.triggerDetails" />

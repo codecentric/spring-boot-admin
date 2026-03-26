@@ -690,4 +690,28 @@ describe('QuartzActuatorService', () => {
       expect(mockInstance.axios.get).toHaveBeenCalledTimes(4);
     });
   });
+
+  describe('triggerJob', () => {
+    it('should post to correct trigger job endpoint with running state', async () => {
+      mockInstance.axios.post = vi.fn().mockResolvedValue({
+        data: {
+          group: 'samples',
+          name: 'testJob',
+          className: 'com.example.TestJob',
+          triggerTime: '2026-03-26T16:30:00.000Z',
+        },
+      });
+
+      await QuartzActuatorService.triggerJob(
+        mockInstance as any,
+        'samples',
+        'testJob',
+      );
+
+      expect(mockInstance.axios.post).toHaveBeenCalledWith(
+        expect.stringContaining('actuator/quartz/jobs/samples/testJob'),
+        { state: 'running' },
+      );
+    });
+  });
 });

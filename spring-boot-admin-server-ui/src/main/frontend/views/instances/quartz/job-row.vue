@@ -2,7 +2,7 @@
   <!-- Main Job Row -->
   <tr
     :class="{ 'bg-blue-50': isExpanded }"
-    class="border-b border-gray-200 hover:bg-gray-50 cursor-pointer block sm:table-row"
+    class="border-b border-gray-200 bg-white hover:bg-gray-50 cursor-pointer block sm:table-row"
     @click="toggle"
   >
     <td class="px-3 sm:px-6 py-4 block sm:table-cell mb-2 sm:mb-0">
@@ -247,13 +247,42 @@
             </div>
           </div>
         </div>
+
+        <!-- Action Buttons Section -->
+        <div v-if="instance" class="border-t border-gray-200 pt-6">
+          <div class="flex flex-col gap-3">
+            <p class="text-sm font-semibold text-gray-900">Actions</p>
+            <div class="flex flex-wrap gap-2">
+              <button
+                :disabled="isLoading"
+                class="inline-flex items-center gap-2 px-3 py-2 rounded text-sm font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                @click.stop="triggerJobNow"
+              >
+                <font-awesome-icon icon="play-circle" class="h-4 w-4" />
+                Trigger Job Now
+              </button>
+            </div>
+            <div
+              v-if="actionError"
+              class="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800"
+            >
+              {{ actionError }}
+            </div>
+          </div>
+        </div>
       </div>
     </td>
   </tr>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
+import { computed, ref } from 'vue';
+
+import Instance from '@/services/instance';
+import { QuartzActuatorService } from '@/services/quartz-actuator';
+
+const notificationCenter = useNotificationCenter();
 
 interface JobTrigger {
   group: string;
@@ -279,13 +308,18 @@ interface JobDetail {
 interface Props {
   jobDetail: JobDetail;
   isExpanded: boolean;
+  instance: Instance;
 }
 
 const props = defineProps<Props>();
 
 const emit = defineEmits<{
   toggle: [];
+  action: [action: string, success: boolean];
 }>();
+
+const isLoading = ref(false);
+const actionError = ref<string | null>(null);
 
 const job = computed(() => props.jobDetail);
 
@@ -304,5 +338,40 @@ const formatDateTime = (dateString?: string): string => {
 
 const toggle = (): void => {
   emit('toggle');
+};
+
+const triggerJobNow = async (): Promise<void> => {
+  if (!props.instance) return;
+  isLoading.value = true;
+  actionError.value = null;
+
+  try {
+    await QuartzActuatorService.triggerJob(
+      props.instance,
+      job.value.group,
+      job.value.name,
+    );
+    notificationCenter.success(
+      `Job "${job.value.name}" triggered successfully`,
+      {
+        title: 'Job Triggered',
+        timeout: 3000,
+      },
+    );
+    emit('action', 'trigger', true);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    actionError.value = `Failed to trigger job: ${errorMessage}`;
+    notificationCenter.error(
+      `Failed to trigger job "${job.value.name}": ${errorMessage}`,
+      {
+        title: 'Trigger Failed',
+        timeout: 5000,
+      },
+    );
+    emit('action', 'trigger', false);
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>

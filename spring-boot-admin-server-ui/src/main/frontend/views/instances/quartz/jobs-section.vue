@@ -52,7 +52,9 @@
             <job-row
               :job-detail="job"
               :is-expanded="selectedJobKey === getJobKey(job)"
+              :instance="instance"
               @toggle="toggleJobExpanded(job)"
+              @action="handleAction"
             />
           </template>
         </tbody>
@@ -66,6 +68,8 @@ import { computed, ref } from 'vue';
 
 import JobRow from './job-row.vue';
 
+import Instance from '@/services/instance';
+
 interface Job {
   group: string;
   name: string;
@@ -74,6 +78,7 @@ interface Job {
 
 interface Props {
   jobs: Job[];
+  instance: Instance;
 }
 
 const props = defineProps<Props>();
@@ -87,5 +92,12 @@ const getJobKey = (job: Job): string => `${job.group}-${job.name}`;
 const toggleJobExpanded = (job: Job): void => {
   const key = getJobKey(job);
   selectedJobKey.value = selectedJobKey.value === key ? null : key;
+};
+
+const handleAction = (action: string, success: boolean): void => {
+  // Handle action feedback (can be connected to toast notifications later)
+  if (!success) {
+    console.warn(`Job action '${action}' failed`);
+  }
 };
 </script>
