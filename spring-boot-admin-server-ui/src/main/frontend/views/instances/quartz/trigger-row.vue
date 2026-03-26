@@ -2,7 +2,7 @@
   <!-- Main Trigger Row -->
   <tr
     :class="{ 'bg-green-50': isOpen }"
-    class="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
+    class="border-b border-gray-200 bg-white hover:bg-gray-50 cursor-pointer"
     @click="toggle"
   >
     <td class="px-6 py-4">
