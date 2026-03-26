@@ -16,6 +16,7 @@
 
 @import './toast-theme.css';
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 @plugin "@tailwindcss/forms";
 @plugin "@tailwindcss/typography";
 
@@ -68,7 +69,7 @@ th {
 }
 
 .table thead {
-  @apply border-b bg-gray-100 rounded-md;
+  @apply border-b border-gray-200  bg-gray-100 rounded-md;
 }
 
 .table th,
@@ -89,7 +90,7 @@ th {
 }
 
 .table tr:not(:last-of-type) {
-  @apply border-b;
+  @apply border-b border-gray-200;
 }
 
 .-rotate-90 {
