@@ -50,7 +50,7 @@
 
         <template v-for="healthGroup in healthGroups" :key="healthGroup.name">
           <div
-            class="px-4 py-2 border-t sm:px-6"
+            class="px-4 py-2 border-t border-gray-200 sm:px-6"
             :class="{ 'border-b': isHealthGroupOpen(healthGroup.name) }"
           >
             <h4 class="leading-6 font-medium text-gray-900">
