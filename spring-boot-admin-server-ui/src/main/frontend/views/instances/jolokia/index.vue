@@ -253,7 +253,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 @reference "../../../index.css";
 .tabs {
   @apply text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700;
@@ -273,11 +273,8 @@ export default {
 
 .m-bean {
   transition: all ease-out 86ms;
-  @apply relative p-2 rounded border;
+  @apply relative p-2 rounded border border-gray-200;
   @apply bg-white;
-}
-
-.m-bean:hover {
 }
 
 .m-bean.is-active {

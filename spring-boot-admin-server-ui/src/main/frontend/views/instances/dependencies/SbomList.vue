@@ -222,7 +222,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style scoped>
 @reference "../../../index.css";
 .table-header-clickable {
   cursor: pointer;

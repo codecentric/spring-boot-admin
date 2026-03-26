@@ -233,7 +233,7 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style>
 @reference "../../index.css";
 .wallboard {
   background-color: #4a4a4a;
