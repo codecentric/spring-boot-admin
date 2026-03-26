@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-@import "tailwindcss";
+@import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 @plugin "@tailwindcss/forms";
 @plugin "@tailwindcss/typography";
 
 @theme {
-    --color-sba-50: var(--main-50);
-    --color-sba-100: var(--main-100);
-    --color-sba-200: var(--main-200);
-    --color-sba-300: var(--main-300);
-    --color-sba-400: var(--main-400);
-    --color-sba-500: var(--main-500);
-    --color-sba-600: var(--main-600);
-    --color-sba-700: var(--main-700);
-    --color-sba-800: var(--main-800);
-    --color-sba-900: var(--main-900);
+  --color-sba-50: var(--main-50);
+  --color-sba-100: var(--main-100);
+  --color-sba-200: var(--main-200);
+  --color-sba-300: var(--main-300);
+  --color-sba-400: var(--main-400);
+  --color-sba-500: var(--main-500);
+  --color-sba-600: var(--main-600);
+  --color-sba-700: var(--main-700);
+  --color-sba-800: var(--main-800);
+  --color-sba-900: var(--main-900);
 }
