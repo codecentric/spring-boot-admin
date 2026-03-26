@@ -36,7 +36,7 @@
           :name="name"
           :value="modelValue"
           :autocomplete="autocomplete"
-          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none sm:text-sm bg-opacity-40 backdrop-blur-sm"
+          class="focus:z-10 p-2 relative flex-1 block w-full rounded-none sm:text-sm backdrop-blur-sm"
           :class="classNames(inputFieldClassNames, inputClass)"
           @input="handleInput"
         >

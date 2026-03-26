@@ -145,10 +145,4 @@ const handleClick = (event) => {
 .btn.is-primary {
   @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-300;
 }
-
-@supports (-moz-appearance: none) {
-  .backdrop-filter.bg-opacity-40 {
-    --tw-bg-opacity: 1 !important;
-  }
-}
 </style>
