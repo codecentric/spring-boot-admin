@@ -1,0 +1,33 @@
+/*!
+ * Copyright 2014-2026 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+@theme {
+    --color-sba-50: var(--main-50);
+    --color-sba-100: var(--main-100);
+    --color-sba-200: var(--main-200);
+    --color-sba-300: var(--main-300);
+    --color-sba-400: var(--main-400);
+    --color-sba-500: var(--main-500);
+    --color-sba-600: var(--main-600);
+    --color-sba-700: var(--main-700);
+    --color-sba-800: var(--main-800);
+    --color-sba-900: var(--main-900);
+}
