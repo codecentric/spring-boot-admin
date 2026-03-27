@@ -4,25 +4,21 @@
       :label="$t('instances.quartz.jobs')"
       :value="jobCount"
       icon="briefcase"
-      variant="blue"
     />
     <quartz-summary-card
       :label="$t('instances.quartz.triggers')"
       :value="triggerCount"
       icon="clock"
-      variant="green"
     />
     <quartz-summary-card
       :label="$t('instances.quartz.active_triggers')"
       :value="activeTriggerCount"
       icon="play-circle"
-      variant="yellow"
     />
     <quartz-summary-card
       :label="$t('instances.quartz.paused_triggers')"
       :value="pausedTriggerCount"
       icon="pause-circle"
-      variant="red"
     />
   </div>
 </template>

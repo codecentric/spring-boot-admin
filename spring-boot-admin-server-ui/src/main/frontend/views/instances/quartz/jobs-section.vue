@@ -7,10 +7,7 @@
       <h2
         class="flex items-center gap-3 text-xl sm:text-2xl font-bold text-gray-900"
       >
-        <font-awesome-icon
-          icon="briefcase"
-          class="h-5 w-5 sm:h-6 sm:w-6 text-blue-600"
-        />
+        <font-awesome-icon icon="briefcase" class="h-5 w-5 sm:h-6 sm:w-6" />
         {{ $t('instances.quartz.jobs') }}
       </h2>
       <div
@@ -26,7 +23,7 @@
     </div>
 
     <!-- Table - responsive with horizontal scroll on mobile -->
-    <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+    <div class="overflow-x-auto rounded border border-gray-200 shadow-sm">
       <table class="w-full text-xs sm:text-sm">
         <thead class="hidden sm:table-header-group">
           <tr class="border-b border-gray-200 bg-gray-50">

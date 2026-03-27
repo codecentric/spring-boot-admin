@@ -28,11 +28,6 @@
                 ? 'check'
                 : 'times'
             "
-            :class="
-              trigger.calendarInterval.preserveHourOfDayAcrossDaylightSavings
-                ? 'text-green-600'
-                : 'text-red-600'
-            "
             class="h-4 w-4"
           />
         </p>
@@ -46,11 +41,6 @@
             trigger.calendarInterval.skipDayIfHourDoesNotExist
               ? 'check'
               : 'times'
-          "
-          :class="
-            trigger.calendarInterval.skipDayIfHourDoesNotExist
-              ? 'text-green-600'
-              : 'text-red-600'
           "
           class="h-4 w-4"
         />

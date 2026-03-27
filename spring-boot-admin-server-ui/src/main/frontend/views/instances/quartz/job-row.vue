@@ -1,7 +1,7 @@
 <template>
   <!-- Main Job Row -->
   <tr
-    :class="{ 'bg-blue-50': isExpanded }"
+    :class="{ 'bg-gray-50': isExpanded }"
     class="border-b border-gray-200 bg-white hover:bg-gray-50 cursor-pointer block sm:table-row"
     @click="toggle"
   >
@@ -45,7 +45,7 @@
       </span>
       <span
         v-else
-        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 whitespace-nowrap"
+        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 whitespace-nowrap"
       >
         <font-awesome-icon icon="times-circle" class="mr-1 h-3 w-3" />
         No
@@ -71,7 +71,7 @@
   <!-- Expanded Details Row -->
   <tr
     v-if="isExpanded"
-    class="bg-blue-50 border-b border-gray-200 block sm:table-row"
+    class="bg-gray-50 border-b border-gray-200 block sm:table-row"
   >
     <td colspan="5" class="px-0 py-0 block sm:table-cell">
       <div class="space-y-6 px-3 sm:px-6 py-6">
@@ -82,10 +82,7 @@
             <h4
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon
-                icon="info-circle"
-                class="h-4 w-4 text-blue-600"
-              />
+              <font-awesome-icon icon="info-circle" class="h-4 w-4" />
               Details
             </h4>
             <div class="space-y-3 text-sm">
@@ -115,7 +112,7 @@
             <h4
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon icon="cog" class="h-4 w-4 text-blue-600" />
+              <font-awesome-icon icon="cog" class="h-4 w-4" />
               Configuration
             </h4>
             <div class="space-y-3 text-sm">
@@ -124,7 +121,6 @@
                 <p class="flex items-center gap-2">
                   <font-awesome-icon
                     :icon="job.durable ? 'check-circle' : 'times-circle'"
-                    :class="job.durable ? 'text-green-600' : 'text-red-600'"
                     class="h-4 w-4"
                   />
                   {{ job.durable ? 'Yes' : 'No' }}
@@ -136,9 +132,6 @@
                   <font-awesome-icon
                     :icon="
                       job.requestRecovery ? 'check-circle' : 'times-circle'
-                    "
-                    :class="
-                      job.requestRecovery ? 'text-green-600' : 'text-red-600'
                     "
                     class="h-4 w-4"
                   />
@@ -160,7 +153,7 @@
             <h4
               class="mb-3 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon icon="clock" class="h-4 w-4 text-blue-600" />
+              <font-awesome-icon icon="clock" class="h-4 w-4" />
               Trigger Fire Times
             </h4>
             <div class="space-y-2 text-sm">
@@ -173,7 +166,7 @@
                     <span class="font-medium">Last Fire:</span>
                     {{ formatDateTime(trigger.previousFireTime) }}
                   </p>
-                  <p v-if="trigger.nextFireTime" class="text-green-700">
+                  <p v-if="trigger.nextFireTime" class="text-gray-700">
                     <span class="font-medium">Next Fire:</span>
                     {{ formatDateTime(trigger.nextFireTime) }}
                   </p>
@@ -189,7 +182,7 @@
             <h4
               class="mb-3 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon icon="link" class="h-4 w-4 text-blue-600" />
+              <font-awesome-icon icon="link" class="h-4 w-4" />
               Associated Triggers ({{ job.triggers.length }})
             </h4>
             <div class="flex flex-wrap gap-2">
@@ -264,7 +257,7 @@
             </div>
             <div
               v-if="actionError"
-              class="p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800"
+              class="p-3 bg-gray-50 border border-gray-200 rounded text-sm text-gray-800"
             >
               {{ actionError }}
             </div>

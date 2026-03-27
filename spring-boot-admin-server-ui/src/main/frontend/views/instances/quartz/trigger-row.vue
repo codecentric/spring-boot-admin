@@ -1,7 +1,7 @@
 <template>
   <!-- Main Trigger Row -->
   <tr
-    :class="{ 'bg-green-50': isOpen }"
+    :class="{ 'bg-gray-50': isOpen }"
     class="border-b border-gray-200 bg-white hover:bg-gray-50 cursor-pointer"
     @click="toggle"
   >
@@ -29,7 +29,7 @@
     </td>
     <td class="px-6 py-4">
       <span
-        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
       >
         {{ trigger.type }}
       </span>
@@ -42,7 +42,7 @@
       </span>
     </td>
     <td class="px-6 py-4 text-xs">
-      <span v-if="trigger.nextFireTime" class="text-green-700 font-medium">
+      <span v-if="trigger.nextFireTime" class="text-gray-700 font-medium">
         {{ formatTime(trigger.nextFireTime) }}
       </span>
       <span v-else class="text-gray-500">—</span>
@@ -50,13 +50,13 @@
   </tr>
 
   <!-- Expanded Details Row -->
-  <tr v-if="isOpen" class="bg-green-50 border-b border-gray-200">
+  <tr v-if="isOpen" class="bg-gray-50 border-b border-gray-200">
     <td colspan="8" class="px-6 py-6">
       <div class="space-y-6">
         <!-- Description -->
         <div
           v-if="trigger.description"
-          class="bg-white border border-gray-200 rounded-lg p-4"
+          class="bg-white border border-gray-200 rounded p-4"
         >
           <p class="font-medium text-gray-700 mb-1">Description</p>
           <p class="text-sm text-gray-600">{{ trigger.description }}</p>
@@ -69,7 +69,7 @@
             <h5
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon icon="clock" class="h-4 w-4 text-green-600" />
+              <font-awesome-icon icon="clock" class="h-4 w-4" />
               Timing Information
             </h5>
             <div class="space-y-3 text-sm">
@@ -85,7 +85,7 @@
               </div>
               <div v-if="trigger.nextFireTime">
                 <p class="font-medium text-gray-700">Next Fire Time</p>
-                <p class="text-green-700 font-medium">
+                <p class="text-gray-700 font-medium">
                   {{ formatDateTime(trigger.nextFireTime) }}
                 </p>
               </div>
@@ -103,10 +103,7 @@
             <h5
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon
-                icon="info-circle"
-                class="h-4 w-4 text-green-600"
-              />
+              <font-awesome-icon icon="info-circle" class="h-4 w-4" />
               Basic Information
             </h5>
             <div class="space-y-3 text-sm">
@@ -121,7 +118,7 @@
               <div>
                 <p class="font-medium text-gray-700">Type</p>
                 <span
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
                 >
                   {{ trigger.type }}
                 </span>
@@ -140,10 +137,7 @@
             <h5
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon
-                icon="calendar"
-                class="h-4 w-4 text-green-600"
-              />
+              <font-awesome-icon icon="calendar" class="h-4 w-4" />
               Schedule Configuration
             </h5>
             <component :is="triggerScheduleComponent" :trigger="trigger" />
@@ -156,10 +150,7 @@
             <h5
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon
-                icon="hourglass"
-                class="h-4 w-4 text-green-600"
-              />
+              <font-awesome-icon icon="hourglass" class="h-4 w-4" />
               Time Window
             </h5>
             <div class="grid grid-cols-2 gap-6 text-sm">
@@ -187,10 +178,7 @@
             <h5
               class="mb-3 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon
-                icon="calendar-check"
-                class="h-4 w-4 text-green-600"
-              />
+              <font-awesome-icon icon="calendar-check" class="h-4 w-4" />
               Calendar
             </h5>
             <p class="text-sm text-gray-600">
@@ -206,10 +194,7 @@
             <h5
               class="mb-3 flex items-center gap-2 font-semibold text-gray-900"
             >
-              <font-awesome-icon
-                icon="database"
-                class="h-4 w-4 text-green-600"
-              />
+              <font-awesome-icon icon="database" class="h-4 w-4" />
               Trigger Data
             </h5>
             <div class="overflow-hidden rounded border border-gray-300">
