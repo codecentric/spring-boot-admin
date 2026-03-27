@@ -13,127 +13,198 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
 
 import {
   mockJobDetail,
   mockJobDetailNoDescription,
 } from './__mocks__/quartz-data';
-import { createQuartzI18n } from './__mocks__/test-setup';
+import { render } from '@/test-utils';
 import JobRow from './job-row.vue';
 
 describe('JobRow.vue', () => {
-  const createWrapper = (jobDetail: any, isExpanded = false, instance: any = {}) => {
-    return mount(JobRow, {
+  it('renders job name correctly', () => {
+    const { container } = render(JobRow, {
       props: {
-        jobDetail,
-        isExpanded,
-        instance,
-      },
-      global: {
-        plugins: [createQuartzI18n()],
+        jobDetail: mockJobDetail,
+        isExpanded: false,
+        instance: {},
       },
     });
-  };
 
-  it('renders job name correctly', () => {
-    const wrapper = createWrapper(mockJobDetail, false);
-
-    expect(wrapper.text()).toContain(mockJobDetail.name);
+    expect(container.textContent).toContain(mockJobDetail.name);
   });
 
   it('renders job class name correctly', () => {
-    const wrapper = createWrapper(mockJobDetail, false);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: false,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain(mockJobDetail.className);
+    expect(container.textContent).toContain(mockJobDetail.className);
   });
 
   it('displays description in table row', () => {
-    const wrapper = createWrapper(mockJobDetail, false);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: false,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain(mockJobDetail.description);
+    expect(container.textContent).toContain(mockJobDetail.description);
   });
 
   it('displays description dash when no description provided', () => {
-    const wrapper = createWrapper(mockJobDetailNoDescription, false);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetailNoDescription,
+        isExpanded: false,
+        instance: {},
+      },
+    });
 
-    const cells = wrapper.findAll('td');
-    expect(cells[1].text()).toBe('—');
+    const cells = container.querySelectorAll('td');
+    expect(cells[1].textContent).toContain('—');
   });
 
   it('displays group correctly', () => {
-    const wrapper = createWrapper(mockJobDetail, false);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: false,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain(mockJobDetail.group);
+    expect(container.textContent).toContain(mockJobDetail.group);
   });
 
   it('displays durable status as Yes when true', () => {
-    const wrapper = createWrapper(mockJobDetail, false);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: false,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain('Yes');
+    expect(container.textContent).toContain('instances.quartz.yes');
   });
 
   it('displays durable status as No when false', () => {
-    const wrapper = createWrapper(mockJobDetailNoDescription, false);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetailNoDescription,
+        isExpanded: false,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain('No');
+    expect(container.textContent).toContain('instances.quartz.no');
   });
 
   it('displays recovery status as Enabled when true', () => {
-    const wrapper = createWrapper(mockJobDetailNoDescription, false);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetailNoDescription,
+        isExpanded: false,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain('Enabled');
+    expect(container.textContent).toContain('instances.quartz.enabled');
   });
 
   it('displays recovery status as Disabled when false', () => {
-    const wrapper = createWrapper(mockJobDetail, false);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: false,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain('Disabled');
+    expect(container.textContent).toContain('instances.quartz.disabled');
   });
 
   it('shows expanded details when isExpanded is true', () => {
-    const wrapper = createWrapper(mockJobDetail, true);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: true,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain('Details');
-    expect(wrapper.text()).toContain('Configuration');
+    expect(container.textContent).toContain('instances.quartz.details');
+    expect(container.textContent).toContain('instances.quartz.configuration');
   });
 
   it('displays all trigger information in expanded view', () => {
-    const wrapper = createWrapper(mockJobDetail, true);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: true,
+        instance: {},
+      },
+    });
 
     mockJobDetail.triggers.forEach((trigger) => {
-      expect(wrapper.text()).toContain(trigger.name);
-      expect(wrapper.text()).toContain(trigger.group);
+      expect(container.textContent).toContain(trigger.name);
+      expect(container.textContent).toContain(trigger.group);
     });
   });
 
   it('displays trigger fire times in expanded view', () => {
-    const wrapper = createWrapper(mockJobDetail, true);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: true,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain('Trigger Fire Times');
+    expect(container.textContent).toContain('instances.quartz.trigger_fire_times');
     mockJobDetail.triggers.forEach((trigger) => {
       if (trigger.previousFireTime) {
-        expect(wrapper.text()).toContain('Last Fire');
+        expect(container.textContent).toContain('instances.quartz.last_fire');
       }
       if (trigger.nextFireTime) {
-        expect(wrapper.text()).toContain('Next Fire');
+        expect(container.textContent).toContain('instances.quartz.next_fire');
       }
     });
   });
 
   it('displays job data in expanded view when present', () => {
-    const wrapper = createWrapper(mockJobDetail, true);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: true,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain('Job Data');
-    expect(wrapper.text()).toContain('job.key');
-    expect(wrapper.text()).toContain('job-value');
+    expect(container.textContent).toContain('instances.quartz.job_data');
+    expect(container.textContent).toContain('job.key');
+    expect(container.textContent).toContain('job-value');
   });
 
   it('does not display job data section when data is empty', () => {
-    const wrapper = createWrapper(mockJobDetailNoDescription, true);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetailNoDescription,
+        isExpanded: true,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).not.toContain('Job Data');
+    expect(container.textContent).not.toContain('instances.quartz.job_data');
   });
 
   it('does not display fire times section when no triggers have fire times', () => {
@@ -148,37 +219,63 @@ describe('JobRow.vue', () => {
       ],
     };
 
-    const wrapper = createWrapper(jobWithoutFireTimes, true);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: jobWithoutFireTimes,
+        isExpanded: true,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).not.toContain('Trigger Fire Times');
+    expect(container.textContent).not.toContain('instances.quartz.trigger_fire_times');
   });
 
   it('emits toggle event when clicked', async () => {
-    const wrapper = createWrapper(mockJobDetail, false);
+    const { container, emitted } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: false,
+        instance: {},
+      },
+    });
 
-    await wrapper.find('tr').trigger('click');
+    const user = userEvent.setup();
+    const row = container.querySelector('tr');
+    await user.click(row!);
 
-    expect(wrapper.emitted('toggle')).toHaveLength(1);
+    expect(emitted().toggle).toBeDefined();
+    expect(emitted().toggle).toHaveLength(1);
   });
 
   it('displays all job detail fields in expanded view', () => {
-    const wrapper = createWrapper(mockJobDetail, true);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: true,
+        instance: {},
+      },
+    });
 
-    expect(wrapper.text()).toContain('Job Name');
-    expect(wrapper.text()).toContain('Class');
-    expect(wrapper.text()).toContain('Group');
-    expect(wrapper.text()).toContain('Description');
-    expect(wrapper.text()).toContain('Durable');
-    expect(wrapper.text()).toContain('Request Recovery');
+    expect(container.textContent).toContain('instances.quartz.job_name');
+    expect(container.textContent).toContain('instances.quartz.class');
+    expect(container.textContent).toContain('instances.quartz.group');
+    expect(container.textContent).toContain('instances.quartz.description');
+    expect(container.textContent).toContain('instances.quartz.durable');
+    expect(container.textContent).toContain('instances.quartz.request_recovery');
   });
 
   it('displays correct durable and recovery values in expanded view', () => {
-    const wrapper = createWrapper(mockJobDetail, true);
+    const { container } = render(JobRow, {
+      props: {
+        jobDetail: mockJobDetail,
+        isExpanded: true,
+        instance: {},
+      },
+    });
 
-    const text = wrapper.text();
-    expect(text).toContain('Durable');
-    expect(text).toContain('Yes');
-    expect(text).toContain('Request Recovery');
-    expect(text).toContain('No');
+    expect(container.textContent).toContain('instances.quartz.durable');
+    expect(container.textContent).toContain('instances.quartz.yes');
+    expect(container.textContent).toContain('instances.quartz.request_recovery');
+    expect(container.textContent).toContain('instances.quartz.no');
   });
 });
