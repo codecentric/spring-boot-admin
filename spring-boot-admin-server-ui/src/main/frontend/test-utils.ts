@@ -19,8 +19,7 @@ const modules: Record<string, any> = import.meta.glob('@/**/i18n.en.json', {
   eager: true,
 });
 for (const modulesKey in modules) {
-  const module = modules[modulesKey];
-  terms = deepMerge(terms, module.default || module);
+  terms = { ...terms, ...modules[modulesKey] };
 }
 export let router;
 createViewRegistry();

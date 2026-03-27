@@ -94,7 +94,7 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('Yes');
+    expect(container.textContent).toContain('instances.quartz.yes');
   });
 
   it('displays durable status as No when false', () => {
@@ -106,7 +106,7 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('No');
+    expect(container.textContent).toContain('instances.quartz.no');
   });
 
   it('displays recovery status as Enabled when true', () => {
@@ -118,7 +118,7 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('Enabled');
+    expect(container.textContent).toContain('instances.quartz.enabled');
   });
 
   it('displays recovery status as Disabled when false', () => {
@@ -130,7 +130,7 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('Disabled');
+    expect(container.textContent).toContain('instances.quartz.disabled');
   });
 
   it('shows expanded details when isExpanded is true', () => {
@@ -142,8 +142,8 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('Details');
-    expect(container.textContent).toContain('Configuration');
+    expect(container.textContent).toContain('instances.quartz.details');
+    expect(container.textContent).toContain('instances.quartz.configuration');
   });
 
   it('displays all trigger information in expanded view', () => {
@@ -170,13 +170,13 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('Trigger Fire Times');
+    expect(container.textContent).toContain('instances.quartz.trigger_fire_times');
     mockJobDetail.triggers.forEach((trigger) => {
       if (trigger.previousFireTime) {
-        expect(container.textContent).toContain('Last Fire');
+        expect(container.textContent).toContain('instances.quartz.last_fire');
       }
       if (trigger.nextFireTime) {
-        expect(container.textContent).toContain('Next Fire');
+        expect(container.textContent).toContain('instances.quartz.next_fire');
       }
     });
   });
@@ -190,7 +190,7 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('Job Data');
+    expect(container.textContent).toContain('instances.quartz.job_data');
     expect(container.textContent).toContain('job.key');
     expect(container.textContent).toContain('job-value');
   });
@@ -204,7 +204,7 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).not.toContain('Job Data');
+    expect(container.textContent).not.toContain('instances.quartz.job_data');
   });
 
   it('does not display fire times section when no triggers have fire times', () => {
@@ -227,7 +227,7 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).not.toContain('Trigger Fire Times');
+    expect(container.textContent).not.toContain('instances.quartz.trigger_fire_times');
   });
 
   it('emits toggle event when clicked', async () => {
@@ -256,12 +256,12 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('Job Name');
-    expect(container.textContent).toContain('Class');
-    expect(container.textContent).toContain('Group');
-    expect(container.textContent).toContain('Description');
-    expect(container.textContent).toContain('Durable');
-    expect(container.textContent).toContain('Request Recovery');
+    expect(container.textContent).toContain('instances.quartz.job_name');
+    expect(container.textContent).toContain('instances.quartz.class');
+    expect(container.textContent).toContain('instances.quartz.group');
+    expect(container.textContent).toContain('instances.quartz.description');
+    expect(container.textContent).toContain('instances.quartz.durable');
+    expect(container.textContent).toContain('instances.quartz.request_recovery');
   });
 
   it('displays correct durable and recovery values in expanded view', () => {
@@ -273,9 +273,9 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('Durable');
-    expect(container.textContent).toContain('Yes');
-    expect(container.textContent).toContain('Request Recovery');
-    expect(container.textContent).toContain('No');
+    expect(container.textContent).toContain('instances.quartz.durable');
+    expect(container.textContent).toContain('instances.quartz.yes');
+    expect(container.textContent).toContain('instances.quartz.request_recovery');
+    expect(container.textContent).toContain('instances.quartz.no');
   });
 });

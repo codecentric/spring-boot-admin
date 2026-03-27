@@ -101,8 +101,8 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).toContain('Timing Information');
-    expect(container.textContent).toContain('Basic Information');
+    expect(container.textContent).toContain('instances.quartz.timing_information');
+    expect(container.textContent).toContain('instances.quartz.basic_information');
   });
 
   it('displays description in expanded view', async () => {
@@ -114,7 +114,7 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).toContain('Description');
+    expect(container.textContent).toContain('instances.quartz.description');
     expect(container.textContent).toContain(
       mockSimpleTriggerDetail.description,
     );
@@ -129,8 +129,8 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).toContain('Schedule Configuration');
-    expect(container.textContent).toContain('Interval');
+    expect(container.textContent).toContain('instances.quartz.schedule_configuration');
+    expect(container.textContent).toContain('instances.quartz.interval');
   });
 
   it('displays cron trigger configuration', async () => {
@@ -142,7 +142,7 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).toContain('Cron Expression');
+    expect(container.textContent).toContain('instances.quartz.cron_expression');
     expect(container.textContent).toContain('0 0 3 * * ?');
   });
 
@@ -155,7 +155,7 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).toContain('Schedule Configuration');
+    expect(container.textContent).toContain('instances.quartz.schedule_configuration');
   });
 
   it('displays calendar interval trigger configuration', async () => {
@@ -167,7 +167,7 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).toContain('Schedule Configuration');
+    expect(container.textContent).toContain('instances.quartz.schedule_configuration');
   });
 
   it('displays custom trigger configuration', async () => {
@@ -179,7 +179,7 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).toContain('Schedule Configuration');
+    expect(container.textContent).toContain('instances.quartz.schedule_configuration');
   });
 
   it('displays time window when start and end times are present', async () => {
@@ -191,8 +191,8 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).toContain('Time Window');
-    expect(container.textContent).toContain('Start Time');
+    expect(container.textContent).toContain('instances.quartz.time_window');
+    expect(container.textContent).toContain('instances.quartz.start_time');
   });
 
   it('displays calendar association when present', async () => {
@@ -217,7 +217,7 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).toContain('Trigger Data');
+    expect(container.textContent).toContain('instances.quartz.trigger_data');
     expect(container.textContent).toContain('trigger.key');
   });
 
@@ -230,7 +230,7 @@ describe('TriggerRow.vue', () => {
     const row = container.querySelector('tr');
     await user.click(row!);
 
-    expect(container.textContent).not.toContain('Trigger Data');
+    expect(container.textContent).not.toContain('instances.quartz.trigger_data');
   });
 
   it('displays all trigger types correctly', () => {

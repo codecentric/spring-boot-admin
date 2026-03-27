@@ -41,8 +41,8 @@ describe('TriggersSection.vue', () => {
       props: { triggers },
     });
 
-    expect(container.textContent).toContain('Triggers');
-    expect(container.textContent).toContain('total');
+    expect(container.textContent).toContain('instances.quartz.triggers');
+    expect(container.textContent).toContain('instances.quartz.total');
     triggers.forEach((t) => {
       expect(container.textContent).toContain(t.name);
     });

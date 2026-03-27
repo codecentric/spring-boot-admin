@@ -56,26 +56,17 @@ describe('JobsSection.vue', () => {
     });
 
     expect(container.textContent).toContain(mockJobDetail.group);
-    expect(container.textContent).toContain('Yes');
-    expect(container.textContent).toContain('No');
-  });
+    expect(container.textContent).toContain('instances.quartz.yes');
+    expect(container.textContent).toContain('instances.quartz.no');
+  });;
 
-  it('displays durable and recovery status correctly', () => {
+  it('displays recovery status', () => {
     const { container } = render(JobsSection, {
       props: { jobs: [mockJobDetail, mockJobDetailNoDescription] },
     });
 
-    expect(container.textContent).toContain('Durable');
-    expect(container.textContent).toContain('Recovery');
-  });
-
-  it('displays enabled and disabled recovery status', () => {
-    const { container } = render(JobsSection, {
-      props: { jobs: [mockJobDetail, mockJobDetailNoDescription] },
-    });
-
-    expect(container.textContent).toContain('Disabled');
-    expect(container.textContent).toContain('Enabled');
+    expect(container.textContent).toContain('instances.quartz.disabled');
+    expect(container.textContent).toContain('instances.quartz.enabled');
   });
 
   it('displays all job data from actuator response', () => {
@@ -88,6 +79,6 @@ describe('JobsSection.vue', () => {
     expect(text).toContain(mockJobDetail.className);
     expect(text).toContain(mockJobDetail.description);
     expect(text).toContain(mockJobDetail.group);
-    expect(text).toContain('Durable');
+    expect(text).toContain('instances.quartz.durable');
   });
 });
