@@ -17,7 +17,11 @@ import axios, { AxiosError } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { redirectOn401, registerErrorToastInterceptor } from './axios';
+import {
+  addLanguageHeaderInterceptor,
+  redirectOn401,
+  registerErrorToastInterceptor,
+} from './axios';
 
 // Initialize errorSpy BEFORE any mocks or imports
 globalThis.errorSpy = vi.fn();
@@ -97,6 +101,125 @@ describe('redirectOn401', () => {
     }
 
     expect(window.location.assign).not.toBeCalled();
+  });
+});
+
+describe('addLanguageHeaderInterceptor', () => {
+  beforeEach(() => {
+    // Clear globalThis.SBA before each test
+    if (globalThis.SBA) {
+      delete globalThis.SBA;
+    }
+  });
+
+  it('should include selected language with highest priority', () => {
+    globalThis.SBA = {
+      useI18n: () => ({ locale: { value: 'de' } }),
+    } as any;
+
+    const config = {
+      url: '/api/test',
+      headers: {},
+    };
+
+    const result = addLanguageHeaderInterceptor(config);
+
+    expect(result.headers['Accept-Language']).toContain('de;q=1.0');
+  });
+
+  it('should include navigator language with lower priority', () => {
+    globalThis.SBA = {
+      useI18n: () => ({ locale: { value: 'de' } }),
+    } as any;
+
+    // Mock navigator.language
+    Object.defineProperty(navigator, 'language', {
+      value: 'en-US',
+      configurable: true,
+    });
+
+    const config = {
+      url: '/api/test',
+      headers: {},
+    };
+
+    const result = addLanguageHeaderInterceptor(config);
+
+    expect(result.headers['Accept-Language']).toContain('de;q=1.0');
+    expect(result.headers['Accept-Language']).toContain('en-US;q=0.9');
+  });
+
+  it('should not duplicate navigator language if it matches selected language', () => {
+    globalThis.SBA = {
+      useI18n: () => ({ locale: { value: 'de' } }),
+    } as any;
+
+    // Mock navigator.language to match selected language
+    Object.defineProperty(navigator, 'language', {
+      value: 'de',
+      configurable: true,
+    });
+
+    const config = {
+      url: '/api/test',
+      headers: {},
+    };
+
+    const result = addLanguageHeaderInterceptor(config);
+
+    // Should only include de once
+    const languageHeader = result.headers['Accept-Language'];
+    const deCount = (languageHeader.match(/de;q=1\.0/g) || []).length;
+    expect(deCount).toBe(1);
+  });
+
+  it('should include wildcard fallback', () => {
+    globalThis.SBA = {
+      useI18n: () => ({ locale: { value: 'fr' } }),
+    } as any;
+
+    const config = {
+      url: '/api/test',
+      headers: {},
+    };
+
+    const result = addLanguageHeaderInterceptor(config);
+
+    expect(result.headers['Accept-Language']).toContain('*;q=0.8');
+  });
+
+  it('should handle missing globalThis.SBA gracefully', () => {
+    // Don't set globalThis.SBA - it should handle this gracefully
+    const config = {
+      url: '/api/test',
+      headers: {},
+    };
+
+    const result = addLanguageHeaderInterceptor(config);
+
+    // Should return the config unchanged if SBA is not available
+    expect(result).toBe(config);
+    expect(result.headers['Accept-Language']).toBeUndefined();
+  });
+
+  it('should preserve existing headers when adding Accept-Language', () => {
+    globalThis.SBA = {
+      useI18n: () => ({ locale: { value: 'fr' } }),
+    } as any;
+
+    const config = {
+      url: '/api/test',
+      headers: {
+        Authorization: 'Bearer token',
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const result = addLanguageHeaderInterceptor(config);
+
+    expect(result.headers['Authorization']).toBe('Bearer token');
+    expect(result.headers['Content-Type']).toBe('application/json');
+    expect(result.headers['Accept-Language']).toContain('fr;q=1.0');
   });
 });
 
