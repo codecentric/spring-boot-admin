@@ -19,11 +19,11 @@ import {
   mockJobDetail,
   mockJobDetailNoDescription,
 } from './__mocks__/quartz-data';
-import { render } from '@/test-utils';
 import JobsSection from './jobs-section.vue';
 
-describe('JobsSection.vue', () => {
+import { render } from '@/test-utils';
 
+describe('JobsSection.vue', () => {
   it('renders nothing when no jobs provided', () => {
     const { container } = render(JobsSection, {
       props: { jobs: [] },
@@ -58,7 +58,7 @@ describe('JobsSection.vue', () => {
     expect(container.textContent).toContain(mockJobDetail.group);
     expect(container.textContent).toContain('instances.quartz.yes');
     expect(container.textContent).toContain('instances.quartz.no');
-  });;
+  });
 
   it('displays recovery status', () => {
     const { container } = render(JobsSection, {

@@ -375,7 +375,9 @@ const triggerJobNow = async (): Promise<void> => {
       job.value.name,
     );
     notificationCenter.success(
-      t('instances.quartz.trigger_success_message', { jobName: job.value.name }),
+      t('instances.quartz.trigger_success_message', {
+        jobName: job.value.name,
+      }),
       {
         title: t('instances.quartz.trigger_success_title'),
         timeout: 3000,

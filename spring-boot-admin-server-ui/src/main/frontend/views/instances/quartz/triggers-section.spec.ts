@@ -23,11 +23,11 @@ import {
   mockSimpleTriggerDetail,
   mockTriggerDetailNoDescription,
 } from './__mocks__/quartz-data';
-import { render } from '@/test-utils';
 import TriggersSection from './triggers-section.vue';
 
-describe('TriggersSection.vue', () => {
+import { render } from '@/test-utils';
 
+describe('TriggersSection.vue', () => {
   it('renders nothing when no triggers provided', () => {
     const { container } = render(TriggersSection, {
       props: { triggers: [] },
@@ -50,13 +50,14 @@ describe('TriggersSection.vue', () => {
 
   it('displays trigger descriptions', () => {
     const { container } = render(TriggersSection, {
-      props: { triggers: [
-        mockSimpleTriggerDetail,
-        mockTriggerDetailNoDescription,
-      ] },
+      props: {
+        triggers: [mockSimpleTriggerDetail, mockTriggerDetailNoDescription],
+      },
     });
 
-    expect(container.textContent).toContain(mockSimpleTriggerDetail.description);
+    expect(container.textContent).toContain(
+      mockSimpleTriggerDetail.description,
+    );
   });
 
   it('displays trigger groups and states', () => {

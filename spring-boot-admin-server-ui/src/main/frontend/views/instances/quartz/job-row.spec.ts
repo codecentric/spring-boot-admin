@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, expect, it } from 'vitest';
 import userEvent from '@testing-library/user-event';
+import { describe, expect, it } from 'vitest';
 
 import {
   mockJobDetail,
   mockJobDetailNoDescription,
 } from './__mocks__/quartz-data';
-import { render } from '@/test-utils';
 import JobRow from './job-row.vue';
+
+import { render } from '@/test-utils';
 
 describe('JobRow.vue', () => {
   it('renders job name correctly', () => {
@@ -170,7 +171,9 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).toContain('instances.quartz.trigger_fire_times');
+    expect(container.textContent).toContain(
+      'instances.quartz.trigger_fire_times',
+    );
     mockJobDetail.triggers.forEach((trigger) => {
       if (trigger.previousFireTime) {
         expect(container.textContent).toContain('instances.quartz.last_fire');
@@ -227,7 +230,9 @@ describe('JobRow.vue', () => {
       },
     });
 
-    expect(container.textContent).not.toContain('instances.quartz.trigger_fire_times');
+    expect(container.textContent).not.toContain(
+      'instances.quartz.trigger_fire_times',
+    );
   });
 
   it('emits toggle event when clicked', async () => {
@@ -261,7 +266,9 @@ describe('JobRow.vue', () => {
     expect(container.textContent).toContain('instances.quartz.group');
     expect(container.textContent).toContain('instances.quartz.description');
     expect(container.textContent).toContain('instances.quartz.durable');
-    expect(container.textContent).toContain('instances.quartz.request_recovery');
+    expect(container.textContent).toContain(
+      'instances.quartz.request_recovery',
+    );
   });
 
   it('displays correct durable and recovery values in expanded view', () => {
@@ -275,7 +282,9 @@ describe('JobRow.vue', () => {
 
     expect(container.textContent).toContain('instances.quartz.durable');
     expect(container.textContent).toContain('instances.quartz.yes');
-    expect(container.textContent).toContain('instances.quartz.request_recovery');
+    expect(container.textContent).toContain(
+      'instances.quartz.request_recovery',
+    );
     expect(container.textContent).toContain('instances.quartz.no');
   });
 });
