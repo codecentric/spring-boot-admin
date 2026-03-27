@@ -16,7 +16,7 @@
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import axios, {
   type AxiosError,
-   AxiosInstance,
+  AxiosInstance,
   type InternalAxiosRequestConfig,
 } from 'axios';
 
