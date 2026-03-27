@@ -1,6 +1,5 @@
 import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
 import { RenderResult, render as tlRender } from '@testing-library/vue';
-import { deepMerge } from '@vitest/utils';
 import { RouterLinkStub } from '@vue/test-utils';
 import { merge } from 'lodash-es';
 import PrimeVue from 'primevue/config';
