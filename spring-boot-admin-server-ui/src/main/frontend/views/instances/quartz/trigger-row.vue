@@ -70,27 +70,35 @@
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="clock" class="h-4 w-4" />
-              Timing Information
+              {{ $t('instances.quartz.timing_information') }}
             </h5>
             <div class="space-y-3 text-sm">
               <div>
-                <p class="font-medium text-gray-700">State</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.state') }}
+                </p>
                 <trigger-state-badge :state="trigger.state" />
               </div>
               <div v-if="trigger.previousFireTime">
-                <p class="font-medium text-gray-700">Last Fire Time</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.last_fire_time') }}
+                </p>
                 <p class="text-gray-600">
                   {{ formatDateTime(trigger.previousFireTime) }}
                 </p>
               </div>
               <div v-if="trigger.nextFireTime">
-                <p class="font-medium text-gray-700">Next Fire Time</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.next_fire_time') }}
+                </p>
                 <p class="text-gray-700 font-medium">
                   {{ formatDateTime(trigger.nextFireTime) }}
                 </p>
               </div>
               <div v-if="trigger.finalFireTime">
-                <p class="font-medium text-gray-700">Final Fire Time</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.final_fire_time') }}
+                </p>
                 <p class="text-gray-600">
                   {{ formatDateTime(trigger.finalFireTime) }}
                 </p>
@@ -104,19 +112,25 @@
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="info-circle" class="h-4 w-4" />
-              Basic Information
+              {{ $t('instances.quartz.basic_information') }}
             </h5>
             <div class="space-y-3 text-sm">
               <div>
-                <p class="font-medium text-gray-700">Name</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.name') }}
+                </p>
                 <p class="text-gray-600">{{ trigger.name }}</p>
               </div>
               <div>
-                <p class="font-medium text-gray-700">Group</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.group') }}
+                </p>
                 <p class="text-gray-600">{{ trigger.group }}</p>
               </div>
               <div>
-                <p class="font-medium text-gray-700">Type</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.type') }}
+                </p>
                 <span
                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
                 >
@@ -124,7 +138,9 @@
                 </span>
               </div>
               <div>
-                <p class="font-medium text-gray-700">Priority</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.priority') }}
+                </p>
                 <p class="text-gray-600">{{ trigger.priority }}</p>
               </div>
             </div>
@@ -138,7 +154,7 @@
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="calendar" class="h-4 w-4" />
-              Schedule Configuration
+              {{ $t('instances.quartz.schedule_configuration') }}
             </h5>
             <component :is="triggerScheduleComponent" :trigger="trigger" />
           </div>
@@ -151,11 +167,13 @@
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="hourglass" class="h-4 w-4" />
-              Time Window
+              {{ $t('instances.quartz.time_window') }}
             </h5>
             <div class="grid grid-cols-2 gap-6 text-sm">
               <div>
-                <p class="font-medium text-gray-700">Start Time</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.start_time') }}
+                </p>
                 <p class="text-gray-600">
                   {{
                     trigger.startTime ? formatDateTime(trigger.startTime) : '—'
@@ -163,7 +181,9 @@
                 </p>
               </div>
               <div>
-                <p class="font-medium text-gray-700">End Time</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.end_time') }}
+                </p>
                 <p class="text-gray-600">
                   {{ trigger.endTime ? formatDateTime(trigger.endTime) : '—' }}
                 </p>
@@ -179,10 +199,10 @@
               class="mb-3 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="calendar-check" class="h-4 w-4" />
-              Calendar
+              {{ $t('instances.quartz.calendar') }}
             </h5>
             <p class="text-sm text-gray-600">
-              Associated with calendar:
+              {{ $t('instances.quartz.associated_with_calendar') }}:
               <strong class="font-medium">{{ trigger.calendarName }}</strong>
             </p>
           </div>
@@ -195,17 +215,17 @@
               class="mb-3 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="database" class="h-4 w-4" />
-              Trigger Data
+              {{ $t('instances.quartz.trigger_data') }}
             </h5>
             <div class="overflow-hidden rounded border border-gray-300">
               <table class="min-w-full text-sm">
                 <thead>
                   <tr class="border-b border-gray-300 bg-gray-100">
                     <th class="px-4 py-2 text-left font-semibold text-gray-900">
-                      Key
+                      {{ $t('instances.quartz.key') }}
                     </th>
                     <th class="px-4 py-2 text-left font-semibold text-gray-900">
-                      Value
+                      {{ $t('instances.quartz.value') }}
                     </th>
                   </tr>
                 </thead>

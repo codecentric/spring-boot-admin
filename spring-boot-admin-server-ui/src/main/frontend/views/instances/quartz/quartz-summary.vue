@@ -26,12 +26,10 @@
 <script setup lang="ts">
 import QuartzSummaryCard from './quartz-summary-card.vue';
 
-interface Props {
+defineProps<{
   jobCount: number;
   triggerCount: number;
   activeTriggerCount: number;
   pausedTriggerCount: number;
-}
-
-defineProps<Props>();
+}>();
 </script>

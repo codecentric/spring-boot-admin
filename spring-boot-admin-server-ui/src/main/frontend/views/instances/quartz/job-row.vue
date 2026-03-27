@@ -41,14 +41,14 @@
         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 whitespace-nowrap"
       >
         <font-awesome-icon icon="check-circle" class="mr-1 h-3 w-3" />
-        Yes
+        {{ $t('instances.quartz.yes') }}
       </span>
       <span
         v-else
         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 whitespace-nowrap"
       >
         <font-awesome-icon icon="times-circle" class="mr-1 h-3 w-3" />
-        No
+        {{ $t('instances.quartz.no') }}
       </span>
     </td>
     <td class="px-3 sm:px-6 py-4 block sm:table-cell">
@@ -57,13 +57,13 @@
         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
       >
         <font-awesome-icon icon="shield" class="mr-1 h-3 w-3" />
-        Enabled
+        {{ $t('instances.quartz.enabled') }}
       </span>
       <span
         v-else
         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
       >
-        Disabled
+        {{ $t('instances.quartz.disabled') }}
       </span>
     </td>
   </tr>
@@ -83,25 +83,33 @@
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="info-circle" class="h-4 w-4" />
-              Details
+              {{ $t('instances.quartz.details') }}
             </h4>
             <div class="space-y-3 text-sm">
               <div>
-                <p class="font-medium text-gray-700">Job Name</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.job_name') }}
+                </p>
                 <p class="text-gray-600">{{ job.name }}</p>
               </div>
               <div>
-                <p class="font-medium text-gray-700">Class</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.class') }}
+                </p>
                 <p class="text-xs text-gray-600 font-mono">
                   {{ job.className }}
                 </p>
               </div>
               <div>
-                <p class="font-medium text-gray-700">Group</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.group') }}
+                </p>
                 <p class="text-gray-600">{{ job.group }}</p>
               </div>
               <div v-if="job.description">
-                <p class="font-medium text-gray-700">Description</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.description') }}
+                </p>
                 <p class="text-gray-600">{{ job.description }}</p>
               </div>
             </div>
@@ -113,21 +121,29 @@
               class="mb-4 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="cog" class="h-4 w-4" />
-              Configuration
+              {{ $t('instances.quartz.configuration') }}
             </h4>
             <div class="space-y-3 text-sm">
               <div>
-                <p class="font-medium text-gray-700">Durable</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.durable') }}
+                </p>
                 <p class="flex items-center gap-2">
                   <font-awesome-icon
                     :icon="job.durable ? 'check-circle' : 'times-circle'"
                     class="h-4 w-4"
                   />
-                  {{ job.durable ? 'Yes' : 'No' }}
+                  {{
+                    job.durable
+                      ? $t('instances.quartz.yes')
+                      : $t('instances.quartz.no')
+                  }}
                 </p>
               </div>
               <div>
-                <p class="font-medium text-gray-700">Request Recovery</p>
+                <p class="font-medium text-gray-700">
+                  {{ $t('instances.quartz.request_recovery') }}
+                </p>
                 <p class="flex items-center gap-2">
                   <font-awesome-icon
                     :icon="
@@ -135,7 +151,11 @@
                     "
                     class="h-4 w-4"
                   />
-                  {{ job.requestRecovery ? 'Yes' : 'No' }}
+                  {{
+                    job.requestRecovery
+                      ? $t('instances.quartz.yes')
+                      : $t('instances.quartz.no')
+                  }}
                 </p>
               </div>
             </div>
@@ -154,7 +174,7 @@
               class="mb-3 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="clock" class="h-4 w-4" />
-              Trigger Fire Times
+              {{ $t('instances.quartz.trigger_fire_times') }}
             </h4>
             <div class="space-y-2 text-sm">
               <div v-for="trigger in job.triggers" :key="triggerKey(trigger)">
@@ -163,11 +183,15 @@
                 </p>
                 <div class="ml-2 space-y-1 text-xs">
                   <p v-if="trigger.previousFireTime" class="text-gray-600">
-                    <span class="font-medium">Last Fire:</span>
+                    <span class="font-medium"
+                      >{{ $t('instances.quartz.last_fire') }}:</span
+                    >
                     {{ formatDateTime(trigger.previousFireTime) }}
                   </p>
                   <p v-if="trigger.nextFireTime" class="text-gray-700">
-                    <span class="font-medium">Next Fire:</span>
+                    <span class="font-medium"
+                      >{{ $t('instances.quartz.next_fire') }}:</span
+                    >
                     {{ formatDateTime(trigger.nextFireTime) }}
                   </p>
                 </div>
@@ -183,7 +207,9 @@
               class="mb-3 flex items-center gap-2 font-semibold text-gray-900"
             >
               <font-awesome-icon icon="link" class="h-4 w-4" />
-              Associated Triggers ({{ job.triggers.length }})
+              {{ $t('instances.quartz.associated_triggers') }} ({{
+                job.triggers.length
+              }})
             </h4>
             <div class="flex flex-wrap gap-2">
               <span
@@ -208,17 +234,17 @@
                 icon="database"
                 class="h-4 w-4 text-blue-600"
               />
-              Job Data
+              {{ $t('instances.quartz.job_data') }}
             </h4>
             <div class="overflow-hidden rounded border border-gray-300">
               <table class="min-w-full text-sm">
                 <thead>
                   <tr class="border-b border-gray-300 bg-gray-100">
                     <th class="px-4 py-2 text-left font-semibold text-gray-900">
-                      Key
+                      {{ $t('instances.quartz.key') }}
                     </th>
                     <th class="px-4 py-2 text-left font-semibold text-gray-900">
-                      Value
+                      {{ $t('instances.quartz.value') }}
                     </th>
                   </tr>
                 </thead>
@@ -244,7 +270,9 @@
         <!-- Action Buttons Section -->
         <div v-if="instance" class="border-t border-gray-200 pt-6">
           <div class="flex flex-col gap-3">
-            <p class="text-sm font-semibold text-gray-900">Actions</p>
+            <p class="text-sm font-semibold text-gray-900">
+              {{ $t('instances.quartz.actions') }}
+            </p>
             <div class="flex flex-wrap gap-2">
               <button
                 :disabled="isLoading"
@@ -252,7 +280,7 @@
                 @click.stop="triggerJobNow"
               >
                 <font-awesome-icon icon="play-circle" class="h-4 w-4" />
-                Trigger Job Now
+                {{ $t('instances.quartz.trigger_job_now') }}
               </button>
             </div>
             <div
