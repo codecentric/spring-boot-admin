@@ -20,128 +20,87 @@ import {
   mockJobDetail,
   mockJobDetailNoDescription,
 } from './__mocks__/quartz-data';
+import { createQuartzI18n } from './__mocks__/test-setup';
 import JobRow from './job-row.vue';
 
 describe('JobRow.vue', () => {
-  it('renders job name correctly', () => {
-    const wrapper = mount(JobRow, {
+  const createWrapper = (jobDetail: any, isExpanded = false, instance: any = {}) => {
+    return mount(JobRow, {
       props: {
-        jobDetail: mockJobDetail,
-        isExpanded: false,
+        jobDetail,
+        isExpanded,
+        instance,
+      },
+      global: {
+        plugins: [createQuartzI18n()],
       },
     });
+  };
+
+  it('renders job name correctly', () => {
+    const wrapper = createWrapper(mockJobDetail, false);
 
     expect(wrapper.text()).toContain(mockJobDetail.name);
   });
 
   it('renders job class name correctly', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: false,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, false);
 
     expect(wrapper.text()).toContain(mockJobDetail.className);
   });
 
   it('displays description in table row', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: false,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, false);
 
     expect(wrapper.text()).toContain(mockJobDetail.description);
   });
 
   it('displays description dash when no description provided', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetailNoDescription,
-        isExpanded: false,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetailNoDescription, false);
 
     const cells = wrapper.findAll('td');
     expect(cells[1].text()).toBe('—');
   });
 
   it('displays group correctly', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: false,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, false);
 
     expect(wrapper.text()).toContain(mockJobDetail.group);
   });
 
   it('displays durable status as Yes when true', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: false,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, false);
 
     expect(wrapper.text()).toContain('Yes');
   });
 
   it('displays durable status as No when false', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetailNoDescription,
-        isExpanded: false,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetailNoDescription, false);
 
     expect(wrapper.text()).toContain('No');
   });
 
   it('displays recovery status as Enabled when true', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetailNoDescription,
-        isExpanded: false,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetailNoDescription, false);
 
     expect(wrapper.text()).toContain('Enabled');
   });
 
   it('displays recovery status as Disabled when false', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: false,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, false);
 
     expect(wrapper.text()).toContain('Disabled');
   });
 
   it('shows expanded details when isExpanded is true', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: true,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, true);
 
     expect(wrapper.text()).toContain('Details');
     expect(wrapper.text()).toContain('Configuration');
   });
 
   it('displays all trigger information in expanded view', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: true,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, true);
 
     mockJobDetail.triggers.forEach((trigger) => {
       expect(wrapper.text()).toContain(trigger.name);
@@ -150,12 +109,7 @@ describe('JobRow.vue', () => {
   });
 
   it('displays trigger fire times in expanded view', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: true,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, true);
 
     expect(wrapper.text()).toContain('Trigger Fire Times');
     mockJobDetail.triggers.forEach((trigger) => {
@@ -169,12 +123,7 @@ describe('JobRow.vue', () => {
   });
 
   it('displays job data in expanded view when present', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: true,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, true);
 
     expect(wrapper.text()).toContain('Job Data');
     expect(wrapper.text()).toContain('job.key');
@@ -182,12 +131,7 @@ describe('JobRow.vue', () => {
   });
 
   it('does not display job data section when data is empty', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetailNoDescription,
-        isExpanded: true,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetailNoDescription, true);
 
     expect(wrapper.text()).not.toContain('Job Data');
   });
@@ -204,23 +148,13 @@ describe('JobRow.vue', () => {
       ],
     };
 
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: jobWithoutFireTimes,
-        isExpanded: true,
-      },
-    });
+    const wrapper = createWrapper(jobWithoutFireTimes, true);
 
     expect(wrapper.text()).not.toContain('Trigger Fire Times');
   });
 
   it('emits toggle event when clicked', async () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: false,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, false);
 
     await wrapper.find('tr').trigger('click');
 
@@ -228,12 +162,7 @@ describe('JobRow.vue', () => {
   });
 
   it('displays all job detail fields in expanded view', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: true,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, true);
 
     expect(wrapper.text()).toContain('Job Name');
     expect(wrapper.text()).toContain('Class');
@@ -244,12 +173,7 @@ describe('JobRow.vue', () => {
   });
 
   it('displays correct durable and recovery values in expanded view', () => {
-    const wrapper = mount(JobRow, {
-      props: {
-        jobDetail: mockJobDetail,
-        isExpanded: true,
-      },
-    });
+    const wrapper = createWrapper(mockJobDetail, true);
 
     const text = wrapper.text();
     expect(text).toContain('Durable');
