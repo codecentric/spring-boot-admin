@@ -299,11 +299,13 @@
 <script setup lang="ts">
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import Instance from '@/services/instance';
 import { QuartzActuatorService } from '@/services/quartz-actuator';
 
 const notificationCenter = useNotificationCenter();
+const { t } = useI18n();
 
 interface JobTrigger {
   group: string;
@@ -373,20 +375,25 @@ const triggerJobNow = async (): Promise<void> => {
       job.value.name,
     );
     notificationCenter.success(
-      `Job "${job.value.name}" triggered successfully`,
+      t('instances.quartz.trigger_success_message', { jobName: job.value.name }),
       {
-        title: 'Job Triggered',
+        title: t('instances.quartz.trigger_success_title'),
         timeout: 3000,
       },
     );
     emit('action', 'trigger', true);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    actionError.value = `Failed to trigger job: ${errorMessage}`;
+    actionError.value = t('instances.quartz.trigger_failed_message', {
+      error: errorMessage,
+    });
     notificationCenter.error(
-      `Failed to trigger job "${job.value.name}": ${errorMessage}`,
+      t('instances.quartz.trigger_failed_notification', {
+        jobName: job.value.name,
+        error: errorMessage,
+      }),
       {
-        title: 'Trigger Failed',
+        title: t('instances.quartz.trigger_failed'),
         timeout: 5000,
       },
     );
