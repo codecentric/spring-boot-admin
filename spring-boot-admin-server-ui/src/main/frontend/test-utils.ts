@@ -75,6 +75,9 @@ export const render = (testComponent, options?): RenderResult => {
         stubs: {
           RouterLink: RouterLinkStub,
           'sba-exchanges-chart': true,
+          'font-awesome-icon': {
+            template: '<svg data-testid="icon" />',
+          },
         },
       },
     },
