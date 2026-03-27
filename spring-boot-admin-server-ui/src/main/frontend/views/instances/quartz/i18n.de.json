@@ -12,6 +12,7 @@
       "cron_expression": "Cron-Ausdruck",
       "custom_trigger": "Benutzerdefinierter Auslöser",
       "days_of_week": "Wochentage",
+      "description": "Beschreibung",
       "details": "Details",
       "disabled": "Deaktiviert",
       "durable": "Persistent",

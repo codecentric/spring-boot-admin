@@ -12,6 +12,7 @@
       "cron_expression": "Cron 表达式",
       "custom_trigger": "自定义触发器",
       "days_of_week": "星期几",
+      "description": "描述",
       "details": "详情",
       "disabled": "禁用",
       "durable": "持久的",

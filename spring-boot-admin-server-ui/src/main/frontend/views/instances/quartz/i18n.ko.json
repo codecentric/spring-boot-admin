@@ -12,6 +12,7 @@
       "cron_expression": "Cron 표현식",
       "custom_trigger": "사용자 정의 트리거",
       "days_of_week": "요일",
+      "description": "설명",
       "details": "세부 정보",
       "disabled": "비활성화됨",
       "durable": "지속성",

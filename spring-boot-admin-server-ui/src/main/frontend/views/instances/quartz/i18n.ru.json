@@ -12,6 +12,7 @@
       "cron_expression": "Выражение Cron",
       "custom_trigger": "Пользовательский Триггер",
       "days_of_week": "Дни Недели",
+      "description": "Описание",
       "details": "Детали",
       "disabled": "Отключено",
       "durable": "Постоянный",

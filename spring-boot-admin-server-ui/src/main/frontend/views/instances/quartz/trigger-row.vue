@@ -58,7 +58,9 @@
           v-if="trigger.description"
           class="bg-white border border-gray-200 rounded p-4"
         >
-          <p class="font-medium text-gray-700 mb-1">Description</p>
+          <p class="font-medium text-gray-700 mb-1">
+            {{ $t('instances.quartz.description') }}
+          </p>
           <p class="text-sm text-gray-600">{{ trigger.description }}</p>
         </div>
 

@@ -12,6 +12,7 @@
       "cron_expression": "Expresión Cron",
       "custom_trigger": "Disparador Personalizado",
       "days_of_week": "Días de la Semana",
+      "description": "Descripción",
       "details": "Detalles",
       "disabled": "Deshabilitado",
       "durable": "Duradero",

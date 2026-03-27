@@ -12,6 +12,7 @@
       "cron_expression": "Expression Cron",
       "custom_trigger": "Déclencheur Personnalisé",
       "days_of_week": "Jours de la Semaine",
+      "description": "Description",
       "details": "Détails",
       "disabled": "Désactivé",
       "durable": "Durable",

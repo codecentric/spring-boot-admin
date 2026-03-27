@@ -12,6 +12,7 @@
       "cron_expression": "Cron-Orðatiltæki",
       "custom_trigger": "Sérsniðinn Kveikir",
       "days_of_week": "Dagar Vikunnar",
+      "description": "Lýsing",
       "details": "Smáatriði",
       "disabled": "Óvirkt",
       "durable": "Stöðugur",

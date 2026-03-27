@@ -12,6 +12,7 @@
       "cron_expression": "Cron Expression",
       "custom_trigger": "Custom Trigger",
       "days_of_week": "Days of Week",
+      "description": "Description",
       "details": "Details",
       "disabled": "Disabled",
       "durable": "Durable",
