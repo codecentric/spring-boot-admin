@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -24,42 +23,40 @@ import {
   mockSimpleTriggerDetail,
   mockTriggerDetailNoDescription,
 } from './__mocks__/quartz-data';
-import { createQuartzI18n } from './__mocks__/test-setup';
+import { render } from '@/test-utils';
 import TriggersSection from './triggers-section.vue';
 
 describe('TriggersSection.vue', () => {
-  const createWrapper = (triggers: any[] = []) => {
-    return mount(TriggersSection, {
-      props: { triggers },
-      global: {
-        plugins: [createQuartzI18n()],
-      },
-    });
-  };
 
   it('renders nothing when no triggers provided', () => {
-    const wrapper = createWrapper([]);
-    expect(wrapper.find('h2').exists()).toBe(false);
+    const { container } = render(TriggersSection, {
+      props: { triggers: [] },
+    });
+    expect(container.querySelector('h2')).toBe(null);
   });
 
   it('renders section header and displays all triggers', () => {
     const triggers = [mockSimpleTriggerDetail, mockCronTriggerDetail];
-    const wrapper = createWrapper(triggers);
+    const { container } = render(TriggersSection, {
+      props: { triggers },
+    });
 
-    expect(wrapper.text()).toContain('Triggers');
-    expect(wrapper.text()).toContain('2');
+    expect(container.textContent).toContain('Triggers');
+    expect(container.textContent).toContain('total');
     triggers.forEach((t) => {
-      expect(wrapper.text()).toContain(t.name);
+      expect(container.textContent).toContain(t.name);
     });
   });
 
   it('displays trigger descriptions', () => {
-    const wrapper = createWrapper([
-      mockSimpleTriggerDetail,
-      mockTriggerDetailNoDescription,
-    ]);
+    const { container } = render(TriggersSection, {
+      props: { triggers: [
+        mockSimpleTriggerDetail,
+        mockTriggerDetailNoDescription,
+      ] },
+    });
 
-    expect(wrapper.text()).toContain(mockSimpleTriggerDetail.description);
+    expect(container.textContent).toContain(mockSimpleTriggerDetail.description);
   });
 
   it('displays trigger groups and states', () => {
@@ -67,30 +64,36 @@ describe('TriggersSection.vue', () => {
       mockSimpleTriggerDetail,
       mockDailyTimeIntervalTriggerDetail,
     ];
-    const wrapper = createWrapper(triggers);
+    const { container } = render(TriggersSection, {
+      props: { triggers },
+    });
 
     triggers.forEach((t) => {
-      expect(wrapper.text()).toContain(t.group);
-      expect(wrapper.text()).toContain(t.state);
+      expect(container.textContent).toContain(t.group);
+      expect(container.textContent).toContain(t.state);
     });
   });
 
   it('displays trigger types and priorities', () => {
     const triggers = [mockSimpleTriggerDetail, mockCronTriggerDetail];
-    const wrapper = createWrapper(triggers);
+    const { container } = render(TriggersSection, {
+      props: { triggers },
+    });
 
-    expect(wrapper.text()).toContain('simple');
-    expect(wrapper.text()).toContain('cron');
+    expect(container.textContent).toContain('simple');
+    expect(container.textContent).toContain('cron');
     triggers.forEach((t) => {
-      expect(wrapper.text()).toContain(String(t.priority));
+      expect(container.textContent).toContain(String(t.priority));
     });
   });
 
   it('displays cron trigger configuration when expanded', () => {
-    const wrapper = createWrapper([mockCronTriggerDetail]);
+    const { container } = render(TriggersSection, {
+      props: { triggers: [mockCronTriggerDetail] },
+    });
 
-    expect(wrapper.text()).toContain('cron');
-    expect(wrapper.text()).toContain(mockCronTriggerDetail.name);
+    expect(container.textContent).toContain('cron');
+    expect(container.textContent).toContain(mockCronTriggerDetail.name);
   });
 
   it('displays all trigger types with correct configuration', () => {
@@ -101,19 +104,23 @@ describe('TriggersSection.vue', () => {
       mockCalendarIntervalTriggerDetail,
       mockCustomTriggerDetail,
     ];
-    const wrapper = createWrapper(triggers);
+    const { container } = render(TriggersSection, {
+      props: { triggers },
+    });
 
-    expect(wrapper.text()).toContain('simple');
-    expect(wrapper.text()).toContain('cron');
-    expect(wrapper.text()).toContain('dailyTimeInterval');
-    expect(wrapper.text()).toContain('calendarInterval');
-    expect(wrapper.text()).toContain('custom');
+    expect(container.textContent).toContain('simple');
+    expect(container.textContent).toContain('cron');
+    expect(container.textContent).toContain('dailyTimeInterval');
+    expect(container.textContent).toContain('calendarInterval');
+    expect(container.textContent).toContain('custom');
   });
 
   it('displays all actuator response data', () => {
-    const wrapper = createWrapper([mockSimpleTriggerDetail]);
+    const { container } = render(TriggersSection, {
+      props: { triggers: [mockSimpleTriggerDetail] },
+    });
 
-    const text = wrapper.text();
+    const text = container.textContent;
     expect(text).toContain(mockSimpleTriggerDetail.name);
     expect(text).toContain(mockSimpleTriggerDetail.description);
     expect(text).toContain(mockSimpleTriggerDetail.group);

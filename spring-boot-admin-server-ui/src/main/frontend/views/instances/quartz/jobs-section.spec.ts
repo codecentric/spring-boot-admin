@@ -13,65 +13,77 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
 import {
   mockJobDetail,
   mockJobDetailNoDescription,
 } from './__mocks__/quartz-data';
-import { createQuartzI18n } from './__mocks__/test-setup';
+import { render } from '@/test-utils';
 import JobsSection from './jobs-section.vue';
 
 describe('JobsSection.vue', () => {
-  const createWrapper = (jobs: any[] = []) => {
-    return mount(JobsSection, {
-      props: { jobs },
-      global: {
-        plugins: [createQuartzI18n()],
-      },
-    });
-  };
 
   it('renders nothing when no jobs provided', () => {
-    const wrapper = createWrapper([]);
-    expect(wrapper.find('h2').exists()).toBe(false);
+    const { container } = render(JobsSection, {
+      props: { jobs: [] },
+    });
+    expect(container.querySelector('h2')).toBe(null);
   });
 
   it('renders section header and displays all jobs', () => {
-    const wrapper = createWrapper([mockJobDetail, mockJobDetailNoDescription]);
+    const { container } = render(JobsSection, {
+      props: { jobs: [mockJobDetail, mockJobDetailNoDescription] },
+    });
 
-    expect(wrapper.text()).toContain('Jobs');
-    expect(wrapper.text()).toContain('2');
-    expect(wrapper.text()).toContain(mockJobDetail.name);
-    expect(wrapper.text()).toContain(mockJobDetailNoDescription.name);
+    expect(container.textContent).toContain('Jobs');
+    expect(container.textContent).toContain('2');
+    expect(container.textContent).toContain(mockJobDetail.name);
+    expect(container.textContent).toContain(mockJobDetailNoDescription.name);
   });
 
   it('displays job descriptions', () => {
-    const wrapper = createWrapper([mockJobDetail, mockJobDetailNoDescription]);
+    const { container } = render(JobsSection, {
+      props: { jobs: [mockJobDetail, mockJobDetailNoDescription] },
+    });
 
-    expect(wrapper.text()).toContain(mockJobDetail.description);
+    expect(container.textContent).toContain(mockJobDetail.description);
   });
 
   it('displays job groups and durable status', () => {
-    const wrapper = createWrapper([mockJobDetail, mockJobDetailNoDescription]);
+    const { container } = render(JobsSection, {
+      props: { jobs: [mockJobDetail, mockJobDetailNoDescription] },
+    });
 
-    expect(wrapper.text()).toContain(mockJobDetail.group);
-    expect(wrapper.text()).toContain('Yes');
-    expect(wrapper.text()).toContain('No');
+    expect(container.textContent).toContain(mockJobDetail.group);
+    expect(container.textContent).toContain('Yes');
+    expect(container.textContent).toContain('No');
   });
 
-  it('displays recovery status', () => {
-    const wrapper = createWrapper([mockJobDetail, mockJobDetailNoDescription]);
+  it('displays durable and recovery status correctly', () => {
+    const { container } = render(JobsSection, {
+      props: { jobs: [mockJobDetail, mockJobDetailNoDescription] },
+    });
 
-    expect(wrapper.text()).toContain('Disabled');
-    expect(wrapper.text()).toContain('Enabled');
+    expect(container.textContent).toContain('Durable');
+    expect(container.textContent).toContain('Recovery');
+  });
+
+  it('displays enabled and disabled recovery status', () => {
+    const { container } = render(JobsSection, {
+      props: { jobs: [mockJobDetail, mockJobDetailNoDescription] },
+    });
+
+    expect(container.textContent).toContain('Disabled');
+    expect(container.textContent).toContain('Enabled');
   });
 
   it('displays all job data from actuator response', () => {
-    const wrapper = createWrapper([mockJobDetail]);
+    const { container } = render(JobsSection, {
+      props: { jobs: [mockJobDetail] },
+    });
 
-    const text = wrapper.text();
+    const text = container.textContent;
     expect(text).toContain(mockJobDetail.name);
     expect(text).toContain(mockJobDetail.className);
     expect(text).toContain(mockJobDetail.description);
