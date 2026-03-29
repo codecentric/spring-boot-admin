@@ -100,7 +100,8 @@ public class AdminServerAutoConfiguration {
 	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
-		return new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(), new ApiMediaTypeHandler());
+		return new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(), new ApiMediaTypeHandler())
+			.timeout(this.adminServerProperties.getMonitor().getDefaultTimeout());
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
