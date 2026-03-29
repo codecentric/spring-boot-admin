@@ -148,7 +148,7 @@ export default {
       return moment(value, moment.HTML5_FMT.DATETIME_LOCAL, true).toDate();
     },
     async fetchAuditevents() {
-      this.isLoading = true;
+      this.isLoading = this.events.length === 0;
       const response = await this.instance.fetchAuditevents(this.filter);
       const converted = response.data.events.map(
         (event) => new Auditevent(event),
