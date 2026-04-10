@@ -100,7 +100,22 @@ public class AdminServerAutoConfiguration {
 	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
-		return new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(), new ApiMediaTypeHandler());
+
+		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
+				new ApiMediaTypeHandler());
+
+		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
+
+		Duration timeout = monitorProperties.getDefaultTimeout();
+		Duration interval = monitorProperties.getStatusInterval();
+
+		if (timeout.compareTo(interval) > 0) {
+			timeout = interval;
+		}
+
+		updater.timeout(timeout);
+
+		return updater;
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
@@ -117,8 +132,8 @@ public class AdminServerAutoConfiguration {
 					defaultTimeout, statusInterval);
 		}
 
-		return new StatusUpdateTrigger(statusUpdater, events, monitorProperties.getStatusInterval(),
-				monitorProperties.getStatusLifetime(), monitorProperties.getStatusMaxBackoff());
+		return new StatusUpdateTrigger(statusUpdater, events, statusInterval, monitorProperties.getStatusLifetime(),
+				monitorProperties.getStatusMaxBackoff());
 	}
 
 	@Bean

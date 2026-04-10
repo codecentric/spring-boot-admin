@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import java.time.Duration;
+
 import com.hazelcast.config.Config;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -36,6 +38,7 @@ import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.services.StatusUpdater;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,6 +65,28 @@ class AdminServerAutoConfigurationTest {
 			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
 			assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
 		});
+	}
+
+	@Test
+	void shouldApplyConfiguredTimeoutFromProperties() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.monitor.default-timeout=5s",
+					"spring.boot.admin.monitor.status-interval=10s")
+			.run((context) -> {
+				StatusUpdater updater = context.getBean(StatusUpdater.class);
+				assertThat(updater).extracting("timeout").isEqualTo(Duration.ofSeconds(5));
+			});
+	}
+
+	@Test
+	void shouldClampTimeoutToInterval() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.monitor.default-timeout=20s",
+					"spring.boot.admin.monitor.status-interval=10s")
+			.run((context) -> {
+				StatusUpdater updater = context.getBean(StatusUpdater.class);
+				assertThat(updater).extracting("timeout").isEqualTo(Duration.ofSeconds(10));
+			});
 	}
 
 	public static class TestHazelcastConfig {
