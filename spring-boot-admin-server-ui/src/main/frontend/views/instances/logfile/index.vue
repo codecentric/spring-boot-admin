@@ -130,8 +130,8 @@ export default {
     atBottom: false,
     atTop: true,
     skippedBytes: null,
-    wrapLines: true,
-    scrollSubcription: null,
+    wrapLines: false,
+    scrollSubscription: null,
   }),
   computed: {
     skippedBytesString() {
@@ -143,7 +143,7 @@ export default {
   },
   created() {
     this.ansiUp = new AnsiUp();
-    this.scrollSubcription = fromEvent(window, 'scroll')
+    this.scrollSubscription = fromEvent(window, 'scroll')
       .pipe(
         debounceTime(25),
         map((event) => event.target.scrollingElement.scrollTop),
@@ -157,11 +157,11 @@ export default {
       });
   },
   beforeUnmount() {
-    if (this.scrollSubcription && !this.scrollSubcription.closed) {
+    if (this.scrollSubscription && !this.scrollSubscription.closed) {
       try {
-        this.scrollSubcription.unsubscribe();
+        this.scrollSubscription.unsubscribe();
       } finally {
-        this.scrollSubcription = null;
+        this.scrollSubscription = null;
       }
     }
   },
