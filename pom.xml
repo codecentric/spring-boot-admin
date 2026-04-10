@@ -47,7 +47,7 @@
         <maven.site.skip>true</maven.site.skip>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>4.0.4</spring-boot.version>
+        <spring-boot.version>4.0.5</spring-boot.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
 
         <jolokia-support-springboot.version>2.5.1</jolokia-support-springboot.version>
@@ -58,7 +58,7 @@
         <wiremock.version>3.13.2</wiremock.version>
         <hazelcast.version>5.6.0</hazelcast.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <jetty.version>12.1.7</jetty.version>
+        <jetty.version>12.1.8</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>

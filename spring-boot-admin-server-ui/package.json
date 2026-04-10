@@ -32,7 +32,7 @@
     "@types/sanitize-html": "^2.16.0",
     "ansi_up": "6.0.6",
     "autolinker": "4.1.5",
-    "axios": "1.13.6",
+    "axios": "1.14.0",
     "chart.js": "4.5.1",
     "chartjs-adapter-moment": "1.0.1",
     "classnames": "2.5.1",
@@ -50,7 +50,7 @@
     "fuse.js": "^7.0.0",
     "iso8601-duration": "2.1.3",
     "js-yaml": "^4.1.0",
-    "lodash-es": "4.17.23",
+    "lodash-es": "4.18.1",
     "mitt": "^3.0.0",
     "moment": "2.30.1",
     "popper.js": "1.16.1",
@@ -66,7 +66,7 @@
     "sanitize-html": "^2.17.0",
     "uuid": "13.0.0",
     "v3-infinite-loading": "1.3.2",
-    "vue": "3.5.30",
+    "vue": "3.5.32",
     "vue-i18n": "11.3.0",
     "vue-router": "5.0.4",
     "vue3-click-away": "1.2.4"
@@ -75,8 +75,8 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^10.0.0",
     "@storybook/addon-docs": "^10.0.0",
-    "@storybook/addon-links": "10.3.3",
-    "@storybook/vue3-vite": "10.3.3",
+    "@storybook/addon-links": "10.3.4",
+    "@storybook/vue3-vite": "10.3.4",
     "@tailwindcss/vite": "^4.2.2",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/user-event": "14.6.1",
@@ -94,7 +94,7 @@
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-storybook": "10.3.3",
+    "eslint-plugin-storybook": "10.3.4",
     "eslint-plugin-vue": "^10.0.0",
     "globals": "^17.0.0",
     "happy-dom": "^20.0.0",
@@ -103,15 +103,15 @@
     "msw-storybook-addon": "2.0.6",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "7.0.1",
-    "storybook": "10.3.3",
+    "storybook": "10.3.4",
     "storybook-vue3-router": "^7.0.0",
     "tailwindcss": "^4.2.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
     "unplugin-vue-components": "^31.0.0",
-    "vite": "7.3.1",
+    "vite": "7.3.2",
     "vite-plugin-static-copy": "3.4.0",
-    "vitest": "4.1.1",
+    "vitest": "4.1.2",
     "vue-eslint-parser": "^10.0.0",
     "vue-loader": "17.4.2"
   },
@@ -119,7 +119,7 @@
     "> .5%, last 2 versions"
   ],
   "engines": {
-    "node": "24.14.0"
+    "node": "24.14.1"
   },
   "msw": {
     "workerDirectory": [
@@ -129,6 +129,6 @@
     ]
   },
   "overrides": {
-    "esbuild": "0.27.4"
+    "esbuild": "0.28.0"
   }
 }
