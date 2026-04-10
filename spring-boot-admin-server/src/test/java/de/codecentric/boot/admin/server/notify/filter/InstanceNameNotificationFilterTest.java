@@ -65,4 +65,17 @@ class InstanceNameNotificationFilterTest {
 			.untilAsserted(() -> assertThat(filterLong.isExpired()).isTrue());
 	}
 
+	@Test
+	void test_getApplicationName() {
+		ApplicationNameNotificationFilter filter = new ApplicationNameNotificationFilter("my-app", null);
+		assertThat(filter.getApplicationName()).isEqualTo("my-app");
+	}
+
+	@Test
+	void test_toString() {
+		Instant expiry = Instant.parse("2099-01-01T00:00:00Z");
+		ApplicationNameNotificationFilter filter = new ApplicationNameNotificationFilter("my-app", expiry);
+		assertThat(filter.toString()).contains("my-app").contains(expiry.toString());
+	}
+
 }
