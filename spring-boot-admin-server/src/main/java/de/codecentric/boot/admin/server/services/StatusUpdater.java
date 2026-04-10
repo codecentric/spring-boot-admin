@@ -60,7 +60,7 @@ public class StatusUpdater {
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
-	private Duration timeout = Duration.ofSeconds(10);
+	private volatile Duration timeout = Duration.ofSeconds(10);
 
 	public StatusUpdater timeout(Duration timeout) {
 		this.timeout = timeout;
@@ -90,10 +90,12 @@ public class StatusUpdater {
 
 	/*
 	 * return a timeout less than the given one to prevent backdrops in concurrent get
-	 * request. This prevents flakiness of health checks.
+	 * request. This prevents flakiness of health checks. Falls back to the full timeout
+	 * when subtracting the margin would produce zero or a negative duration.
 	 */
 	private Duration getTimeoutWithMargin() {
-		return this.timeout.minusSeconds(1).abs();
+		Duration withMargin = this.timeout.minusSeconds(1);
+		return (withMargin.compareTo(Duration.ZERO) > 0) ? withMargin : this.timeout;
 	}
 
 	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {

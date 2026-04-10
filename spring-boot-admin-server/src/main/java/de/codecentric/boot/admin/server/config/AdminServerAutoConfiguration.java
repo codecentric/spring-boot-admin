@@ -100,21 +100,10 @@ public class AdminServerAutoConfiguration {
 	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
-
 		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
 				new ApiMediaTypeHandler());
-
 		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
-
-		Duration timeout = monitorProperties.getDefaultTimeout();
-		Duration interval = monitorProperties.getStatusInterval();
-
-		if (timeout.compareTo(interval) > 0) {
-			timeout = interval;
-		}
-
-		updater.timeout(timeout);
-
+		updater.timeout(effectiveTimeout(monitorProperties.getDefaultTimeout(), monitorProperties.getStatusInterval()));
 		return updater;
 	}
 
@@ -122,18 +111,18 @@ public class AdminServerAutoConfiguration {
 	@ConditionalOnMissingBean
 	public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
 		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
+		return new StatusUpdateTrigger(statusUpdater, events, monitorProperties.getStatusInterval(),
+				monitorProperties.getStatusLifetime(), monitorProperties.getStatusMaxBackoff());
+	}
 
-		Duration defaultTimeout = monitorProperties.getDefaultTimeout();
-		Duration statusInterval = monitorProperties.getStatusInterval();
-
-		if (defaultTimeout.compareTo(statusInterval) > 0) {
+	private Duration effectiveTimeout(Duration configured, Duration interval) {
+		if (configured.compareTo(interval) > 0) {
 			log.warn(
 					"Default timeout ({}) is larger than status interval ({}), hence status interval will be used as timeout.",
-					defaultTimeout, statusInterval);
+					configured, interval);
+			return interval;
 		}
-
-		return new StatusUpdateTrigger(statusUpdater, events, statusInterval, monitorProperties.getStatusLifetime(),
-				monitorProperties.getStatusMaxBackoff());
+		return configured;
 	}
 
 	@Bean

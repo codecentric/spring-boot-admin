@@ -89,6 +89,17 @@ class AdminServerAutoConfigurationTest {
 			});
 	}
 
+	@Test
+	void shouldNotClampTimeoutWhenEqualToInterval() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.monitor.default-timeout=10s",
+					"spring.boot.admin.monitor.status-interval=10s")
+			.run((context) -> {
+				StatusUpdater updater = context.getBean(StatusUpdater.class);
+				assertThat(updater).extracting("timeout").isEqualTo(Duration.ofSeconds(10));
+			});
+	}
+
 	public static class TestHazelcastConfig {
 
 		@Bean
