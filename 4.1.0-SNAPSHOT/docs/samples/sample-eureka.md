@@ -41,9 +41,13 @@ The Eureka sample demonstrates Spring Boot Admin Server integration with Netflix
 
 ```
 # Using Docker
+
 docker run -d -p 8761:8761 springcloud/eureka
 
+
+
 # Or using Spring Cloud Eureka server JAR
+
 java -jar eureka-server.jar
 ```
 
@@ -53,6 +57,7 @@ Verify Eureka is running: `http://localhost:8761`
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-eureka
+
 mvn spring-boot:run
 ```
 
@@ -62,6 +67,7 @@ Access Admin UI at: `http://localhost:8080`
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-eureka
+
 docker-compose up
 ```
 
@@ -84,6 +90,7 @@ This starts:
 
 ```
 mvn spring-boot:run -Dspring-boot.run.arguments=\
+
   --eureka.client.serviceUrl.defaultZone=http://other-eureka:8761/eureka/
 ```
 
@@ -91,6 +98,7 @@ Or set environment variable:
 
 ```
 export EUREKA_SERVICE_URL=http://other-eureka:8761
+
 mvn spring-boot:run
 ```
 
@@ -100,35 +108,65 @@ mvn spring-boot:run
 
 ```
 <dependencies>
+
     <!-- Admin Server -->
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-server</artifactId>
+
     </dependency>
+
+
 
     <!-- Eureka Discovery Client -->
+
     <dependency>
+
         <groupId>org.springframework.cloud</groupId>
+
         <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+
     </dependency>
+
+
 
     <!-- Security -->
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-starter-security</artifactId>
+
     </dependency>
 
+
+
     <!-- Web (Servlet excluded, uses WebFlux) -->
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-starter-webmvc</artifactId>
+
         <exclusions>
+
             <exclusion>
+
                 <groupId>org.springframework.boot</groupId>
+
                 <artifactId>spring-boot-starter-tomcat</artifactId>
+
             </exclusion>
+
         </exclusions>
+
     </dependency>
+
 </dependencies>
 ```
 
@@ -140,20 +178,35 @@ SpringBootAdminEurekaApplication.java
 
 ```
 @Configuration
+
 @EnableAutoConfiguration
+
 @EnableDiscoveryClient  // Enable Eureka discovery
+
 @EnableAdminServer      // Enable Admin Server
+
 public class SpringBootAdminEurekaApplication {
+
+
 
     private final AdminServerProperties adminServer;
 
+
+
     public SpringBootAdminEurekaApplication(AdminServerProperties adminServer) {
+
         this.adminServer = adminServer;
+
     }
 
+
+
     public static void main(String[] args) {
+
         SpringApplication.run(SpringBootAdminEurekaApplication.class, args);
+
     }
+
 }
 ```
 
@@ -171,30 +224,55 @@ application.yml
 
 ```
 spring:
+
   application:
+
     name: spring-boot-admin-sample-eureka
+
   profiles:
+
     active:
+
       - secure
 
+
+
 eureka:
+
   instance:
+
     leaseRenewalIntervalInSeconds: 10  # Heartbeat interval
+
     health-check-url-path: /actuator/health
+
     metadata-map:
+
       startup: ${random.int}  # Trigger refresh on restart
+
   client:
+
     registryFetchIntervalSeconds: 5  # Fetch registry every 5s
+
     serviceUrl:
+
       defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8761}/eureka/
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"  # Expose all actuator endpoints
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 ```
 
@@ -211,21 +289,37 @@ For applications to be monitored, they only need:
 
 ```
 spring:
+
   application:
+
     name: my-service  # Service name in Eureka
 
+
+
 eureka:
+
   client:
+
     serviceUrl:
+
       defaultZone: http://localhost:8761/eureka/
+
   instance:
+
     metadata-map:
+
       management.context-path: /actuator  # Tell Admin where actuator is
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"  # Expose endpoints
 ```
 
@@ -237,14 +331,23 @@ management:
 
 ```
 @Bean
+
 @Profile("insecure")
+
 public SecurityWebFilterChain securityWebFilterChainPermitAll(
+
         ServerHttpSecurity http) {
+
     return http
+
         .authorizeExchange((authorizeExchange) ->
+
             authorizeExchange.anyExchange().permitAll())
+
         .csrf(ServerHttpSecurity.CsrfSpec::disable)
+
         .build();
+
 }
 ```
 
@@ -252,29 +355,53 @@ public SecurityWebFilterChain securityWebFilterChainPermitAll(
 
 ```
 @Bean
+
 @Profile("secure")
+
 public SecurityWebFilterChain securityWebFilterChainSecure(
+
         ServerHttpSecurity http) {
+
     return http
+
         .authorizeExchange((authorizeExchange) ->
+
             authorizeExchange
+
                 .pathMatchers(adminServer.path("/assets/**"))
+
                     .permitAll()
+
                 .pathMatchers("/actuator/health/**")
+
                     .permitAll()
+
                 .pathMatchers(adminServer.path("/login"))
+
                     .permitAll()
+
                 .anyExchange()
+
                     .authenticated())
+
         .formLogin((formLogin) -> formLogin
+
             .loginPage(adminServer.path("/login"))
+
             .authenticationSuccessHandler(loginSuccessHandler(...)))
+
         .logout((logout) -> logout
+
             .logoutUrl(adminServer.path("/logout"))
+
             .logoutSuccessHandler(logoutSuccessHandler(...)))
+
         .httpBasic(Customizer.withDefaults())
+
         .csrf(ServerHttpSecurity.CsrfSpec::disable)
+
         .build();
+
 }
 ```
 
@@ -289,71 +416,138 @@ docker-compose.yml
 ```
 version: '2'
 
+
+
 services:
+
   # Eureka Server
+
   eureka:
+
     image: springcloud/eureka
+
     container_name: eureka
+
     ports:
+
       - "8761:8761"
+
     environment:
+
       - EUREKA_INSTANCE_PREFERIPADDRESS=true
 
+
+
   # Admin Server
+
   admin:
+
     build:
+
       context: .
+
       dockerfile: ./src/main/docker/Dockerfile
+
     depends_on:
+
       - eureka
+
     ports:
+
      - "8080:8080"
+
     environment:
+
       - EUREKA_SERVICE_URL=http://eureka:8761
+
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
 
+
+
   # Spring Cloud Config Server
+
   config:
+
     image: springcloud/configserver
+
     depends_on:
+
       - eureka
+
     ports:
+
       - "8888:8888"
+
     environment:
+
       - EUREKA_SERVICE_URL=http://eureka:8761
 
+
+
   # Sample Microservices
+
   customers:
+
     image: springcloud/customers
+
     depends_on:
+
       - config
+
       - rabbit
+
     environment:
+
       - CONFIG_SERVER_URI=http://config:8888
+
       - RABBITMQ_HOST=rabbit
+
+
 
   stores:
+
     image: springcloud/stores
+
     depends_on:
+
       - config
+
       - rabbit
+
       - mongodb
+
     environment:
+
       - CONFIG_SERVER_URI=http://config:8888
+
       - RABBITMQ_HOST=rabbit
+
       - MONGODB_HOST=mongodb
 
+
+
   # Infrastructure
+
   mongodb:
+
     image: tutum/mongodb
+
     ports:
+
       - "27017:27017"
+
     environment:
+
       - AUTH=no
 
+
+
   rabbit:
+
     image: "rabbitmq:4"
+
     ports:
+
      - "5672:5672"
 ```
 
@@ -373,9 +567,13 @@ docker-compose down
 
 ```
 # All services
+
 docker-compose logs -f
 
+
+
 # Specific service
+
 docker-compose logs -f admin
 ```
 
@@ -412,19 +610,33 @@ Admin Server reads specific metadata keys:
 
 ```
 eureka:
+
   instance:
+
     metadata-map:
+
       # Required for proper endpoint detection
+
       management.context-path: /actuator
+
       management.port: 8081  # If different from service port
 
+
+
       # Optional - for authenticated actuators
+
       user.name: admin
+
       user.password: ${admin.password}
 
+
+
       # Optional - custom metadata
+
       startup: ${random.int}  # Triggers refresh
+
       environment: production
+
       version: ${project.version}
 ```
 
@@ -472,6 +684,7 @@ eureka:
 
 ```
 # Start another instance
+
 SERVER_PORT=8081 mvn spring-boot:run
 ```
 
@@ -493,11 +706,17 @@ Filter which services to monitor:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       discovery:
+
         ignored-services:
+
           - eureka-server  # Don't monitor Eureka itself
+
           - config-server  # Don't monitor Config Server
 ```
 
@@ -507,10 +726,15 @@ Group services using metadata:
 
 ```
 # Client application
+
 eureka:
+
   instance:
+
     metadata-map:
+
       group: backend-services
+
       team: platform
 ```
 
@@ -520,10 +744,15 @@ If client actuators are secured:
 
 ```
 # Client application
+
 eureka:
+
   instance:
+
     metadata-map:
+
       user.name: actuator-admin
+
       user.password: ${actuator.password}
 ```
 
@@ -533,9 +762,13 @@ Admin Server automatically uses these credentials.
 
 ```
 eureka:
+
   instance:
+
     health-check-url-path: /custom/health
+
     metadata-map:
+
       management.context-path: /custom
 ```
 
@@ -559,9 +792,13 @@ eureka:
 
 ```
 # Test Eureka API
+
 curl http://localhost:8761/eureka/apps
 
+
+
 # Check Admin logs
+
 docker-compose logs admin | grep -i eureka
 ```
 
@@ -575,9 +812,13 @@ docker-compose logs admin | grep -i eureka
 
 ```
 # Verify configuration
+
 eureka:
+
   client:
+
     serviceUrl:
+
       defaultZone: http://localhost:8761/eureka/  # Trailing slash!
 ```
 
@@ -593,8 +834,11 @@ curl http://localhost:8080/actuator/health
 
 ```
 eureka:
+
   instance:
+
     metadata-map:
+
       management.context-path: /actuator  # Must match actual path
 ```
 
@@ -604,9 +848,13 @@ Services take too long to appear:
 
 ```
 eureka:
+
   client:
+
     registryFetchIntervalSeconds: 5  # Reduce from default 30s
+
   instance:
+
     leaseRenewalIntervalInSeconds: 10  # Reduce from default 30s
 ```
 
@@ -616,7 +864,9 @@ eureka:
 
 ```
 # Change ports in docker-compose.yml
+
 ports:
+
   - "9090:8080"  # Map to different host port
 ```
 
@@ -624,9 +874,13 @@ ports:
 
 ```
 # Check network
+
 docker network inspect spring-boot-admin-sample-eureka_discovery
 
+
+
 # Check container logs
+
 docker-compose logs eureka
 ```
 
@@ -638,8 +892,11 @@ Run multiple Eureka servers:
 
 ```
 eureka:
+
   client:
+
     serviceUrl:
+
       defaultZone: http://eureka1:8761/eureka/,http://eureka2:8761/eureka/
 ```
 
@@ -649,8 +906,11 @@ Secure Eureka communication:
 
 ```
 eureka:
+
   client:
+
     serviceUrl:
+
       defaultZone: https://${eureka.user}:${eureka.password}@eureka:8761/eureka/
 ```
 
@@ -660,15 +920,25 @@ Optimize for large deployments:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       monitor:
+
         period: 20000  # Increase polling interval (ms)
+
         connect-timeout: 5000
+
         read-timeout: 10000
 
+
+
 eureka:
+
   client:
+
     registryFetchIntervalSeconds: 10  # Balance freshness vs. load
 ```
 
@@ -678,9 +948,13 @@ Register Admin Server with itself:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       discovery:
+
         ignored-services: []  # Don't ignore any services
 ```
 

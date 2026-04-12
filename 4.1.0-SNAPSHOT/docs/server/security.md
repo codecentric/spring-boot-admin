@@ -8,77 +8,150 @@ SecuritySecureConfig.java
 
 ```
 
+
 import org.springframework.http.HttpMethod;
 
+
+
 @Configuration(proxyBeanMethods = false)
+
 public class SecuritySecureConfig {
+
+
 
 	private final AdminServerProperties adminServer;
 
+
+
 	private final SecurityProperties security;
 
+
+
 	public SecuritySecureConfig(AdminServerProperties adminServer, SecurityProperties security) {
+
 		this.adminServer = adminServer;
+
 		this.security = security;
+
 	}
 
+
+
 	@Bean
+
 	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
 		SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+
 		successHandler.setTargetUrlParameter("redirectTo");
+
 		successHandler.setDefaultTargetUrl(this.adminServer.path("/"));
 
+
+
 		http.authorizeHttpRequests((authorizeRequests) -> authorizeRequests //
+
 						.requestMatchers(PathPatternRequestMatcher.withDefaults()
+
 								.matcher(this.adminServer.path("/assets/**")))
+
 						.permitAll() // (1)
+
 						.requestMatchers(PathPatternRequestMatcher.withDefaults()
+
 								.matcher(this.adminServer.path("/actuator/info")))
+
 						.permitAll()
+
 						.requestMatchers(PathPatternRequestMatcher.withDefaults()
+
 								.matcher(this.adminServer.path("/actuator/health")))
+
 						.permitAll()
+
 						.requestMatchers(PathPatternRequestMatcher.withDefaults()
+
 								.matcher(this.adminServer.path("/login")))
+
 						.permitAll()
+
 						.dispatcherTypeMatchers(DispatcherType.ASYNC)
+
 						.permitAll() // https://github.com/spring-projects/spring-security/issues/11027
+
 						.anyRequest()
+
 						.authenticated()) // (2)
+
 				.formLogin(
+
 						(formLogin) -> formLogin.loginPage(this.adminServer.path("/login")).successHandler(successHandler)) // (3)
+
 				.logout((logout) -> logout.logoutUrl(this.adminServer.path("/logout")))
+
 				.httpBasic(Customizer.withDefaults()); // (4)
 
+
+
 		http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class) // (5)
+
 				.csrf((csrf) -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+
 						.csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+
 						.ignoringRequestMatchers(
+
 								PathPatternRequestMatcher.withDefaults()
+
 										.matcher(HttpMethod.POST, this.adminServer.path("/instances")), // (6)
+
 								PathPatternRequestMatcher.withDefaults()
+
 										.matcher(HttpMethod.DELETE, this.adminServer.path("/instances/*")), // (6)
+
 								PathPatternRequestMatcher.withDefaults()
+
 										.matcher(this.adminServer.path("/actuator/**")) // (7)
+
 						));
+
+
 
 		http.rememberMe((rememberMe) -> rememberMe.key(UUID.randomUUID().toString()).tokenValiditySeconds(1209600));
 
+
+
 		return http.build();
 
+
+
 	}
+
+
 
 	// Required to provide UserDetailsService for "remember functionality"
-	@Bean
-	public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-		UserDetails user = User.withUsername("user").password(passwordEncoder.encode("password")).roles("USER").build();
-		return new InMemoryUserDetailsManager(user);
-	}
 
 	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+
+	public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+
+		UserDetails user = User.withUsername("user").password(passwordEncoder.encode("password")).roles("USER").build();
+
+		return new InMemoryUserDetailsManager(user);
+
 	}
+
+
+
+	@Bean
+
+	public PasswordEncoder passwordEncoder() {
+
+		return new BCryptPasswordEncoder();
+
+	}
+
+
 
 }
 ```
@@ -97,7 +170,9 @@ application.yml
 
 ```
 spring.boot.admin.client:
+
   username: sba-client
+
   password: s3cret
 ```
 
@@ -133,10 +208,15 @@ application.yml
 
 ```
 spring.boot.admin.client:
+
   url: http://localhost:8080
+
   instance:
+
     metadata:
+
       user.name: ${spring.security.user.name}
+
       user.password: ${spring.security.user.password}
 ```
 
@@ -160,16 +240,27 @@ application.yml
 
 ```
 spring.boot.admin:
+
   instance-auth:
+
     enabled: true
+
     default-user-name: "${some.user.name.from.secret}"
+
     default-password: "${some.user.password.from.secret}"
+
     service-map:
+
       my-first-service-to-monitor:
+
         user-name: "${some.user.name.from.secret}"
+
         user-password: "${some.user.password.from.secret}"
+
       my-second-service-to-monitor:
+
         user-name: "${some.user.name.from.secret}"
+
         user-password: "${some.user.password.from.secret}"
 ```
 
@@ -179,9 +270,13 @@ application.yml
 
 ```
 eureka:
+
   instance:
+
     metadata-map:
+
       user.name: ${spring.security.user.name}
+
       user.password: ${spring.security.user.password}
 ```
 
@@ -191,9 +286,13 @@ application.yml
 
 ```
 spring.cloud.consul:
+
   discovery:
+
     metadata:
+
       user-name: ${spring.security.user.name}
+
       user-password: ${spring.security.user.password}
 ```
 
@@ -209,8 +308,12 @@ SecuritySecureConfig.java
 
 ```
 
+
 @Bean
+
 private SecurityFilterChain filterChain(HttpSecurity http) {
+
 	return http.csrf(c -> c.ignoringRequestMatchers("/actuator/**")).build();
+
 }
 ```

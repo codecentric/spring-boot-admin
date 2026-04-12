@@ -23,9 +23,13 @@ By default, **all instances are visible**:
 
 ```
 @Bean
+
 @ConditionalOnMissingBean
+
 public InstanceFilter instanceFilter() {
+
     return instance -> true;  // Accept all instances
+
 }
 ```
 
@@ -36,17 +40,31 @@ public InstanceFilter instanceFilter() {
 ```
 package de.codecentric.boot.admin.server.services;
 
+
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 
+
+
 @FunctionalInterface
+
 public interface InstanceFilter {
 
+
+
     /**
+
      * Test if instance should be visible
+
      * @param instance the instance to filter
+
      * @return true if instance should be included, false to exclude
+
      */
+
     boolean filter(Instance instance);
+
+
 
 }
 ```
@@ -59,11 +77,17 @@ public interface InstanceFilter {
 
 ```
 public Flux<Instance> getInstances() {
+
     return repository.findAll().filter(filter::filter);
+
 }
 
+
+
 public Mono<Instance> getInstance(InstanceId id) {
+
     return repository.find(id).filter(filter::filter);
+
 }
 ```
 
@@ -82,24 +106,44 @@ Show only production instances:
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter() {
+
         return instance -> {
+
             String env = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("environment");
 
+
+
             return "production".equals(env);
+
         };
+
     }
+
 }
 ```
 
@@ -107,11 +151,17 @@ public class InstanceFilterConfig {
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             environment: production
 ```
 
@@ -124,29 +174,54 @@ Show only instances with specific tags:
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter() {
+
         return instance -> {
+
             String tags = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("tags");
 
+
+
             if (tags == null) {
+
                 return false;  // Exclude instances without tags
+
             }
 
+
+
             // Show instances with "production" or "critical" tag
+
             return tags.contains("production") || tags.contains("critical");
+
         };
+
     }
+
 }
 ```
 
@@ -154,11 +229,17 @@ public class InstanceFilterConfig {
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             tags: production,critical,payment
 ```
 
@@ -171,29 +252,54 @@ Exclude specific services:
 ```
 package com.example.admin;
 
+
+
 import java.util.Set;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter() {
+
         Set<String> excludedServices = Set.of(
+
             "test-service",
+
             "dev-helper",
+
             "mock-service"
+
         );
 
+
+
         return instance -> {
+
             String serviceName = instance.getRegistration().getName();
+
             return !excludedServices.contains(serviceName);
+
         };
+
     }
+
 }
 ```
 
@@ -206,24 +312,44 @@ Show only healthy instances:
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
 
+
+
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter() {
+
         return instance -> {
+
             StatusInfo status = instance.getStatusInfo();
 
+
+
             // Show only UP or UNKNOWN instances
+
             return status.isUp() || status.isUnknown();
+
         };
+
     }
+
 }
 ```
 
@@ -243,24 +369,44 @@ Show only instances from specific hosts:
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter() {
+
         return instance -> {
+
             String serviceUrl = instance.getRegistration().getServiceUrl();
 
+
+
             // Show only instances on production domain
+
             return serviceUrl != null &&
+
                    serviceUrl.contains(".prod.company.com");
+
         };
+
     }
+
 }
 ```
 
@@ -274,11 +420,17 @@ Filter based on application properties:
 
 ```
 admin:
+
   filter:
+
     enabled: true
+
     environment: production
+
     tags:
+
       - critical
+
       - production
 ```
 
@@ -287,92 +439,180 @@ admin:
 ```
 package com.example.admin;
 
+
+
 import java.util.List;
 
+
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.stereotype.Component;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 @EnableConfigurationProperties(FilterProperties.class)
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter(FilterProperties filterProperties) {
+
         if (!filterProperties.isEnabled()) {
+
             return instance -> true;  // No filtering
+
         }
 
+
+
         return instance -> {
+
             String env = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("environment");
 
+
+
             String tags = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("tags");
 
+
+
             // Check environment
+
             if (filterProperties.getEnvironment() != null) {
+
                 if (!filterProperties.getEnvironment().equals(env)) {
+
                     return false;
+
                 }
+
             }
+
+
 
             // Check tags
+
             if (filterProperties.getTags() != null && !filterProperties.getTags().isEmpty()) {
+
                 if (tags == null) {
+
                     return false;
+
                 }
+
+
 
                 for (String requiredTag : filterProperties.getTags()) {
+
                     if (tags.contains(requiredTag)) {
+
                         return true;
+
                     }
+
                 }
+
                 return false;
+
             }
 
+
+
             return true;
+
         };
+
     }
+
 }
 
+
+
 @Component
+
 @ConfigurationProperties(prefix = "admin.filter")
+
 class FilterProperties {
+
     private boolean enabled = false;
+
     private String environment;
+
     private List<String> tags;
 
+
+
     // Getters and setters
+
     public boolean isEnabled() {
+
         return enabled;
+
     }
+
+
 
     public void setEnabled(boolean enabled) {
+
         this.enabled = enabled;
+
     }
+
+
 
     public String getEnvironment() {
+
         return environment;
+
     }
+
+
 
     public void setEnvironment(String environment) {
+
         this.environment = environment;
+
     }
+
+
 
     public List<String> getTags() {
+
         return tags;
+
     }
 
+
+
     public void setTags(List<String> tags) {
+
         this.tags = tags;
+
     }
+
 }
 ```
 
@@ -385,35 +625,66 @@ Combine multiple filter conditions:
 ```
 package com.example.admin;
 
+
+
 import java.util.Set;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter() {
+
         Set<String> allowedEnvironments = Set.of("production", "staging");
+
         Set<String> excludedServices = Set.of("test-service", "dev-tool");
 
+
+
         return instance -> {
+
             String env = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("environment");
+
+
 
             String serviceName = instance.getRegistration().getName();
 
+
+
             // Include if:
+
             // 1. Environment is allowed AND
+
             // 2. Service is not excluded
+
             return allowedEnvironments.contains(env) &&
+
                    !excludedServices.contains(serviceName);
+
         };
+
     }
+
 }
 ```
 
@@ -428,30 +699,56 @@ Show only recently registered instances:
 ```
 package com.example.admin;
 
+
+
 import java.time.Duration;
+
 import java.time.Instant;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter() {
+
         return instance -> {
+
             Instant registrationTime = instance.getRegistration().getTimestamp();
+
             if (registrationTime == null) {
+
                 return true;
+
             }
 
+
+
             // Show instances registered within last 7 days
+
             Duration age = Duration.between(registrationTime, Instant.now());
+
             return age.compareTo(Duration.ofDays(7)) < 0;
+
         };
+
     }
+
 }
 ```
 
@@ -462,33 +759,62 @@ Show only instances with specific versions:
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter() {
+
         return instance -> {
+
             if (instance.getInfo() == null || instance.getInfo().getValues() == null) {
+
                 return true;  // No build info available
+
             }
+
+
 
             Object buildInfo = instance.getInfo().getValues().get("build");
+
             if (buildInfo instanceof Map) {
+
                 Map<?, ?> build = (Map<?, ?>) buildInfo;
+
                 String version = (String) build.get("version");
 
+
+
                 // Only show version 2.x and above
+
                 return version != null && !version.startsWith("1.");
+
             }
 
+
+
             return true;
+
         };
+
     }
+
 }
 ```
 
@@ -499,30 +825,56 @@ Load filter rules from database:
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter(InstanceFilterRuleRepository repository) {
+
         return instance -> {
+
             String serviceName = instance.getRegistration().getName();
+
             String env = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("environment");
 
+
+
             // Query database for filter rules
+
             return repository.shouldShowInstance(serviceName, env);
+
         };
+
     }
+
 }
 
+
+
 interface InstanceFilterRuleRepository {
+
     boolean shouldShowInstance(String serviceName, String environment);
+
 }
 ```
 
@@ -535,62 +887,120 @@ Combine multiple filters with AND/OR logic:
 ```
 package com.example.admin;
 
+
+
 import java.util.Arrays;
+
 import java.util.List;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import de.codecentric.boot.admin.server.services.InstanceFilter;
 
+
+
 @Configuration
+
 public class InstanceFilterConfig {
 
+
+
     @Bean
+
     public InstanceFilter instanceFilter() {
+
         InstanceFilter envFilter = instance -> {
+
             String env = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("environment");
+
             return "production".equals(env);
+
         };
+
+
 
         InstanceFilter statusFilter = instance -> {
+
             return instance.getStatusInfo().isUp();
+
         };
+
+
 
         InstanceFilter tagsFilter = instance -> {
+
             String tags = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("tags");
+
             return tags != null && tags.contains("monitored");
+
         };
+
+
 
         // Combine with AND logic
+
         return and(envFilter, statusFilter, tagsFilter);
+
     }
+
+
 
     private InstanceFilter and(InstanceFilter... filters) {
+
         return instance -> {
+
             for (InstanceFilter filter : filters) {
+
                 if (!filter.filter(instance)) {
+
                     return false;
+
                 }
+
             }
+
             return true;
+
         };
+
     }
 
+
+
     private InstanceFilter or(InstanceFilter... filters) {
+
         return instance -> {
+
             for (InstanceFilter filter : filters) {
+
                 if (filter.filter(instance)) {
+
                     return true;
+
                 }
+
             }
+
             return false;
+
         };
+
     }
+
 }
 ```
 
@@ -603,47 +1013,90 @@ public class InstanceFilterConfig {
 ```
 package com.example.admin;
 
+
+
 import java.util.Map;
+
+
 
 import org.junit.jupiter.api.Test;
 
+
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
+
 import de.codecentric.boot.admin.server.domain.values.Registration;
+
 import de.codecentric.boot.admin.server.services.InstanceFilter;
+
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
+
 class InstanceFilterTest {
 
+
+
     @Test
+
     void shouldFilterByEnvironment() {
+
         InstanceFilter filter = instance -> {
+
             String env = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("environment");
+
             return "production".equals(env);
+
         };
 
+
+
         Instance prodInstance = createInstance("prod-service",
+
             Map.of("environment", "production"));
+
         Instance devInstance = createInstance("dev-service",
+
             Map.of("environment", "development"));
 
+
+
         assertThat(filter.filter(prodInstance)).isTrue();
+
         assertThat(filter.filter(devInstance)).isFalse();
+
     }
+
+
 
     private Instance createInstance(String name, Map<String, String> metadata) {
+
         Registration registration = Registration.builder()
+
             .name(name)
+
             .healthUrl("http://localhost:8080/actuator/health")
+
             .metadata(metadata)
+
             .build();
 
+
+
         return Instance.create(InstanceId.of("test-id"))
+
             .register(registration);
+
     }
+
 }
 ```
 
@@ -659,18 +1112,31 @@ class InstanceFilterTest {
 
 ```
 @Bean
+
 public InstanceFilter instanceFilter() {
+
     return instance -> {
+
         boolean result = /* your filter logic */;
 
+
+
         // Log for debugging
+
         if (!result) {
+
             System.out.println("Filtered out: " +
+
                 instance.getRegistration().getName());
+
         }
 
+
+
         return result;
+
     };
+
 }
 ```
 
@@ -688,11 +1154,17 @@ public InstanceFilter instanceFilter() {
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             environment: production
 ```
 
@@ -714,13 +1186,21 @@ spring:
 
 ```
 @Bean
+
 public InstanceFilter instanceFilter(@Value("${tenant.id}") String tenantId) {
+
     return instance -> {
+
         String instanceTenant = instance.getRegistration()
+
             .getMetadata()
+
             .get("tenant");
+
         return tenantId.equals(instanceTenant);
+
     };
+
 }
 ```
 
@@ -728,13 +1208,21 @@ public InstanceFilter instanceFilter(@Value("${tenant.id}") String tenantId) {
 
 ```
 @Bean
+
 public InstanceFilter instanceFilter(@Value("${aws.region}") String currentRegion) {
+
     return instance -> {
+
         String instanceRegion = instance.getRegistration()
+
             .getMetadata()
+
             .get("region");
+
         return currentRegion.equals(instanceRegion);
+
     };
+
 }
 ```
 
@@ -742,26 +1230,47 @@ public InstanceFilter instanceFilter(@Value("${aws.region}") String currentRegio
 
 ```
 @Bean
+
 public InstanceFilter instanceFilter(
+
         @Value("${admin.whitelist:}") List<String> whitelist,
+
         @Value("${admin.blacklist:}") List<String> blacklist) {
 
+
+
     return instance -> {
+
         String serviceName = instance.getRegistration().getName();
 
+
+
         // Blacklist takes precedence
+
         if (blacklist.contains(serviceName)) {
+
             return false;
+
         }
+
+
 
         // If whitelist is empty, allow all (except blacklisted)
+
         if (whitelist.isEmpty()) {
+
             return true;
+
         }
 
+
+
         // Otherwise, only allow whitelisted
+
         return whitelist.contains(serviceName);
+
     };
+
 }
 ```
 
@@ -769,10 +1278,15 @@ public InstanceFilter instanceFilter(
 
 ```
 admin:
+
   whitelist:
+
     - payment-service
+
     - user-service
+
   blacklist:
+
     - test-service
 ```
 

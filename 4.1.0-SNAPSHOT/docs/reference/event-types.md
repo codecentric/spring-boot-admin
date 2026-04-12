@@ -8,10 +8,15 @@ All events extend `InstanceEvent`:
 
 ```
 public abstract class InstanceEvent implements Serializable {
+
 	private final InstanceId instance;     // Unique instance identifier
+
 	private final long version;            // Event version (incremental)
+
 	private final Instant timestamp;       // When event occurred
+
 	private final String type;             // Event type constant
+
 }
 ```
 
@@ -28,11 +33,17 @@ Typical event sequence for an instance:
 
 ```
 1. REGISTERED           → Instance first registers
+
 2. ENDPOINTS_DETECTED   → Actuator endpoints discovered
+
 3. STATUS_CHANGED       → Health status updated to UP
+
 4. INFO_CHANGED         → Info endpoint data loaded
+
 5. STATUS_CHANGED       → Status changes during lifecycle
+
 6. REGISTRATION_UPDATED → Registration info changes (optional)
+
 7. DEREGISTERED         → Instance unregisters
 ```
 
@@ -50,7 +61,9 @@ Typical event sequence for an instance:
 
 ```
 public class InstanceRegisteredEvent extends InstanceEvent {
+
 	Registration registration;  // Complete registration info
+
 }
 ```
 
@@ -67,20 +80,35 @@ public class InstanceRegisteredEvent extends InstanceEvent {
 
 ```
 {
+
   "instance": "abc123def456",
+
   "version": 0,
+
   "timestamp": "2026-02-07T10:00:00Z",
+
   "type": "REGISTERED",
+
   "registration": {
+
     "name": "my-service",
+
     "managementUrl": "http://localhost:8080/actuator",
+
     "healthUrl": "http://localhost:8080/actuator/health",
+
     "serviceUrl": "http://localhost:8080",
+
     "source": "http-api",
+
     "metadata": {
+
       "startup": "2026-02-07T09:59:55Z"
+
     }
+
   }
+
 }
 ```
 
@@ -95,15 +123,25 @@ public class InstanceRegisteredEvent extends InstanceEvent {
 
 ```
 
+
 @Component
+
 public class RegistrationListener {
 
+
+
 	@EventListener
+
 	public void onInstanceRegistered(InstanceRegisteredEvent event) {
+
 		log.info("New instance registered: {} at {}",
+
 				event.getRegistration().getName(),
+
 				event.getRegistration().getServiceUrl());
+
 	}
+
 }
 ```
 
@@ -121,7 +159,9 @@ public class RegistrationListener {
 
 ```
 public class InstanceRegistrationUpdatedEvent extends InstanceEvent {
+
 	Registration registration;  // Updated registration info
+
 }
 ```
 
@@ -136,19 +176,33 @@ public class InstanceRegistrationUpdatedEvent extends InstanceEvent {
 
 ```
 {
+
   "instance": "abc123def456",
+
   "version": 5,
+
   "timestamp": "2026-02-07T11:00:00Z",
+
   "type": "REGISTRATION_UPDATED",
+
   "registration": {
+
     "name": "my-service",
+
     "managementUrl": "http://192.168.1.100:8080/actuator",
+
     "healthUrl": "http://192.168.1.100:8080/actuator/health",
+
     "serviceUrl": "http://192.168.1.100:8080",
+
     "metadata": {
+
       "version": "2.0.0"
+
     }
+
   }
+
 }
 ```
 
@@ -173,7 +227,9 @@ public class InstanceRegistrationUpdatedEvent extends InstanceEvent {
 
 ```
 public class InstanceDeregisteredEvent extends InstanceEvent {
+
 	// No additional fields - just base InstanceEvent fields
+
 }
 ```
 
@@ -181,10 +237,15 @@ public class InstanceDeregisteredEvent extends InstanceEvent {
 
 ```
 {
+
   "instance": "abc123def456",
+
   "version": 10,
+
   "timestamp": "2026-02-07T12:00:00Z",
+
   "type": "DEREGISTERED"
+
 }
 ```
 
@@ -199,16 +260,27 @@ public class InstanceDeregisteredEvent extends InstanceEvent {
 
 ```
 
+
 @EventListener
+
 public void onInstanceDeregistered(InstanceDeregisteredEvent event) {
+
 	Instant timestamp = event.getTimestamp();
+
 	long version = event.getVersion();
 
+
+
 	log.info("Instance {} deregistered after {} events",
+
 			event.getInstance(), version);
 
+
+
 	// Cleanup resources
+
 	cleanupResourcesFor(event.getInstance());
+
 }
 ```
 
@@ -226,7 +298,9 @@ public void onInstanceDeregistered(InstanceDeregisteredEvent event) {
 
 ```
 public class InstanceStatusChangedEvent extends InstanceEvent {
+
 	StatusInfo statusInfo;  // Current status information
+
 }
 ```
 
@@ -248,25 +322,45 @@ public class InstanceStatusChangedEvent extends InstanceEvent {
 
 ```
 {
+
   "instance": "abc123def456",
+
   "version": 3,
+
   "timestamp": "2026-02-07T10:05:00Z",
+
   "type": "STATUS_CHANGED",
+
   "statusInfo": {
+
     "status": "UP",
+
     "details": {
+
       "diskSpace": {
+
         "status": "UP",
+
         "total": 500000000000,
+
         "free": 250000000000
+
       },
+
       "db": {
+
         "status": "UP",
+
         "database": "PostgreSQL",
+
         "validationQuery": "isValid()"
+
       }
+
     }
+
   }
+
 }
 ```
 
@@ -281,17 +375,29 @@ public class InstanceStatusChangedEvent extends InstanceEvent {
 
 ```
 
+
 @EventListener
+
 public void onStatusChanged(InstanceStatusChangedEvent event) {
+
 	StatusInfo statusInfo = event.getStatusInfo();
+
 	String status = statusInfo.getStatus();
 
+
+
 	if ("DOWN".equals(status)) {
+
 		alertService.sendAlert(
+
 				"Instance " + event.getInstance() + " is DOWN",
+
 				statusInfo.getDetails()
+
 		);
+
 	}
+
 }
 ```
 
@@ -309,7 +415,9 @@ public void onStatusChanged(InstanceStatusChangedEvent event) {
 
 ```
 public class InstanceEndpointsDetectedEvent extends InstanceEvent {
+
 	Endpoints endpoints;  // Discovered endpoints
+
 }
 ```
 
@@ -322,28 +430,51 @@ public class InstanceEndpointsDetectedEvent extends InstanceEvent {
 
 ```
 {
+
   "instance": "abc123def456",
+
   "version": 1,
+
   "timestamp": "2026-02-07T10:00:05Z",
+
   "type": "ENDPOINTS_DETECTED",
+
   "endpoints": [
+
     {
+
       "id": "health",
+
       "url": "http://localhost:8080/actuator/health"
+
     },
+
     {
+
       "id": "metrics",
+
       "url": "http://localhost:8080/actuator/metrics"
+
     },
+
     {
+
       "id": "env",
+
       "url": "http://localhost:8080/actuator/env"
+
     },
+
     {
+
       "id": "loggers",
+
       "url": "http://localhost:8080/actuator/loggers"
+
     }
+
   ]
+
 }
 ```
 
@@ -358,17 +489,29 @@ public class InstanceEndpointsDetectedEvent extends InstanceEvent {
 
 ```
 
+
 @EventListener
+
 public void onEndpointsDetected(InstanceEndpointsDetectedEvent event) {
+
 	Endpoints endpoints = event.getEndpoints();
 
+
+
 	boolean hasMetrics = endpoints.get("metrics").isPresent();
+
 	boolean hasLoggers = endpoints.get("loggers").isPresent();
 
+
+
 	if (hasMetrics && hasLoggers) {
+
 		// Enable advanced monitoring
+
 		advancedMonitoring.enable(event.getInstance());
+
 	}
+
 }
 ```
 
@@ -386,7 +529,9 @@ public void onEndpointsDetected(InstanceEndpointsDetectedEvent event) {
 
 ```
 public class InstanceInfoChangedEvent extends InstanceEvent {
+
 	Info info;  // Info endpoint data
+
 }
 ```
 
@@ -400,29 +545,53 @@ public class InstanceInfoChangedEvent extends InstanceEvent {
 
 ```
 {
+
   "instance": "abc123def456",
+
   "version": 2,
+
   "timestamp": "2026-02-07T10:00:10Z",
+
   "type": "INFO_CHANGED",
+
   "info": {
+
     "build": {
+
       "version": "1.0.0",
+
       "artifact": "my-service",
+
       "name": "my-service",
+
       "time": "2026-02-07T09:00:00Z"
+
     },
+
     "git": {
+
       "branch": "main",
+
       "commit": {
+
         "id": "abc123",
+
         "time": "2026-02-06T15:30:00Z"
+
       }
+
     },
+
     "custom": {
+
       "team": "Platform",
+
       "environment": "production"
+
     }
+
   }
+
 }
 ```
 
@@ -441,11 +610,17 @@ Events are ordered by `version` number, which is monotonically increasing per in
 
 ```
 version 0: REGISTERED
+
 version 1: ENDPOINTS_DETECTED
+
 version 2: STATUS_CHANGED (to UP)
+
 version 3: INFO_CHANGED
+
 version 4: STATUS_CHANGED (to DOWN)
+
 version 5: STATUS_CHANGED (to UP)
+
 version 6: DEREGISTERED
 ```
 
@@ -462,9 +637,13 @@ Events are stored in the `InstanceEventStore`:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       event-store:
+
         max-log-size-per-aggregate: 100  # Keep last 100 events per instance
 ```
 
@@ -474,19 +653,33 @@ spring:
 
 ```
 
+
 @Component
+
 public class MyEventListener {
 
-	@EventListener
-	public void onAnyInstanceEvent(InstanceEvent event) {
-		log.info("Event: {} for instance {} at version {}",
-				event.getType(), event.getInstance(), event.getVersion());
-	}
+
 
 	@EventListener
-	public void onSpecificEvent(InstanceStatusChangedEvent event) {
-		// Handle specific event type
+
+	public void onAnyInstanceEvent(InstanceEvent event) {
+
+		log.info("Event: {} for instance {} at version {}",
+
+				event.getType(), event.getInstance(), event.getVersion());
+
 	}
+
+
+
+	@EventListener
+
+	public void onSpecificEvent(InstanceStatusChangedEvent event) {
+
+		// Handle specific event type
+
+	}
+
 }
 ```
 
@@ -494,27 +687,49 @@ public class MyEventListener {
 
 ```
 
+
 @Component
+
 public class CustomNotifier extends AbstractEventNotifier {
 
+
+
 	public CustomNotifier(InstanceRepository repository) {
+
 		super(repository);
+
 	}
 
+
+
 	@Override
+
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+
 		return Mono.fromRunnable(() -> {
+
 			switch (event.getType()) {
+
 				case "STATUS_CHANGED":
+
 					handleStatusChange((InstanceStatusChangedEvent) event);
+
 					break;
+
 				case "REGISTERED":
+
 					handleRegistration((InstanceRegisteredEvent) event);
+
 					break;
+
 				// Handle other events
+
 			}
+
 		});
+
 	}
+
 }
 ```
 
@@ -531,7 +746,11 @@ Returns Server-Sent Events (SSE) stream:
 ```
 data:{"instance":"abc123","version":0,"type":"REGISTERED",...}
 
+
+
 data:{"instance":"abc123","version":1,"type":"ENDPOINTS_DETECTED",...}
+
+
 
 data:{"instance":"abc123","version":2,"type":"STATUS_CHANGED",...}
 ```
@@ -542,12 +761,19 @@ Filter events by type using `FilteringNotifier`:
 
 ```
 
+
 @Bean
+
 public FilteringNotifier filteringNotifier(Notifier delegate,
+
 										   InstanceRepository repository) {
+
 	FilteringNotifier notifier = new FilteringNotifier(delegate, repository);
+
 	notifier.setFilterExpression("!(type == 'INFO_CHANGED')");  // Exclude INFO_CHANGED
+
 	return notifier;
+
 }
 ```
 
@@ -564,12 +790,19 @@ public FilteringNotifier filteringNotifier(Notifier delegate,
 
 ```
 // Only DOWN events
+
 "type == 'STATUS_CHANGED' && statusInfo.status == 'DOWN'"
 
+
+
 // Exclude INFO_CHANGED and ENDPOINTS_DETECTED
+
 		"!(type == 'INFO_CHANGED' || type == 'ENDPOINTS_DETECTED')"
 
+
+
 // Only production instances (via metadata)
+
 		"metadata['environment'] == 'production'"
 ```
 
@@ -579,13 +812,21 @@ Use `RemindingNotifier` to send periodic reminders:
 
 ```
 
+
 @Bean
+
 public RemindingNotifier remindingNotifier(Notifier delegate,
+
 										   InstanceRepository repository) {
+
 	RemindingNotifier notifier = new RemindingNotifier(delegate, repository);
+
 	notifier.setReminderPeriod(Duration.ofMinutes(10));
+
 	notifier.setCheckReminderInverval(Duration.ofSeconds(60));
+
 	return notifier;
+
 }
 ```
 

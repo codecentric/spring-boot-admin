@@ -16,16 +16,27 @@ pom.xml
 
 ```
 
+
 <dependencies>
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-server</artifactId>
+
         <version>4.1.0-SNAPSHOT</version>
+
     </dependency>
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-starter-webmvc</artifactId>
+
     </dependency>
+
 </dependencies>
 ```
 
@@ -35,8 +46,11 @@ build.gradle
 
 ```
 dependencies {
+
     implementation 'de.codecentric:spring-boot-admin-starter-server:4.1.0-SNAPSHOT'
+
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+
 }
 ```
 
@@ -52,16 +66,27 @@ SpringBootAdminApplication.java
 
 ```
 import org.springframework.boot.SpringApplication;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
+
+
 @SpringBootApplication
+
 @EnableAdminServer
+
 public class SpringBootAdminApplication {
+
 	public static void main(String[] args) {
+
 		SpringApplication.run(SpringBootAdminApplication.class, args);
+
 	}
+
 }
 ```
 
@@ -75,19 +100,33 @@ application.yml
 
 ```
 spring:
+
   application:
+
     name: spring-boot-admin-server
 
+
+
 server:
+
   port: 8080
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 ```
 
@@ -105,8 +144,11 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       context-path: /admin  # UI will be available at http://localhost:8080/admin
 ```
 
@@ -116,6 +158,7 @@ application.yml
 
 ```
 server:
+
   port: 9090  # Run on a different port
 ```
 
@@ -127,9 +170,13 @@ Spring Boot Admin Server can run on either a Servlet or Reactive stack:
 
 ```
 
+
 <dependency>
+
     <groupId>org.springframework.boot</groupId>
+
     <artifactId>spring-boot-starter-webmvc</artifactId>
+
 </dependency>
 ```
 
@@ -139,9 +186,13 @@ Best for traditional servlet-based applications and when you need features like 
 
 ```
 
+
 <dependency>
+
     <groupId>org.springframework.boot</groupId>
+
     <artifactId>spring-boot-starter-webflux</artifactId>
+
 </dependency>
 ```
 
@@ -155,6 +206,7 @@ Build and run as a standalone application:
 
 ```
 mvn clean package
+
 java -jar target/spring-boot-admin-server.jar
 ```
 
@@ -168,8 +220,11 @@ Create a `Dockerfile`:
 
 ```
 FROM eclipse-temurin:17-jre
+
 COPY target/spring-boot-admin-server.jar app.jar
+
 EXPOSE 8080
+
 ENTRYPOINT ["java", "-jar", "/app.jar"]
 ```
 
@@ -177,6 +232,7 @@ Build and run:
 
 ```
 docker build -t spring-boot-admin-server .
+
 docker run -p 8080:8080 spring-boot-admin-server
 ```
 

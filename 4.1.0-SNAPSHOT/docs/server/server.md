@@ -16,8 +16,11 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>org.springframework.cloud</groupId>
+
     <artifactId>spring-cloud-starter</artifactId>
+
 </dependency>
 ```
 
@@ -25,17 +28,29 @@ application.yml
 
 ```
 spring:
+
   cloud:
+
     discovery:
+
       client:
+
         simple:
+
           instances:
+
             test:
+
               - uri: http://instance1.intern:8080
+
                 metadata:
+
                   management.context-path: /actuator
+
               - uri: http://instance2.intern:8080
+
                 metadata:
+
                   management.context-path: /actuator
 ```
 
@@ -127,10 +142,16 @@ application.yml
 
 ```
 eureka:
+
   instance:
+
     hostname: ${vcap.application.uris[0]}
+
     nonSecurePort: 80
+
     metadata-map:
+
       applicationId: ${vcap.application.application_id}
+
       instanceId: ${vcap.application.instance_index}
 ```

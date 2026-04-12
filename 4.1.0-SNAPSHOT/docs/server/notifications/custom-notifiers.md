@@ -19,39 +19,73 @@ The recommended approach is to extend `AbstractEventNotifier`, which provides bu
 
 ```
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+
 import de.codecentric.boot.admin.server.notify.AbstractEventNotifier;
 
+
+
 import org.slf4j.Logger;
+
 import org.slf4j.LoggerFactory;
+
 import reactor.core.publisher.Mono;
+
+
 
 public class CustomNotifier extends AbstractEventNotifier {
 
+
+
 	private static final Logger log = LoggerFactory.getLogger(CustomNotifier.class);
 
+
+
 	public CustomNotifier(InstanceRepository repository) {
+
 		super(repository);
+
 	}
 
+
+
 	@Override
+
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+
 		return Mono.fromRunnable(() -> {
+
 			if (event instanceof InstanceStatusChangedEvent statusEvent) {
+
 				log.info("Instance {} ({}) is {}",
+
 						instance.getRegistration().getName(),
+
 						event.getInstance(),
+
 						statusEvent.getStatusInfo().getStatus());
+
 			} else {
+
 				log.info("Instance {} ({}) {}",
+
 						instance.getRegistration().getName(),
+
 						event.getInstance(),
+
 						event.getType());
+
 			}
+
 		});
+
 	}
+
 }
 ```
 
@@ -61,15 +95,25 @@ Register your custom notifier as a Spring bean:
 
 ```
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
 
+
+
 @Configuration
+
 public class NotifierConfiguration {
 
+
+
 	@Bean
+
 	public CustomNotifier customNotifier(InstanceRepository repository) {
+
 		return new CustomNotifier(repository);
+
 	}
+
 }
 ```
 
@@ -79,66 +123,127 @@ Here's a more advanced example that sends notifications to an external API:
 
 ```
 import org.springframework.web.reactive.function.client.WebClient;
+
 import reactor.core.publisher.Mono;
+
+
 
 public class WebhookNotifier extends AbstractEventNotifier {
 
+
+
 	private static final Logger log = LoggerFactory.getLogger(WebhookNotifier.class);
 
+
+
 	private final WebClient webClient;
+
 	private final String webhookUrl;
 
+
+
 	public WebhookNotifier(InstanceRepository repository,
+
 						   WebClient.Builder webClientBuilder,
+
 						   String webhookUrl) {
+
 		super(repository);
+
 		this.webhookUrl = webhookUrl;
+
 		this.webClient = webClientBuilder.build();
+
 	}
+
+
 
 	@Override
+
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+
 		return Mono.fromSupplier(() -> createNotificationPayload(event, instance))
+
 				.flatMap(this::sendWebhookNotification)
+
 				.doOnError(ex -> log.error("Failed to send webhook notification", ex))
+
 				.then();
+
 	}
+
+
 
 	private NotificationPayload createNotificationPayload(InstanceEvent event,
+
 														  Instance instance) {
+
 		return NotificationPayload.builder()
+
 				.instanceId(instance.getId().getValue())
+
 				.instanceName(instance.getRegistration().getName())
+
 				.eventType(event.getType())
+
 				.status(instance.getStatusInfo().getStatus())
+
 				.timestamp(event.getTimestamp())
+
 				.serviceUrl(instance.getRegistration().getServiceUrl())
+
 				.build();
+
 	}
+
+
 
 	private Mono<Void> sendWebhookNotification(NotificationPayload payload) {
+
 		return webClient.post()
+
 				.uri(webhookUrl)
+
 				.bodyValue(payload)
+
 				.retrieve()
+
 				.bodyToMono(Void.class)
+
 				.doOnSuccess(v -> log.info("Webhook notification sent successfully"))
+
 				.onErrorResume(ex -> {
+
 					log.error("Webhook call failed: {}", ex.getMessage());
+
 					return Mono.empty();
+
 				});
+
 	}
 
+
+
 	@lombok.Data
+
 	@lombok.Builder
+
 	private static class NotificationPayload {
+
 		private String instanceId;
+
 		private String instanceName;
+
 		private String eventType;
+
 		private String status;
+
 		private long timestamp;
+
 		private String serviceUrl;
+
 	}
+
 }
 ```
 
@@ -146,15 +251,25 @@ public class WebhookNotifier extends AbstractEventNotifier {
 
 ```
 
+
 @Configuration
+
 public class WebhookNotifierConfiguration {
 
+
+
 	@Bean
+
 	public WebhookNotifier webhookNotifier(InstanceRepository repository,
+
 										   WebClient.Builder webClientBuilder,
+
 										   @Value("${webhook.url}") String webhookUrl) {
+
 		return new WebhookNotifier(repository, webClientBuilder, webhookUrl);
+
 	}
+
 }
 ```
 
@@ -162,6 +277,7 @@ application.yml
 
 ```
 webhook:
+
   url: https://your-webhook-endpoint.com/notifications
 ```
 
@@ -172,26 +288,48 @@ You can override `shouldNotify` to filter which events trigger notifications:
 ```
 public class FilteredNotifier extends AbstractEventNotifier {
 
+
+
 	public FilteredNotifier(InstanceRepository repository) {
+
 		super(repository);
+
 	}
 
+
+
 	@Override
+
 	protected boolean shouldNotify(InstanceEvent event, Instance instance) {
+
 		// Only notify for production instances
+
 		String environment = instance.getRegistration()
+
 				.getMetadata()
+
 				.get("environment");
+
 		return "production".equals(environment);
+
 	}
 
+
+
 	@Override
+
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+
 		// Send notification
+
 		return Mono.fromRunnable(() -> {
+
 			log.info("Production instance event: {}", event.getType());
+
 		});
+
 	}
+
 }
 ```
 
@@ -201,35 +339,65 @@ If you only care about status changes (UP/DOWN/OFFLINE), extend `AbstractStatusC
 
 ```
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+
 import de.codecentric.boot.admin.server.notify.AbstractStatusChangeNotifier;
+
+
 
 import reactor.core.publisher.Mono;
 
+
+
 public class StatusChangeNotifier extends AbstractStatusChangeNotifier {
 
+
+
 	public StatusChangeNotifier(InstanceRepository repository) {
+
 		super(repository);
+
 	}
+
+
 
 	@Override
+
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+
 		StatusInfo statusInfo = instance.getStatusInfo();
+
 		String status = statusInfo.getStatus();
 
+
+
 		return Mono.fromRunnable(() -> {
+
 			if ("DOWN".equals(status)) {
+
 				// Send critical alert
+
 				log.error("CRITICAL: Instance {} is DOWN!",
+
 						instance.getRegistration().getName());
+
 			} else if ("UP".equals(status)) {
+
 				// Send recovery notification
+
 				log.info("Instance {} is back UP",
+
 						instance.getRegistration().getName());
+
 			}
+
 		});
+
 	}
+
 }
 ```
 
@@ -240,38 +408,72 @@ For full control, implement the `Notifier` interface:
 ```
 import de.codecentric.boot.admin.server.notify.Notifier;
 
+
+
 import reactor.core.publisher.Mono;
+
+
 
 public class DirectNotifier implements Notifier {
 
+
+
 	private final InstanceRepository repository;
+
 	private boolean enabled = true;
 
+
+
 	public DirectNotifier(InstanceRepository repository) {
+
 		this.repository = repository;
+
 	}
+
+
 
 	@Override
+
 	public Mono<Void> notify(InstanceEvent event) {
+
 		if (!enabled) {
+
 			return Mono.empty();
+
 		}
 
+
+
 		return repository.find(event.getInstance())
+
 				.flatMap(instance -> processNotification(event, instance))
+
 				.then();
+
 	}
+
+
 
 	private Mono<Void> processNotification(InstanceEvent event, Instance instance) {
+
 		// Custom notification logic
+
 		return Mono.fromRunnable(() -> {
+
 			// Send notification
+
 		});
+
 	}
 
+
+
 	public void setEnabled(boolean enabled) {
+
 		this.enabled = enabled;
+
 	}
+
 }
 ```
 
@@ -282,36 +484,64 @@ Make your notifier configurable through application properties:
 ```
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+
+
 @ConfigurationProperties(prefix = "spring.boot.admin.notify.custom")
+
 public class CustomNotifierProperties {
+
 	private final boolean enabled = true;
+
 	private String apiUrl;
+
 	private String apiKey;
+
 	private final int timeout = 5000;
 
+
+
 	// Getters and setters
+
 }
 ```
 
 ```
 
+
 @Configuration
+
 @EnableConfigurationProperties(CustomNotifierProperties.class)
+
 public class CustomNotifierConfiguration {
 
+
+
 	@Bean
+
 	@ConditionalOnProperty(prefix = "spring.boot.admin.notify.custom",
+
 			name = "enabled",
+
 			havingValue = "true",
+
 			matchIfMissing = true)
+
 	public CustomNotifier customNotifier(InstanceRepository repository,
+
 										 CustomNotifierProperties properties) {
+
 		CustomNotifier notifier = new CustomNotifier(repository);
+
 		notifier.setApiUrl(properties.getApiUrl());
+
 		notifier.setApiKey(properties.getApiKey());
+
 		notifier.setTimeout(properties.getTimeout());
+
 		return notifier;
+
 	}
+
 }
 ```
 
@@ -319,13 +549,21 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       notify:
+
         custom:
+
           enabled: true
+
           api-url: https://api.example.com/notifications
+
           api-key: ${NOTIFICATION_API_KEY}
+
           timeout: 10000
 ```
 
@@ -335,32 +573,59 @@ Use `FilteringNotifier` to allow runtime control:
 
 ```
 
+
 @Configuration
+
 public class NotifierConfig {
 
+
+
 	@Bean
+
 	public FilteringNotifier filteringNotifier(InstanceRepository repository,
+
 											   ObjectProvider<List<Notifier>> otherNotifiers) {
+
 		CompositeNotifier delegate = new CompositeNotifier(
+
 				otherNotifiers.getIfAvailable(Collections::emptyList));
+
 		return new FilteringNotifier(delegate, repository);
+
 	}
+
+
 
 	@Primary
+
 	@Bean(initMethod = "start", destroyMethod = "stop")
+
 	public RemindingNotifier remindingNotifier(FilteringNotifier filteringNotifier,
+
 											   InstanceRepository repository) {
+
 		RemindingNotifier notifier = new RemindingNotifier(
+
 				filteringNotifier, repository);
+
 		notifier.setReminderPeriod(Duration.ofMinutes(10));
+
 		notifier.setCheckReminderInverval(Duration.ofSeconds(10));
+
 		return notifier;
+
 	}
 
+
+
 	@Bean
+
 	public CustomNotifier customNotifier(InstanceRepository repository) {
+
 		return new CustomNotifier(repository);
+
 	}
+
 }
 ```
 
@@ -368,32 +633,59 @@ public class NotifierConfig {
 
 ```
 import org.junit.jupiter.api.Test;
+
 import org.mockito.Mockito;
+
 import reactor.test.StepVerifier;
+
+
 
 public class CustomNotifierTest {
 
+
+
 	@Test
+
 	public void testNotification() {
+
 		InstanceRepository repository = Mockito.mock(InstanceRepository.class);
+
 		CustomNotifier notifier = new CustomNotifier(repository);
 
+
+
 		Instance instance = Instance.create(InstanceId.of("test-instance"))
+
 				.register(Registration.create("test-app", "http://localhost:8080")
+
 						.build());
 
+
+
 		InstanceEvent event = new InstanceStatusChangedEvent(
+
 				instance.getId(),
+
 				instance.getVersion(),
+
 				StatusInfo.ofUp()
+
 		);
 
+
+
 		Mockito.when(repository.find(instance.getId()))
+
 				.thenReturn(Mono.just(instance));
 
+
+
 		StepVerifier.create(notifier.notify(event))
+
 				.verifyComplete();
+
 	}
+
 }
 ```
 

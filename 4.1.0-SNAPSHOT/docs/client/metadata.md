@@ -8,8 +8,11 @@ The `MetadataContributor` interface enables you to programmatically add metadata
 
 ```
 @FunctionalInterface
+
 public interface MetadataContributor {
+
     Map<String, String> getMetadata();
+
 }
 ```
 
@@ -22,13 +25,22 @@ Automatically adds the application startup timestamp:
 ```
 public class StartupDateMetadataContributor implements MetadataContributor {
 
+
+
     private final OffsetDateTime timestamp = OffsetDateTime.now();
 
+
+
     @Override
+
     public Map<String, String> getMetadata() {
+
         return singletonMap("startup",
+
                           timestamp.format(DateTimeFormatter.ISO_DATE_TIME));
+
     }
+
 }
 ```
 
@@ -41,14 +53,24 @@ For Cloud Foundry deployments, adds CF-specific metadata:
 ```
 public class CloudFoundryMetadataContributor implements MetadataContributor {
 
+
+
     @Override
+
     public Map<String, String> getMetadata() {
+
         Map<String, String> metadata = new HashMap<>();
+
         metadata.put("applicationId", vcapApplication.getApplicationId());
+
         metadata.put("instanceId", vcapApplication.getInstanceId());
+
         // Additional CF metadata
+
         return metadata;
+
     }
+
 }
 ```
 
@@ -61,18 +83,32 @@ Combines multiple metadata contributors:
 ```
 public class CompositeMetadataContributor implements MetadataContributor {
 
+
+
     private final List<MetadataContributor> delegates;
 
+
+
     public CompositeMetadataContributor(List<MetadataContributor> delegates) {
+
         this.delegates = delegates;
+
     }
 
+
+
     @Override
+
     public Map<String, String> getMetadata() {
+
         Map<String, String> metadata = new LinkedHashMap<>();
+
         delegates.forEach(delegate -> metadata.putAll(delegate.getMetadata()));
+
         return metadata;
+
     }
+
 }
 ```
 
@@ -88,15 +124,25 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             team: platform-team
+
             environment: production
+
             region: us-east-1
+
             version: 1.0.0
+
             support-email: platform@example.com
 ```
 
@@ -108,15 +154,25 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             environment: ${APP_ENV:development}
+
             version: ${APP_VERSION:unknown}
+
             hostname: ${HOSTNAME:localhost}
+
             pod-name: ${POD_NAME:}
+
             namespace: ${NAMESPACE:default}
 ```
 
@@ -126,46 +182,87 @@ Create custom metadata contributors for dynamic or computed metadata:
 
 ```
 import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
+
 import java.util.Map;
 
+
+
 @Component
+
 public class CustomMetadataContributor implements MetadataContributor {
 
+
+
     private final Environment environment;
+
     private final BuildProperties buildProperties;
 
+
+
     public CustomMetadataContributor(Environment environment,
+
                                     @Autowired(required = false) BuildProperties buildProperties) {
+
         this.environment = environment;
+
         this.buildProperties = buildProperties;
+
     }
+
+
 
     @Override
+
     public Map<String, String> getMetadata() {
+
         Map<String, String> metadata = new HashMap<>();
 
+
+
         // Add build information
+
         if (buildProperties != null) {
+
             metadata.put("build.version", buildProperties.getVersion());
+
             metadata.put("build.time", buildProperties.getTime().toString());
+
             metadata.put("build.artifact", buildProperties.getArtifact());
+
         }
 
+
+
         // Add environment information
+
         metadata.put("spring.profiles", String.join(",",
+
                                                     environment.getActiveProfiles()));
 
+
+
         // Add JVM information
+
         metadata.put("java.version", System.getProperty("java.version"));
+
         metadata.put("java.vendor", System.getProperty("java.vendor"));
 
+
+
         // Add custom business metadata
+
         metadata.put("feature-flags",
+
                     environment.getProperty("app.feature-flags", ""));
 
+
+
         return metadata;
+
     }
+
 }
 ```
 
@@ -173,28 +270,51 @@ public class CustomMetadataContributor implements MetadataContributor {
 
 ```
 @Component
+
 @ConditionalOnProperty(name = "kubernetes.enabled", havingValue = "true")
+
 public class KubernetesMetadataContributor implements MetadataContributor {
 
+
+
     @Override
+
     public Map<String, String> getMetadata() {
+
         Map<String, String> metadata = new HashMap<>();
 
+
+
         // Read from environment variables set by Kubernetes
+
         metadata.put("k8s.pod", System.getenv("HOSTNAME"));
+
         metadata.put("k8s.namespace", System.getenv("POD_NAMESPACE"));
+
         metadata.put("k8s.node", System.getenv("NODE_NAME"));
+
         metadata.put("k8s.service-account",
+
                     System.getenv("SERVICE_ACCOUNT"));
 
+
+
         // Add labels as metadata
+
         String labels = System.getenv("POD_LABELS");
+
         if (labels != null) {
+
             metadata.put("k8s.labels", labels);
+
         }
 
+
+
         return metadata;
+
     }
+
 }
 ```
 
@@ -210,14 +330,23 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             tags:
+
               environment: production
+
               region: us-west-2
+
               tier: backend
 ```
 
@@ -227,9 +356,13 @@ application.yml
 
 ```
 info:
+
   tags:
+
     environment: production
+
     region: us-west-2
+
     tier: backend
 ```
 
@@ -247,44 +380,83 @@ Create tags dynamically based on runtime conditions:
 
 ```
 @Component
+
 public class DynamicTagMetadataContributor implements MetadataContributor {
+
+
 
     private final Environment environment;
 
+
+
     public DynamicTagMetadataContributor(Environment environment) {
+
         this.environment = environment;
+
     }
+
+
 
     @Override
+
     public Map<String, String> getMetadata() {
+
         Map<String, String> metadata = new HashMap<>();
 
+
+
         // Environment tag
+
         String env = environment.getProperty("spring.profiles.active", "default");
+
         metadata.put("tags.environment", env);
 
+
+
         // Deployment type
+
         if (isKubernetes()) {
+
             metadata.put("tags.platform", "kubernetes");
+
         } else if (isCloudFoundry()) {
+
             metadata.put("tags.platform", "cloud-foundry");
+
         } else {
+
             metadata.put("tags.platform", "standalone");
+
         }
 
+
+
         // Health-based tag
+
         metadata.put("tags.monitoring", "enabled");
 
+
+
         return metadata;
+
     }
+
+
 
     private boolean isKubernetes() {
+
         return System.getenv("KUBERNETES_SERVICE_HOST") != null;
+
     }
 
+
+
     private boolean isCloudFoundry() {
+
         return System.getenv("VCAP_APPLICATION") != null;
+
     }
+
 }
 ```
 
@@ -298,12 +470,19 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             user.name: ${spring.security.user.name}
+
             user.password: ${spring.security.user.password}
 ```
 
@@ -319,11 +498,17 @@ application.yml
 
 ```
 eureka:
+
   instance:
+
     metadata-map:
+
       startup: ${random.int}  # Trigger update on restart
+
       user.name: ${spring.security.user.name}
+
       user.password: ${spring.security.user.password}
+
       tags.environment: ${APP_ENV}
 ```
 
@@ -333,12 +518,19 @@ application.yml
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         metadata:
+
           user-name: ${spring.security.user.name}  # Note: use dashes, not dots
+
           user-password: ${spring.security.user.password}
+
           environment: production
 ```
 
@@ -352,13 +544,21 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             group: Legacy Squad
+
             squad: backend-team
+
             cost-center: CC-1234
 ```
 
@@ -370,13 +570,21 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             management.context-path: /actuator
+
             service-url: https://my-app.example.com
+
             service-path: /api
 ```
 
@@ -386,11 +594,17 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             hide-url: true  # Hide service URL in UI
 ```
 
@@ -400,20 +614,35 @@ Metadata is available through the instance object:
 
 ```
 @Component
+
 public class MetadataProcessor {
 
+
+
     public void processInstance(Instance instance) {
+
         Map<String, String> metadata = instance.getRegistration().getMetadata();
 
+
+
         String environment = metadata.get("tags.environment");
+
         String team = metadata.get("team");
+
         String version = metadata.get("version");
 
+
+
         // Process metadata
+
         log.info("Instance {} - Environment: {}, Team: {}, Version: {}",
+
                 instance.getRegistration().getName(),
+
                 environment, team, version);
+
     }
+
 }
 ```
 
@@ -448,9 +677,13 @@ Always use HTTPS when transmitting sensitive metadata:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         url: https://admin-server.example.com  # Use HTTPS
 ```
 

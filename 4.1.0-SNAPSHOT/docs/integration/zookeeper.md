@@ -17,14 +17,23 @@ With Zookeeper integration:
 
 ```
 # macOS
+
 brew install zookeeper
 
+
+
 # Linux
+
 wget https://downloads.apache.org/zookeeper/zookeeper-3.8.3/apache-zookeeper-3.8.3-bin.tar.gz
+
 tar -xzf apache-zookeeper-3.8.3-bin.tar.gz
+
 cd apache-zookeeper-3.8.3-bin
 
+
+
 # Docker
+
 docker run -d --name zookeeper -p 2181:2181 zookeeper:latest
 ```
 
@@ -32,9 +41,13 @@ docker run -d --name zookeeper -p 2181:2181 zookeeper:latest
 
 ```
 # Direct
+
 zkServer start
 
+
+
 # Docker
+
 docker start zookeeper
 ```
 
@@ -42,6 +55,7 @@ Verify Zookeeper is running:
 
 ```
 echo ruok | nc localhost 2181
+
 # Should respond with: imok
 ```
 
@@ -53,18 +67,31 @@ pom.xml
 
 ```
 <dependencies>
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-server</artifactId>
+
     </dependency>
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-starter-webflux</artifactId>
+
     </dependency>
+
     <dependency>
+
         <groupId>org.springframework.cloud</groupId>
+
         <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
+
     </dependency>
+
 </dependencies>
 ```
 
@@ -74,17 +101,29 @@ SpringBootAdminZookeeperApplication.java
 
 ```
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
+
 import org.springframework.boot.SpringApplication;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
+
+
 @EnableDiscoveryClient
+
 @EnableAdminServer
+
 @SpringBootApplication
+
 public class SpringBootAdminZookeeperApplication {
+
     public static void main(String[] args) {
+
         SpringApplication.run(SpringBootAdminZookeeperApplication.class, args);
+
     }
+
 }
 ```
 
@@ -94,23 +133,41 @@ application.yml
 
 ```
 spring:
+
   application:
+
     name: spring-boot-admin-server
+
   cloud:
+
     zookeeper:
+
       connect-string: localhost:2181
+
       discovery:
+
         enabled: true
+
         register: true
+
         root: /services
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 ```
 
@@ -122,8 +179,11 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>org.springframework.cloud</groupId>
+
     <artifactId>spring-cloud-starter-zookeeper-discovery</artifactId>
+
 </dependency>
 ```
 
@@ -131,11 +191,17 @@ pom.xml
 
 ```
 @EnableDiscoveryClient
+
 @SpringBootApplication
+
 public class Application {
+
     public static void main(String[] args) {
+
         SpringApplication.run(Application.class, args);
+
     }
+
 }
 ```
 
@@ -145,26 +211,47 @@ application.yml
 
 ```
 spring:
+
   application:
+
     name: my-application
+
   cloud:
+
     zookeeper:
+
       connect-string: localhost:2181
+
       discovery:
+
         enabled: true
+
         register: true
+
         metadata:
+
           management.context-path: /actuator
+
           user.name: ${spring.security.user.name}
+
           user.password: ${spring.security.user.password}
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 ```
 
@@ -176,16 +263,27 @@ application.yml
 
 ```
 spring:
+
   cloud:
+
     zookeeper:
+
       discovery:
+
         metadata:
+
           management.context-path: /actuator
+
           user.name: admin
+
           user.password: secret
+
           tags.environment: production
+
           tags.region: us-east-1
+
           team: platform
+
           version: 1.0.0
 ```
 
@@ -195,21 +293,37 @@ application.yml
 
 ```
 server:
+
   port: 8080
 
+
+
 management:
+
   server:
+
     port: 9090
+
   endpoints:
+
     web:
+
       base-path: /actuator
 
+
+
 spring:
+
   cloud:
+
     zookeeper:
+
       discovery:
+
         metadata:
+
           management.port: 9090
+
           management.context-path: /actuator
 ```
 
@@ -219,9 +333,13 @@ spring:
 
 ```
 spring:
+
   cloud:
+
     zookeeper:
+
       discovery:
+
         instance-id: ${spring.application.name}:${random.value}
 ```
 
@@ -229,9 +347,13 @@ spring:
 
 ```
 spring:
+
   cloud:
+
     zookeeper:
+
       discovery:
+
         preferIpAddress: true
 ```
 
@@ -239,9 +361,13 @@ spring:
 
 ```
 spring:
+
   cloud:
+
     zookeeper:
+
       discovery:
+
         serviceName: custom-service-name
 ```
 
@@ -251,12 +377,19 @@ spring:
 
 ```
 spring:
+
   cloud:
+
     zookeeper:
+
       connect-string: localhost:2181
+
       max-retries: 10
+
       max-sleep-ms: 500
+
       connection-timeout: 15000
+
       session-timeout: 60000
 ```
 
@@ -264,8 +397,11 @@ spring:
 
 ```
 spring:
+
   cloud:
+
     zookeeper:
+
       connect-string: zk1:2181,zk2:2181,zk3:2181
 ```
 
@@ -273,10 +409,15 @@ spring:
 
 ```
 spring:
+
   cloud:
+
     zookeeper:
+
       discovery:
+
         root: /services
+
         uriSpec: '{scheme}://{address}:{port}'
 ```
 
@@ -287,30 +428,56 @@ docker-compose.yml
 ```
 version: '3'
 
+
+
 services:
+
   zookeeper:
+
     image: zookeeper:3.8
+
     ports:
+
       - "2181:2181"
+
     environment:
+
       - ZOO_MY_ID=1
 
+
+
   spring-boot-admin:
+
     build: ./admin-server
+
     ports:
+
       - "8080:8080"
+
     environment:
+
       - SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING=zookeeper:2181
+
     depends_on:
+
       - zookeeper
 
+
+
   my-application:
+
     build: ./my-app
+
     ports:
+
       - "8081:8081"
+
     environment:
+
       - SPRING_CLOUD_ZOOKEEPER_CONNECT_STRING=zookeeper:2181
+
     depends_on:
+
       - zookeeper
 ```
 
@@ -328,6 +495,7 @@ Verify connection:
 
 ```
 zkCli.sh -server localhost:2181
+
 ls /services
 ```
 
@@ -337,7 +505,9 @@ List registered services:
 
 ```
 zkCli.sh -server localhost:2181
+
 ls /services
+
 get /services/my-application
 ```
 
@@ -347,8 +517,11 @@ Increase session timeout:
 
 ```
 spring:
+
   cloud:
+
     zookeeper:
+
       session-timeout: 120000  # 2 minutes
 ```
 
@@ -358,9 +531,13 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        zookeeper:
+
          max-retries: 10
+
          max-sleep-ms: 500
    ```
 
@@ -368,8 +545,11 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        zookeeper:
+
          connect-string: zk1:2181,zk2:2181,zk3:2181
    ```
 
@@ -377,9 +557,13 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        zookeeper:
+
          connection-timeout: 15000
+
          session-timeout: 60000
    ```
 
@@ -387,9 +571,13 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        zookeeper:
+
          discovery:
+
            instance-id: ${spring.application.name}:${random.value}
    ```
 

@@ -18,9 +18,13 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>de.codecentric</groupId>
+
     <artifactId>spring-boot-admin-starter-client</artifactId>
+
     <version>4.1.0-SNAPSHOT</version>
+
 </dependency>
 ```
 
@@ -40,21 +44,37 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         url: http://localhost:8080  # URL of your Admin Server
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"  # Expose all actuator endpoints
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
+
   info:
+
     env:
+
       enabled: true  # Enable the info endpoint
 ```
 
@@ -62,8 +82,11 @@ application.properties
 
 ```
 spring.boot.admin.client.url=http://localhost:8080
+
 management.endpoints.web.exposure.include=*
+
 management.endpoint.health.show-details=ALWAYS
+
 management.info.env.enabled=true
 ```
 
@@ -81,14 +104,23 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             tags:
+
               environment: production
+
               region: us-east-1
+
             team: platform
 ```
 
@@ -100,11 +132,17 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           service-url: https://my-app.example.com
+
           service-host-type: IP  # or CANONICAL
 ```
 
@@ -116,10 +154,15 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         period: 10000  # milliseconds (default: 10000)
+
         auto-registration: true  # Enable/disable auto-registration
 ```
 
@@ -137,8 +180,11 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>org.springframework.cloud</groupId>
+
     <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+
 </dependency>
 ```
 
@@ -148,22 +194,39 @@ application.yml
 
 ```
 eureka:
+
   client:
+
     serviceUrl:
+
       defaultZone: http://localhost:8761/eureka/
+
   instance:
+
     leaseRenewalIntervalInSeconds: 10
+
     health-check-url-path: /actuator/health
+
     metadata-map:
+
       startup: ${random.int}  # Trigger info update after restart
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 ```
 
@@ -175,8 +238,11 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>org.springframework.cloud</groupId>
+
     <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+
 </dependency>
 ```
 
@@ -187,13 +253,22 @@ SpringBootAdminApplication.java
 ```
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
+
+
 @EnableDiscoveryClient
+
 @EnableAdminServer
+
 @SpringBootApplication
+
 public class SpringBootAdminApplication {
+
     static void main(String[] args) {
+
         SpringApplication.run(SpringBootAdminApplication.class, args);
+
     }
+
 }
 ```
 
@@ -203,11 +278,17 @@ application.yml
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         metadata:
+
           user-name: ${spring.security.user.name}
+
           user-password: ${spring.security.user.password}
 ```
 
@@ -227,14 +308,23 @@ application.yml (Admin Server)
 
 ```
 spring:
+
   cloud:
+
     discovery:
+
       client:
+
         simple:
+
           instances:
+
             my-application:
+
               - uri: http://localhost:8081
+
                 metadata:
+
                   management.context-path: /actuator
 ```
 
@@ -252,11 +342,17 @@ application.yml (Client)
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         url: http://localhost:8080
+
         username: admin
+
         password: secret
 ```
 
@@ -270,11 +366,17 @@ application.yml
 
 ```
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"  # Expose all endpoints
+
       # Or be more specific:
+
       # include: health,info,metrics,env,loggers
 ```
 

@@ -33,23 +33,37 @@ Spring Boot Admin 4 replaces Spring's nullable annotations with JSpecify annotat
 
 ```
 // Before (Spring Boot Admin 3.x)
+
 import org.springframework.lang.Nullable;
 
+
+
 public class MyService {
+
     public void process(@Nullable String value) {
+
         // ...
+
     }
+
 }
 ```
 
 ```
 // After (Spring Boot Admin 4.x)
+
 import org.jspecify.annotations.Nullable;
 
+
+
 public class MyService {
+
     public void process(@Nullable String value) {
+
         // ...
+
     }
+
 }
 ```
 
@@ -61,9 +75,13 @@ If you extend Spring Boot Admin classes or implement interfaces using `@Nullable
 
 ```
 <dependency>
+
     <groupId>org.jspecify</groupId>
+
     <artifactId>jspecify</artifactId>
+
     <version>1.0.0</version>
+
 </dependency>
 ```
 
@@ -88,19 +106,29 @@ The client autoconfiguration now provides `RestClient` instead of `WebClient`:
 
 ```
 // Before (Spring Boot Admin 3.x)
+
 @Bean
+
 public WebClient.Builder webClientBuilder() {
+
     return WebClient.builder()
+
         .defaultHeader("X-Custom-Header", "value");
+
 }
 ```
 
 ```
 // After (Spring Boot Admin 4.x)
+
 @Bean
+
 public RestClient.Builder restClientBuilder() {
+
     return RestClient.builder()
+
         .defaultHeader("X-Custom-Header", "value");
+
 }
 ```
 
@@ -110,11 +138,17 @@ No changes required - the server continues using `WebClient` for instance commun
 
 ```
 // Server-side customization (unchanged)
+
 @Bean
+
 public InstanceWebClient instanceWebClient(WebClient.Builder builder) {
+
     return InstanceWebClient.builder(builder)
+
         .connectTimeout(Duration.ofSeconds(5))
+
         .build();
+
 }
 ```
 
@@ -135,21 +169,33 @@ The property `spring.boot.admin.client.instance.prefer-ip` has been removed in f
 
 ```
 # Before (Spring Boot Admin 3.x)
+
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           prefer-ip: true
 ```
 
 ```
 # After (Spring Boot Admin 4.x)
+
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           service-host-type: IP  # Options: IP, HOST_NAME, CANONICAL_HOST_NAME
 ```
 
@@ -189,24 +235,43 @@ Update your `pom.xml`:
 
 ```
 <properties>
+
     <spring-boot.version>4.0.0</spring-boot.version>
+
     <spring-boot-admin.version>4.0.0</spring-boot-admin.version>
+
 </properties>
 
+
+
 <dependencies>
+
     <!-- Admin Server -->
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-server</artifactId>
+
         <version>${spring-boot-admin.version}</version>
+
     </dependency>
 
+
+
     <!-- Admin Client -->
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-client</artifactId>
+
         <version>${spring-boot-admin.version}</version>
+
     </dependency>
+
 </dependencies>
 ```
 
@@ -216,7 +281,9 @@ Update your `pom.xml`:
 
 ```
 # Find and replace in all configuration files
+
 grep -r "prefer-ip" src/main/resources/
+
 # Replace with service-host-type
 ```
 
@@ -224,6 +291,7 @@ grep -r "prefer-ip" src/main/resources/
 
 ```
 # Check for WebClient customizations in client apps
+
 grep -r "WebClient.Builder" src/main/java/
 ```
 
@@ -233,9 +301,13 @@ grep -r "WebClient.Builder" src/main/java/
 
 ```
 # Find all Spring nullable imports
+
 find src -name "*.java" -exec grep -l "org.springframework.lang.Nullable" {} \;
 
+
+
 # Replace with JSpecify
+
 sed -i 's/org.springframework.lang.Nullable/org.jspecify.annotations.Nullable/g' <files>
 ```
 

@@ -9,22 +9,40 @@ The `ApplicationRegistrator` is responsible for managing the registration lifecy
 ```
 public interface ApplicationRegistrator {
 
+
+
     /**
+
      * Registers the client application at spring-boot-admin-server.
+
      * @return true if successful registration on at least one admin server
+
      */
+
     boolean register();
 
-    /**
-     * Tries to deregister currently registered application
-     */
-    void deregister();
+
 
     /**
-     * @return the id of this client as given by the admin server.
-     * Returns null if not registered yet.
+
+     * Tries to deregister currently registered application
+
      */
+
+    void deregister();
+
+
+
+    /**
+
+     * @return the id of this client as given by the admin server.
+
+     * Returns null if not registered yet.
+
+     */
+
     String getRegisteredId();
+
 }
 ```
 
@@ -43,12 +61,19 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         url: http://localhost:8080  # Admin Server URL
+
         period: 10000  # Registration interval in milliseconds
+
         auto-registration: true  # Enable auto-registration
+
         auto-deregistration: true  # Enable auto-deregistration on shutdown
 ```
 
@@ -67,7 +92,9 @@ The `ApplicationFactory` is responsible for creating the `Application` object th
 
 ```
 public interface ApplicationFactory {
+
     Application createApplication();
+
 }
 ```
 
@@ -83,13 +110,21 @@ The default factory gathers information from:
 
 ```
 @Override
+
 public Application createApplication() {
+
     return Application.create(getName())
+
         .healthUrl(getHealthUrl())
+
         .managementUrl(getManagementUrl())
+
         .serviceUrl(getServiceUrl())
+
         .metadata(getMetadata())
+
         .build();
+
 }
 ```
 
@@ -99,10 +134,15 @@ public Application createApplication() {
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           name: ${spring.application.name}  # Application name
 ```
 
@@ -112,13 +152,21 @@ The URL where your application can be accessed:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           service-url: https://my-app.example.com
+
           # or let it auto-detect:
+
           service-base-url: https://my-app.example.com
+
           service-path: /
 ```
 
@@ -134,16 +182,27 @@ URL for actuator endpoints:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           management-url: https://my-app.example.com/actuator
+
           # or
+
           management-base-url: https://my-app.example.com
+
 management:
+
   endpoints:
+
     web:
+
       base-path: /actuator
 ```
 
@@ -153,10 +212,15 @@ Specific health endpoint URL:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           health-url: https://my-app.example.com/actuator/health
 ```
 
@@ -166,10 +230,15 @@ Control how the service host is determined:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           service-host-type: IP  # or CANONICAL
 ```
 
@@ -182,46 +251,87 @@ Create a custom factory for specialized registration logic:
 
 ```
 @Component
+
 public class CustomApplicationFactory implements ApplicationFactory {
 
+
+
     private final InstanceProperties instance;
+
     private final Environment environment;
 
+
+
     public CustomApplicationFactory(InstanceProperties instance,
+
                                    Environment environment) {
+
         this.instance = instance;
+
         this.environment = environment;
+
     }
+
+
 
     @Override
+
     public Application createApplication() {
+
         Map<String, String> metadata = new HashMap<>();
+
         metadata.put("environment", environment.getProperty("app.environment"));
+
         metadata.put("version", environment.getProperty("app.version"));
+
         metadata.put("region", environment.getProperty("cloud.region"));
 
+
+
         return Application.create(instance.getName())
+
             .healthUrl(buildHealthUrl())
+
             .managementUrl(buildManagementUrl())
+
             .serviceUrl(buildServiceUrl())
+
             .metadata(metadata)
+
             .build();
+
     }
+
+
 
     private String buildHealthUrl() {
+
         // Custom logic to build health URL
+
         return "https://my-app.com/health";
+
     }
+
+
 
     private String buildManagementUrl() {
+
         // Custom logic to build management URL
+
         return "https://my-app.com/management";
+
     }
 
+
+
     private String buildServiceUrl() {
+
         // Custom logic to build service URL
+
         return "https://my-app.com";
+
     }
+
 }
 ```
 
@@ -233,7 +343,9 @@ For servlet-based applications:
 
 ```
 public class ServletApplicationFactory extends DefaultApplicationFactory {
+
     // Detects servlet port and context path automatically
+
 }
 ```
 
@@ -243,7 +355,9 @@ For WebFlux applications:
 
 ```
 public class ReactiveApplicationFactory extends DefaultApplicationFactory {
+
     // Detects Netty port and context automatically
+
 }
 ```
 
@@ -253,10 +367,15 @@ For Cloud Foundry deployments:
 
 ```
 public class CloudFoundryApplicationFactory implements ApplicationFactory {
+
     // Uses CF-specific environment variables:
+
     // - vcap.application.application_id
+
     // - vcap.application.instance_id
+
     // - vcap.application.uris
+
 }
 ```
 
@@ -268,16 +387,27 @@ The `Application` class represents the registration payload:
 
 ```
 public class Application {
+
     private final String name;
+
     private final String managementUrl;
+
     private final String healthUrl;
+
     private final String serviceUrl;
+
     private final Map<String, String> metadata;
 
+
+
     // Builder pattern
+
     public static Builder create(String name) {
+
         return new Builder(name);
+
     }
+
 }
 ```
 
@@ -285,11 +415,17 @@ public class Application {
 
 ```
 Application app = Application.create("my-application")
+
     .healthUrl("http://localhost:8080/actuator/health")
+
     .managementUrl("http://localhost:8080/actuator")
+
     .serviceUrl("http://localhost:8080")
+
     .metadata("version", "1.0.0")
+
     .metadata("environment", "production")
+
     .build();
 ```
 
@@ -299,18 +435,31 @@ Spring Boot Admin Client fires application events during registration:
 
 ```
 @Component
+
 public class RegistrationEventListener {
 
-    @EventListener
-    public void onRegistration(InstanceRegisteredEvent event) {
-        String instanceId = event.getRegistration().getInstanceId();
-        log.info("Registered with instance ID: {}", instanceId);
-    }
+
 
     @EventListener
-    public void onDeregistration(InstanceDeregisteredEvent event) {
-        log.info("Deregistered instance");
+
+    public void onRegistration(InstanceRegisteredEvent event) {
+
+        String instanceId = event.getRegistration().getInstanceId();
+
+        log.info("Registered with instance ID: {}", instanceId);
+
     }
+
+
+
+    @EventListener
+
+    public void onDeregistration(InstanceDeregisteredEvent event) {
+
+        log.info("Deregistered instance");
+
+    }
+
 }
 ```
 
@@ -320,52 +469,99 @@ Implement custom registration logic:
 
 ```
 @Component
+
 public class CustomApplicationRegistrator implements ApplicationRegistrator {
 
+
+
     private final ApplicationFactory applicationFactory;
+
     private final RestClient restClient;
+
     private final String adminUrl;
+
     private volatile String registeredId;
 
+
+
     @Override
+
     public boolean register() {
+
         Application application = applicationFactory.createApplication();
 
+
+
         try {
+
             Map<String, Object> response = restClient.post()
+
                 .uri(adminUrl + "/instances")
+
                 .body(application)
+
                 .retrieve()
+
                 .body(new ParameterizedTypeReference<Map<String, Object>>() {});
 
+
+
             this.registeredId = (String) response.get("id");
+
             log.info("Registered as: {}", registeredId);
+
             return true;
+
         } catch (Exception e) {
+
             log.error("Registration failed", e);
+
             return false;
+
         }
+
     }
 
+
+
     @Override
+
     public void deregister() {
+
         if (registeredId != null) {
+
             try {
+
                 restClient.delete()
+
                     .uri(adminUrl + "/instances/" + registeredId)
+
                     .retrieve()
+
                     .toBodilessEntity();
+
                 log.info("Deregistered successfully");
+
             } catch (Exception e) {
+
                 log.error("Deregistration failed", e);
+
             }
+
         }
+
     }
 
+
+
     @Override
+
     public String getRegisteredId() {
+
         return registeredId;
+
     }
+
 }
 ```
 
@@ -396,9 +592,13 @@ This is normal behavior - the client re-registers periodically as a heartbeat. A
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         period: 30000  # 30 seconds instead of default 10
 ```
 

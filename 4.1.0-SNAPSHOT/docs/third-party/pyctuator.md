@@ -16,20 +16,35 @@ app.py
 
 ```
 import os
+
 from flask import Flask
+
 from pyctuator.pyctuator import Pyctuator
+
 app_name = "Flask App with Pyctuator"
+
 app = Flask(app_name)
+
 @app.route("/")
+
 def hello():
+
     return "Hello World!"
+
 Pyctuator(
+
     app,
+
     app_name,
+
     app_url="http://example-app.com",
+
     pyctuator_endpoint_url="http://example-app.com/pyctuator",
+
     registration_url=os.getenv("SPRING_BOOT_ADMIN_URL")
+
 )
+
 app.run()
 ```
 

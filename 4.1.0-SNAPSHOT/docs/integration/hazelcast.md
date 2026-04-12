@@ -31,18 +31,31 @@ pom.xml
 
 ```
 <dependencies>
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-server</artifactId>
+
     </dependency>
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-starter-webflux</artifactId>
+
     </dependency>
+
     <dependency>
+
         <groupId>com.hazelcast</groupId>
+
         <artifactId>hazelcast</artifactId>
+
     </dependency>
+
 </dependencies>
 ```
 
@@ -52,57 +65,109 @@ HazelcastConfig.java
 
 ```
 import com.hazelcast.config.Config;
+
 import com.hazelcast.config.MapConfig;
+
 import com.hazelcast.config.MergePolicyConfig;
+
 import com.hazelcast.core.Hazelcast;
+
 import com.hazelcast.core.HazelcastInstance;
+
 import com.hazelcast.map.IMap;
+
 import com.hazelcast.spi.merge.PutIfAbsentMergePolicy;
+
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
+
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
+
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
+
 
 import java.util.List;
 
+
+
 @Configuration
+
 public class HazelcastConfig {
 
+
+
     @Bean
+
     public Config hazelcastConfig() {
+
         MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store")
+
             .setBackupCount(1)
+
             .setMergePolicyConfig(new MergePolicyConfig(
+
                 PutIfAbsentMergePolicy.class.getName(), 100));
 
+
+
         Config config = new Config();
+
         config.addMapConfig(mapConfig);
+
         config.setProperty("hazelcast.jmx", "true");
 
+
+
         // Network configuration
+
         config.getNetworkConfig()
+
             .setPort(5701)
+
             .setPortAutoIncrement(true)
+
             .getJoin()
+
             .getMulticastConfig()
+
             .setEnabled(true);
 
+
+
         return config;
+
     }
 
+
+
     @Bean
+
     public HazelcastInstance hazelcastInstance(Config hazelcastConfig) {
+
         return Hazelcast.newHazelcastInstance(hazelcastConfig);
+
     }
 
+
+
     @Bean
+
     public InstanceEventStore eventStore(HazelcastInstance hazelcastInstance) {
+
         IMap<InstanceId, List<InstanceEvent>> map =
+
             hazelcastInstance.getMap("spring-boot-admin-event-store");
+
         return new HazelcastEventStore(100, map);
+
     }
+
 }
 ```
 
@@ -112,17 +177,29 @@ application.yml
 
 ```
 spring:
+
   application:
+
     name: spring-boot-admin-server
 
+
+
 hazelcast:
+
   network:
+
     port: 5701
+
     port-auto-increment: true
+
     join:
+
       multicast:
+
         enabled: true
+
       tcp-ip:
+
         enabled: false
 ```
 
@@ -134,20 +211,31 @@ Automatic discovery using multicast:
 
 ```
 config.getNetworkConfig()
+
     .getJoin()
+
     .getMulticastConfig()
+
     .setEnabled(true)
+
     .setMulticastGroup("224.2.2.3")
+
     .setMulticastPort(54327);
 ```
 
 ```
 hazelcast:
+
   network:
+
     join:
+
       multicast:
+
         enabled: true
+
         multicast-group: 224.2.2.3
+
         multicast-port: 54327
 ```
 
@@ -157,30 +245,51 @@ Explicit member list for production:
 
 ```
 config.getNetworkConfig()
+
     .getJoin()
+
     .getMulticastConfig()
+
     .setEnabled(false);
 
+
+
 config.getNetworkConfig()
+
     .getJoin()
+
     .getTcpIpConfig()
+
     .setEnabled(true)
+
     .addMember("192.168.1.100")
+
     .addMember("192.168.1.101")
+
     .addMember("192.168.1.102");
 ```
 
 ```
 hazelcast:
+
   network:
+
     join:
+
       multicast:
+
         enabled: false
+
       tcp-ip:
+
         enabled: true
+
         members:
+
           - 192.168.1.100
+
           - 192.168.1.101
+
           - 192.168.1.102
 ```
 
@@ -190,22 +299,35 @@ For Kubernetes deployments:
 
 ```
 <dependency>
+
     <groupId>com.hazelcast</groupId>
+
     <artifactId>hazelcast-kubernetes</artifactId>
+
 </dependency>
 ```
 
 ```
 config.getNetworkConfig()
+
     .getJoin()
+
     .getMulticastConfig()
+
     .setEnabled(false);
 
+
+
 config.getNetworkConfig()
+
     .getJoin()
+
     .getKubernetesConfig()
+
     .setEnabled(true)
+
     .setProperty("namespace", "default")
+
     .setProperty("service-name", "spring-boot-admin");
 ```
 
@@ -215,11 +337,17 @@ config.getNetworkConfig()
 
 ```
 MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store")
+
     .setBackupCount(1)  // Number of backup copies
+
     .setAsyncBackupCount(0)  // Async backups
+
     .setTimeToLiveSeconds(0)  // No expiration
+
     .setMaxIdleSeconds(0)  // No idle timeout
+
     .setMergePolicyConfig(new MergePolicyConfig(
+
         PutIfAbsentMergePolicy.class.getName(), 100));
 ```
 
@@ -229,10 +357,15 @@ Limit events per instance:
 
 ```
 @Bean
+
 public InstanceEventStore eventStore(HazelcastInstance hazelcastInstance) {
+
     IMap<InstanceId, List<InstanceEvent>> map =
+
         hazelcastInstance.getMap("spring-boot-admin-event-store");
+
     return new HazelcastEventStore(500, map);  // Max 500 events per instance
+
 }
 ```
 
@@ -242,23 +375,41 @@ public InstanceEventStore eventStore(HazelcastInstance hazelcastInstance) {
 
 ```
 upstream spring_boot_admin {
+
     least_conn;
+
     server admin1:8080;
+
     server admin2:8080;
+
     server admin3:8080;
+
 }
 
+
+
 server {
+
     listen 80;
+
     server_name admin.example.com;
 
+
+
     location / {
+
         proxy_pass http://spring_boot_admin;
+
         proxy_set_header Host $host;
+
         proxy_set_header X-Real-IP $remote_addr;
+
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
         proxy_set_header X-Forwarded-Proto $scheme;
+
     }
+
 }
 ```
 
@@ -268,9 +419,13 @@ Use sticky sessions for the UI:
 
 ```
 upstream spring_boot_admin {
+
     ip_hash;  # Sticky sessions
+
     server admin1:8080;
+
     server admin2:8080;
+
 }
 ```
 
@@ -278,16 +433,23 @@ Or use Spring Session:
 
 ```
 <dependency>
+
     <groupId>org.springframework.session</groupId>
+
     <artifactId>spring-session-hazelcast</artifactId>
+
 </dependency>
 ```
 
 ```
 @EnableHazelcastHttpSession
+
 @Configuration
+
 public class SessionConfig {
+
     // Hazelcast will be used for session storage
+
 }
 ```
 
@@ -298,40 +460,76 @@ docker-compose.yml
 ```
 version: '3'
 
+
+
 services:
+
   admin1:
+
     build: ./admin-server
+
     ports:
+
       - "8080:8080"
+
     environment:
+
       - HAZELCAST_MEMBERS=admin1,admin2,admin3
+
       - SERVER_PORT=8080
+
+
 
   admin2:
+
     build: ./admin-server
+
     ports:
+
       - "8081:8080"
+
     environment:
+
       - HAZELCAST_MEMBERS=admin1,admin2,admin3
+
       - SERVER_PORT=8080
+
+
 
   admin3:
+
     build: ./admin-server
+
     ports:
+
       - "8082:8080"
+
     environment:
+
       - HAZELCAST_MEMBERS=admin1,admin2,admin3
+
       - SERVER_PORT=8080
 
+
+
   nginx:
+
     image: nginx:alpine
+
     ports:
+
       - "80:80"
+
     volumes:
+
       - ./nginx.conf:/etc/nginx/nginx.conf
+
     depends_on:
+
       - admin1
+
       - admin2
+
       - admin3
 ```
 
@@ -343,8 +541,11 @@ Use Hazelcast Management Center:
 
 ```
 hazelcast:
+
   management-center:
+
     enabled: true
+
     url: http://localhost:8083/mancenter
 ```
 
@@ -362,21 +563,37 @@ Check cluster health:
 
 ```
 @Component
+
 public class HazelcastHealthCheck {
+
+
 
     private final HazelcastInstance hazelcastInstance;
 
+
+
     public HazelcastHealthCheck(HazelcastInstance hazelcastInstance) {
+
         this.hazelcastInstance = hazelcastInstance;
+
     }
+
+
 
     public boolean isHealthy() {
+
         return hazelcastInstance.getCluster().getMembers().size() > 0;
+
     }
 
+
+
     public int getClusterSize() {
+
         return hazelcastInstance.getCluster().getMembers().size();
+
     }
+
 }
 ```
 
@@ -388,6 +605,7 @@ Configure merge policy:
 
 ```
 mapConfig.setMergePolicyConfig(new MergePolicyConfig(
+
     PutIfAbsentMergePolicy.class.getName(), 100));
 ```
 
@@ -403,6 +621,7 @@ mapConfig.setMergePolicyConfig(new MergePolicyConfig(
 
    ```
    # Check if multicast is enabled
+
    ip maddr show
    ```
 
@@ -430,6 +649,7 @@ mapConfig.setMergePolicyConfig(new MergePolicyConfig(
 
    ```
    IMap map = hazelcastInstance.getMap("spring-boot-admin-event-store");
+
    log.info("Map size: {}", map.size());
    ```
 

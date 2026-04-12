@@ -57,28 +57,47 @@ Enhanced security with client certificates:
 
 ```
 spring:
+
   security:
+
     user:
+
       name: admin
+
       password: ${ADMIN_PASSWORD}
 ```
 
 ```
 @Configuration
+
 public class SecurityConfig {
 
+
+
     @Bean
+
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http.authorizeHttpRequests(auth -> auth
+
                 .requestMatchers("/assets/**").permitAll()
+
                 .requestMatchers("/login").permitAll()
+
                 .anyRequest().authenticated()
+
             )
+
             .formLogin(formLogin -> formLogin.loginPage("/login"))
+
             .httpBasic(Customizer.withDefaults());
 
+
+
         return http.build();
+
     }
+
 }
 ```
 
@@ -88,24 +107,43 @@ public class SecurityConfig {
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         url: http://admin-server:8080
+
         instance:
+
           metadata:
+
             user.name: actuator
+
             user.password: ${ACTUATOR_PASSWORD}
 
+
+
   security:
+
     user:
+
       name: actuator
+
       password: ${ACTUATOR_PASSWORD}
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
 ```
 
@@ -113,10 +151,15 @@ management:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
+
         # Credentials from instance metadata
 ```
 
@@ -189,10 +232,15 @@ Use this checklist to ensure your deployment is secure:
 
 ```
 # Admin Server
+
 spring:
+
   security:
+
     user:
+
       name: user
+
       password: password
 ```
 
@@ -204,42 +252,79 @@ No actuator security needed in development.
 
 ```
 @Configuration
+
 public class SecurityConfig {
 
+
+
     @Bean
+
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http.authorizeHttpRequests(auth -> auth
+
                 .requestMatchers("/assets/**", "/login").permitAll()
+
                 .requestMatchers("/instances/**").hasRole("ADMIN")
+
                 .anyRequest().hasAnyRole("ADMIN", "USER")
+
             )
+
             .formLogin(formLogin -> formLogin.loginPage("/login"))
+
             .httpBasic(Customizer.withDefaults());
 
+
+
         return http.build();
+
     }
 
+
+
     @Bean
+
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
+
         UserDetails admin = User.builder()
+
             .username("admin")
+
             .password(encoder.encode(System.getenv("ADMIN_PASSWORD")))
+
             .roles("ADMIN")
+
             .build();
+
+
 
         UserDetails user = User.builder()
+
             .username("viewer")
+
             .password(encoder.encode(System.getenv("VIEWER_PASSWORD")))
+
             .roles("USER")
+
             .build();
 
+
+
         return new InMemoryUserDetailsManager(admin, user);
+
     }
 
+
+
     @Bean
+
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
+
     }
+
 }
 ```
 
@@ -249,23 +334,41 @@ public class SecurityConfig {
 
 ```
 # Admin Server
+
 spring:
+
   boot:
+
     admin:
+
       discovery:
+
         enabled: true
 
+
+
 # Spring Security with OAuth2
+
 spring:
+
   security:
+
     oauth2:
+
       client:
+
         registration:
+
           keycloak:
+
             client-id: spring-boot-admin
+
             client-secret: ${OAUTH2_CLIENT_SECRET}
+
         provider:
+
           keycloak:
+
             issuer-uri: https://keycloak.company.com/realms/main
 ```
 
@@ -277,18 +380,31 @@ spring:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
+
         service-map:
+
           service-a:
+
             user-name: service-a-actuator
+
             user-password: ${SERVICE_A_PASSWORD}
+
           service-b:
+
             user-name: service-b-actuator
+
             user-password: ${SERVICE_B_PASSWORD}
+
         default-user-name: default-actuator
+
         default-password: ${DEFAULT_PASSWORD}
 ```
 
@@ -296,12 +412,19 @@ spring:
 
 ```
 spring:
+
   application:
+
     name: service-a
 
+
+
   security:
+
     user:
+
       name: service-a-actuator
+
       password: ${SERVICE_A_PASSWORD}
 ```
 
@@ -315,9 +438,13 @@ Never hardcode passwords. Use environment variables or secret management:
 
 ```
 spring:
+
   security:
+
     user:
+
       name: ${ADMIN_USER:admin}
+
       password: ${ADMIN_PASSWORD}
 ```
 
@@ -331,11 +458,17 @@ docker run -e ADMIN_PASSWORD=secret123 my-admin-server
 
 ```
 apiVersion: v1
+
 kind: Secret
+
 metadata:
+
   name: admin-credentials
+
 type: Opaque
+
 data:
+
   password: c2VjcmV0MTIz  # base64 encoded
 ```
 
@@ -352,9 +485,13 @@ Only expose necessary endpoints:
 
 ```
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: health,info,metrics,loggers
 ```
 
@@ -364,11 +501,17 @@ Use TLS for all communication:
 
 ```
 server:
+
   port: 8443
+
   ssl:
+
     enabled: true
+
     key-store: classpath:keystore.p12
+
     key-store-password: ${KEYSTORE_PASSWORD}
+
     key-store-type: PKCS12
 ```
 
@@ -378,8 +521,11 @@ Log authentication attempts and failures:
 
 ```
 logging:
+
   level:
+
     org.springframework.security: DEBUG
+
     de.codecentric.boot.admin: DEBUG
 ```
 
@@ -391,25 +537,45 @@ Configure security headers for the Admin UI:
 
 ```
 @Configuration
+
 public class SecurityConfig {
 
+
+
     @Bean
+
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
+
             .headers(headers -> headers
+
                 .contentSecurityPolicy(csp -> csp
+
                     .policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'")
+
                 )
+
                 .frameOptions(frame -> frame.sameOrigin())
+
                 .xssProtection(xss -> xss.block(true))
+
                 .httpStrictTransportSecurity(hsts -> hsts
+
                     .includeSubDomains(true)
+
                     .maxAgeInSeconds(31536000)
+
                 )
+
             );
 
+
+
         return http.build();
+
     }
+
 }
 ```
 
@@ -425,12 +591,19 @@ public class SecurityConfig {
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             user.name: actuator
+
             user.password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -442,10 +615,15 @@ spring:
 
 ```
 .csrf(csrf -> csrf
+
     .ignoringRequestMatchers(
+
         new AntPathRequestMatcher("/instances", POST.name()),
+
         new AntPathRequestMatcher("/instances/*", DELETE.name())
+
     )
+
 )
 ```
 
@@ -457,8 +635,11 @@ spring:
 
 ```
 .authorizeHttpRequests(auth -> auth
+
     .requestMatchers("/assets/**", "/login").permitAll()
+
     .anyRequest().authenticated()
+
 )
 ```
 
@@ -470,13 +651,21 @@ spring:
 
 ```
 @Bean
+
 public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
+
     UserDetails user = User.builder()
+
         .username("admin")
+
         .password(encoder.encode("password"))
+
         .roles("ADMIN")
+
         .build();
+
     return new InMemoryUserDetailsManager(user);
+
 }
 ```
 

@@ -21,8 +21,11 @@ The default implementation stores events in memory using a `ConcurrentHashMap`. 
 
 ```
 @Bean
+
 public InstanceEventStore eventStore() {
+
     return new InMemoryEventStore(100); // Max 100 events per instance
+
 }
 ```
 
@@ -47,8 +50,11 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>com.hazelcast</groupId>
+
     <artifactId>hazelcast</artifactId>
+
 </dependency>
 ```
 
@@ -56,38 +62,71 @@ Then configure the Hazelcast-backed event store:
 
 ```
 import com.hazelcast.config.Config;
+
 import com.hazelcast.config.MapConfig;
+
 import com.hazelcast.core.Hazelcast;
+
 import com.hazelcast.core.HazelcastInstance;
+
 import com.hazelcast.map.IMap;
+
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
 
+
+
 @Configuration
+
 public class HazelcastConfig {
 
+
+
     @Bean
+
     public Config hazelcastConfig() {
+
         MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store")
+
             .setBackupCount(1)
+
             .setMergePolicyConfig(new MergePolicyConfig(
+
                 PutIfAbsentMergePolicy.class.getName(), 100));
 
+
+
         Config config = new Config();
+
         config.addMapConfig(mapConfig);
+
         return config;
+
     }
 
+
+
     @Bean
+
     public HazelcastInstance hazelcastInstance(Config hazelcastConfig) {
+
         return Hazelcast.newHazelcastInstance(hazelcastConfig);
+
     }
 
+
+
     @Bean
+
     public InstanceEventStore eventStore(HazelcastInstance hazelcastInstance) {
+
         IMap<InstanceId, List<InstanceEvent>> map =
+
             hazelcastInstance.getMap("spring-boot-admin-event-store");
+
         return new HazelcastEventStore(100, map);
+
     }
+
 }
 ```
 
@@ -97,15 +136,25 @@ The `HazelcastEventStore` listens to map entry updates and publishes new events 
 
 ```
 eventLog.addEntryListener(new EntryAdapter<InstanceId, List<InstanceEvent>>() {
+
     @Override
+
     public void entryUpdated(EntryEvent<InstanceId, List<InstanceEvent>> event) {
+
         long lastKnownVersion = getLastVersion(event.getOldValue());
+
         List<InstanceEvent> newEvents = event.getValue()
+
             .stream()
+
             .filter((e) -> e.getVersion() > lastKnownVersion)
+
             .toList();
+
         publish(newEvents);
+
     }
+
 }, true);
 ```
 
@@ -132,11 +181,18 @@ Each event contains:
 ```
 public interface InstanceEventStore extends Publisher<InstanceEvent> {
 
+
+
     Flux<InstanceEvent> findAll();
+
+
 
     Flux<InstanceEvent> find(InstanceId id);
 
+
+
     Mono<Void> append(List<InstanceEvent> events);
+
 }
 ```
 
@@ -154,11 +210,17 @@ Events are versioned to prevent concurrent modification issues. Each event inclu
 
 ```
 public abstract class InstanceEvent implements Serializable {
+
     private final InstanceId instance;
+
     private final long version;
+
     private final long timestamp;
 
+
+
     // ...
+
 }
 ```
 
@@ -170,11 +232,17 @@ The event store publishes events to subscribers, enabling reactive processing:
 
 ```
 eventStore.subscribe(event -> {
+
     if (event instanceof InstanceStatusChangedEvent statusEvent) {
+
         // React to status changes
+
         System.out.println("Instance " + event.getInstance() +
+
                           " changed to " + statusEvent.getStatusInfo().getStatus());
+
     }
+
 });
 ```
 
@@ -184,8 +252,11 @@ Control the maximum number of events stored per instance:
 
 ```
 @Bean
+
 public InstanceEventStore eventStore() {
+
     return new InMemoryEventStore(500); // Store up to 500 events per instance
+
 }
 ```
 
@@ -198,25 +269,46 @@ You can implement your own event store for custom persistence requirements (e.g.
 ```
 public class CustomEventStore implements InstanceEventStore {
 
+
+
     @Override
+
     public Flux<InstanceEvent> findAll() {
+
         // Load all events from your storage
+
     }
 
+
+
     @Override
+
     public Flux<InstanceEvent> find(InstanceId id) {
+
         // Load events for specific instance
+
     }
 
+
+
     @Override
+
     public Mono<Void> append(List<InstanceEvent> events) {
+
         // Persist events and publish to subscribers
+
     }
 
+
+
     @Override
+
     public void subscribe(Subscriber<? super InstanceEvent> subscriber) {
+
         // Handle event subscriptions
+
     }
+
 }
 ```
 
@@ -224,8 +316,11 @@ Then register your custom implementation as a bean:
 
 ```
 @Bean
+
 public InstanceEventStore eventStore() {
+
     return new CustomEventStore();
+
 }
 ```
 
@@ -243,15 +338,25 @@ Monitor event store health through actuator endpoints or by subscribing to event
 
 ```
 @Component
+
 public class EventStoreMonitor {
 
+
+
     public EventStoreMonitor(InstanceEventStore eventStore) {
+
         eventStore.subscribe(event -> {
+
             // Log or metric collection
+
             log.debug("Event: {} for instance {}",
+
                      event.getType(), event.getInstance());
+
         });
+
     }
+
 }
 ```
 

@@ -9,25 +9,46 @@ CustomNotifier.java
 ```
 public class CustomNotifier extends AbstractEventNotifier {
 
+
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CustomNotifier.class);
 
+
+
     public CustomNotifier(InstanceRepository repository) {
+
         super(repository);
+
     }
 
+
+
     @Override
+
     protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
+
         return Mono.fromRunnable(() -> {
+
             if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
+
                 LOGGER.info("Instance {} ({}) is {}", instance.getRegistration().getName(), event.getInstance(),
+
                         statusChangedEvent.getStatusInfo().getStatus());
+
             }
+
             else {
+
                 LOGGER.info("Instance {} ({}) {}", instance.getRegistration().getName(), event.getInstance(),
+
                         event.getType());
+
             }
+
         });
+
     }
+
 }
 ```
 
@@ -66,18 +87,31 @@ NotifierConfiguration.java
 
 ```
 @Configuration
+
 public class NotifierConfiguration {
+
     @Autowired
+
     private Notifier notifier;
 
+
+
     @Primary
+
     @Bean(initMethod = "start", destroyMethod = "stop")
+
     public RemindingNotifier remindingNotifier() {
+
         RemindingNotifier notifier = new RemindingNotifier(notifier, repository);
+
         notifier.setReminderPeriod(Duration.ofMinutes(10)); // (1)
+
         notifier.setCheckReminderInverval(Duration.ofSeconds(10)); //(2)
+
         return notifier;
+
     }
+
 }
 ```
 
@@ -109,31 +143,58 @@ NotifierConfig.java
 
 ```
 @Configuration(proxyBeanMethods = false)
+
 public class NotifierConfig {
+
+
 
     private final InstanceRepository repository;
 
+
+
     private final ObjectProvider<List<Notifier>> otherNotifiers;
 
+
+
     public NotifierConfig(InstanceRepository repository, ObjectProvider<List<Notifier>> otherNotifiers) {
+
         this.repository = repository;
+
         this.otherNotifiers = otherNotifiers;
+
     }
+
+
 
     @Bean
+
     public FilteringNotifier filteringNotifier() { // (1)
+
         CompositeNotifier delegate = new CompositeNotifier(this.otherNotifiers.getIfAvailable(Collections::emptyList));
+
         return new FilteringNotifier(delegate, this.repository);
+
     }
 
+
+
     @Primary
+
     @Bean(initMethod = "start", destroyMethod = "stop")
+
     public RemindingNotifier remindingNotifier() { // (2)
+
         RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), this.repository);
+
         notifier.setReminderPeriod(Duration.ofMinutes(10));
+
         notifier.setCheckReminderInverval(Duration.ofSeconds(10));
+
         return notifier;
+
     }
+
+
 
 }
 ```

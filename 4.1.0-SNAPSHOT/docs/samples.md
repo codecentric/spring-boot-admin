@@ -26,13 +26,21 @@ All samples are available in the [Spring Boot Admin GitHub repository](https://g
 
 ```
 spring-boot-admin-samples/
+
 ├── spring-boot-admin-sample-servlet/
+
 ├── spring-boot-admin-sample-reactive/
+
 ├── spring-boot-admin-sample-war/
+
 ├── spring-boot-admin-sample-eureka/
+
 ├── spring-boot-admin-sample-consul/
+
 ├── spring-boot-admin-sample-zookeeper/
+
 ├── spring-boot-admin-sample-hazelcast/
+
 └── spring-boot-admin-sample-custom-ui/
 ```
 
@@ -48,7 +56,9 @@ spring-boot-admin-samples/
 
 ```
 git clone https://github.com/codecentric/spring-boot-admin.git
+
 cd spring-boot-admin
+
 mvn clean install -DskipTests
 ```
 
@@ -56,6 +66,7 @@ mvn clean install -DskipTests
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-servlet
+
 mvn spring-boot:run
 ```
 
@@ -88,12 +99,19 @@ All samples share common patterns:
 
 ```
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 ```
 
@@ -101,9 +119,13 @@ management:
 
 ```
 logging:
+
   file:
+
     name: "target/boot-admin-sample.log"
+
   pattern:
+
     file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
 ```
 
@@ -113,15 +135,25 @@ All samples generate build information:
 
 ```
 <plugin>
+
     <groupId>org.springframework.boot</groupId>
+
     <artifactId>spring-boot-maven-plugin</artifactId>
+
     <executions>
+
         <execution>
+
             <goals>
+
                 <goal>build-info</goal>
+
             </goals>
+
         </execution>
+
     </executions>
+
 </plugin>
 ```
 
@@ -131,6 +163,7 @@ All samples generate build information:
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-servlet
+
 mvn spring-boot:run
 ```
 
@@ -145,10 +178,15 @@ Features:
 
 ```
 # Start Eureka Server
+
 docker run -d -p 8761:8761 springcloud/eureka
 
+
+
 # Start Admin Server
+
 cd spring-boot-admin-samples/spring-boot-admin-sample-eureka
+
 mvn spring-boot:run
 ```
 
@@ -162,12 +200,19 @@ Features:
 
 ```
 # Start multiple instances
+
 cd spring-boot-admin-samples/spring-boot-admin-sample-hazelcast
 
+
+
 # Terminal 1
+
 SERVER_PORT=8080 mvn spring-boot:run
 
+
+
 # Terminal 2
+
 SERVER_PORT=8081 mvn spring-boot:run
 ```
 
@@ -183,6 +228,7 @@ Some samples include Docker Compose configurations:
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-eureka
+
 docker-compose up
 ```
 
@@ -200,6 +246,7 @@ Use the samples as templates:
 
    ```
    <artifactId>my-admin-server</artifactId>
+
    <name>My Admin Server</name>
    ```
 
@@ -213,6 +260,7 @@ Use the samples as templates:
 
    ```
    mvn clean package
+
    java -jar target/my-admin-server.jar
    ```
 
@@ -222,6 +270,7 @@ Each sample includes tests:
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-servlet
+
 mvn test
 ```
 
@@ -239,6 +288,7 @@ Or in `application.yml`:
 
 ```
 server:
+
   port: 9090
 ```
 

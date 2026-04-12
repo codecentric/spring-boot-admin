@@ -25,7 +25,10 @@ Spring Boot Admin Server integration with Apache Zookeeper for service discovery
 
 ```
 # Docker
+
 docker run -d -p 2181:2181 zookeeper:3.8
+
+
 
 # Or download from https://zookeeper.apache.org/
 ```
@@ -34,6 +37,7 @@ docker run -d -p 2181:2181 zookeeper:3.8
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-zookeeper
+
 mvn spring-boot:run
 ```
 
@@ -43,23 +47,41 @@ Access at: `http://localhost:8080`
 
 ```
 spring:
+
   application:
+
     name: zookeeper-example
+
   cloud:
+
     zookeeper:
+
       connect-string: localhost:2181
+
       discovery:
+
         metadata:
+
           management.context-path: /foo  # Dots allowed (unlike Consul)
+
           health.path: /ping
+
           user.name: user
+
           user.password: password
 
+
+
 management:
+
   endpoints:
+
     web:
+
       base-path: /foo
+
       path-mapping:
+
         health: /ping
 ```
 

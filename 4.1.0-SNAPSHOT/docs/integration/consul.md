@@ -21,14 +21,23 @@ With Consul integration:
 
 ```
 # macOS
+
 brew install consul
 
+
+
 # Linux
+
 wget https://releases.hashicorp.com/consul/1.17.0/consul_1.17.0_linux_amd64.zip
+
 unzip consul_1.17.0_linux_amd64.zip
+
 sudo mv consul /usr/local/bin/
 
+
+
 # Docker
+
 docker run -d --name=consul -p 8500:8500 consul:latest
 ```
 
@@ -36,9 +45,13 @@ docker run -d --name=consul -p 8500:8500 consul:latest
 
 ```
 # Development mode
+
 consul agent -dev
 
+
+
 # Production mode
+
 consul agent -server -bootstrap-expect=1 -data-dir=/tmp/consul
 ```
 
@@ -52,18 +65,31 @@ pom.xml
 
 ```
 <dependencies>
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-server</artifactId>
+
     </dependency>
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-starter-webflux</artifactId>
+
     </dependency>
+
     <dependency>
+
         <groupId>org.springframework.cloud</groupId>
+
         <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+
     </dependency>
+
 </dependencies>
 ```
 
@@ -73,17 +99,29 @@ SpringBootAdminConsulApplication.java
 
 ```
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
+
 import org.springframework.boot.SpringApplication;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
+
+
 @EnableDiscoveryClient
+
 @EnableAdminServer
+
 @SpringBootApplication
+
 public class SpringBootAdminConsulApplication {
+
     public static void main(String[] args) {
+
         SpringApplication.run(SpringBootAdminConsulApplication.class, args);
+
     }
+
 }
 ```
 
@@ -93,25 +131,45 @@ application.yml
 
 ```
 spring:
+
   application:
+
     name: spring-boot-admin-server
+
   cloud:
+
     consul:
+
       host: localhost
+
       port: 8500
+
       discovery:
+
         preferIpAddress: true
+
         health-check-interval: 10s
+
         health-check-path: /actuator/health
+
         instance-id: ${spring.application.name}:${random.value}
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 ```
 
@@ -123,9 +181,13 @@ application.yml
 
 ```
 spring:
+
   boot:
+
     admin:
+
       discovery:
+
         ignored-services: consul
 ```
 
@@ -137,8 +199,11 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>org.springframework.cloud</groupId>
+
     <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+
 </dependency>
 ```
 
@@ -146,11 +211,17 @@ pom.xml
 
 ```
 @EnableDiscoveryClient
+
 @SpringBootApplication
+
 public class Application {
+
     public static void main(String[] args) {
+
         SpringApplication.run(Application.class, args);
+
     }
+
 }
 ```
 
@@ -160,25 +231,45 @@ application.yml
 
 ```
 spring:
+
   application:
+
     name: my-application
+
   cloud:
+
     consul:
+
       host: localhost
+
       port: 8500
+
       discovery:
+
         metadata:
+
           management-context-path: ${management.server.base-path:/actuator}
+
           health-path: ${management.endpoints.web.path-mapping.health:health}
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
       base-path: /actuator
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 ```
 
@@ -194,7 +285,9 @@ Consul **does not allow dots (`.`)** in metadata keys. Use dashes (`-`) or under
 
 ```
 metadata:
+
   user.name: admin       # ❌ Won't work
+
   user.password: secret  # ❌ Won't work
 ```
 
@@ -202,7 +295,9 @@ metadata:
 
 ```
 metadata:
+
   user-name: admin       # ✅ Works
+
   user-password: secret  # ✅ Works
 ```
 
@@ -212,16 +307,27 @@ application.yml
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         metadata:
+
           management-context-path: /actuator
+
           health-path: /ping
+
           user-name: ${spring.security.user.name}
+
           user-password: ${spring.security.user.password}
+
           tags-environment: production
+
           tags-region: us-east-1
+
           team: platform
 ```
 
@@ -233,12 +339,19 @@ application.yml
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         tags:
+
           - production
+
           - us-east-1
+
           - platform-team
 ```
 
@@ -250,21 +363,37 @@ application.yml
 
 ```
 server:
+
   port: 8080
 
+
+
 management:
+
   server:
+
     port: 9090
+
   endpoints:
+
     web:
+
       base-path: /management
 
+
+
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         metadata:
+
           management-port: 9090
+
           management-context-path: /management
 ```
 
@@ -274,18 +403,31 @@ application.yml
 
 ```
 management:
+
   endpoints:
+
     web:
+
       path-mapping:
+
         health: /ping
+
       base-path: /actuator
 
+
+
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         health-check-path: /actuator/ping
+
         metadata:
+
           health-path: /ping
 ```
 
@@ -297,11 +439,17 @@ Consul automatically creates HTTP health check:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         health-check-interval: 10s
+
         health-check-timeout: 5s
+
         health-check-path: /actuator/health
 ```
 
@@ -309,11 +457,17 @@ spring:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         health-check-url: https://my-app.example.com/actuator/health
+
         health-check-interval: 15s
+
         health-check-critical-timeout: 30s
 ```
 
@@ -323,13 +477,21 @@ Use TTL-based health check instead of HTTP:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         health-check-interval: 10s
+
         heartbeat:
+
           enabled: true
+
           ttl-value: 15
+
           ttl-unit: s
 ```
 
@@ -341,9 +503,13 @@ application.yml (Admin Server)
 
 ```
 spring:
+
   boot:
+
     admin:
+
       discovery:
+
         ignored-services: consul,config-server
 ```
 
@@ -351,12 +517,19 @@ spring:
 
 ```
 @Bean
+
 public InstanceFilter consulInstanceFilter() {
+
     return registration -> {
+
         // Only monitor services with 'monitor' tag
+
         Map<String, String> metadata = registration.getMetadata();
+
         return "true".equals(metadata.get("monitor"));
+
     };
+
 }
 ```
 
@@ -364,11 +537,17 @@ public InstanceFilter consulInstanceFilter() {
 
 ```
 @Bean
+
 public InstanceFilter tagBasedFilter() {
+
     return registration -> {
+
         String tags = registration.getMetadata().get("tags");
+
         return tags != null && tags.contains("production");
+
     };
+
 }
 ```
 
@@ -380,11 +559,17 @@ application.yml
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       host: localhost
+
       port: 8500
+
       discovery:
+
         acl-token: ${CONSUL_ACL_TOKEN}
 ```
 
@@ -394,15 +579,25 @@ application.yml
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       host: localhost
+
       port: 8501
+
       scheme: https
+
       tls:
+
         enabled: true
+
         cert-path: /path/to/cert.pem
+
         key-path: /path/to/key.pem
+
         ca-cert-path: /path/to/ca.pem
 ```
 
@@ -413,30 +608,56 @@ docker-compose.yml
 ```
 version: '3'
 
+
+
 services:
+
   consul:
+
     image: consul:latest
+
     ports:
+
       - "8500:8500"
+
       - "8600:8600/udp"
+
     command: agent -server -ui -bootstrap-expect=1 -client=0.0.0.0
 
+
+
   spring-boot-admin:
+
     build: ./admin-server
+
     ports:
+
       - "8080:8080"
+
     environment:
+
       - SPRING_CLOUD_CONSUL_HOST=consul
+
     depends_on:
+
       - consul
 
+
+
   my-application:
+
     build: ./my-app
+
     ports:
+
       - "8081:8081"
+
     environment:
+
       - SPRING_CLOUD_CONSUL_HOST=consul
+
     depends_on:
+
       - consul
 ```
 
@@ -448,15 +669,25 @@ application.yml
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       host: consul.service.consul
+
       port: 8500
+
       discovery:
+
         preferIpAddress: false
+
         hostname: ${HOSTNAME}.my-app.default.svc.cluster.local
+
         metadata:
+
           k8s-namespace: ${POD_NAMESPACE:default}
+
           k8s-pod: ${HOSTNAME}
 ```
 
@@ -468,6 +699,7 @@ spring:
 
    ```
    curl http://localhost:8500/v1/catalog/services
+
    curl http://localhost:8500/v1/health/service/my-application
    ```
 
@@ -475,6 +707,7 @@ spring:
 
    ```
    consul catalog services
+
    consul catalog nodes -service=my-application
    ```
 
@@ -490,11 +723,17 @@ Ensure no dots in keys:
 
 ```
 # Wrong
+
 metadata:
+
   user.name: admin
 
+
+
 # Correct
+
 metadata:
+
   user-name: admin
 ```
 
@@ -518,9 +757,13 @@ Configure critical timeout:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         health-check-critical-timeout: 30s
 ```
 
@@ -530,9 +773,13 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        consul:
+
          discovery:
+
            instance-id: ${spring.application.name}:${random.value}
    ```
 
@@ -540,10 +787,15 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        consul:
+
          discovery:
+
            health-check-interval: 10s
+
            health-check-critical-timeout: 1m
    ```
 
@@ -551,11 +803,17 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        consul:
+
          discovery:
+
            metadata:
+
              user-name: ${ACTUATOR_USER}
+
              user-password: ${ACTUATOR_PASSWORD}
    ```
 
@@ -563,9 +821,13 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        consul:
+
          discovery:
+
            preferIpAddress: true
    ```
 
@@ -573,11 +835,17 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        consul:
+
          discovery:
+
            tags:
+
              - production
+
              - microservice
    ```
 
@@ -585,9 +853,13 @@ spring:
 
    ```
    spring:
+
      cloud:
+
        consul:
+
          discovery:
+
            deregister: true
    ```
 
@@ -595,6 +867,7 @@ spring:
 
    ```
    consul members
+
    consul info
    ```
 

@@ -14,9 +14,13 @@ Add spring-boot-starter-mail to your dependencies
 
 ```
 
+
 <dependency>
+
   <groupId>org.springframework.boot</groupId>
+
   <artifactId>spring-boot-starter-mail</artifactId>
+
 </dependency>
 ```
 
@@ -24,6 +28,7 @@ application.properties
 
 ```
 spring.mail.host=smtp.example.com
+
 spring.boot.admin.notify.mail.to=admin@example.com
 ```
 

@@ -34,7 +34,9 @@ brew install consul
 
 ```
 wget https://releases.hashicorp.com/consul/1.17.0/consul_1.17.0_linux_amd64.zip
+
 unzip consul_1.17.0_linux_amd64.zip
+
 sudo mv consul /usr/local/bin/
 ```
 
@@ -60,6 +62,7 @@ consul version
 
 ```
 # Development mode (single node)
+
 consul agent -dev
 ```
 
@@ -69,6 +72,7 @@ Verify Consul is running: `http://localhost:8500/ui`
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-consul
+
 mvn spring-boot:run
 ```
 
@@ -78,6 +82,7 @@ Access Admin UI at: `http://localhost:8080`
 
 ```
 mvn spring-boot:run -Dspring-boot.run.arguments=\
+
   --spring.cloud.consul.host=consul-server
 ```
 
@@ -93,29 +98,53 @@ mvn spring-boot:run -Dspring-boot.run.profiles=insecure
 
 ```
 <dependencies>
+
     <!-- Admin Server -->
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-server</artifactId>
+
     </dependency>
+
+
 
     <!-- Consul Discovery -->
+
     <dependency>
+
         <groupId>org.springframework.cloud</groupId>
+
         <artifactId>spring-cloud-starter-consul-discovery</artifactId>
+
     </dependency>
+
+
 
     <!-- Web (Servlet) -->
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-starter-webmvc</artifactId>
+
     </dependency>
 
+
+
     <!-- Security -->
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-starter-security</artifactId>
+
     </dependency>
+
 </dependencies>
 ```
 
@@ -125,13 +154,21 @@ SpringBootAdminConsulApplication.java
 
 ```
 @SpringBootApplication
+
 @EnableDiscoveryClient  // Enable Consul discovery
+
 @EnableAdminServer      // Enable Admin Server
+
 public class SpringBootAdminConsulApplication {
 
+
+
     static void main(String[] args) {
+
         SpringApplication.run(SpringBootAdminConsulApplication.class, args);
+
     }
+
 }
 ```
 
@@ -143,42 +180,79 @@ application.yml
 
 ```
 spring:
+
   application:
+
     name: consul-example
 
+
+
   cloud:
+
     config:
+
       enabled: false  # Disable config client
+
     consul:
+
       host: localhost
+
       port: 8500
+
       discovery:
+
         metadata:
+
           # IMPORTANT: Use dashes, not dots in metadata keys!
+
           management-context-path: /foo
+
           health-path: /ping
+
           user-name: user
+
           user-password: password
 
+
+
   profiles:
+
     active:
+
       - secure
 
+
+
   boot:
+
     admin:
+
       discovery:
+
         ignored-services: consul  # Don't monitor Consul itself
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
       base-path: /foo  # Custom actuator base path
+
       path-mapping:
+
         health: /ping  # Custom health endpoint path
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 ```
 
@@ -197,25 +271,45 @@ For applications to be monitored:
 
 ```
 spring:
+
   application:
+
     name: my-service
 
+
+
   cloud:
+
     consul:
+
       host: localhost
+
       port: 8500
+
       discovery:
+
         metadata:
+
           management-context-path: /actuator  # Use dashes!
+
           health-path: /actuator/health
+
           # For secured actuators
+
           user-name: ${actuator.username}
+
           user-password: ${actuator.password}
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
 ```
 
@@ -225,23 +319,41 @@ management:
 
 ```
 @Profile("insecure")
+
 @Configuration
+
 public static class SecurityPermitAllConfig {
 
+
+
     @Bean
+
     protected SecurityFilterChain filterChain(HttpSecurity http)
+
             throws Exception {
+
         http.authorizeHttpRequests((authorizeRequests) ->
+
                 authorizeRequests.anyRequest().permitAll())
+
             .csrf((csrf) -> csrf
+
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+
                 .ignoringRequestMatchers(
+
                     adminContextPath + "/instances",
+
                     adminContextPath + "/instances/*",
+
                     adminContextPath + "/actuator/**"
+
                 ));
+
         return http.build();
+
     }
+
 }
 ```
 
@@ -249,41 +361,77 @@ public static class SecurityPermitAllConfig {
 
 ```
 @Profile("secure")
+
 @Configuration
+
 public static class SecuritySecureConfig {
 
+
+
     @Bean
+
     protected SecurityFilterChain filterChain(HttpSecurity http)
+
             throws Exception {
+
         SavedRequestAwareAuthenticationSuccessHandler successHandler =
+
             new SavedRequestAwareAuthenticationSuccessHandler();
+
         successHandler.setTargetUrlParameter("redirectTo");
+
         successHandler.setDefaultTargetUrl(adminContextPath + "/");
 
+
+
         http.authorizeHttpRequests((authorizeRequests) ->
+
                 authorizeRequests
+
                     .requestMatchers(adminContextPath + "/assets/**")
+
                         .permitAll()
+
                     .requestMatchers(adminContextPath + "/login")
+
                         .permitAll()
+
                     .anyRequest()
+
                         .authenticated())
+
             .formLogin((formLogin) -> formLogin
+
                 .loginPage(adminContextPath + "/login")
+
                 .successHandler(successHandler))
+
             .logout((logout) -> logout
+
                 .logoutUrl(adminContextPath + "/logout"))
+
             .httpBasic(Customizer.withDefaults())
+
             .csrf((csrf) -> csrf
+
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+
                 .ignoringRequestMatchers(
+
                     adminContextPath + "/instances",
+
                     adminContextPath + "/instances/*",
+
                     adminContextPath + "/actuator/**"
+
                 ));
 
+
+
         return http.build();
+
     }
+
 }
 ```
 
@@ -321,21 +469,37 @@ Admin Server reads specific metadata keys from Consul:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         metadata:
+
           # Required for endpoint detection
+
           management-context-path: /actuator  # Dashes only!
+
           management-port: 8081  # If different
 
+
+
           # Optional - for secured actuators
+
           user-name: admin
+
           user-password: ${ACTUATOR_PASSWORD}
 
+
+
           # Custom metadata
+
           environment: production
+
           version: 1.0.0
+
           team: platform
 ```
 
@@ -352,10 +516,15 @@ This sample demonstrates custom actuator paths:
 
 ```
 management:
+
   endpoints:
+
     web:
+
       base-path: /foo          # Actuator at /foo instead of /actuator
+
       path-mapping:
+
         health: /ping          # Health at /foo/ping instead of /foo/health
 ```
 
@@ -363,11 +532,17 @@ Admin Server discovers these via metadata:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         metadata:
+
           management-context-path: /foo
+
           health-path: /ping
 ```
 
@@ -415,17 +590,29 @@ Register a new service:
 
 ```
 # Register via Consul API
+
 curl -X PUT -d '{
+
   "Name": "test-service",
+
   "Address": "127.0.0.1",
+
   "Port": 8081,
+
   "Meta": {
+
     "management-context-path": "/actuator"
+
   },
+
   "Check": {
+
     "HTTP": "http://127.0.0.1:8081/actuator/health",
+
     "Interval": "10s"
+
   }
+
 }' http://localhost:8500/v1/agent/service/register
 ```
 
@@ -441,11 +628,17 @@ Consul supports multiple health check types:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         health-check-path: /actuator/health
+
         health-check-interval: 10s
+
         health-check-timeout: 5s
 ```
 
@@ -453,9 +646,13 @@ spring:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         health-check-ttl: 30s
 ```
 
@@ -467,12 +664,19 @@ Add tags for filtering:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         tags:
+
           - production
+
           - backend
+
           - v1.0.0
 ```
 
@@ -482,14 +686,23 @@ Filter services monitored by Admin:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       discovery:
+
         ignored-services:
+
           - consul        # Don't monitor Consul
+
           - config-server # Don't monitor Config Server
+
         services:         # Only monitor these (if specified)
+
           - my-service
+
           - another-service
 ```
 
@@ -501,10 +714,15 @@ Secure Consul with ACL tokens:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       token: ${CONSUL_TOKEN}
+
       discovery:
+
         acl-token: ${CONSUL_ACL_TOKEN}
 ```
 
@@ -514,12 +732,19 @@ Connect to Consul over TLS:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       scheme: https
+
       tls:
+
         enabled: true
+
         key-store-path: classpath:consul-keystore.p12
+
         key-store-password: ${KEYSTORE_PASSWORD}
 ```
 
@@ -529,9 +754,13 @@ Register in specific datacenter:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         datacenter: dc1
 ```
 
@@ -541,10 +770,15 @@ Use IP instead of hostname:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         prefer-ip-address: true
+
         ip-address: 192.168.1.100
 ```
 
@@ -573,11 +807,17 @@ spring:
 
 ```
 # Wrong
+
 metadata:
+
   management.context-path: /actuator
 
+
+
 # Correct
+
 metadata:
+
   management-context-path: /actuator
 ```
 
@@ -587,9 +827,13 @@ metadata:
 
 ```
 # Test Consul API
+
 curl http://localhost:8500/v1/catalog/services
 
+
+
 # Check health
+
 curl http://localhost:8500/v1/health/state/passing
 ```
 
@@ -613,9 +857,13 @@ Services show as "failing" in Consul:
 
    ```
    spring:
+
      cloud:
+
        consul:
+
          discovery:
+
            health-check-interval: 30s  # Increase if needed
    ```
 
@@ -631,9 +879,13 @@ Increase timeout values:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         health-check-timeout: 10s  # Increase from default
 ```
 
@@ -645,15 +897,25 @@ Run Consul in cluster mode (3 or 5 nodes):
 
 ```
 # Server node 1
+
 consul agent -server -bootstrap-expect=3 -data-dir=/consul/data \
+
   -bind=192.168.1.10
 
+
+
 # Server node 2
+
 consul agent -server -data-dir=/consul/data \
+
   -bind=192.168.1.11 -join=192.168.1.10
 
+
+
 # Server node 3
+
 consul agent -server -data-dir=/consul/data \
+
   -bind=192.168.1.12 -join=192.168.1.10
 ```
 
@@ -661,10 +923,15 @@ consul agent -server -data-dir=/consul/data \
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       token: ${CONSUL_MANAGEMENT_TOKEN}
+
       discovery:
+
         acl-token: ${CONSUL_SERVICE_TOKEN}
 ```
 
@@ -674,9 +941,13 @@ Register Admin Server to monitor itself:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       discovery:
+
         ignored-services: []  # Don't ignore any services
 ```
 

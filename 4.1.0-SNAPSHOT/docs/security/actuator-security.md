@@ -20,8 +20,11 @@ Add Spring Security to your client application:
 
 ```
 <dependency>
+
     <groupId>org.springframework.boot</groupId>
+
     <artifactId>spring-boot-starter-security</artifactId>
+
 </dependency>
 ```
 
@@ -35,15 +38,25 @@ implementation 'org.springframework.boot:spring-boot-starter-security'
 
 ```
 spring:
+
   security:
+
     user:
+
       name: actuator
+
       password: ${ACTUATOR_PASSWORD}
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
 ```
 
@@ -53,13 +66,21 @@ Pass credentials via metadata:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         url: http://admin-server:8080
+
         instance:
+
           metadata:
+
             user.name: actuator
+
             user.password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -69,9 +90,13 @@ spring:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
 ```
 
@@ -87,27 +112,49 @@ Simplest approach using default Spring Security user:
 
 ```
 spring:
+
   application:
+
     name: my-service
 
+
+
   security:
+
     user:
+
       name: actuator
+
       password: ${ACTUATOR_PASSWORD}
 
+
+
   boot:
+
     admin:
+
       client:
+
         url: http://admin-server:8080
+
         instance:
+
           metadata:
+
             user.name: ${spring.security.user.name}
+
             user.password: ${spring.security.user.password}
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: health,info,metrics,env,loggers
 ```
 
@@ -118,55 +165,106 @@ For more control, create a custom `SecurityFilterChain`:
 ```
 package com.example.myservice;
 
+
+
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.Customizer;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
 import org.springframework.security.web.SecurityFilterChain;
 
+
+
 @Configuration
+
 public class ActuatorSecurityConfig {
 
+
+
     @Bean
+
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
+
             .authorizeHttpRequests(auth -> auth
+
                 // Permit health endpoint for load balancers
+
                 .requestMatchers(EndpointRequest.to("health")).permitAll()
+
                 // Secure all other actuator endpoints
+
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()
+
                 // Allow application endpoints
+
                 .anyRequest().permitAll()
+
             )
+
             // Use HTTP Basic for actuator
+
             .httpBasic(Customizer.withDefaults())
+
             // Disable CSRF for stateless API
+
             .csrf(csrf -> csrf.disable());
 
+
+
         return http.build();
+
     }
 
+
+
     @Bean
+
     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
+
         UserDetails actuator = User.builder()
+
             .username("actuator")
+
             .password(encoder.encode(System.getenv("ACTUATOR_PASSWORD")))
+
             .roles("ACTUATOR")
+
             .build();
 
+
+
         return new InMemoryUserDetailsManager(actuator);
+
     }
 
+
+
     @Bean
+
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
+
     }
+
 }
 ```
 
@@ -176,52 +274,99 @@ Separate security for actuator and application:
 
 ```
 @Configuration
+
 @Order(1)  // Higher precedence
+
 public class ActuatorSecurityConfig {
 
+
+
     @Bean
+
     @Order(1)
+
     public SecurityFilterChain actuatorFilterChain(HttpSecurity http) throws Exception {
+
         http
+
             .securityMatcher(EndpointRequest.toAnyEndpoint())
+
             .authorizeHttpRequests(auth -> auth
+
                 .requestMatchers(EndpointRequest.to("health")).permitAll()
+
                 .anyRequest().hasRole("ACTUATOR")
+
             )
+
             .httpBasic(Customizer.withDefaults())
+
             .csrf(csrf -> csrf.disable());
 
+
+
         return http.build();
+
     }
 
+
+
     @Bean
+
     public InMemoryUserDetailsManager actuatorUserDetailsService(PasswordEncoder encoder) {
+
         UserDetails actuator = User.builder()
+
             .username("actuator")
+
             .password(encoder.encode(System.getenv("ACTUATOR_PASSWORD")))
+
             .roles("ACTUATOR")
+
             .build();
 
+
+
         return new InMemoryUserDetailsManager(actuator);
+
     }
+
 }
 
+
+
 @Configuration
+
 @Order(2)  // Lower precedence
+
 public class ApplicationSecurityConfig {
 
+
+
     @Bean
+
     @Order(2)
+
     public SecurityFilterChain applicationFilterChain(HttpSecurity http) throws Exception {
+
         http
+
             .authorizeHttpRequests(auth -> auth
+
                 .requestMatchers("/api/public/**").permitAll()
+
                 .anyRequest().authenticated()
+
             )
+
             .oauth2Login(Customizer.withDefaults());
 
+
+
         return http.build();
+
     }
+
 }
 ```
 
@@ -231,28 +376,51 @@ Run actuator on a different port for isolation:
 
 ```
 management:
+
   server:
+
     port: 8081  # Separate management port
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
 
+
+
 spring:
+
   security:
+
     user:
+
       name: actuator
+
       password: ${ACTUATOR_PASSWORD}
 
+
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           # Admin Server will auto-detect management port
+
           # Or specify explicitly:
+
           management-base-url: http://localhost:8081
+
           metadata:
+
             user.name: actuator
+
             user.password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -260,19 +428,33 @@ spring:
 
 ```
 @Configuration
+
 public class SecurityConfig {
 
+
+
     @Bean
+
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
+
             .authorizeHttpRequests(auth -> auth
+
                 // No actuator endpoints on main port
+
                 .anyRequest().permitAll()
+
             )
+
             .csrf(csrf -> csrf.disable());
 
+
+
         return http.build();
+
     }
+
 }
 ```
 
@@ -286,9 +468,13 @@ On port 8081, actuator endpoints are secured with Spring Security's default secu
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
 ```
 
@@ -303,11 +489,17 @@ Set default credentials for all instances:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
+
         default-user-name: actuator
+
         default-password: ${DEFAULT_ACTUATOR_PASSWORD}
 ```
 
@@ -319,21 +511,37 @@ Configure different credentials for each service:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
+
         service-map:
+
           # Service name from spring.application.name
+
           my-service:
+
             user-name: my-service-actuator
+
             user-password: ${MY_SERVICE_PASSWORD}
+
           another-service:
+
             user-name: another-actuator
+
             user-password: ${ANOTHER_SERVICE_PASSWORD}
 
+
+
         # Fallback for services not in service-map
+
         default-user-name: default-actuator
+
         default-password: ${DEFAULT_PASSWORD}
 ```
 
@@ -341,12 +549,19 @@ spring:
 
 ```
 spring:
+
   application:
+
     name: my-service
 
+
+
   security:
+
     user:
+
       name: my-service-actuator
+
       password: ${MY_SERVICE_PASSWORD}
 ```
 
@@ -360,12 +575,19 @@ spring:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             user.name: actuator
+
             user.password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -373,9 +595,13 @@ spring:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
 ```
 
@@ -396,13 +622,21 @@ spring:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
+
         service-map:
+
           service-a:
+
             user-name: service-a-user
+
             user-password: ${SERVICE_A_PASSWORD}
 ```
 
@@ -410,9 +644,13 @@ spring:
 
 ```
 spring:
+
   security:
+
     user:
+
       name: service-a-user
+
       password: ${SERVICE_A_PASSWORD}
 ```
 
@@ -434,11 +672,17 @@ spring:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
+
         default-user-name: actuator
+
         default-password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -446,9 +690,13 @@ spring:
 
 ```
 spring:
+
   security:
+
     user:
+
       name: actuator
+
       password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -470,9 +718,13 @@ Only expose necessary endpoints:
 
 ```
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: health,info,metrics,env,loggers
 ```
 
@@ -480,10 +732,15 @@ Or exclude specific endpoints:
 
 ```
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
         exclude: heapdump,threaddump
 ```
 
@@ -491,9 +748,13 @@ management:
 
 ```
 management:
+
   endpoint:
+
     health:
+
       show-details: when-authorized
+
       roles: ACTUATOR
 ```
 
@@ -505,13 +766,21 @@ By default, credentials in metadata are sanitized:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       metadata-keys-to-sanitize:
+
         - ".*password$"
+
         - ".*secret$"
+
         - ".*key$"
+
         - ".*token$"
+
         - ".*credentials.*"
 ```
 
@@ -527,9 +796,13 @@ When using service discovery (Eureka, Consul, etc.), credentials can be set via 
 
 ```
 eureka:
+
   instance:
+
     metadata-map:
+
       user.name: actuator
+
       user.password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -537,11 +810,17 @@ eureka:
 
 ```
 spring:
+
   cloud:
+
     consul:
+
       discovery:
+
         metadata:
+
           user.name: actuator
+
           user.password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -549,18 +828,31 @@ spring:
 
 ```
 apiVersion: v1
+
 kind: ConfigMap
+
 metadata:
+
   name: my-service-config
+
 data:
+
   application.yml: |
+
     spring:
+
       boot:
+
         admin:
+
           client:
+
             instance:
+
               metadata:
+
                 user.name: actuator
+
                 user.password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -572,22 +864,39 @@ Use HTTPS for actuator endpoints:
 
 ```
 management:
+
   server:
+
     port: 8443
+
     ssl:
+
       enabled: true
+
       key-store: classpath:actuator-keystore.p12
+
       key-store-password: ${KEYSTORE_PASSWORD}
+
       key-store-type: PKCS12
 
+
+
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           management-base-url: https://localhost:8443
+
           metadata:
+
             user.name: actuator
+
             user.password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -595,10 +904,15 @@ spring:
 
 ```
 keytool -genkeypair -alias actuator \
+
   -keyalg RSA -keysize 2048 \
+
   -storetype PKCS12 \
+
   -keystore actuator-keystore.p12 \
+
   -validity 3650 \
+
   -storepass changeit
 ```
 
@@ -612,15 +926,25 @@ keytool -genkeypair -alias actuator \
 
 ```
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
 
+
+
 spring:
+
   boot:
+
     admin:
+
       client:
+
         url: http://localhost:8080
 ```
 
@@ -632,44 +956,83 @@ No Spring Security dependency, all endpoints open.
 
 ```
 spring:
+
   application:
+
     name: payment-service
 
+
+
   security:
+
     user:
+
       name: ${ACTUATOR_USER}
+
       password: ${ACTUATOR_PASSWORD}
 
+
+
   boot:
+
     admin:
+
       client:
+
         url: https://admin.company.com
+
         username: ${ADMIN_CLIENT_USER}
+
         password: ${ADMIN_CLIENT_PASSWORD}
+
         instance:
+
           service-base-url: https://payment.company.com
+
           management-base-url: https://payment.company.com:8443
+
           metadata:
+
             user.name: ${ACTUATOR_USER}
+
             user.password: ${ACTUATOR_PASSWORD}
+
             tags:
+
               environment: production
 
+
+
 management:
+
   server:
+
     port: 8443
+
     ssl:
+
       enabled: true
+
       key-store: classpath:keystore.p12
+
       key-store-password: ${KEYSTORE_PASSWORD}
 
+
+
   endpoints:
+
     web:
+
       exposure:
+
         include: health,info,metrics,env,loggers
 
+
+
   endpoint:
+
     health:
+
       show-details: when-authorized
 ```
 
@@ -677,10 +1040,15 @@ management:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       instance-auth:
+
         enabled: true
+
         # Uses credentials from instance metadata
 ```
 
@@ -690,12 +1058,19 @@ spring:
 
 ```
 apiVersion: v1
+
 kind: Secret
+
 metadata:
+
   name: actuator-credentials
+
 type: Opaque
+
 stringData:
+
   username: actuator
+
   password: secure-password-123
 ```
 
@@ -703,28 +1078,51 @@ stringData:
 
 ```
 apiVersion: apps/v1
+
 kind: Deployment
+
 metadata:
+
   name: my-service
+
 spec:
+
   template:
+
     spec:
+
       containers:
+
         - name: my-service
+
           image: my-service:latest
+
           env:
+
             - name: ACTUATOR_USER
+
               valueFrom:
+
                 secretKeyRef:
+
                   name: actuator-credentials
+
                   key: username
+
             - name: ACTUATOR_PASSWORD
+
               valueFrom:
+
                 secretKeyRef:
+
                   name: actuator-credentials
+
                   key: password
+
           ports:
+
             - containerPort: 8080
+
             - containerPort: 8081  # Actuator
 ```
 
@@ -732,21 +1130,37 @@ spec:
 
 ```
 spring:
+
   security:
+
     user:
+
       name: ${ACTUATOR_USER}
+
       password: ${ACTUATOR_PASSWORD}
 
+
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             user.name: ${ACTUATOR_USER}
+
             user.password: ${ACTUATOR_PASSWORD}
 
+
+
 management:
+
   server:
+
     port: 8081
 ```
 
@@ -756,18 +1170,31 @@ management:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             user.name: ${ACTUATOR_USER:actuator}
+
             user.password: ${ACTUATOR_PASSWORD}
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
 ```
 
@@ -775,14 +1202,23 @@ management:
 
 ```
 spring:
+
   security:
+
     user:
+
       name: actuator
+
       password: dev-password
 
+
+
   boot:
+
     admin:
+
       client:
+
         url: http://localhost:8080
 ```
 
@@ -790,25 +1226,45 @@ spring:
 
 ```
 spring:
+
   security:
+
     user:
+
       name: ${ACTUATOR_USER}
+
       password: ${ACTUATOR_PASSWORD}
 
+
+
   boot:
+
     admin:
+
       client:
+
         url: https://admin.company.com
+
         username: ${ADMIN_CLIENT_USER}
+
         password: ${ADMIN_CLIENT_PASSWORD}
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: health,info,metrics,env,loggers
+
   endpoint:
+
     health:
+
       show-details: when-authorized
 ```
 
@@ -838,12 +1294,19 @@ management:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             user.name: actuator
+
             user.password: ${ACTUATOR_PASSWORD}
 ```
 
@@ -871,7 +1334,9 @@ curl -u actuator:password http://client:8080/actuator/health
 
 ```
 http.authorizeHttpRequests(auth -> auth
+
     .requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()
+
 )
 ```
 
@@ -883,9 +1348,13 @@ http.authorizeHttpRequests(auth -> auth
 
 ```
 spring:
+
   boot:
+
     admin:
+
       metadata-keys-to-sanitize:
+
         - ".*password$"
 ```
 

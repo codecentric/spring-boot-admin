@@ -45,8 +45,11 @@ All events extend `InstanceEvent` base class:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       context-path: /admin  # Default: /
 ```
 
@@ -54,11 +57,17 @@ spring:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         url: http://localhost:8080
+
         instance:
+
           name: ${spring.application.name}
 ```
 
@@ -106,8 +115,11 @@ Spring Boot Admin provides complete configuration metadata for IDE autocomplete:
 
 ```
 <dependency>
+
     <groupId>de.codecentric</groupId>
+
     <artifactId>spring-boot-admin-server</artifactId>
+
 </dependency>
 ```
 

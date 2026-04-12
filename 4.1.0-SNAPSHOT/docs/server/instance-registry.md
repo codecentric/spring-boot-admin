@@ -9,19 +9,34 @@ The `InstanceRepository` is the primary interface for storing and retrieving app
 ```
 public interface InstanceRepository {
 
+
+
     Mono<Instance> save(Instance app);
+
+
 
     Flux<Instance> findAll();
 
+
+
     Mono<Instance> find(InstanceId id);
+
+
 
     Flux<Instance> findByName(String name);
 
+
+
     Mono<Instance> compute(InstanceId id,
+
         BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
 
+
+
     Mono<Instance> computeIfPresent(InstanceId id,
+
         BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction);
+
 }
 ```
 
@@ -40,29 +55,54 @@ Instead of directly storing instance state, the repository stores events that re
 ```
 public class EventsourcingInstanceRepository implements InstanceRepository {
 
+
+
     private final InstanceEventStore eventStore;
 
+
+
     @Override
+
     public Mono<Instance> save(Instance instance) {
+
         return eventStore.append(instance.getUnsavedEvents())
+
                         .then(Mono.just(instance.clearUnsavedEvents()));
+
     }
 
+
+
     @Override
+
     public Mono<Instance> find(InstanceId id) {
+
         return eventStore.find(id)
+
                         .collectList()
+
                         .filter(e -> !e.isEmpty())
+
                         .map(events -> Instance.create(id).apply(events));
+
     }
 
+
+
     @Override
+
     public Flux<Instance> findAll() {
+
         return eventStore.findAll()
+
                         .groupBy(InstanceEvent::getInstance)
+
                         .flatMap(f -> f.reduce(Instance.create(f.key()),
+
                                               Instance::apply));
+
     }
+
 }
 ```
 
@@ -81,7 +121,9 @@ When an application registers, a new instance is created:
 
 ```
 InstanceId id = idGenerator.generateId(registration);
+
 Instance newInstance = Instance.create(id).register(registration);
+
 repository.save(newInstance);
 ```
 
@@ -93,6 +135,7 @@ After registration, the server detects available actuator endpoints:
 
 ```
 instance = instance.withEndpoints(detectedEndpoints);
+
 repository.save(instance);
 ```
 
@@ -104,6 +147,7 @@ The server periodically polls health endpoints:
 
 ```
 instance = instance.withStatusInfo(statusInfo);
+
 repository.save(instance);
 ```
 
@@ -115,6 +159,7 @@ Application info is periodically refreshed:
 
 ```
 instance = instance.withInfo(info);
+
 repository.save(instance);
 ```
 
@@ -126,6 +171,7 @@ When an application shuts down or is removed:
 
 ```
 instance = instance.deregister();
+
 repository.save(instance);
 ```
 
@@ -137,18 +183,31 @@ The repository uses optimistic locking to handle concurrent updates:
 
 ```
 private final Retry retryOptimisticLockException = Retry.max(10)
+
     .doBeforeRetry(s -> log.debug("Retrying after OptimisticLockingException",
+
                                   s.failure()))
+
     .filter(OptimisticLockingException.class::isInstance);
 
+
+
 @Override
+
 public Mono<Instance> compute(InstanceId id,
+
         BiFunction<InstanceId, Instance, Mono<Instance>> remappingFunction) {
+
     return find(id)
+
         .flatMap(app -> remappingFunction.apply(id, app))
+
         .switchIfEmpty(Mono.defer(() -> remappingFunction.apply(id, null)))
+
         .flatMap(this::save)
+
         .retryWhen(retryOptimisticLockException);
+
 }
 ```
 
@@ -160,8 +219,11 @@ If two updates conflict (based on event version numbers), the operation is autom
 
 ```
 Flux<Instance> instances = repository.findAll();
+
 instances.subscribe(instance -> {
+
     System.out.println("Instance: " + instance.getRegistration().getName());
+
 });
 ```
 
@@ -169,8 +231,11 @@ instances.subscribe(instance -> {
 
 ```
 Mono<Instance> instance = repository.find(instanceId);
+
 instance.subscribe(inst -> {
+
     System.out.println("Found: " + inst.getRegistration().getName());
+
 });
 ```
 
@@ -178,8 +243,11 @@ instance.subscribe(inst -> {
 
 ```
 Flux<Instance> instances = repository.findByName("my-application");
+
 instances.subscribe(instance -> {
+
     System.out.println("Instance ID: " + instance.getId());
+
 });
 ```
 
@@ -193,13 +261,21 @@ Updates an instance or creates it if it doesn't exist:
 
 ```
 repository.compute(instanceId, (id, instance) -> {
+
     if (instance == null) {
+
         // Create new instance
+
         return Mono.just(Instance.create(id).register(registration));
+
     } else {
+
         // Update existing instance
+
         return Mono.just(instance.withStatusInfo(newStatus));
+
     }
+
 }).subscribe();
 ```
 
@@ -209,7 +285,9 @@ Updates only if the instance exists:
 
 ```
 repository.computeIfPresent(instanceId, (id, instance) -> {
+
     return Mono.just(instance.withInfo(updatedInfo));
+
 }).subscribe();
 ```
 
@@ -219,16 +297,27 @@ An `Instance` object contains:
 
 ```
 public class Instance {
+
     private final InstanceId id;
+
     private final long version;
+
     private final Registration registration;
+
     private final boolean registered;
+
     private final StatusInfo statusInfo;
+
     private final Info info;
+
     private final Endpoints endpoints;
+
     private final BuildVersion buildVersion;
+
     private final Tags tags;
+
     private final List<InstanceEvent> unsavedEvents;
+
 }
 ```
 
@@ -255,12 +344,19 @@ Generates stable IDs based on the service URL:
 
 ```
 public class HashingInstanceUrlIdGenerator implements InstanceIdGenerator {
+
     @Override
+
     public InstanceId generateId(Registration registration) {
+
         String serviceUrl = registration.getServiceUrl();
+
         // Generate hash-based ID from URL
+
         return InstanceId.of(hash(serviceUrl));
+
     }
+
 }
 ```
 
@@ -270,13 +366,21 @@ Uses Cloud Foundry's application instance ID:
 
 ```
 public class CloudFoundryInstanceIdGenerator implements InstanceIdGenerator {
+
     @Override
+
     public InstanceId generateId(Registration registration) {
+
         String cfInstanceId = registration.getMetadata()
+
                                          .get("applicationId")
+
             + ":" + registration.getMetadata().get("instanceId");
+
         return InstanceId.of(cfInstanceId);
+
     }
+
 }
 ```
 
@@ -286,15 +390,25 @@ Implement your own ID generation strategy:
 
 ```
 @Component
+
 public class CustomInstanceIdGenerator implements InstanceIdGenerator {
 
+
+
     @Override
+
     public InstanceId generateId(Registration registration) {
+
         // Custom logic to generate instance ID
+
         String customId = registration.getName()
+
             + "-" + UUID.randomUUID().toString();
+
         return InstanceId.of(customId);
+
     }
+
 }
 ```
 
@@ -304,20 +418,35 @@ public class CustomInstanceIdGenerator implements InstanceIdGenerator {
 
 ```
 @Component
+
 public class InstanceManager {
+
+
 
     private final InstanceRepository repository;
 
+
+
     public InstanceManager(InstanceRepository repository) {
+
         this.repository = repository;
+
     }
 
+
+
     public Flux<String> getApplicationNames() {
+
         return repository.findAll()
+
                         .filter(Instance::isRegistered)
+
                         .map(i -> i.getRegistration().getName())
+
                         .distinct();
+
     }
+
 }
 ```
 
@@ -327,21 +456,37 @@ Subscribe to the event store to react to instance changes:
 
 ```
 @Component
+
 public class InstanceChangeListener {
 
+
+
     public InstanceChangeListener(InstanceEventStore eventStore,
+
                                   InstanceRepository repository) {
+
         eventStore.subscribe(event -> {
+
             if (event instanceof InstanceStatusChangedEvent statusEvent) {
+
                 repository.find(event.getInstance())
+
                          .subscribe(instance -> {
+
                              log.info("Instance {} status: {}",
+
                                      instance.getRegistration().getName(),
+
                                      instance.getStatusInfo().getStatus());
+
                          });
+
             }
+
         });
+
     }
+
 }
 ```
 

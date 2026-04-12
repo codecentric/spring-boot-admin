@@ -27,6 +27,7 @@ The Reactive sample demonstrates a Spring Boot Admin Server deployment using Spr
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-reactive
+
 mvn spring-boot:run
 ```
 
@@ -56,30 +57,55 @@ The reactive sample uses minimal dependencies:
 
 ```
 <dependencies>
+
     <!-- Admin Server -->
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-server</artifactId>
+
     </dependency>
+
+
 
     <!-- Admin Client (for self-monitoring) -->
+
     <dependency>
+
         <groupId>de.codecentric</groupId>
+
         <artifactId>spring-boot-admin-starter-client</artifactId>
+
     </dependency>
+
+
 
     <!-- Security for WebFlux -->
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-starter-security</artifactId>
+
     </dependency>
 
+
+
     <!-- DevTools -->
+
     <dependency>
+
         <groupId>org.springframework.boot</groupId>
+
         <artifactId>spring-boot-devtools</artifactId>
+
         <optional>true</optional>
+
     </dependency>
+
 </dependencies>
 ```
 
@@ -102,23 +128,41 @@ SpringBootAdminReactiveApplication.java
 
 ```
 @SpringBootApplication
+
 @EnableAdminServer
+
 public class SpringBootAdminReactiveApplication {
+
+
 
     private final AdminServerProperties adminServer;
 
+
+
     public SpringBootAdminReactiveApplication(AdminServerProperties adminServer) {
+
         this.adminServer = adminServer;
+
     }
+
+
 
     static void main(String[] args) {
+
         SpringApplication.run(SpringBootAdminReactiveApplication.class, args);
+
     }
 
+
+
     @Bean
+
     public Notifier notifier() {
+
         return (e) -> Mono.empty();  // No-op notifier
+
     }
+
 }
 ```
 
@@ -134,14 +178,23 @@ public class SpringBootAdminReactiveApplication {
 
 ```
 @Bean
+
 @Profile("insecure")
+
 public SecurityWebFilterChain securityWebFilterChainPermitAll(
+
         ServerHttpSecurity http) {
+
     return http
+
         .authorizeExchange((authorizeExchange) ->
+
             authorizeExchange.anyExchange().permitAll())
+
         .csrf(ServerHttpSecurity.CsrfSpec::disable)
+
         .build();
+
 }
 ```
 
@@ -159,45 +212,85 @@ The insecure profile should only be used for local development and testing. Alwa
 
 ```
 @Bean
+
 @Profile("secure")
+
 public SecurityWebFilterChain securityWebFilterChainSecure(
+
         ServerHttpSecurity http) {
+
     return http
+
         .authorizeExchange((authorizeExchange) ->
+
             authorizeExchange
+
                 .pathMatchers(adminServer.path("/assets/**"))
+
                     .permitAll()  // Static resources
+
                 .pathMatchers("/actuator/health/**")
+
                     .permitAll()  // Health endpoint
+
                 .pathMatchers(adminServer.path("/login"))
+
                     .permitAll()  // Login page
+
                 .anyExchange()
+
                     .authenticated())  // Everything else requires auth
+
         .formLogin((formLogin) -> formLogin
+
             .loginPage(adminServer.path("/login"))
+
             .authenticationSuccessHandler(
+
                 loginSuccessHandler(adminServer.path("/"))))
+
         .logout((logout) -> logout
+
             .logoutUrl(adminServer.path("/logout"))
+
             .logoutSuccessHandler(
+
                 logoutSuccessHandler(adminServer.path("/login?logout"))))
+
         .httpBasic(Customizer.withDefaults())
+
         .csrf(ServerHttpSecurity.CsrfSpec::disable)  // Simplified for demo
+
         .build();
+
 }
+
+
 
 private ServerAuthenticationSuccessHandler loginSuccessHandler(String uri) {
+
     RedirectServerAuthenticationSuccessHandler successHandler =
+
         new RedirectServerAuthenticationSuccessHandler();
+
     successHandler.setLocation(URI.create(uri));
+
     return successHandler;
+
 }
 
+
+
 private ServerLogoutSuccessHandler logoutSuccessHandler(String uri) {
+
     RedirectServerLogoutSuccessHandler successHandler =
+
         new RedirectServerLogoutSuccessHandler();
+
     successHandler.setLogoutSuccessUrl(URI.create(uri));
+
     return successHandler;
+
 }
 ```
 
@@ -221,29 +314,53 @@ application.yml
 
 ```
 spring:
+
   application:
+
     name: spring-boot-admin-sample-reactive
 
+
+
   boot:
+
     admin:
+
       client:
+
         url: http://localhost:8080  # Self-registration
 
+
+
   profiles:
+
     active:
+
       - insecure  # Default profile
 
+
+
 management:
+
   endpoints:
+
     web:
+
       exposure:
+
         include: "*"
+
   endpoint:
+
     health:
+
       show-details: ALWAYS
 
+
+
 logging:
+
   file:
+
     name: "target/boot-admin-sample-reactive.log"
 ```
 
@@ -262,15 +379,25 @@ All operations are non-blocking:
 
 ```
 // Instance queries are reactive
+
 Flux<Instance> instances = instanceRepository.findAll();
 
+
+
 // Event streams are reactive
+
 Flux<InstanceEvent> events = eventStore.findAll();
 
+
+
 // HTTP calls are reactive
+
 Mono<ClientResponse> response = webClient
+
     .get()
+
     .uri("/actuator/health")
+
     .exchange();
 ```
 
@@ -286,8 +413,11 @@ The reactive stack automatically handles backpressure:
 
 ```
 // Slow consumers won't overwhelm fast producers
+
 eventStore.findAll()
+
     .limitRate(100)  // Process 100 events at a time
+
     .subscribe(event -> processEvent(event));
 ```
 
@@ -320,6 +450,7 @@ Monitor thread usage:
 
 ```
 # Check thread count (should be low)
+
 jcmd <pid> Thread.print | grep "nioEventLoopGroup" | wc -l
 ```
 
@@ -331,9 +462,13 @@ Compare reactive vs. servlet performance:
 
 ```
 # Reactive sample
+
 ab -n 10000 -c 100 http://localhost:8080/actuator/health
 
+
+
 # Servlet sample
+
 ab -n 10000 -c 100 http://localhost:8081/actuator/health
 ```
 
@@ -359,6 +494,7 @@ java -jar target/spring-boot-admin-sample-reactive.jar
 
 ```
 java -jar target/spring-boot-admin-sample-reactive.jar \
+
   --spring.profiles.active=secure
 ```
 
@@ -368,24 +504,43 @@ Example production configuration:
 
 ```
 spring:
+
   profiles:
+
     active:
+
       - secure  # Enable security
 
+
+
   security:
+
     user:
+
       name: admin
+
       password: ${ADMIN_PASSWORD}
 
+
+
 server:
+
   port: 8443
+
   ssl:
+
     enabled: true
+
     key-store: classpath:keystore.p12
+
     key-store-password: ${KEYSTORE_PASSWORD}
 
+
+
 management:
+
   server:
+
     port: 8081  # Separate management port
 ```
 
@@ -435,9 +590,13 @@ java.lang.ClassNotFoundException: reactor.netty.http.server.HttpServer
 
 ```
 <!-- Remove if present -->
+
 <dependency>
+
     <groupId>org.springframework.boot</groupId>
+
     <artifactId>spring-boot-starter-webmvc</artifactId>
+
 </dependency>
 ```
 
@@ -455,6 +614,7 @@ If security profile doesn't work:
 
 ```
 # Verify active profiles
+
 curl http://localhost:8080/actuator/env | jq '.activeProfiles'
 ```
 
@@ -466,19 +626,33 @@ Ensure profile is set correctly in `application.yml` or via command line.
 
 ```
 @Bean
+
 public Notifier customReactiveNotifier() {
+
     return (event) -> {
+
         return webClient
+
             .post()
+
             .uri("https://webhook.site/...")
+
             .bodyValue(event)
+
             .retrieve()
+
             .bodyToMono(Void.class)
+
             .onErrorResume(e -> {
+
                 log.error("Notification failed", e);
+
                 return Mono.empty();
+
             });
+
     };
+
 }
 ```
 
@@ -486,12 +660,19 @@ public Notifier customReactiveNotifier() {
 
 ```
 @Bean
+
 public InstanceWebClientCustomizer customTimeout() {
+
     return (builder) -> builder
+
         .clientConnector(new ReactorClientHttpConnector(
+
             HttpClient.create()
+
                 .responseTimeout(Duration.ofSeconds(10))
+
         ));
+
 }
 ```
 
@@ -499,14 +680,23 @@ public InstanceWebClientCustomizer customTimeout() {
 
 ```
 @Component
+
 public class CustomHealthIndicator implements ReactiveHealthIndicator {
 
+
+
     @Override
+
     public Mono<Health> health() {
+
         return Mono.just(Health.up()
+
             .withDetail("custom", "Reactive health check")
+
             .build());
+
     }
+
 }
 ```
 

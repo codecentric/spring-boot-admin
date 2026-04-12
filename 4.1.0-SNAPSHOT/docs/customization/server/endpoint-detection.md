@@ -25,17 +25,29 @@ By default, Admin Server uses a **ChainingStrategy** that:
 
 ```
 @Bean
+
 @ConditionalOnMissingBean
+
 public EndpointDetectionStrategy endpointDetectionStrategy(
+
         InstanceWebClient instanceWebClient,
+
         AdminServerProperties adminServerProperties,
+
         ApiMediaTypeHandler apiMediaTypeHandler) {
 
+
+
     return new ChainingStrategy(
+
         new QueryIndexEndpointStrategy(instanceWebClient, apiMediaTypeHandler),
+
         new ProbeEndpointsStrategy(instanceWebClient,
+
             adminServerProperties.getProbedEndpoints())
+
     );
+
 }
 ```
 
@@ -51,6 +63,7 @@ Queries the actuator index at `/actuator` to discover endpoints.
 
 ```
 GET /actuator HTTP/1.1
+
 Accept: application/vnd.spring-boot.actuator.v3+json
 ```
 
@@ -58,24 +71,43 @@ Accept: application/vnd.spring-boot.actuator.v3+json
 
 ```
 {
+
   "_links": {
+
     "self": {
+
       "href": "http://localhost:8080/actuator",
+
       "templated": false
+
     },
+
     "health": {
+
       "href": "http://localhost:8080/actuator/health",
+
       "templated": false
+
     },
+
     "info": {
+
       "href": "http://localhost:8080/actuator/info",
+
       "templated": false
+
     },
+
     "metrics": {
+
       "href": "http://localhost:8080/actuator/metrics/{requiredMetricName}",
+
       "templated": true
+
     }
+
   }
+
 }
 ```
 
@@ -90,24 +122,44 @@ Accept: application/vnd.spring-boot.actuator.v3+json
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
 
+
+
 import de.codecentric.boot.admin.server.services.ApiMediaTypeHandler;
+
 import de.codecentric.boot.admin.server.services.endpoints.EndpointDetectionStrategy;
+
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
+
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
+
+
 @Configuration
+
 public class EndpointDetectionConfig {
 
+
+
     @Bean
+
     public EndpointDetectionStrategy endpointDetectionStrategy(
+
             InstanceWebClient instanceWebClient,
+
             ApiMediaTypeHandler apiMediaTypeHandler) {
 
+
+
         return new QueryIndexEndpointStrategy(instanceWebClient, apiMediaTypeHandler);
+
     }
+
 }
 ```
 
@@ -139,16 +191,27 @@ If response is `2xx`, the endpoint is considered available.
 
 ```
 spring:
+
   boot:
+
     admin:
+
       probed-endpoints:
+
         - health
+
         - info
+
         - metrics
+
         - env
+
         - loggers
+
         - logfile
+
         - threaddump
+
         - heapdump
 ```
 
@@ -158,11 +221,17 @@ If endpoint ID differs from path, use `id:path` syntax:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       probed-endpoints:
+
         - health:ping        # Endpoint ID "health" at path "/actuator/ping"
+
         - metrics:stats      # Endpoint ID "metrics" at path "/actuator/stats"
+
         - custom:my-custom   # Endpoint ID "custom" at path "/actuator/my-custom"
 ```
 
@@ -171,27 +240,50 @@ spring:
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
 
+
+
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
+
 import de.codecentric.boot.admin.server.services.endpoints.EndpointDetectionStrategy;
+
 import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrategy;
+
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
+
+
 @Configuration
+
 public class EndpointDetectionConfig {
 
+
+
     @Bean
+
     public EndpointDetectionStrategy endpointDetectionStrategy(
+
             InstanceWebClient instanceWebClient,
+
             AdminServerProperties properties) {
 
+
+
         return new ProbeEndpointsStrategy(
+
             instanceWebClient,
+
             properties.getProbedEndpoints()
+
         );
+
     }
+
 }
 ```
 
@@ -213,8 +305,11 @@ Tries strategies in order until one succeeds:
 
 ```
 ChainingStrategy(
+
     new QueryIndexEndpointStrategy(...),  // Try first
+
     new ProbeEndpointsStrategy(...)       // Fallback
+
 )
 ```
 
@@ -225,32 +320,60 @@ If first strategy returns empty, tries next strategy.
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
 
+
+
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
+
 import de.codecentric.boot.admin.server.services.ApiMediaTypeHandler;
+
 import de.codecentric.boot.admin.server.services.endpoints.ChainingStrategy;
+
 import de.codecentric.boot.admin.server.services.endpoints.EndpointDetectionStrategy;
+
 import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrategy;
+
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
+
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
+
+
 @Configuration
+
 public class EndpointDetectionConfig {
 
+
+
     @Bean
+
     public EndpointDetectionStrategy endpointDetectionStrategy(
+
             InstanceWebClient instanceWebClient,
+
             AdminServerProperties properties,
+
             ApiMediaTypeHandler apiMediaTypeHandler) {
 
+
+
         return new ChainingStrategy(
+
             new QueryIndexEndpointStrategy(instanceWebClient, apiMediaTypeHandler),
+
             new ProbeEndpointsStrategy(instanceWebClient, properties.getProbedEndpoints()),
+
             new CustomEndpointStrategy()  // Your custom strategy as last resort
+
         );
+
     }
+
 }
 ```
 
@@ -265,14 +388,25 @@ Implement `EndpointDetectionStrategy` interface for custom detection logic.
 ```
 package de.codecentric.boot.admin.server.services.endpoints;
 
+
+
 import reactor.core.publisher.Mono;
 
+
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+
+
 
 public interface EndpointDetectionStrategy {
 
+
+
     Mono<Endpoints> detectEndpoints(Instance instance);
+
+
 
 }
 ```
@@ -284,39 +418,74 @@ Define endpoints based on metadata:
 ```
 package com.example.admin;
 
+
+
 import reactor.core.publisher.Mono;
 
+
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+
 import de.codecentric.boot.admin.server.services.endpoints.EndpointDetectionStrategy;
+
+
 
 public class MetadataEndpointStrategy implements EndpointDetectionStrategy {
 
+
+
     @Override
+
     public Mono<Endpoints> detectEndpoints(Instance instance) {
+
         String managementUrl = instance.getRegistration().getManagementUrl();
+
         if (managementUrl == null) {
+
             return Mono.empty();
+
         }
+
+
 
         // Read endpoints from metadata
+
         String endpointList = instance.getRegistration()
+
             .getMetadata()
+
             .get("endpoints");
 
+
+
         if (endpointList == null || endpointList.isBlank()) {
+
             return Mono.empty();
+
         }
 
+
+
         // Parse comma-separated endpoint IDs
+
         List<Endpoint> endpoints = Arrays.stream(endpointList.split(","))
+
             .map(String::trim)
+
             .map(id -> Endpoint.of(id, managementUrl + "/" + id))
+
             .toList();
 
+
+
         return Mono.just(Endpoints.of(endpoints));
+
     }
+
 }
 ```
 
@@ -324,11 +493,17 @@ public class MetadataEndpointStrategy implements EndpointDetectionStrategy {
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             endpoints: health,info,metrics,env
 ```
 
@@ -336,11 +511,17 @@ spring:
 
 ```
 @Bean
+
 public EndpointDetectionStrategy endpointDetectionStrategy() {
+
     return new ChainingStrategy(
+
         new MetadataEndpointStrategy(),
+
         new QueryIndexEndpointStrategy(...)
+
     );
+
 }
 ```
 
@@ -351,45 +532,86 @@ Different endpoint detection based on service name:
 ```
 package com.example.admin;
 
+
+
 import reactor.core.publisher.Mono;
 
+
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+
 import de.codecentric.boot.admin.server.services.endpoints.EndpointDetectionStrategy;
+
+
 
 public class ServiceSpecificEndpointStrategy implements EndpointDetectionStrategy {
 
+
+
     private final Map<String, List<String>> serviceEndpoints;
 
+
+
     public ServiceSpecificEndpointStrategy() {
+
         this.serviceEndpoints = Map.of(
+
             "payment-service", List.of("health", "info", "metrics", "payments"),
+
             "user-service", List.of("health", "info", "metrics", "users"),
+
             "legacy-service", List.of("health", "info")  // Limited endpoints
+
         );
+
     }
+
+
 
     @Override
+
     public Mono<Endpoints> detectEndpoints(Instance instance) {
+
         String serviceName = instance.getRegistration().getName();
+
         String managementUrl = instance.getRegistration().getManagementUrl();
 
+
+
         if (managementUrl == null) {
+
             return Mono.empty();
+
         }
+
+
 
         List<String> endpointIds = serviceEndpoints.get(serviceName);
+
         if (endpointIds == null) {
+
             return Mono.empty();  // Fall back to next strategy
+
         }
 
+
+
         List<Endpoint> endpoints = endpointIds.stream()
+
             .map(id -> Endpoint.of(id, managementUrl + "/" + id))
+
             .toList();
 
+
+
         return Mono.just(Endpoints.of(endpoints));
+
     }
+
 }
 ```
 
@@ -400,53 +622,102 @@ Load endpoint configuration from database:
 ```
 package com.example.admin;
 
+
+
 import java.util.List;
+
+
 
 import reactor.core.publisher.Mono;
 
+
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+
 import de.codecentric.boot.admin.server.services.endpoints.EndpointDetectionStrategy;
+
+
 
 public class DatabaseEndpointStrategy implements EndpointDetectionStrategy {
 
+
+
     private final EndpointConfigRepository endpointConfigRepository;
 
+
+
     public DatabaseEndpointStrategy(EndpointConfigRepository repository) {
+
         this.endpointConfigRepository = repository;
+
     }
+
+
 
     @Override
+
     public Mono<Endpoints> detectEndpoints(Instance instance) {
+
         String serviceName = instance.getRegistration().getName();
+
         String managementUrl = instance.getRegistration().getManagementUrl();
 
+
+
         if (managementUrl == null) {
+
             return Mono.empty();
+
         }
 
+
+
         return endpointConfigRepository.findByServiceName(serviceName)
+
             .map(config -> {
+
                 List<Endpoint> endpoints = config.getEndpointIds().stream()
+
                     .map(id -> Endpoint.of(id, managementUrl + "/" + id))
+
                     .toList();
+
                 return Endpoints.of(endpoints);
+
             })
+
             .switchIfEmpty(Mono.empty());
+
     }
+
 }
+
+
 
 @Repository
+
 interface EndpointConfigRepository extends ReactiveMongoRepository<EndpointConfig, String> {
+
     Mono<EndpointConfig> findByServiceName(String serviceName);
+
 }
 
+
+
 @Document
+
 class EndpointConfig {
+
     private String serviceName;
+
     private List<String> endpointIds;
+
     // getters/setters
+
 }
 ```
 
@@ -457,44 +728,84 @@ Fetch endpoints from custom discovery endpoint:
 ```
 package com.example.admin;
 
+
+
 import reactor.core.publisher.Mono;
+
 import org.springframework.web.reactive.function.client.WebClient;
 
+
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+
 import de.codecentric.boot.admin.server.services.endpoints.EndpointDetectionStrategy;
+
+
 
 public class DiscoveryServiceEndpointStrategy implements EndpointDetectionStrategy {
 
+
+
     private final WebClient webClient;
 
+
+
     public DiscoveryServiceEndpointStrategy(WebClient.Builder webClientBuilder) {
+
         this.webClient = webClientBuilder.baseUrl("http://discovery-service").build();
+
     }
+
+
 
     @Override
+
     public Mono<Endpoints> detectEndpoints(Instance instance) {
+
         String serviceName = instance.getRegistration().getName();
+
         String managementUrl = instance.getRegistration().getManagementUrl();
 
+
+
         if (managementUrl == null) {
+
             return Mono.empty();
+
         }
 
+
+
         return webClient.get()
+
             .uri("/services/{name}/endpoints", serviceName)
+
             .retrieve()
+
             .bodyToFlux(String.class)
+
             .collectList()
+
             .map(endpointIds -> {
+
                 List<Endpoint> endpoints = endpointIds.stream()
+
                     .map(id -> Endpoint.of(id, managementUrl + "/" + id))
+
                     .toList();
+
                 return Endpoints.of(endpoints);
+
             })
+
             .onErrorResume(e -> Mono.empty());
+
     }
+
 }
 ```
 
@@ -514,10 +825,15 @@ Endpoints are detected:
 
 ```
 @Autowired
+
 private EndpointDetector endpointDetector;
 
+
+
 public void refreshEndpoints(InstanceId instanceId) {
+
     endpointDetector.detectEndpoints(instanceId).subscribe();
+
 }
 ```
 
@@ -529,8 +845,11 @@ public void refreshEndpoints(InstanceId instanceId) {
 
 ```
 logging:
+
   level:
+
     de.codecentric.boot.admin.server.services.EndpointDetector: DEBUG
+
     de.codecentric.boot.admin.server.services.endpoints: DEBUG
 ```
 
@@ -538,7 +857,9 @@ logging:
 
 ```
 DEBUG EndpointDetector - Detect endpoints for Instance{id=abc123}
+
 DEBUG QueryIndexEndpointStrategy - Querying actuator-index for instance abc123 on 'http://client:8080/actuator' successful.
+
 DEBUG EndpointDetector - Detected endpoints: [health, info, metrics, env]
 ```
 
@@ -554,18 +875,31 @@ curl http://admin-server:8080/instances/{id} | jq '.endpoints'
 
 ```
 [
+
   {
+
     "id": "health",
+
     "url": "http://localhost:8080/actuator/health"
+
   },
+
   {
+
     "id": "info",
+
     "url": "http://localhost:8080/actuator/info"
+
   },
+
   {
+
     "id": "metrics",
+
     "url": "http://localhost:8080/actuator/metrics"
+
   }
+
 ]
 ```
 
@@ -579,15 +913,25 @@ curl http://admin-server:8080/instances/{id} | jq '.endpoints'
 
 ```
 spring:
+
   boot:
+
     admin:
+
       probed-endpoints:
+
         # Spring Boot 1.x endpoints
+
         - health
+
         - info
+
         - metrics
+
         - env
+
         - trace:httptrace
+
         - dump:threaddump
 ```
 
@@ -595,15 +939,25 @@ spring:
 
 ```
 @Bean
+
 public EndpointDetectionStrategy endpointDetectionStrategy(
+
         InstanceWebClient instanceWebClient,
+
         AdminServerProperties properties) {
 
+
+
     // Only use probing for legacy apps
+
     return new ProbeEndpointsStrategy(
+
         instanceWebClient,
+
         properties.getProbedEndpoints()
+
     );
+
 }
 ```
 
@@ -613,17 +967,29 @@ public EndpointDetectionStrategy endpointDetectionStrategy(
 
 ```
 @Bean
+
 public EndpointDetectionStrategy endpointDetectionStrategy(
+
         InstanceWebClient instanceWebClient,
+
         AdminServerProperties properties,
+
         ApiMediaTypeHandler apiMediaTypeHandler) {
 
+
+
     return new ChainingStrategy(
+
         // Try modern Spring Boot 2.x+ first
+
         new QueryIndexEndpointStrategy(instanceWebClient, apiMediaTypeHandler),
+
         // Fall back to probing for legacy apps
+
         new ProbeEndpointsStrategy(instanceWebClient, properties.getProbedEndpoints())
+
     );
+
 }
 ```
 
@@ -633,8 +999,11 @@ public EndpointDetectionStrategy endpointDetectionStrategy(
 
 ```
 management:
+
   endpoints:
+
     web:
+
       base-path: /management  # Not /actuator
 ```
 
@@ -643,18 +1012,32 @@ management:
 ```
 public class CustomPathEndpointStrategy implements EndpointDetectionStrategy {
 
+
+
     @Override
+
     public Mono<Endpoints> detectEndpoints(Instance instance) {
+
         String managementUrl = instance.getRegistration().getManagementUrl();
 
+
+
         // Adjust for custom base path
+
         if (managementUrl != null && !managementUrl.endsWith("/actuator")) {
+
             // Query custom index endpoint
+
             return queryIndex(instance, managementUrl);
+
         }
 
+
+
         return Mono.empty();
+
     }
+
 }
 ```
 
@@ -663,23 +1046,42 @@ public class CustomPathEndpointStrategy implements EndpointDetectionStrategy {
 ```
 public class ConditionalEndpointStrategy implements EndpointDetectionStrategy {
 
+
+
     private final QueryIndexEndpointStrategy queryStrategy;
+
     private final ProbeEndpointsStrategy probeStrategy;
 
+
+
     @Override
+
     public Mono<Endpoints> detectEndpoints(Instance instance) {
+
         String version = instance.getRegistration()
+
             .getMetadata()
+
             .get("spring-boot-version");
 
+
+
         if (version != null && version.startsWith("1.")) {
+
             // Use probing for Spring Boot 1.x
+
             return probeStrategy.detectEndpoints(instance);
+
         } else {
+
             // Use index query for Spring Boot 2.x+
+
             return queryStrategy.detectEndpoints(instance);
+
         }
+
     }
+
 }
 ```
 
@@ -719,12 +1121,19 @@ Limit probed endpoints to essentials:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       probed-endpoints:
+
         - health
+
         - info
+
         - metrics
+
         # Remove rarely-used endpoints
 ```
 
@@ -740,7 +1149,9 @@ spring:
 
 ```
 logging:
+
   level:
+
     de.codecentric.boot.admin.server.services.endpoints: DEBUG
 ```
 
@@ -758,10 +1169,15 @@ logging:
 
 ```
 @Bean
+
 public EndpointDetectionStrategy endpointDetectionStrategy(
+
         InstanceWebClient instanceWebClient,
+
         ApiMediaTypeHandler apiMediaTypeHandler) {
+
     return new QueryIndexEndpointStrategy(instanceWebClient, apiMediaTypeHandler);
+
 }
 ```
 
@@ -773,11 +1189,17 @@ public EndpointDetectionStrategy endpointDetectionStrategy(
 
 ```
 spring:
+
   boot:
+
     admin:
+
       probed-endpoints:
+
         - health
+
         - info
+
         - my-custom-endpoint
 ```
 
@@ -797,71 +1219,138 @@ Or create custom strategy.
 ```
 package com.example.admin;
 
+
+
 import java.util.Arrays;
+
 import java.util.List;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
 import reactor.core.publisher.Mono;
 
+
+
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
+
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
+
 import de.codecentric.boot.admin.server.services.ApiMediaTypeHandler;
+
 import de.codecentric.boot.admin.server.services.endpoints.ChainingStrategy;
+
 import de.codecentric.boot.admin.server.services.endpoints.EndpointDetectionStrategy;
+
 import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrategy;
+
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
+
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
+
+
 @Configuration
+
 public class EndpointDetectionConfig {
 
+
+
     @Bean
+
     public EndpointDetectionStrategy endpointDetectionStrategy(
+
             InstanceWebClient instanceWebClient,
+
             AdminServerProperties properties,
+
             ApiMediaTypeHandler apiMediaTypeHandler) {
 
+
+
         return new ChainingStrategy(
+
             // 1. Try metadata-based detection
+
             new MetadataEndpointStrategy(),
+
             // 2. Try standard actuator index query
+
             new QueryIndexEndpointStrategy(instanceWebClient, apiMediaTypeHandler),
+
             // 3. Fall back to probing
+
             new ProbeEndpointsStrategy(instanceWebClient, properties.getProbedEndpoints())
+
         );
+
     }
+
+
 
     /**
+
      * Detect endpoints from instance metadata
+
      */
+
     static class MetadataEndpointStrategy implements EndpointDetectionStrategy {
 
+
+
         @Override
+
         public Mono<Endpoints> detectEndpoints(Instance instance) {
+
             String managementUrl = instance.getRegistration().getManagementUrl();
+
             if (managementUrl == null) {
+
                 return Mono.empty();
+
             }
+
+
 
             String endpointList = instance.getRegistration()
+
                 .getMetadata()
+
                 .get("endpoints");
 
+
+
             if (endpointList == null || endpointList.isBlank()) {
+
                 return Mono.empty();
+
             }
 
+
+
             List<Endpoint> endpoints = Arrays.stream(endpointList.split(","))
+
                 .map(String::trim)
+
                 .map(id -> Endpoint.of(id, managementUrl + "/" + id))
+
                 .toList();
 
+
+
             return Mono.just(Endpoints.of(endpoints));
+
         }
+
     }
+
 }
 ```
 
@@ -869,10 +1358,16 @@ public class EndpointDetectionConfig {
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         instance:
+
           metadata:
+
             endpoints: health,info,metrics,custom
 ```

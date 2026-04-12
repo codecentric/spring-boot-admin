@@ -10,19 +10,33 @@ pom.xml
 
 ```
 <build>
+
     <plugins>
+
         <plugin>
+
             <groupId>org.springframework.boot</groupId>
+
             <artifactId>spring-boot-maven-plugin</artifactId>
+
             <executions>
+
                 <execution>
+
                     <goals>
+
                         <goal>build-info</goal>
+
                     </goals>
+
                 </execution>
+
             </executions>
+
         </plugin>
+
     </plugins>
+
 </build>
 ```
 
@@ -32,7 +46,9 @@ build.gradle
 
 ```
 springBoot {
+
     buildInfo()
+
 }
 ```
 
@@ -54,9 +70,13 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>org.jolokia</groupId>
+
     <artifactId>jolokia-support-springboot</artifactId>
+
     <version>x.y.z</version> <!-- replace with a concrete Jolokia Spring Boot integration version (for example, the latest from Maven Central), or omit this element if the version is already managed via a BOM in your <dependencyManagement> section -->
+
 </dependency>
 ```
 
@@ -68,9 +88,13 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>org.jolokia</groupId>
+
     <artifactId>jolokia-support-springboot3</artifactId>
+
     <version>x.y.z</version> <!-- replace with a concrete Jolokia Spring Boot 3 integration version (for example, the latest from Maven Central), or omit this element if the version is already managed via a BOM in your <dependencyManagement> section -->
+
 </dependency>
 ```
 
@@ -82,9 +106,13 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>org.jolokia</groupId>
+
     <artifactId>jolokia-core</artifactId>
+
     <version>x.y.z</version> <!-- replace with the desired Jolokia core version -->
+
 </dependency>
 ```
 
@@ -102,6 +130,7 @@ application.properties
 
 ```
 logging.file.name=/var/log/sample-boot-application.log (1)
+
 logging.pattern.file=%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx (2)
 ```
 
@@ -116,9 +145,13 @@ application.properties
 
 ```
 #using the metadata
+
 spring.boot.admin.client.instance.metadata.tags.environment=test
 
+
+
 #using the info endpoint
+
 info.tags.environment=test
 ```
 

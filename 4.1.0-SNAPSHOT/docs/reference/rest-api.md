@@ -10,8 +10,11 @@ With custom context path:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       context-path: /admin
 ```
 
@@ -45,16 +48,27 @@ Register a new instance with the Admin Server.
 
 ```
 {
+
   "name": "my-service",
+
   "managementUrl": "http://localhost:8081/actuator",
+
   "healthUrl": "http://localhost:8081/actuator/health",
+
   "serviceUrl": "http://localhost:8081",
+
   "metadata": {
+
     "startup": "2026-02-07T10:00:00Z",
+
     "tags": {
+
       "environment": "production"
+
     }
+
   }
+
 }
 ```
 
@@ -62,7 +76,9 @@ Register a new instance with the Admin Server.
 
 ```
 {
+
   "id": "abc123def456"
+
 }
 ```
 
@@ -74,12 +90,19 @@ Register a new instance with the Admin Server.
 
 ```
 curl -X POST http://localhost:8080/instances \
+
   -H "Content-Type: application/json" \
+
   -d '{
+
     "name": "my-service",
+
     "managementUrl": "http://localhost:8081/actuator",
+
     "healthUrl": "http://localhost:8081/actuator/health",
+
     "serviceUrl": "http://localhost:8081"
+
   }'
 ```
 
@@ -95,39 +118,73 @@ Get all registered instances.
 
 ```
 [
+
   {
+
     "id": "abc123def456",
+
     "version": 5,
+
     "registration": {
+
       "name": "my-service",
+
       "managementUrl": "http://localhost:8081/actuator",
+
       "healthUrl": "http://localhost:8081/actuator/health",
+
       "serviceUrl": "http://localhost:8081",
+
       "source": "http-api",
+
       "metadata": {}
+
     },
+
     "registered": true,
+
     "statusInfo": {
+
       "status": "UP",
+
       "details": {}
+
     },
+
     "statusTimestamp": "2026-02-07T10:05:00Z",
+
     "info": {},
+
     "endpoints": [
+
       {
+
         "id": "health",
+
         "url": "http://localhost:8081/actuator/health"
+
       },
+
       {
+
         "id": "metrics",
+
         "url": "http://localhost:8081/actuator/metrics"
+
       }
+
     ],
+
     "buildVersion": "1.0.0",
+
     "tags": {
+
       "environment": "production"
+
     }
+
   }
+
 ]
 ```
 
@@ -175,19 +232,33 @@ Get details of a specific instance.
 
 ```
 {
+
   "id": "abc123def456",
+
   "version": 5,
+
   "registration": {
+
     "name": "my-service",
+
     "managementUrl": "http://localhost:8081/actuator",
+
     "healthUrl": "http://localhost:8081/actuator/health",
+
     "serviceUrl": "http://localhost:8081"
+
   },
+
   "registered": true,
+
   "statusInfo": {
+
     "status": "UP"
+
   },
+
   "endpoints": [...]
+
 }
 ```
 
@@ -234,7 +305,11 @@ Subscribe to real-time instance events via Server-Sent Events.
 ```
 data:{"instance":"abc123","version":0,"type":"REGISTERED","timestamp":"2026-02-07T10:00:00Z","registration":{...}}
 
+
+
 data:{"instance":"abc123","version":1,"type":"ENDPOINTS_DETECTED","timestamp":"2026-02-07T10:00:05Z","endpoints":[...]}
+
+
 
 data:{"instance":"abc123","version":2,"type":"STATUS_CHANGED","timestamp":"2026-02-07T10:00:10Z","statusInfo":{"status":"UP"}}
 ```
@@ -250,9 +325,14 @@ curl -N http://localhost:8080/instances/events
 ```
 const eventSource = new EventSource('http://localhost:8080/instances/events');
 
+
+
 eventSource.onmessage = (event) => {
+
   const instanceEvent = JSON.parse(event.data);
+
   console.log('Event:', instanceEvent.type, 'for', instanceEvent.instance);
+
 };
 ```
 
@@ -294,23 +374,41 @@ Get all applications (grouped instances).
 
 ```
 [
+
   {
+
     "name": "my-service",
+
     "buildVersion": "1.0.0",
+
     "status": "UP",
+
     "instances": [
+
       {
+
         "id": "abc123",
+
         "healthUrl": "http://instance1:8081/actuator/health",
+
         "statusInfo": {"status": "UP"}
+
       },
+
       {
+
         "id": "def456",
+
         "healthUrl": "http://instance2:8081/actuator/health",
+
         "statusInfo": {"status": "UP"}
+
       }
+
     ]
+
   }
+
 ]
 ```
 
@@ -336,10 +434,15 @@ Get details of a specific application.
 
 ```
 {
+
   "name": "my-service",
+
   "buildVersion": "1.0.0",
+
   "status": "UP",
+
   "instances": [...]
+
 }
 ```
 
@@ -428,18 +531,31 @@ Admin Server proxies requests to instance actuator endpoints.
 
 ```
 # Get health
+
 curl http://localhost:8080/instances/abc123/actuator/health
 
+
+
 # Get metrics
+
 curl http://localhost:8080/instances/abc123/actuator/metrics
 
+
+
 # Get specific metric
+
 curl http://localhost:8080/instances/abc123/actuator/metrics/jvm.memory.used
 
+
+
 # Get environment
+
 curl http://localhost:8080/instances/abc123/actuator/env
 
+
+
 # Get loggers
+
 curl http://localhost:8080/instances/abc123/actuator/loggers
 ```
 
@@ -467,7 +583,9 @@ curl http://localhost:8080/instances/abc123/actuator/loggers
 
 ```
 {
+
   "configuredLevel": "DEBUG"
+
 }
 ```
 
@@ -475,7 +593,9 @@ curl http://localhost:8080/instances/abc123/actuator/loggers
 
 ```
 curl -X POST http://localhost:8080/instances/abc123/actuator/loggers/com.example \
+
   -H "Content-Type: application/json" \
+
   -d '{"configuredLevel":"DEBUG"}'
 ```
 
@@ -513,7 +633,9 @@ Gracefully shutdown a Spring Boot application.
 
 ```
 {
+
   "message": "Shutting down, bye..."
+
 }
 ```
 
@@ -537,9 +659,13 @@ Invalid request body or parameters.
 
 ```
 {
+
   "error": "Bad Request",
+
   "message": "Invalid registration data",
+
   "status": 400
+
 }
 ```
 
@@ -549,9 +675,13 @@ Instance or application not found.
 
 ```
 {
+
   "error": "Not Found",
+
   "message": "Instance not found: abc123",
+
   "status": 404
+
 }
 ```
 
@@ -561,9 +691,13 @@ Server error.
 
 ```
 {
+
   "error": "Internal Server Error",
+
   "message": "Failed to register instance",
+
   "status": 500
+
 }
 ```
 
@@ -573,14 +707,23 @@ Cross-Origin Resource Sharing (CORS) configuration:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       cors:
+
         allowed-origins: "http://localhost:3000"
+
         allowed-methods: "GET,POST,DELETE"
+
         allowed-headers: "*"
+
         exposed-headers: "Location"
+
         allow-credentials: true
+
         max-age: 3600
 ```
 
@@ -607,18 +750,33 @@ Not supported. Use Server-Sent Events (SSE) for real-time updates.
 ```
 RestTemplate restTemplate = new RestTemplate();
 
+
+
 // Register instance
+
 Registration registration = Registration.create("my-service")
+
 		.managementUrl("http://localhost:8081/actuator")
+
 		.healthUrl("http://localhost:8081/actuator/health")
+
 		.serviceUrl("http://localhost:8081")
+
 		.build();
 
+
+
 ResponseEntity<Map> response = restTemplate.postForEntity(
+
 		"http://localhost:8080/instances",
+
 		registration,
+
 		Map.class
+
 );
+
+
 
 String instanceId = (String) response.getBody().get("id");
 ```
@@ -627,20 +785,35 @@ String instanceId = (String) response.getBody().get("id");
 
 ```
 // Register instance
+
 const registration = {
+
   name: 'my-service',
+
   managementUrl: 'http://localhost:8081/actuator',
+
   healthUrl: 'http://localhost:8081/actuator/health',
+
   serviceUrl: 'http://localhost:8081'
+
 };
 
+
+
 const response = await fetch('http://localhost:8080/instances', {
+
   method: 'POST',
+
   headers: { 'Content-Type': 'application/json' },
+
   body: JSON.stringify(registration)
+
 });
 
+
+
 const { id } = await response.json();
+
 console.log('Instance ID:', id);
 ```
 
@@ -649,20 +822,36 @@ console.log('Instance ID:', id);
 ```
 import requests
 
+
+
 # Register instance
+
 registration = {
+
     "name": "my-service",
+
     "managementUrl": "http://localhost:8081/actuator",
+
     "healthUrl": "http://localhost:8081/actuator/health",
+
     "serviceUrl": "http://localhost:8081"
+
 }
 
+
+
 response = requests.post(
+
     "http://localhost:8080/instances",
+
     json=registration
+
 )
 
+
+
 instance_id = response.json()["id"]
+
 print(f"Instance ID: {instance_id}")
 ```
 

@@ -21,8 +21,11 @@ A secured Admin Server requires:
 
 ```
 <dependency>
+
     <groupId>org.springframework.boot</groupId>
+
     <artifactId>spring-boot-starter-security</artifactId>
+
 </dependency>
 ```
 
@@ -38,9 +41,13 @@ implementation 'org.springframework.boot:spring-boot-starter-security'
 
 ```
 spring:
+
   security:
+
     user:
+
       name: admin
+
       password: ${ADMIN_PASSWORD}
 ```
 
@@ -63,120 +70,236 @@ For more control, use a custom `SecurityFilterChain`:
 ```
 package com.example.admin;
 
+
+
 import java.util.UUID;
 
+
+
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.Customizer;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
 import org.springframework.security.web.SecurityFilterChain;
+
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+
+
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 
+
+
 import static org.springframework.http.HttpMethod.DELETE;
+
 import static org.springframework.http.HttpMethod.POST;
 
+
+
 @Configuration
+
 public class SecurityConfig {
+
+
 
     private final AdminServerProperties adminServer;
 
+
+
     public SecurityConfig(AdminServerProperties adminServer) {
+
         this.adminServer = adminServer;
+
     }
 
+
+
     @Bean
+
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         // Redirect to login after successful authentication
+
         SavedRequestAwareAuthenticationSuccessHandler successHandler =
+
             new SavedRequestAwareAuthenticationSuccessHandler();
+
         successHandler.setTargetUrlParameter("redirectTo");
+
         successHandler.setDefaultTargetUrl(adminServer.path("/"));
 
+
+
         http
+
             .authorizeHttpRequests(auth -> auth
+
                 // Permit access to static resources
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/assets/**")))
+
                 .permitAll()
+
                 // Permit access to login page
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/login")))
+
                 .permitAll()
+
                 // Permit Admin Server's own actuator endpoints
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/actuator/info")))
+
                 .permitAll()
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/actuator/health")))
+
                 .permitAll()
+
                 // Require authentication for all other requests
+
                 .anyRequest().authenticated()
+
             )
+
             // Form login for UI
+
             .formLogin(formLogin -> formLogin
+
                 .loginPage(adminServer.path("/login"))
+
                 .successHandler(successHandler)
+
             )
+
             // Logout configuration
+
             .logout(logout -> logout
+
                 .logoutUrl(adminServer.path("/logout"))
+
             )
+
             // HTTP Basic for API clients
+
             .httpBasic(Customizer.withDefaults());
 
+
+
         // CSRF configuration (see CSRF Protection section)
+
         http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class)
+
             .csrf(csrf -> csrf
+
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+
                 .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+
                 .ignoringRequestMatchers(
+
                     // Exempt client registration endpoints
+
                     PathPatternRequestMatcher.withDefaults()
+
                         .matcher(POST, adminServer.path("/instances")),
+
                     PathPatternRequestMatcher.withDefaults()
+
                         .matcher(DELETE, adminServer.path("/instances/*")),
+
                     // Exempt Admin Server's own actuator
+
                     PathPatternRequestMatcher.withDefaults()
+
                         .matcher(adminServer.path("/actuator/**"))
+
                 )
+
             );
 
+
+
         // Remember-me functionality
+
         http.rememberMe(rememberMe -> rememberMe
+
             .key(UUID.randomUUID().toString())
+
             .tokenValiditySeconds(1209600) // 2 weeks
+
         );
 
+
+
         return http.build();
+
     }
 
+
+
     @Bean
+
     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+
         UserDetails user = User.builder()
+
             .username("admin")
+
             .password(passwordEncoder.encode(System.getenv("ADMIN_PASSWORD")))
+
             .roles("ADMIN")
+
             .build();
 
+
+
         return new InMemoryUserDetailsManager(user);
+
     }
 
+
+
     @Bean
+
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
+
     }
+
 }
 ```
 
@@ -187,42 +310,80 @@ Required to make CSRF token available to JavaScript:
 ```
 package com.example.admin;
 
+
+
 import java.io.IOException;
 
+
+
 import jakarta.servlet.FilterChain;
+
 import jakarta.servlet.ServletException;
+
 import jakarta.servlet.http.Cookie;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.web.csrf.CsrfToken;
+
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import org.springframework.web.util.WebUtils;
+
+
 
 public class CustomCsrfFilter extends OncePerRequestFilter {
 
+
+
     public static final String CSRF_COOKIE_NAME = "XSRF-TOKEN";
 
+
+
     @Override
+
     protected void doFilterInternal(HttpServletRequest request,
+
                                     HttpServletResponse response,
+
                                     FilterChain filterChain)
+
             throws ServletException, IOException {
+
+
 
         CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 
+
+
         if (csrf != null) {
+
             Cookie cookie = WebUtils.getCookie(request, CSRF_COOKIE_NAME);
+
             String token = csrf.getToken();
 
+
+
             if (cookie == null || token != null && !token.equals(cookie.getValue())) {
+
                 cookie = new Cookie(CSRF_COOKIE_NAME, token);
+
                 cookie.setPath("/");
+
                 response.addCookie(cookie);
+
             }
+
         }
 
+
+
         filterChain.doFilter(request, response);
+
     }
+
 }
 ```
 
@@ -236,8 +397,11 @@ If your Admin Server uses a custom context path:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       context-path: /admin
 ```
 
@@ -245,7 +409,9 @@ Adjust security matchers:
 
 ```
 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
     .matcher(adminServer.path("/assets/**")))
+
 .permitAll()
 ```
 
@@ -257,9 +423,13 @@ Enable persistent sessions:
 
 ```
 http.rememberMe(rememberMe -> rememberMe
+
     .key(UUID.randomUUID().toString())           // Unique key
+
     .tokenValiditySeconds(1209600)               // 2 weeks
+
     .rememberMeParameter("remember-me")          // Form parameter name
+
 )
 ```
 
@@ -271,9 +441,13 @@ Configure session behavior:
 
 ```
 http.sessionManagement(session -> session
+
     .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+
     .maximumSessions(1)                          // Max 1 session per user
+
     .maxSessionsPreventsLogin(false)             // Invalidate old session
+
 )
 ```
 
@@ -287,20 +461,35 @@ Simple for development or small deployments:
 
 ```
 @Bean
+
 public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
+
     UserDetails admin = User.builder()
+
         .username("admin")
+
         .password(encoder.encode(System.getenv("ADMIN_PASSWORD")))
+
         .roles("ADMIN")
+
         .build();
+
+
 
     UserDetails viewer = User.builder()
+
         .username("viewer")
+
         .password(encoder.encode(System.getenv("VIEWER_PASSWORD")))
+
         .roles("USER")
+
         .build();
 
+
+
     return new InMemoryUserDetailsManager(admin, viewer);
+
 }
 ```
 
@@ -310,21 +499,37 @@ Use `JdbcUserDetailsManager` for database-backed users:
 
 ```
 @Bean
+
 public JdbcUserDetailsManager userDetailsService(DataSource dataSource,
+
                                                   PasswordEncoder encoder) {
+
     JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
 
+
+
     // Create default admin if not exists
+
     if (!manager.userExists("admin")) {
+
         UserDetails admin = User.builder()
+
             .username("admin")
+
             .password(encoder.encode(System.getenv("ADMIN_PASSWORD")))
+
             .roles("ADMIN")
+
             .build();
+
         manager.createUser(admin);
+
     }
 
+
+
     return manager;
+
 }
 ```
 
@@ -332,16 +537,28 @@ public JdbcUserDetailsManager userDetailsService(DataSource dataSource,
 
 ```
 CREATE TABLE users (
+
     username VARCHAR(50) NOT NULL PRIMARY KEY,
+
     password VARCHAR(100) NOT NULL,
+
     enabled BOOLEAN NOT NULL
+
 );
 
+
+
 CREATE TABLE authorities (
+
     username VARCHAR(50) NOT NULL,
+
     authority VARCHAR(50) NOT NULL,
+
     FOREIGN KEY (username) REFERENCES users(username)
+
 );
+
+
 
 CREATE UNIQUE INDEX ix_auth_username ON authorities (username, authority);
 ```
@@ -352,36 +569,67 @@ Authenticate against an LDAP server:
 
 ```
 @Bean
+
 public SecurityFilterChain filterChain(HttpSecurity http,
+
                                        AdminServerProperties adminServer) throws Exception {
+
     http
+
         .authorizeHttpRequests(/* ... */)
+
         .formLogin(/* ... */)
+
         .logout(/* ... */)
+
         .httpBasic(Customizer.withDefaults());
 
+
+
     return http.build();
+
 }
 
+
+
 @Configuration
+
 public static class LdapConfig {
 
-    @Bean
-    public EmbeddedLdapServerContextSourceFactoryBean contextSourceFactoryBean() {
-        EmbeddedLdapServerContextSourceFactoryBean factory =
-            new EmbeddedLdapServerContextSourceFactoryBean();
-        factory.setPort(8389);
-        return factory;
-    }
+
 
     @Bean
-    public AuthenticationManager authenticationManager(BaseLdapPathContextSource contextSource) {
-        LdapBindAuthenticationManagerFactory factory =
-            new LdapBindAuthenticationManagerFactory(contextSource);
-        factory.setUserDnPatterns("uid={0},ou=people");
-        factory.setUserDetailsContextMapper(new PersonContextMapper());
-        return factory.createAuthenticationManager();
+
+    public EmbeddedLdapServerContextSourceFactoryBean contextSourceFactoryBean() {
+
+        EmbeddedLdapServerContextSourceFactoryBean factory =
+
+            new EmbeddedLdapServerContextSourceFactoryBean();
+
+        factory.setPort(8389);
+
+        return factory;
+
     }
+
+
+
+    @Bean
+
+    public AuthenticationManager authenticationManager(BaseLdapPathContextSource contextSource) {
+
+        LdapBindAuthenticationManagerFactory factory =
+
+            new LdapBindAuthenticationManagerFactory(contextSource);
+
+        factory.setUserDnPatterns("uid={0},ou=people");
+
+        factory.setUserDetailsContextMapper(new PersonContextMapper());
+
+        return factory.createAuthenticationManager();
+
+    }
+
 }
 ```
 
@@ -389,10 +637,15 @@ public static class LdapConfig {
 
 ```
 spring:
+
   ldap:
+
     urls: ldap://ldap.company.com:389
+
     base: dc=company,dc=com
+
     username: cn=admin,dc=company,dc=com
+
     password: ${LDAP_PASSWORD}
 ```
 
@@ -404,8 +657,11 @@ Use OAuth2 for Single Sign-On (SSO):
 
 ```
 <dependency>
+
     <groupId>org.springframework.boot</groupId>
+
     <artifactId>spring-boot-starter-oauth2-client</artifactId>
+
 </dependency>
 ```
 
@@ -413,18 +669,31 @@ Use OAuth2 for Single Sign-On (SSO):
 
 ```
 spring:
+
   security:
+
     oauth2:
+
       client:
+
         registration:
+
           keycloak:
+
             client-id: spring-boot-admin
+
             client-secret: ${OAUTH2_CLIENT_SECRET}
+
             scope: openid,profile,email
+
             authorization-grant-type: authorization_code
+
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
         provider:
+
           keycloak:
+
             issuer-uri: https://keycloak.company.com/realms/main
 ```
 
@@ -432,29 +701,53 @@ spring:
 
 ```
 @Bean
+
 public SecurityFilterChain filterChain(HttpSecurity http,
+
                                        AdminServerProperties adminServer) throws Exception {
+
     http
+
         .authorizeHttpRequests(auth -> auth
+
             .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                 .matcher(adminServer.path("/assets/**")))
+
             .permitAll()
+
             .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                 .matcher(adminServer.path("/login")))
+
             .permitAll()
+
             .anyRequest().authenticated()
+
         )
+
         .oauth2Login(oauth2 -> oauth2
+
             .loginPage(adminServer.path("/login"))
+
         )
+
         .logout(logout -> logout
+
             .logoutUrl(adminServer.path("/logout"))
+
             .logoutSuccessUrl(adminServer.path("/"))
+
         );
+
+
 
     // CSRF and other configurations...
 
+
+
     return http.build();
+
 }
 ```
 
@@ -466,30 +759,55 @@ Restrict access by roles:
 
 ```
 @Bean
+
 public SecurityFilterChain filterChain(HttpSecurity http,
+
                                        AdminServerProperties adminServer) throws Exception {
+
     http.authorizeHttpRequests(auth -> auth
+
             .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                 .matcher(adminServer.path("/assets/**")))
+
             .permitAll()
+
             .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                 .matcher(adminServer.path("/login")))
+
             .permitAll()
+
             // Only ADMIN can delete instances
+
             .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                 .matcher(DELETE, adminServer.path("/instances/*")))
+
             .hasRole("ADMIN")
+
             // Only ADMIN can access logfile endpoint
+
             .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                 .matcher(adminServer.path("/instances/*/actuator/logfile")))
+
             .hasRole("ADMIN")
+
             // USER and ADMIN can view everything else
+
             .anyRequest().hasAnyRole("USER", "ADMIN")
+
         )
+
         .formLogin(formLogin -> formLogin.loginPage(adminServer.path("/login")))
+
         .httpBasic(Customizer.withDefaults());
 
+
+
     return http.build();
+
 }
 ```
 
@@ -497,20 +815,35 @@ public SecurityFilterChain filterChain(HttpSecurity http,
 
 ```
 @Bean
+
 public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
+
     UserDetails admin = User.builder()
+
         .username("admin")
+
         .password(encoder.encode(System.getenv("ADMIN_PASSWORD")))
+
         .roles("ADMIN")
+
         .build();
+
+
 
     UserDetails viewer = User.builder()
+
         .username("viewer")
+
         .password(encoder.encode(System.getenv("VIEWER_PASSWORD")))
+
         .roles("USER")
+
         .build();
 
+
+
     return new InMemoryUserDetailsManager(admin, viewer);
+
 }
 ```
 
@@ -524,6 +857,7 @@ For local development, HTTP is acceptable:
 
 ```
 server:
+
   port: 8080
 ```
 
@@ -533,12 +867,19 @@ Enable HTTPS for secure communication:
 
 ```
 server:
+
   port: 8443
+
   ssl:
+
     enabled: true
+
     key-store: classpath:keystore.p12
+
     key-store-password: ${KEYSTORE_PASSWORD}
+
     key-store-type: PKCS12
+
     key-alias: spring-boot-admin
 ```
 
@@ -546,10 +887,15 @@ server:
 
 ```
 keytool -genkeypair -alias spring-boot-admin \
+
   -keyalg RSA -keysize 2048 \
+
   -storetype PKCS12 \
+
   -keystore keystore.p12 \
+
   -validity 3650 \
+
   -storepass changeit
 ```
 
@@ -557,9 +903,13 @@ keytool -genkeypair -alias spring-boot-admin \
 
 ```
 spring:
+
   boot:
+
     admin:
+
       client:
+
         url: https://admin-server:8443
 ```
 
@@ -573,16 +923,27 @@ spring:
 
 ```
 server {
+
     listen 80;
+
     server_name admin.company.com;
 
+
+
     location / {
+
         proxy_pass http://localhost:8080;
+
         proxy_set_header Host $host;
+
         proxy_set_header X-Real-IP $remote_addr;
+
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
         proxy_set_header X-Forwarded-Proto $scheme;
+
     }
+
 }
 ```
 
@@ -590,12 +951,19 @@ server {
 
 ```
 server:
+
   forward-headers-strategy: native
 
+
+
 spring:
+
   boot:
+
     admin:
+
       ui:
+
         public-url: https://admin.company.com
 ```
 
@@ -605,14 +973,23 @@ spring:
 
 ```
 <VirtualHost *:80>
+
     ServerName admin.company.com
 
+
+
     ProxyPreserveHost On
+
     ProxyPass / http://localhost:8080/
+
     ProxyPassReverse / http://localhost:8080/
 
+
+
     RequestHeader set X-Forwarded-Proto "https"
+
     RequestHeader set X-Forwarded-Port "443"
+
 </VirtualHost>
 ```
 
@@ -624,32 +1001,59 @@ Add security headers to protect against common attacks:
 
 ```
 @Bean
+
 public SecurityFilterChain filterChain(HttpSecurity http,
+
                                        AdminServerProperties adminServer) throws Exception {
+
     http
+
         .headers(headers -> headers
+
             // Content Security Policy
+
             .contentSecurityPolicy(csp -> csp
+
                 .policyDirectives("default-src 'self'; " +
+
                     "script-src 'self' 'unsafe-inline'; " +
+
                     "style-src 'self' 'unsafe-inline'; " +
+
                     "img-src 'self' data:; " +
+
                     "font-src 'self' data:")
+
             )
+
             // Frame options
+
             .frameOptions(frame -> frame.sameOrigin())
+
             // XSS protection
+
             .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK))
+
             // HSTS
+
             .httpStrictTransportSecurity(hsts -> hsts
+
                 .includeSubDomains(true)
+
                 .maxAgeInSeconds(31536000)
+
             )
+
         );
+
+
 
     // Other configurations...
 
+
+
     return http.build();
+
 }
 ```
 
@@ -661,19 +1065,33 @@ Support both form login and HTTP Basic:
 
 ```
 @Bean
+
 public SecurityFilterChain filterChain(HttpSecurity http,
+
                                        AdminServerProperties adminServer) throws Exception {
+
     http
+
         .authorizeHttpRequests(/* ... */)
+
         .formLogin(formLogin -> formLogin
+
             .loginPage(adminServer.path("/login"))
+
         )
+
         .httpBasic(Customizer.withDefaults())
+
         .logout(logout -> logout
+
             .logoutUrl(adminServer.path("/logout"))
+
         );
 
+
+
     return http.build();
+
 }
 ```
 
@@ -692,7 +1110,9 @@ public SecurityFilterChain filterChain(HttpSecurity http,
 
 ```
 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
     .matcher(adminServer.path("/assets/**")))
+
 .permitAll()
 ```
 
@@ -704,7 +1124,9 @@ public SecurityFilterChain filterChain(HttpSecurity http,
 
 ```
 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
     .matcher(adminServer.path("/login")))
+
 .permitAll()
 ```
 
@@ -716,12 +1138,19 @@ public SecurityFilterChain filterChain(HttpSecurity http,
 
 ```
 .csrf(csrf -> csrf
+
     .ignoringRequestMatchers(
+
         PathPatternRequestMatcher.withDefaults()
+
             .matcher(POST, adminServer.path("/instances")),
+
         PathPatternRequestMatcher.withDefaults()
+
             .matcher(DELETE, adminServer.path("/instances/*"))
+
     )
+
 )
 ```
 
@@ -733,8 +1162,11 @@ public SecurityFilterChain filterChain(HttpSecurity http,
 
 ```
 @Bean
+
 public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
+
     // ...
+
 }
 ```
 
@@ -755,115 +1187,226 @@ curl -u admin:password http://localhost:8080/instances
 ```
 package com.example.admin;
 
+
+
 import java.util.UUID;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.Customizer;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
 import org.springframework.security.web.SecurityFilterChain;
+
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
+
+
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
+
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
+
+
 import static org.springframework.http.HttpMethod.DELETE;
+
 import static org.springframework.http.HttpMethod.POST;
 
+
+
 @EnableAdminServer
+
 @Configuration
+
 public class AdminServerConfig {
+
+
 
     private final AdminServerProperties adminServer;
 
+
+
     public AdminServerConfig(AdminServerProperties adminServer) {
+
         this.adminServer = adminServer;
+
     }
 
+
+
     @Bean
+
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         SavedRequestAwareAuthenticationSuccessHandler successHandler =
+
             new SavedRequestAwareAuthenticationSuccessHandler();
+
         successHandler.setTargetUrlParameter("redirectTo");
+
         successHandler.setDefaultTargetUrl(adminServer.path("/"));
 
+
+
         http
+
             .authorizeHttpRequests(auth -> auth
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/assets/**")))
+
                 .permitAll()
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/login")))
+
                 .permitAll()
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/actuator/info")))
+
                 .permitAll()
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/actuator/health")))
+
                 .permitAll()
+
                 .anyRequest().authenticated()
+
             )
+
             .formLogin(formLogin -> formLogin
+
                 .loginPage(adminServer.path("/login"))
+
                 .successHandler(successHandler)
+
             )
+
             .logout(logout -> logout
+
                 .logoutUrl(adminServer.path("/logout"))
+
             )
+
             .httpBasic(Customizer.withDefaults());
 
+
+
         http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class)
+
             .csrf(csrf -> csrf
+
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+
                 .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+
                 .ignoringRequestMatchers(
+
                     PathPatternRequestMatcher.withDefaults()
+
                         .matcher(POST, adminServer.path("/instances")),
+
                     PathPatternRequestMatcher.withDefaults()
+
                         .matcher(DELETE, adminServer.path("/instances/*")),
+
                     PathPatternRequestMatcher.withDefaults()
+
                         .matcher(adminServer.path("/actuator/**"))
+
                 )
+
             );
 
+
+
         http.rememberMe(rememberMe -> rememberMe
+
             .key(UUID.randomUUID().toString())
+
             .tokenValiditySeconds(1209600)
+
         );
 
+
+
         return http.build();
+
     }
 
+
+
     @Bean
+
     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+
         UserDetails admin = User.builder()
+
             .username("admin")
+
             .password(passwordEncoder.encode(System.getenv("ADMIN_PASSWORD")))
+
             .roles("ADMIN")
+
             .build();
+
+
 
         UserDetails viewer = User.builder()
+
             .username("viewer")
+
             .password(passwordEncoder.encode(System.getenv("VIEWER_PASSWORD")))
+
             .roles("USER")
+
             .build();
 
+
+
         return new InMemoryUserDetailsManager(admin, viewer);
+
     }
 
+
+
     @Bean
+
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
+
     }
+
 }
 ```
 
@@ -871,21 +1414,37 @@ public class AdminServerConfig {
 
 ```
 spring:
+
   application:
+
     name: spring-boot-admin-server
 
+
+
   boot:
+
     admin:
+
       context-path: /admin
+
       ui:
+
         title: "Production Monitor"
 
+
+
 server:
+
   port: 8443
+
   ssl:
+
     enabled: true
+
     key-store: classpath:keystore.p12
+
     key-store-password: ${KEYSTORE_PASSWORD}
+
     key-store-type: PKCS12
 ```
 

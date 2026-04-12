@@ -25,6 +25,7 @@ Clustered Spring Boot Admin Server deployment using Hazelcast for distributed ev
 
 ```
 cd spring-boot-admin-samples/spring-boot-admin-sample-hazelcast
+
 mvn spring-boot:run
 ```
 
@@ -50,16 +51,27 @@ All instances automatically form a cluster and share:
 
 ```
 <dependency>
+
     <groupId>de.codecentric</groupId>
+
     <artifactId>spring-boot-admin-starter-server</artifactId>
+
 </dependency>
+
 <dependency>
+
     <groupId>de.codecentric</groupId>
+
     <artifactId>spring-boot-admin-starter-client</artifactId>
+
 </dependency>
+
 <dependency>
+
     <groupId>com.hazelcast</groupId>
+
     <artifactId>hazelcast</artifactId>
+
 </dependency>
 ```
 
@@ -67,39 +79,73 @@ All instances automatically form a cluster and share:
 
 ```
 @Bean
+
 public Config hazelcastConfig() {
+
     // Event store map - holds all instance events
+
     MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP)
+
         .setInMemoryFormat(InMemoryFormat.OBJECT)
+
         .setBackupCount(1)  // 1 backup copy
+
         .setMergePolicyConfig(
+
             new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100)
+
         );
+
+
 
     // Notification map - deduplicates notifications
+
     MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
+
         .setInMemoryFormat(InMemoryFormat.OBJECT)
+
         .setBackupCount(1)
+
         .setEvictionConfig(
+
             new EvictionConfig()
+
                 .setEvictionPolicy(EvictionPolicy.LRU)
+
                 .setMaxSizePolicy(MaxSizePolicy.PER_NODE)
+
         );
 
+
+
     Config config = new Config();
+
     config.addMapConfig(eventStoreMap);
+
     config.addMapConfig(sentNotificationsMap);
+
     config.setProperty("hazelcast.jmx", "true");
 
+
+
     // TCP/IP cluster discovery (local)
+
     config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+
     TcpIpConfig tcpIpConfig = config.getNetworkConfig()
+
         .getJoin()
+
         .getTcpIpConfig();
+
     tcpIpConfig.setEnabled(true);
+
     tcpIpConfig.setMembers(singletonList("127.0.0.1"));
 
+
+
     return config;
+
 }
 ```
 
@@ -141,9 +187,13 @@ Check logs for:
 
 ```
 Members {size:3, ver:3} [
+
     Member [127.0.0.1]:5701 - e1f2g3h4
+
     Member [127.0.0.1]:5702 - a5b6c7d8
+
     Member [127.0.0.1]:5703 - i9j0k1l2
+
 ]
 ```
 
@@ -167,10 +217,15 @@ Members {size:3, ver:3} [
 
 ```
 config.getNetworkConfig()
+
     .getJoin()
+
     .getMulticastConfig()
+
     .setEnabled(true)
+
     .setMulticastGroup("224.2.2.3")
+
     .setMulticastPort(54327);
 ```
 
@@ -178,9 +233,13 @@ config.getNetworkConfig()
 
 ```
 tcpIpConfig.setMembers(Arrays.asList(
+
     "admin-1.company.com",
+
     "admin-2.company.com",
+
     "admin-3.company.com"
+
 ));
 ```
 
@@ -188,10 +247,15 @@ tcpIpConfig.setMembers(Arrays.asList(
 
 ```
 config.getNetworkConfig()
+
     .getJoin()
+
     .getKubernetesConfig()
+
     .setEnabled(true)
+
     .setProperty("namespace", "default")
+
     .setProperty("service-name", "spring-boot-admin");
 ```
 

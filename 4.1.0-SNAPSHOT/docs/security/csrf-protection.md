@@ -38,76 +38,148 @@ CSRF attacks trick authenticated users into performing unwanted actions:
 ```
 package com.example.admin;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import org.springframework.security.web.SecurityFilterChain;
+
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+
+
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 
+
+
 import static org.springframework.http.HttpMethod.DELETE;
+
 import static org.springframework.http.HttpMethod.POST;
 
+
+
 @Configuration
+
 public class SecurityConfig {
+
+
 
     private final AdminServerProperties adminServer;
 
+
+
     public SecurityConfig(AdminServerProperties adminServer) {
+
         this.adminServer = adminServer;
+
     }
+
+
 
     @Bean
+
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
+
             .authorizeHttpRequests(auth -> auth
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/assets/**")))
+
                 .permitAll()
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/login")))
+
                 .permitAll()
+
                 .anyRequest().authenticated()
+
             )
+
             .formLogin(formLogin -> formLogin
+
                 .loginPage(adminServer.path("/login"))
+
             )
+
             .httpBasic(Customizer.withDefaults());
 
+
+
         // Custom CSRF filter to expose token to JavaScript
+
         http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class);
 
+
+
         // CSRF configuration
+
         http.csrf(csrf -> csrf
+
             // Use cookie-based token repository (accessible to JavaScript)
+
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+
             // Use attribute-based token handler
+
             .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+
             // Exempt specific endpoints
+
             .ignoringRequestMatchers(
+
                 // Client registration
+
                 PathPatternRequestMatcher.withDefaults()
+
                     .matcher(POST, adminServer.path("/instances")),
+
                 // Client deregistration
+
                 PathPatternRequestMatcher.withDefaults()
+
                     .matcher(DELETE, adminServer.path("/instances/*")),
+
                 // Notification endpoints
+
                 PathPatternRequestMatcher.withDefaults()
+
                     .matcher(POST, adminServer.path("/notifications/**")),
+
                 PathPatternRequestMatcher.withDefaults()
+
                     .matcher(DELETE, adminServer.path("/notifications/**")),
+
                 // Admin Server's own actuator
+
                 PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/actuator/**"))
+
             )
+
         );
 
+
+
         return http.build();
+
     }
+
 }
 ```
 
@@ -120,44 +192,84 @@ The Admin UI (JavaScript) needs access to the CSRF token. Create a filter to exp
 ```
 package com.example.admin;
 
+
+
 import java.io.IOException;
 
+
+
 import jakarta.servlet.FilterChain;
+
 import jakarta.servlet.ServletException;
+
 import jakarta.servlet.http.Cookie;
+
 import jakarta.servlet.http.HttpServletRequest;
+
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.web.csrf.CsrfToken;
+
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import org.springframework.web.util.WebUtils;
+
+
 
 public class CustomCsrfFilter extends OncePerRequestFilter {
 
+
+
     public static final String CSRF_COOKIE_NAME = "XSRF-TOKEN";
 
+
+
     @Override
+
     protected void doFilterInternal(HttpServletRequest request,
+
                                     HttpServletResponse response,
+
                                     FilterChain filterChain)
+
             throws ServletException, IOException {
 
+
+
         // Get CSRF token from request attributes
+
         CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
 
+
+
         if (csrf != null) {
+
             Cookie cookie = WebUtils.getCookie(request, CSRF_COOKIE_NAME);
+
             String token = csrf.getToken();
 
+
+
             // Set cookie if not present or token changed
+
             if (cookie == null || token != null && !token.equals(cookie.getValue())) {
+
                 cookie = new Cookie(CSRF_COOKIE_NAME, token);
+
                 cookie.setPath("/");
+
                 response.addCookie(cookie);
+
             }
+
         }
 
+
+
         filterChain.doFilter(request, response);
+
     }
+
 }
 ```
 
@@ -182,10 +294,15 @@ GET / HTTP/1.1
 
 ```
 HTTP/1.1 200 OK
+
 Set-Cookie: XSRF-TOKEN=abc123; Path=/
+
 Set-Cookie: JSESSIONID=xyz789; Path=/; HttpOnly
 
+
+
 <!DOCTYPE html>
+
 <html>...</html>
 ```
 
@@ -195,11 +312,17 @@ Admin UI JavaScript reads `XSRF-TOKEN` cookie and sends it in header:
 
 ```
 fetch('/instances/123/actuator/info', {
+
   method: 'GET',
+
   headers: {
+
     'X-XSRF-TOKEN': 'abc123'  // From cookie
+
   },
+
   credentials: 'same-origin'
+
 })
 ```
 
@@ -207,7 +330,9 @@ fetch('/instances/123/actuator/info', {
 
 ```
 GET /instances/123/actuator/info HTTP/1.1
+
 X-XSRF-TOKEN: abc123
+
 Cookie: XSRF-TOKEN=abc123; JSESSIONID=xyz789
 ```
 
@@ -226,11 +351,17 @@ Client applications register **without** CSRF token:
 
 ```
 POST /instances HTTP/1.1
+
 Content-Type: application/json
 
+
+
 {
+
   "name": "my-service",
+
   "healthUrl": "http://localhost:8081/actuator/health"
+
 }
 ```
 
@@ -283,10 +414,15 @@ This works because `/instances` is in `ignoringRequestMatchers`.
 
 ```
 .ignoringRequestMatchers(
+
     PathPatternRequestMatcher.withDefaults()
+
         .matcher(POST, adminServer.path("/instances")),
+
     PathPatternRequestMatcher.withDefaults()
+
         .matcher(DELETE, adminServer.path("/instances/*"))
+
 )
 ```
 
@@ -300,8 +436,11 @@ This works because `/instances` is in `ignoringRequestMatchers`.
 
 ```
 .ignoringRequestMatchers(
+
     PathPatternRequestMatcher.withDefaults()
+
         .matcher(adminServer.path("/actuator/**"))
+
 )
 ```
 
@@ -315,10 +454,15 @@ This works because `/instances` is in `ignoringRequestMatchers`.
 
 ```
 .ignoringRequestMatchers(
+
     PathPatternRequestMatcher.withDefaults()
+
         .matcher(POST, adminServer.path("/notifications/**")),
+
     PathPatternRequestMatcher.withDefaults()
+
         .matcher(DELETE, adminServer.path("/notifications/**"))
+
 )
 ```
 
@@ -336,8 +480,11 @@ If using a custom context path:
 
 ```
 spring:
+
   boot:
+
     admin:
+
       context-path: /admin
 ```
 
@@ -345,6 +492,7 @@ Use `adminServer.path()` to include context path automatically:
 
 ```
 PathPatternRequestMatcher.withDefaults()
+
     .matcher(POST, adminServer.path("/instances"))
 ```
 
@@ -360,6 +508,7 @@ This becomes `/admin/instances` automatically.
 
 ```
 curl -X POST http://localhost:8080/applications/my-app/restart \
+
   -H "Cookie: JSESSIONID=abc123"
 ```
 
@@ -369,7 +518,9 @@ curl -X POST http://localhost:8080/applications/my-app/restart \
 
 ```
 curl -X POST http://localhost:8080/applications/my-app/restart \
+
   -H "Cookie: JSESSIONID=abc123; XSRF-TOKEN=def456" \
+
   -H "X-XSRF-TOKEN: def456"
 ```
 
@@ -379,10 +530,15 @@ curl -X POST http://localhost:8080/applications/my-app/restart \
 
 ```
 curl -X POST http://localhost:8080/instances \
+
   -H "Content-Type: application/json" \
+
   -d '{
+
     "name": "test-service",
+
     "healthUrl": "http://localhost:8081/actuator/health"
+
   }'
 ```
 
@@ -404,13 +560,21 @@ For development/testing only:
 
 ```
 @Bean
+
 @Profile("dev")
+
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
     http
+
         .authorizeHttpRequests(/* ... */)
+
         .csrf(csrf -> csrf.disable());  // Disable CSRF
 
+
+
     return http.build();
+
 }
 ```
 
@@ -424,9 +588,13 @@ Enhance CSRF protection with SameSite cookies:
 
 ```
 server:
+
   servlet:
+
     session:
+
       cookie:
+
         same-site: strict
 ```
 
@@ -476,12 +644,19 @@ server:
 
 ```
 .csrf(csrf -> csrf
+
     .ignoringRequestMatchers(
+
         PathPatternRequestMatcher.withDefaults()
+
             .matcher(POST, adminServer.path("/instances")),
+
         PathPatternRequestMatcher.withDefaults()
+
             .matcher(DELETE, adminServer.path("/instances/*"))
+
     )
+
 )
 ```
 
@@ -503,7 +678,9 @@ server:
 
 ```
 CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+
 repository.setCookieName("XSRF-TOKEN");
+
 repository.setHeaderName("X-XSRF-TOKEN");
 ```
 
@@ -515,6 +692,7 @@ repository.setHeaderName("X-XSRF-TOKEN");
 
 ```
 PathPatternRequestMatcher.withDefaults()
+
     .matcher(POST, adminServer.path("/instances"))
 ```
 
@@ -532,13 +710,21 @@ new AntPathRequestMatcher("/instances", POST.name())
 
 ```
 CookieCsrfTokenRepository repository = new CookieCsrfTokenRepository();
+
 repository.setCookieName("MY-CSRF-TOKEN");
+
 repository.setHeaderName("X-MY-CSRF-TOKEN");
+
 repository.setParameterName("_csrf");
+
 repository.setCookieHttpOnly(false);
 
+
+
 http.csrf(csrf -> csrf
+
     .csrfTokenRepository(repository)
+
 )
 ```
 
@@ -554,26 +740,47 @@ Enable CSRF only for browser requests:
 
 ```
 http.csrf(csrf -> csrf
+
     .requireCsrfProtectionMatcher(request -> {
+
         // Require CSRF for browser requests (non-API)
+
         String method = request.getMethod();
+
         if ("GET".equals(method) || "HEAD".equals(method) ||
+
             "TRACE".equals(method) || "OPTIONS".equals(method)) {
+
             return false;  // Safe methods
+
         }
+
+
 
         String header = request.getHeader("X-Requested-With");
+
         if ("XMLHttpRequest".equals(header)) {
+
             return true;  // AJAX requests
+
         }
+
+
 
         String accept = request.getHeader("Accept");
+
         if (accept != null && accept.contains("application/json")) {
+
             return false;  // API clients
+
         }
 
+
+
         return true;  // Browser requests
+
     })
+
 )
 ```
 
@@ -583,34 +790,63 @@ Separate CSRF rules for UI and API:
 
 ```
 @Configuration
+
 public class SecurityConfig {
 
+
+
     @Bean
+
     @Order(1)
+
     public SecurityFilterChain apiFilterChain(HttpSecurity http,
+
                                               AdminServerProperties adminServer) throws Exception {
+
         http
+
             .securityMatcher(adminServer.path("/api/**"))
+
             .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+
             .httpBasic(Customizer.withDefaults())
+
             .csrf(csrf -> csrf.disable());  // No CSRF for API
 
+
+
         return http.build();
+
     }
+
+
 
     @Bean
+
     @Order(2)
+
     public SecurityFilterChain uiFilterChain(HttpSecurity http,
+
                                              AdminServerProperties adminServer) throws Exception {
+
         http
+
             .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+
             .formLogin(/* ... */)
+
             .csrf(csrf -> csrf  // CSRF for UI
+
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+
             );
 
+
+
         return http.build();
+
     }
+
 }
 ```
 
@@ -636,107 +872,210 @@ public class SecurityConfig {
 ```
 package com.example.admin;
 
+
+
 import java.util.UUID;
 
+
+
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.Customizer;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
 import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
 import org.springframework.security.web.SecurityFilterChain;
+
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+
+
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
 
+
+
 import static org.springframework.http.HttpMethod.DELETE;
+
 import static org.springframework.http.HttpMethod.POST;
 
+
+
 @Configuration
+
 public class SecurityConfig {
+
+
 
     private final AdminServerProperties adminServer;
 
+
+
     public SecurityConfig(AdminServerProperties adminServer) {
+
         this.adminServer = adminServer;
+
     }
 
+
+
     @Bean
+
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         SavedRequestAwareAuthenticationSuccessHandler successHandler =
+
             new SavedRequestAwareAuthenticationSuccessHandler();
+
         successHandler.setTargetUrlParameter("redirectTo");
+
         successHandler.setDefaultTargetUrl(adminServer.path("/"));
 
+
+
         http
+
             .authorizeHttpRequests(auth -> auth
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/assets/**")))
+
                 .permitAll()
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/login")))
+
                 .permitAll()
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/actuator/info")))
+
                 .permitAll()
+
                 .requestMatchers(PathPatternRequestMatcher.withDefaults()
+
                     .matcher(adminServer.path("/actuator/health")))
+
                 .permitAll()
+
                 .anyRequest().authenticated()
+
             )
+
             .formLogin(formLogin -> formLogin
+
                 .loginPage(adminServer.path("/login"))
+
                 .successHandler(successHandler)
+
             )
+
             .logout(logout -> logout
+
                 .logoutUrl(adminServer.path("/logout"))
+
             )
+
             .httpBasic(Customizer.withDefaults());
 
+
+
         http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class)
+
             .csrf(csrf -> csrf
+
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+
                 .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+
                 .ignoringRequestMatchers(
+
                     PathPatternRequestMatcher.withDefaults()
+
                         .matcher(POST, adminServer.path("/instances")),
+
                     PathPatternRequestMatcher.withDefaults()
+
                         .matcher(DELETE, adminServer.path("/instances/*")),
+
                     PathPatternRequestMatcher.withDefaults()
+
                         .matcher(adminServer.path("/actuator/**"))
+
                 )
+
             );
 
+
+
         http.rememberMe(rememberMe -> rememberMe
+
             .key(UUID.randomUUID().toString())
+
             .tokenValiditySeconds(1209600)
+
         );
 
+
+
         return http.build();
+
     }
 
+
+
     @Bean
+
     public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+
         UserDetails user = User.builder()
+
             .username("admin")
+
             .password(passwordEncoder.encode(System.getenv("ADMIN_PASSWORD")))
+
             .roles("ADMIN")
+
             .build();
 
+
+
         return new InMemoryUserDetailsManager(user);
+
     }
 
+
+
     @Bean
+
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
+
     }
+
 }
 ```
 

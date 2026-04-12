@@ -22,8 +22,11 @@ pom.xml
 
 ```
 <dependency>
+
     <groupId>com.hazelcast</groupId>
+
     <artifactId>hazelcast</artifactId>
+
 </dependency>
 ```
 
@@ -33,36 +36,68 @@ HazelcastConfig.java
 
 ```
 @Bean
+
 public Config hazelcastConfig() {
+
     // This map is used to store the events.
+
     // It should be configured to reliably hold all the data,
+
     // Spring Boot Admin will compact the events, if there are too many
+
     MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
+
             .setBackupCount(1)
+
             .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+
     // This map is used to deduplicate the notifications.
+
     // If data in this map gets lost it should not be a big issue as it will atmost
+
     // lead to
+
     // the same notification to be sent by multiple instances
+
     MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
+
             .setInMemoryFormat(InMemoryFormat.OBJECT)
+
             .setBackupCount(1)
+
             .setEvictionConfig(
+
                     new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setMaxSizePolicy(MaxSizePolicy.PER_NODE))
+
             .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+
+
 
     Config config = new Config();
+
     config.addMapConfig(eventStoreMap);
+
     config.addMapConfig(sentNotificationsMap);
+
     config.setProperty("hazelcast.jmx", "true");
 
+
+
     // network and join configuration (simple defaults good for local/dev)
+
     NetworkConfig network = config.getNetworkConfig();
+
     network.setPort(5701).setPortAutoIncrement(true);
 
+
+
     JoinConfig join = network.getJoin();
+
     join.getMulticastConfig().setEnabled(true);
 
+
+
     return config;
+
 }
 ```
