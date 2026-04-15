@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.thymeleaf.spring6.dialect.SpringStandardDialect;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -93,6 +94,13 @@ public class AdminServerUiAutoConfiguration {
 	@Bean
 	public CssColorUtils cssColorUtils() {
 		return new CssColorUtils();
+	}
+
+	@Bean
+	public SpringStandardDialect springStandardDialect() {
+		SpringStandardDialect dialect = new SpringStandardDialect();
+		dialect.setEnableSpringELCompiler(true);
+		return dialect;
 	}
 
 	@Bean
