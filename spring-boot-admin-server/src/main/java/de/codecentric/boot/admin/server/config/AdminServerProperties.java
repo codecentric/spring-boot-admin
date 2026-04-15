@@ -49,6 +49,8 @@ public class AdminServerProperties {
 
 	private InstanceProxyProperties instanceProxy = new InstanceProxyProperties();
 
+	private EndpointCacheProperties endpointCache = new EndpointCacheProperties();
+
 	/**
 	 * The metadata keys which should be sanitized when serializing to json
 	 */
@@ -196,6 +198,42 @@ public class AdminServerProperties {
 		 * Headers not to be forwarded when making requests to clients.
 		 */
 		private Set<String> ignoredHeaders = new HashSet<>(asList("Cookie", "Set-Cookie", "Authorization"));
+
+	}
+
+	@lombok.Data
+	public static class EndpointCacheProperties {
+
+		/**
+		 * Whether server-side caching of proxied actuator GET responses is enabled.
+		 */
+		private boolean enabled = true;
+
+		/**
+		 * Default TTL for cached responses.
+		 */
+		@DurationUnit(ChronoUnit.MILLIS)
+		private Duration defaultTtl = Duration.ofMinutes(5);
+
+		/**
+		 * TTL per endpoint id. Overrides default-ttl for a specific endpoint. Example:
+		 * {@code spring.boot.admin.endpoint-cache.ttl.mappings=10m}
+		 */
+		@DurationUnit(ChronoUnit.MILLIS)
+		private Map<String, Duration> ttl = new HashMap<>();
+
+		/**
+		 * Endpoint ids whose responses should be cached. Only safe GET requests to these
+		 * endpoints are cached.
+		 */
+		private Set<String> endpoints = new HashSet<>(
+				asList("mappings", "configprops", "beans", "conditions", "sbom", "startup"));
+
+		/**
+		 * Maximum response body size in bytes that will be cached. Responses larger than
+		 * this threshold are forwarded as-is without caching.
+		 */
+		private long maxPayloadSize = 10L * 1024 * 1024;
 
 	}
 

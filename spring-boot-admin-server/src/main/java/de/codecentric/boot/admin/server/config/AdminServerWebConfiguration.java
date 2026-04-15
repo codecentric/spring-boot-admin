@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2024 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,12 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,12 +31,18 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import tools.jackson.databind.module.SimpleModule;
 
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
+import de.codecentric.boot.admin.server.web.HttpHeaderFilter;
+import de.codecentric.boot.admin.server.web.InstanceWebProxy;
 import de.codecentric.boot.admin.server.web.InstancesController;
+import de.codecentric.boot.admin.server.web.cache.ActuatorResponseCache;
+import de.codecentric.boot.admin.server.web.cache.CacheInvalidationTrigger;
+import de.codecentric.boot.admin.server.web.cache.InMemoryActuatorResponseCache;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 @Configuration(proxyBeanMethods = false)
@@ -62,6 +72,21 @@ public class AdminServerWebConfiguration {
 		return new ApplicationsController(applicationRegistry, applicationEventPublisher);
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(ActuatorResponseCache.class)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.endpoint-cache", name = "enabled", matchIfMissing = true)
+	public InMemoryActuatorResponseCache actuatorResponseCache() {
+		return new InMemoryActuatorResponseCache(this.adminServerProperties.getEndpointCache());
+	}
+
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	@ConditionalOnBean(ActuatorResponseCache.class)
+	@ConditionalOnMissingBean(CacheInvalidationTrigger.class)
+	public CacheInvalidationTrigger cacheInvalidationTrigger(ActuatorResponseCache responseCache,
+			Publisher<InstanceEvent> events) {
+		return new CacheInvalidationTrigger(events, responseCache);
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 	public static class ReactiveRestApiConfiguration {
@@ -75,11 +100,14 @@ public class AdminServerWebConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public de.codecentric.boot.admin.server.web.reactive.InstancesProxyController instancesProxyController(
-				InstanceRegistry instanceRegistry, InstanceWebClient.Builder instanceWebClientBuilder) {
+				InstanceRegistry instanceRegistry, InstanceWebClient.Builder instanceWebClientBuilder,
+				ObjectProvider<ActuatorResponseCache> responseCache) {
+			HttpHeaderFilter headerFilter = new HttpHeaderFilter(
+					this.adminServerProperties.getInstanceProxy().getIgnoredHeaders());
+			InstanceWebProxy instanceWebProxy = new InstanceWebProxy(instanceWebClientBuilder.build(),
+					responseCache.getIfAvailable(), headerFilter);
 			return new de.codecentric.boot.admin.server.web.reactive.InstancesProxyController(
-					this.adminServerProperties.getContextPath(),
-					this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry,
-					instanceWebClientBuilder.build());
+					this.adminServerProperties.getContextPath(), headerFilter, instanceRegistry, instanceWebProxy);
 		}
 
 		@Bean
@@ -108,11 +136,14 @@ public class AdminServerWebConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public de.codecentric.boot.admin.server.web.servlet.InstancesProxyController instancesProxyController(
-				InstanceRegistry instanceRegistry, InstanceWebClient.Builder instanceWebClientBuilder) {
+				InstanceRegistry instanceRegistry, InstanceWebClient.Builder instanceWebClientBuilder,
+				ObjectProvider<ActuatorResponseCache> responseCache) {
+			HttpHeaderFilter headerFilter = new HttpHeaderFilter(
+					this.adminServerProperties.getInstanceProxy().getIgnoredHeaders());
+			InstanceWebProxy instanceWebProxy = new InstanceWebProxy(instanceWebClientBuilder.build(),
+					responseCache.getIfAvailable(), headerFilter);
 			return new de.codecentric.boot.admin.server.web.servlet.InstancesProxyController(
-					this.adminServerProperties.getContextPath(),
-					this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry,
-					instanceWebClientBuilder.build());
+					this.adminServerProperties.getContextPath(), headerFilter, instanceRegistry, instanceWebProxy);
 		}
 
 		@Bean
