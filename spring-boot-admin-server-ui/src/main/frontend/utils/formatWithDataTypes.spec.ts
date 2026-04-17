@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { formatWithDataTypes } from './formatWithDataTypes';
 
@@ -64,16 +64,35 @@ describe('formatWithDataTypes', () => {
     expect(output).toEqual({ a: 1 });
   });
 
-  it('formats date from timestamp', () => {
-    const input = { timestamp: 1717243496000 };
-    const output = formatWithDataTypes(input, { timestamp: 'date' });
-    expect(output.timestamp).toMatch(/01\.06\.2024, 14:04:56/);
-  });
+  describe('date format', () => {
+    const OriginalDateTimeFormat = Intl.DateTimeFormat;
 
-  it('formats date from ISO string', () => {
-    const input = { created: '2024-06-01T12:34:56Z' };
-    const output = formatWithDataTypes(input, { created: 'date' });
-    expect(output.created).toMatch(/01\.06\.2024, 14:34:56/);
+    beforeAll(() => {
+      Intl.DateTimeFormat = class extends OriginalDateTimeFormat {
+        constructor(
+          _?: string | string[],
+          options?: Intl.DateTimeFormatOptions,
+        ) {
+          super('de-DE', options);
+        }
+      } as Intl.DateTimeFormatConstructor;
+    });
+
+    afterAll(() => {
+      Intl.DateTimeFormat = OriginalDateTimeFormat;
+    });
+
+    it('formats date from timestamp', () => {
+      const input = { timestamp: 1717243496000 };
+      const output = formatWithDataTypes(input, { timestamp: 'date' });
+      expect(output.timestamp).toMatch(/01\.06\.2024, 14:04:56/);
+    });
+
+    it('formats date from ISO string', () => {
+      const input = { created: '2024-06-01T12:34:56Z' };
+      const output = formatWithDataTypes(input, { created: 'date' });
+      expect(output.created).toMatch(/01\.06\.2024, 14:34:56/);
+    });
   });
 
   it('handles formatting errors gracefully', () => {
