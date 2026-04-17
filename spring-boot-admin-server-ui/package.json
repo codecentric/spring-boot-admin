@@ -4,8 +4,8 @@
   "description": "Spring Boot Admin UI",
   "scripts": {
     "build": "vite build --emptyOutDir --sourcemap",
-    "build:dev": "NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
-    "build:watch": "NODE_ENV=development vite build --emptyOutDir --sourcemap --watch --mode development",
+    "build:dev": "cross-env NODE_ENV=development vite build --emptyOutDir --sourcemap --mode development",
+    "build:watch": "cross-env NODE_ENV=development vite build --emptyOutDir --sourcemap --watch --mode development",
     "dev": "vite",
     "test": "vitest run --silent",
     "test:watch": "vitest",
@@ -91,6 +91,7 @@
     "@vue/test-utils": "2.4.6",
     "axios-mock-adapter": "^2.1.0",
     "babel-loader": "10.1.1",
+    "cross-env": "^10.1.0",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-prettier": "^5.0.0",
