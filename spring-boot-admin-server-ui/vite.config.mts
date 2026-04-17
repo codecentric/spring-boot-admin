@@ -50,21 +50,15 @@ export default defineConfig(({ mode }) => {
       },
     },
     test: {
-      root: __dirname,
       globals: true,
       environment: 'jsdom',
-      setupFiles: [resolve(frontendDir, 'tests/setup.ts')],
+      setupFiles: ['tests/setup.ts'],
       env: {
         LANG: 'de_DE.UTF-8',
         LC_ALL: 'de_DE.UTF-8',
         TZ: 'Europe/Berlin',
       },
-      include: [
-        resolve(
-          frontendDir,
-          '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-        ),
-      ],
+      include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     },
     root: frontendDir,
     build: {
