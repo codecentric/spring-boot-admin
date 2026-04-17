@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +41,9 @@ import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.web.cache.ActuatorResponseCache;
+import de.codecentric.boot.admin.server.web.cache.CacheEntry;
+import de.codecentric.boot.admin.server.web.cache.HazelcastActuatorResponseCache;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
@@ -47,6 +51,7 @@ import de.codecentric.boot.admin.server.notify.Notifier;
 @ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ AdminServerAutoConfiguration.class, AdminServerNotifierAutoConfiguration.class })
 @AutoConfigureAfter(HazelcastAutoConfiguration.class)
+@EnableConfigurationProperties(AdminServerProperties.class)
 @Lazy(false)
 public class AdminServerHazelcastAutoConfiguration {
 
@@ -54,8 +59,13 @@ public class AdminServerHazelcastAutoConfiguration {
 
 	public static final String DEFAULT_NAME_SENT_NOTIFICATIONS_MAP = "spring-boot-admin-sent-notifications";
 
+	public static final String DEFAULT_NAME_RESPONSE_CACHE_MAP = "spring-boot-admin-actuator-response-cache";
+
 	@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP + "}")
-	private final String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
+	private String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
+
+	@Value("${spring.boot.admin.hazelcast.response-cache:" + DEFAULT_NAME_RESPONSE_CACHE_MAP + "}")
+	private String nameResponseCacheMap = DEFAULT_NAME_RESPONSE_CACHE_MAP;
 
 	@Bean
 	@ConditionalOnMissingBean(InstanceEventStore.class)
@@ -64,12 +74,21 @@ public class AdminServerHazelcastAutoConfiguration {
 		return new HazelcastEventStore(map);
 	}
 
+	@Bean
+	@ConditionalOnMissingBean(ActuatorResponseCache.class)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.endpoint-cache", name = "enabled", matchIfMissing = true)
+	public HazelcastActuatorResponseCache actuatorResponseCache(HazelcastInstance hazelcastInstance,
+			AdminServerProperties properties) {
+		IMap<String, CacheEntry> map = hazelcastInstance.getMap(this.nameResponseCacheMap);
+		return new HazelcastActuatorResponseCache(map, properties.getEndpointCache());
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Notifier.class)
 	public static class NotifierTriggerConfiguration {
 
 		@Value("${spring.boot.admin.hazelcast.sent-notifications:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP + "}")
-		private final String nameSentNotificationsMap = DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
+		private String nameSentNotificationsMap = DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
 
 		@Bean(initMethod = "start", destroyMethod = "stop")
 		@ConditionalOnMissingBean(NotificationTrigger.class)

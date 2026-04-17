@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package de.codecentric.boot.admin.server.web.reactive;
 
 import java.net.URI;
-import java.util.Set;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -42,7 +43,6 @@ import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.HttpHeaderFilter;
 import de.codecentric.boot.admin.server.web.InstanceWebProxy;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * Http Handler for proxied requests
@@ -66,28 +66,26 @@ public class InstancesProxyController {
 
 	private final HttpHeaderFilter httpHeadersFilter;
 
-	public InstancesProxyController(String adminContextPath, Set<String> ignoredHeaders, InstanceRegistry registry,
-			InstanceWebClient instanceWebClient) {
+	public InstancesProxyController(String adminContextPath, HttpHeaderFilter httpHeadersFilter,
+			InstanceRegistry registry, InstanceWebProxy instanceWebProxy) {
 		this.adminContextPath = adminContextPath;
+		this.httpHeadersFilter = httpHeadersFilter;
 		this.registry = registry;
-		this.httpHeadersFilter = new HttpHeaderFilter(ignoredHeaders);
-		this.instanceWebProxy = new InstanceWebProxy(instanceWebClient);
+		this.instanceWebProxy = instanceWebProxy;
 	}
 
 	@RequestMapping(path = INSTANCE_MAPPED_PATH, method = { RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST,
 			RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS })
 	public Mono<Void> endpointProxy(@PathVariable("instanceId") String instanceId, ServerHttpRequest request,
 			ServerHttpResponse response) {
-		InstanceWebProxy.ForwardRequest fwdRequest = createForwardRequest(request, request.getBody(),
-				this.adminContextPath + INSTANCE_MAPPED_PATH);
+		String localPath = getLocalPath(this.adminContextPath + INSTANCE_MAPPED_PATH, request);
+		String rawQuery = request.getURI().getRawQuery();
+		InstanceId id = InstanceId.of(instanceId);
 
-		return this.instanceWebProxy.forward(this.registry.getInstance(InstanceId.of(instanceId)), fwdRequest,
-				(clientResponse) -> {
-					response.setStatusCode(clientResponse.statusCode());
-					response.getHeaders()
-						.addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
-					return response.writeAndFlushWith(clientResponse.body(BodyExtractors.toDataBuffers()).window(1));
-				});
+		InstanceWebProxy.ForwardRequest fwdRequest = createForwardRequest(request, request.getBody(), localPath,
+				rawQuery);
+		return this.instanceWebProxy.forward(this.registry.getInstance(id), fwdRequest,
+				(clientResponse) -> writeProxiedResponse(clientResponse, response));
 	}
 
 	@ResponseBody
@@ -111,15 +109,25 @@ public class InstancesProxyController {
 		return this.instanceWebProxy.forward(this.registry.getInstances(applicationName), fwdRequest);
 	}
 
-	private InstanceWebProxy.ForwardRequest createForwardRequest(ServerHttpRequest request, Flux<DataBuffer> cachedBody,
+	private Mono<Void> writeProxiedResponse(ClientResponse clientResponse, ServerHttpResponse response) {
+		response.setStatusCode(clientResponse.statusCode());
+		response.getHeaders().addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
+		return response.writeAndFlushWith(clientResponse.body(BodyExtractors.toDataBuffers()).window(1));
+	}
+
+	private InstanceWebProxy.ForwardRequest createForwardRequest(ServerHttpRequest request, Flux<DataBuffer> body,
 			String pathPattern) {
-		String localPath = this.getLocalPath(pathPattern, request);
-		URI uri = UriComponentsBuilder.fromPath(localPath).query(request.getURI().getRawQuery()).build(true).toUri();
+		return createForwardRequest(request, body, getLocalPath(pathPattern, request), request.getURI().getRawQuery());
+	}
+
+	private InstanceWebProxy.ForwardRequest createForwardRequest(ServerHttpRequest request, Flux<DataBuffer> body,
+			String localPath, @Nullable String rawQuery) {
+		URI uri = UriComponentsBuilder.fromPath(localPath).query(rawQuery).build(true).toUri();
 		return InstanceWebProxy.ForwardRequest.builder()
 			.uri(uri)
 			.method(request.getMethod())
 			.headers(this.httpHeadersFilter.filterHeaders(request.getHeaders()))
-			.body(BodyInserters.fromDataBuffers(cachedBody))
+			.body(BodyInserters.fromDataBuffers(body))
 			.build();
 	}
 
