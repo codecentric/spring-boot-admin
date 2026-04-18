@@ -58,6 +58,7 @@
             params: { instanceId: instance.id },
           }"
           class="navbar-link navbar-link__group"
+          @click.prevent="toggleGroup(group.id)"
         >
           <span v-html="group.icon" />
           <span
@@ -90,7 +91,7 @@
 
         <!-- Le subnav -->
         <ul
-          v-if="hasMultipleViews(group) && isActiveGroup(group)"
+          v-if="hasMultipleViews(group) && (openGroup === group.id || isActiveGroup(group))"
           :class="{ 'hidden md:block': !sidebarOpen }"
           class="relative block"
         >
@@ -183,6 +184,7 @@ const props = defineProps<{
 const { t } = useI18n();
 const route = useRoute();
 const sidebarOpen = ref(false);
+const openGroup = ref<string | null>(null);
 
 const customLinksFromMetadata = computed(() => {
   const newVar = props.instance.metadataParsed?.sidebar?.links || [];
@@ -233,11 +235,16 @@ watch(
   () => route.fullPath,
   () => {
     sidebarOpen.value = false;
+    openGroup.value = null;
   },
 );
 
 function toggleSidebar() {
   sidebarOpen.value = !sidebarOpen.value;
+}
+
+function toggleGroup(groupId: string) {
+  openGroup.value = openGroup.value === groupId ? null : groupId;
 }
 
 function getGroupTitle(groupId: string) {
