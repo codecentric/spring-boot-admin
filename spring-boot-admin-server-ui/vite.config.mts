@@ -59,12 +59,7 @@ export default defineConfig(({ mode }) => {
         LC_ALL: 'de_DE.UTF-8',
         TZ: 'Europe/Berlin',
       },
-      include: [
-        resolve(
-          frontendDir,
-          '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-        ),
-      ],
+      include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     },
     root: frontendDir,
     build: {
