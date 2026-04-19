@@ -33,6 +33,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.PollTimer;
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.UiTheme;
+import de.codecentric.boot.admin.server.ui.config.CssColorUtils;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.AdminController;
@@ -50,10 +51,13 @@ public class UiController {
 
 	private final Settings uiSettings;
 
-	public UiController(String publicUrl, UiExtensions uiExtensions, Settings uiSettings) {
+	private final CssColorUtils cssColorUtils;
+
+	public UiController(String publicUrl, UiExtensions uiExtensions, Settings uiSettings, CssColorUtils cssColorUtils) {
 		this.publicUrl = publicUrl;
 		this.uiExtensions = uiExtensions;
 		this.uiSettings = uiSettings;
+		this.cssColorUtils = cssColorUtils;
 	}
 
 	@ModelAttribute(value = "baseUrl", binding = false)
@@ -95,6 +99,23 @@ public class UiController {
 			return singletonMap("name", principal.getName());
 		}
 		return emptyMap();
+	}
+
+	@ModelAttribute(value = "cssColors", binding = false)
+	public Map<String, String> getCssColors() {
+		var palette = uiSettings.getTheme().getPalette();
+		return Map.of(
+			"shade50Rgb", cssColorUtils.hexToRgb(palette.getShade50()),
+			"shade100Rgb", cssColorUtils.hexToRgb(palette.getShade100()),
+			"shade200Rgb", cssColorUtils.hexToRgb(palette.getShade200()),
+			"shade300Rgb", cssColorUtils.hexToRgb(palette.getShade300()),
+			"shade400Rgb", cssColorUtils.hexToRgb(palette.getShade400()),
+			"shade500Rgb", cssColorUtils.hexToRgb(palette.getShade500()),
+			"shade600Rgb", cssColorUtils.hexToRgb(palette.getShade600()),
+			"shade700Rgb", cssColorUtils.hexToRgb(palette.getShade700()),
+			"shade800Rgb", cssColorUtils.hexToRgb(palette.getShade800()),
+			"shade900Rgb", cssColorUtils.hexToRgb(palette.getShade900())
+		);
 	}
 
 	@GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
