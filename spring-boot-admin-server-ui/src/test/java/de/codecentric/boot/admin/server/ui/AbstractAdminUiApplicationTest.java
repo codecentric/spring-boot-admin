@@ -150,6 +150,31 @@ public abstract class AbstractAdminUiApplicationTest {
 		//@formatter:on
 	}
 
+	@Test
+	public void should_render_palette_colors_in_variables_css() {
+		//@formatter:off
+		this.webClient.get()
+					.uri("/variables.css")
+					.accept(MediaType.parseMediaType("text/css"), MediaType.ALL)
+					.exchange()
+					.expectStatus().isOk()
+					.expectHeader().contentTypeCompatibleWith(MediaType.parseMediaType("text/css"))
+					.expectBody(String.class)
+					.value((body) -> assertThat(body).contains("--main-50: rgb(238, 252, 250)"))
+					.value((body) -> assertThat(body).contains("--main-100: rgb(217, 247, 244)"))
+					.value((body) -> assertThat(body).contains("--main-200: rgb(183, 240, 234)"))
+					.value((body) -> assertThat(body).contains("--main-300: rgb(145, 232, 224)"))
+					.value((body) -> assertThat(body).contains("--main-400: rgb(107, 224, 213)"))
+					.value((body) -> assertThat(body).contains("--main-500: rgb(71, 217, 203)"))
+					.value((body) -> assertThat(body).contains("--main-600: rgb(39, 190, 175)"))
+					.value((body) -> assertThat(body).contains("--main-700: rgb(30, 144, 132)"))
+					.value((body) -> assertThat(body).contains("--main-800: rgb(20, 97, 90)"))
+					.value((body) -> assertThat(body).contains("--main-900: rgb(10, 47, 43)"))
+					.value((body) -> assertThat(body).contains("--bg-color-start: #91E8E0"))
+					.value((body) -> assertThat(body).contains("--bg-color-stop: #1E9084"));
+		//@formatter:on
+	}
+
 	protected WebTestClient createWebClient(int port) {
 		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
 	}
