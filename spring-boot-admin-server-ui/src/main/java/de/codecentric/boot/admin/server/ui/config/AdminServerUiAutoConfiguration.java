@@ -97,7 +97,7 @@ public class AdminServerUiAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public UiController homeUiController(UiExtensions uiExtensions) throws IOException {
+	public UiController homeUiController(UiExtensions uiExtensions, CssColorUtils cssColorUtils) throws IOException {
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 			.scan(this.adminUi.getExtensionResourceLocations());
 		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream()).toList();
@@ -124,7 +124,7 @@ public class AdminServerUiAutoConfiguration {
 
 		String publicUrl = (this.adminUi.getPublicUrl() != null) ? this.adminUi.getPublicUrl()
 				: this.adminServer.getContextPath();
-		return new UiController(publicUrl, uiExtensions, uiSettings);
+		return new UiController(publicUrl, uiExtensions, uiSettings, cssColorUtils);
 	}
 
 	@Bean

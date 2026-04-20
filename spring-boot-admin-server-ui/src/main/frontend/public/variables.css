@@ -1,17 +1,17 @@
 :root {
-  --main-50: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade50())})]*/ #e8fbef;
-  --main-100: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade100())})]*/ #d0f7df;
-  --main-200: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade200())})]*/ #a1efbd;
-  --main-300: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade300())})]*/ #71e69c;
-  --main-400: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade400())})]*/ #41de7b;
-  --main-500: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade500())})]*/ #22c55e;
-  --main-600: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade600())})]*/ #1a9547;
-  --main-700: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade700())})]*/ #116530;
-  --main-800: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade800())})]*/ #09351a;
-  --main-900: /*[(${@cssColorUtils.hexToRgb(uiSettings.theme.palette.getShade900())})]*/ #010603;
+  --main-50: /*[(${palette.rgbColor50})]*/ #e8fbef;
+  --main-100: /*[(${palette.rgbColor100})]*/ #d0f7df;
+  --main-200: /*[(${palette.rgbColor200})]*/ #a1efbd;
+  --main-300: /*[(${palette.rgbColor300})]*/ #71e69c;
+  --main-400: /*[(${palette.rgbColor400})]*/ #41de7b;
+  --main-500: /*[(${palette.rgbColor500})]*/ #22c55e;
+  --main-600: /*[(${palette.rgbColor600})]*/ #1a9547;
+  --main-700: /*[(${palette.rgbColor700})]*/ #116530;
+  --main-800: /*[(${palette.rgbColor800})]*/ #09351a;
+  --main-900: /*[(${palette.rgbColor900})]*/ #010603;
 
-  --bg-color-start: /*[(${uiSettings.theme.palette.getShade300()})]*/ #71e69c;
-  --bg-color-stop: /*[(${uiSettings.theme.palette.getShade700()})]*/ #09351a;
+  --bg-color-start: /*[(${uiSettings.theme.palette.shade300})]*/ #71e69c;
+  --bg-color-stop: /*[(${uiSettings.theme.palette.shade700})]*/ #09351a;
 }
 
 .bg-color-start {

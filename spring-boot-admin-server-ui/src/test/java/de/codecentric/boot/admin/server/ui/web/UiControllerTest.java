@@ -24,6 +24,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties;
+import de.codecentric.boot.admin.server.ui.config.CssColorUtils;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping;
 
@@ -99,12 +101,13 @@ class UiControllerTest {
 	}
 
 	private MockMvc setupController(String publicUrl, List<UiController.ExternalView> externalViews) {
-		var uiControllerSettings = UiController.Settings.builder();
+		var uiControllerSettings = UiController.Settings.builder().theme(new AdminServerUiProperties.UiTheme());
 		if (!isEmpty(externalViews)) {
 			uiControllerSettings.externalViews(externalViews);
 		}
 		return MockMvcBuilders
-			.standaloneSetup(new UiController(publicUrl, UiExtensions.EMPTY, uiControllerSettings.build()))
+			.standaloneSetup(
+					new UiController(publicUrl, UiExtensions.EMPTY, uiControllerSettings.build(), new CssColorUtils()))
 			.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
 			.build();
 	}
