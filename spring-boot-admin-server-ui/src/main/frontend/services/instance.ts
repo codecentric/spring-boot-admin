@@ -515,7 +515,7 @@ export type Registration = {
   metadata?: { [key: string]: string };
 };
 
-type StatusInfo = {
+export type StatusInfo = {
   status:
     | 'UNKNOWN'
     | 'OUT_OF_SERVICE'
