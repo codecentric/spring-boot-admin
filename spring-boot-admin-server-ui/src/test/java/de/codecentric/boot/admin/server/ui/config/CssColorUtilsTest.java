@@ -23,17 +23,13 @@ class CssColorUtilsTest implements WithAssertions {
 
 	@Test
 	void hexToRgb() {
-		CssColorUtils cssColorUtils = new CssColorUtils();
-
-		assertThat(cssColorUtils.hexToRgb(new AdminServerUiProperties.Palette().getShade50()))
+		assertThat(CssColorUtils.hexToRgb(new AdminServerUiProperties.Palette().getShade50()))
 			.isEqualTo("rgb(238, 252, 250)");
 	}
 
 	@Test
 	void hexToRgb_throws_exception_on_invalid_format() {
-		CssColorUtils cssColorUtils = new CssColorUtils();
-
-		assertThatThrownBy(() -> cssColorUtils.hexToRgb("EEFCFA")).isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> CssColorUtils.hexToRgb("EEFCFA")).isInstanceOf(IllegalArgumentException.class);
 	}
 
 }

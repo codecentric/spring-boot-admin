@@ -91,13 +91,8 @@ public class AdminServerUiAutoConfiguration {
 	}
 
 	@Bean
-	public CssColorUtils cssColorUtils() {
-		return new CssColorUtils();
-	}
-
-	@Bean
 	@ConditionalOnMissingBean
-	public UiController homeUiController(UiExtensions uiExtensions, CssColorUtils cssColorUtils) throws IOException {
+	public UiController homeUiController(UiExtensions uiExtensions) throws IOException {
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 			.scan(this.adminUi.getExtensionResourceLocations());
 		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream()).toList();
@@ -124,7 +119,7 @@ public class AdminServerUiAutoConfiguration {
 
 		String publicUrl = (this.adminUi.getPublicUrl() != null) ? this.adminUi.getPublicUrl()
 				: this.adminServer.getContextPath();
-		return new UiController(publicUrl, uiExtensions, uiSettings, cssColorUtils);
+		return new UiController(publicUrl, uiExtensions, uiSettings);
 	}
 
 	@Bean

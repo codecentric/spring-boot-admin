@@ -53,13 +53,10 @@ public class UiController {
 
 	private final Settings uiSettings;
 
-	private final CssColorUtils cssColorUtils;
-
-	public UiController(String publicUrl, UiExtensions uiExtensions, Settings uiSettings, CssColorUtils cssColorUtils) {
+	public UiController(String publicUrl, UiExtensions uiExtensions, Settings uiSettings) {
 		this.publicUrl = publicUrl;
 		this.uiExtensions = uiExtensions;
 		this.uiSettings = uiSettings;
-		this.cssColorUtils = cssColorUtils;
 	}
 
 	@ModelAttribute(value = "baseUrl", binding = false)
@@ -130,7 +127,7 @@ public class UiController {
 
 	private Map.Entry<String, String> hexToRgbColor(int grade, Function<Palette, String> hexColorGetter) {
 		return Map.entry(("rgbColor" + grade).intern(),
-				cssColorUtils.hexToRgb(hexColorGetter.apply(uiSettings.getTheme().getPalette())));
+				CssColorUtils.hexToRgb(hexColorGetter.apply(uiSettings.getTheme().getPalette())));
 	}
 
 	@GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)

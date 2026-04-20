@@ -25,7 +25,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties;
-import de.codecentric.boot.admin.server.ui.config.CssColorUtils;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping;
 
@@ -80,16 +79,16 @@ class UiControllerTest {
 
 	@ParameterizedTest
 	@CsvSource(value = { //
-			"link without children with url, https://codecentric.de, false, false", //
-			"link without children without url, null, false, true", //
-			"link with children, null, true, false" }, //
-			nullValues = { "null" })
+		"link without children with url, https://codecentric.de, false, false", //
+		"link without children without url, null, false, true", //
+		"link with children, null, true, false"}, //
+		nullValues = {"null"})
 	void should_validate_external_views(String label, String url, boolean hasChildren, boolean shouldFail) {
 		try {
 			UiController.ExternalView externalView = new UiController.ExternalView(label, url, 1, false,
-					hasChildren
-							? List.of(new UiController.ExternalView("child", "https://urli.com", 1, false, List.of()))
-							: List.of());
+				hasChildren
+					? List.of(new UiController.ExternalView("child", "https://urli.com", 1, false, List.of()))
+					: List.of());
 
 			setupController("https://mysba.com", List.of(externalView));
 		}
@@ -107,7 +106,7 @@ class UiControllerTest {
 		}
 		return MockMvcBuilders
 			.standaloneSetup(
-					new UiController(publicUrl, UiExtensions.EMPTY, uiControllerSettings.build(), new CssColorUtils()))
+				new UiController(publicUrl, UiExtensions.EMPTY, uiControllerSettings.build()))
 			.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
 			.build();
 	}
