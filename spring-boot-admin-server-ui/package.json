@@ -100,7 +100,7 @@
     "globals": "^17.0.0",
     "happy-dom": "^20.0.0",
     "jsdom": "^29.0.0",
-    "msw": "2.13.3",
+    "msw": "2.13.4",
     "msw-storybook-addon": "2.0.7",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "7.0.1",
