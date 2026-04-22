@@ -15,7 +15,12 @@
   -->
 
 <template>
-  <sba-instance-section :error="error" :loading="!hasLoaded">
+  <sba-instance-section
+    :error="error"
+    :loading="!hasLoaded"
+    :layout-options="{ isFlex: true, noMargin: true }"
+    class="logfile-section"
+  >
     <template #before>
       <sba-sticky-subnav>
         <div class="flex items-center justify-end gap-1">
@@ -86,6 +91,7 @@
     </template>
 
     <div
+      ref="scrollContainer"
       :class="{ 'wrap-lines': wrapLines }"
       class="log-viewer overflow-x-auto text-sm -mx-6 -my-20 pt-14"
     >
@@ -143,17 +149,20 @@ export default {
   },
   created() {
     this.ansiUp = new AnsiUp();
-    this.scrollSubscription = fromEvent(window, 'scroll')
+  },
+  mounted() {
+    const element = this.$refs.scrollContainer;
+    this.scrollSubscription = fromEvent(element, 'scroll')
       .pipe(
         debounceTime(25),
-        map((event) => event.target.scrollingElement.scrollTop),
+        map(() => element.scrollTop),
       )
       .subscribe((scrollTop) => {
         this.atTop = scrollTop === 0;
         this.atBottom =
-          document.scrollingElement.clientHeight ===
-          document.scrollingElement.scrollHeight -
-            document.scrollingElement.scrollTop;
+          Math.abs(
+            element.clientHeight - (element.scrollHeight - element.scrollTop),
+          ) <= 1;
       });
   },
   beforeUnmount() {
@@ -204,11 +213,11 @@ export default {
         });
     },
     scrollToTop() {
-      document.scrollingElement.scrollTop = 0;
+      this.$refs.scrollContainer.scrollTop = 0;
     },
     scrollToBottom() {
-      document.scrollingElement.scrollTop =
-        document.scrollingElement.scrollHeight;
+      this.$refs.scrollContainer.scrollTop =
+        this.$refs.scrollContainer.scrollHeight;
     },
     downloadLogfile() {
       window.open(`instances/${this.instance.id}/actuator/logfile`, '_blank');
@@ -231,6 +240,35 @@ export default {
 
 <style lang="css">
 @reference "../../../index.css";
+.logfile-section {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+.logfile-section #subnavigation {
+  flex: 0 0 auto;
+}
+
+.logfile-section .sba-instance-section-content {
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  flex-direction: column;
+}
+
+.logfile-section .sba-instance-section-content [role='alert'] {
+  margin: 0;
+}
+
+.log-viewer {
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-height: 100%;
+}
+
 .log-viewer pre {
   padding: 0 0.75em;
   margin-bottom: 1px;
@@ -242,6 +280,7 @@ export default {
 
 .log-viewer.wrap-lines pre {
   @apply whitespace-pre-wrap;
+  word-break: break-all;
 }
 
 .log-viewer {
