@@ -22,7 +22,10 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
   return timer(0, interval).pipe(
     concatMap(() => {
       return new Observable((observer) => {
-        getFn({ headers: { range, Accept: 'text/plain' } })
+        getFn({
+          responseType: 'text',
+          headers: { range, Accept: 'text/plain' },
+        })
           .then((response) => {
             observer.next(response);
             observer.complete();
