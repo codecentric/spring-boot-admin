@@ -1,6 +1,9 @@
 import { AxiosError } from 'axios';
-import { describe, expect, test, vi } from 'vitest';
+import { http } from 'msw';
+import { firstValueFrom } from 'rxjs';
+import { describe, expect, it, test, vi } from 'vitest';
 
+import { server } from '@/mocks/server';
 import Instance from '@/services/instance';
 
 const { useSbaConfig } = vi.hoisted(() => ({
@@ -179,6 +182,40 @@ describe('Instance', () => {
         expect.any(String),
         expect.objectContaining({ suppressToast: suppressFn }),
       );
+    });
+  });
+
+  describe('streamLogFile', () => {
+    const instance = new Instance({
+      id: 'test-id',
+      registration: {
+        name: 'test',
+        healthUrl: '',
+        source: '',
+      },
+    });
+
+    it('should handle single JSON log line correctly', async () => {
+      const payload = '{"foo":"bar"}';
+      server.use(
+        http.get(
+          '/instances/:instanceId/actuator/logfile',
+          () =>
+            // As per Spring Boot definition: https://docs.spring.io/spring-boot/api/rest/actuator/logfile.html
+            new Response(payload, {
+              headers: {
+                'Accept-Ranges': 'bytes',
+                'Content-Type': 'text/plain;charset=UTF-8',
+                'Content-Length': payload.length.toString(),
+              },
+            }),
+        ),
+      );
+
+      const source = instance.streamLogfile(0);
+      const { addendum } = await firstValueFrom(source);
+
+      expect(addendum).toEqual(payload);
     });
   });
 });
