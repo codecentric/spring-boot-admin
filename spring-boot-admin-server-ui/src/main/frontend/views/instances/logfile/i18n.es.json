@@ -3,8 +3,12 @@
     "logfile": {
       "label": "Archivo de log",
       "download": "Descargar",
-
-      "wrap_lines": "Ajustar líneas"
+      "wrap_lines": "Ajustar líneas",
+      "page_up": "Subir página",
+      "page_down": "Bajar página",
+      "previous_chunk": "Fragmento anterior",
+      "next_chunk": "Fragmento siguiente",
+      "resume_follow": "Reanudar seguimiento"
     }
   }
 }

@@ -15,7 +15,39 @@
  */
 import { EMPTY, Observable, catchError, concatMap, of, timer } from './rxjs';
 
-export default (getFn, interval, initialSize = 300 * 1024) => {
+export const DEFAULT_LOGFILE_CHUNK_SIZE = 300 * 1024;
+
+const parseInteger = (value, fallback) => {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? fallback : parsed;
+};
+
+export const getLogfileWindowMetadata = (response) => {
+  const contentLength = response.data.length;
+  const contentRange = response.headers.get('content-range');
+  const rangeMatch = contentRange?.match(/^bytes\s+(\d+)-(\d+)\/(\d+|\*)$/i);
+
+  if (rangeMatch) {
+    return {
+      windowStart: parseInteger(rangeMatch[1], 0),
+      windowEnd: parseInteger(rangeMatch[2], Math.max(contentLength - 1, 0)),
+      totalBytes: parseInteger(rangeMatch[3], contentLength),
+    };
+  }
+
+  const totalBytes = parseInteger(
+    response.headers.get('content-length'),
+    contentLength,
+  );
+
+  return {
+    windowStart: 0,
+    windowEnd: Math.max(contentLength - 1, 0),
+    totalBytes,
+  };
+};
+
+export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
   let range = `bytes=-${initialSize}`;
   let size = 0;
 
@@ -38,16 +70,21 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
     concatMap((response) => {
       let initial = size === 0;
       const contentLength = response.data.length;
+      let windowStart = 0;
+      let windowEnd = Math.max(contentLength - 1, 0);
 
       if (response.status === 200) {
         if (!initial) {
           throw 'Expected 206 - Partial Content on subsequent requests.';
         }
         size = contentLength;
-        range = `bytes=${size - 1}-`;
+        range = `bytes=${Math.max(size - 1, 0)}-`;
       } else if (response.status === 206) {
-        size = parseInt(response.headers['content-range'].split('/')[1]);
-        range = `bytes=${size - 1}-`;
+        const metadata = getLogfileWindowMetadata(response);
+        size = metadata.totalBytes;
+        windowStart = metadata.windowStart;
+        windowEnd = metadata.windowEnd;
+        range = `bytes=${Math.max(size - 1, 0)}-`;
       } else if (response.status === 416) {
         size = 0;
         range = `bytes=-${initialSize}`;
@@ -77,6 +114,8 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
             totalBytes: size,
             skipped,
             addendum,
+            windowStart,
+            windowEnd,
           })
         : EMPTY;
     }),

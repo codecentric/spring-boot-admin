@@ -2,7 +2,13 @@
   "instances": {
     "logfile": {
       "label": "로그파일",
-      "download": "다운로드"
+      "download": "다운로드",
+      "wrap_lines": "줄 바꿈",
+      "page_up": "페이지 위로",
+      "page_down": "페이지 아래로",
+      "previous_chunk": "이전 구간",
+      "next_chunk": "다음 구간",
+      "resume_follow": "실시간 추적 재개"
     }
   }
 }
