@@ -2,7 +2,13 @@
   "instances": {
     "logfile": {
       "label": "Annálaskrá",
-      "download": "Niðurhal"
+      "download": "Niðurhal",
+      "wrap_lines": "Línuskipting",
+      "page_up": "Síða upp",
+      "page_down": "Síða niður",
+      "previous_chunk": "Fyrri hluti",
+      "next_chunk": "Næsti hluti",
+      "resume_follow": "Fylgja aftur"
     }
   }
 }

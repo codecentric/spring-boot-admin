@@ -2,7 +2,13 @@
   "instances": {
     "logfile": {
       "label": "Лог-файл",
-      "download": "Загрузить"
+      "download": "Загрузить",
+      "wrap_lines": "Перенос строк",
+      "page_up": "Страница вверх",
+      "page_down": "Страница вниз",
+      "previous_chunk": "Предыдущий фрагмент",
+      "next_chunk": "Следующий фрагмент",
+      "resume_follow": "Возобновить слежение"
     }
   }
 }

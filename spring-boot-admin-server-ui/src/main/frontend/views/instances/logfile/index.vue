@@ -48,37 +48,54 @@
           </div>
 
           <div class="mx-3 btn-group">
-            <sba-button :disabled="atTop" @click="scrollToTop">
-              <svg
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M7 11l5-5m0 0l5 5m-5-5v12"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+            <sba-button
+              :aria-label="$t('instances.logfile.resume_follow')"
+              :disabled="isChunkLoading"
+              :primary="isFollowing"
+              :title="$t('instances.logfile.resume_follow')"
+              @click="toggleFollowMode"
+            >
+              <font-awesome-icon :icon="faArrowsDownToLine" />
             </sba-button>
-            <sba-button :disabled="atBottom" @click="scrollToBottom">
-              <svg
-                class="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M17 13l-5 5m0 0l-5-5m5 5V6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+            <sba-button
+              :aria-label="
+                $t(
+                  isFollowing
+                    ? 'instances.logfile.page_up'
+                    : 'instances.logfile.previous_chunk',
+                )
+              "
+              :disabled="!canPageUp"
+              :title="
+                $t(
+                  isFollowing
+                    ? 'instances.logfile.page_up'
+                    : 'instances.logfile.previous_chunk',
+                )
+              "
+              @click="pageUp"
+            >
+              <font-awesome-icon :icon="faArrowUp" />
+            </sba-button>
+            <sba-button
+              :aria-label="
+                $t(
+                  isFollowing
+                    ? 'instances.logfile.page_down'
+                    : 'instances.logfile.next_chunk',
+                )
+              "
+              :disabled="!canPageDown"
+              :title="
+                $t(
+                  isFollowing
+                    ? 'instances.logfile.page_down'
+                    : 'instances.logfile.next_chunk',
+                )
+              "
+              @click="pageDown"
+            >
+              <font-awesome-icon :icon="faArrowDown" />
             </sba-button>
           </div>
 
@@ -95,12 +112,28 @@
       :class="{ 'wrap-lines': wrapLines }"
       class="log-viewer overflow-x-auto text-sm -mx-6 -my-20 pt-14"
     >
-      <table ref="logContainer" class="table-striped min-w-full" />
+      <table class="table-striped">
+        <tbody>
+          <tr
+            v-for="(line, index) in renderedLines"
+            :key="`${windowStart}-${index}`"
+          >
+            <td>
+              <pre v-html="renderLine(line)" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </sba-instance-section>
 </template>
 
 <script>
+import {
+  faArrowDown,
+  faArrowUp,
+  faArrowsDownToLine,
+} from '@fortawesome/free-solid-svg-icons';
 import { AnsiUp } from 'ansi_up/ansi_up';
 import { chunk } from 'lodash-es';
 import prettyBytes from 'pretty-bytes';
@@ -110,6 +143,7 @@ import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import autolink from '@/utils/autolink';
+import { DEFAULT_LOGFILE_CHUNK_SIZE } from '@/utils/logtail';
 import {
   animationFrameScheduler,
   concatAll,
@@ -136,15 +170,46 @@ export default {
     atBottom: false,
     atTop: true,
     skippedBytes: null,
+    renderedLines: [],
     wrapLines: false,
     scrollSubscription: null,
+    mode: 'follow',
+    chunkSize: DEFAULT_LOGFILE_CHUNK_SIZE,
+    windowStart: 0,
+    windowEnd: -1,
+    totalBytes: 0,
+    isChunkLoading: false,
+    faArrowDown,
+    faArrowsDownToLine,
+    faArrowUp,
   }),
   computed: {
     skippedBytesString() {
-      if (this.skippedBytes != null) {
+      if (this.skippedBytes != null && this.skippedBytes > 0) {
         return `skipped ${prettyBytes(this.skippedBytes)}`;
       }
       return '';
+    },
+    isFollowing() {
+      return this.mode === 'follow';
+    },
+    canLoadPrevious() {
+      return !this.isChunkLoading && this.windowStart > 0;
+    },
+    canLoadNext() {
+      return (
+        !this.isFollowing &&
+        !this.isChunkLoading &&
+        this.windowEnd >= 0 &&
+        this.totalBytes > 0 &&
+        this.windowEnd < this.totalBytes - 1
+      );
+    },
+    canPageUp() {
+      return !this.isChunkLoading && (!this.atTop || this.canLoadPrevious);
+    },
+    canPageDown() {
+      return !this.isChunkLoading && !(this.isFollowing && this.atBottom);
     },
   },
   created() {
@@ -153,17 +218,12 @@ export default {
   mounted() {
     const element = this.$refs.scrollContainer;
     this.scrollSubscription = fromEvent(element, 'scroll')
-      .pipe(
-        debounceTime(25),
-        map(() => element.scrollTop),
-      )
-      .subscribe((scrollTop) => {
-        this.atTop = scrollTop === 0;
-        this.atBottom =
-          Math.abs(
-            element.clientHeight - (element.scrollHeight - element.scrollTop),
-          ) <= 1;
-      });
+      .pipe(debounceTime(25))
+      .subscribe(() => this.updateScrollState());
+
+    if (this.isFollowing && this.renderedLines.length > 0) {
+      this.scrollToBottom();
+    }
   },
   beforeUnmount() {
     if (this.scrollSubscription && !this.scrollSubscription.closed) {
@@ -176,14 +236,48 @@ export default {
   },
   methods: {
     prettyBytes,
-    createSubscription() {
+    splitLines(content) {
+      return content === '' ? [] : content.split(/\r?\n/);
+    },
+    renderLine(line) {
+      return autolink(this.ansiUp.ansi_to_html(line));
+    },
+    resetFollowState() {
+      this.mode = 'follow';
       this.error = null;
+      this.hasLoaded = false;
+      this.isChunkLoading = false;
+      this.skippedBytes = null;
+      this.renderedLines = [];
+      this.windowStart = 0;
+      this.windowEnd = -1;
+      this.totalBytes = 0;
+    },
+    async setManualChunk(response) {
+      this.renderedLines = this.splitLines(response.data);
+      this.windowStart = response.windowStart;
+      this.windowEnd = response.windowEnd;
+      this.totalBytes = response.totalBytes;
+      this.skippedBytes = response.windowStart;
+      this.hasLoaded = true;
+      await this.$nextTick();
+      this.scrollToTop();
+    },
+    createSubscription() {
+      this.resetFollowState();
+      let shouldScrollToBottom = true;
+
       return this.instance
         .streamLogfile(sbaConfig.uiSettings.pollTimer.logfile)
         .pipe(
-          tap(
-            (part) => (this.skippedBytes = this.skippedBytes || part.skipped),
-          ),
+          tap((part) => {
+            if (this.renderedLines.length === 0) {
+              this.windowStart = part.windowStart;
+              this.skippedBytes = part.skipped || null;
+            }
+            this.windowEnd = part.windowEnd;
+            this.totalBytes = part.totalBytes;
+          }),
           concatMap((part) => chunk(part.addendum.split(/\r?\n/), 250)),
           map((lines) => of(lines, animationFrameScheduler)),
           concatAll(),
@@ -191,24 +285,13 @@ export default {
         .subscribe({
           next: (lines) => {
             this.hasLoaded = true;
-            const logContainer = this.$refs.logContainer;
-            lines.forEach((line) => {
-              let content;
-              if (line) {
-                content = document.createElement('pre');
-                content.innerHTML = autolink(this.ansiUp.ansi_to_html(line));
-              } else {
-                content = document.createElement('br');
-              }
-              const row = document.createElement('tr');
-              const col = document.createElement('td');
-              col.appendChild(content);
-              row.appendChild(col);
-              logContainer.appendChild(row);
-            });
+            this.renderedLines = [...this.renderedLines, ...lines];
 
-            if (this.atBottom) {
-              this.scrollToBottom();
+            const shouldKeepAtBottom = shouldScrollToBottom || this.atBottom;
+            shouldScrollToBottom = false;
+
+            if (shouldKeepAtBottom) {
+              this.$nextTick(() => this.scrollToBottom());
             }
           },
           error: (error) => {
@@ -218,12 +301,105 @@ export default {
           },
         });
     },
+    async loadChunk(start, end) {
+      this.error = null;
+      this.mode = 'manual';
+      this.isChunkLoading = true;
+
+      try {
+        const response = await this.instance.fetchLogfileRange(start, end);
+        await this.setManualChunk(response);
+      } catch (error) {
+        this.hasLoaded = true;
+        console.warn('Fetching logfile chunk failed:', error);
+        this.error = error;
+      } finally {
+        this.isChunkLoading = false;
+      }
+    },
+    async loadPreviousChunk() {
+      if (!this.canLoadPrevious) {
+        return;
+      }
+
+      this.unsubscribe();
+      const end = this.windowStart - 1;
+      const start = Math.max(0, end - this.chunkSize + 1);
+      await this.loadChunk(start, end);
+    },
+    async loadNextChunk() {
+      if (!this.canLoadNext) {
+        return;
+      }
+
+      this.unsubscribe();
+      const start = this.windowEnd + 1;
+      const end = Math.min(this.totalBytes - 1, start + this.chunkSize - 1);
+      await this.loadChunk(start, end);
+    },
+    async resumeFollowMode() {
+      if (this.isFollowing && this.subscription) {
+        return;
+      }
+
+      this.unsubscribe();
+      await this.subscribe();
+    },
+    async toggleFollowMode() {
+      if (this.isFollowing) {
+        this.unsubscribe();
+        this.mode = 'manual';
+        return;
+      }
+
+      await this.resumeFollowMode();
+    },
+    async pageUp() {
+      if (this.atTop) {
+        await this.loadPreviousChunk();
+        return;
+      }
+
+      this.scrollToTop();
+    },
+    async pageDown() {
+      if (!this.atBottom) {
+        this.scrollToBottom();
+        return;
+      }
+
+      if (this.canLoadNext) {
+        await this.loadNextChunk();
+        if (!this.canLoadNext) {
+          await this.resumeFollowMode();
+        }
+        return;
+      }
+
+      if (!this.isFollowing) {
+        await this.resumeFollowMode();
+      }
+    },
+    updateScrollState() {
+      const element = this.$refs.scrollContainer;
+      if (!element) {
+        return;
+      }
+
+      this.atTop = element.scrollTop === 0;
+      this.atBottom =
+        Math.abs(
+          element.clientHeight - (element.scrollHeight - element.scrollTop),
+        ) <= 1;
+    },
     scrollToTop() {
       this.$refs.scrollContainer.scrollTop = 0;
+      this.updateScrollState();
     },
     scrollToBottom() {
       this.$refs.scrollContainer.scrollTop =
         this.$refs.scrollContainer.scrollHeight;
+      this.updateScrollState();
     },
     downloadLogfile() {
       window.open(`instances/${this.instance.id}/actuator/logfile`, '_blank');
