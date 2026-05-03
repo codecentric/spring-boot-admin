@@ -155,6 +155,11 @@ import {
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
+const LogfileMode = Object.freeze({
+  FOLLOW: 'follow',
+  MANUAL: 'manual',
+});
+
 export default {
   components: { SbaInstanceSection },
   mixins: [subscribing],
@@ -173,7 +178,7 @@ export default {
     renderedLines: [],
     wrapLines: false,
     scrollSubscription: null,
-    mode: 'follow',
+    mode: LogfileMode.FOLLOW,
     chunkSize: DEFAULT_LOGFILE_CHUNK_SIZE,
     windowStart: 0,
     windowEnd: -1,
@@ -185,13 +190,13 @@ export default {
   }),
   computed: {
     skippedBytesString() {
-      if (this.skippedBytes != null && this.skippedBytes > 0) {
+      if (this.skippedBytes != null) {
         return `skipped ${prettyBytes(this.skippedBytes)}`;
       }
       return '';
     },
     isFollowing() {
-      return this.mode === 'follow';
+      return this.mode === LogfileMode.FOLLOW;
     },
     canLoadPrevious() {
       return !this.isChunkLoading && this.windowStart > 0;
@@ -243,7 +248,7 @@ export default {
       return autolink(this.ansiUp.ansi_to_html(line));
     },
     resetFollowState() {
-      this.mode = 'follow';
+      this.mode = LogfileMode.FOLLOW;
       this.error = null;
       this.hasLoaded = false;
       this.isChunkLoading = false;
@@ -303,7 +308,7 @@ export default {
     },
     async loadChunk(start, end) {
       this.error = null;
-      this.mode = 'manual';
+      this.mode = LogfileMode.MANUAL;
       this.isChunkLoading = true;
 
       try {
@@ -348,7 +353,7 @@ export default {
     async toggleFollowMode() {
       if (this.isFollowing) {
         this.unsubscribe();
-        this.mode = 'manual';
+        this.mode = LogfileMode.MANUAL;
         return;
       }
 
