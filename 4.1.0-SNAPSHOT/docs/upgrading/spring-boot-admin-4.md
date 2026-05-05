@@ -201,16 +201,16 @@ spring:
 
 **Available Options:**
 
-| Value                 | Description                                          |
-| --------------------- | ---------------------------------------------------- |
-| `IP`                  | Use IP address (equivalent to old `prefer-ip: true`) |
-| `HOST_NAME`           | Use hostname (equivalent to old `prefer-ip: false`)  |
-| `CANONICAL_HOST_NAME` | Use canonical hostname                               |
+| Value                 | Description                                                   |
+| --------------------- | ------------------------------------------------------------- |
+| `IP`                  | Use IP address (equivalent to old `prefer-ip: true`)          |
+| `HOST_NAME`           | Use hostname                                                  |
+| `CANONICAL_HOST_NAME` | Use canonical hostname (equivalent to old `prefer-ip: false`) |
 
 **Action Required:**
 
 * Search your configuration files for `prefer-ip`
-* Replace with `service-host-type: IP` (if `prefer-ip: true`) or `service-host-type: HOST_NAME` (if `prefer-ip: false`)
+* Replace with `service-host-type: IP` (if `prefer-ip: true`) or `service-host-type: CANONICAL_HOST_NAME` (if `prefer-ip: false`)
 
 ### 4. Jolokia Compatibility[​](#4-jolokia-compatibility "Direct link to 4. Jolokia Compatibility")
 
