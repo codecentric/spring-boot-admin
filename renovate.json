@@ -47,9 +47,10 @@
       "allowedVersions": "<13"
     },
     {
-      "description": "Group all Node.js version updates (pom.xml, .nvmrc, package.json engines, GitHub Actions) into one PR",
-      "matchDepNames": ["node"],
-      "matchDatasources": ["node-version"],
+      "description": "Group all Node.js and npm version updates (pom.xml, .nvmrc, package.json engines, GitHub Actions) into one PR",
+      "matchDepNames": ["node", "npm"],
+      "matchDatasources": ["node-version", "npm"],
+      "matchDepTypes": ["engines", "node"],
       "groupName": "Node.js version",
       "groupSlug": "nodejs-version"
     }
