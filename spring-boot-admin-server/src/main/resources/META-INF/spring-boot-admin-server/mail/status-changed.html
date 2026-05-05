@@ -78,7 +78,7 @@
         <dt th:text="${detail.key}"/>
         <dd th:unless="${detail.value instanceof T(java.util.Map)}" th:text="${detail.value}"/>
         <dd th:if="${detail.value instanceof T(java.util.Map)}">
-            <dl th:replace="${#execInfo.templateName} :: statusDetails (details = ${detail.value})"/>
+            <dl th:with="templateName = ${#execInfo.templateName}" th:replace="${templateName} :: statusDetails (details = ${detail.value})"/>
         </dd>
     </th:block>
 </dl>
