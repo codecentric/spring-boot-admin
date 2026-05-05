@@ -66,7 +66,7 @@ class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTest {
 		public static class SecurityConfiguration {
 
 			@Bean
-			protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+			protected SecurityFilterChain filterChain(HttpSecurity http) {
 				return http.csrf(AbstractHttpConfigurer::disable)
 					.authorizeHttpRequests((authz) -> authz.anyRequest().permitAll())
 					.anonymous((config) -> config.principal("anonymousUser"))
