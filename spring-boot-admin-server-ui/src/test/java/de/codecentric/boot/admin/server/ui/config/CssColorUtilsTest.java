@@ -24,7 +24,7 @@ class CssColorUtilsTest implements WithAssertions {
 	@Test
 	void hexToRgb() {
 		assertThat(CssColorUtils.hexToRgb(new AdminServerUiProperties.Palette().getShade50()))
-			.isEqualTo("238, 252, 250");
+			.isEqualTo("rgb(238, 252, 250)");
 	}
 
 	@Test
