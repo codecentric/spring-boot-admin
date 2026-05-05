@@ -28,6 +28,7 @@
     "integer": "Entier",
     "milliseconds": "Millisecondes",
     "minutes": "{count} minute | {count} minutes",
+    "percent": "pour cent",
     "name": "Nom",
     "operations": "Opérations",
     "save": "Sauvegarder",

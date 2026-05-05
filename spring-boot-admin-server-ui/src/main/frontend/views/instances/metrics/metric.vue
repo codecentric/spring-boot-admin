@@ -61,6 +61,10 @@
                 :value="MetricValueType.EPOCH_TIME"
                 v-text="$t('term.epoch_time')"
               />
+              <option
+                :value="MetricValueType.PERCENT"
+                v-text="$t('term.percent')"
+              />
             </select>
           </div>
         </div>
@@ -122,11 +126,13 @@ import SbaIconButton from '@/components/sba-icon-button.vue';
 import SbaPanel from '@/components/sba-panel.vue';
 
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
+import { usePercentFormatter } from '@/composables/useNumberFormatter';
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
 import { concatMap, delay, from, retryWhen, timer } from '@/utils/rxjs';
 
 const { formatDateTime } = useDateTimeFormatter();
+const { formatPercent } = usePercentFormatter();
 
 enum MetricValueType {
   INTEGER = 'integer',
@@ -135,6 +141,7 @@ enum MetricValueType {
   MILLIS = 'millis',
   BYTES = 'bytes',
   EPOCH_TIME = 'epoch_time',
+  PERCENT = 'percent',
 }
 
 enum BaseUnit {
@@ -258,6 +265,8 @@ export default {
           return formatDateTime(
             new Date(toMillis(measurement.value, this.baseUnit)),
           );
+        case MetricValueType.PERCENT:
+          return formatPercent(measurement.value);
         default:
           return measurement.value;
       }
