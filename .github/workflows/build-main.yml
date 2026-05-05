@@ -8,53 +8,12 @@ on:
       - 2.*
       - 3.*
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
-
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Set up JDK
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-          cache: 'maven'
-          cache-dependency-path: '**/pom.xml'
-
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-
-      - name: Build with Maven
-        run: ./mvnw -B --no-transfer-progress install -P coverage
-
-      - name: Upload surefire reports
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: surefire-reports
-          path: |
-            **/target/surefire-reports/*.xml
-            **/target/surefire-reports/*.txt
-            **/target/surefire-reports/*.dump*
-            **/target/surefire-reports/*.out
-            **/target/surefire-reports/*.err
-          if-no-files-found: warn
-          retention-days: 14
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
-
-  publish-snapshot:
-    needs: build
+  build-and-publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -75,20 +34,41 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
-        run: ./mvnw -B deploy --no-transfer-progress -DskipTests
+      - name: Build with Maven (parallel modules)
+        run: ./mvnw -B -T 1C --no-transfer-progress install -P coverage
+        # -T 1C = 1 thread per CPU core for parallel module builds
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-reports
+          path: |
+            **/target/surefire-reports/*.xml
+            **/target/surefire-reports/*.txt
+            **/target/surefire-reports/*.dump*
+            **/target/surefire-reports/*.out
+            **/target/surefire-reports/*.err
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v6
+
+      - name: Publish SNAPSHOT version to GitHub Packages
+        run: ./mvnw -B -T 1C deploy --no-transfer-progress -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Maven project version for Asciidoc GitHub Pages directory naming
-        run: echo ::set-output name=version::$(./mvnw -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+      - name: Extract Maven project version
+        run: echo "version=$(./mvnw -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> "$GITHUB_OUTPUT"
         id: project
 
       - name: Show extracted Maven project version
         run: echo ${{ steps.project.outputs.version }}
 
       - name: Build documentation with Maven
-        run: ./mvnw -B --no-transfer-progress site
+        run: ./mvnw -B --no-transfer-progress -pl spring-boot-admin-docs site
 
       - name: Deploy documentation to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.8.0

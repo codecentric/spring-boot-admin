@@ -363,6 +363,8 @@
                     <configuration>
                         <parallel>classesAndMethods</parallel>
                         <useUnlimitedThreads>false</useUnlimitedThreads>
+                        <threadCount>4</threadCount>
+                        <perCoreThreadCount>true</perCoreThreadCount>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <rerunFailingTestsCount>2</rerunFailingTestsCount>
                         <includes>

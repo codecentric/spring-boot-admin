@@ -12,6 +12,10 @@ on:
         type: boolean
         default: false
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false  # Don't cancel releases in progress
+
 env:
   VERSION: ${{ github.event.inputs.releaseversion }}
 
@@ -20,18 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "Will start a Maven Central upload with version ${{ github.event.inputs.releaseversion }}"
-
-      - name: free disk space
-        continue-on-error: true
-        run: |
-          df -h
-          sudo swapoff -a
-          sudo rm -f /swapfile
-          sudo apt clean
-          if [ -n "$(docker image ls -q)" ]; then
-            docker rmi -f $(docker image ls -aq) || true
-          fi
-          df -h
 
       - uses: actions/checkout@v6
 
@@ -51,21 +43,18 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
-      - name: Cache node modules
-        uses: actions/cache@v5
-        env:
-          cache-name: cache-node-modules
+      - name: Set up Node
+        uses: actions/setup-node@v6
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Set projects Maven version to GitHub Action GUI set version
         run: ./mvnw versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" --no-transfer-progress
 
-      - name: Publish package
-        run: ./mvnw -B deploy --no-transfer-progress -P central-deploy -DskipTests
+      - name: Publish package (parallel modules)
+        run: ./mvnw -B -T 1C deploy --no-transfer-progress -P central-deploy -DskipTests
         env:
           #TODO: This is a workaround for NEXUS-27902 which uses XStream that fails on JVM >16
           JDK_JAVA_OPTIONS: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED"
@@ -74,7 +63,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Build documentation with Maven
-        run: ./mvnw -B --no-transfer-progress  -pl spring-boot-admin-docs site
+        run: ./mvnw -B --no-transfer-progress -pl spring-boot-admin-docs site
 
       - name: Deploy documentation to GitHub Pages for version ${{ github.event.inputs.releaseversion }}
         uses: JamesIves/github-pages-deploy-action@v4.8.0
@@ -109,18 +98,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: free disk space
-        continue-on-error: true
-        run: |
-          df -h
-          sudo swapoff -a
-          sudo rm -f /swapfile
-          sudo apt clean
-          if [ -n "$(docker image ls -q)" ]; then
-            docker rmi -f $(docker image ls -aq) || true
-          fi
-          df -h
-
       - name: Generate changelog
         id: changelog
         uses: metcalfc/changelog-generator@v4.7.0
@@ -135,5 +112,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: ${{ contains(github.event.inputs.releaseversion, '-') }}
-
-

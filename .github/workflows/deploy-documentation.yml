@@ -13,6 +13,10 @@ on:
         type: boolean
         default: false
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false  # Don't cancel documentation deploys in progress
+
 env:
   VERSION: ${{ github.event.inputs.releaseversion }}
 
@@ -43,8 +47,8 @@ jobs:
       - name: Set projects Maven version to GitHub Action GUI set version
         run: ./mvnw versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" --no-transfer-progress
 
-      - name: Build with Maven
-        run: ./mvnw -B --no-transfer-progress package -DskipTests
+      - name: Build with Maven (parallel modules)
+        run: ./mvnw -B -T 1C --no-transfer-progress package -DskipTests
 
       - name: Build documentation with Maven
         run: ./mvnw -B --no-transfer-progress  -pl spring-boot-admin-docs site

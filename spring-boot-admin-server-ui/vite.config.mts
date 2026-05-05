@@ -60,6 +60,7 @@ export default defineConfig(({ mode }) => {
         TZ: 'Europe/Berlin',
       },
       include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+      maxWorkers: 4,
     },
     root: frontendDir,
     build: {

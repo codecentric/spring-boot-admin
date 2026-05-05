@@ -8,27 +8,15 @@ on:
       - 2.*
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
 
-    runs-on: ${{ matrix.os }}
     steps:
-
-      - name: free disk space
-        continue-on-error: true
-        run: |
-          df -h
-          sudo swapoff -a
-          sudo rm -f /swapfile
-          sudo apt clean
-          if [ -n "$(docker image ls -q)" ]; then
-            docker rmi -f $(docker image ls -aq) || true
-          fi
-          df -h
-
       - uses: actions/checkout@v6
 
       - name: Set up JDK
@@ -46,8 +34,10 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Build with Maven
-        run: ./mvnw -B --no-transfer-progress install -P coverage
+      - name: Build with Maven (parallel modules, no coverage)
+        run: ./mvnw -B -T 1C --no-transfer-progress install
+        # -T 1C = 1 thread per CPU core for parallel module builds
+        # Coverage skipped for faster PR feedback; main branch builds have coverage
 
       - name: Upload surefire reports
         if: always()
