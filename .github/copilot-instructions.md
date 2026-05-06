@@ -15,9 +15,9 @@ Always reference these instructions first and fallback to search or bash command
 ### Building the Project
 - **NEVER CANCEL builds - they take time but will complete successfully**
 - **CRITICAL**: Set timeout to 20+ minutes for builds, 60+ minutes for tests
-- Clean compile: `export PATH="/tmp/node-v22.18.0-linux-x64/bin:$PATH" && ./mvnw clean compile -B --no-transfer-progress -DskipTests` -- takes ~10.5 minutes
-- Full package: `export PATH="/tmp/node-v22.18.0-linux-x64/bin:$PATH" && ./mvnw package -B --no-transfer-progress -DskipTests` -- takes ~4 minutes  
-- Install to local repository: `export PATH="/tmp/node-v22.18.0-linux-x64/bin:$PATH" && ./mvnw install -B --no-transfer-progress -DskipTests` -- takes ~1.5 minutes
+- Clean compile: `export PATH="/tmp/node-v22.18.0-linux-x64/bin:$PATH" && ./mvnw clean compile -B --no-transfer-progress -Dmaven.test.skip=true` -- takes ~10.5 minutes
+- Full package: `export PATH="/tmp/node-v22.18.0-linux-x64/bin:$PATH" && ./mvnw package -B --no-transfer-progress -Dmaven.test.skip=true` -- takes ~4 minutes  
+- Install to local repository: `export PATH="/tmp/node-v22.18.0-linux-x64/bin:$PATH" && ./mvnw install -B --no-transfer-progress -Dmaven.test.skip=true` -- takes ~1.5 minutes
 
 ### Testing
 - **NEVER CANCEL test runs - set 60+ minute timeouts**
@@ -101,7 +101,7 @@ Always reference these instructions first and fallback to search or bash command
 ## Development Workflow
 1. **Setup**: Configure Node.js 22.18.0 in PATH: `export PATH="/tmp/node-v22.18.0-linux-x64/bin:$PATH"`
 2. **Initial Build**: Run `./mvnw clean compile` to verify everything builds (~10.5 minutes - be patient)
-3. **Install Dependencies**: Run `./mvnw install -DskipTests` for sample app dependencies (~1.5 minutes)
+3. **Install Dependencies**: Run `./mvnw install -Dmaven.test.skip=true` for sample app dependencies (~1.5 minutes)
 4. **Make Changes**: Edit code in appropriate modules
 5. **Format Code**: Run `./mvnw spring-javaformat:apply` and UI `npm run format:fix`
 6. **Test Build**: Run build commands to verify changes don't break anything

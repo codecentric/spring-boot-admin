@@ -36,7 +36,6 @@ jobs:
 
       - name: Build with Maven (parallel modules)
         run: ./mvnw -B -T 1C --no-transfer-progress install -P coverage
-        # -T 1C = 1 thread per CPU core for parallel module builds
 
       - name: Upload surefire reports
         if: always()
@@ -56,7 +55,7 @@ jobs:
         uses: codecov/codecov-action@v6
 
       - name: Publish SNAPSHOT version to GitHub Packages
-        run: ./mvnw -B -T 1C deploy --no-transfer-progress -DskipTests
+        run: ./mvnw -B -T 1C deploy --no-transfer-progress -Dmaven.test.skip=true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
