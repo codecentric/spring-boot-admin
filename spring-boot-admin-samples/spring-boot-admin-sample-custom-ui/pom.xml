@@ -46,6 +46,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
+                            <npmVersion>${npm.version}</npmVersion>
                             <nodeVersion>${node.version}</nodeVersion>
                         </configuration>
                     </execution>

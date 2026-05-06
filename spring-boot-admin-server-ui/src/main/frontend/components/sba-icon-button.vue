@@ -19,7 +19,8 @@
     class="border-none sm:m-1 bg-transparent!"
     :title="title"
     size="xs"
-    v-on="$attrs"
+    v-bind="$attrs"
+    @click="$emit('click', $event)"
   >
     <font-awesome-icon :icon="icon" :size="size" :class="iconClass" />
   </sba-button>
@@ -49,6 +50,7 @@ export default {
       default: null,
     },
   },
+  emits: ['click'],
 };
 </script>
 

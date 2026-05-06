@@ -53,6 +53,7 @@
                         </goals>
                         <phase>pre-site</phase>
                         <configuration>
+                            <npmVersion>${npm.version}</npmVersion>
                             <nodeVersion>${node.version}</nodeVersion>
                         </configuration>
                     </execution>
