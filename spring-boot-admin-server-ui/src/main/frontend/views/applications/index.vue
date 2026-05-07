@@ -19,52 +19,54 @@
     <sba-wave />
     <section>
       <sba-sticky-subnav>
-        <div class="container mx-auto flex">
-          <ApplicationStats />
-          <sba-confirm-button
-            class="mr-1"
-            :title="$t('applications.actions.refresh_applications')"
-            @click="refreshApplications"
-          >
-            <font-awesome-icon :icon="'rotate-left'" />
-          </sba-confirm-button>
-          <template v-if="groupNames.length > 1">
-            <sba-button-group class="mr-1">
-              <sba-button
-                :title="
-                  $t('applications.actions.switch_to_grouping_by_application')
-                "
-                :disabled="isGroupingFunctionActive('application')"
-                @click="() => setGroupingFunction('application')"
-              >
-                <font-awesome-icon icon="list" />
-              </sba-button>
-              <sba-button
-                :title="$t('applications.actions.switch_to_grouping_by_group')"
-                :disabled="isGroupingFunctionActive('group')"
-                @click="() => setGroupingFunction('group')"
-              >
-                <font-awesome-icon icon="expand" />
-              </sba-button>
-            </sba-button-group>
-          </template>
-          <ApplicationNotificationCenter
-            v-if="hasNotificationFiltersSupport"
-            :notification-filters="notificationFilters"
-            @filter-remove="removeFilter"
-          />
-          <div class="flex-1">
-            <sba-input
-              v-model="routerState.q"
-              :placeholder="t('term.filter')"
-              name="filter"
-              type="search"
+        <div class="container mx-auto flex justify-between">
+          <div class="flex">
+            <ApplicationStats />
+            <sba-confirm-button
+              class="mr-1"
+              :title="$t('applications.actions.refresh_applications')"
+              @click="refreshApplications"
             >
-              <template #prepend>
-                <font-awesome-icon icon="filter" />
-              </template>
-            </sba-input>
+              <font-awesome-icon :icon="'rotate-left'" />
+            </sba-confirm-button>
+            <template v-if="groupNames.length > 1">
+              <sba-button-group class="mr-1">
+                <sba-button
+                  :title="
+                    $t('applications.actions.switch_to_grouping_by_application')
+                  "
+                  :disabled="isGroupingFunctionActive('application')"
+                  @click="() => setGroupingFunction('application')"
+                >
+                  <font-awesome-icon icon="list" />
+                </sba-button>
+                <sba-button
+                  :title="
+                    $t('applications.actions.switch_to_grouping_by_group')
+                  "
+                  :disabled="isGroupingFunctionActive('group')"
+                  @click="() => setGroupingFunction('group')"
+                >
+                  <font-awesome-icon icon="expand" />
+                </sba-button>
+              </sba-button-group>
+            </template>
+            <ApplicationNotificationCenter
+              v-if="hasNotificationFiltersSupport"
+              :notification-filters="notificationFilters"
+              @filter-remove="removeFilter"
+            />
           </div>
+          <sba-input
+            v-model="routerState.q"
+            :placeholder="t('term.filter')"
+            name="filter"
+            type="search"
+          >
+            <template #prepend>
+              <font-awesome-icon icon="filter" />
+            </template>
+          </sba-input>
         </div>
       </sba-sticky-subnav>
 

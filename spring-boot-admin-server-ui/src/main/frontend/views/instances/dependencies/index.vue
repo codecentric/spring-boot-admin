@@ -4,6 +4,7 @@
       <sba-sticky-subnav>
         <sba-input
           v-model="filter"
+          class="justify-self-end"
           :placeholder="$t('term.filter')"
           name="filter"
           type="search"
