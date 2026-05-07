@@ -28,7 +28,21 @@ export function useViewRegistry() {
     addView(viewToAdd) {
       const view = viewRegistry.addView(viewToAdd)[0];
 
-      if (view.parent) {
+      // If router doesn't exist yet, the view will be added when createRouter() is called
+      // via viewRegistry.routes which includes all views
+      if (!viewRegistry.router) {
+        return;
+      }
+
+      // Vue Router 5 requires paths to start with / for top-level routes
+      const ensureAbsolutePath = (path: string) =>
+        path.startsWith('/') ? path : `/${path}`;
+
+      // Check if parent route exists in the router
+      const parentRouteExists =
+        view.parent && viewRegistry.router.hasRoute(view.parent);
+
+      if (parentRouteExists) {
         viewRegistry.router.addRoute(view.parent, {
           path: view.path,
           name: view.name,
@@ -37,8 +51,14 @@ export function useViewRegistry() {
           meta: { view: view },
         });
       } else {
+        // Add as top-level route when no parent or parent doesn't exist yet
+        const path = view.parent
+          ? ensureAbsolutePath(
+              `${view.parent}/${view.path}`.replace(/\/+/g, '/'),
+            )
+          : ensureAbsolutePath(view.path);
         viewRegistry.router.addRoute({
-          path: view.path,
+          path,
           name: view.name,
           component: view.component,
           props: view.props,
