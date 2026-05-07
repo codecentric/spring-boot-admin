@@ -31,7 +31,10 @@
       "
     >
       <h3 class="font-medium text-gray-900 flex-1">
-        <button class="flex items-center w-full" @click="$emit('title-click')">
+        <button
+          :class="classNames('flex items-center w-full', { 'cursor-pointer': $attrs.onTitleClick })"
+          @click="$emit('title-click')"
+        >
           <slot v-if="'prefix' in $slots" name="prefix" />
           <span v-text="title" />
           <span
