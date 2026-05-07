@@ -112,10 +112,10 @@
               <template #title>
                 <div class="items-center inline-flex flex-row min-w-116">
                   <font-awesome-icon
-                    icon="chevron-down"
+                    icon="chevron-right"
+                    class="mr-2 transition-transform duration-200"
                     :class="{
-                      '-rotate-90': !isExpanded(group.name),
-                      'mr-2 transition-[transform]': true,
+                      'rotate-90': isExpanded(group.name),
                     }"
                   />
                   <sba-status-badge
