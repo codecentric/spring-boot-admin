@@ -110,10 +110,12 @@
               "
             >
               <template #title>
-                <div class="items-center inline-flex flex-row min-w-116">
+                <div
+                  class="items-center inline-flex flex-row min-w-116 cursor-pointer"
+                >
                   <font-awesome-icon
                     icon="chevron-right"
-                    class="mr-2 transition-transform duration-200"
+                    class="mr-2 transition-transform"
                     :class="{
                       'rotate-90': isExpanded(group.name),
                     }"
@@ -168,6 +170,7 @@
                       "
                       :item="instance"
                       class="md:hidden"
+                      size="xs"
                       @filter-settings="toggleNotificationFilterSettings"
                     />
                   </template>

@@ -32,10 +32,11 @@
 
     <template #actions>
       <router-link
+        :title="$t('applications.actions.journal')"
         :to="{ name: 'journal', query: { instanceId: instance.id } }"
         class="text-sm inline-flex items-center leading-sm border border-gray-400 bg-white text-gray-700 rounded overflow-hidden px-3 py-1 hover:bg-gray-200 ml-1"
       >
-        <font-awesome-icon icon="history" />
+        <font-awesome-icon :icon="faScroll()" />
       </router-link>
     </template>
 
@@ -90,6 +91,7 @@
 </template>
 
 <script lang="ts">
+import { faHistory, faScroll } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
@@ -131,6 +133,12 @@ export default {
     },
   },
   methods: {
+    faScroll() {
+      return faScroll;
+    },
+    faHistory() {
+      return faHistory;
+    },
     reloadHealth() {
       const updateKey =
         this.instance.version ??

@@ -40,7 +40,7 @@
             {
               '-rotate-90': !open,
             },
-            'mr-2 transition-[transform]',
+            'mr-2 transition-transform',
           )
         "
       />

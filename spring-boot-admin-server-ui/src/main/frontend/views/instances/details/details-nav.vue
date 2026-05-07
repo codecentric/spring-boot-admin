@@ -16,7 +16,7 @@
             target="_blank"
             :title="instance.registration.serviceUrl"
             :href="instance.registration.serviceUrl"
-            class="border-gray-400 ml-1"
+            class="border-gray-400"
           >
             <font-awesome-icon :icon="faHome" />
           </sba-button>
@@ -28,9 +28,9 @@
             target="_blank"
             :title="instance.registration.managementUrl"
             :href="instance.registration.managementUrl"
-            class="border-gray-400 ml-1"
+            class="border-gray-400"
           >
-            <font-awesome-icon :icon="faClipboardList" />
+            <font-awesome-icon :icon="faCogs" />
           </sba-button>
 
           <sba-button
@@ -40,9 +40,9 @@
             target="_blank"
             :title="instance.registration.healthUrl"
             :href="instance.registration.healthUrl"
-            class="border-gray-400 ml-1"
+            class="border-gray-400"
           >
-            <font-awesome-icon :icon="faHeart" />
+            <font-awesome-icon :icon="faHeartPulse" />
           </sba-button>
         </sba-button-group>
       </div>
@@ -53,8 +53,12 @@
 <script setup lang="ts">
 import {
   faClipboardList,
+  faCogs,
+  faGauge,
   faHeart,
+  faHeartPulse,
   faHome,
+  faTachometerAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 

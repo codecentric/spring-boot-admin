@@ -1,7 +1,7 @@
 <template>
   <component
     :is="as"
-    class="btn relative items-center"
+    class="btn relative items-center cursor-pointer"
     v-bind="componentAttrs"
     @click="handleClick"
   >
@@ -49,7 +49,7 @@ const attrs = useAttrs();
 
 const cssClasses = computed(() => {
   return {
-    'px-1 py-0 text-xs': props.size === '2xs',
+    'px-1.5 py-0.5 text-xs': props.size === '2xs',
     'px-2 py-2 text-xs': props.size === 'xs',
     'px-3 py-2': props.size === 'sm',
     'px-4 py-3': props.size === 'base',
