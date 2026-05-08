@@ -43,6 +43,7 @@
     },
     "milliseconds": "Milliseconds",
     "minutes": "{count} 분 | {count} 분",
+    "percent": "퍼센트",
     "name": "이름",
     "operations": "Operations",
     "save": "저장",

@@ -19,8 +19,9 @@ const isStorybook = Object.prototype.hasOwnProperty.call(window, 'STORIES');
 const views = [];
 
 if (!isStorybook) {
+  // Use array of patterns instead of extglob (not supported in Vite 8/Rolldown)
   const context: Record<string, any> = import.meta.glob(
-    './**/index.(js|vue|ts)',
+    ['./**/index.js', './**/index.vue', './**/index.ts'],
     { eager: true },
   );
   Object.keys(context)

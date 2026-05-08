@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.ui.web;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -31,8 +32,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.Palette;
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.PollTimer;
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.UiTheme;
+import de.codecentric.boot.admin.server.ui.config.CssColorUtils;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.AdminController;
@@ -97,6 +100,15 @@ public class UiController {
 		return emptyMap();
 	}
 
+	@ModelAttribute(value = "palette", binding = false)
+	public Map<String, String> getPalette() {
+		return Map.ofEntries(hexToRgbColor(50, Palette::getShade50), hexToRgbColor(100, Palette::getShade100),
+				hexToRgbColor(200, Palette::getShade200), hexToRgbColor(300, Palette::getShade300),
+				hexToRgbColor(400, Palette::getShade400), hexToRgbColor(500, Palette::getShade500),
+				hexToRgbColor(600, Palette::getShade600), hexToRgbColor(700, Palette::getShade700),
+				hexToRgbColor(800, Palette::getShade800), hexToRgbColor(900, Palette::getShade900));
+	}
+
 	@GetMapping(path = "/", produces = MediaType.TEXT_HTML_VALUE)
 	@RegisterReflectionForBinding(String.class)
 	public String index() {
@@ -111,6 +123,11 @@ public class UiController {
 	@GetMapping(path = "/variables.css", produces = "text/css")
 	public String variablesCss() {
 		return "variables.css";
+	}
+
+	private Map.Entry<String, String> hexToRgbColor(int grade, Function<Palette, String> hexColorGetter) {
+		return Map.entry(("rgbColor" + grade).intern(),
+				CssColorUtils.hexToRgb(hexColorGetter.apply(uiSettings.getTheme().getPalette())));
 	}
 
 	@GetMapping(path = "/login", produces = MediaType.TEXT_HTML_VALUE)

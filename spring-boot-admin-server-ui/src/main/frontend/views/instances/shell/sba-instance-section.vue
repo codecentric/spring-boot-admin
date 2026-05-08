@@ -5,6 +5,7 @@
     <div
       :class="
         classNames({
+          'sba-instance-section-content': true,
           'flex-1': true,
           flex: layoutOptions.isFlex,
           'px-2 md:px-6 py-6': !layoutOptions.noMargin,

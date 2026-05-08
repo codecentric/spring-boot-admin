@@ -52,7 +52,6 @@
         class="relative mb-1"
       >
         <router-link
-          :class="{ 'navbar-link__active': isActiveGroup(group) }"
           :to="{
             name: group.views[0].name,
             params: { instanceId: instance.id },
@@ -68,30 +67,24 @@
                 : $t(group.views[0].label)
             "
           />
-          <svg
+          <button
             v-if="hasMultipleViews(group)"
-            :class="{
-              '-rotate-90': !isActiveGroup(group),
-              '': isActiveGroup(group),
-            }"
-            aria-hidden="true"
-            class="h-3 ml-auto hidden md:block transition"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 448 512"
-            xmlns="http://www.w3.org/2000/svg"
+            class="ml-auto px-2 py-2 cursor-pointer hover:bg-sba-500/50 rounded"
+            @click.prevent="toggleGroup(group.id)"
           >
-            <path
-              d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"
-              fill="currentColor"
+            <font-awesome-icon
+              class="h-3 ml-auto hidden md:block transition"
+              :class="{
+                '-rotate-90': isGroupOpen(group),
+              }"
+              :icon="faChevronUp"
             />
-          </svg>
+          </button>
         </router-link>
 
         <!-- Le subnav -->
         <ul
-          v-if="hasMultipleViews(group) && (openGroup === group.id || isActiveGroup(group))"
+          v-if="hasMultipleViews(group) && isGroupOpen(group)"
           :class="{ 'hidden md:block': !sidebarOpen }"
           class="relative block"
         >
@@ -163,7 +156,10 @@
 </template>
 
 <script lang="ts" setup>
-import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowUpRightFromSquare,
+  faChevronUp,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Divider } from 'primevue';
 import { computed, h, ref, toRaw, watch } from 'vue';
@@ -173,7 +169,7 @@ import { useRoute } from 'vue-router';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
-import { VIEW_GROUP, VIEW_GROUP_ICON } from '@/views/ViewGroup';
+import { VIEW_GROUP_ICON } from '@/views/ViewGroup';
 
 const props = defineProps<{
   views: any[];
@@ -232,11 +228,12 @@ const groups = computed(() => {
 });
 
 watch(
-  () => route.fullPath,
+  [() => route.fullPath, groups],
   () => {
     sidebarOpen.value = false;
     openGroup.value = null;
   },
+  { immediate: true },
 );
 
 function toggleSidebar() {
@@ -253,15 +250,8 @@ function getGroupTitle(groupId: string) {
   return key === translated ? groupId : translated;
 }
 
-function isActiveGroup(group: any) {
-  if (group.id === VIEW_GROUP.CUSTOM_LINK) {
-    return true;
-  }
-
-  const result = group.views.some(
-    (view: any) => toRaw(view) === route.meta.view,
-  );
-  return result;
+function isGroupOpen(group: any) {
+  return openGroup.value === group.id;
 }
 
 function hasMultipleViews(group: any) {
@@ -297,6 +287,6 @@ a.navbar-link {
 }
 
 .navbar-link__group {
-  @apply h-12 px-2 md:px-6;
+  @apply h-12 px-2 md:pl-6;
 }
 </style>

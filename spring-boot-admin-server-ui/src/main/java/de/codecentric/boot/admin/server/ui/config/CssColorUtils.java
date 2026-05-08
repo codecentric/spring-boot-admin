@@ -18,11 +18,14 @@ package de.codecentric.boot.admin.server.ui.config;
 
 import java.util.regex.Pattern;
 
-public class CssColorUtils {
+public final class CssColorUtils {
+
+	private CssColorUtils() {
+	}
 
 	private static final Pattern HEX_RGB_PATTERN = Pattern.compile("^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$");
 
-	public String hexToRgb(String color) {
+	public static String hexToRgb(String color) {
 		if (!HEX_RGB_PATTERN.matcher(color).matches()) {
 			throw new IllegalArgumentException(String.format("Invalid hex rgb format %s", color));
 		}

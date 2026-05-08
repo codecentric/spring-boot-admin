@@ -28,6 +28,7 @@
     "integer": "整型",
     "milliseconds": "毫秒",
     "minutes": "{count} 分钟 | {count} 分钟",
+    "percent": "百分之",
     "name": "名称",
     "operations": "操作",
     "save": "保存",

@@ -124,6 +124,7 @@ export default {
   },
   data: () => ({
     isLoading: false,
+    hasLoadedInitially: false,
     error: null,
     events: [],
     filter: {
@@ -148,14 +149,19 @@ export default {
       return moment(value, moment.HTML5_FMT.DATETIME_LOCAL, true).toDate();
     },
     async fetchAuditevents() {
-      this.isLoading = true;
-      const response = await this.instance.fetchAuditevents(this.filter);
-      const converted = response.data.events.map(
-        (event) => new Auditevent(event),
-      );
-      converted.reverse();
-      this.isLoading = false;
-      return converted;
+      this.isLoading = !this.hasLoadedInitially;
+
+      try {
+        const response = await this.instance.fetchAuditevents(this.filter);
+        const converted = response.data.events.map(
+          (event) => new Auditevent(event),
+        );
+        converted.reverse();
+        return converted;
+      } finally {
+        this.isLoading = false;
+        this.hasLoadedInitially = true;
+      }
     },
     createSubscription() {
       this.filterChanged = new Subject();
