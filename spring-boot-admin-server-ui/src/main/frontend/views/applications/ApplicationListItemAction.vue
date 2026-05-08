@@ -54,7 +54,6 @@
 import {
   faBell,
   faBellSlash,
-  faHistory,
   faPowerOff,
   faScroll,
   faTrash,

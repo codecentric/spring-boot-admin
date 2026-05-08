@@ -166,15 +166,28 @@
               <template v-if="isExpanded(group.name)" #default>
                 <InstancesList :instances="group.instances">
                   <template #actions="{ instance }">
-                    <ApplicationListItemAction
-                      :has-notification-filters-support="
-                        hasNotificationFiltersSupport
-                      "
-                      :item="instance"
-                      class="md:hidden"
-                      size="xs"
-                      @filter-settings="toggleNotificationFilterSettings"
-                    />
+                    <div class="inline-flex">
+                      <sba-button
+                        :as="RouterLink"
+                        :to="{
+                          name: 'instances/details',
+                          params: { instanceId: instance.id },
+                        }"
+                        size="2xs"
+                        class="self-center mr-1 whitespace-nowrap"
+                        v-text="t('instances.open_details')"
+                      />
+
+                      <ApplicationListItemAction
+                        :has-notification-filters-support="
+                          hasNotificationFiltersSupport
+                        "
+                        :item="instance"
+                        class="md:hidden"
+                        size="xs"
+                        @filter-settings="toggleNotificationFilterSettings"
+                      />
+                    </div>
                   </template>
                 </InstancesList>
               </template>
@@ -207,7 +220,7 @@ import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { groupBy, sortBy, transform } from 'lodash-es';
 import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 import SbaButton from '@/components/sba-button.vue';
 import SbaConfirmButton from '@/components/sba-confirm-button.vue';

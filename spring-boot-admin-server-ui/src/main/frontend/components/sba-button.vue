@@ -19,11 +19,8 @@ const props = defineProps({
     default: '',
   },
   as: {
-    type: String,
+    type: [String, Object, Function],
     default: 'button',
-    validator(value) {
-      return ['a', 'button'].includes(value);
-    },
   },
   href: {
     type: String,
@@ -79,17 +76,16 @@ const componentAttrs = computed(() => {
       type: props.type,
     };
   }
-  return {};
+  return common;
 });
 
 const emit = defineEmits(['click']);
 const handleClick = (event) => {
-  if (props.as === 'button') {
-    emit('click', event);
-  }
   if (props.as === 'a') {
     event.stopPropagation();
+    return;
   }
+  emit('click', event);
 };
 </script>
 

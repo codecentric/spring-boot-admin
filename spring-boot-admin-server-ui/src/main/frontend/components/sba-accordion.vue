@@ -90,3 +90,11 @@ const handleTitleClick = () => {
   open.value = !open.value;
 };
 </script>
+
+<style scoped>
+@reference "../index.css";
+
+:deep(header button) {
+  @apply cursor-pointer;
+}
+</style>

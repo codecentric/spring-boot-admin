@@ -52,13 +52,9 @@
 
 <script setup lang="ts">
 import {
-  faClipboardList,
   faCogs,
-  faGauge,
-  faHeart,
   faHeartPulse,
   faHome,
-  faTachometerAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
