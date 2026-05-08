@@ -28,6 +28,7 @@
     "integer": "Integer",
     "milliseconds": "Мс.",
     "minutes": "{count} мин. | {count} мин.",
+    "percent": "процент",
     "name": "Имя",
     "operations": "Операции",
     "save": "Сохранить",

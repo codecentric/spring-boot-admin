@@ -8,6 +8,18 @@
   ],
   "minimumReleaseAge": "5 days",
   "internalChecksFilter": "strict",
+  "customManagers": [
+    {
+      "description": "Track Node.js version in frontend-maven-plugin <node.version> property",
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)pom\\.xml$/"],
+      "matchStrings": ["<node\\.version>v(?<currentValue>[^<]+)</node\\.version>"],
+      "depNameTemplate": "node",
+      "datasourceTemplate": "node-version",
+      "versioningTemplate": "node",
+      "extractVersionTemplate": "^v?(?<version>.+)$"
+    }
+  ],
   "packageRules": [
     {
       "description": "Automatically merge minor and patch-level updates when checks pass, creates a PR otherwise",
@@ -33,6 +45,14 @@
         "com.puppycrawl.tools:checkstyle"
       ],
       "allowedVersions": "<13"
+    },
+    {
+      "description": "Group all Node.js and npm version updates (pom.xml, .nvmrc, package.json engines, GitHub Actions) into one PR",
+      "matchDepNames": ["node", "npm"],
+      "matchDatasources": ["node-version", "npm"],
+      "matchDepTypes": ["engines", "node"],
+      "groupName": "Node.js version",
+      "groupSlug": "nodejs-version"
     }
   ]
 }
