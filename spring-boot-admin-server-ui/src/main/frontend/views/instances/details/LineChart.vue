@@ -15,7 +15,9 @@
   -->
 
 <template>
-  <canvas id="chart" ref="chart" />
+  <div class="flex w-full">
+    <canvas id="chart" ref="chart" />
+  </div>
 </template>
 
 <script>
