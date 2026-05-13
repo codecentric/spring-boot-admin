@@ -57,14 +57,14 @@
     "primelocale": "^2.1.7",
     "primevue": "^4.4.1",
     "qs": "^6.13.0",
-    "react": "19.2.5",
+    "react": "19.2.6",
     "resize-observer-polyfill": "1.5.1",
     "rxjs": "7.8.2",
     "sanitize-html": "^2.17.0",
     "tailwindcss": "^4.2.4",
     "v3-infinite-loading": "1.3.2",
     "vue": "3.5.34",
-    "vue-i18n": "11.4.0",
+    "vue-i18n": "11.4.2",
     "vue-router": "5.0.6",
     "vue3-click-away": "1.2.4"
   },
@@ -94,14 +94,14 @@
     "globals": "^17.0.0",
     "happy-dom": "^20.0.0",
     "jsdom": "^29.0.0",
-    "msw": "2.14.3",
+    "msw": "2.14.4",
     "msw-storybook-addon": "2.0.7",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "7.0.1",
     "storybook": "10.3.6",
     "storybook-vue3-router": "^7.0.0",
     "typescript": "^6.0.0",
-    "vite": "8.0.10",
+    "vite": "8.0.11",
     "vite-plugin-static-copy": "3.4.0",
     "vitest": "4.1.5",
     "vue-eslint-parser": "^10.0.0"
@@ -110,7 +110,7 @@
     "> .5%, last 2 versions"
   ],
   "engines": {
-    "npm": "11.13.0",
+    "npm": "11.14.0",
     "node": "24.15.0"
   },
   "msw": {
