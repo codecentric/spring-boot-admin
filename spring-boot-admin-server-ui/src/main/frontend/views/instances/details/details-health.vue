@@ -66,10 +66,10 @@
               >
                 <font-awesome-icon
                   v-if="isHealthGroupCollapsible(healthGroup.name)"
-                  icon="chevron-down"
-                  class="transition-[transform] mr-2 h-4"
+                  :icon="faChevronRight()"
+                  class="transition-transform mr-2 h-4"
                   :class="{
-                    '-rotate-90': !isHealthGroupOpen(healthGroup.name),
+                    'rotate-90': isHealthGroupOpen(healthGroup.name),
                   }"
                 />
                 <span v-text="$t('instances.details.health_group.title')"></span
@@ -91,15 +91,16 @@
 </template>
 
 <script lang="ts">
-import { faHistory, faScroll } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faScroll } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { defineComponent } from 'vue';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
 import Instance from '@/services/instance';
 import healthDetails from '@/views/instances/details/health-details';
 
-export default {
+export default defineComponent({
   components: { SbaAccordion, FontAwesomeIcon, healthDetails },
   props: {
     instance: {
@@ -136,8 +137,8 @@ export default {
     faScroll() {
       return faScroll;
     },
-    faHistory() {
-      return faHistory;
+    faChevronRight() {
+      return faChevronRight;
     },
     reloadHealth() {
       const updateKey =
@@ -228,10 +229,13 @@ export default {
                 name: string;
                 data: { details: string } | undefined;
               }) => {
+                const components =
+                  group.data?.details || group.data?.components;
+
                 return {
                   [group.name]: {
-                    isOpen: group.data?.details === undefined,
-                    collapsible: group.data?.details !== undefined,
+                    isOpen: components === undefined,
+                    collapsible: components !== undefined,
                   },
                 };
               },
@@ -253,5 +257,5 @@ export default {
       }
     },
   },
-};
+});
 </script>
