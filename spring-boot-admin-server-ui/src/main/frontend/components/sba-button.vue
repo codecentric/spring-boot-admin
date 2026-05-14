@@ -73,7 +73,7 @@ const componentAttrs = computed(() => {
     return {
       ...common,
       disabled: props.disabled === true,
-      type: props.type,
+      type: 'button',
     };
   }
   return common;
