@@ -40,7 +40,7 @@
             {
               '-rotate-90': !open,
             },
-            'mr-2 transition-[transform]',
+            'mr-2 transition-transform',
           )
         "
       />
@@ -90,3 +90,11 @@ const handleTitleClick = () => {
   open.value = !open.value;
 };
 </script>
+
+<style scoped>
+@reference "../index.css";
+
+:deep(header button) {
+  @apply cursor-pointer;
+}
+</style>

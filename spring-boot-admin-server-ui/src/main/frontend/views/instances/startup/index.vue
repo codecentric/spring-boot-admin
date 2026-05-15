@@ -18,7 +18,7 @@
   <sba-instance-section :error="error">
     <template #before>
       <sba-sticky-subnav>
-        <div class="flex gap-2">
+        <div class="flex gap-2 justify-between">
           <sba-button v-if="!isExpanded" @click="expandTree">
             <svg
               class="h-4 w-4"
@@ -45,7 +45,7 @@
               />
             </svg>
           </sba-button>
-          <div class="flex-1">
+          <div>
             <sba-input
               v-model="filter"
               :placeholder="

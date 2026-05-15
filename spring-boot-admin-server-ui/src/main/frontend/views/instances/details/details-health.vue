@@ -32,10 +32,11 @@
     <template #actions>
       <router-link
         v-if="hasHealthUrl"
+        :title="$t('applications.actions.journal')"
         :to="{ name: 'journal', query: { instanceId: instance.id } }"
         class="text-sm inline-flex items-center leading-sm border border-gray-400 bg-white text-gray-700 rounded overflow-hidden px-3 py-1 hover:bg-gray-200 ml-1"
       >
-        <font-awesome-icon icon="history" />
+        <font-awesome-icon :icon="faScroll()" />
       </router-link>
     </template>
 
@@ -63,9 +64,12 @@
                 @click="toggleHealthGroup(group.name)"
               >
                 <font-awesome-icon
-                  icon="chevron-down"
-                  class="transition-[transform] mr-2 h-4"
-                  :class="{ '-rotate-90': !isHealthGroupOpen(group.name) }"
+                  v-if="isHealthGroupCollapsible(group.name)"
+                  :icon="faChevronRight()"
+                  class="transition-transform mr-2 h-4"
+                  :class="{
+                    'rotate-90': isHealthGroupOpen(group.name),
+                  }"
                 />
                 <span v-text="$t('instances.details.health_group.title')"></span
                 >:&nbsp;
@@ -89,14 +93,16 @@
 </template>
 
 <script lang="ts">
+import { faChevronRight, faScroll } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { defineComponent } from 'vue';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
 import Instance from '@/services/instance';
 import HealthDetails from '@/views/instances/details/health-details.vue';
 
-export default {
+export default defineComponent({
   components: { SbaAccordion, FontAwesomeIcon, HealthDetails },
   props: {
     instance: {
@@ -140,6 +146,12 @@ export default {
     },
   },
   methods: {
+    faScroll() {
+      return faScroll;
+    },
+    faChevronRight() {
+      return faChevronRight;
+    },
     onInstanceChanged() {
       if (this.instance.id !== this.currentInstanceId) {
         this.currentInstanceId = this.instance.id;
@@ -224,5 +236,5 @@ export default {
       }
     },
   },
-};
+});
 </script>

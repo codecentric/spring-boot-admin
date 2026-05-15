@@ -37,38 +37,43 @@
             small
           />
 
-          <template v-if="!instance.isUrlDisabled()">
+          <sba-button-group>
+            <template v-if="!instance.isUrlDisabled()">
+              <sba-button
+                as="a"
+                :href="instance.registration.serviceUrl"
+                :title="instance.registration.serviceUrl"
+                size="2xs"
+                referrerpolicy="no-referrer"
+                target="_blank"
+                :aria-label="t('term.homepage')"
+              >
+                <font-awesome-icon :icon="faHomeAlt" size="xs" />
+              </sba-button>
+            </template>
             <sba-button
               as="a"
-              :href="instance.registration.serviceUrl"
+              :href="instance.registration.managementUrl"
+              :title="instance.registration.managementUrl"
               size="2xs"
               referrerpolicy="no-referrer"
               target="_blank"
-              :aria-label="t('term.homepage')"
+              :aria-label="t('term.actuator_endpoint')"
             >
-              <font-awesome-icon :icon="faHome" size="xs" />
+              <font-awesome-icon :icon="faCogs" size="xs" />
             </sba-button>
-          </template>
-          <sba-button
-            as="a"
-            :href="instance.registration.managementUrl"
-            size="2xs"
-            referrerpolicy="no-referrer"
-            target="_blank"
-            :aria-label="t('term.actuator_endpoint')"
-          >
-            <font-awesome-icon :icon="faClipboardList" size="xs" />
-          </sba-button>
-          <sba-button
-            as="a"
-            :href="instance.registration.healthUrl"
-            size="2xs"
-            referrerpolicy="no-referrer"
-            target="_blank"
-            :aria-label="t('health.label')"
-          >
-            <font-awesome-icon :icon="faHeart" size="xs" />
-          </sba-button>
+            <sba-button
+              as="a"
+              :href="instance.registration.healthUrl"
+              :title="instance.registration.healthUrl"
+              size="2xs"
+              referrerpolicy="no-referrer"
+              target="_blank"
+              :aria-label="t('health.label')"
+            >
+              <font-awesome-icon :icon="faHeartPulse" size="xs" />
+            </sba-button>
+          </sba-button-group>
         </div>
       </template>
 
@@ -92,9 +97,9 @@
 
 <script setup lang="ts">
 import {
-  faClipboardList,
-  faHeart,
-  faHome,
+  faCogs,
+  faHeartPulse,
+  faHomeAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useI18n } from 'vue-i18n';
