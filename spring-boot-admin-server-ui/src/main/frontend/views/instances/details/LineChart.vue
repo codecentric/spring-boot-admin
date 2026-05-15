@@ -15,7 +15,9 @@
   -->
 
 <template>
-  <canvas id="chart" ref="chart" />
+  <div class="chart-container">
+    <canvas id="chart" ref="chart" />
+  </div>
 </template>
 
 <script>
@@ -115,6 +117,8 @@ export default {
         datasets,
       },
       options: {
+        responsive: true,
+        maintainAspectRatio: false,
         animation: {
           duration: 0,
         },
@@ -192,3 +196,13 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.chart-container {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+  max-height: 450px;
+  height: 100%;
+}
+</style>
