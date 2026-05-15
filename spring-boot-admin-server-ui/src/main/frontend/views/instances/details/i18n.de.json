@@ -22,7 +22,8 @@
         "title": "GC Pausen"
       },
       "health": {
-        "title": "Zustand"
+        "title": "Zustand",
+        "toggle_details": "{name} Zustandsdetails umschalten"
       },
       "health_group": {
         "title": "Zustandsgruppe"

@@ -22,7 +22,8 @@
         "title": "GC hlé"
       },
       "health": {
-        "title": "Staða"
+        "title": "Staða",
+        "toggle_details": "Skipta um {name} heilsuupplýsingar"
       },
       "health_group": {
         "title": "Stöðuhópur"

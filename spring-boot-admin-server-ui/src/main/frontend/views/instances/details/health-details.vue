@@ -15,24 +15,45 @@
   -->
 
 <template>
-  <dl
-    class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
-    :class="{ 'bg-white': index % 2 === 0, 'bg-gray-50': index % 2 !== 0 }"
-  >
-    <dt :id="`health-${id}__${name}`" class="text-sm font-medium text-gray-500">
-      {{ name }}
+  <dl class="px-4 py-3 even:bg-white odd:bg-gray-100">
+    <dt
+      :id="`health-${id}__${name}`"
+      class="flex text-sm font-medium text-gray-500 items-center"
+    >
+      <div class="w-48">
+        {{ name }}
+      </div>
+      <div class="flex-1">
+        <sba-status-badge v-if="health.status" :status="health.status" />
+      </div>
+      <div v-if="details && details.length > 0" class="w-12 text-right">
+        <sba-icon-button
+          class="p-0!"
+          :class="
+            classNames({
+              'text-sba-600!': !isCollapsed,
+              'text-black': isCollapsed,
+            })
+          "
+          :icon="faCircleInfo"
+          :title="t('instances.details.health.toggle_details', { name })"
+          :aria-label="t('instances.details.health.toggle_details', { name })"
+          :aria-expanded="!isCollapsed"
+          :aria-controls="`health-details-${id}__${name}`"
+          @click="() => toggleCollapsed()"
+        />
+      </div>
     </dt>
     <dd
-      class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+      :id="`health-details-${id}__${name}`"
+      class="mt-1 text-sm text-gray-900 sm:mt-0"
       :aria-labelledby="`health-${id}__` + name"
     >
-      <sba-status-badge v-if="health.status" :status="health.status" />
-
-      <dl v-if="details && details.length > 0" class="grid grid-cols-2 mt-2">
+      <dl v-if="!isCollapsed" class="grid grid-cols-6 mt-2">
         <template v-for="detail in details" :key="detail.name">
           <dt
             :id="`health-detail-${id}__${detail.name}`"
-            class="font-medium"
+            class="font-medium col-span-2"
             v-text="detail.name"
           />
           <dd
@@ -40,11 +61,13 @@
               name.toLowerCase().startsWith('diskspace') &&
               typeof detail.value === 'number'
             "
+            class="col-span-4"
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
             v-text="prettyBytes(detail.value)"
           />
           <dd
             v-else-if="typeof detail.value === 'object'"
+            class="col-span-4"
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
           >
             <sba-formatted-obj
@@ -55,52 +78,67 @@
           <dd
             v-else
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
-            class="wrap-break-word whitespace-pre-wrap"
+            class="wrap-break-word whitespace-pre-wrap col-span-4"
             v-html="autolink(detail.value)"
           />
         </template>
       </dl>
     </dd>
   </dl>
-
   <health-details
-    v-for="(child, idx) in childHealth"
+    v-for="child in childHealth"
     :key="child.name"
-    :index="idx + 1"
+    :instance="instance"
     :name="child.name"
     :health="child.value"
   />
 </template>
 
 <script lang="ts" setup>
+import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
 import prettyBytes from 'pretty-bytes';
-import { computed, useId } from 'vue';
+import { computed, onMounted, ref, useId } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
+import SbaIconButton from '@/components/sba-icon-button.vue';
 
+import Instance from '@/services/instance';
 import autolink from '@/utils/autolink';
 
+const { t } = useI18n();
 const id = useId();
 
-const isChildHealth = (value) => {
-  return value !== null && typeof value === 'object' && 'status' in value;
-};
-
-const {
-  health,
-  name,
-  index = 0,
-} = defineProps<{
+const { health, name, instance } = defineProps<{
+  instance: Instance;
   name: string;
   health: Record<string, any>;
-  index?: number;
 }>();
+
+const COLLAPSED_KEY = `de.codecentric.spring-boot-admin.health-details.${name}.${instance.id}.collapsed`;
+const isCollapsed = ref(true);
+
+onMounted(() => {
+  isCollapsed.value =
+    localStorage.getItem(COLLAPSED_KEY) === null ||
+    !(localStorage.getItem(COLLAPSED_KEY) === 'false');
+});
+
+type Details = {
+  name: string;
+  value: string;
+};
+
+const isChildHealth = (value: any) => {
+  return value !== null && typeof value === 'object' && 'status' in value;
+};
 
 const details = computed(() => {
   if (health.details || health.components) {
     return Object.entries(health.details || health.components)
       .filter(([, value]) => !isChildHealth(value))
-      .map(([name, value]) => ({ name, value }));
+      .map(([name, value]) => ({ name, value }) as Details);
   }
   return [];
 });
@@ -113,6 +151,11 @@ const childHealth = computed(() => {
   }
   return [];
 });
+
+const toggleCollapsed = () => {
+  isCollapsed.value = !isCollapsed.value;
+  localStorage.setItem(COLLAPSED_KEY, JSON.stringify(isCollapsed.value));
+};
 </script>
 
 <style scoped>

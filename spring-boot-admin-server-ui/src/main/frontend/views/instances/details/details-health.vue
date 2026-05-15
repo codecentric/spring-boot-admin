@@ -48,7 +48,7 @@
         :title="$t('term.fetch_failed')"
       />
       <div class="-mx-4 -my-3">
-        <health-details :health="health" name="Instance" />
+        <health-details :instance="instance" :health="health" name="Instance" />
 
         <template v-for="group in healthGroups" :key="group.name">
           <div
@@ -84,7 +84,11 @@
             </h4>
           </div>
           <div v-if="isHealthGroupOpen(group.name) && group.data">
-            <health-details :health="group.data" :name="group.name" />
+            <health-details
+              :instance="instance"
+              :health="group.data"
+              :name="group.name"
+            />
           </div>
         </template>
       </div>
