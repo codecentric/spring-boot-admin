@@ -50,7 +50,7 @@ public class AdminServerProperties {
 	private InstanceProxyProperties instanceProxy = new InstanceProxyProperties();
 
 	/**
-	 * The metadata keys which should be sanitized when serializing to json
+	 * The metadata keys which should be sanitized when serializing to JSON
 	 */
 	private String[] metadataKeysToSanitize = new String[] { ".*password$", ".*secret$", ".*key$", ".*token$",
 			".*credentials.*", ".*vcap_services$" };
@@ -60,10 +60,14 @@ public class AdminServerProperties {
 	 * using the actuator links. For Spring Boot 1.x applications SBA probes for the
 	 * specified endpoints using an OPTIONS request. If the path differs from the id you
 	 * can specify this as id:path (e.g. health:ping).
+	 * <p>
+	 * All the available default endpoints are listed in the <a href=
+	 * "https://docs.spring.io/spring-boot/reference/actuator/endpoints.html">documentation</a>.
 	 */
 	private String[] probedEndpoints = { "health", "env", "metrics", "httptrace:trace", "httptrace", "threaddump:dump",
 			"threaddump", "jolokia", "info", "logfile", "refresh", "flyway", "liquibase", "heapdump", "loggers",
-			"auditevents", "mappings", "scheduledtasks", "configprops", "caches", "beans" };
+			"auditevents", "mappings", "scheduledtasks", "configprops", "caches", "beans", "conditions",
+			"httpexchanges", "integrationgraph", "quartz", "sessions", "shutdown", "startup", "prometheus", "sbom" };
 
 	public void setContextPath(String contextPath) {
 		this.contextPath = PathUtils.normalizePath(contextPath);
@@ -132,7 +136,7 @@ public class AdminServerProperties {
 
 		/**
 		 * Default number of retries for failed requests. Individual values for specific
-		 * endpoints can be overriden using `spring.boot.admin.monitor.retries.*`.
+		 * endpoints can be overridden using `spring.boot.admin.monitor.retries.*`.
 		 */
 		private int defaultRetries = 0;
 
