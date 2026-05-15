@@ -62,7 +62,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	private static final String SOURCE_KEY = "Source";
 
-	private static final String DEFAULT_THEME_COLOR_EXPRESSION = "#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'}";
+	private static final String DEFAULT_THEME_COLOR_EXPRESSION = "#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? 'Good' : 'Attention') : 'Accent'}";
 
 	private static final String DEFAULT_DEREGISTER_ACTIVITY_SUBTITLE_EXPRESSION = "#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin";
 
@@ -197,24 +197,44 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	protected Message createMessage(Instance instance, String registeredTitle, String activitySubtitle,
 			EvaluationContext context) {
 		List<Fact> facts = new ArrayList<>();
-		facts.add(new Fact(STATUS_KEY, instance.getStatusInfo().getStatus()));
-		facts.add(new Fact(SERVICE_URL_KEY, instance.getRegistration().getServiceUrl()));
-		facts.add(new Fact(HEALTH_URL_KEY, instance.getRegistration().getHealthUrl()));
-		facts.add(new Fact(MANAGEMENT_URL_KEY, instance.getRegistration().getManagementUrl()));
-		facts.add(new Fact(SOURCE_KEY, instance.getRegistration().getSource()));
+		addFactIfNotNull(facts, STATUS_KEY, instance.getStatusInfo().getStatus());
+		addFactIfNotNull(facts, SERVICE_URL_KEY, instance.getRegistration().getServiceUrl());
+		addFactIfNotNull(facts, HEALTH_URL_KEY, instance.getRegistration().getHealthUrl());
+		addFactIfNotNull(facts, MANAGEMENT_URL_KEY, instance.getRegistration().getManagementUrl());
+		addFactIfNotNull(facts, SOURCE_KEY, instance.getRegistration().getSource());
 
-		Section section = Section.builder()
-			.activityTitle(instance.getRegistration().getName())
-			.activitySubtitle(activitySubtitle)
-			.facts(facts)
-			.build();
+		String themeColorValue = evaluateExpression(context, themeColor);
 
-		return Message.builder()
-			.title(registeredTitle)
-			.summary(messageSummary)
-			.themeColor(evaluateExpression(context, themeColor))
-			.sections(singletonList(section))
-			.build();
+		List<CardElement> cardBody = new ArrayList<>();
+
+		// Title
+		cardBody.add(CardElement.builder()
+			.type("TextBlock")
+			.text(registeredTitle)
+			.size("Large")
+			.weight("Bolder")
+			.color(themeColorValue)
+			.build());
+
+		// Service Name
+		cardBody.add(CardElement.builder()
+			.type("TextBlock")
+			.text(instance.getRegistration().getName())
+			.size("Medium")
+			.weight("Bolder")
+			.build());
+
+		// Activity Subtitle
+		cardBody.add(CardElement.builder().type("TextBlock").text(activitySubtitle).wrap(true).build());
+
+		// Facts
+		cardBody.add(CardElement.builder().type("FactSet").facts(facts).build());
+
+		AdaptiveCard adaptiveCard = AdaptiveCard.builder().body(cardBody).build();
+
+		Attachment attachment = Attachment.builder().content(adaptiveCard).build();
+
+		return Message.builder().attachments(singletonList(attachment)).build();
 	}
 
 	protected String evaluateExpression(EvaluationContext context, Expression expression) {
@@ -230,6 +250,12 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 			.forPropertyAccessors(DataBindingPropertyAccessor.forReadOnlyAccess(), new MapAccessor())
 			.withRootObject(root)
 			.build();
+	}
+
+	private void addFactIfNotNull(List<Fact> facts, String title, @Nullable String value) {
+		if (value != null && !value.isBlank()) {
+			facts.add(new Fact(title, value));
+		}
 	}
 
 	@Nullable public URI getWebhookUrl() {
@@ -278,31 +304,62 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	@Builder
 	public static class Message {
 
-		private final String summary;
-
-		private final String themeColor;
-
-		private final String title;
+		private final String type = "message";
 
 		@Builder.Default
-		private final List<Section> sections = new ArrayList<>();
+		private final List<Attachment> attachments = new ArrayList<>();
 
 	}
 
 	@Data
 	@Builder
-	public static class Section {
+	public static class Attachment {
 
-		private final String activityTitle;
+		private final String contentType = "application/vnd.microsoft.card.adaptive";
 
-		private final String activitySubtitle;
+		@Nullable private final String contentUrl = null;
 
-		@Builder.Default
-		private final List<Fact> facts = new ArrayList<>();
+		private final AdaptiveCard content;
 
 	}
 
-	public record Fact(String name, @Nullable String value) {
+	@Data
+	@Builder
+	public static class AdaptiveCard {
+
+		@Builder.Default
+		private final String schema = "http://adaptivecards.io/schemas/adaptive-card.json";
+
+		private final String type = "AdaptiveCard";
+
+		private final String version = "1.2";
+
+		@Builder.Default
+		private final List<CardElement> body = new ArrayList<>();
+
+	}
+
+	@Data
+	@Builder
+	public static class CardElement {
+
+		private final String type;
+
+		@Nullable private final String text;
+
+		@Nullable private final String size;
+
+		@Nullable private final String weight;
+
+		@Nullable private final String color;
+
+		@Nullable private final Boolean wrap;
+
+		@Nullable private final List<Fact> facts;
+
+	}
+
+	public record Fact(String title, @Nullable String value) {
 	}
 
 }
