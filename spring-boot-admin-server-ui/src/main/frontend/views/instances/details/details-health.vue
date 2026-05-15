@@ -19,7 +19,6 @@
     :id="`health-details-panel__${instance.id}`"
     v-model="panelOpen"
     :title="$t('instances.details.health.title')"
-    :loading="loading"
   >
     <template #title>
       <sba-status-badge
@@ -32,6 +31,7 @@
 
     <template #actions>
       <router-link
+        v-if="hasHealthUrl"
         :title="$t('applications.actions.journal')"
         :to="{ name: 'journal', query: { instanceId: instance.id } }"
         class="text-sm inline-flex items-center leading-sm border border-gray-400 bg-white text-gray-700 rounded overflow-hidden px-3 py-1 hover:bg-gray-200 ml-1"
@@ -42,47 +42,49 @@
 
     <template #default>
       <sba-alert
-        :error="error"
+        v-if="healthGroupsError"
+        :error="healthGroupsError"
         class="border-l-4"
         :title="$t('term.fetch_failed')"
       />
       <div class="-mx-4 -my-3">
         <health-details :health="health" name="Instance" />
 
-        <template v-for="healthGroup in healthGroups" :key="healthGroup.name">
+        <template v-for="group in healthGroups" :key="group.name">
           <div
             class="px-4 py-2 border-t border-gray-200 sm:px-6"
-            :class="{ 'border-b': isHealthGroupOpen(healthGroup.name) }"
+            :class="{ 'border-b': isHealthGroupOpen(group.name) }"
           >
             <h4 class="leading-6 font-medium text-gray-900">
               <button
                 class="flex items-center"
                 :aria-label="
-                  $t('instances.details.health_group.title') +
-                  ': ' +
-                  healthGroup.name
+                  $t('instances.details.health_group.title') + ': ' + group.name
                 "
-                @click="toggleHealthGroup(healthGroup.name)"
+                @click="toggleHealthGroup(group.name)"
               >
                 <font-awesome-icon
-                  v-if="isHealthGroupCollapsible(healthGroup.name)"
+                  v-if="isHealthGroupCollapsible(group.name)"
                   :icon="faChevronRight()"
                   class="transition-transform mr-2 h-4"
                   :class="{
-                    'rotate-90': isHealthGroupOpen(healthGroup.name),
+                    'rotate-90': isHealthGroupOpen(group.name),
                   }"
                 />
                 <span v-text="$t('instances.details.health_group.title')"></span
                 >:&nbsp;
-                <span v-text="healthGroup.name"></span>
+                <span v-text="group.name"></span>
+                <font-awesome-icon
+                  v-if="healthGroupLoadingMap[group.name]"
+                  icon="sync-alt"
+                  spin
+                  class="ml-2 h-3"
+                />
               </button>
             </h4>
           </div>
-          <div v-if="isHealthGroupOpen(healthGroup.name)">
-            <health-details
-              :health="healthGroup.data"
-              :name="healthGroup.name"
-            />
+          <div v-if="isHealthGroupOpen(group.name) && group.data">
+            <health-details :health="group.data" :name="group.name" />
           </div>
         </template>
       </div>
@@ -98,10 +100,10 @@ import { defineComponent } from 'vue';
 import SbaAccordion from '@/components/sba-accordion.vue';
 
 import Instance from '@/services/instance';
-import healthDetails from '@/views/instances/details/health-details';
+import HealthDetails from '@/views/instances/details/health-details.vue';
 
 export default defineComponent({
-  components: { SbaAccordion, FontAwesomeIcon, healthDetails },
+  components: { SbaAccordion, FontAwesomeIcon, HealthDetails },
   props: {
     instance: {
       type: Instance,
@@ -109,27 +111,37 @@ export default defineComponent({
     },
   },
   data: () => ({
-    error: null,
-    loading: false,
-    liveHealth: null,
-    healthGroups: [],
     panelOpen: true,
-    healthGroupOpenStatus: {} as {
-      isOpen: boolean;
-      collapsible: boolean;
-    },
-    currentInstanceId: null,
-    currentInstanceUpdateKey: null,
-    fetchToken: 0,
+    healthGroups: [] as Array<{
+      name: string;
+      data: Record<string, any> | null;
+    }>,
+    healthGroupsError: null as Error | null,
+    healthGroupOpenStatus: {} as Record<
+      string,
+      { isOpen: boolean; collapsible: boolean }
+    >,
+    healthGroupLoadingMap: {} as Record<string, boolean>,
+    currentInstanceId: null as string | null,
   }),
   computed: {
     health() {
-      return this.liveHealth || this.instance.statusInfo;
+      return this.instance.statusInfo;
+    },
+    hasHealthUrl() {
+      if (this.instance.endpoints) {
+        return (
+          this.instance.endpoints.findIndex(
+            (endpoint: { id: string }) => endpoint.id === 'health',
+          ) >= 0
+        );
+      }
+      return false;
     },
   },
   watch: {
     instance: {
-      handler: 'fetchHealth',
+      handler: 'onInstanceChanged',
       immediate: true,
     },
   },
@@ -140,120 +152,87 @@ export default defineComponent({
     faChevronRight() {
       return faChevronRight;
     },
-    reloadHealth() {
-      const updateKey =
-        this.instance.version ??
-        this.instance.statusTimestamp ??
-        this.instance.id;
-      if (
-        this.instance.id !== this.currentInstanceId ||
-        updateKey !== this.currentInstanceUpdateKey
-      ) {
-        this.fetchHealth();
+    onInstanceChanged() {
+      if (this.instance.id !== this.currentInstanceId) {
+        this.currentInstanceId = this.instance.id;
+        this.healthGroups = [];
+        this.healthGroupOpenStatus = {};
+        this.healthGroupLoadingMap = {};
+        this.healthGroupsError = null;
+        this.fetchHealthGroups();
+      } else {
+        // Same instance, SSE update (e.g. status change) — collapse groups and clear stale data
+        for (const group of this.healthGroups) {
+          group.data = null;
+        }
+        this.healthGroupOpenStatus = {};
+        this.healthGroupLoadingMap = {};
       }
     },
     isHealthGroupOpen(groupName: string) {
-      return this.healthGroupOpenStatus[groupName].isOpen === true;
+      return this.healthGroupOpenStatus[groupName]?.isOpen ?? false;
     },
     isHealthGroupCollapsible(groupName: string) {
-      return this.healthGroupOpenStatus[groupName].collapsible;
+      return this.healthGroupOpenStatus[groupName]?.collapsible ?? true;
     },
     toggleHealthGroup(groupName: string) {
-      if (this.isHealthGroupCollapsible(groupName)) {
+      const group = this.healthGroups.find((g) => g.name === groupName);
+
+      if (group == undefined) {
+        return;
+      }
+
+      if (group.data === null) {
+        // First click — fetch group details
+        this.fetchGroupDetails(groupName);
+      } else if (this.isHealthGroupCollapsible(groupName)) {
         this.healthGroupOpenStatus[groupName].isOpen =
           !this.healthGroupOpenStatus[groupName].isOpen;
       }
     },
-    async fetchHealth() {
-      const token = ++this.fetchToken;
-      this.error = null;
-      this.loading = true;
+    async fetchHealthGroups() {
+      if (!this.hasHealthUrl) {
+        return;
+      }
+
+      this.healthGroupsError = null;
 
       try {
         const res = await this.instance.fetchHealth();
-        // Stale response - another fetch was initiated
-        if (token !== this.fetchToken) {
-          return;
-        }
-
-        this.currentInstanceId = this.instance.id;
-        this.currentInstanceUpdateKey =
-          this.instance.version ??
-          this.instance.statusTimestamp ??
-          this.instance.id;
-        this.liveHealth = res.data;
 
         if (Array.isArray(res.data.groups)) {
-          // Capture token for group fetches to detect staleness
-          const groupToken = token;
-          const groupPromises = res.data.groups.map(async (group: string) => {
-            // Check if stale before starting fetch
-            if (groupToken !== this.fetchToken) {
-              throw new Error('Stale request');
-            }
-
-            try {
-              return {
-                name: group,
-                data: (await this.instance.fetchHealthGroup(group)).data,
-              };
-            } catch (e) {
-              // Only suppress error if this request became stale
-              if (groupToken !== this.fetchToken) {
-                throw e;
-              }
-              return null;
-            }
-          });
-
-          const groupResults = await Promise.allSettled(groupPromises);
-
-          // Final staleness check after all promises settle
-          if (groupToken !== this.fetchToken) {
-            return;
-          }
-
-          this.healthGroups = groupResults
-            .map((result) => {
-              // Verify still not stale after settlement
-              if (groupToken !== this.fetchToken) {
-                return null;
-              }
-              return result.status === 'fulfilled' ? result.value : null;
-            })
-            .filter((g) => g !== null);
-
-          this.healthGroupOpenStatus = this.healthGroups
-            .map(
-              (group: {
-                name: string;
-                data: { details: string } | undefined;
-              }) => {
-                const components =
-                  group.data?.details || group.data?.components;
-
-                return {
-                  [group.name]: {
-                    isOpen: components === undefined,
-                    collapsible: components !== undefined,
-                  },
-                };
-              },
-            )
-            .reduce((acc, curr) => ({ ...acc, ...curr }), {});
+          this.healthGroups = res.data.groups.map((name: string) => ({
+            name,
+            data: null,
+          }));
+          this.healthGroupOpenStatus = {};
+          this.healthGroupLoadingMap = {};
+        } else {
+          this.healthGroups = [];
         }
       } catch (error) {
-        // Stale error - ignore
-        if (token !== this.fetchToken) {
-          return;
+        console.warn('Fetching health groups failed:', error);
+        this.healthGroupsError = error as Error;
+      }
+    },
+    async fetchGroupDetails(groupName: string) {
+      this.healthGroupLoadingMap[groupName] = true;
+
+      try {
+        const res = await this.instance.fetchHealthGroup(groupName);
+        const group = this.healthGroups.find((g) => g.name === groupName);
+
+        if (group) {
+          group.data = res.data;
+          this.healthGroupOpenStatus[groupName] = {
+            isOpen: true,
+            collapsible: res.data !== undefined,
+          };
         }
-        console.warn('Fetching live health failed:', error);
-        this.error = error;
+      } catch (error) {
+        console.warn(`Fetching health group '${groupName}' failed:`, error);
       } finally {
-        if (token !== this.fetchToken) {
-          return;
-        }
-        this.loading = false;
+        this.healthGroupLoadingMap[groupName] = false;
       }
     },
   },

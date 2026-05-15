@@ -1,88 +1,40 @@
-import { screen, waitFor } from '@testing-library/vue';
-import { AxiosHeaders } from 'axios';
-import { HttpResponse, http } from 'msw';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { screen } from '@testing-library/vue';
+import { describe, expect, it, vi } from 'vitest';
 
 import DetailsInfo from './details-info.vue';
 
 import { applications } from '@/mocks/applications/data';
-import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import { render } from '@/test-utils';
 
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: any) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return { promise, resolve, reject };
-}
-
 describe('DetailsInfo', () => {
-  beforeEach(() => {
-    server.use(
-      http.get('/instances/:instanceId/actuator/info', () => {
-        return HttpResponse.json({
-          app: { version: '1.0.0', name: 'TestApp' },
-          java: { version: '17' },
-        });
-      }),
-    );
-  });
-
-  it('should render info table with keys and values', async () => {
+  it('should render info from instance.info', async () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
-    instance.hasEndpoint = () => true;
-
-    instance.fetchInfo = async () => ({
-      data: {
-        app: { version: '1.0.0', name: 'TestApp' },
-        java: { version: '17' },
-      },
-      status: 200,
-      statusText: 'OK',
-      headers: new AxiosHeaders(),
-      config: { headers: new AxiosHeaders() },
-    });
 
     render(DetailsInfo, {
       props: { instance },
     });
 
-    await waitFor(() => {
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
-    });
-
-    expect(await screen.findByText('app')).toBeVisible();
-    expect(await screen.findByText('java')).toBeVisible();
-    // YAML-formatted output is rendered in a <pre> block, so match the full string
-    expect(
-      await screen.findByText(/version: 1.0.0[\s\S]*name: TestApp/),
-    ).toBeVisible();
-    expect(await screen.findByText(/version: '17'/)).toBeVisible();
+    // The mock instance has info with 'tags', 'scm-url', 'build-url', 'build' keys
+    expect(await screen.findByText('tags')).toBeVisible();
+    expect(await screen.findByText('build')).toBeVisible();
   });
 
-  it('should show no info message if info is empty', async () => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
-    instance.hasEndpoint = () => true;
-    instance.fetchInfo = async () => ({
-      data: {},
-      status: 200,
-      statusText: 'OK',
-      headers: new AxiosHeaders(),
-      config: { headers: new AxiosHeaders() },
+  it('should show empty message when info is empty', async () => {
+    const application = new Application({
+      ...applications[0],
+      instances: [
+        {
+          ...applications[0].instances[0],
+          info: {},
+        },
+      ],
     });
+    const instance = application.instances[0];
 
     render(DetailsInfo, {
       props: { instance },
-    });
-
-    await waitFor(() => {
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });
 
     expect(
@@ -90,152 +42,123 @@ describe('DetailsInfo', () => {
     ).toBeVisible();
   });
 
-  it('should show error alert if fetch fails', async () => {
+  it('should update when instance prop changes', async () => {
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+
+    const { rerender } = render(DetailsInfo, {
+      props: { instance: instance1 },
+    });
+
+    // Initial render shows info from mock data
+    expect(await screen.findByText('tags')).toBeVisible();
+
+    // Create new instance with different info
+    const instance2 = new Application({
+      ...applications[0],
+      instances: [
+        {
+          ...applications[0].instances[0],
+          info: { foo: 'bar' },
+        },
+      ],
+    }).instances[0];
+
+    await rerender({ instance: instance2 });
+
+    expect(await screen.findByText('foo')).toBeVisible();
+    expect(await screen.findByText('bar')).toBeVisible();
+  });
+
+  it('should show count of info entries', async () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
-    instance.hasEndpoint = () => true;
-    instance.fetchInfo = async () => {
-      throw new Error('fail');
-    };
 
     render(DetailsInfo, {
       props: { instance },
     });
 
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toBeVisible();
-    });
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'Fetching of data failed.',
-    );
+    // The mock has 4 info keys: tags, scm-url, build-url, build
+    // The count appears in the accordion title slot
+    expect(await screen.findByText('(4)')).toBeVisible();
   });
 
-  it('should call fetchInfo when instance changes (watcher)', async () => {
-    const application = new Application(applications[0]);
-    const instance1 = application.instances[0];
-    const instance2 = new Application({
-      ...application,
-      instances: [
-        {
-          ...instance1,
-          id: 'other-id',
-        },
-      ],
-    }).instances[0];
-    instance2.hasEndpoint = () => true;
-    instance2.fetchInfo = async () => ({ data: { foo: 'bar' } });
-    instance1.hasEndpoint = () => true;
-    const fetchInfoSpy = vi
-      .fn()
-      .mockResolvedValue({ data: { app: { version: '1.0.0' } } });
-    instance1.fetchInfo = fetchInfoSpy;
+  describe('SSE reactive updates', () => {
+    it('should never call instance.fetchInfo (no direct actuator calls)', async () => {
+      const application = new Application(applications[0]);
+      const instance = application.instances[0];
 
-    const { rerender } = render(DetailsInfo, {
-      props: { instance: instance1 },
+      // Spy on fetchInfo to prove it's never called
+      const fetchInfoSpy = vi.spyOn(instance, 'fetchInfo');
+
+      render(DetailsInfo, {
+        props: { instance },
+      });
+
+      // Wait for component to fully render
+      await screen.findByText('tags');
+
+      // Assert fetchInfo was NEVER called - this proves the bug fix
+      expect(fetchInfoSpy).not.toHaveBeenCalled();
     });
 
-    await waitFor(() => {
-      expect(fetchInfoSpy).toHaveBeenCalled();
+    it('should reactively update through multiple SSE info changes without HTTP calls', async () => {
+      const baseApp = applications[0];
+
+      // 1. Initial SSE event with full info
+      const instance1 = new Application(baseApp).instances[0];
+      const fetchInfoSpy1 = vi.spyOn(instance1, 'fetchInfo');
+
+      const { rerender } = render(DetailsInfo, {
+        props: { instance: instance1 },
+      });
+
+      expect(await screen.findByText('tags')).toBeVisible();
+      expect(await screen.findByText('build')).toBeVisible();
+      expect(fetchInfoSpy1).not.toHaveBeenCalled();
+
+      // 2. SSE event: info changes (simulates INFO_CHANGED event)
+      const instance2 = new Application({
+        ...baseApp,
+        instances: [
+          {
+            ...baseApp.instances[0],
+            version: 4,
+            info: {
+              app: { name: 'my-service', version: '2.0.0' },
+              'git.branch': 'main',
+            },
+          },
+        ],
+      }).instances[0];
+      const fetchInfoSpy2 = vi.spyOn(instance2, 'fetchInfo');
+
+      await rerender({ instance: instance2 });
+
+      expect(await screen.findByText('app')).toBeVisible();
+      expect(await screen.findByText('git.branch')).toBeVisible();
+      expect(screen.queryByText('tags')).not.toBeInTheDocument();
+      expect(fetchInfoSpy2).not.toHaveBeenCalled();
+
+      // 3. SSE event: info becomes empty
+      const instance3 = new Application({
+        ...baseApp,
+        instances: [
+          {
+            ...baseApp.instances[0],
+            version: 5,
+            info: {},
+          },
+        ],
+      }).instances[0];
+      const fetchInfoSpy3 = vi.spyOn(instance3, 'fetchInfo');
+
+      await rerender({ instance: instance3 });
+
+      expect(
+        await screen.findByText('instances.details.info.no_info_provided'),
+      ).toBeVisible();
+      expect(fetchInfoSpy3).not.toHaveBeenCalled();
     });
-
-    // Now rerender with a new instance (different id)
-    await rerender({ instance: instance2 });
-
-    // Should show the new info from instance2
-    expect(await screen.findByText('foo')).toBeVisible();
-    expect(await screen.findByText('bar')).toBeVisible();
-  });
-
-  it('should call fetchInfo when instance version changes (SSE update)', async () => {
-    const application = new Application(applications[0]);
-    const instance1 = application.instances[0];
-    instance1.hasEndpoint = () => true;
-
-    const fetchInfoSpy = vi
-      .fn()
-      .mockResolvedValueOnce({ data: { app: { version: '1.0.0' } } })
-      .mockResolvedValueOnce({ data: { app: { version: '2.0.0' } } });
-    instance1.fetchInfo = fetchInfoSpy;
-
-    const { rerender } = render(DetailsInfo, {
-      props: { instance: instance1 },
-    });
-
-    await waitFor(() => {
-      expect(fetchInfoSpy).toHaveBeenCalledTimes(1);
-    });
-
-    const instance2 = new Application({
-      ...application,
-      instances: [
-        {
-          ...instance1,
-          id: instance1.id,
-          version: (instance1.version ?? 0) + 1,
-        },
-      ],
-    }).instances[0];
-    instance2.hasEndpoint = () => true;
-    instance2.fetchInfo = fetchInfoSpy;
-
-    await rerender({ instance: instance2 });
-
-    await waitFor(() => {
-      expect(fetchInfoSpy).toHaveBeenCalledTimes(2);
-    });
-
-    expect(await screen.findByText(/version: 2.0.0/)).toBeVisible();
-  });
-
-  it('should ignore stale info response when instance updates quickly', async () => {
-    const application = new Application(applications[0]);
-    const instance1 = application.instances[0];
-    instance1.hasEndpoint = () => true;
-
-    const p1 = deferred<{ data: any }>();
-    const p2 = deferred<{ data: any }>();
-    const fetchInfoSpy = vi
-      .fn()
-      .mockReturnValueOnce(p1.promise)
-      .mockReturnValueOnce(p2.promise);
-    instance1.fetchInfo = fetchInfoSpy;
-
-    const { rerender } = render(DetailsInfo, {
-      props: { instance: instance1 },
-    });
-
-    await waitFor(() => {
-      expect(fetchInfoSpy).toHaveBeenCalledTimes(1);
-    });
-
-    const instance2 = new Application({
-      ...application,
-      instances: [
-        {
-          ...instance1,
-          id: instance1.id,
-          version: (instance1.version ?? 0) + 1,
-        },
-      ],
-    }).instances[0];
-    instance2.hasEndpoint = () => true;
-    instance2.fetchInfo = fetchInfoSpy;
-
-    await rerender({ instance: instance2 });
-
-    await waitFor(() => {
-      expect(fetchInfoSpy).toHaveBeenCalledTimes(2);
-    });
-
-    // Resolve second (newer) response first.
-    p2.resolve({ data: { app: { version: '2.0.0' } } });
-    expect(await screen.findByText(/version: 2.0.0/)).toBeVisible();
-
-    // Resolve first (older) response afterwards; UI must not regress.
-    p1.resolve({ data: { app: { version: '1.0.0' } } });
-    await waitFor(() => {
-      expect(screen.queryByText(/version: 1.0.0/)).not.toBeInTheDocument();
-    });
-    expect(await screen.findByText(/version: 2.0.0/)).toBeVisible();
   });
 });
