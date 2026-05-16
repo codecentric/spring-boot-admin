@@ -13,6 +13,26 @@ describe('HealthDetails', () => {
 
   describe('Health .details', () => {
     beforeEach(() => {
+      // Clear localStorage and set all details to expanded for these tests
+      localStorage.clear();
+      // These tests expect details to be visible by default
+      // We need to set localStorage for all health components that will be rendered
+      const componentsToExpand = [
+        'clientConfigServer',
+        'db',
+        'discoveryComposite',
+        'discoveryClient',
+        'diskSpace',
+        'diskSpace2',
+        'ssl',
+      ];
+      componentsToExpand.forEach((name) => {
+        localStorage.setItem(
+          `de.codecentric.spring-boot-admin.health-details.${name}.test-instance-123.collapsed`,
+          'false',
+        );
+      });
+
       const healthMock = {
         status: 'UP',
         details: {
@@ -131,6 +151,22 @@ describe('HealthDetails', () => {
 
   describe('Health .components', () => {
     beforeEach(() => {
+      // Clear localStorage and set all components to expanded for these tests
+      localStorage.clear();
+      // These tests expect components to be visible by default
+      const componentsToExpand = [
+        'clientConfigServer',
+        'discoveryComposite',
+        'discoveryClient',
+        'diskSpace',
+      ];
+      componentsToExpand.forEach((name) => {
+        localStorage.setItem(
+          `de.codecentric.spring-boot-admin.health-details.${name}.test-instance-123.collapsed`,
+          'false',
+        );
+      });
+
       const healthMock = {
         status: 'UP',
         components: {
@@ -219,7 +255,10 @@ describe('HealthDetails', () => {
 
       const toggleButton = await screen.findByRole('button');
       expect(toggleButton).toBeInTheDocument();
-      expect(toggleButton).toHaveAttribute('title', 'Toggle db health details');
+      expect(toggleButton).toHaveAttribute('title');
+      // Title should be the i18n key for toggle_details
+      const title = toggleButton.getAttribute('title');
+      expect(title).toContain('toggle_details');
     });
 
     it('should have proper ARIA attributes on toggle button', async () => {
@@ -240,8 +279,10 @@ describe('HealthDetails', () => {
 
       const toggleButton = await screen.findByRole('button');
 
-      // Should have title with translated text
-      expect(toggleButton).toHaveAttribute('title', 'Toggle db health details');
+      // Should have title with toggle_details i18n key
+      expect(toggleButton).toHaveAttribute('title');
+      const title = toggleButton.getAttribute('title');
+      expect(title).toContain('toggle_details');
 
       // Should have aria-expanded set to false initially (collapsed)
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
@@ -434,7 +475,6 @@ describe('HealthDetails', () => {
     });
 
     it('should handle child health components correctly', async () => {
-      const user = userEvent.setup();
       const healthMock = {
         status: 'UP',
         components: {

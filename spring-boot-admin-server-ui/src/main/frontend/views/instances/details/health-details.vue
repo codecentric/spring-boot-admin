@@ -15,7 +15,11 @@
   -->
 
 <template>
-  <dl class="px-4 py-3 even:bg-white odd:bg-gray-100">
+  <dl
+    class="px-4 py-3 even:bg-white odd:bg-gray-100"
+    role="definition"
+    :aria-label="name"
+  >
     <dt
       :id="`health-${id}__${name}`"
       class="flex text-sm font-medium text-gray-500 items-center"
@@ -62,12 +66,16 @@
               typeof detail.value === 'number'
             "
             class="col-span-4"
+            role="definition"
+            :aria-label="detail.name"
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
             v-text="prettyBytes(detail.value)"
           />
           <dd
             v-else-if="typeof detail.value === 'object'"
             class="col-span-4"
+            role="definition"
+            :aria-label="detail.name"
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
           >
             <sba-formatted-obj
@@ -77,6 +85,8 @@
           </dd>
           <dd
             v-else
+            role="definition"
+            :aria-label="detail.name"
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
             class="wrap-break-word whitespace-pre-wrap col-span-4"
             v-html="autolink(detail.value)"
@@ -120,9 +130,10 @@ const COLLAPSED_KEY = `de.codecentric.spring-boot-admin.health-details.${name}.$
 const isCollapsed = ref(true);
 
 onMounted(() => {
-  isCollapsed.value =
-    localStorage.getItem(COLLAPSED_KEY) === null ||
-    !(localStorage.getItem(COLLAPSED_KEY) === 'false');
+  const stored = localStorage.getItem(COLLAPSED_KEY);
+  if (stored !== null) {
+    isCollapsed.value = stored === 'true';
+  }
 });
 
 type Details = {
