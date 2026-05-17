@@ -104,7 +104,7 @@ describe('HealthDetails', () => {
     `(
       'should display health components status',
       async ({ componentId, status }) => {
-        const clientConfigServer = await screen.findByRole('definition', {
+        const clientConfigServer = await screen.findByRole('group', {
           name: componentId,
         });
         expect(
@@ -114,7 +114,7 @@ describe('HealthDetails', () => {
     );
 
     it('should format diskSpace details correctly', async () => {
-      const diskSpaceInfo = await screen.findByRole('definition', {
+      const diskSpaceInfo = await screen.findByRole('group', {
         name: 'diskSpace2',
       });
 
@@ -143,7 +143,7 @@ describe('HealthDetails', () => {
 
     it('should format object details correctly', async () => {
       const sslInfo = await screen.findByRole('definition', {
-        name: 'validChains',
+        name: 'validChains', // inner <dd role="definition"> within ssl group
       });
       expect(sslInfo).toMatchSnapshot();
     });
@@ -207,7 +207,7 @@ describe('HealthDetails', () => {
 
     it('should display health status', async () => {
       expect(
-        screen.getByRole('definition', { name: 'clientConfigServer' }),
+        screen.getByRole('group', { name: 'clientConfigServer' }),
       ).toBeInTheDocument();
     });
 
@@ -220,7 +220,7 @@ describe('HealthDetails', () => {
     `(
       'should display health components status',
       async ({ componentId, status }) => {
-        const clientConfigServer = await screen.findByRole('definition', {
+        const clientConfigServer = await screen.findByRole('group', {
           name: componentId,
         });
         expect(
@@ -496,7 +496,7 @@ describe('HealthDetails', () => {
       });
 
       // Child component should be rendered
-      const dbComponent = await screen.findByRole('definition', { name: 'db' });
+      const dbComponent = await screen.findByRole('group', { name: 'db' });
       expect(dbComponent).toBeInTheDocument();
     });
 

@@ -16,12 +16,13 @@
 
 <template>
   <dl
-    class="px-4 py-3 even:bg-white odd:bg-gray-100"
-    role="definition"
+    class="px-4 py-3"
+    :class="{ 'bg-white': index % 2 === 0, 'bg-gray-100': index % 2 !== 0 }"
+    role="group"
     :aria-label="name"
   >
     <dt
-      :id="`health-${id}__${name}`"
+      :id="`health-${id}__${safeNameId}`"
       class="flex text-sm font-medium text-gray-500 items-center"
     >
       <div class="w-48">
@@ -42,21 +43,21 @@
           :icon="faCircleInfo"
           :title="t('instances.details.health.toggle_details', { name })"
           :aria-label="t('instances.details.health.toggle_details', { name })"
-          :aria-expanded="!isCollapsed"
-          :aria-controls="`health-details-${id}__${name}`"
+          :aria-expanded="String(!isCollapsed)"
+          :aria-controls="`health-details-${id}__${safeNameId}`"
           @click="() => toggleCollapsed()"
         />
       </div>
     </dt>
     <dd
-      :id="`health-details-${id}__${name}`"
+      :id="`health-details-${id}__${safeNameId}`"
       class="mt-1 text-sm text-gray-900 sm:mt-0"
-      :aria-labelledby="`health-${id}__` + name"
+      :aria-labelledby="`health-${id}__${safeNameId}`"
     >
       <dl v-if="!isCollapsed" class="grid grid-cols-6 mt-2">
         <template v-for="detail in details" :key="detail.name">
           <dt
-            :id="`health-detail-${id}__${detail.name}`"
+            :id="`health-detail-${id}__${detail.name.replace(/[^a-zA-Z0-9_-]/g, '_')}`"
             class="font-medium col-span-2"
             v-text="detail.name"
           />
@@ -68,15 +69,15 @@
             class="col-span-4"
             role="definition"
             :aria-label="detail.name"
-            :aria-labelledby="`health-detail-${id}__${detail.name}`"
-            v-text="prettyBytes(detail.value)"
+            :aria-labelledby="`health-detail-${id}__${detail.name.replace(/[^a-zA-Z0-9_-]/g, '_')}`"
+            v-text="prettyBytes(detail.value as number)"
           />
           <dd
-            v-else-if="typeof detail.value === 'object'"
+            v-else-if="detail.value !== null && typeof detail.value === 'object'"
             class="col-span-4"
             role="definition"
             :aria-label="detail.name"
-            :aria-labelledby="`health-detail-${id}__${detail.name}`"
+            :aria-labelledby="`health-detail-${id}__${detail.name.replace(/[^a-zA-Z0-9_-]/g, '_')}`"
           >
             <sba-formatted-obj
               class="overflow-auto whitespace-pre!"
@@ -87,28 +88,31 @@
             v-else
             role="definition"
             :aria-label="detail.name"
-            :aria-labelledby="`health-detail-${id}__${detail.name}`"
+            :aria-labelledby="`health-detail-${id}__${detail.name.replace(/[^a-zA-Z0-9_-]/g, '_')}`"
             class="wrap-break-word whitespace-pre-wrap col-span-4"
-            v-html="autolink(detail.value)"
+            v-html="autolink(String(detail.value ?? ''))"
           />
         </template>
       </dl>
     </dd>
   </dl>
-  <health-details
-    v-for="child in childHealth"
-    :key="child.name"
-    :instance="instance"
-    :name="child.name"
-    :health="child.value"
-  />
+  <template v-if="index < 10">
+    <health-details
+      v-for="(child, idx) in childHealth"
+      :key="`${child.name}_${idx}`"
+      :instance="instance"
+      :index="index + 1"
+      :name="child.name"
+      :health="child.value"
+    />
+  </template>
 </template>
 
 <script lang="ts" setup>
 import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import prettyBytes from 'pretty-bytes';
-import { computed, onMounted, ref, useId } from 'vue';
+import { computed, ref, useId, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
@@ -120,25 +124,37 @@ import autolink from '@/utils/autolink';
 const { t } = useI18n();
 const id = useId();
 
-const { health, name, instance } = defineProps<{
+const { health, name, instance, index = 0 } = defineProps<{
   instance: Instance;
   name: string;
   health: Record<string, any>;
+  index?: number;
 }>();
 
-const COLLAPSED_KEY = `de.codecentric.spring-boot-admin.health-details.${name}.${instance.id}.collapsed`;
-const isCollapsed = ref(true);
+// Sanitised name safe for use in HTML id attributes
+const safeNameId = computed(() => (name ?? '').replace(/[^a-zA-Z0-9_-]/g, '_'));
 
-onMounted(() => {
-  const stored = localStorage.getItem(COLLAPSED_KEY);
-  if (stored !== null) {
-    isCollapsed.value = stored === 'true';
+const COLLAPSED_KEY = computed(
+  () =>
+    `de.codecentric.spring-boot-admin.health-details.${encodeURIComponent(name ?? '')}.${encodeURIComponent(instance?.id ?? '')}.collapsed`,
+);
+
+function readCollapsedFromStorage(): boolean {
+  if (!instance?.id) return true;
+  try {
+    const stored = localStorage.getItem(COLLAPSED_KEY.value);
+    if (stored !== null) return stored === 'true';
+  } catch {
+    // storage unavailable — fall back to default
   }
-});
+  return true;
+}
+
+const isCollapsed = ref(readCollapsedFromStorage());
 
 type Details = {
   name: string;
-  value: string;
+  value: unknown;
 };
 
 const isChildHealth = (value: any) => {
@@ -163,9 +179,20 @@ const childHealth = computed(() => {
   return [];
 });
 
+watch(COLLAPSED_KEY, () => {
+  isCollapsed.value = readCollapsedFromStorage();
+});
+
 const toggleCollapsed = () => {
-  isCollapsed.value = !isCollapsed.value;
-  localStorage.setItem(COLLAPSED_KEY, JSON.stringify(isCollapsed.value));
+  const next = !isCollapsed.value;
+  if (instance?.id) {
+    try {
+      localStorage.setItem(COLLAPSED_KEY.value, JSON.stringify(next));
+    } catch {
+      // storage unavailable — in-memory state still updated
+    }
+  }
+  isCollapsed.value = next;
 };
 </script>
 

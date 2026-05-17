@@ -41,7 +41,7 @@ export default defineComponent({
       default: null,
     },
     icon: {
-      type: Object as PropType<Array<string> | string | IconDefinition>,
+      type: [Object, Array, String] as PropType<Array<string> | string | IconDefinition>,
       required: true,
     },
     size: {
