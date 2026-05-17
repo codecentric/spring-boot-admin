@@ -24,6 +24,9 @@ import org.springframework.context.annotation.Bean;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.mcp.tools.ApplicationTools;
 import de.codecentric.boot.admin.server.mcp.tools.HealthTools;
+import de.codecentric.boot.admin.server.mcp.tools.LogsTools;
+import de.codecentric.boot.admin.server.mcp.tools.MetricsTools;
+import de.codecentric.boot.admin.server.mcp.tools.OperationsTools;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
@@ -60,6 +63,46 @@ public class McpAutoConfiguration {
 	public HealthTools healthTools(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		return new HealthTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link MetricsTools} bean for querying application metrics.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link MetricsTools}
+	 */
+	@Bean
+	public MetricsTools metricsTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new MetricsTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link LogsTools} bean for accessing application log output.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link LogsTools}
+	 */
+	@Bean
+	public LogsTools logsTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new LogsTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link OperationsTools} bean for performing write operations on
+	 * applications.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link OperationsTools}
+	 */
+	@Bean
+	public OperationsTools operationsTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new OperationsTools(instanceRepository, instanceWebClientBuilder.build());
 	}
 
 }
