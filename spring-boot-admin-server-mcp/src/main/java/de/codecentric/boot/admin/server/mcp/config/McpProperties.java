@@ -1,0 +1,63 @@
+/*
+ * Copyright 2014-2026 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package de.codecentric.boot.admin.server.mcp.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+/**
+ * Configuration properties for the Spring Boot Admin MCP server integration.
+ *
+ * <p>
+ * MCP support is disabled by default. To enable it, set
+ * {@code spring.boot.admin.mcp.enabled=true} in your application configuration.
+ * </p>
+ *
+ * <p>
+ * Example configuration:
+ * </p>
+ *
+ * <pre>
+ * spring:
+ *   boot:
+ *     admin:
+ *       mcp:
+ *         enabled: true
+ *   ai:
+ *     mcp:
+ *       server:
+ *         type: ASYNC
+ *         protocol: STREAMABLE
+ * </pre>
+ */
+@lombok.Data
+@ConfigurationProperties(prefix = "spring.boot.admin.mcp")
+public class McpProperties {
+
+	/**
+	 * Creates a new {@code McpProperties} instance with default values.
+	 */
+	public McpProperties() {
+		// NOOP
+	}
+
+	/**
+	 * Whether the MCP server integration is enabled. Defaults to {@code false} to ensure
+	 * zero impact on existing Spring Boot Admin deployments.
+	 */
+	private boolean enabled = false;
+
+}

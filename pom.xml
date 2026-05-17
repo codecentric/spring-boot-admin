@@ -50,6 +50,7 @@
         <!-- used dependencies versions -->
         <spring-boot.version>4.0.6</spring-boot.version>
         <spring-cloud.version>2025.1.1</spring-cloud.version>
+        <spring-ai.version>2.0.0-M6</spring-ai.version>
 
         <jolokia-support-springboot.version>2.6.0</jolokia-support-springboot.version>
 
@@ -99,6 +100,7 @@
         <module>spring-boot-admin-docs</module>
         <module>spring-boot-admin-starter-server</module>
         <module>spring-boot-admin-starter-client</module>
+        <module>spring-boot-admin-server-mcp</module>
         <module>spring-boot-admin-samples</module>
     </modules>
 

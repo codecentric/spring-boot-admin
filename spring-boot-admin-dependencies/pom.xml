@@ -60,6 +60,11 @@
                 <artifactId>spring-boot-admin-starter-server</artifactId>
                 <version>${revision}</version>
             </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-server-mcp</artifactId>
+                <version>${revision}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

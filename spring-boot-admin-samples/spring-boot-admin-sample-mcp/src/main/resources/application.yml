@@ -1,0 +1,32 @@
+logging:
+  file:
+    name: "target/boot-admin-sample-mcp.log"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+spring:
+  application:
+    name: spring-boot-admin-sample-mcp
+  boot:
+    admin:
+      client:
+        url: http://localhost:8080
+      mcp:
+        enabled: true
+  ai:
+    mcp:
+      server:
+        type: ASYNC
+        protocol: STATELESS
+        name: "Spring Boot Admin"
+        version: "1.0.0"
+  profiles:
+    active:
+      - insecure
