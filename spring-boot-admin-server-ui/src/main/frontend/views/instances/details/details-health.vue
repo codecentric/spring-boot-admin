@@ -76,9 +76,15 @@
                     'rotate-90': isHealthGroupOpen(group.name),
                   }"
                 />
-                <span v-text="$t('instances.details.health_group.title')"></span
-                >:&nbsp;
-                <span v-text="group.name"></span>
+                <span
+                  v-text="$t('instances.details.health_group.title')"
+                />:&nbsp; <span v-text="group.name"></span>
+                <sba-status-badge
+                  v-if="group.data?.status"
+                  class="ml-2 fade"
+                  :status="group.data?.status"
+                />
+
                 <font-awesome-icon
                   v-if="healthGroupLoadingMap[group.name]"
                   icon="sync-alt"

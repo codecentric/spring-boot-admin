@@ -16,8 +16,7 @@
 
 <template>
   <dl
-    class="px-4 py-3"
-    :class="{ 'bg-white': index % 2 === 0, 'bg-gray-100': index % 2 !== 0 }"
+    class="px-4 py-3 even:bg-white odd:bg-gray-50"
     role="group"
     :aria-label="name"
   >
@@ -32,21 +31,27 @@
         <sba-status-badge v-if="health.status" :status="health.status" />
       </div>
       <div v-if="details && details.length > 0" class="w-12 text-right">
-        <sba-icon-button
-          class="p-0!"
+        <sba-button
+          class="p-0! border-none"
           :class="
             classNames({
               'text-sba-600!': !isCollapsed,
               'text-black': isCollapsed,
             })
           "
-          :icon="faCircleInfo"
           :title="t('instances.details.health.toggle_details', { name })"
           :aria-label="t('instances.details.health.toggle_details', { name })"
           :aria-expanded="String(!isCollapsed)"
           :aria-controls="`health-details-${id}__${safeNameId}`"
           @click="() => toggleCollapsed()"
-        />
+        >
+          <font-awesome-icon
+            :icon="faChevronRight"
+            class="transition-transform"
+            :class="{ 'rotate-90': !isCollapsed }"
+          />
+          <font-awesome-icon :icon="faCircleInfo" />
+        </sba-button>
       </div>
     </dt>
     <dd
@@ -55,7 +60,10 @@
       :aria-labelledby="`health-${id}__${safeNameId}`"
     >
       <dl v-if="!isCollapsed" class="grid grid-cols-6 mt-2">
-        <template v-for="(detail, idx) in details" :key="`${detail.name}_${idx}`">
+        <template
+          v-for="(detail, idx) in details"
+          :key="`${detail.name}_${idx}`"
+        >
           <dt
             :id="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
             class="font-medium col-span-2"
@@ -73,7 +81,9 @@
             v-text="prettyBytes(detail.value as number)"
           />
           <dd
-            v-else-if="detail.value !== null && typeof detail.value === 'object'"
+            v-else-if="
+              detail.value !== null && typeof detail.value === 'object'
+            "
             class="col-span-4"
             role="definition"
             :aria-label="detail.name"
@@ -101,7 +111,6 @@
       v-for="(child, idx) in childHealth"
       :key="`${child.name}_${idx}`"
       :instance="instance"
-      :index="idx"
       :depth="depth + 1"
       :name="child.name"
       :health="child.value"
@@ -110,14 +119,16 @@
 </template>
 
 <script lang="ts" setup>
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+import {
+  faChevronRight,
+  faCircleInfo,
+} from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 import prettyBytes from 'pretty-bytes';
 import { computed, ref, useId, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
-import SbaIconButton from '@/components/sba-icon-button.vue';
 
 import Instance from '@/services/instance';
 import autolink from '@/utils/autolink';
@@ -125,15 +136,17 @@ import autolink from '@/utils/autolink';
 const { t } = useI18n();
 const id = useId();
 
-const { health, name, instance, index = 0, depth = 0 } = defineProps<{
+const {
+  health,
+  name,
+  instance,
+  depth = 0,
+} = defineProps<{
   instance: Instance;
   name: string;
   health: Record<string, any>;
-  /** Row position within siblings — drives even/odd background alternation. */
-  index?: number;
-  /** Recursion depth — used to prevent infinite nesting. */
   depth?: number;
-}>(); 
+}>();
 
 // Sanitised name safe for use in HTML id attributes
 const safeNameId = computed(() => (name ?? '').replace(/[^a-zA-Z0-9_-]/g, '_'));
