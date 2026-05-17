@@ -96,12 +96,13 @@
       </dl>
     </dd>
   </dl>
-  <template v-if="index < 10">
+  <template v-if="depth < 10">
     <health-details
       v-for="(child, idx) in childHealth"
       :key="`${child.name}_${idx}`"
       :instance="instance"
-      :index="index + 1"
+      :index="idx"
+      :depth="depth + 1"
       :name="child.name"
       :health="child.value"
     />
@@ -124,12 +125,15 @@ import autolink from '@/utils/autolink';
 const { t } = useI18n();
 const id = useId();
 
-const { health, name, instance, index = 0 } = defineProps<{
+const { health, name, instance, index = 0, depth = 0 } = defineProps<{
   instance: Instance;
   name: string;
   health: Record<string, any>;
+  /** Row position within siblings — drives even/odd background alternation. */
   index?: number;
-}>();
+  /** Recursion depth — used to prevent infinite nesting. */
+  depth?: number;
+}>(); 
 
 // Sanitised name safe for use in HTML id attributes
 const safeNameId = computed(() => (name ?? '').replace(/[^a-zA-Z0-9_-]/g, '_'));
