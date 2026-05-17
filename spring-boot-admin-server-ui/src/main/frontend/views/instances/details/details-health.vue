@@ -48,9 +48,14 @@
         :title="$t('term.fetch_failed')"
       />
       <div class="-mx-4 -my-3">
-        <health-details :instance="instance" :health="health" name="Instance" />
+        <health-details
+          :instance="instance"
+          :health="health"
+          :index="0"
+          name="Instance"
+        />
 
-        <template v-for="group in healthGroups" :key="group.name">
+        <template v-for="(group, groupIdx) in healthGroups" :key="group.name">
           <div
             class="px-4 py-2 border-t border-gray-200 sm:px-6"
             :class="{ 'border-b': isHealthGroupOpen(group.name) }"
@@ -88,6 +93,7 @@
               :instance="instance"
               :health="group.data"
               :name="group.name"
+              :index="groupIdx + 1"
             />
           </div>
         </template>
