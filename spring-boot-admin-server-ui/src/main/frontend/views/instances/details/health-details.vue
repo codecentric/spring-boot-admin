@@ -55,9 +55,9 @@
       :aria-labelledby="`health-${id}__${safeNameId}`"
     >
       <dl v-if="!isCollapsed" class="grid grid-cols-6 mt-2">
-        <template v-for="detail in details" :key="detail.name">
+        <template v-for="(detail, idx) in details" :key="`${detail.name}_${idx}`">
           <dt
-            :id="`health-detail-${id}__${detail.name.replace(/[^a-zA-Z0-9_-]/g, '_')}`"
+            :id="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
             class="font-medium col-span-2"
             v-text="detail.name"
           />
@@ -69,7 +69,7 @@
             class="col-span-4"
             role="definition"
             :aria-label="detail.name"
-            :aria-labelledby="`health-detail-${id}__${detail.name.replace(/[^a-zA-Z0-9_-]/g, '_')}`"
+            :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
             v-text="prettyBytes(detail.value as number)"
           />
           <dd
@@ -77,7 +77,7 @@
             class="col-span-4"
             role="definition"
             :aria-label="detail.name"
-            :aria-labelledby="`health-detail-${id}__${detail.name.replace(/[^a-zA-Z0-9_-]/g, '_')}`"
+            :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
           >
             <sba-formatted-obj
               class="overflow-auto whitespace-pre!"
@@ -88,7 +88,7 @@
             v-else
             role="definition"
             :aria-label="detail.name"
-            :aria-labelledby="`health-detail-${id}__${detail.name.replace(/[^a-zA-Z0-9_-]/g, '_')}`"
+            :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
             class="wrap-break-word whitespace-pre-wrap col-span-4"
             v-html="autolink(String(detail.value ?? ''))"
           />
@@ -134,6 +134,12 @@ const { health, name, instance, index = 0 } = defineProps<{
 // Sanitised name safe for use in HTML id attributes
 const safeNameId = computed(() => (name ?? '').replace(/[^a-zA-Z0-9_-]/g, '_'));
 
+// Sanitise a detail key for use in HTML ids; fall back to its index when result would be empty
+function safeDetailId(detailName: string, idx: number): string {
+  const safe = detailName.replace(/[^a-zA-Z0-9_-]/g, '_');
+  return safe.length > 0 ? safe : `detail_${idx}`;
+}
+
 const COLLAPSED_KEY = computed(
   () =>
     `de.codecentric.spring-boot-admin.health-details.${encodeURIComponent(name ?? '')}.${encodeURIComponent(instance?.id ?? '')}.collapsed`,
@@ -161,23 +167,25 @@ const isChildHealth = (value: any) => {
   return value !== null && typeof value === 'object' && 'status' in value;
 };
 
-const details = computed(() => {
-  if (health.details || health.components) {
-    return Object.entries(health.details || health.components)
-      .filter(([, value]) => !isChildHealth(value))
-      .map(([name, value]) => ({ name, value }) as Details);
+const healthEntries = computed(() => {
+  const source = health.details ?? health.components;
+  if (source && typeof source === 'object' && !Array.isArray(source)) {
+    return Object.entries(source);
   }
   return [];
 });
 
-const childHealth = computed(() => {
-  if (health.details || health.components) {
-    return Object.entries(health.details || health.components)
-      .filter(([, value]) => isChildHealth(value))
-      .map(([name, value]) => ({ name, value }));
-  }
-  return [];
-});
+const details = computed(() =>
+  healthEntries.value
+    .filter(([, value]) => !isChildHealth(value))
+    .map(([name, value]) => ({ name, value }) as Details),
+);
+
+const childHealth = computed(() =>
+  healthEntries.value
+    .filter(([, value]) => isChildHealth(value))
+    .map(([name, value]) => ({ name, value })),
+);
 
 watch(COLLAPSED_KEY, () => {
   isCollapsed.value = readCollapsedFromStorage();
