@@ -15,7 +15,7 @@
         </sba-input>
       </sba-sticky-subnav>
     </template>
-    <template v-if="sboms.length === 0">
+    <template v-if="hasLoaded && sboms.length === 0">
       <sba-alert
         severity="WARN"
         :error="$t('instances.dependencies.no_data_provided')"
@@ -50,6 +50,7 @@ const sboms = ref([]);
 const filter = ref('');
 
 const fetchSbomIds = async () => {
+  hasLoaded.value = false;
   error.value = null;
   try {
     const res = await props.instance.fetchSbomIds();
