@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -62,6 +64,8 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	private static final String SOURCE_KEY = "Source";
 
+	// For color definitions see:
+	// https://adaptivecards.microsoft.com/?topic=TextBlock#color
 	private static final String DEFAULT_THEME_COLOR_EXPRESSION = "#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? 'Good' : 'Attention') : 'Accent'}";
 
 	private static final String DEFAULT_DEREGISTER_ACTIVITY_SUBTITLE_EXPRESSION = "#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin";
@@ -302,6 +306,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	@Data
 	@Builder
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class Message {
 
 		private final String type = "message";
@@ -313,6 +318,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	@Data
 	@Builder
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class Attachment {
 
 		private final String contentType = "application/vnd.microsoft.card.adaptive";
@@ -325,9 +331,11 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	@Data
 	@Builder
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class AdaptiveCard {
 
 		@Builder.Default
+		@JsonProperty("$schema")
 		private final String schema = "http://adaptivecards.io/schemas/adaptive-card.json";
 
 		private final String type = "AdaptiveCard";
@@ -341,6 +349,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	@Data
 	@Builder
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class CardElement {
 
 		private final String type;

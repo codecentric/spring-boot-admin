@@ -18,15 +18,17 @@ package de.codecentric.boot.admin.server.notify;
 
 import java.net.URI;
 
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -45,12 +47,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MicrosoftTeamsNotifierTest {
-
-	private static final String ACCENT = "Accent";
-
-	private static final String ATTENTION = "Attention";
-
-	private static final String GOOD = "Good";
 
 	private static final String APP_NAME = "Test App";
 
@@ -97,7 +93,7 @@ class MicrosoftTeamsNotifierTest {
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertThat(entity.getValue().getBody()).isNotNull();
 		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(),
-				"Test App with id TestAppId has de-registered from Spring Boot Admin", ACCENT);
+				"Test App with id TestAppId has de-registered from Spring Boot Admin", "Accent");
 	}
 
 	@Test
@@ -113,7 +109,7 @@ class MicrosoftTeamsNotifierTest {
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertThat(entity.getValue().getBody()).isNotNull();
 		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(),
-				"Test App with id TestAppId has registered with Spring Boot Admin", ACCENT);
+				"Test App with id TestAppId has registered with Spring Boot Admin", "Accent");
 	}
 
 	@Test
@@ -129,7 +125,7 @@ class MicrosoftTeamsNotifierTest {
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertThat(entity.getValue().getBody()).isNotNull();
 		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(),
-				"Test App with id TestAppId changed status from UNKNOWN to UP", GOOD);
+				"Test App with id TestAppId changed status from UNKNOWN to UP", "Good");
 	}
 
 	@Test
@@ -150,7 +146,7 @@ class MicrosoftTeamsNotifierTest {
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertMessage(message, notifier.getDeRegisteredTitle(),
-				"Test App with id TestAppId has de-registered from Spring Boot Admin", ACCENT);
+				"Test App with id TestAppId has de-registered from Spring Boot Admin", "Accent");
 	}
 
 	@Test
@@ -159,7 +155,7 @@ class MicrosoftTeamsNotifierTest {
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertMessage(message, notifier.getRegisteredTitle(),
-				"Test App with id TestAppId has registered with Spring Boot Admin", ACCENT);
+				"Test App with id TestAppId has registered with Spring Boot Admin", "Accent");
 	}
 
 	@Test
@@ -168,7 +164,7 @@ class MicrosoftTeamsNotifierTest {
 				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
 
 		assertMessage(message, notifier.getStatusChangedTitle(),
-				"Test App with id TestAppId changed status from UNKNOWN to DOWN", ATTENTION);
+				"Test App with id TestAppId changed status from UNKNOWN to DOWN", "Attention");
 	}
 
 	@Test
@@ -179,7 +175,7 @@ class MicrosoftTeamsNotifierTest {
 				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
 
 		assertMessage(message, notifier.getStatusChangedTitle(),
-				"Test App with id TestAppId changed status from UP to DOWN", ATTENTION);
+				"Test App with id TestAppId changed status from UP to DOWN", "Attention");
 	}
 
 	@Test
@@ -230,13 +226,15 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getStatusChangedMessage(upInstance, notifier.createEvaluationContext(
 				new InstanceStatusChangedEvent(upInstance.getId(), 1L, StatusInfo.ofUp()), upInstance));
 
-		// Build expected JSON structure using JSONObject with actual values
-		JSONObject expectedJson = new JSONObject("""
+		JsonMapper mapper = JsonMapper.builder().build();
+		String actual = mapper.writeValueAsString(message);
+
+		// Build expected JSON structure
+		String expectedJson = """
 				{
 					"type": "message",
 					"attachments": [{
 						"contentType": "application/vnd.microsoft.card.adaptive",
-						"contentUrl": null,
 						"content": {
 							"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
 							"type": "AdaptiveCard",
@@ -273,57 +271,9 @@ class MicrosoftTeamsNotifierTest {
 						}
 					}]
 				}
-				""");
+				""";
 
-		// Verify message structure matches expected format
-		assertThat(message.getType()).isEqualTo(expectedJson.getString("type"));
-
-		assertThat(message.getAttachments()).hasSize(1);
-		var attachment = message.getAttachments().get(0);
-		assertThat(attachment.getContentType())
-			.isEqualTo(expectedJson.getJSONArray("attachments").getJSONObject(0).getString("contentType"));
-
-		var content = attachment.getContent();
-		var expectedContent = expectedJson.getJSONArray("attachments").getJSONObject(0).getJSONObject("content");
-		assertThat(content.getSchema()).isEqualTo(expectedContent.getString("$schema"));
-		assertThat(content.getType()).isEqualTo(expectedContent.getString("type"));
-		assertThat(content.getVersion()).isEqualTo(expectedContent.getString("version"));
-
-		// Verify body structure and content
-		var body = content.getBody();
-		var expectedBody = expectedContent.getJSONArray("body");
-		assertThat(body).hasSize(expectedBody.length());
-
-		// Verify Title TextBlock
-		assertThat(body.get(0).getType()).isEqualTo("TextBlock");
-		assertThat(body.get(0).getText()).isEqualTo("Status Changed");
-		assertThat(body.get(0).getSize()).isEqualTo("Large");
-		assertThat(body.get(0).getWeight()).isEqualTo("Bolder");
-		assertThat(body.get(0).getColor()).isEqualTo("Good");
-
-		// Verify Service Name TextBlock
-		assertThat(body.get(1).getType()).isEqualTo("TextBlock");
-		assertThat(body.get(1).getText()).isEqualTo(APP_NAME);
-		assertThat(body.get(1).getSize()).isEqualTo("Medium");
-		assertThat(body.get(1).getWeight()).isEqualTo("Bolder");
-
-		// Verify Activity Subtitle TextBlock
-		assertThat(body.get(2).getType()).isEqualTo("TextBlock");
-		assertThat(body.get(2).getText()).isEqualTo("Test App with id TestAppId changed status from UNKNOWN to UP");
-		assertThat(body.get(2).getWrap()).isTrue();
-
-		// Verify FactSet
-		assertThat(body.get(3).getType()).isEqualTo("FactSet");
-		assertThat(body.get(3).getFacts()).hasSize(4); // Source is omitted because it's
-														// null
-		assertThat(body.get(3).getFacts().get(0).title()).isEqualTo("Status");
-		assertThat(body.get(3).getFacts().get(0).value()).isEqualTo("UP");
-		assertThat(body.get(3).getFacts().get(1).title()).isEqualTo("Service URL");
-		assertThat(body.get(3).getFacts().get(1).value()).isEqualTo(SERVICE_URL);
-		assertThat(body.get(3).getFacts().get(2).title()).isEqualTo("Health URL");
-		assertThat(body.get(3).getFacts().get(2).value()).isEqualTo(HEALTH_URL);
-		assertThat(body.get(3).getFacts().get(3).title()).isEqualTo("Management URL");
-		assertThat(body.get(3).getFacts().get(3).value()).isEqualTo(MANAGEMENT_URL);
+		JSONAssert.assertEquals(expectedJson, actual, JSONCompareMode.NON_EXTENSIBLE);
 	}
 
 	private String getActivitySubtitleFromMessage(Message message) {
