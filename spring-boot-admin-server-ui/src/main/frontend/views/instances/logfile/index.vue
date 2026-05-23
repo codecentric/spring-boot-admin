@@ -95,7 +95,7 @@
       :class="{ 'wrap-lines': wrapLines }"
       class="log-viewer overflow-x-auto text-sm -mx-6 -my-20 pt-14"
     >
-      <table class="table-striped" />
+      <table ref="logContainer" class="table-striped min-w-full" />
     </div>
   </sba-instance-section>
 </template>
@@ -191,14 +191,20 @@ export default {
         .subscribe({
           next: (lines) => {
             this.hasLoaded = true;
+            const logContainer = this.$refs.logContainer;
             lines.forEach((line) => {
+              let content;
+              if (line) {
+                content = document.createElement('pre');
+                content.innerHTML = autolink(this.ansiUp.ansi_to_html(line));
+              } else {
+                content = document.createElement('br');
+              }
               const row = document.createElement('tr');
               const col = document.createElement('td');
-              const pre = document.createElement('pre');
-              pre.innerHTML = autolink(this.ansiUp.ansi_to_html(line));
-              col.appendChild(pre);
+              col.appendChild(content);
               row.appendChild(col);
-              document.querySelector('.log-viewer > table')?.appendChild(row);
+              logContainer.appendChild(row);
             });
 
             if (this.atBottom) {
@@ -269,13 +275,22 @@ export default {
   max-height: 100%;
 }
 
+.log-viewer tr,
+.log-viewer td {
+  @apply w-full;
+}
+
 .log-viewer pre {
   padding: 0 0.75em;
   margin-bottom: 1px;
 }
 
-.log-viewer pre:hover {
+.log-viewer td:hover {
   background: #dbdbdb;
+}
+
+.log-viewer a[href] {
+  @apply underline;
 }
 
 .log-viewer.wrap-lines pre {
