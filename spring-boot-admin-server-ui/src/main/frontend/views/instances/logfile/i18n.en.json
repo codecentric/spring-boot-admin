@@ -8,7 +8,8 @@
       "page_down": "Page down",
       "previous_chunk": "Previous chunk",
       "next_chunk": "Next chunk",
-      "resume_follow": "Resume follow"
+      "resume_follow": "Resume follow",
+      "compressed_reset": "Logfile compressed, resetting page."
     }
   }
 }

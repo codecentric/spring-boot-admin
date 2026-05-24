@@ -8,7 +8,8 @@
       "page_down": "Síða niður",
       "previous_chunk": "Fyrri hluti",
       "next_chunk": "Næsti hluti",
-      "resume_follow": "Fylgja aftur"
+      "resume_follow": "Fylgja aftur",
+      "compressed_reset": "Atvikaskrá þjöppuð, síðan er endurstillt"
     }
   }
 }

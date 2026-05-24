@@ -8,7 +8,8 @@
       "page_down": "Seite nach unten",
       "previous_chunk": "Vorheriger Abschnitt",
       "next_chunk": "Nächster Abschnitt",
-      "resume_follow": "Live-Ansicht fortsetzen"
+      "resume_follow": "Live-Ansicht fortsetzen",
+      "compressed_reset": "Logdatei komprimiert, Seite wird zurückgesetzt."
     }
   }
 }

@@ -8,7 +8,8 @@
       "page_down": "Descer página",
       "previous_chunk": "Trecho anterior",
       "next_chunk": "Próximo trecho",
-      "resume_follow": "Retomar acompanhamento"
+      "resume_follow": "Retomar acompanhamento",
+      "compressed_reset": "Arquivo de log compactado, redefinindo a página"
     }
   }
 }

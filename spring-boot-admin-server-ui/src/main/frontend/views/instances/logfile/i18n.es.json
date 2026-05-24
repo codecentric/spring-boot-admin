@@ -8,7 +8,8 @@
       "page_down": "Bajar página",
       "previous_chunk": "Fragmento anterior",
       "next_chunk": "Fragmento siguiente",
-      "resume_follow": "Reanudar seguimiento"
+      "resume_follow": "Reanudar seguimiento",
+      "compressed_reset": "Archivo de registro comprimido, restableciendo la página"
     }
   }
 }

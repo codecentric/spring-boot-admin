@@ -416,7 +416,11 @@ class Instance {
 
   streamLogfile(interval: number) {
     return logtail(
-      (opt) => this.axios.get(uri`actuator/logfile`, opt),
+      (opt) =>
+        this.axios.get(uri`actuator/logfile`, {
+          ...opt,
+          suppressToast: (error: AxiosError) => error.response?.status === 416,
+        }),
       interval,
     );
   }
@@ -428,6 +432,7 @@ class Instance {
         Accept: 'text/plain',
         Range: `bytes=${start}-${end}`,
       },
+      suppressToast: (error: AxiosError) => error.response?.status === 416,
     });
     const metadata = getLogfileWindowMetadata(response);
 
