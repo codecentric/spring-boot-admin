@@ -123,7 +123,8 @@
             :key="`${windowStart}-${index}`"
           >
             <td>
-              <pre v-html="renderLine(line)" />
+              <br v-if="line === ''" />
+              <pre v-else v-html="renderLine(line)" />
             </td>
           </tr>
         </tbody>
@@ -299,9 +300,6 @@ export default {
     prettyBytes,
     splitLines(content) {
       return content === '' ? [] : content.split(/\n/);
-    },
-    startsWithLineBreak(content) {
-      return /^\r?\n/.test(content);
     },
     calculateLoadedBytes() {
       return Math.max(this.windowEnd - this.windowStart + 1, 0);
