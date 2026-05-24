@@ -789,13 +789,24 @@ export default {
   max-height: 100%;
 }
 
+.log-viewer tr,
+.log-viewer td,
+.log-viewer br {
+  @apply w-full;
+}
+
 .log-viewer pre {
   padding: 0 0.75em;
   margin-bottom: 1px;
+  @apply w-full;
 }
 
 .log-viewer pre:hover {
   background: #dbdbdb;
+}
+
+.log-viewer a[href] {
+  @apply underline;
 }
 
 .log-viewer.wrap-lines pre {
