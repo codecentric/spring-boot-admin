@@ -8,7 +8,8 @@
       "page_down": "向下翻页",
       "previous_chunk": "上一段",
       "next_chunk": "下一段",
-      "resume_follow": "恢复跟踪"
+      "resume_follow": "恢复跟踪",
+      "compressed_reset": "日志文件已压缩，正在重置页面。"
     }
   }
 }

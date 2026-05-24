@@ -8,7 +8,8 @@
       "page_down": "Page vers le bas",
       "previous_chunk": "Segment précédent",
       "next_chunk": "Segment suivant",
-      "resume_follow": "Reprendre le suivi"
+      "resume_follow": "Reprendre le suivi",
+      "compressed_reset": "Fichier journal compressé, réinitialisation de la page"
     }
   }
 }

@@ -17,9 +17,22 @@ import { EMPTY, Observable, catchError, concatMap, of, timer } from './rxjs';
 
 export const DEFAULT_LOGFILE_CHUNK_SIZE = 300 * 1024;
 
+export enum StreamType {
+  Data = 'data',
+  Reset = 'reset',
+  Empty = 'empty',
+}
+
 const parseInteger = (value, fallback) => {
   const parsed = parseInt(value, 10);
   return Number.isNaN(parsed) ? fallback : parsed;
+};
+
+export const getTotalBytesFrom416 = (response) => {
+  const contentRange = response.headers?.get?.('content-range');
+  const match = contentRange?.match(/^bytes\s+\*\/(\d+)$/i);
+
+  return match ? parseInteger(match[1], undefined) : undefined;
 };
 
 export const getLogfileWindowMetadata = (response) => {
@@ -50,6 +63,7 @@ export const getLogfileWindowMetadata = (response) => {
 export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
   let range = `bytes=-${initialSize}`;
   let size = 0;
+  let streamUpdated = true;
 
   return timer(0, interval).pipe(
     concatMap(() => {
@@ -59,65 +73,60 @@ export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
           headers: { range, Accept: 'text/plain' },
         })
           .then((response) => {
+            streamUpdated = false;
             observer.next(response);
             observer.complete();
           })
           .catch((error) => observer.error(error));
       }).pipe(
-        catchError((error) => of({ data: '', status: error.response.status })),
+        catchError((error) =>
+          of({
+            data: '',
+            status: error.response?.status,
+            headers: error.response?.headers,
+          }),
+        ),
       );
     }),
     concatMap((response) => {
-      let initial = size === 0;
-      const contentLength = response.data.length;
-      let windowStart = 0;
-      let windowEnd = Math.max(contentLength - 1, 0);
-
-      if (response.status === 200) {
-        if (!initial) {
-          throw 'Expected 206 - Partial Content on subsequent requests.';
+      //resetting when log file is compressed
+      if (response.status === 416) {
+        const currentSize = getTotalBytesFrom416(response);
+        if (currentSize === size) {
+          return EMPTY;
         }
-        size = contentLength;
-        range = `bytes=${Math.max(size - 1, 0)}-`;
-      } else if (response.status === 206) {
-        const metadata = getLogfileWindowMetadata(response);
-        size = metadata.totalBytes;
-        windowStart = metadata.windowStart;
-        windowEnd = metadata.windowEnd;
-        range = `bytes=${Math.max(size - 1, 0)}-`;
-      } else if (response.status === 416) {
         size = 0;
         range = `bytes=-${initialSize}`;
-        initial = true;
+        streamUpdated = true;
+        return of({ type: StreamType.Reset });
+      }
+      const { windowStart, windowEnd, totalBytes } =
+        getLogfileWindowMetadata(response);
+      if (response.status === 206 || response.status === 200) {
+        if (totalBytes > size) {
+          streamUpdated = true;
+          size = totalBytes;
+          range = `bytes=${Math.max(size, 0)}-`;
+        }
       } else {
         throw 'Unexpected response status: ' + response.status;
       }
-
-      let addendum = null;
-      let skipped = 0;
-
-      if (initial) {
-        if (contentLength >= size) {
-          addendum = response.data;
-        } else {
-          // In case of a partial response find the first line break.
-          addendum = response.data.substring(response.data.indexOf('\n') + 1);
-          skipped = size - addendum.length;
-        }
-      } else if (response.data.length > 1) {
-        // Remove the first byte which has been part of the previos response.
-        addendum = response.data.substring(1);
+      if (size === 0) {
+        return of({ type: StreamType.Empty });
       }
+      const addendum = response.data;
 
-      return addendum
-        ? of({
-            totalBytes: size,
-            skipped,
-            addendum,
-            windowStart,
-            windowEnd,
-          })
-        : EMPTY;
+      if (streamUpdated) {
+        return of({
+          type: StreamType.Data,
+          totalBytes: size,
+          addendum,
+          windowStart,
+          windowEnd,
+        });
+      } else {
+        return EMPTY;
+      }
     }),
   );
 };
