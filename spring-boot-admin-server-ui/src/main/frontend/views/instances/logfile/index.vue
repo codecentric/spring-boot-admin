@@ -790,13 +790,15 @@ export default {
 }
 
 .log-viewer tr,
-.log-viewer td {
+.log-viewer td,
+.log-viewer br {
   @apply w-full;
 }
 
 .log-viewer pre {
   padding: 0 0.75em;
   margin-bottom: 1px;
+  @apply w-full;
 }
 
 .log-viewer td:hover {
