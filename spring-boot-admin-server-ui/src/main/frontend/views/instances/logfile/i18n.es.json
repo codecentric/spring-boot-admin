@@ -9,6 +9,7 @@
       "previous_chunk": "Fragmento anterior",
       "next_chunk": "Fragmento siguiente",
       "resume_follow": "Reanudar seguimiento",
+      "stop_follow": "Detener seguimiento",
       "compressed_reset": "Archivo de registro comprimido, restableciendo la página"
     }
   }

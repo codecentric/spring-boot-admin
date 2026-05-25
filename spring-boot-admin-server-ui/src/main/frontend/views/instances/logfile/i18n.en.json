@@ -9,6 +9,7 @@
       "previous_chunk": "Previous chunk",
       "next_chunk": "Next chunk",
       "resume_follow": "Resume follow",
+      "stop_follow": "Stop following",
       "compressed_reset": "Logfile compressed, resetting page."
     }
   }

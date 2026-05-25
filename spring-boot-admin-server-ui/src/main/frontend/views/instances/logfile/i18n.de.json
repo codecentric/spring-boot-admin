@@ -9,6 +9,7 @@
       "previous_chunk": "Vorheriger Abschnitt",
       "next_chunk": "Nächster Abschnitt",
       "resume_follow": "Live-Ansicht fortsetzen",
+      "stop_follow": "Live-Ansicht anhalten",
       "compressed_reset": "Logdatei komprimiert, Seite wird zurückgesetzt."
     }
   }

@@ -9,6 +9,7 @@
       "previous_chunk": "Segment précédent",
       "next_chunk": "Segment suivant",
       "resume_follow": "Reprendre le suivi",
+      "stop_follow": "Arrêter le suivi",
       "compressed_reset": "Fichier journal compressé, réinitialisation de la page"
     }
   }
