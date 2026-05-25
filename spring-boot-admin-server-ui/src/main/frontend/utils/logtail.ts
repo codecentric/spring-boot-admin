@@ -13,7 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EMPTY, Observable, catchError, concatMap, of, timer } from './rxjs';
+import {
+  EMPTY,
+  Observable,
+  catchError,
+  concatMap,
+  of,
+  throwError,
+  timer,
+} from './rxjs';
 
 export const DEFAULT_LOGFILE_CHUNK_SIZE = 300 * 1024;
 
@@ -79,13 +87,17 @@ export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
           })
           .catch((error) => observer.error(error));
       }).pipe(
-        catchError((error) =>
-          of({
+        catchError((error) => {
+          if (error.response?.status !== 416) {
+            return throwError(() => error);
+          }
+
+          return of({
             data: '',
             status: error.response?.status,
             headers: error.response?.headers,
-          }),
-        ),
+          });
+        }),
       );
     }),
     concatMap((response) => {

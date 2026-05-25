@@ -433,7 +433,7 @@ export default {
       this.totalBytes = 0;
     },
     isLogfileRangeInvalid(error) {
-      return error.response.status === 416;
+      return error?.response?.status === 416;
     },
     notifyLogfileCompressed() {
       notificationCenter.warning(this.$t('instances.logfile.compressed_reset'));
@@ -462,6 +462,8 @@ export default {
                   return EMPTY;
                 }
                 console.warn('Fetching logfile metadata failed:', error);
+                this.hasLoaded = true;
+                this.error = error;
                 return EMPTY;
               }),
             ),
