@@ -345,8 +345,10 @@ export default {
         }
         this.renderedLines = linesToAppend;
         this.windowStart = windowStart;
-        if (this.renderedLines[0] !== '') {
-          this.setHeadRemainderState(lines[0], this.windowStart);
+        if (this.windowStart > 0) {
+          if (this.renderedLines[0] !== '') {
+            this.setHeadRemainderState(lines[0], this.windowStart);
+          }
           this.renderedLines.shift();
         }
         if (this.renderedLines.at(-1) !== '') {
@@ -566,10 +568,12 @@ export default {
           this.clearHeadRemainderState();
         }
         this.clearTailRemainderState();
-        if (this.renderedLines[0] !== '') {
-          this.setHeadRemainderState(this.renderedLines[0], this.windowStart);
+        if (this.windowStart > 0) {
+          if (this.renderedLines[0] !== '') {
+            this.setHeadRemainderState(this.renderedLines[0], this.windowStart);
+          }
+          this.renderedLines.shift();
         }
-        this.renderedLines.shift();
         this.displayLines = this.renderedLines;
       }
       this.hasLoaded = true;
