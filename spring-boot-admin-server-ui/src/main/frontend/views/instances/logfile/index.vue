@@ -53,10 +53,22 @@
 
           <div class="mx-3 btn-group">
             <sba-button
-              :aria-label="$t('instances.logfile.resume_follow')"
+              :aria-label="
+                $t(
+                  isFollowing
+                    ? 'instances.logfile.stop_follow'
+                    : 'instances.logfile.resume_follow',
+                )
+              "
               :disabled="isChunkLoading"
               :primary="isFollowing"
-              :title="$t('instances.logfile.resume_follow')"
+              :title="
+                $t(
+                  isFollowing
+                    ? 'instances.logfile.stop_follow'
+                    : 'instances.logfile.resume_follow',
+                )
+              "
               @click="toggleFollowMode"
             >
               <font-awesome-icon :icon="faArrowsDownToLine" />

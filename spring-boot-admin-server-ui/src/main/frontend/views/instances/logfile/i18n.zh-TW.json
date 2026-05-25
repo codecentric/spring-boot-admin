@@ -9,6 +9,7 @@
       "previous_chunk": "上一段",
       "next_chunk": "下一段",
       "resume_follow": "恢復追蹤",
+      "stop_follow": "停止追蹤",
       "compressed_reset": "記錄檔已壓縮，正在重設頁面。"
     }
   }
