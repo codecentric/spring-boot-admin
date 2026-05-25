@@ -465,6 +465,10 @@ export default {
             from(this.instance.fetchLogfileRange(0, 0)).pipe(
               tap((response) => {
                 if (!this.isFollowing) {
+                  if (response.totalBytes <= this.windowEnd) {
+                    void this.handleLogfileCompressed();
+                    return;
+                  }
                   this.totalBytes = response.totalBytes;
                 }
               }),
