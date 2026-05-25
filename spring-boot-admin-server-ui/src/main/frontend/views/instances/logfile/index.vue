@@ -620,7 +620,11 @@ export default {
             this.appendRenderedLines(lines, windowStart, windowEnd);
             this.hasLoaded = true;
             if (shouldKeepAtBottom) {
-              this.$nextTick(() => this.scrollToBottom());
+              this.$nextTick(() => {
+                if (this.isFollowing) {
+                  this.scrollToBottom();
+                }
+              });
             }
           },
           error: (error) => {
