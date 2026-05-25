@@ -686,9 +686,7 @@ export default {
       }
       //Manual Mode
       else {
-        if (!this.isFollowing) {
-          await this.loadPreviousChunk();
-        }
+        await this.loadPreviousChunk();
       }
     },
     async pageDown() {
@@ -702,13 +700,7 @@ export default {
       }
       //Manual Mode
       else {
-        if (!this.isFollowing) {
-          if (!this.atBottom) {
-            this.scrollToBottom();
-          } else {
-            await this.loadNextChunk();
-          }
-        }
+        await this.loadNextChunk();
       }
     },
     updateScrollState() {
