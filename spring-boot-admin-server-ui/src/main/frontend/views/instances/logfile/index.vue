@@ -128,7 +128,7 @@
       :class="{ 'wrap-lines': wrapLines }"
       class="log-viewer overflow-x-auto text-sm -mx-6 -my-20 pt-14"
     >
-      <table class="table-striped">
+      <table class="table-striped min-w-full">
         <tbody>
           <tr
             v-for="(line, index) in displayLines"
