@@ -26,6 +26,12 @@
         <div class="flex items-center justify-end gap-1">
           <div class="flex-1">
             <span v-text="$t('instances.logfile.label')" />&nbsp;
+            <span
+              v-if="isRetryingLogfile"
+              aria-live="polite"
+              class="logfile-reconnecting"
+              v-text="$t('instances.logfile.reconnecting')"
+            />
             <small class="hidden md:block">
               <span v-text="skippedBytesString" />
               &nbsp;
@@ -171,6 +177,7 @@ import {
   from,
   map,
   of,
+  retry,
   tap,
   timer,
 } from '@/utils/rxjs';
@@ -189,6 +196,7 @@ const ChunkDirection = Object.freeze({
 const SCROLL_BOTTOM_TOLERANCE = 2;
 const MAX_BYTES_RENDERED = 600 * 1024;
 const TAIL_PIN_MAINTENANCE_DURATION = 200;
+const LOGFILE_RECONNECT_RESET_RETRY_COUNT = 10;
 
 const notificationCenter = useNotificationCenter({});
 
@@ -233,6 +241,8 @@ export default {
     totalBytes: 0,
     loadedBytes: 0,
     isChunkLoading: false,
+    isRetryingLogfile: false,
+    shouldResetLogfileOnReconnect: false,
     faArrowDown,
     faArrowsDownToLine,
     faArrowUp,
@@ -426,16 +436,7 @@ export default {
     renderLine(line) {
       return autolink(this.ansiUp.ansi_to_html(line));
     },
-    resetFollowState() {
-      this.stopManualMetadataPolling();
-      this.unsubscribe();
-      this.mode = LogfileMode.FOLLOW;
-      this.error = null;
-      this.hasLoaded = false;
-      this.isChunkLoading = false;
-      this.atBottom = false;
-      this.atTop = true;
-      this.isTailPinned = true;
+    resetLogfileWindowState() {
       this.renderedLines = [];
       this.displayLines = [];
       this.clearRemainderStates();
@@ -443,6 +444,20 @@ export default {
       this.windowStart = 0;
       this.windowEnd = -1;
       this.totalBytes = 0;
+    },
+    resetFollowState() {
+      this.stopManualMetadataPolling();
+      this.unsubscribe();
+      this.mode = LogfileMode.FOLLOW;
+      this.error = null;
+      this.hasLoaded = false;
+      this.isChunkLoading = false;
+      this.isRetryingLogfile = false;
+      this.shouldResetLogfileOnReconnect = false;
+      this.atBottom = false;
+      this.atTop = true;
+      this.isTailPinned = true;
+      this.resetLogfileWindowState();
     },
     isLogfileRangeInvalid(error) {
       return error?.response?.status === 416;
@@ -610,8 +625,13 @@ export default {
             }
             if (part.type === StreamType.Empty) {
               console.warn('File size is 0 bytes');
+              if (this.shouldResetLogfileOnReconnect) {
+                this.resetLogfileWindowState();
+              }
               this.hasLoaded = true;
               this.error = null;
+              this.isRetryingLogfile = false;
+              this.shouldResetLogfileOnReconnect = false;
             }
           }),
           filter((part) => part.type === StreamType.Data),
@@ -627,6 +647,19 @@ export default {
             ),
           ),
           concatAll(),
+          retry({
+            count: Infinity,
+            delay: (error, retryCount) => {
+              this.hasLoaded = true;
+              console.warn('Fetching logfile failed:', error);
+              this.error = error;
+              this.isRetryingLogfile = true;
+              this.shouldResetLogfileOnReconnect =
+                this.shouldResetLogfileOnReconnect ||
+                retryCount > LOGFILE_RECONNECT_RESET_RETRY_COUNT;
+              return timer(sbaConfig.uiSettings.pollTimer.logfile);
+            },
+          }),
         )
         .subscribe({
           next: ({ lines, windowStart, windowEnd, totalBytes }) => {
@@ -634,9 +667,15 @@ export default {
             if (shouldKeepAtBottom) {
               this.maintainTailPin();
             }
+            if (this.shouldResetLogfileOnReconnect) {
+              this.resetLogfileWindowState();
+            }
             this.totalBytes = totalBytes;
             this.appendRenderedLines(lines, windowStart, windowEnd);
             this.hasLoaded = true;
+            this.error = null;
+            this.isRetryingLogfile = false;
+            this.shouldResetLogfileOnReconnect = false;
             if (shouldKeepAtBottom) {
               this.$nextTick(() => {
                 if (this.isFollowing) {
@@ -649,6 +688,8 @@ export default {
             this.hasLoaded = true;
             console.warn('Fetching logfile failed:', error);
             this.error = error;
+            this.isRetryingLogfile = false;
+            this.shouldResetLogfileOnReconnect = false;
             this.logTailSubscription = null;
           },
         });
@@ -797,6 +838,23 @@ export default {
 
 .logfile-section .sba-instance-section-content [role='alert'] {
   margin: 0;
+}
+
+.logfile-reconnecting {
+  @apply text-sm font-semibold text-red-600 whitespace-nowrap;
+
+  animation: logfile-retry-flicker 1s ease-in-out infinite;
+}
+
+@keyframes logfile-retry-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
 }
 
 .log-viewer {

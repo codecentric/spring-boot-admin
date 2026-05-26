@@ -10,6 +10,7 @@
       "next_chunk": "다음 구간",
       "resume_follow": "실시간 추적 재개",
       "stop_follow": "실시간 추적 중지",
+      "reconnecting": "다시 연결 중...",
       "compressed_reset": "로그 파일이 압축되었습니다. 페이지를 재설정합니다"
     }
   }

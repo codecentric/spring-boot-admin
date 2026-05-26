@@ -10,6 +10,7 @@
       "next_chunk": "Fragmento siguiente",
       "resume_follow": "Reanudar seguimiento",
       "stop_follow": "Detener seguimiento",
+      "reconnecting": "Reconectando...",
       "compressed_reset": "Archivo de registro comprimido, restableciendo la página"
     }
   }

@@ -10,6 +10,7 @@
       "next_chunk": "Næsti hluti",
       "resume_follow": "Fylgja aftur",
       "stop_follow": "Hætta að fylgja",
+      "reconnecting": "Endurtengist...",
       "compressed_reset": "Atvikaskrá þjöppuð, síðan er endurstillt"
     }
   }
