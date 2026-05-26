@@ -34,7 +34,7 @@
 
         <java.version>17</java.version>
         <npm.version>11.12.1</npm.version>
-        <node.version>v24.15.0</node.version>
+        <node.version>v24.16.0</node.version>
 
         <require.maven.version>3.9</require.maven.version>
 
