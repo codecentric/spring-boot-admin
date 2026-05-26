@@ -32,6 +32,7 @@ export {
   debounceTime,
   mergeWith,
   map,
+  retry,
   retryWhen,
   tap,
   filter,

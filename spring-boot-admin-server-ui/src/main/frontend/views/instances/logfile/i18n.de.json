@@ -10,6 +10,7 @@
       "next_chunk": "Nächster Abschnitt",
       "resume_follow": "Live-Ansicht fortsetzen",
       "stop_follow": "Live-Ansicht anhalten",
+      "reconnecting": "Verbindung wird wiederhergestellt...",
       "compressed_reset": "Logdatei komprimiert, Seite wird zurückgesetzt."
     }
   }
