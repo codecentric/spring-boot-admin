@@ -485,6 +485,8 @@ export default {
                     return;
                   }
                   this.totalBytes = response.totalBytes;
+                  this.error = null;
+                  this.isRetryingLogfile = false;
                 }
               }),
               catchError((error) => {
@@ -495,6 +497,7 @@ export default {
                 console.warn('Fetching logfile metadata failed:', error);
                 this.hasLoaded = true;
                 this.error = error;
+                this.isRetryingLogfile = true;
                 return EMPTY;
               }),
             ),
