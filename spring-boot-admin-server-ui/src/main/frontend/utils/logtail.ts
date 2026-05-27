@@ -114,11 +114,16 @@ export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
       }
       const { windowStart, windowEnd, totalBytes } =
         getLogfileWindowMetadata(response);
+      let addendum = response.data;
+      let addendumWindowStart = windowStart;
       if (response.status === 206 || response.status === 200) {
         if (totalBytes > size) {
           streamUpdated = true;
+          const overlap = Math.max(size - windowStart, 0);
+          addendum = addendum.substring(overlap);
+          addendumWindowStart = windowStart + overlap;
           size = totalBytes;
-          range = `bytes=${Math.max(size, 0)}-`;
+          range = `bytes=${Math.max(size - 1, 0)}-`;
         }
       } else {
         throw 'Unexpected response status: ' + response.status;
@@ -126,14 +131,13 @@ export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
       if (size === 0) {
         return of({ type: StreamType.Empty });
       }
-      const addendum = response.data;
 
       if (streamUpdated) {
         return of({
           type: StreamType.Data,
           totalBytes: size,
           addendum,
-          windowStart,
+          windowStart: addendumWindowStart,
           windowEnd,
         });
       } else {
