@@ -53,7 +53,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
 
 	private final Notifier delegate;
 
-	private Duration checkReminderInverval = Duration.ofSeconds(10);
+	private Duration checkReminderInterval = Duration.ofSeconds(10);
 
 	private Duration reminderPeriod = Duration.ofMinutes(10);
 
@@ -83,7 +83,7 @@ public class RemindingNotifier extends AbstractEventNotifier {
 
 	public void start() {
 		this.reminderScheduler = Schedulers.newSingle("reminders");
-		this.subscription = Flux.interval(this.checkReminderInverval, this.reminderScheduler)
+		this.subscription = Flux.interval(this.checkReminderInterval, this.reminderScheduler)
 			.log(log.getName(), Level.FINEST)
 			.doOnSubscribe((s) -> log.debug("Started reminders"))
 			.flatMap((i) -> this.sendReminders())
@@ -141,8 +141,22 @@ public class RemindingNotifier extends AbstractEventNotifier {
 		this.reminderStatuses = copy;
 	}
 
-	public void setCheckReminderInverval(Duration checkReminderInverval) {
-		this.checkReminderInverval = checkReminderInverval;
+	/**
+	 * Set the interval used to check for reminders.
+	 * @param checkReminderInterval the interval used to check for reminders
+	 */
+	public void setCheckReminderInterval(Duration checkReminderInterval) {
+		this.checkReminderInterval = checkReminderInterval;
+	}
+
+	/**
+	 * Set the interval used to check for reminders.
+	 * @param checkReminderInterval the interval used to check for reminders
+	 * @deprecated use {@link #setCheckReminderInterval(Duration)} instead.
+	 */
+	@Deprecated
+	public void setCheckReminderInverval(Duration checkReminderInterval) {
+		setCheckReminderInterval(checkReminderInterval);
 	}
 
 	protected static final class Reminder {

@@ -593,7 +593,7 @@ public RemindingNotifier remindingNotifier(Notifier delegate,
 										   InstanceRepository repository) {
 	RemindingNotifier notifier = new RemindingNotifier(delegate, repository);
 	notifier.setReminderPeriod(Duration.ofMinutes(10));
-	notifier.setCheckReminderInverval(Duration.ofSeconds(60));
+	notifier.setCheckReminderInterval(Duration.ofSeconds(60));
 	return notifier;
 }
 ```
