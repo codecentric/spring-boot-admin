@@ -191,6 +191,7 @@ const LogfileMode = Object.freeze({
 const ChunkDirection = Object.freeze({
   PREVIOUS: 'previous',
   NEXT: 'next',
+  REPLACE: 'replace',
 });
 
 const SCROLL_BOTTOM_TOLERANCE = 2;
@@ -583,7 +584,24 @@ export default {
       this.windowStart = response.windowStart;
       this.windowEnd = response.windowEnd;
       this.totalBytes = response.totalBytes;
-      if (ChunkDirection.NEXT === direction) {
+      if (ChunkDirection.REPLACE === direction) {
+        this.clearRemainderStates();
+        if (this.windowStart > 0) {
+          const headLine = this.renderedLines[0];
+          if (headLine !== undefined && headLine !== '') {
+            this.setHeadRemainderState(headLine, this.windowStart);
+          }
+          this.renderedLines.shift();
+        }
+        const tailLine = this.renderedLines.at(-1);
+        if (tailLine !== undefined && tailLine !== '') {
+          this.setTailRemainderState(tailLine, this.windowEnd);
+        }
+        if (this.renderedLines.length > 0) {
+          this.renderedLines.pop();
+        }
+        this.displayLines = this.renderedLines;
+      } else if (ChunkDirection.NEXT === direction) {
         if (this.tailRemainderState.presentOrnotBoolean) {
           this.renderedLines[0] =
             this.tailRemainderState.remainderString + this.renderedLines[0];
@@ -714,14 +732,26 @@ export default {
       }
     },
     async loadPreviousChunk() {
-      const end = this.windowStart - 1;
+      let end = this.windowStart - 1;
       const start = Math.max(0, end - this.chunkSize + 1);
-      await this.loadChunk(start, end, ChunkDirection.PREVIOUS);
+      if (start === 0) {
+        end = Math.min(this.totalBytes - 1, this.chunkSize - 1);
+      }
+      const direction =
+        end < this.windowStart
+          ? ChunkDirection.PREVIOUS
+          : ChunkDirection.REPLACE;
+      await this.loadChunk(start, end, direction);
     },
     async loadNextChunk() {
-      const start = this.windowEnd + 1;
+      let start = this.windowEnd + 1;
       const end = Math.min(this.totalBytes - 1, start + this.chunkSize - 1);
-      await this.loadChunk(start, end, ChunkDirection.NEXT);
+      if (end === this.totalBytes - 1) {
+        start = Math.max(0, end - this.chunkSize + 1);
+      }
+      const direction =
+        start > this.windowEnd ? ChunkDirection.NEXT : ChunkDirection.REPLACE;
+      await this.loadChunk(start, end, direction);
     },
     async toggleFollowMode() {
       if (this.isFollowing) {
