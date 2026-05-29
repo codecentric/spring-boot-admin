@@ -92,7 +92,7 @@ class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertThat(entity.getValue().getBody()).isNotNull();
-		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(),
+		assertMessage(entity.getValue().getBody(), notifier.getDeregisteredTitle(),
 				"Test App with id TestAppId has de-registered from Spring Boot Admin", "Accent");
 	}
 
@@ -145,7 +145,7 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getDeregisteredMessage(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
-		assertMessage(message, notifier.getDeRegisteredTitle(),
+		assertMessage(message, notifier.getDeregisteredTitle(),
 				"Test App with id TestAppId has de-registered from Spring Boot Admin", "Accent");
 	}
 
@@ -160,7 +160,7 @@ class MicrosoftTeamsNotifierTest {
 
 	@Test
 	void test_getStatusChangedMessageForAppReturns_correctContent() {
-		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
+		Message message = notifier.getStatusChangedTextExpression(instance, notifier.createEvaluationContext(
 				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
 
 		assertMessage(message, notifier.getStatusChangedTitle(),
@@ -171,7 +171,7 @@ class MicrosoftTeamsNotifierTest {
 	void test_getStatusChangedMessageForAppReturns_UP_to_DOWN() {
 		notifier.updateLastStatus(new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp()));
 
-		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
+		Message message = notifier.getStatusChangedTextExpression(instance, notifier.createEvaluationContext(
 				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
 
 		assertMessage(message, notifier.getStatusChangedTitle(),
@@ -180,8 +180,8 @@ class MicrosoftTeamsNotifierTest {
 
 	@Test
 	void test_getStatusChangedMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-		notifier.setStatusActivitySubtitle("STATUS_ACTIVITY_PATTERN_#{instance.registration.name}");
-		Message message = notifier.getStatusChangedMessage(instance,
+		notifier.setStatusChangedTextExpression("STATUS_ACTIVITY_PATTERN_#{instance.registration.name}");
+		Message message = notifier.getStatusChangedTextExpression(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
 		assertThat(getActivitySubtitleFromMessage(message)).isEqualTo("STATUS_ACTIVITY_PATTERN_" + APP_NAME);
@@ -189,7 +189,7 @@ class MicrosoftTeamsNotifierTest {
 
 	@Test
 	void test_getRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-		notifier.setRegisterActivitySubtitle("REGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
+		notifier.setRegisteredTextExpression("REGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
 		Message message = notifier.getRegisteredMessage(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
@@ -198,7 +198,7 @@ class MicrosoftTeamsNotifierTest {
 
 	@Test
 	void test_getDeRegisterMessageWithExtraFormatArgumentReturns_activitySubtitlePatternWithAppName() {
-		notifier.setDeregisterActivitySubtitle("DEREGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
+		notifier.setDeregisteredTextExpression("DEREGISTER_ACTIVITY_PATTERN_#{instance.registration.name}");
 		Message message = notifier.getDeregisteredMessage(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
@@ -207,10 +207,10 @@ class MicrosoftTeamsNotifierTest {
 
 	@Test
 	void test_getStatusChangedMessage_parsesThemeColorFromSpelExpression() {
-		notifier.setThemeColor(
+		notifier.setTitleColorExpression(
 				"#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? 'green' : 'red') : 'blue'}");
 
-		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
+		Message message = notifier.getStatusChangedTextExpression(instance, notifier.createEvaluationContext(
 				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp()), instance));
 
 		assertThat(getColorFromMessage(message)).isEqualTo("green");
@@ -223,7 +223,7 @@ class MicrosoftTeamsNotifierTest {
 			.register(instance.getRegistration())
 			.withStatusInfo(StatusInfo.ofUp());
 
-		Message message = notifier.getStatusChangedMessage(upInstance, notifier.createEvaluationContext(
+		Message message = notifier.getStatusChangedTextExpression(upInstance, notifier.createEvaluationContext(
 				new InstanceStatusChangedEvent(upInstance.getId(), 1L, StatusInfo.ofUp()), upInstance));
 
 		JsonMapper mapper = JsonMapper.builder().build();
