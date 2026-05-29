@@ -25,7 +25,8 @@
         "title": "垃圾回收暫停"
       },
       "health": {
-        "title": "健康狀態"
+        "title": "健康狀態",
+        "toggle_details": "切換{name}健康詳情"
       },
       "health_group": {
         "title": "健康群組"

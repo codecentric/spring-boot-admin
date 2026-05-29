@@ -48,9 +48,14 @@
         :title="$t('term.fetch_failed')"
       />
       <div class="-mx-4 -my-3">
-        <health-details :health="health" name="Instance" />
+        <health-details
+          :instance="instance"
+          :health="health"
+          :index="0"
+          name="Instance"
+        />
 
-        <template v-for="group in healthGroups" :key="group.name">
+        <template v-for="(group, groupIdx) in healthGroups" :key="group.name">
           <div
             class="px-4 py-2 border-t border-gray-200 sm:px-6"
             :class="{ 'border-b': isHealthGroupOpen(group.name) }"
@@ -71,9 +76,15 @@
                     'rotate-90': isHealthGroupOpen(group.name),
                   }"
                 />
-                <span v-text="$t('instances.details.health_group.title')"></span
-                >:&nbsp;
-                <span v-text="group.name"></span>
+                <span
+                  v-text="$t('instances.details.health_group.title')"
+                />:&nbsp; <span v-text="group.name"></span>
+                <sba-status-badge
+                  v-if="group.data?.status"
+                  class="ml-2 fade"
+                  :status="group.data?.status"
+                />
+
                 <font-awesome-icon
                   v-if="healthGroupLoadingMap[group.name]"
                   icon="sync-alt"
@@ -84,7 +95,12 @@
             </h4>
           </div>
           <div v-if="isHealthGroupOpen(group.name) && group.data">
-            <health-details :health="group.data" :name="group.name" />
+            <health-details
+              :instance="instance"
+              :health="group.data"
+              :name="group.name"
+              :index="groupIdx + 1"
+            />
           </div>
         </template>
       </div>

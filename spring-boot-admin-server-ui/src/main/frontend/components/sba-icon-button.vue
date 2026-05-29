@@ -26,10 +26,13 @@
   </sba-button>
 </template>
 
-<script>
+<script lang="ts">
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { PropType, defineComponent } from 'vue';
+
 import SbaButton from '@/components/sba-button';
 
-export default {
+export default defineComponent({
   components: { SbaButton },
   props: {
     title: {
@@ -38,7 +41,9 @@ export default {
       default: null,
     },
     icon: {
-      type: [String, Array],
+      type: [Object, Array, String] as PropType<
+        Array<string> | string | IconDefinition
+      >,
       required: true,
     },
     size: {
@@ -51,7 +56,7 @@ export default {
     },
   },
   emits: ['click'],
-};
+});
 </script>
 
 <style></style>

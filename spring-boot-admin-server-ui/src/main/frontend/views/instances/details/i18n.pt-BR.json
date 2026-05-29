@@ -22,7 +22,8 @@
         "title": "Pausas do Garbage Collection"
       },
       "health": {
-        "title": "Integridade"
+        "title": "Integridade",
+        "toggle_details": "Alternar detalhes de integridade de {name}"
       },
       "health_group": {
         "title": "Grupo de Integridade"
