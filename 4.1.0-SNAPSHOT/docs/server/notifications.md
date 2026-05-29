@@ -106,7 +106,7 @@ public class NotifierConfiguration {
 
         notifier.setReminderPeriod(Duration.ofMinutes(10)); // (1)
 
-        notifier.setCheckReminderInverval(Duration.ofSeconds(10)); //(2)
+        notifier.setCheckReminderInterval(Duration.ofSeconds(10)); //(2)
 
         return notifier;
 
@@ -188,7 +188,7 @@ public class NotifierConfig {
 
         notifier.setReminderPeriod(Duration.ofMinutes(10));
 
-        notifier.setCheckReminderInverval(Duration.ofSeconds(10));
+        notifier.setCheckReminderInterval(Duration.ofSeconds(10));
 
         return notifier;
 

@@ -823,7 +823,7 @@ public RemindingNotifier remindingNotifier(Notifier delegate,
 
 	notifier.setReminderPeriod(Duration.ofMinutes(10));
 
-	notifier.setCheckReminderInverval(Duration.ofSeconds(60));
+	notifier.setCheckReminderInterval(Duration.ofSeconds(60));
 
 	return notifier;
 
