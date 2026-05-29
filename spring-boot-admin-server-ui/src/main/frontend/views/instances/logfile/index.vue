@@ -66,7 +66,7 @@
                     : 'instances.logfile.resume_follow',
                 )
               "
-              :disabled="isChunkLoading"
+              :disabled="isChunkLoading || isRetryingLogfile"
               :primary="isFollowing"
               :title="
                 $t(
@@ -121,7 +121,11 @@
             </sba-button>
           </div>
 
-          <sba-button class="hidden md:block" @click="downloadLogfile()">
+          <sba-button
+            class="hidden md:block"
+            :disabled="isRetryingLogfile"
+            @click="downloadLogfile()"
+          >
             <font-awesome-icon icon="download" />&nbsp;
             <span v-text="$t('instances.logfile.download')" />
           </sba-button>
@@ -286,7 +290,9 @@ export default {
       let canPageUpManualMode = !this.isFollowing && this.canLoadPrevious;
 
       return (
-        !this.isChunkLoading && (canPageUpFollowMode || canPageUpManualMode)
+        !this.isChunkLoading &&
+        !this.isRetryingLogfile &&
+        (canPageUpFollowMode || canPageUpManualMode)
       );
     },
     canPageDown() {
@@ -296,7 +302,9 @@ export default {
       let canPageDownManualMode = !this.isFollowing && this.canLoadNext;
 
       return (
-        !this.isChunkLoading && (canPageDownFollowMode || canPageDownManualMode)
+        !this.isChunkLoading &&
+        !this.isRetryingLogfile &&
+        (canPageDownFollowMode || canPageDownManualMode)
       );
     },
   },
