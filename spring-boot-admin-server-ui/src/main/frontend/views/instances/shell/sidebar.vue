@@ -74,7 +74,7 @@
             <font-awesome-icon
               class="h-3 ml-auto hidden md:block transition"
               :class="{
-                '-rotate-90': isGroupOpen(group),
+                'rotate-180': isGroupOpen(group),
               }"
               :icon="faChevronUp"
             />

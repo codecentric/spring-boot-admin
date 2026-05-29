@@ -159,7 +159,7 @@ class RemindingNotifierTest {
 
 			RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
 			eventPublisher.flux().flatMap(reminder::notify).subscribe();
-			reminder.setCheckReminderInverval(Duration.ofMillis(10));
+			reminder.setCheckReminderInterval(Duration.ofMillis(10));
 			reminder.setReminderPeriod(Duration.ofMillis(10));
 			reminder.start();
 		});
@@ -171,6 +171,33 @@ class RemindingNotifierTest {
 			.then(() -> eventPublisher.next(errorTriggeringEvent))
 			.thenConsumeWhile((e) -> !e.equals(errorTriggeringEvent))
 			.expectNext(errorTriggeringEvent, appDown, appDown)
+			.thenCancel()
+			.verify();
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	void should_support_deprecated_check_reminder_inverval_setter() {
+		TestPublisher<InstanceEvent> eventPublisher = TestPublisher.create();
+
+		Flux<InstanceEvent> emittedNotifications = Flux.create((emitter) -> {
+			Notifier notifier = (event) -> {
+				emitter.next(event);
+				return Mono.empty();
+			};
+
+			RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
+			eventPublisher.flux().flatMap(reminder::notify).subscribe();
+
+			reminder.setCheckReminderInverval(Duration.ofMillis(10));
+			reminder.setReminderPeriod(Duration.ofMillis(10));
+			reminder.start();
+		});
+
+		StepVerifier.create(emittedNotifications)
+			.expectSubscription()
+			.then(() -> eventPublisher.next(appDown))
+			.expectNext(appDown, appDown)
 			.thenCancel()
 			.verify();
 	}

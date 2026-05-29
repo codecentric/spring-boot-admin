@@ -43,6 +43,7 @@
     "shutdown": "<code>{name}</code> 인스턴스를 종료할까요?",
     "shutdown_successful": "{name} 인스턴스를 종료하였습니다.",
     "shutdown_failed": "{name} 인스턴스를 종료하지 못하였습니다.",
+    "open_details": "인스턴스 상세 정보 열기",
     "restart": "<code>{name}</code> 인스턴스를 재시작할까요?",
     "restarted": "{name} 인스턴스를 재시작하였습니다.",
     "unregister": "<code>{name}</code> 인스턴스 등록을 해제할까요?",

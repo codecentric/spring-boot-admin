@@ -19,6 +19,7 @@
   },
   "instances": {
     "shutdown": "Detener instancia <code>{name}</code>?",
+    "open_details": "Abrir detalles de la instancia",
     "restart": "Reinciar instancia <code>{name}</code>?",
     "restarted": "Instancia reiniciada exitosamente"
   }

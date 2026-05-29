@@ -19,52 +19,54 @@
     <sba-wave />
     <section>
       <sba-sticky-subnav>
-        <div class="container mx-auto flex">
-          <ApplicationStats />
-          <sba-confirm-button
-            class="mr-1"
-            :title="$t('applications.actions.refresh_applications')"
-            @click="refreshApplications"
-          >
-            <font-awesome-icon :icon="'rotate-left'" />
-          </sba-confirm-button>
-          <template v-if="groupNames.length > 1">
-            <sba-button-group class="mr-1">
-              <sba-button
-                :title="
-                  $t('applications.actions.switch_to_grouping_by_application')
-                "
-                :disabled="isGroupingFunctionActive('application')"
-                @click="() => setGroupingFunction('application')"
-              >
-                <font-awesome-icon icon="list" />
-              </sba-button>
-              <sba-button
-                :title="$t('applications.actions.switch_to_grouping_by_group')"
-                :disabled="isGroupingFunctionActive('group')"
-                @click="() => setGroupingFunction('group')"
-              >
-                <font-awesome-icon icon="expand" />
-              </sba-button>
-            </sba-button-group>
-          </template>
-          <ApplicationNotificationCenter
-            v-if="hasNotificationFiltersSupport"
-            :notification-filters="notificationFilters"
-            @filter-remove="removeFilter"
-          />
-          <div class="flex-1">
-            <sba-input
-              v-model="routerState.q"
-              :placeholder="t('term.filter')"
-              name="filter"
-              type="search"
+        <div class="container mx-auto flex justify-between">
+          <div class="flex">
+            <ApplicationStats />
+            <sba-confirm-button
+              class="mr-1"
+              :title="$t('applications.actions.refresh_applications')"
+              @click="refreshApplications"
             >
-              <template #prepend>
-                <font-awesome-icon icon="filter" />
-              </template>
-            </sba-input>
+              <font-awesome-icon :icon="'rotate-left'" />
+            </sba-confirm-button>
+            <template v-if="groupNames.length > 1">
+              <sba-button-group class="mr-1">
+                <sba-button
+                  :title="
+                    $t('applications.actions.switch_to_grouping_by_application')
+                  "
+                  :disabled="isGroupingFunctionActive('application')"
+                  @click="() => setGroupingFunction('application')"
+                >
+                  <font-awesome-icon icon="list" />
+                </sba-button>
+                <sba-button
+                  :title="
+                    $t('applications.actions.switch_to_grouping_by_group')
+                  "
+                  :disabled="isGroupingFunctionActive('group')"
+                  @click="() => setGroupingFunction('group')"
+                >
+                  <font-awesome-icon icon="expand" />
+                </sba-button>
+              </sba-button-group>
+            </template>
+            <ApplicationNotificationCenter
+              v-if="hasNotificationFiltersSupport"
+              :notification-filters="notificationFilters"
+              @filter-remove="removeFilter"
+            />
           </div>
+          <sba-input
+            v-model="routerState.q"
+            :placeholder="t('term.filter')"
+            name="filter"
+            type="search"
+          >
+            <template #prepend>
+              <font-awesome-icon icon="filter" />
+            </template>
+          </sba-input>
         </div>
       </sba-sticky-subnav>
 
@@ -110,12 +112,14 @@
               "
             >
               <template #title>
-                <div class="items-center inline-flex flex-row min-w-116">
+                <div
+                  class="items-center inline-flex flex-row min-w-116 cursor-pointer"
+                >
                   <font-awesome-icon
-                    icon="chevron-down"
+                    icon="chevron-right"
+                    class="mr-2 transition-transform"
                     :class="{
-                      '-rotate-90': !isExpanded(group.name),
-                      'mr-2 transition-[transform]': true,
+                      'rotate-90': isExpanded(group.name),
                     }"
                   />
                   <sba-status-badge
@@ -162,14 +166,28 @@
               <template v-if="isExpanded(group.name)" #default>
                 <InstancesList :instances="group.instances">
                   <template #actions="{ instance }">
-                    <ApplicationListItemAction
-                      :has-notification-filters-support="
-                        hasNotificationFiltersSupport
-                      "
-                      :item="instance"
-                      class="md:hidden"
-                      @filter-settings="toggleNotificationFilterSettings"
-                    />
+                    <div class="inline-flex">
+                      <sba-button
+                        :as="RouterLink"
+                        :to="{
+                          name: 'instances/details',
+                          params: { instanceId: instance.id },
+                        }"
+                        size="2xs"
+                        class="self-center mr-1 whitespace-nowrap"
+                        v-text="t('instances.open_details')"
+                      />
+
+                      <ApplicationListItemAction
+                        :has-notification-filters-support="
+                          hasNotificationFiltersSupport
+                        "
+                        :item="instance"
+                        class="md:hidden"
+                        size="xs"
+                        @filter-settings="toggleNotificationFilterSettings"
+                      />
+                    </div>
                   </template>
                 </InstancesList>
               </template>
@@ -202,7 +220,7 @@ import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
 import { groupBy, sortBy, transform } from 'lodash-es';
 import { computed, nextTick, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 import SbaButton from '@/components/sba-button.vue';
 import SbaConfirmButton from '@/components/sba-confirm-button.vue';

@@ -19,6 +19,7 @@
   },
   "instances": {
     "shutdown": "Shutdown instance <code>{name}</code>?",
+    "open_details": "打开实例详情",
     "restart": "Restart instance <code>{name}</code>?",
     "restarted": "Successfully restarted instance"
   }

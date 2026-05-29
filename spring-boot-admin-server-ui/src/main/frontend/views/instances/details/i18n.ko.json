@@ -22,7 +22,8 @@
         "title": "가비지 컬렉션"
       },
       "health": {
-        "title": "상태"
+        "title": "상태",
+        "toggle_details": "{name} 상태 세부정보 토글"
       },
       "health_group": {
         "title": "상태 그룹"

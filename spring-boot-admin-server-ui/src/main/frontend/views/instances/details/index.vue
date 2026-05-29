@@ -21,18 +21,18 @@
       <details-hero :instance="instance" />
     </template>
 
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
+    <div class="instance-grid">
+      <div>
         <details-info v-if="hasInfo" :instance="instance" />
         <details-metadata v-if="hasMetadata" :instance="instance" />
       </div>
-      <div class="flex-1">
+      <div>
         <details-health :instance="instance" />
       </div>
     </div>
 
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
+    <div class="instance-grid">
+      <div>
         <details-process
           v-if="hasProcess"
           :instance="instance"
@@ -40,25 +40,25 @@
         />
         <details-gc v-if="hasGc" :instance="instance" />
       </div>
-      <div class="flex-1">
+      <div>
         <details-threads v-if="hasThreads" :instance="instance" />
       </div>
     </div>
 
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
+    <div class="instance-grid">
+      <div>
         <details-memory v-if="hasMemory" :instance="instance" type="heap" />
       </div>
-      <div class="flex-1">
+      <div>
         <details-memory v-if="hasMemory" :instance="instance" type="nonheap" />
       </div>
     </div>
 
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
+    <div class="instance-grid">
+      <div>
         <details-datasources v-if="hasDatasources" :instance="instance" />
       </div>
-      <div class="flex-1">
+      <div>
         <details-caches v-if="hasCaches" :instance="instance" />
       </div>
     </div>
@@ -204,3 +204,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@reference "../../../index.css";
+
+.instance-grid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-4;
+}
+</style>

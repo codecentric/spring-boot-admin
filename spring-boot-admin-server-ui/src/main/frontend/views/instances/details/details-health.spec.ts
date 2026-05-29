@@ -1,52 +1,22 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
-import { HttpResponse, http } from 'msw';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { AxiosResponse } from 'axios';
+import { describe, expect, it, vi } from 'vitest';
 
 import { applications } from '@/mocks/applications/data';
-import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import { render } from '@/test-utils';
 import DetailsHealth from '@/views/instances/details/details-health.vue';
 
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: any) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return { promise, resolve, reject };
-}
-
 describe('DetailsHealth', () => {
-  const healthHandlerSpy = vi.fn();
-
-  beforeEach(() => {
-    healthHandlerSpy.mockReset();
-    server.use(
-      http.get('/instances/:instanceId/actuator/health', () => {
-        healthHandlerSpy();
-        return HttpResponse.json({
-          instance: 'UP',
-          groups: ['liveness'],
-        });
-      }),
-      http.get('/instances/:instanceId/actuator/health/liveness', () => {
-        return HttpResponse.json({
-          status: 'UP',
-          details: {
-            disk: { status: 'UNKNOWN' },
-            database: { status: 'UNKNOWN' },
-          },
-        });
-      }),
-    );
-  });
-
-  it('should display groups as part of health section', async () => {
+  it('should display health status from instance.statusInfo', async () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
+
+    // Mock fetchHealth for groups (will be called once on mount)
+    instance.fetchHealth = vi
+      .fn()
+      .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
 
     render(DetailsHealth, {
       props: {
@@ -54,215 +24,326 @@ describe('DetailsHealth', () => {
       },
     });
 
-    await waitFor(() =>
-      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
-    );
-
-    expect(
-      await screen.findByRole('button', {
-        name: /instances.details.health_group.title: liveness/,
-      }),
-    ).toBeVisible();
+    const statusBadges = await screen.findAllByRole('status');
+    expect(statusBadges[0]).toHaveTextContent('UP');
   });
 
-  it('health groups are toggleable, when details are available', async () => {
+  it('should display health details from instance.statusInfo', async () => {
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+
+    instance.fetchHealth = vi
+      .fn()
+      .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
+
+    render(DetailsHealth, {
+      props: {
+        instance,
+      },
+    });
+
+    expect(await screen.findByLabelText('db')).toBeInTheDocument();
+    expect(await screen.findByLabelText('diskSpace')).toBeInTheDocument();
+    expect(await screen.findByLabelText('ping')).toBeInTheDocument();
+  });
+
+  it('should update when instance prop changes', async () => {
+    const application = new Application(applications[0]);
+    const instance1 = application.instances[0];
+    instance1.fetchHealth = vi
+      .fn()
+      .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
+
+    const { rerender } = render(DetailsHealth, {
+      props: {
+        instance: instance1,
+      },
+    });
+
+    let statusBadges = await screen.findAllByRole('status');
+    expect(statusBadges[0]).toHaveTextContent('UP');
+
+    const instance2 = new Application({
+      ...applications[0],
+      instances: [
+        {
+          ...applications[0].instances[0],
+          statusInfo: { status: 'DOWN', details: {} },
+        },
+      ],
+    }).instances[0];
+    instance2.fetchHealth = vi
+      .fn()
+      .mockResolvedValue({ data: { status: 'DOWN', groups: [] } });
+
+    await rerender({ instance: instance2 });
+
+    statusBadges = await screen.findAllByRole('status');
+    expect(statusBadges[0]).toHaveTextContent('DOWN');
+  });
+
+  it('should handle empty/missing details gracefully', async () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
     instance.statusInfo = { status: 'UP', details: {} };
-
-    render(DetailsHealth, {
-      props: {
-        instance,
-      },
-    });
-
-    await waitFor(() =>
-      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
-    );
-
-    const button = screen.queryByRole('button', {
-      name: /instances.details.health_group.title: liveness/,
-    });
-    expect(button).toBeVisible();
-
-    expect(screen.queryByLabelText('disk')).toBeNull();
-    expect(screen.queryByLabelText('database')).toBeNull();
-
-    await userEvent.click(button);
-
-    expect(screen.queryByLabelText('disk')).toBeDefined();
-    expect(screen.queryByLabelText('database')).toBeDefined();
-  });
-
-  it('should update health details when instance prop changes (watch)', async () => {
-    const application = new Application(applications[0]);
-    const instance1 = application.instances[0];
-    const instance2 = {
-      ...instance1,
-      id: 'other-id',
-      statusInfo: { status: 'DOWN', details: {} },
-    };
-
-    const { rerender } = render(DetailsHealth, {
-      props: {
-        instance: instance1,
-      },
-    });
-
-    await waitFor(() =>
-      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
-    );
-
-    // Simulate prop change
-    await rerender({ instance: instance2 });
-
-    // Wait for the component to react to the prop change
-    await waitFor(() =>
-      expect(
-        screen.queryByRole('button', {
-          name: /instances.details.health_group.title: liveness/,
-        }),
-      ).toBeVisible(),
-    );
-  });
-
-  it('should refetch health when instance version changes (SSE update)', async () => {
-    const application = new Application(applications[0]);
-    const instance1 = application.instances[0];
-
-    const { rerender } = render(DetailsHealth, {
-      props: {
-        instance: instance1,
-      },
-    });
-
-    await waitFor(() => {
-      expect(healthHandlerSpy).toHaveBeenCalledTimes(1);
-    });
-
-    const instance2 = new Application({
-      ...application,
-      instances: [
-        {
-          ...instance1,
-          id: instance1.id,
-          version: (instance1.version ?? 0) + 1,
-        },
-      ],
-    }).instances[0];
-
-    await rerender({ instance: instance2 });
-
-    await waitFor(() => {
-      expect(healthHandlerSpy).toHaveBeenCalledTimes(2);
-    });
-  });
-
-  it('should ignore stale health response when instance updates quickly', async () => {
-    const application = new Application(applications[0]);
-    const instance1 = application.instances[0];
-
-    const p1 = deferred<{ data: any }>();
-    const p2 = deferred<{ data: any }>();
-    const fetchHealthSpy = vi
+    instance.fetchHealth = vi
       .fn()
-      .mockReturnValueOnce(p1.promise)
-      .mockReturnValueOnce(p2.promise);
-    instance1.fetchHealth = fetchHealthSpy;
-    instance1.fetchHealthGroup = vi.fn().mockResolvedValue({ data: {} });
+      .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
 
-    const { rerender } = render(DetailsHealth, {
+    render(DetailsHealth, {
       props: {
-        instance: instance1,
+        instance,
       },
     });
 
-    await waitFor(() => {
-      expect(fetchHealthSpy).toHaveBeenCalledTimes(1);
+    const statusBadges = await screen.findAllByRole('status');
+    expect(statusBadges[0]).toHaveTextContent('UP');
+  });
+
+  describe('SSE reactive updates', () => {
+    it('should call fetchHealth once on mount, not on SSE version changes', async () => {
+      const baseApp = applications[0];
+      const instance1 = new Application(baseApp).instances[0];
+      const fetchHealthSpy1 = vi.spyOn(instance1, 'fetchHealth');
+      fetchHealthSpy1.mockResolvedValue({
+        data: { status: 'UP', groups: ['liveness'] },
+      } as AxiosResponse);
+
+      const { rerender } = render(DetailsHealth, {
+        props: { instance: instance1 },
+      });
+
+      await screen.findAllByRole('status');
+      expect(fetchHealthSpy1).toHaveBeenCalledTimes(1);
+
+      // Same instance, different version (SSE update) — should NOT call fetchHealth again
+      const instance2 = new Application({
+        ...baseApp,
+        instances: [
+          {
+            ...baseApp.instances[0],
+            version: (baseApp.instances[0].version || 1) + 1,
+            statusInfo: { status: 'DOWN', details: {} },
+          },
+        ],
+      }).instances[0];
+      const fetchHealthSpy2 = vi.spyOn(instance2, 'fetchHealth');
+      fetchHealthSpy2.mockResolvedValue({
+        data: { status: 'DOWN', groups: [] },
+      } as AxiosResponse);
+
+      await rerender({ instance: instance2 });
+
+      // Original instance's spy should still be 1 (no additional calls)
+      expect(fetchHealthSpy1).toHaveBeenCalledTimes(1);
     });
 
-    const instance2 = new Application({
-      ...application,
-      instances: [
-        {
-          ...instance1,
-          id: instance1.id,
-          version: (instance1.version ?? 0) + 1,
+    it('should reactively update through multiple SSE status changes without extra HTTP calls', async () => {
+      const baseApp = applications[0];
+
+      const instance1 = new Application(baseApp).instances[0];
+      instance1.fetchHealth = vi
+        .fn()
+        .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
+
+      const { rerender } = render(DetailsHealth, {
+        props: { instance: instance1 },
+      });
+
+      let statusBadges = await screen.findAllByRole('status');
+      expect(statusBadges[0]).toHaveTextContent('UP');
+
+      // SSE update: same id, different version
+      const instance2 = new Application({
+        ...baseApp,
+        instances: [
+          {
+            ...baseApp.instances[0],
+            version: 4,
+            statusInfo: {
+              status: 'DOWN',
+              details: {
+                db: {
+                  status: 'DOWN',
+                  details: { error: 'Connection refused' },
+                },
+              },
+            },
+          },
+        ],
+      }).instances[0];
+      instance2.fetchHealth = vi
+        .fn()
+        .mockResolvedValue({ data: { status: 'DOWN', groups: [] } });
+
+      await rerender({ instance: instance2 });
+
+      statusBadges = await screen.findAllByRole('status');
+      expect(statusBadges[0]).toHaveTextContent('DOWN');
+      expect(await screen.findByLabelText('db')).toBeInTheDocument();
+    });
+  });
+
+  describe('lazy health groups', () => {
+    it('should display health group buttons after mount', async () => {
+      const application = new Application(applications[0]);
+      const instance = application.instances[0];
+      instance.fetchHealth = vi.fn().mockResolvedValue({
+        data: { status: 'UP', groups: ['liveness', 'readiness'] },
+      });
+      const fetchGroupSpy = vi.spyOn(instance, 'fetchHealthGroup');
+
+      render(DetailsHealth, {
+        props: { instance },
+      });
+
+      await screen.findAllByRole('status');
+
+      expect(
+        await screen.findByRole('button', { name: /liveness/ }),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByRole('button', { name: /readiness/ }),
+      ).toBeInTheDocument();
+      expect(fetchGroupSpy).not.toHaveBeenCalled();
+    });
+
+    it('should fetch group details on first click', async () => {
+      const application = new Application(applications[0]);
+      const instance = application.instances[0];
+      instance.fetchHealth = vi.fn().mockResolvedValue({
+        data: { status: 'UP', groups: ['custom-group'] },
+      });
+      const fetchGroupSpy = vi.spyOn(instance, 'fetchHealthGroup');
+      fetchGroupSpy.mockResolvedValue({
+        data: {
+          status: 'UP',
+          details: {
+            customDetails: {
+              status: 'UP',
+              details: { error: 'no property sources located' },
+            },
+            evenMoreDiskSpace: {
+              status: 'UP',
+              details: {
+                total: 994662584320,
+                free: 300063879168,
+                threshold: 10485760,
+                exists: true,
+              },
+            },
+          },
         },
-      ],
-    }).instances[0];
-    instance2.fetchHealth = fetchHealthSpy;
-    instance2.fetchHealthGroup = instance1.fetchHealthGroup;
+      } as AxiosResponse);
 
-    await rerender({ instance: instance2 });
+      render(DetailsHealth, {
+        props: { instance },
+      });
 
-    await waitFor(() => {
-      expect(fetchHealthSpy).toHaveBeenCalledTimes(2);
+      const button = await screen.findByRole('button', {
+        name: /custom-group/,
+      });
+      await userEvent.click(button);
+
+      await waitFor(() => {
+        expect(fetchGroupSpy).toHaveBeenCalledWith('custom-group');
+      });
+
+      // custom-group has service component
+      expect(await screen.findByLabelText('customDetails')).toBeInTheDocument();
+      expect(
+        await screen.findByLabelText('evenMoreDiskSpace'),
+      ).toBeInTheDocument();
     });
 
-    // Resolve second (newer) response first.
-    p2.resolve({ data: { status: 'UP', groups: [] } });
-    await waitFor(() => {
-      expect(screen.getByText('UP')).toBeInTheDocument();
+    it('should toggle group visibility after data is loaded', async () => {
+      const application = new Application(applications[0]);
+      const instance = application.instances[0];
+      instance.fetchHealth = vi.fn().mockResolvedValue({
+        data: { status: 'UP', groups: ['custom-group'] },
+      });
+      const fetchGroupSpy = vi.spyOn(instance, 'fetchHealthGroup');
+      fetchGroupSpy.mockResolvedValue({
+        data: { status: 'UP', details: { service: { status: 'UP' } } },
+      } as AxiosResponse);
+
+      render(DetailsHealth, {
+        props: { instance },
+      });
+
+      const button = await screen.findByRole('button', {
+        name: /custom-group/,
+      });
+
+      // First click — fetch & show
+      await userEvent.click(button);
+      await screen.findByLabelText('service');
+
+      // Second click — hide
+      await userEvent.click(button);
+      expect(screen.queryByLabelText('service')).not.toBeInTheDocument();
+
+      // Third click — show again
+      await userEvent.click(button);
+      expect(await screen.findByLabelText('service')).toBeInTheDocument();
+
+      // fetchHealthGroup should only be called once (first click)
+      expect(fetchGroupSpy).toHaveBeenCalledTimes(1);
     });
 
-    // Resolve first (older) response afterwards; UI must not regress.
-    p1.resolve({ data: { status: 'DOWN', groups: [] } });
-    await waitFor(() => {
-      expect(screen.queryByText('DOWN')).not.toBeInTheDocument();
-    });
-    expect(screen.getByText('UP')).toBeInTheDocument();
-  });
+    it('should not show groups when none exist', async () => {
+      const application = new Application(applications[0]);
+      const instance = application.instances[0];
+      instance.fetchHealth = vi.fn().mockResolvedValue({
+        data: { status: 'UP', groups: [] },
+      });
 
-  it('should not display health group button if no groups are present', async () => {
-    server.use(
-      http.get('/instances/:instanceId/actuator/health', () => {
-        return HttpResponse.json({
-          instance: 'UP',
-          groups: [],
-        });
-      }),
-    );
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
+      render(DetailsHealth, {
+        props: { instance },
+      });
 
-    render(DetailsHealth, {
-      props: {
-        instance,
-      },
+      await screen.findAllByRole('status');
+
+      expect(
+        screen.queryByRole('button', { name: /Health Group/ }),
+      ).not.toBeInTheDocument();
     });
 
-    await waitFor(() =>
-      expect(screen.queryByRole('status')).not.toBeInTheDocument(),
-    );
+    it('should re-fetch groups when instance id changes', async () => {
+      const app1 = new Application(applications[0]).instances[0];
+      app1.fetchHealth = vi
+        .fn()
+        .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
 
-    expect(
-      screen.queryByRole('button', {
-        name: /instances.details.health_group.title: liveness/,
-      }),
-    ).toBeNull();
-  });
+      const { rerender } = render(DetailsHealth, {
+        props: { instance: app1 },
+      });
 
-  it('should fetch health details only once on startup', async () => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
+      await waitFor(() => {
+        expect(app1.fetchHealth).toHaveBeenCalledTimes(1);
+      });
 
-    render(DetailsHealth, {
-      props: {
-        instance,
-      },
+      const app2 = new Application({
+        ...applications[0],
+        instances: [
+          {
+            ...applications[0].instances[0],
+            id: 'different-id',
+          },
+        ],
+      }).instances[0];
+      app2.fetchHealth = vi
+        .fn()
+        .mockResolvedValue({ data: { status: 'UP', groups: ['readiness'] } });
+
+      await rerender({ instance: app2 });
+
+      await waitFor(() => {
+        expect(app2.fetchHealth).toHaveBeenCalledTimes(1);
+      });
+
+      // Original instance should still have only 1 call
+      expect(app1.fetchHealth).toHaveBeenCalledTimes(1);
     });
-
-    await waitFor(() => {
-      expect(healthHandlerSpy).toHaveBeenCalledTimes(1);
-    });
-
-    // Verify that the handler is not called again after the initial fetch
-    await waitFor(
-      () => {
-        expect(healthHandlerSpy).toHaveBeenCalledTimes(1);
-      },
-      { timeout: 1000 },
-    );
   });
 });

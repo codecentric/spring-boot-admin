@@ -40,6 +40,7 @@
   },
   "instances": {
     "shutdown": "Möchten Sie die Instanz <code>{name}</code> herunterfahren?",
+    "open_details": "Instanzdetails öffnen",
     "restart": "Möchten Sie die Instanz <code>{name}</code> neu starten?",
     "restarted": "Die Instanz {name} wurde neu gestartet.",
     "unregister": "Möchten Sie die Instanz <code>{name}</code> deregistrieren?",

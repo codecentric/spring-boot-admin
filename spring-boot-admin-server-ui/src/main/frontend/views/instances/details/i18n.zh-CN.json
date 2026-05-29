@@ -22,7 +22,8 @@
         "title": "垃圾回收"
       },
       "health": {
-        "title": "健康"
+        "title": "健康",
+        "toggle_details": "切换{name}健康详情"
       },
       "health_group": {
         "title": "健康组"

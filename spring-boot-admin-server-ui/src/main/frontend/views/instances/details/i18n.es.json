@@ -23,7 +23,8 @@
         "title": "Pausas en la recolección de basura"
       },
       "health": {
-        "title": "Salud"
+        "title": "Salud",
+        "toggle_details": "Alternar detalles de salud de {name}"
       },
       "health_group": {
         "title": "Grupo de Salud"

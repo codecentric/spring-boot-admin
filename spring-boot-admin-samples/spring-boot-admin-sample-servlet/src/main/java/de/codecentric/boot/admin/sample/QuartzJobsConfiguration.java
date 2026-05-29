@@ -24,6 +24,8 @@ import org.quartz.JobDetail;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.QuartzJobBean;
@@ -108,9 +110,11 @@ public class QuartzJobsConfiguration {
 	 */
 	public static class SampleJob extends QuartzJobBean {
 
+		private static final Logger logger = LoggerFactory.getLogger(SampleJob.class);
+
 		@Override
 		protected void executeInternal(org.quartz.JobExecutionContext context) {
-			System.out.println("Sample Quartz Job executed at " + new java.util.Date());
+			logger.info("Sample Quartz Job executed at {}", new java.util.Date());
 		}
 
 	}
@@ -120,9 +124,11 @@ public class QuartzJobsConfiguration {
 	 */
 	public static class AnotherSampleJob extends QuartzJobBean {
 
+		private static final Logger logger = LoggerFactory.getLogger(AnotherSampleJob.class);
+
 		@Override
 		protected void executeInternal(org.quartz.JobExecutionContext context) {
-			System.out.println("Another Quartz Job executed at " + new java.util.Date());
+			logger.info("Another Quartz Job executed at {}", new java.util.Date());
 		}
 
 	}

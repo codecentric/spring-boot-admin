@@ -907,8 +907,7 @@ export default {
 }
 
 .log-viewer tr,
-.log-viewer td,
-.log-viewer br {
+.log-viewer td {
   @apply w-full;
 }
 
@@ -918,7 +917,7 @@ export default {
   @apply w-full;
 }
 
-.log-viewer pre:hover {
+.log-viewer td:hover {
   background: #dbdbdb;
 }
 
