@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.notify;
 
 import java.net.URI;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,9 @@ import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier.Attachment;
+import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier.CardElement;
+import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier.Fact;
 import de.codecentric.boot.admin.server.notify.MicrosoftTeamsNotifier.Message;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,11 +49,11 @@ import static org.mockito.Mockito.when;
 
 class MicrosoftTeamsNotifierTest {
 
-	private static final String BLUE = "439fe0";
+	private static final String ACCENT = "Accent";
 
-	private static final String RED = "b32d36";
+	private static final String ATTENTION = "Attention";
 
-	private static final String GREEN = "6db33f";
+	private static final String GOOD = "Good";
 
 	private static final String APP_NAME = "Test App";
 
@@ -95,8 +99,10 @@ class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertThat(entity.getValue().getBody()).isNotNull();
-		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
-				"Test App with id TestAppId has de-registered from Spring Boot Admin", BLUE);
+		assertMessage(entity.getValue().getBody(), notifier.getDeRegisteredTitle(), ACCENT,
+				"Test App with id TestAppId has de-registered from Spring Boot Admin",
+				List.of(new Fact("Status", "UNKNOWN"), new Fact("Service URL", SERVICE_URL),
+						new Fact("Health URL", HEALTH_URL), new Fact("Management URL", MANAGEMENT_URL)));
 	}
 
 	@Test
@@ -111,8 +117,10 @@ class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertThat(entity.getValue().getBody()).isNotNull();
-		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(), notifier.getMessageSummary(),
-				"Test App with id TestAppId has registered with Spring Boot Admin", BLUE);
+		assertMessage(entity.getValue().getBody(), notifier.getRegisteredTitle(), ACCENT,
+				"Test App with id TestAppId has registered with Spring Boot Admin",
+				List.of(new Fact("Status", "UNKNOWN"), new Fact("Service URL", SERVICE_URL),
+						new Fact("Health URL", HEALTH_URL), new Fact("Management URL", MANAGEMENT_URL)));
 	}
 
 	@Test
@@ -127,8 +135,10 @@ class MicrosoftTeamsNotifierTest {
 
 		assertThat(entity.getValue().getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON);
 		assertThat(entity.getValue().getBody()).isNotNull();
-		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
-				"Test App with id TestAppId changed status from UNKNOWN to UP", GREEN);
+		assertMessage(entity.getValue().getBody(), notifier.getStatusChangedTitle(), GOOD,
+				"Test App with id TestAppId changed status from UNKNOWN to UP",
+				List.of(new Fact("Status", "UNKNOWN"), new Fact("Service URL", SERVICE_URL),
+						new Fact("Health URL", HEALTH_URL), new Fact("Management URL", MANAGEMENT_URL)));
 	}
 
 	@Test
@@ -148,8 +158,10 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getDeregisteredMessage(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
-		assertMessage(message, notifier.getDeRegisteredTitle(), notifier.getMessageSummary(),
-				"Test App with id TestAppId has de-registered from Spring Boot Admin", BLUE);
+		assertMessage(message, notifier.getDeRegisteredTitle(), ACCENT,
+				"Test App with id TestAppId has de-registered from Spring Boot Admin",
+				List.of(new Fact("Status", "UNKNOWN"), new Fact("Service URL", SERVICE_URL),
+						new Fact("Health URL", HEALTH_URL), new Fact("Management URL", MANAGEMENT_URL)));
 	}
 
 	@Test
@@ -157,8 +169,10 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getRegisteredMessage(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
-		assertMessage(message, notifier.getRegisteredTitle(), notifier.getMessageSummary(),
-				"Test App with id TestAppId has registered with Spring Boot Admin", BLUE);
+		assertMessage(message, notifier.getRegisteredTitle(), ACCENT,
+				"Test App with id TestAppId has registered with Spring Boot Admin",
+				List.of(new Fact("Status", "UNKNOWN"), new Fact("Service URL", SERVICE_URL),
+						new Fact("Health URL", HEALTH_URL), new Fact("Management URL", MANAGEMENT_URL)));
 	}
 
 	@Test
@@ -166,8 +180,10 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
 				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
 
-		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
-				"Test App with id TestAppId changed status from UNKNOWN to DOWN", RED);
+		assertMessage(message, notifier.getStatusChangedTitle(), ATTENTION,
+				"Test App with id TestAppId changed status from UNKNOWN to DOWN",
+				List.of(new Fact("Status", "UNKNOWN"), new Fact("Service URL", SERVICE_URL),
+						new Fact("Health URL", HEALTH_URL), new Fact("Management URL", MANAGEMENT_URL)));
 	}
 
 	@Test
@@ -177,8 +193,10 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
 				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofDown()), instance));
 
-		assertMessage(message, notifier.getStatusChangedTitle(), notifier.getMessageSummary(),
-				"Test App with id TestAppId changed status from UP to DOWN", RED);
+		assertMessage(message, notifier.getStatusChangedTitle(), ATTENTION,
+				"Test App with id TestAppId changed status from UP to DOWN",
+				List.of(new Fact("Status", "UNKNOWN"), new Fact("Service URL", SERVICE_URL),
+						new Fact("Health URL", HEALTH_URL), new Fact("Management URL", MANAGEMENT_URL)));
 	}
 
 	@Test
@@ -187,7 +205,8 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getStatusChangedMessage(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
-		assertThat(message.getSections().get(0).getActivitySubtitle()).isEqualTo("STATUS_ACTIVITY_PATTERN_" + APP_NAME);
+		assertThat(message.getAttachments().get(0).getContent().getBody().get(2).getText())
+			.isEqualTo("STATUS_ACTIVITY_PATTERN_" + APP_NAME);
 	}
 
 	@Test
@@ -196,7 +215,7 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getRegisteredMessage(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
-		assertThat(message.getSections().get(0).getActivitySubtitle())
+		assertThat(message.getAttachments().get(0).getContent().getBody().get(2).getText())
 			.isEqualTo("REGISTER_ACTIVITY_PATTERN_" + APP_NAME);
 	}
 
@@ -206,7 +225,7 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getDeregisteredMessage(instance,
 				notifier.createEvaluationContext(new InstanceDeregisteredEvent(instance.getId(), 1L), instance));
 
-		assertThat(message.getSections().get(0).getActivitySubtitle())
+		assertThat(message.getAttachments().get(0).getContent().getBody().get(2).getText())
 			.isEqualTo("DEREGISTER_ACTIVITY_PATTERN_" + APP_NAME);
 	}
 
@@ -218,36 +237,68 @@ class MicrosoftTeamsNotifierTest {
 		Message message = notifier.getStatusChangedMessage(instance, notifier.createEvaluationContext(
 				new InstanceStatusChangedEvent(instance.getId(), 1L, StatusInfo.ofUp()), instance));
 
-		assertThat(message.getThemeColor()).isEqualTo("green");
+		assertThat(message.getAttachments().get(0).getContent().getBody().get(0).getColor()).isEqualTo("green");
 	}
 
-	private void assertMessage(Message message, String expectedTitle, String expectedSummary, String expectedSubTitle,
-			String expectedColor) {
-		assertThat(message.getTitle()).isEqualTo(expectedTitle);
-		assertThat(message.getSummary()).isEqualTo(expectedSummary);
-		assertThat(message.getThemeColor()).isEqualTo(expectedColor);
+	private Message createTestMessage() {
+		List<Fact> facts = List.of(new Fact("Status", "UP"), new Fact("Service URL", SERVICE_URL),
+				new Fact("Health URL", HEALTH_URL), new Fact("Management URL", MANAGEMENT_URL));
 
-		assertThat(message.getSections()).hasSize(1).anySatisfy((section) -> {
-			assertThat(section.getActivityTitle()).isEqualTo(instance.getRegistration().getName());
-			assertThat(section.getActivitySubtitle()).isEqualTo(expectedSubTitle);
+		List<CardElement> body = List.of(
+				CardElement.builder()
+					.type("TextBlock")
+					.text("Test Title")
+					.size("Large")
+					.weight("Bolder")
+					.color("Good")
+					.build(),
+				CardElement.builder().type("TextBlock").text(APP_NAME).size("Medium").weight("Bolder").build(),
+				CardElement.builder().type("TextBlock").text("Test subtitle").wrap(true).build(),
+				CardElement.builder().type("FactSet").facts(facts).build());
 
-			assertThat(section.getFacts()).hasSize(5).anySatisfy((fact) -> {
-				assertThat(fact.name()).isEqualTo("Status");
-				assertThat(fact.value()).isEqualTo("UNKNOWN");
-			}).anySatisfy((fact) -> {
-				assertThat(fact.name()).isEqualTo("Service URL");
-				assertThat(fact.value()).isEqualTo(SERVICE_URL);
-			}).anySatisfy((fact) -> {
-				assertThat(fact.name()).isEqualTo("Health URL");
-				assertThat(fact.value()).isEqualTo(HEALTH_URL);
-			}).anySatisfy((fact) -> {
-				assertThat(fact.name()).isEqualTo("Management URL");
-				assertThat(fact.value()).isEqualTo(MANAGEMENT_URL);
-			}).anySatisfy((fact) -> {
-				assertThat(fact.name()).isEqualTo("Source");
-				assertThat(fact.value()).isNull();
-			});
-		});
+		var adaptiveCard = MicrosoftTeamsNotifier.AdaptiveCard.builder().body(body).build();
+
+		var attachment = Attachment.builder().content(adaptiveCard).build();
+
+		return Message.builder().attachments(List.of(attachment)).build();
+	}
+
+	private void assertMessage(Message msg, String expectedTitle, String expectedColor, String expectedActivitySubtitle,
+			List<Fact> expectedFacts) {
+		assertThat(msg.getType()).isEqualTo("message");
+		assertThat(msg.getAttachments()).hasSize(1);
+
+		Attachment attachment = msg.getAttachments().get(0);
+		assertThat(attachment.getContentType()).isEqualTo("application/vnd.microsoft.card.adaptive");
+
+		var card = attachment.getContent();
+		assertThat(card.getType()).isEqualTo("AdaptiveCard");
+		assertThat(card.getVersion()).isEqualTo("1.2");
+
+		List<CardElement> body = card.getBody();
+		assertThat(body).hasSize(4);
+
+		// Title TextBlock
+		assertThat(body.get(0).getType()).isEqualTo("TextBlock");
+		assertThat(body.get(0).getText()).isEqualTo(expectedTitle);
+		assertThat(body.get(0).getSize()).isEqualTo("Large");
+		assertThat(body.get(0).getWeight()).isEqualTo("Bolder");
+		assertThat(body.get(0).getColor()).isEqualTo(expectedColor);
+
+		// Activity Title TextBlock
+		assertThat(body.get(1).getType()).isEqualTo("TextBlock");
+		assertThat(body.get(1).getText()).isEqualTo(APP_NAME);
+		assertThat(body.get(1).getSize()).isEqualTo("Medium");
+		assertThat(body.get(1).getWeight()).isEqualTo("Bolder");
+
+		// Activity Subtitle TextBlock
+		assertThat(body.get(2).getType()).isEqualTo("TextBlock");
+		assertThat(body.get(2).getText()).isEqualTo(expectedActivitySubtitle);
+		assertThat(body.get(2).getWrap()).isTrue();
+
+		// FactSet
+		assertThat(body.get(3).getType()).isEqualTo("FactSet");
+		assertThat(body.get(3).getFacts()).containsExactlyElementsOf(expectedFacts);
 	}
 
 }

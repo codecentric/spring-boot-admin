@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -62,7 +63,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	private static final String SOURCE_KEY = "Source";
 
-	private static final String DEFAULT_THEME_COLOR_EXPRESSION = "#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'}";
+	private static final String DEFAULT_THEME_COLOR_EXPRESSION = "#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? 'Good' : 'Attention') : 'Accent'}";
 
 	private static final String DEFAULT_DEREGISTER_ACTIVITY_SUBTITLE_EXPRESSION = "#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin";
 
@@ -126,13 +127,6 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	@Getter
 	private String statusChangedTitle = "Status Changed";
 
-	/**
-	 * Summary section of every Teams message originating from Spring Boot Admin
-	 */
-	@Setter
-	@Getter
-	private String messageSummary = "Spring Boot Admin Notification";
-
 	public MicrosoftTeamsNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
@@ -194,27 +188,45 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		return createMessage(instance, statusChangedTitle, activitySubtitle, context);
 	}
 
-	protected Message createMessage(Instance instance, String registeredTitle, String activitySubtitle,
+	protected Message createMessage(Instance instance, String title, String activitySubtitle,
 			EvaluationContext context) {
+		String themeColorValue = evaluateExpression(context, themeColor);
+		String registrationName = instance.getRegistration().getName();
+
 		List<Fact> facts = new ArrayList<>();
-		facts.add(new Fact(STATUS_KEY, instance.getStatusInfo().getStatus()));
-		facts.add(new Fact(SERVICE_URL_KEY, instance.getRegistration().getServiceUrl()));
-		facts.add(new Fact(HEALTH_URL_KEY, instance.getRegistration().getHealthUrl()));
-		facts.add(new Fact(MANAGEMENT_URL_KEY, instance.getRegistration().getManagementUrl()));
-		facts.add(new Fact(SOURCE_KEY, instance.getRegistration().getSource()));
+		addFactIfNotNull(facts, STATUS_KEY, instance.getStatusInfo().getStatus());
+		addFactIfNotNull(facts, SERVICE_URL_KEY, instance.getRegistration().getServiceUrl());
+		addFactIfNotNull(facts, HEALTH_URL_KEY, instance.getRegistration().getHealthUrl());
+		addFactIfNotNull(facts, MANAGEMENT_URL_KEY, instance.getRegistration().getManagementUrl());
+		addFactIfNotNull(facts, SOURCE_KEY, instance.getRegistration().getSource());
 
-		Section section = Section.builder()
-			.activityTitle(instance.getRegistration().getName())
-			.activitySubtitle(activitySubtitle)
-			.facts(facts)
-			.build();
+		List<CardElement> body = new ArrayList<>();
+		body.add(CardElement.builder()
+			.type("TextBlock")
+			.text(title)
+			.size("Large")
+			.weight("Bolder")
+			.color(themeColorValue)
+			.build());
 
-		return Message.builder()
-			.title(registeredTitle)
-			.summary(messageSummary)
-			.themeColor(evaluateExpression(context, themeColor))
-			.sections(singletonList(section))
-			.build();
+		body.add(
+				CardElement.builder().type("TextBlock").text(registrationName).size("Medium").weight("Bolder").build());
+
+		body.add(CardElement.builder().type("TextBlock").text(activitySubtitle).wrap(true).build());
+
+		body.add(CardElement.builder().type("FactSet").facts(facts).build());
+
+		AdaptiveCard adaptiveCard = AdaptiveCard.builder().body(body).build();
+
+		Attachment attachment = Attachment.builder().content(adaptiveCard).build();
+
+		return Message.builder().attachments(singletonList(attachment)).build();
+	}
+
+	private void addFactIfNotNull(List<Fact> facts, String title, String value) {
+		if (value != null && !value.isBlank()) {
+			facts.add(new Fact(title, value));
+		}
 	}
 
 	protected String evaluateExpression(EvaluationContext context, Expression expression) {
@@ -278,31 +290,60 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	@Builder
 	public static class Message {
 
-		private final String summary;
+		private final String type = "message";
 
-		private final String themeColor;
-
-		private final String title;
-
-		@Builder.Default
-		private final List<Section> sections = new ArrayList<>();
+		private List<Attachment> attachments;
 
 	}
 
 	@Data
 	@Builder
-	public static class Section {
+	public static class Attachment {
 
-		private final String activityTitle;
+		private final String contentType = "application/vnd.microsoft.card.adaptive";
 
-		private final String activitySubtitle;
+		private final String contentUrl = null;
 
-		@Builder.Default
-		private final List<Fact> facts = new ArrayList<>();
+		private AdaptiveCard content;
 
 	}
 
-	public record Fact(String name, @Nullable String value) {
+	@Data
+	@Builder
+	public static class AdaptiveCard {
+
+		@JsonProperty("$schema")
+		private final String schema = "http://adaptivecards.io/schemas/adaptive-card.json";
+
+		private final String type = "AdaptiveCard";
+
+		private final String version = "1.2";
+
+		private List<CardElement> body;
+
+	}
+
+	@Data
+	@Builder
+	public static class CardElement {
+
+		private String type;
+
+		private String text;
+
+		private String size;
+
+		private String weight;
+
+		private String color;
+
+		private Boolean wrap;
+
+		private List<Fact> facts;
+
+	}
+
+	public record Fact(String title, @Nullable String value) {
 	}
 
 }
