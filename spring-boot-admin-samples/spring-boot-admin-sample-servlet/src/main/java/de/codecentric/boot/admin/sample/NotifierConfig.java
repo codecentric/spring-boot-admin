@@ -55,7 +55,7 @@ public class NotifierConfig {
 	public RemindingNotifier remindingNotifier() { // <2>
 		RemindingNotifier notifier = new RemindingNotifier(filteringNotifier(), this.repository);
 		notifier.setReminderPeriod(Duration.ofMinutes(10));
-		notifier.setCheckReminderInverval(Duration.ofSeconds(10));
+		notifier.setCheckReminderInterval(Duration.ofSeconds(10));
 		return notifier;
 	}
 
