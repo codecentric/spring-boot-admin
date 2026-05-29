@@ -640,7 +640,7 @@ export default {
       }
       this.hasLoaded = true;
       await this.$nextTick();
-      this.scrollToTop();
+      this.scrollToBottom();
     },
     createSubscription() {
       this.unsubscribe();
