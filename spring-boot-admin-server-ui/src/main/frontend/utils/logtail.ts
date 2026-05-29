@@ -18,6 +18,7 @@ import { EMPTY, Observable, catchError, concatMap, of, timer } from './rxjs';
 export default (getFn, interval, initialSize = 300 * 1024) => {
   let range = `bytes=-${initialSize}`;
   let size = 0;
+  let atTheEnd = false;
 
   return timer(0, interval).pipe(
     concatMap(() => {
@@ -46,7 +47,10 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
         size = contentLength;
         range = `bytes=${size - 1}-`;
       } else if (response.status === 206) {
-        size = parseInt(response.headers['content-range'].split('/')[1]);
+        const contentRangeParts = response.headers['content-range'].split('/');
+        size = parseInt(contentRangeParts[1]);
+        // The end value of the range is always one byte less than the size when at the end
+        atTheEnd = parseInt(contentRangeParts[0].split('-')[1]) == size - 1;
         range = `bytes=${size - 1}-`;
       } else if (response.status === 416) {
         size = 0;
@@ -68,7 +72,7 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
           skipped = size - addendum.length;
         }
       } else if (response.data.length > 1) {
-        // Remove the first byte which has been part of the previos response.
+        // Remove the first byte which has been part of the previous response.
         addendum = response.data.substring(1);
       }
 
@@ -76,7 +80,9 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
         ? of({
             totalBytes: size,
             skipped,
-            addendum,
+            // The log file always temporarily ends with a new line until the next one is written.
+            // Therefore, if we're at the end of it, we drop such a new line.
+            addendum: atTheEnd ? addendum.trimEnd() : addendum,
           })
         : EMPTY;
     }),
