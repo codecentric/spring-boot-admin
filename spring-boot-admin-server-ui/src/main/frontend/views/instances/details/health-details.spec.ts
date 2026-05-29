@@ -284,8 +284,8 @@ describe('HealthDetails', () => {
       const title = toggleButton.getAttribute('title');
       expect(title).toContain('toggle_details');
 
-      // Should have aria-expanded set to false initially (collapsed)
-      expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+      // Should have aria-expanded set to true initially (collapsed)
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
 
       // Should have aria-controls pointing to the details element
       expect(toggleButton).toHaveAttribute('aria-controls');
@@ -313,16 +313,16 @@ describe('HealthDetails', () => {
 
       const toggleButton = await screen.findByRole('button');
 
-      // Initially collapsed
-      expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
-
-      // After clicking - expanded
-      await user.click(toggleButton);
+      // Initially expanded
       expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
 
-      // After clicking again - collapsed
+      // After clicking - collapsed
       await user.click(toggleButton);
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
+
+      // After clicking again - expanded
+      await user.click(toggleButton);
+      expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
     });
 
     it('should not show toggle button when no details exist', async () => {
@@ -342,7 +342,7 @@ describe('HealthDetails', () => {
       expect(toggleButton).not.toBeInTheDocument();
     });
 
-    it('should start collapsed by default', async () => {
+    it('should start expanded by default', async () => {
       const healthMock = {
         status: 'UP',
         details: {
@@ -360,12 +360,10 @@ describe('HealthDetails', () => {
       });
 
       // Details should not be visible initially
-      expect(
-        screen.queryByText('HSQL Database Engine'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('HSQL Database Engine')).toBeInTheDocument();
     });
 
-    it('should expand details when toggle button is clicked', async () => {
+    it('should hide details when toggle button is clicked', async () => {
       const user = userEvent.setup();
       const healthMock = {
         status: 'UP',
@@ -386,14 +384,14 @@ describe('HealthDetails', () => {
       const toggleButton = await screen.findByRole('button');
       await user.click(toggleButton);
 
-      // Details should now be visible
+      // Details should now be hidden
       expect(
-        await screen.findByText('HSQL Database Engine'),
-      ).toBeInTheDocument();
-      expect(screen.getByText('isValid()')).toBeInTheDocument();
+        screen.queryByText('HSQL Database Engine'),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText('isValid()')).not.toBeInTheDocument();
     });
 
-    it('should collapse details when toggle button is clicked twice', async () => {
+    it('should expand details when toggle button is clicked twice', async () => {
       const user = userEvent.setup();
       const healthMock = {
         status: 'UP',
@@ -415,14 +413,12 @@ describe('HealthDetails', () => {
       // First click - expand
       await user.click(toggleButton);
       expect(
-        await screen.findByText('HSQL Database Engine'),
-      ).toBeInTheDocument();
+        screen.queryByText('HSQL Database Engine'),
+      ).not.toBeInTheDocument();
 
       // Second click - collapse
       await user.click(toggleButton);
-      expect(
-        screen.queryByText('HSQL Database Engine'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('HSQL Database Engine')).toBeInTheDocument();
     });
 
     it('should persist collapsed state in localStorage', async () => {
@@ -446,7 +442,7 @@ describe('HealthDetails', () => {
       await user.click(toggleButton);
 
       const storageKey = `de.codecentric.spring-boot-admin.health-details.db.${mockInstance.id}.collapsed`;
-      expect(localStorage.getItem(storageKey)).toBe('false');
+      expect(localStorage.getItem(storageKey)).toBe('true');
     });
 
     it('should restore collapsed state from localStorage', async () => {

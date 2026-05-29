@@ -33,12 +33,6 @@
       <div v-if="details && details.length > 0" class="w-12 text-right">
         <sba-button
           class="p-0! border-none"
-          :class="
-            classNames({
-              'text-sba-600!': !isCollapsed,
-              'text-black': isCollapsed,
-            })
-          "
           :title="t('instances.details.health.toggle_details', { name })"
           :aria-label="t('instances.details.health.toggle_details', { name })"
           :aria-expanded="String(!isCollapsed)"
@@ -106,16 +100,13 @@
       </dl>
     </dd>
   </dl>
-  <template v-if="depth < 10">
-    <health-details
-      v-for="(child, idx) in childHealth"
-      :key="`${child.name}_${idx}`"
-      :instance="instance"
-      :depth="depth + 1"
-      :name="child.name"
-      :health="child.value"
-    />
-  </template>
+  <health-details
+    v-for="(child, idx) in childHealth"
+    :key="`${child.name}_${idx}`"
+    :instance="instance"
+    :name="child.name"
+    :health="child.value"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -123,7 +114,6 @@ import {
   faChevronRight,
   faCircleInfo,
 } from '@fortawesome/free-solid-svg-icons';
-import classNames from 'classnames';
 import prettyBytes from 'pretty-bytes';
 import { computed, ref, useId, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -136,16 +126,10 @@ import autolink from '@/utils/autolink';
 const { t } = useI18n();
 const id = useId();
 
-const {
-  health,
-  name,
-  instance,
-  depth = 0,
-} = defineProps<{
+const { health, name, instance } = defineProps<{
   instance: Instance;
   name: string;
   health: Record<string, any>;
-  depth?: number;
 }>();
 
 // Sanitised name safe for use in HTML id attributes
@@ -163,14 +147,14 @@ const COLLAPSED_KEY = computed(
 );
 
 function readCollapsedFromStorage(): boolean {
-  if (!instance?.id) return true;
+  if (!instance?.id) return false;
   try {
     const stored = localStorage.getItem(COLLAPSED_KEY.value);
     if (stored !== null) return stored === 'true';
   } catch {
     // storage unavailable — fall back to default
   }
-  return true;
+  return false;
 }
 
 const isCollapsed = ref(readCollapsedFromStorage());
