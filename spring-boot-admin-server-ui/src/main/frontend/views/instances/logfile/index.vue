@@ -287,7 +287,8 @@ export default {
         this.isFollowing &&
         (!this.atTop || (this.atTop && this.canLoadPrevious));
       //Manual mode
-      let canPageUpManualMode = !this.isFollowing && this.canLoadPrevious;
+      let canPageUpManualMode =
+        !this.isFollowing && (!this.atTop || this.canLoadPrevious);
 
       return (
         !this.isChunkLoading &&
@@ -299,7 +300,8 @@ export default {
       //Follow mode
       let canPageDownFollowMode = this.isFollowing && !this.atBottom;
       //Manual mode
-      let canPageDownManualMode = !this.isFollowing && this.canLoadNext;
+      let canPageDownManualMode =
+        !this.isFollowing && (!this.atBottom || this.canLoadNext);
 
       return (
         !this.isChunkLoading &&
@@ -640,7 +642,7 @@ export default {
       }
       this.hasLoaded = true;
       await this.$nextTick();
-      this.scrollToBottom();
+      this.scrollToTop();
     },
     createSubscription() {
       this.unsubscribe();
@@ -790,7 +792,12 @@ export default {
       }
       //Manual Mode
       else {
-        await this.loadPreviousChunk();
+        this.syncScrollState();
+        if (!this.atTop) {
+          this.scrollToTop();
+        } else if (this.canLoadPrevious) {
+          await this.loadPreviousChunk();
+        }
       }
     },
     async pageDown() {
@@ -804,7 +811,11 @@ export default {
       }
       //Manual Mode
       else {
-        await this.loadNextChunk();
+        if (!this.atBottom) {
+          this.scrollToBottom();
+        } else if (this.canLoadNext) {
+          await this.loadNextChunk();
+        }
       }
     },
     updateScrollState() {
