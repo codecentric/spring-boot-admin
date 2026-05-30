@@ -18,7 +18,7 @@
   <sba-instance-section :error="error" :loading="isLoading">
     <template #before>
       <sba-sticky-subnav>
-        <div class="flex gap-2">
+        <div class="flex gap-2 justify-end">
           <sba-input
             v-model.trim="filter.principal"
             :placeholder="$t('instances.auditevents.principal')"

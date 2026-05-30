@@ -27,12 +27,14 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 import static java.util.Comparator.comparing;
@@ -117,9 +119,9 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 
 	private void compact(List<InstanceEvent> events) {
 		BinaryOperator<InstanceEvent> latestEvent = (e1, e2) -> (e1.getVersion() > e2.getVersion()) ? e1 : e2;
-		Map<Class<?>, Optional<InstanceEvent>> latestPerType = events.stream()
-			.collect(groupingBy(InstanceEvent::getClass, reducing(latestEvent)));
-		events.removeIf((e) -> !Objects.equals(e, latestPerType.get(e.getClass()).orElse(null)));
+		Map<DistinctEventType, Optional<InstanceEvent>> latestPerType = events.stream()
+			.collect(groupingBy(ConcurrentMapEventStore::getDistinctEventTypeFor, reducing(latestEvent)));
+		events.removeIf((e) -> !Objects.equals(e, latestPerType.get(getDistinctEventTypeFor(e)).orElse(null)));
 	}
 
 	private OptimisticLockingException createOptimisticLockException(InstanceEvent event, long lastVersion) {
@@ -129,6 +131,33 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 
 	protected static long getLastVersion(List<InstanceEvent> events) {
 		return events.isEmpty() ? -1 : events.get(events.size() - 1).getVersion();
+	}
+
+	private static DistinctEventType getDistinctEventTypeFor(InstanceEvent event) {
+		return new DistinctEventType(event.getType(),
+				(event instanceof InstanceStatusChangedEvent s) ? s.getStatusInfo().getStatus() : null);
+	}
+
+	/**
+	 * Internal class to distinguish events not only by their type but also by an
+	 * additional optional discriminator. If no additional distinction is necessary apart
+	 * the type itself, the {@code discriminator} can be {@code null}.
+	 * <p>
+	 * The existing use case is to keep, during compaction, at least one
+	 * {@link InstanceStatusChangedEvent} for each status type (UP, DOWN, OUT_OF_SERVICE,
+	 * UNKNOWN, RESTRICTED, OFFLINE) while keeping only the latest entry for all the other
+	 * event types.
+	 * <p>
+	 * For this reason, while for the {@link InstanceStatusChangedEvent} its status value
+	 * will be used as discriminator, for all the other types {@code null} will be used
+	 * instead.
+	 *
+	 * @see ConcurrentMapEventStore#getDistinctEventTypeFor(InstanceEvent)
+	 * @param type the type of the event
+	 * @param discriminator the tiebreaker to use to discriminate multiple events with the
+	 * same type
+	 */
+	private record DistinctEventType(String type, @Nullable Object discriminator) {
 	}
 
 }

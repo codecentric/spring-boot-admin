@@ -33,8 +33,10 @@ import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
@@ -91,15 +93,20 @@ public abstract class AbstractEventStoreTest {
 
 	@Test
 	public void should_shorten_log_on_exceeded_capacity() {
-		InstanceEventStore store = createStore(2);
+		InstanceEventStore store = createStore(4);
 
 		InstanceEvent event1 = new InstanceRegisteredEvent(id, 0L, registration);
-		InstanceEvent event2 = new InstanceStatusChangedEvent(id, 1L, StatusInfo.ofDown());
-		InstanceEvent event3 = new InstanceStatusChangedEvent(id, 2L, StatusInfo.ofUp());
+		// It will be dropped since there is a newer info event
+		InstanceEvent event2 = new InstanceInfoChangedEvent(id, 1L, Info.empty());
+		// It will be dropped since there is a newer status event with status DOWN
+		InstanceEvent event3 = new InstanceStatusChangedEvent(id, 3L, StatusInfo.ofDown());
+		InstanceEvent event4 = new InstanceStatusChangedEvent(id, 4L, StatusInfo.ofUp());
+		InstanceEvent event5 = new InstanceInfoChangedEvent(id, 5L, Info.empty());
+		InstanceEvent event6 = new InstanceStatusChangedEvent(id, 6L, StatusInfo.ofDown());
 
-		StepVerifier.create(store.append(asList(event1, event2, event3))).verifyComplete();
+		StepVerifier.create(store.append(asList(event1, event2, event3, event4, event5, event6))).verifyComplete();
 
-		StepVerifier.create(store.findAll()).expectNext(event1, event3).verifyComplete();
+		StepVerifier.create(store.findAll()).expectNext(event1, event4, event5, event6).verifyComplete();
 	}
 
 	@Test

@@ -18,7 +18,8 @@ const modules: Record<string, any> = import.meta.glob('@/**/i18n.en.json', {
   eager: true,
 });
 for (const modulesKey in modules) {
-  terms = { ...terms, ...modules[modulesKey] };
+  const moduleContent = modules[modulesKey].default || modules[modulesKey];
+  terms = { ...terms, ...moduleContent };
 }
 export let router;
 createViewRegistry();

@@ -25,7 +25,8 @@
         "title": "Garbage Collection Pauses"
       },
       "health": {
-        "title": "Health"
+        "title": "Health",
+        "toggle_details": "Toggle {name} health details"
       },
       "health_group": {
         "title": "Health Group"

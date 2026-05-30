@@ -18,18 +18,20 @@
   <sba-instance-section :error="error" :loading="isLoading">
     <template #before>
       <sba-sticky-subnav v-if="env">
-        <div class="flex">
-          <div v-if="instance.hasEndpoint('refresh')" class="mr-1">
-            <refresh
-              :application="application"
-              :instance="instance"
-              @refresh="fetchEnv"
-            />
+        <div class="flex justify-between">
+          <div>
+            <div v-if="instance.hasEndpoint('refresh')" class="mr-1">
+              <refresh
+                :application="application"
+                :instance="instance"
+                @refresh="fetchEnv"
+              />
+            </div>
+            <div v-if="instance.hasEndpoint('busrefresh')" class="mr-1">
+              <busrefresh :instance="instance" @refresh="fetchEnv" />
+            </div>
           </div>
-          <div v-if="instance.hasEndpoint('busrefresh')" class="mr-1">
-            <busrefresh :instance="instance" @refresh="fetchEnv" />
-          </div>
-          <div class="flex-1">
+          <div>
             <sba-input
               v-model="filter"
               :placeholder="$t('term.filter')"
