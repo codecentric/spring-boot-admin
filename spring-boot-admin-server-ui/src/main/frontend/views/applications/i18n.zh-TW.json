@@ -7,6 +7,7 @@
       "shutdown": "關閉",
       "restart": "重新啟動"
     },
+    "last_update": "最後更新",
     "all_up": "全部正常",
     "all_down": "全部停止",
     "all_unknown": "全部狀態未知",

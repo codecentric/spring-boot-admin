@@ -10,6 +10,7 @@
       "switch_to_grouping_by_group": "Group same instance by same group name",
       "unregister": "Unregister"
     },
+    "last_update": "Last update",
     "all_up": "all up",
     "all_down": "all down",
     "all_unknown": "all in unknown state",
