@@ -77,7 +77,7 @@ class MicrosoftTeamsNotifierTest {
 
 		mockRestTemplate = mock(RestTemplate.class);
 		notifier = new MicrosoftTeamsNotifier(repository, mockRestTemplate);
-		notifier.setWebhookUrl(URI.create("https://example.com"));
+		notifier.setWebhookUrl("https://example.com");
 	}
 
 	@Test

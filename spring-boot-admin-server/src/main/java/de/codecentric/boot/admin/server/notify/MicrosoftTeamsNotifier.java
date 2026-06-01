@@ -81,7 +81,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	 * Webhook url for Microsoft Teams Channel Webhook connector (i.e.
 	 * <a href="https://outlook.office.com/webhook/">...</a>{webhook-id})
 	 */
-	@Nullable private URI webhookUrl;
+	@Nullable private String webhookUrl;
 
 	/**
 	 * Expression for the color of the message title, see
@@ -163,8 +163,9 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 			return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
 		}
 
-		return Mono.fromRunnable(() -> this.restTemplate.postForEntity(webhookUrl,
-				new HttpEntity<Object>(message, headers), Void.class));
+		URI uri = URI.create(webhookUrl);
+		return Mono.fromRunnable(
+				() -> this.restTemplate.postForEntity(uri, new HttpEntity<Object>(message, headers), Void.class));
 	}
 
 	@Override
@@ -252,11 +253,11 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 		}
 	}
 
-	@Nullable public URI getWebhookUrl() {
+	@Nullable public String getWebhookUrl() {
 		return webhookUrl;
 	}
 
-	public void setWebhookUrl(@Nullable URI webhookUrl) {
+	public void setWebhookUrl(@Nullable String webhookUrl) {
 		this.webhookUrl = webhookUrl;
 	}
 
