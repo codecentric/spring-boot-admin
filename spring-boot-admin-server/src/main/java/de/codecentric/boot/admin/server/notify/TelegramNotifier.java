@@ -48,6 +48,11 @@ public class TelegramNotifier extends AbstractContentNotifier {
 	@Nullable private String chatId;
 
 	/**
+	 * Unique identifier for the target chat or username of the target channel
+	 */
+	@Nullable private String messageThreadId;
+
+	/**
 	 * The token identifying und authorizing your Telegram bot (e.g.
 	 * `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
 	 */
@@ -83,6 +88,7 @@ public class TelegramNotifier extends AbstractContentNotifier {
 	private Map<String, Object> createMessage(InstanceEvent event, Instance instance) {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("chat_id", this.chatId);
+		parameters.put("message_thread_id", this.messageThreadId);
 		parameters.put("parse_mode", this.parseMode);
 		parameters.put("disable_notification", this.disableNotify);
 		parameters.put("text", createContent(event, instance));
@@ -112,6 +118,14 @@ public class TelegramNotifier extends AbstractContentNotifier {
 
 	public void setChatId(@Nullable String chatId) {
 		this.chatId = chatId;
+	}
+
+	@Nullable public String getMessageThreadId() {
+		return messageThreadId;
+	}
+
+	public void setMessageThreadId(@Nullable String messageThreadId) {
+		this.messageThreadId = messageThreadId;
 	}
 
 	@Nullable public String getAuthToken() {
