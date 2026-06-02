@@ -81,10 +81,12 @@ public class TelegramNotifier extends AbstractContentNotifier {
 			.fromRunnable(() -> restTemplate.getForObject(buildUrl(), Void.class, createMessage(event, instance)));
 	}
 
-	protected String buildUrl() {
-		return String.format("%s/bot%s/sendmessage?chat_id={chat_id}&text={text}&parse_mode={parse_mode}"
-				+ "&disable_notification={disable_notification}", this.apiUrl, this.authToken);
-	}
+    protected String buildUrl() {
+        return String.format(
+                "%s/bot%s/sendmessage?chat_id={chat_id}&message_thread_id={message_thread_id}&text={text}&parse_mode={parse_mode}&disable_notification={disable_notification}",
+                this.apiUrl, this.authToken
+        );
+    }
 
 	private Map<String, Object> createMessage(InstanceEvent event, Instance instance) {
 		Map<String, Object> parameters = new HashMap<>();
