@@ -48,9 +48,10 @@ public class TelegramNotifier extends AbstractContentNotifier {
 	@Nullable private String chatId;
 
 	/**
-	 * Unique identifier for the target chat or username of the target channel
+	 * Unique identifier for the target topic of the target super group
+	 * 0 is an ID of general topic
 	 */
-	@Nullable private String messageThreadId;
+	private String messageThreadId = "0";
 
 	/**
 	 * The token identifying und authorizing your Telegram bot (e.g.
@@ -120,11 +121,11 @@ public class TelegramNotifier extends AbstractContentNotifier {
 		this.chatId = chatId;
 	}
 
-	@Nullable public String getMessageThreadId() {
+	public String getMessageThreadId() {
 		return messageThreadId;
 	}
 
-	public void setMessageThreadId(@Nullable String messageThreadId) {
+	public void setMessageThreadId(String messageThreadId) {
 		this.messageThreadId = messageThreadId;
 	}
 
