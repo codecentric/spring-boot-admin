@@ -19,7 +19,7 @@ The Spring Boot Admin Client library enables applications to register themselves
 
 ### Step 1: Add Dependencies
 
-Add the Spring Boot Admin Client starter to your application:
+Add the Spring Boot Admin Client starter and the Spring Boot RestClient to your application:
 
 ```xml title="pom.xml"
 <dependency>
@@ -27,12 +27,20 @@ Add the Spring Boot Admin Client starter to your application:
     <artifactId>spring-boot-admin-starter-client</artifactId>
     <version>@VERSION@</version>
 </dependency>
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-restclient</artifactId>
+    <version>@VERSION@</version>
+    <scope>compile</scope>
+</dependency>
 ```
 
 For Gradle:
 
 ```groovy title="build.gradle"
 implementation 'de.codecentric:spring-boot-admin-starter-client:@VERSION@'
+implementation 'org.springframework.boot:spring-boot-restclient:@VERSION@'
 ```
 
 ### Step 2: Configure the Admin Server URL
