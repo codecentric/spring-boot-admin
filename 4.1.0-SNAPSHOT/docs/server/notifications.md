@@ -238,7 +238,7 @@ This example combines the reminding and filtering notifiers. This allows you to 
 
 ## [<!-- -->Microsoft Teams Notifications](/4.1.0-SNAPSHOT/docs/server/notifications/notifier-msteams.md)
 
-[To enable Microsoft Teams notifications you need to set up a connector webhook url and set the appropriate configuration property.](/4.1.0-SNAPSHOT/docs/server/notifications/notifier-msteams.md)
+[To enable Microsoft Teams notifications, you need to set up a connector webhook url and set the appropriate configuration property.](/4.1.0-SNAPSHOT/docs/server/notifications/notifier-msteams.md)
 
 ## [<!-- -->RocketChat Notifications](/4.1.0-SNAPSHOT/docs/server/notifications/notifier-rocketchat.md)
 
