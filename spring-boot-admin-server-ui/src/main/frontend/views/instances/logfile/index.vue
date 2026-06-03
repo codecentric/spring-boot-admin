@@ -141,12 +141,13 @@
       <table class="table-striped min-w-full">
         <tbody>
           <tr
-            v-for="(line, index) in displayLines"
-            :key="`${windowStart}-${index}`"
+            v-for="line in displayLines"
+            :key="lineKey(line)"
+            :data-line-key="lineKey(line)"
           >
             <td>
-              <br v-if="line === ''" />
-              <pre v-else v-html="renderLine(line)" />
+              <br v-if="line.text === ''" />
+              <pre v-else v-html="renderLine(line.text)" />
             </td>
           </tr>
         </tbody>
@@ -225,14 +226,15 @@ export default {
     tailRemainderState: {
       remainderString: '',
       presentOrnotBoolean: false,
+      byteStart: -1,
       byteEnd: -1,
     },
     headRemainderState: {
       remainderString: '',
       presentOrnotBoolean: false,
       byteStart: -1,
+      byteEnd: -1,
     },
-    newLineByteSize: 1,
     wrapLines: false,
     logTailSubscription: null,
     scrollSubscription: null,
@@ -312,6 +314,7 @@ export default {
   },
   created() {
     this.ansiUp = new AnsiUp();
+    this.textEncoder = new TextEncoder();
   },
   mounted() {
     const element = this.$refs.scrollContainer;
@@ -331,8 +334,33 @@ export default {
   },
   methods: {
     prettyBytes,
-    splitLines(content) {
-      return content === '' ? [] : content.split(/\n/);
+    byteLength(content) {
+      return this.textEncoder.encode(content).length;
+    },
+    lineKey(line) {
+      return `${line.startByte}-${line.endByte}`;
+    },
+    createLine(text, startByte, endByte) {
+      return { text, startByte, endByte };
+    },
+    splitLines(content, windowStart) {
+      if (content === '') {
+        return [];
+      }
+      let nextByte = windowStart;
+      const lines = content.split(/\n/);
+      return lines.map((line, index) => {
+        const hasNewLine = index < lines.length - 1;
+        const lineBytes =
+          this.byteLength(line) + (hasNewLine ? this.byteLength('\n') : 0);
+        const renderedLine = this.createLine(
+          line,
+          nextByte,
+          nextByte + lineBytes - 1,
+        );
+        nextByte += lineBytes;
+        return renderedLine;
+      });
     },
     calculateLoadedBytes() {
       return Math.max(this.windowEnd - this.windowStart + 1, 0);
@@ -342,26 +370,63 @@ export default {
       this.clearTailRemainderState();
     },
     clearTailRemainderState() {
-      this.setTailRemainderState('', -1);
+      this.setTailRemainderState('', -1, -1);
       this.tailRemainderState.presentOrnotBoolean = false;
     },
-    setTailRemainderState(remainderString, byteEnd) {
+    setTailRemainderState(remainderString, byteStart, byteEnd) {
       this.tailRemainderState.presentOrnotBoolean = true;
       this.tailRemainderState.remainderString = remainderString;
+      this.tailRemainderState.byteStart = byteStart;
       this.tailRemainderState.byteEnd = byteEnd;
     },
     clearHeadRemainderState() {
-      this.setHeadRemainderState('', -1);
+      this.setHeadRemainderState('', -1, -1);
       this.headRemainderState.presentOrnotBoolean = false;
     },
-    setHeadRemainderState(remainderString, byteStart) {
+    setHeadRemainderState(remainderString, byteStart, byteEnd) {
       this.headRemainderState.presentOrnotBoolean = true;
       this.headRemainderState.remainderString = remainderString;
       this.headRemainderState.byteStart = byteStart;
+      this.headRemainderState.byteEnd = byteEnd;
+    },
+    getLineByteLength(line) {
+      return Math.max(line.endByte - line.startByte + 1, 0);
+    },
+    setTailRemainderLine(line) {
+      this.setTailRemainderState(line.text, line.startByte, line.endByte);
+    },
+    setHeadRemainderLine(line) {
+      this.setHeadRemainderState(line.text, line.startByte, line.endByte);
+    },
+    appendToTailRemainder(line) {
+      this.setTailRemainderState(
+        this.tailRemainderState.remainderString + line.text,
+        this.tailRemainderState.presentOrnotBoolean
+          ? this.tailRemainderState.byteStart
+          : line.startByte,
+        line.endByte,
+      );
+    },
+    mergeTailRemainderWithLine(line) {
+      return this.createLine(
+        this.tailRemainderState.remainderString + line.text,
+        this.tailRemainderState.byteStart,
+        line.endByte,
+      );
+    },
+    mergeLineWithHeadRemainder(line) {
+      return this.createLine(
+        line.text + this.headRemainderState.remainderString,
+        line.startByte,
+        this.headRemainderState.byteEnd,
+      );
     },
     appendRenderedLines(lines, windowStart, windowEnd) {
       let linesToAppend = [...lines];
       this.windowEnd = windowEnd;
+      if (linesToAppend.length === 0) {
+        return;
+      }
       //first pass
       if (
         this.renderedLines.length === 0 &&
@@ -369,34 +434,32 @@ export default {
         !this.tailRemainderState.presentOrnotBoolean
       ) {
         if (linesToAppend.length === 1) {
-          this.setTailRemainderState(
-            this.tailRemainderState.remainderString + linesToAppend[0],
-            this.windowEnd,
-          );
+          this.appendToTailRemainder(linesToAppend[0]);
           this.windowStart = windowStart;
           return;
         }
         this.renderedLines = linesToAppend;
         this.windowStart = windowStart;
         if (this.windowStart > 0) {
-          if (this.renderedLines[0] !== '') {
-            this.setHeadRemainderState(lines[0], this.windowStart);
+          const headLine = this.renderedLines[0];
+          if (headLine && headLine.text !== '') {
+            this.setHeadRemainderLine(headLine);
           }
           this.renderedLines.shift();
         }
-        if (this.renderedLines.at(-1) !== '') {
-          this.setTailRemainderState(this.renderedLines.at(-1), this.windowEnd);
+        const tailLine = this.renderedLines.at(-1);
+        if (tailLine && tailLine.text !== '') {
+          this.setTailRemainderLine(tailLine);
         }
-        this.renderedLines.pop();
+        if (this.renderedLines.length > 0) {
+          this.renderedLines.pop();
+        }
         this.displayLines = this.renderedLines;
       } else {
         //consequent passes
         if (linesToAppend.length === 1) {
           // If a few bytes are added without the newline , simply update remainders do not render anything new.
-          this.setTailRemainderState(
-            this.tailRemainderState.remainderString + linesToAppend[0],
-            this.windowEnd,
-          );
+          this.appendToTailRemainder(linesToAppend[0]);
           return;
         }
         //no remainder
@@ -407,8 +470,7 @@ export default {
         //remainder present
         else if (this.tailRemainderState.presentOrnotBoolean) {
           this.windowEnd = windowEnd;
-          let completedLine =
-            this.tailRemainderState.remainderString + linesToAppend[0];
+          let completedLine = this.mergeTailRemainderWithLine(linesToAppend[0]);
           linesToAppend.shift();
           this.renderedLines = [
             ...this.renderedLines,
@@ -417,10 +479,13 @@ export default {
           ];
           this.clearTailRemainderState();
         }
-        if (this.renderedLines.at(-1) !== '') {
-          this.setTailRemainderState(this.renderedLines.at(-1), this.windowEnd);
+        const tailLine = this.renderedLines.at(-1);
+        if (tailLine && tailLine.text !== '') {
+          this.setTailRemainderLine(tailLine);
         }
-        this.renderedLines.pop();
+        if (this.renderedLines.length > 0) {
+          this.renderedLines.pop();
+        }
         if (this.calculateLoadedBytes() > MAX_BYTES_RENDERED) {
           this.evictOverflowingRenderedLines();
         }
@@ -432,13 +497,21 @@ export default {
       let evictedLines = 0;
       let previousSize = this.calculateLoadedBytes();
       if (this.headRemainderState.presentOrnotBoolean) {
-        evictedBytes += this.headRemainderState.remainderString.length;
-        evictedBytes += this.newLineByteSize;
+        evictedBytes += Math.max(
+          this.headRemainderState.byteEnd -
+            this.headRemainderState.byteStart +
+            1,
+          0,
+        );
         this.clearHeadRemainderState();
       }
-      while (previousSize - evictedBytes > DEFAULT_LOGFILE_CHUNK_SIZE) {
-        evictedBytes += this.renderedLines[evictedLines].length;
-        evictedBytes += this.newLineByteSize;
+      while (
+        previousSize - evictedBytes > DEFAULT_LOGFILE_CHUNK_SIZE &&
+        evictedLines < this.renderedLines.length
+      ) {
+        evictedBytes += this.getLineByteLength(
+          this.renderedLines[evictedLines],
+        );
         evictedLines += 1;
       }
       this.windowStart += evictedBytes;
@@ -588,53 +661,64 @@ export default {
         }
       }
     },
-    async setManualChunk(response, direction) {
-      this.renderedLines = this.splitLines(response.data);
-      this.loadedBytes = this.calculateLoadedBytes();
+    async setManualChunk(response, direction, scrollAnchorByte = null) {
+      this.renderedLines = this.splitLines(response.data, response.windowStart);
       this.windowStart = response.windowStart;
       this.windowEnd = response.windowEnd;
       this.totalBytes = response.totalBytes;
+      this.loadedBytes = this.calculateLoadedBytes();
       if (ChunkDirection.REPLACE === direction) {
         this.clearRemainderStates();
         if (this.windowStart > 0) {
           const headLine = this.renderedLines[0];
-          if (headLine !== undefined && headLine !== '') {
-            this.setHeadRemainderState(headLine, this.windowStart);
+          if (headLine !== undefined && headLine.text !== '') {
+            this.setHeadRemainderLine(headLine);
           }
           this.renderedLines.shift();
         }
         const tailLine = this.renderedLines.at(-1);
-        if (tailLine !== undefined && tailLine !== '') {
-          this.setTailRemainderState(tailLine, this.windowEnd);
+        if (tailLine !== undefined && tailLine.text !== '') {
+          this.setTailRemainderLine(tailLine);
         }
         if (this.renderedLines.length > 0) {
           this.renderedLines.pop();
         }
         this.displayLines = this.renderedLines;
       } else if (ChunkDirection.NEXT === direction) {
-        if (this.tailRemainderState.presentOrnotBoolean) {
-          this.renderedLines[0] =
-            this.tailRemainderState.remainderString + this.renderedLines[0];
+        if (
+          this.tailRemainderState.presentOrnotBoolean &&
+          this.renderedLines.length > 0
+        ) {
+          this.renderedLines[0] = this.mergeTailRemainderWithLine(
+            this.renderedLines[0],
+          );
           this.clearTailRemainderState();
         }
         this.clearHeadRemainderState();
-        if (this.renderedLines.at(-1) !== '') {
-          this.setTailRemainderState(this.renderedLines.at(-1), this.windowEnd);
+        const tailLine = this.renderedLines.at(-1);
+        if (tailLine && tailLine.text !== '') {
+          this.setTailRemainderLine(tailLine);
         }
-        this.renderedLines.pop();
+        if (this.renderedLines.length > 0) {
+          this.renderedLines.pop();
+        }
         this.displayLines = this.renderedLines;
       } else if (ChunkDirection.PREVIOUS === direction) {
-        if (this.headRemainderState.presentOrnotBoolean) {
+        if (
+          this.headRemainderState.presentOrnotBoolean &&
+          this.renderedLines.length > 0
+        ) {
           let lastIndex = this.renderedLines.length - 1;
-          this.renderedLines[lastIndex] =
-            this.renderedLines[lastIndex] +
-            this.headRemainderState.remainderString;
+          this.renderedLines[lastIndex] = this.mergeLineWithHeadRemainder(
+            this.renderedLines[lastIndex],
+          );
           this.clearHeadRemainderState();
         }
         this.clearTailRemainderState();
         if (this.windowStart > 0) {
-          if (this.renderedLines[0] !== '') {
-            this.setHeadRemainderState(this.renderedLines[0], this.windowStart);
+          const headLine = this.renderedLines[0];
+          if (headLine && headLine.text !== '') {
+            this.setHeadRemainderLine(headLine);
           }
           this.renderedLines.shift();
         }
@@ -642,6 +726,13 @@ export default {
       }
       this.hasLoaded = true;
       await this.$nextTick();
+      if (scrollAnchorByte != null) {
+        if (this.scrollToLineContainingByte(scrollAnchorByte)) {
+          return;
+        }
+        this.scrollToBottom();
+        return;
+      }
       this.scrollToTop();
     },
     createSubscription() {
@@ -669,7 +760,7 @@ export default {
           map((part) =>
             of(
               {
-                lines: this.splitLines(part.addendum),
+                lines: this.splitLines(part.addendum, part.windowStart),
                 windowStart: part.windowStart,
                 windowEnd: part.windowEnd,
                 totalBytes: part.totalBytes,
@@ -725,11 +816,11 @@ export default {
           },
         });
     },
-    async loadChunk(start, end, direction) {
+    async loadChunk(start, end, direction, scrollAnchorByte = null) {
       this.isChunkLoading = true;
       try {
         const response = await this.instance.fetchLogfileRange(start, end);
-        await this.setManualChunk(response, direction);
+        await this.setManualChunk(response, direction, scrollAnchorByte);
       } catch (error) {
         if (this.isLogfileRangeInvalid(error)) {
           await this.handleLogfileCompressed();
@@ -754,14 +845,17 @@ export default {
       await this.loadChunk(start, end, direction);
     },
     async loadNextChunk() {
-      let start = this.windowEnd + 1;
+      const currentWindowEnd = this.windowEnd;
+      const firstNewByte = currentWindowEnd + 1;
+      let start = firstNewByte;
       const end = Math.min(this.totalBytes - 1, start + this.chunkSize - 1);
       if (end === this.totalBytes - 1) {
         start = Math.max(0, end - this.chunkSize + 1);
       }
       const direction =
-        start > this.windowEnd ? ChunkDirection.NEXT : ChunkDirection.REPLACE;
-      await this.loadChunk(start, end, direction);
+        start > currentWindowEnd ? ChunkDirection.NEXT : ChunkDirection.REPLACE;
+      const scrollAnchorByte = start <= currentWindowEnd ? firstNewByte : null;
+      await this.loadChunk(start, end, direction, scrollAnchorByte);
     },
     async toggleFollowMode() {
       if (this.isFollowing) {
@@ -828,6 +922,33 @@ export default {
       }
       element.scrollTop = 0;
       this.syncScrollState(element);
+    },
+    scrollToLineContainingByte(byteOffset) {
+      const element = this.$refs.scrollContainer;
+      if (!element) {
+        return false;
+      }
+
+      const line = this.displayLines.find(
+        (displayLine) => displayLine.endByte >= byteOffset,
+      );
+      if (!line) {
+        return false;
+      }
+
+      const target = element.querySelector(
+        `[data-line-key="${this.lineKey(line)}"]`,
+      );
+      if (!target) {
+        return false;
+      }
+
+      const scrollOffset =
+        target.getBoundingClientRect().top -
+        element.getBoundingClientRect().top;
+      element.scrollTop += scrollOffset;
+      this.syncScrollState(element);
+      return true;
     },
     scrollToBottom() {
       const element = this.$refs.scrollContainer;
