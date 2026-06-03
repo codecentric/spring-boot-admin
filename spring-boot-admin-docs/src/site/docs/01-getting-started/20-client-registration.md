@@ -21,6 +21,9 @@ The Spring Boot Admin Client library enables applications to register themselves
 
 Add the Spring Boot Admin Client starter and the Spring Boot RestClient to your application:
 
+> [!IMPORTANT]
+> Add `spring-boot-restclient` only if using Spring Boot 4.x and later. Otherwise only add the starter dependency.
+
 ```xml title="pom.xml"
 <dependency>
     <groupId>de.codecentric</groupId>
