@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,7 +133,7 @@ public class InstancesController {
 	public Mono<ResponseEntity<List<String>>> healthGroups(@PathVariable String id) {
 		InstanceId instanceId = InstanceId.of(id);
 		return this.registry.getInstance(instanceId)
-			.map((instance) -> ResponseEntity.ok(this.healthGroupsCache.getGroups(instanceId)))
+			.map((_instance) -> ResponseEntity.ok(this.healthGroupsCache.getGroups(instanceId)))
 			.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 

@@ -43,6 +43,7 @@ import de.codecentric.boot.admin.server.services.EndpointDetectionTrigger;
 import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.HealthGroupsCache;
+import de.codecentric.boot.admin.server.services.HealthGroupsCacheCleanupTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdater;
 import de.codecentric.boot.admin.server.services.InstanceFilter;
@@ -109,9 +110,7 @@ public class AdminServerAutoConfiguration {
 			InstanceWebClient.Builder instanceWebClientBuilder, HealthGroupsCache healthGroupsCache) {
 
 		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
-				new ApiMediaTypeHandler());
-
-		updater.setHealthGroupsCache(healthGroupsCache);
+				new ApiMediaTypeHandler(), healthGroupsCache);
 
 		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
 
@@ -143,6 +142,13 @@ public class AdminServerAutoConfiguration {
 
 		return new StatusUpdateTrigger(statusUpdater, events, statusInterval, monitorProperties.getStatusLifetime(),
 				monitorProperties.getStatusMaxBackoff());
+	}
+
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	@ConditionalOnMissingBean
+	public HealthGroupsCacheCleanupTrigger healthGroupsCacheCleanupTrigger(Publisher<InstanceEvent> events,
+			HealthGroupsCache healthGroupsCache) {
+		return new HealthGroupsCacheCleanupTrigger(events, healthGroupsCache);
 	}
 
 	@Bean

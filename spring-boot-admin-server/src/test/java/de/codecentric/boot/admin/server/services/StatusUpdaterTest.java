@@ -95,16 +95,14 @@ class StatusUpdaterTest {
 			.register(Registration.create("foo", this.wireMock.url("/health")).build());
 		StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1).verifyComplete();
 
+		this.healthGroupsCache = new HealthGroupsCache();
 		this.updater = new StatusUpdater(this.repository,
 				InstanceWebClient.builder()
 					.filter(rewriteEndpointUrl())
 					.filter(retry(0, singletonMap(Endpoint.HEALTH, 1)))
 					.filter(timeout(Duration.ofSeconds(2), emptyMap()))
 					.build(),
-				new ApiMediaTypeHandler());
-
-		this.healthGroupsCache = new HealthGroupsCache();
-		this.updater.setHealthGroupsCache(this.healthGroupsCache);
+				new ApiMediaTypeHandler(), this.healthGroupsCache);
 	}
 
 	@AfterEach
