@@ -214,10 +214,10 @@ export default defineComponent({
       this.healthGroupsError = null;
 
       try {
-        const res = await this.instance.fetchHealth();
+        const res = await this.instance.fetchCachedHealthGroups();
 
-        if (Array.isArray(res.data.groups)) {
-          this.healthGroups = res.data.groups.map((name: string) => ({
+        if (Array.isArray(res.data)) {
+          this.healthGroups = res.data.map((name: string) => ({
             name,
             data: null,
           }));

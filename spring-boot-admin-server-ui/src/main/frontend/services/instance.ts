@@ -231,6 +231,10 @@ class Instance {
     });
   }
 
+  async fetchCachedHealthGroups() {
+    return this.axios.get('health-groups');
+  }
+
   async fetchHealthGroup(groupName: string) {
     return await this.axios.get(uri`actuator/health/${groupName}`, {
       validateStatus: null,

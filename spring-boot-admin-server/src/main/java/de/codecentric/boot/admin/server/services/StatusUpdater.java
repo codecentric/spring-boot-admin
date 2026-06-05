@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.services;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -62,9 +63,15 @@ public class StatusUpdater {
 
 	private Duration timeout = Duration.ofSeconds(10);
 
+	private HealthGroupsCache healthGroupsCache;
+
 	public StatusUpdater timeout(Duration timeout) {
 		this.timeout = timeout;
 		return this;
+	}
+
+	public void setHealthGroupsCache(HealthGroupsCache healthGroupsCache) {
+		this.healthGroupsCache = healthGroupsCache;
 	}
 
 	public Mono<Void> updateStatus(InstanceId id) {
@@ -80,7 +87,7 @@ public class StatusUpdater {
 		return this.instanceWebClient.instance(instance)
 			.get()
 			.uri(Endpoint.HEALTH)
-			.exchangeToMono(this::convertStatusInfo)
+			.exchangeToMono((response) -> this.convertStatusInfo(response, instance.getId()))
 			.log(log.getName(), Level.FINEST)
 			.timeout(getTimeoutWithMargin())
 			.doOnError((ex) -> logError(instance, ex))
@@ -96,7 +103,7 @@ public class StatusUpdater {
 		return this.timeout.minusSeconds(1).abs();
 	}
 
-	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
+	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response, InstanceId instanceId) {
 		boolean hasCompatibleContentType = response.headers()
 			.contentType()
 			.filter((mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON)
@@ -106,6 +113,7 @@ public class StatusUpdater {
 		StatusInfo statusInfoFromStatus = this.getStatusInfoFromStatus(response.statusCode(), emptyMap());
 		if (hasCompatibleContentType) {
 			return response.bodyToMono(RESPONSE_TYPE).map((body) -> {
+				extractAndCacheGroups(instanceId, body);
 				if (body.get("status") instanceof String) {
 					return StatusInfo.from(body);
 				}
@@ -145,6 +153,13 @@ public class StatusUpdater {
 		}
 		else {
 			log.info("Couldn't retrieve status for {}", instance, ex);
+		}
+	}
+
+	private void extractAndCacheGroups(InstanceId instanceId, Map<String, Object> body) {
+		if (this.healthGroupsCache != null && body.get("groups") instanceof List<?> groupsList) {
+			List<String> groups = groupsList.stream().filter(String.class::isInstance).map(String.class::cast).toList();
+			this.healthGroupsCache.updateGroups(instanceId, groups);
 		}
 	}
 

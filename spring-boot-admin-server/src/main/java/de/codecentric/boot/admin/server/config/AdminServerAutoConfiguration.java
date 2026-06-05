@@ -42,6 +42,7 @@ import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.EndpointDetectionTrigger;
 import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
+import de.codecentric.boot.admin.server.services.HealthGroupsCache;
 import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdater;
 import de.codecentric.boot.admin.server.services.InstanceFilter;
@@ -98,11 +99,19 @@ public class AdminServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	public HealthGroupsCache healthGroupsCache() {
+		return new HealthGroupsCache();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
-			InstanceWebClient.Builder instanceWebClientBuilder) {
+			InstanceWebClient.Builder instanceWebClientBuilder, HealthGroupsCache healthGroupsCache) {
 
 		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
 				new ApiMediaTypeHandler());
+
+		updater.setHealthGroupsCache(healthGroupsCache);
 
 		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
 
