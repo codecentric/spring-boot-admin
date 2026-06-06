@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment jsdom
+ */
 import { RenderResult, screen, waitFor } from '@testing-library/vue';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

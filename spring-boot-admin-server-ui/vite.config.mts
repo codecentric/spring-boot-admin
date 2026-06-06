@@ -52,7 +52,7 @@ export default defineConfig(({ mode }) => {
     test: {
       root: __dirname,
       globals: true,
-      environment: 'jsdom',
+      environment: 'happy-dom',  // Faster than jsdom (~2-3x)
       setupFiles: [resolve(frontendDir, 'tests/setup.ts')],
       env: {
         LANG: 'de_DE.UTF-8',
@@ -60,6 +60,7 @@ export default defineConfig(({ mode }) => {
         TZ: 'Europe/Berlin',
       },
       include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+      maxWorkers: 4,
     },
     root: frontendDir,
     build: {

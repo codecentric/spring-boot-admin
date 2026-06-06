@@ -363,11 +363,29 @@
                     <configuration>
                         <parallel>classesAndMethods</parallel>
                         <useUnlimitedThreads>false</useUnlimitedThreads>
+                        <threadCount>4</threadCount>
+                        <perCoreThreadCount>true</perCoreThreadCount>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <rerunFailingTestsCount>2</rerunFailingTestsCount>
                         <includes>
                             <include>**/*Tests.java</include>
                             <include>**/*Test.java</include>
+                        </includes>
+                        <excludes>
+                            <exclude>**/*IntegrationTests.java</exclude>
+                            <exclude>**/*IntegrationTest.java</exclude>
+                            <exclude>**/Abstract*.java</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven-failsafe-plugin.version}</version>
+                    <configuration>
+                        <includes>
+                            <include>**/*IntegrationTest.java</include>
+                            <include>**/*IntegrationTests.java</include>
                         </includes>
                         <excludes>
                             <exclude>**/Abstract*.java</exclude>
