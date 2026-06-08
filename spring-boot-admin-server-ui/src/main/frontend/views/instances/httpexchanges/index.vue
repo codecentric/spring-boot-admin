@@ -90,7 +90,11 @@
     </template>
 
     <sba-panel>
-      <sba-exchanges-chart :exchanges="listedExchanges" class="mb-6" />
+      <sba-exchanges-chart
+        :exchanges="visibleExchanges"
+        class="mb-6"
+        @select="selectTimeRange"
+      />
     </sba-panel>
 
     <sba-panel seamless>
@@ -156,14 +160,20 @@ export default {
     filteredExchanges() {
       return this.filterExchanges(this.exchanges);
     },
+
+    visibleExchanges() {
+      return this.filterExchanges(this.exchanges.slice(this.listOffset));
+    },
+
     listedExchanges() {
-      const exchanges = this.filterExchanges(
-        this.exchanges.slice(this.listOffset),
-      );
+      const exchanges = this.visibleExchanges;
+
       if (!this.selection) {
         return exchanges;
       }
+
       const [start, end] = this.selection;
+
       return exchanges.filter(
         (exchange) =>
           !exchange.timestamp.isBefore(start) &&
@@ -176,6 +186,7 @@ export default {
         : moment(0);
     },
   },
+
   watch: {
     limit: debounce(function (value) {
       if (this.exchanges.length > value) {
@@ -189,6 +200,9 @@ export default {
     },
   },
   methods: {
+    selectTimeRange(selection) {
+      this.selection = selection;
+    },
     showNewExchanges() {
       this.listOffset = 0;
     },
