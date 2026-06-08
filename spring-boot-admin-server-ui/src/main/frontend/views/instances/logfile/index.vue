@@ -143,6 +143,10 @@
           <tr
             v-for="line in displayLines"
             :key="lineKey(line)"
+            :class="{
+              'log-viewer-highlighted-line':
+                lineKey(line) === highlightedLineKey,
+            }"
             :data-line-key="lineKey(line)"
           >
             <td>
@@ -239,6 +243,8 @@ export default {
     logTailSubscription: null,
     scrollSubscription: null,
     tailPinMaintenanceTimer: null,
+    highlightedLineKey: null,
+    highlightedLineTimer: null,
     isMaintainingTailPin: false,
     manualMetadataSubscription: null,
     mode: LogfileMode.FOLLOW,
@@ -331,6 +337,7 @@ export default {
     this.unsubscribe();
     this.stopScrollSubscription();
     this.stopTailPinMaintenance();
+    this.stopLineHighlight();
   },
   methods: {
     prettyBytes,
@@ -528,6 +535,7 @@ export default {
       this.windowStart = 0;
       this.windowEnd = -1;
       this.totalBytes = 0;
+      this.stopLineHighlight();
     },
     resetFollowState() {
       this.stopManualMetadataPolling();
@@ -727,7 +735,7 @@ export default {
       this.hasLoaded = true;
       await this.$nextTick();
       if (scrollAnchorByte != null) {
-        if (this.scrollToLineContainingByte(scrollAnchorByte)) {
+        if (this.scrollToLineContainingByte(scrollAnchorByte, true)) {
           return;
         }
         this.scrollToBottom();
@@ -923,7 +931,20 @@ export default {
       element.scrollTop = 0;
       this.syncScrollState(element);
     },
-    scrollToLineContainingByte(byteOffset) {
+    stopLineHighlight() {
+      window.clearTimeout(this.highlightedLineTimer);
+      this.highlightedLineTimer = null;
+      this.highlightedLineKey = null;
+    },
+    highlightLine(line) {
+      this.stopLineHighlight();
+      this.highlightedLineKey = this.lineKey(line);
+      this.highlightedLineTimer = window.setTimeout(() => {
+        this.highlightedLineTimer = null;
+        this.highlightedLineKey = null;
+      }, 1400);
+    },
+    scrollToLineContainingByte(byteOffset, highlight = false) {
       const element = this.$refs.scrollContainer;
       if (!element) {
         return false;
@@ -948,6 +969,9 @@ export default {
         element.getBoundingClientRect().top;
       element.scrollTop += scrollOffset;
       this.syncScrollState(element);
+      if (highlight) {
+        this.highlightLine(line);
+      }
       return true;
     },
     scrollToBottom() {
@@ -1052,6 +1076,20 @@ export default {
 
 .log-viewer td:hover {
   background: #dbdbdb;
+}
+
+.log-viewer-highlighted-line pre {
+  animation: logfile-line-highlight 1.4s ease-out;
+}
+
+@keyframes logfile-line-highlight {
+  0% {
+    background: #fef3c7;
+  }
+
+  100% {
+    background: transparent;
+  }
 }
 
 .log-viewer a[href] {
