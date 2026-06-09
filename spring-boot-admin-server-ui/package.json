@@ -84,7 +84,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitejs/plugin-vue": "6.0.7",
-    "@vue/test-utils": "2.4.10",
+    "@vue/test-utils": "2.4.11",
     "axios-mock-adapter": "^2.1.0",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.0.0",
