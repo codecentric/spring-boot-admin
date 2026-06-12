@@ -1,8 +1,8 @@
-import { render } from '@testing-library/vue';
 import { screen } from '@testing-library/vue';
 import { describe, expect, it } from 'vitest';
 
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
+import { render } from '@/test-utils';
 import ApplicationStatusOverview from '@/views/applications/ApplicationStatusOverview.vue';
 
 describe('ApplicationStatusOverview', () => {
@@ -17,7 +17,6 @@ describe('ApplicationStatusOverview', () => {
       global: {
         mocks: {
           FontAwesomeIcon: true,
-          $t: (key: string) => key,
         },
       },
     });
@@ -29,17 +28,13 @@ describe('ApplicationStatusOverview', () => {
     renderComponent(lastUpdate);
 
     expect(
-      screen.getByText(
-        `applications.last_update: ${formatDateTime(lastUpdate)}`,
-      ),
+      screen.getByText(`Last update: ${formatDateTime(lastUpdate)}`),
     ).toBeVisible();
   });
 
   it('shows no last update information if not provided', () => {
     renderComponent();
 
-    expect(
-      screen.queryByText(/applications\.last_update:.+/),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/Last update:.+/)).not.toBeInTheDocument();
   });
 });
