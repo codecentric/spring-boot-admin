@@ -4,6 +4,7 @@
     "applications": "应用数",
     "instances": "实例数",
     "some_down": "离线实例",
+    "last_update": "最后更新",
     "loading_applications": "应用加载中...",
     "no_applications_registered": "暂无应用注册。",
     "notifications_suppressed_for": "Notifications on <code>{name}</code> are suppressed for",

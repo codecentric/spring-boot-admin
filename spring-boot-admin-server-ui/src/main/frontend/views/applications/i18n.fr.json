@@ -4,6 +4,7 @@
     "applications": "Applications",
     "instances": "Instances",
     "some_down": "instances inaccessibles",
+    "last_update": "Dernière mise à jour",
     "loading_applications": "Chargement des applications...",
     "no_applications_registered": "Aucune application enregistrée.",
     "notifications_suppressed_for": "Les notifications sur <code>{name}</code> sont supprimées",

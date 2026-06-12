@@ -2,54 +2,47 @@
   <sba-panel>
     <div class="flex flex-row items-center justify-center my-2">
       <template v-if="applicationsCount > 0">
-        <template v-if="statusInfo.allUp">
-          <font-awesome-icon icon="check-circle" class="text-green-500 icon" />
-          <div class="text-center">
-            <h1 class="status-label" v-text="$t('applications.all_up')" />
-            <p class="text-gray-400" v-text="lastUpdate" />
-          </div>
-        </template>
-        <template v-else-if="statusInfo.allDown">
-          <font-awesome-icon icon="minus-circle" class="text-red-500 icon" />
-          <div class="text-center">
-            <h1 class="status-label" v-text="$t('applications.all_down')" />
-            <p class="text-gray-400" v-text="lastUpdate" />
-          </div>
-        </template>
-        <template v-if="statusInfo.allUnknown">
-          <font-awesome-icon
-            icon="question-circle"
-            class="text-gray-300 icon"
-          />
-          <div class="text-center">
-            <h1 class="status-label" v-text="$t('applications.all_unknown')" />
-            <p class="text-gray-400" v-text="lastUpdate" />
-          </div>
-        </template>
-        <template v-else-if="someInstancesDown">
-          <font-awesome-icon icon="minus-circle" class="text-red-500 icon" />
-          <div class="text-center">
-            <h1 class="status-label" v-text="$t('applications.some_down')" />
-            <p class="text-gray-400" v-text="lastUpdate" />
-          </div>
-        </template>
-
-        <template v-else-if="someInstancesUnknown">
-          <font-awesome-icon
-            icon="question-circle"
-            class="text-gray-300 icon"
-          />
-          <div class="text-center">
-            <h1 class="status-label" v-text="$t('applications.some_unknown')" />
-            <p class="text-gray-400" v-text="lastUpdate" />
-          </div>
-        </template>
+        <application-status-overview
+          v-if="statusInfo.allUp"
+          icon-name="check-circle"
+          icon-color="text-green-500"
+          :last-update="lastUpdate"
+          status-label-text-key="applications.all_up"
+        />
+        <application-status-overview
+          v-else-if="statusInfo.allDown"
+          icon-name="minus-circle"
+          icon-color="text-red-500"
+          :last-update="lastUpdate"
+          status-label-text-key="applications.all_down"
+        />
+        <application-status-overview
+          v-if="statusInfo.allUnknown"
+          icon-name="question-circle"
+          icon-color="text-gray-300"
+          :last-update="lastUpdate"
+          status-label-text-key="applications.all_unknown"
+        />
+        <application-status-overview
+          v-else-if="someInstancesDown"
+          icon-name="minus-circle"
+          icon-color="text-red-500"
+          :last-update="lastUpdate"
+          status-label-text-key="applications.some_down"
+        />
+        <application-status-overview
+          v-else-if="someInstancesUnknown"
+          icon-name="question-circle"
+          icon-color="text-gray-300"
+          :last-update="lastUpdate"
+          status-label-text-key="applications.some_unknown"
+        />
       </template>
       <template v-else>
-        <font-awesome-icon icon="frown-open" class="text-gray-500 icon" />
-        <h1
-          class="status-label"
-          v-text="$t('applications.no_applications_registered')"
+        <application-status-overview
+          icon-name="frown-open"
+          icon-color="text-gray-500"
+          status-label-text-key="applications.no_applications_registered"
         />
       </template>
     </div>
@@ -60,20 +53,19 @@
 import { computed, ref, watch } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
-import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import { getStatusInfo } from '@/services/application';
+import ApplicationStatusOverview from '@/views/applications/ApplicationStatusOverview.vue';
 
 const { applications } = useApplicationStore();
-const { formatDateTime } = useDateTimeFormatter();
 
-const lastUpdate = ref(formatDateTime(new Date()));
+const lastUpdate = ref(new Date());
 
 const statusInfo = computed(() => {
   return getStatusInfo(applications.value);
 });
 
 watch(statusInfo, () => {
-  lastUpdate.value = formatDateTime(new Date());
+  lastUpdate.value = new Date();
 });
 
 const applicationsCount = computed(() => {
@@ -88,13 +80,3 @@ const someInstancesUnknown = computed(() => {
   return statusInfo.value.someUnknown;
 });
 </script>
-
-<style scoped>
-@reference "../../index.css";
-.status-label {
-  @apply font-bold text-2xl;
-}
-.icon {
-  @apply text-6xl pr-4;
-}
-</style>

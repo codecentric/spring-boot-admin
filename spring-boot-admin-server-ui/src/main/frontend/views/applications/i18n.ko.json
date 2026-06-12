@@ -7,6 +7,7 @@
       "shutdown": "종료",
       "restart": "재시작"
     },
+    "last_update": "마지막 업데이트",
     "all_up": "전체 인스턴스 가동중",
     "all_down": "전체 인스턴스 중단됨",
     "all_unknown": "전체 인스턴스 상태 불명",
