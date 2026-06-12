@@ -105,7 +105,7 @@ describe('DetailsHealth', () => {
   });
 
   describe('SSE reactive updates', () => {
-    it('should call fetchCachedHealthGroups once on mount, not on SSE version changes', async () => {
+    it('should re-fetch cached health groups on SSE version changes', async () => {
       const baseApp = applications[0];
       const instance1 = new Application(baseApp).instances[0];
       instance1.fetchCachedHealthGroups = vi
@@ -119,7 +119,8 @@ describe('DetailsHealth', () => {
       await screen.findAllByRole('status');
       expect(instance1.fetchCachedHealthGroups).toHaveBeenCalledTimes(1);
 
-      // Same instance, different version (SSE update) — should NOT call fetchCachedHealthGroups again
+      // Same instance, different version (SSE update) — should re-fetch the
+      // (server-cached) group list so it self-corrects when groups change.
       const instance2 = new Application({
         ...baseApp,
         instances: [
@@ -132,15 +133,17 @@ describe('DetailsHealth', () => {
       }).instances[0];
       instance2.fetchCachedHealthGroups = vi
         .fn()
-        .mockResolvedValue({ data: [] });
+        .mockResolvedValue({ data: ['liveness', 'readiness'] });
 
       await rerender({ instance: instance2 });
 
-      // Original instance's mock should still be 1 (no additional calls)
-      expect(instance1.fetchCachedHealthGroups).toHaveBeenCalledTimes(1);
+      // The new instance's cached groups should have been fetched on the SSE update.
+      await waitFor(() => {
+        expect(instance2.fetchCachedHealthGroups).toHaveBeenCalledTimes(1);
+      });
     });
 
-    it('should reactively update through multiple SSE status changes without extra HTTP calls', async () => {
+    it('should reactively update health status and details through SSE status changes', async () => {
       const baseApp = applications[0];
 
       const instance1 = new Application(baseApp).instances[0];

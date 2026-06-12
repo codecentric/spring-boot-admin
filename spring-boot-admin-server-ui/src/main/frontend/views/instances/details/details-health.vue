@@ -175,15 +175,9 @@ export default defineComponent({
         this.healthGroupOpenStatus = {};
         this.healthGroupLoadingMap = {};
         this.healthGroupsError = null;
-        this.fetchHealthGroups();
-      } else {
-        // Same instance, SSE update (e.g. status change) — collapse groups and clear stale data
-        for (const group of this.healthGroups) {
-          group.data = null;
-        }
-        this.healthGroupOpenStatus = {};
-        this.healthGroupLoadingMap = {};
       }
+      // Re-fetch the (server-cached) group list on every instance change
+      this.fetchHealthGroups();
     },
     isHealthGroupOpen(groupName: string) {
       return this.healthGroupOpenStatus[groupName]?.isOpen ?? false;
