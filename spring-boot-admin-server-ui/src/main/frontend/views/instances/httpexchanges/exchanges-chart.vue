@@ -15,8 +15,19 @@
   -->
 
 <template>
-  <div class="exchange-chart">
+  <div
+    class="exchange-chart"
+    @mousedown="startSelection"
+    @mousemove="updateSelection"
+    @mouseup="finishSelection"
+    @mouseleave="cancelSelection"
+  >
     <canvas ref="chartCanvas" />
+    <div
+      v-if="selectionStyle"
+      class="exchange-chart__selection"
+      :style="selectionStyle"
+    />
   </div>
 </template>
 
@@ -32,6 +43,7 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-moment';
 import { parse } from 'iso8601-duration';
+import moment from 'moment';
 import { markRaw } from 'vue';
 
 import { toMilliseconds } from '@/utils/iso8601-duration';
@@ -54,11 +66,27 @@ export default {
       default: () => [],
     },
   },
+  emits: ['select'],
   data: () => ({
     chart: null,
     cachedChartData: [],
+    selectionStartX: null,
+    selectionEndX: null,
   }),
   computed: {
+    selectionStyle() {
+      if (this.selectionStartX === null || this.selectionEndX === null) {
+        return null;
+      }
+
+      const left = Math.min(this.selectionStartX, this.selectionEndX);
+      const width = Math.abs(this.selectionEndX - this.selectionStartX);
+
+      return {
+        left: `${left}px`,
+        width: `${width}px`,
+      };
+    },
     chartData() {
       if (this.exchanges.length <= 0) {
         return [];
@@ -131,6 +159,78 @@ export default {
     }
   },
   methods: {
+    getChartPixel(event) {
+      if (!this.chart) {
+        return null;
+      }
+
+      const canvas = this.$refs.chartCanvas;
+      const rect = canvas.getBoundingClientRect();
+      const chartArea = this.chart.chartArea;
+      const x = event.clientX - rect.left;
+
+      return Math.max(chartArea.left, Math.min(chartArea.right, x));
+    },
+
+    startSelection(event) {
+      const x = this.getChartPixel(event);
+
+      if (x === null) {
+        return;
+      }
+
+      this.selectionStartX = x;
+      this.selectionEndX = x;
+    },
+
+    updateSelection(event) {
+      if (this.selectionStartX === null) {
+        return;
+      }
+
+      this.selectionEndX = this.getChartPixel(event);
+    },
+
+    finishSelection() {
+      if (this.selectionStartX === null || this.selectionEndX === null) {
+        return;
+      }
+
+      const startPixel = Math.min(this.selectionStartX, this.selectionEndX);
+      const endPixel = Math.max(this.selectionStartX, this.selectionEndX);
+
+      this.selectionStartX = null;
+      this.selectionEndX = null;
+
+      if (endPixel - startPixel < 5) {
+        this.$emit('select', null);
+        return;
+      }
+
+      const xScale = this.chart.scales.x;
+
+      const selectedExchanges = this.exchanges.filter((exchange) => {
+        const exchangePixel = xScale.getPixelForValue(exchange.timestamp);
+
+        return exchangePixel >= startPixel && exchangePixel <= endPixel;
+      });
+
+      if (selectedExchanges.length === 0) {
+        this.$emit('select', null);
+        return;
+      }
+
+      const timestamps = selectedExchanges.map(
+        (exchange) => exchange.timestamp,
+      );
+
+      this.$emit('select', [moment.min(timestamps), moment.max(timestamps)]);
+    },
+
+    cancelSelection() {
+      this.selectionStartX = null;
+      this.selectionEndX = null;
+    },
     initChart() {
       const ctx = this.$refs.chartCanvas.getContext('2d');
       const chartDataRef = this.cachedChartData;
@@ -245,10 +345,17 @@ export default {
 @reference "../../../index.css";
 .exchange-chart {
   height: 200px;
+  position: relative;
+  user-select: none;
   width: 100%;
 }
 
-.exchange-chart canvas {
-  max-height: 200px;
+.exchange-chart__selection {
+  background: rgba(50, 115, 220, 0.2);
+  border: 1px solid rgba(50, 115, 220, 0.6);
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
 }
 </style>
