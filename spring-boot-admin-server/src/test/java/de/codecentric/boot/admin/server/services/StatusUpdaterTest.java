@@ -95,7 +95,7 @@ class StatusUpdaterTest {
 			.register(Registration.create("foo", this.wireMock.url("/health")).build());
 		StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1).verifyComplete();
 
-		this.healthGroupsCache = new HealthGroupsCache();
+		this.healthGroupsCache = new InMemoryHealthGroupsCache();
 		this.updater = new StatusUpdater(this.repository,
 				InstanceWebClient.builder()
 					.filter(rewriteEndpointUrl())

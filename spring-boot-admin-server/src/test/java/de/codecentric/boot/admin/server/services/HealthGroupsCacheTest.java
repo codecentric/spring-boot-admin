@@ -34,7 +34,7 @@ class HealthGroupsCacheTest {
 
 	@BeforeEach
 	void setUp() {
-		this.cache = new HealthGroupsCache();
+		this.cache = new InMemoryHealthGroupsCache();
 		this.instanceId = InstanceId.of("test-instance");
 	}
 

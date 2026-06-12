@@ -39,7 +39,7 @@ class HealthGroupsCacheCleanupTriggerTest {
 
 	@BeforeEach
 	void setUp() {
-		this.cache = new HealthGroupsCache();
+		this.cache = new InMemoryHealthGroupsCache();
 		this.trigger = new HealthGroupsCacheCleanupTrigger(this.events.flux(), this.cache);
 		this.trigger.start();
 		await().until(this.events::wasSubscribed);

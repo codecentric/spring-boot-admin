@@ -44,6 +44,7 @@ import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.HealthGroupsCache;
 import de.codecentric.boot.admin.server.services.HealthGroupsCacheCleanupTrigger;
+import de.codecentric.boot.admin.server.services.InMemoryHealthGroupsCache;
 import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdater;
 import de.codecentric.boot.admin.server.services.InstanceFilter;
@@ -101,7 +102,7 @@ public class AdminServerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HealthGroupsCache healthGroupsCache() {
-		return new HealthGroupsCache();
+		return new InMemoryHealthGroupsCache();
 	}
 
 	@Bean

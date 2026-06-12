@@ -16,19 +16,14 @@
 
 package de.codecentric.boot.admin.server.services;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
 /**
  * Cache for health groups per instance.
  */
-public class HealthGroupsCache {
-
-	private final ConcurrentMap<InstanceId, List<String>> cache = new ConcurrentHashMap<>();
+public interface HealthGroupsCache {
 
 	/**
 	 * Update the health groups for an instance. If groups is null or empty, the entry is
@@ -36,30 +31,19 @@ public class HealthGroupsCache {
 	 * @param instanceId the instance id
 	 * @param groups the health groups list
 	 */
-	public void updateGroups(InstanceId instanceId, List<String> groups) {
-		if (groups == null || groups.isEmpty()) {
-			this.cache.remove(instanceId);
-		}
-		else {
-			this.cache.put(instanceId, List.copyOf(groups));
-		}
-	}
+	void updateGroups(InstanceId instanceId, List<String> groups);
 
 	/**
 	 * Get the health groups for an instance.
 	 * @param instanceId the instance id
 	 * @return the list of health groups, or an empty list if none are cached
 	 */
-	public List<String> getGroups(InstanceId instanceId) {
-		return this.cache.getOrDefault(instanceId, Collections.emptyList());
-	}
+	List<String> getGroups(InstanceId instanceId);
 
 	/**
 	 * Remove the health groups entry for an instance.
 	 * @param instanceId the instance id
 	 */
-	public void remove(InstanceId instanceId) {
-		this.cache.remove(instanceId);
-	}
+	void remove(InstanceId instanceId);
 
 }
