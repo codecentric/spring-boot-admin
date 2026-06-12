@@ -113,7 +113,7 @@ public class StatusUpdater {
 		StatusInfo statusInfoFromStatus = this.getStatusInfoFromStatus(response.statusCode(), emptyMap());
 		if (hasCompatibleContentType) {
 			return response.bodyToMono(RESPONSE_TYPE)
-				.doOnNext((body) -> extractAndCacheGroups(instanceId, body))
+				.doOnNext((body) -> extractAndCacheHealthGroups(instanceId, body))
 				.map((body) -> {
 					if (body.get("status") instanceof String) {
 						return StatusInfo.from(body);
