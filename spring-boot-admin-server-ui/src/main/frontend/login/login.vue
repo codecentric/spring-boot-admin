@@ -44,7 +44,7 @@
 
       <template #footer>
         <div class="text-right">
-          <sba-button>
+          <sba-button type="submit">
             {{ t('login.button_login') }}
           </sba-button>
         </div>
