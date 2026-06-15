@@ -26,6 +26,13 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  type: {
+    type: String,
+    default: 'button',
+    validator(value) {
+      return ['button', 'submit', 'reset'].includes(value);
+    },
+  },
   size: {
     type: String,
     default: 'sm',
@@ -73,7 +80,7 @@ const componentAttrs = computed(() => {
     return {
       ...common,
       disabled: props.disabled === true,
-      type: 'button',
+      type: props.type,
     };
   }
   return common;
