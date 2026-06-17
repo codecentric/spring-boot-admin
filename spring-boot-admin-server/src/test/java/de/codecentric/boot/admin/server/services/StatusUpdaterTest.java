@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
+import java.util.Map;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.Options;
@@ -54,6 +55,7 @@ import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilter
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.timeout;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class StatusUpdaterTest {
@@ -263,6 +265,43 @@ class StatusUpdaterTest {
 		StepVerifier.create(this.repository.find(this.instance.getId()))
 			.assertNext((app) -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP"))
 			.verifyComplete();
+	}
+
+	@Test
+	void should_update_status_details() {
+		// 1st pass -> initial details
+		shouldUpdateStatusDetails(singletonMap("foo", "bar"));
+
+		// 2nd pass -> details changed
+		shouldUpdateStatusDetails(singletonMap("foo", "baz"));
+	}
+
+	private void shouldUpdateStatusDetails(Map<String, String> details) {
+		String body = "{ \"status\" : \"UP\", \"details\" : %s }".formatted(details.entrySet()
+			.stream()
+			.map((e) -> "\"%s\" : \"%s\"".formatted(e.getKey(), e.getValue()))
+			.collect(joining(", ", "{ ", " }")));
+		this.wireMock.stubFor(
+				get("/health").willReturn(okForContentType(ApiVersion.LATEST.getProducedMimeType().toString(), body)
+					.withHeader("Content-Length", Integer.toString(body.length()))));
+
+		StepVerifier.create(this.eventStore)
+			.expectSubscription()
+			.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
+			.assertNext((event) -> {
+				assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class);
+				assertThat(event.getInstance()).isEqualTo(this.instance.getId());
+				InstanceStatusChangedEvent statusChangedEvent = (InstanceStatusChangedEvent) event;
+				assertThat(statusChangedEvent.getStatusInfo().getStatus()).isEqualTo("UP");
+				assertThat(statusChangedEvent.getStatusInfo().getDetails()).isEqualTo(details);
+			})
+			.thenCancel()
+			.verify();
+
+		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext((app) -> {
+			assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP");
+			assertThat(app.getStatusInfo().getDetails()).isEqualTo(details);
+		}).verifyComplete();
 	}
 
 }

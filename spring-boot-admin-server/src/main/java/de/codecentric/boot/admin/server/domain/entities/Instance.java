@@ -141,7 +141,7 @@ public final class Instance implements Serializable {
 
 	public Instance withStatusInfo(StatusInfo statusInfo) {
 		Assert.notNull(statusInfo, "'statusInfo' must not be null");
-		if (Objects.equals(this.statusInfo.getStatus(), statusInfo.getStatus())) {
+		if (Objects.equals(this.statusInfo, statusInfo)) {
 			return this;
 		}
 		return this.apply(new InstanceStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true);
