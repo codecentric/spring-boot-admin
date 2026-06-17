@@ -74,7 +74,8 @@ class InstancesControllerIntegrationTest {
 	void setUp() {
 		instance = new SpringApplicationBuilder().sources(AdminReactiveApplicationTest.TestAdminApplication.class)
 			.web(WebApplicationType.REACTIVE)
-			.run("--server.port=0", "--eureka.client.enabled=false");
+			.run("--server.port=0", "--eureka.client.enabled=false",
+					"--management.endpoints.web.base-path=/application");
 
 		localPort = instance.getEnvironment().getProperty("local.server.port", Integer.class, 0);
 
