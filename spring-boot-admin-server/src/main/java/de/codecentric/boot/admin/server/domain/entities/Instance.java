@@ -216,8 +216,11 @@ public final class Instance implements Serializable {
 		}
 		else if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
 			StatusInfo statusInfo = statusChangedEvent.getStatusInfo();
+			// Preserve the existing status timestamp if only the details have changed
+			Instant statusTimestamp = this.statusInfo.getStatus().equals(statusInfo.getStatus()) ? this.statusTimestamp
+					: event.getTimestamp();
 			return new Instance(this.id, event.getVersion(), this.registration, this.registered, statusInfo,
-					event.getTimestamp(), this.info, this.endpoints, this.buildVersion, this.tags, unsavedEvents);
+					statusTimestamp, this.info, this.endpoints, this.buildVersion, this.tags, unsavedEvents);
 
 		}
 		else if (event instanceof InstanceEndpointsDetectedEvent endpointsDetectedEvent) {
