@@ -42,7 +42,7 @@ const DEFAULT_CONFIG: SBASettings = {
       process: 2500,
       memory: 2500,
       threads: 2500,
-      threaddump: 2500,
+      threaddump: 1000,
       logfile: 1000,
     },
     hideInstanceUrl: false,

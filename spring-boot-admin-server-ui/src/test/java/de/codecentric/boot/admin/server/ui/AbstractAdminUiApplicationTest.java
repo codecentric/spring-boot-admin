@@ -147,7 +147,7 @@ public abstract class AbstractAdminUiApplicationTest {
 			.expectBody(String.class)
 			.value((body) -> assertThat(body).contains("\"pollTimer\""))
 			.value((body) -> assertThat(body).contains("\"cache\":2500"))
-			.value((body) -> assertThat(body).contains("\"threaddump\":2500"));
+			.value((body) -> assertThat(body).contains("\"threaddump\":1000"));
 		//@formatter:on
 	}
 
