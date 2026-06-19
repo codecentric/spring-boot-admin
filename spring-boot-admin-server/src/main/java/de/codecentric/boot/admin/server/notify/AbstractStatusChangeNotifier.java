@@ -58,7 +58,7 @@ public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier
 		if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
 			String from = getLastStatus(event.getInstance());
 			String to = statusChangedEvent.getStatusInfo().getStatus();
-			return Arrays.binarySearch(ignoreChanges, from + ":" + to) < 0
+			return !from.equals(to) && Arrays.binarySearch(ignoreChanges, from + ":" + to) < 0
 					&& Arrays.binarySearch(ignoreChanges, "*:" + to) < 0
 					&& Arrays.binarySearch(ignoreChanges, from + ":*") < 0;
 		}
