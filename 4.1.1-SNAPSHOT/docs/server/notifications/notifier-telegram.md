@@ -44,3 +44,6 @@ To enable [Telegram](https://telegram.org/) notifications you need to create and
 - Default: 
 
   `["UNKNOWN:UP"]` |
+| `spring.boot.admin.notify.telegram.message-thread-id`Unique identifier for the target topic of the target super group- Type: 
+
+  `java.lang.Integer`                                                                             |
