@@ -16,44 +16,49 @@
 
 <template>
   <dl
-    class="px-4 py-3 even:bg-white odd:bg-gray-50"
+    class="px-4 py-3 even:bg-white odd:bg-gray-50 grid grid-cols-3"
     role="group"
     :aria-label="name"
   >
     <dt
       :id="`health-${id}__${safeNameId}`"
-      class="flex text-sm font-medium text-gray-500 items-center"
+      class="w-48 text-sm font-medium text-gray-500 items-center"
     >
-      <div class="w-48">
+      <div class="break-all">
         {{ name }}
-      </div>
-      <div class="flex-1">
-        <sba-status-badge v-if="health.status" :status="health.status" />
-      </div>
-      <div v-if="details && details.length > 0" class="w-12 text-right">
-        <sba-button
-          class="p-0! border-none"
-          :title="t('instances.details.health.toggle_details', { name })"
-          :aria-label="t('instances.details.health.toggle_details', { name })"
-          :aria-expanded="String(!isCollapsed)"
-          :aria-controls="`health-details-${id}__${safeNameId}`"
-          @click="() => toggleCollapsed()"
-        >
-          <font-awesome-icon
-            :icon="faChevronRight"
-            class="transition-transform"
-            :class="{ 'rotate-90': !isCollapsed }"
-          />
-          <font-awesome-icon :icon="faCircleInfo" />
-        </sba-button>
       </div>
     </dt>
     <dd
       :id="`health-details-${id}__${safeNameId}`"
-      class="mt-1 text-sm text-gray-900 sm:mt-0"
+      class="mt-1 text-sm text-gray-900 sm:mt-0 col-span-2"
       :aria-labelledby="`health-${id}__${safeNameId}`"
     >
-      <dl v-if="!isCollapsed" class="grid grid-cols-6 mt-2">
+      <div class="flex gap-1 items-center">
+        <div class="flex-1">
+          <sba-status-badge v-if="health.status" :status="health.status" />
+        </div>
+        <div v-if="details && details.length > 0" class="w-12 text-right">
+          <sba-button
+            class="p-0! border-none"
+            :title="t('instances.details.health.toggle_details', { name })"
+            :aria-label="t('instances.details.health.toggle_details', { name })"
+            :aria-expanded="String(!isCollapsed)"
+            :aria-controls="`health-details-${id}__${safeNameId}`"
+            @click="() => toggleCollapsed()"
+          >
+            <font-awesome-icon
+              :icon="faChevronRight"
+              class="transition-transform"
+              :class="{ 'rotate-90': !isCollapsed }"
+            />
+          </sba-button>
+        </div>
+      </div>
+      <dl
+        v-if="details && details.length > 0"
+        v-show="!isCollapsed"
+        class="grid grid-cols-6 mt-2"
+      >
         <template
           v-for="(detail, idx) in details"
           :key="`${detail.name}_${idx}`"
@@ -110,10 +115,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  faChevronRight,
-  faCircleInfo,
-} from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import prettyBytes from 'pretty-bytes';
 import { computed, ref, useId, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
