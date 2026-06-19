@@ -88,6 +88,7 @@
         <spring-javaformat-maven-plugin.version>0.0.47</spring-javaformat-maven-plugin.version>
         <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
         <spring-conf-prop-documenter-maven-plugin.version>0.7.2</spring-conf-prop-documenter-maven-plugin.version>
+        <exec-maven-plugin.version>3.6.3</exec-maven-plugin.version>
     </properties>
 
     <modules>
@@ -431,6 +432,11 @@
                     <groupId>org.rodnansol</groupId>
                     <artifactId>spring-configuration-property-documenter-maven-plugin</artifactId>
                     <version>${spring-conf-prop-documenter-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${exec-maven-plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
