@@ -42,6 +42,7 @@ declare global {
     process: number;
     memory: number;
     threads: number;
+    threaddump: number;
     logfile: number;
   };
 

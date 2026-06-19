@@ -179,6 +179,11 @@ public class AdminServerUiProperties {
 		private int threads = 2500;
 
 		/**
+		 * Time in milliseconds to refresh data in threaddump view.
+		 */
+		private int threaddump = 1000;
+
+		/**
 		 * Time in milliseconds to refresh data in logfile view.
 		 */
 		private int logfile = 1000;

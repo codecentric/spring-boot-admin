@@ -43,6 +43,7 @@ import moment from 'moment';
 import { take } from 'rxjs/operators';
 
 import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
@@ -127,7 +128,7 @@ export default {
     },
     createSubscription() {
       this.errorFetch = null;
-      return timer(0, 1000)
+      return timer(0, sbaConfig.uiSettings.pollTimer.threaddump)
         .pipe(
           concatMap(this.fetchThreaddump),
           retryWhen((err) => {
