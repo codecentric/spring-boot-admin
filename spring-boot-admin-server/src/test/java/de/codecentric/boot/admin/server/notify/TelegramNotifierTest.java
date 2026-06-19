@@ -121,10 +121,9 @@ class TelegramNotifierTest {
 		Map<String, Object> parameters = getParameters("DOWN");
 		parameters.put("message_thread_id", 1337);
 
-		verify(restTemplate).getForObject(
-			"https://telegram.com/bot--token-/sendmessage?chat_id={chat_id}&text={text}"
+		verify(restTemplate).getForObject("https://telegram.com/bot--token-/sendmessage?chat_id={chat_id}&text={text}"
 				+ "&parse_mode={parse_mode}&disable_notification={disable_notification}&message_thread_id={message_thread_id}",
-			Void.class, parameters);
+				Void.class, parameters);
 	}
 
 	private Map<String, Object> getParameters(String status) {
