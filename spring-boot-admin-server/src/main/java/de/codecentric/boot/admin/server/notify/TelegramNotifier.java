@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -50,7 +51,7 @@ public class TelegramNotifier extends AbstractContentNotifier {
 	/**
 	 * Unique identifier for the target topic of the target super group
 	 */
-	private Integer messageThreadId;
+	@Nullable private Integer messageThreadId;
 
 	/**
 	 * The token identifying und authorizing your Telegram bot (e.g.
@@ -80,17 +81,27 @@ public class TelegramNotifier extends AbstractContentNotifier {
 			.fromRunnable(() -> restTemplate.getForObject(buildUrl(), Void.class, createMessage(event, instance)));
 	}
 
-    protected String buildUrl() {
-        return String.format(
-                "%s/bot%s/sendmessage?chat_id={chat_id}&message_thread_id={message_thread_id}&text={text}&parse_mode={parse_mode}&disable_notification={disable_notification}",
-                this.apiUrl, this.authToken
-        );
-    }
+	protected String buildUrl() {
+		UriComponentsBuilder builder = UriComponentsBuilder
+			.fromUriString(this.apiUrl + "/bot" + this.authToken + "/sendmessage")
+			.queryParam("chat_id", "{chat_id}")
+			.queryParam("text", "{text}")
+			.queryParam("parse_mode", "{parse_mode}")
+			.queryParam("disable_notification", "{disable_notification}");
+
+		if (this.messageThreadId != null) {
+			builder.queryParam("message_thread_id", "{message_thread_id}");
+		}
+
+		return builder.build().toUriString();
+	}
 
 	private Map<String, Object> createMessage(InstanceEvent event, Instance instance) {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("chat_id", this.chatId);
-		parameters.put("message_thread_id", this.messageThreadId);
+		if (this.messageThreadId != null) {
+			parameters.put("message_thread_id", this.messageThreadId);
+		}
 		parameters.put("parse_mode", this.parseMode);
 		parameters.put("disable_notification", this.disableNotify);
 		parameters.put("text", createContent(event, instance));

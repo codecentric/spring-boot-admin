@@ -109,6 +109,24 @@ class TelegramNotifierTest {
 				Void.class, getParameters("DOWN"));
 	}
 
+	@Test
+	void test_includes_messageThreadId_in_url_when_set() {
+		notifier.setMessageThreadId(1337);
+
+		StepVerifier
+			.create(notifier
+				.notify(new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown())))
+			.verifyComplete();
+
+		Map<String, Object> parameters = getParameters("DOWN");
+		parameters.put("message_thread_id", 1337);
+
+		verify(restTemplate).getForObject(
+			"https://telegram.com/bot--token-/sendmessage?chat_id={chat_id}&text={text}"
+				+ "&parse_mode={parse_mode}&disable_notification={disable_notification}&message_thread_id={message_thread_id}",
+			Void.class, parameters);
+	}
+
 	private Map<String, Object> getParameters(String status) {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("chat_id", "-room-");
