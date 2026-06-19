@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ import de.codecentric.boot.admin.server.services.StatusUpdater;
 import de.codecentric.boot.admin.server.services.endpoints.ChainingStrategy;
 import de.codecentric.boot.admin.server.services.endpoints.ProbeEndpointsStrategy;
 import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
+import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 @Configuration(proxyBeanMethods = false)
@@ -81,9 +82,15 @@ public class AdminServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	public SsrfUrlValidator ssrfUrlValidator() {
+		return new SsrfUrlValidator(this.adminServerProperties.getSsrfProtection());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public InstanceRegistry instanceRegistry(InstanceRepository instanceRepository,
-			InstanceIdGenerator instanceIdGenerator, InstanceFilter instanceFilter) {
-		return new InstanceRegistry(instanceRepository, instanceIdGenerator, instanceFilter);
+			InstanceIdGenerator instanceIdGenerator, InstanceFilter instanceFilter, SsrfUrlValidator ssrfUrlValidator) {
+		return new InstanceRegistry(instanceRepository, instanceIdGenerator, instanceFilter, ssrfUrlValidator);
 	}
 
 	@Bean

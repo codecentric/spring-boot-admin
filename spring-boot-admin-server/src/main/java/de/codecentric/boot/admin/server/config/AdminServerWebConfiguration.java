@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2025 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.HealthGroupsCache;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
+import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
 import de.codecentric.boot.admin.server.web.InstancesController;
@@ -77,11 +78,12 @@ public class AdminServerWebConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public de.codecentric.boot.admin.server.web.reactive.InstancesProxyController instancesProxyController(
-				InstanceRegistry instanceRegistry, InstanceWebClient.Builder instanceWebClientBuilder) {
+				InstanceRegistry instanceRegistry, InstanceWebClient.Builder instanceWebClientBuilder,
+				SsrfUrlValidator ssrfUrlValidator) {
 			return new de.codecentric.boot.admin.server.web.reactive.InstancesProxyController(
 					this.adminServerProperties.getContextPath(),
 					this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry,
-					instanceWebClientBuilder.build());
+					instanceWebClientBuilder.build(), ssrfUrlValidator);
 		}
 
 		@Bean
@@ -110,11 +112,12 @@ public class AdminServerWebConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public de.codecentric.boot.admin.server.web.servlet.InstancesProxyController instancesProxyController(
-				InstanceRegistry instanceRegistry, InstanceWebClient.Builder instanceWebClientBuilder) {
+				InstanceRegistry instanceRegistry, InstanceWebClient.Builder instanceWebClientBuilder,
+				SsrfUrlValidator ssrfUrlValidator) {
 			return new de.codecentric.boot.admin.server.web.servlet.InstancesProxyController(
 					this.adminServerProperties.getContextPath(),
 					this.adminServerProperties.getInstanceProxy().getIgnoredHeaders(), instanceRegistry,
-					instanceWebClientBuilder.build());
+					instanceWebClientBuilder.build(), ssrfUrlValidator);
 		}
 
 		@Bean

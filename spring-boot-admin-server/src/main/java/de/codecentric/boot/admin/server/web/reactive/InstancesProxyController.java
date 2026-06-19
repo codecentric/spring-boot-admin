@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
+import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 import de.codecentric.boot.admin.server.web.AdminController;
 import de.codecentric.boot.admin.server.web.HttpHeaderFilter;
 import de.codecentric.boot.admin.server.web.InstanceWebProxy;
@@ -68,10 +69,16 @@ public class InstancesProxyController {
 
 	public InstancesProxyController(String adminContextPath, Set<String> ignoredHeaders, InstanceRegistry registry,
 			InstanceWebClient instanceWebClient) {
+		this(adminContextPath, ignoredHeaders, registry, instanceWebClient, new SsrfUrlValidator(
+				new de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties()));
+	}
+
+	public InstancesProxyController(String adminContextPath, Set<String> ignoredHeaders, InstanceRegistry registry,
+			InstanceWebClient instanceWebClient, SsrfUrlValidator ssrfUrlValidator) {
 		this.adminContextPath = adminContextPath;
 		this.registry = registry;
 		this.httpHeadersFilter = new HttpHeaderFilter(ignoredHeaders);
-		this.instanceWebProxy = new InstanceWebProxy(instanceWebClient);
+		this.instanceWebProxy = new InstanceWebProxy(instanceWebClient, ssrfUrlValidator);
 	}
 
 	@RequestMapping(path = INSTANCE_MAPPED_PATH, method = { RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST,
