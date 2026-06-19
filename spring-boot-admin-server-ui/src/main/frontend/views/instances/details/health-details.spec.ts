@@ -385,10 +385,8 @@ describe('HealthDetails', () => {
       await user.click(toggleButton);
 
       // Details should now be hidden
-      expect(
-        screen.queryByText('HSQL Database Engine'),
-      ).not.toBeInTheDocument();
-      expect(screen.queryByText('isValid()')).not.toBeInTheDocument();
+      expect(screen.queryByText('HSQL Database Engine')).not.toBeVisible();
+      expect(screen.queryByText('isValid()')).not.toBeVisible();
     });
 
     it('should expand details when toggle button is clicked twice', async () => {
@@ -412,9 +410,7 @@ describe('HealthDetails', () => {
 
       // First click - expand
       await user.click(toggleButton);
-      expect(
-        screen.queryByText('HSQL Database Engine'),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText('HSQL Database Engine')).not.toBeVisible();
 
       // Second click - collapse
       await user.click(toggleButton);
@@ -465,9 +461,7 @@ describe('HealthDetails', () => {
       });
 
       // Details should be visible because we set collapsed to false in localStorage
-      expect(
-        await screen.findByText('HSQL Database Engine'),
-      ).toBeInTheDocument();
+      expect(await screen.findByText('HSQL Database Engine')).toBeVisible();
     });
 
     it('should handle child health components correctly', async () => {

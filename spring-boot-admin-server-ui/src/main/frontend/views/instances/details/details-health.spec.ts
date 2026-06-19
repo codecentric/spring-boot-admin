@@ -42,9 +42,15 @@ describe('DetailsHealth', () => {
       },
     });
 
-    expect(await screen.findByLabelText('db')).toBeInTheDocument();
-    expect(await screen.findByLabelText('diskSpace')).toBeInTheDocument();
-    expect(await screen.findByLabelText('ping')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('group', { name: 'db' }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('group', { name: 'diskSpace' }),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByRole('group', { name: 'ping' }),
+    ).toBeInTheDocument();
   });
 
   it('should update when instance prop changes', async () => {
@@ -180,7 +186,10 @@ describe('DetailsHealth', () => {
 
       statusBadges = await screen.findAllByRole('status');
       expect(statusBadges[0]).toHaveTextContent('DOWN');
-      expect(await screen.findByLabelText('db')).toBeInTheDocument();
+
+      expect(
+        await screen.findByRole('group', { name: 'db' }),
+      ).toBeInTheDocument();
     });
   });
 
@@ -250,9 +259,11 @@ describe('DetailsHealth', () => {
       });
 
       // custom-group has service component
-      expect(await screen.findByLabelText('customDetails')).toBeInTheDocument();
       expect(
-        await screen.findByLabelText('evenMoreDiskSpace'),
+        await screen.findByRole('group', { name: 'customDetails' }),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByRole('group', { name: 'evenMoreDiskSpace' }),
       ).toBeInTheDocument();
     });
 
@@ -277,7 +288,9 @@ describe('DetailsHealth', () => {
 
       // First click — fetch & show
       await userEvent.click(button);
-      await screen.findByLabelText('service');
+      expect(
+        await screen.findByRole('group', { name: 'service' }),
+      ).toBeInTheDocument();
 
       // Second click — hide
       await userEvent.click(button);
@@ -285,7 +298,9 @@ describe('DetailsHealth', () => {
 
       // Third click — show again
       await userEvent.click(button);
-      expect(await screen.findByLabelText('service')).toBeInTheDocument();
+      expect(
+        await screen.findByRole('group', { name: 'service' }),
+      ).toBeInTheDocument();
 
       // fetchHealthGroup should only be called once (first click)
       expect(fetchGroupSpy).toHaveBeenCalledTimes(1);
