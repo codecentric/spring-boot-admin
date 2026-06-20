@@ -282,24 +282,3 @@ export const fetchLogfileRange = async (instance, start, end, direction) => {
     }
   }
 };
-
-
-// async fetchLogfileRange(start: number, end: number): Promise<LogfileRange> {
-//     const response = await this.axios.get(uri`actuator/logfile`, {
-//       responseType: 'text',
-//       headers: {
-//         Accept: 'text/plain',
-//         Range: `bytes=${start}-${end}`,
-//       },
-//       suppressToast: (error: AxiosError) => error.response?.status === 416,
-//     });
-//     const metadata = getLogfileWindowMetadata(response);
-
-//     return {
-//       data: response.data,
-//       totalBytes: metadata.totalBytes,
-//       windowStart: metadata.windowStart,
-//       windowEnd: metadata.windowEnd,
-//       status: response.status,
-//     };
-//   }

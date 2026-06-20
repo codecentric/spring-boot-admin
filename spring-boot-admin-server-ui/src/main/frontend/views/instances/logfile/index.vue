@@ -235,7 +235,6 @@ export default {
     highlightedLineTimer: null,
     isMaintainingTailPin: false,
     manualMetadataSubscription: null,
-    manualChunkCache: {},
     mode: LogfileMode.FOLLOW,
     chunkSize: DEFAULT_LOGFILE_CHUNK_SIZE,
     windowStart: -1,
