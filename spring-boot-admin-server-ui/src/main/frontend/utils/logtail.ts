@@ -31,10 +31,28 @@ export enum StreamType {
   Empty = 'empty',
 }
 
+export const ChunkDirection = Object.freeze({
+  PREVIOUS: 'previous',
+  NEXT: 'next',
+  REPLACE: 'replace',
+});
+
+export enum ContentType {
+  NormalContent = 'normalContent',
+  ShortContent = 'shortContent',
+}
+
 const parseInteger = (value, fallback) => {
   const parsed = parseInt(value, 10);
   return Number.isNaN(parsed) ? fallback : parsed;
 };
+
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+const byteLength = (content) => textEncoder.encode(content).length;
+const substringFromByteOffset = (content, offset) =>
+  textDecoder.decode(textEncoder.encode(content).slice(offset));
 
 export const getTotalBytesFrom416 = (response) => {
   const contentRange = response.headers?.get?.('content-range');
@@ -44,7 +62,7 @@ export const getTotalBytesFrom416 = (response) => {
 };
 
 export const getLogfileWindowMetadata = (response) => {
-  const contentLength = response.data.length;
+  const contentLength = byteLength(response.data);
   const contentRange = response.headers.get('content-range');
   const rangeMatch = contentRange?.match(/^bytes\s+(\d+)-(\d+)\/(\d+|\*)$/i);
 
@@ -68,10 +86,59 @@ export const getLogfileWindowMetadata = (response) => {
   };
 };
 
+export const TrimtoCompleteLines = (
+  content: string,
+  windowStart: number,
+  windowEnd: number,
+  firstChunkSet: boolean,
+) => {
+  const completeLineStart = content.indexOf('\n');
+  const completeLineEnd = content.lastIndexOf('\n');
+
+  if (completeLineEnd === -1) {
+    return {
+      trimmedCompleteLines: firstChunkSet ? content : undefined,
+      windowStart,
+      windowEnd,
+      contentType: ContentType.ShortContent,
+    };
+  }
+
+  let trimmedStart = 0;
+  if (!firstChunkSet && windowStart > 0) {
+    if (completeLineStart === completeLineEnd) {
+      return {
+        trimmedCompleteLines: undefined,
+        windowStart,
+        windowEnd,
+        contentType: ContentType.ShortContent,
+      };
+    }
+    trimmedStart = completeLineStart + 1;
+  }
+
+  const trimmedCompleteLines = content.substring(
+    trimmedStart,
+    completeLineEnd + 1,
+  );
+  const newWindowEnd =
+    windowEnd - byteLength(content.substring(completeLineEnd + 1));
+  const newWindowStart =
+    newWindowEnd - byteLength(trimmedCompleteLines) + 1;
+
+  return {
+    trimmedCompleteLines,
+    windowStart: newWindowStart,
+    windowEnd: newWindowEnd,
+    contentType: ContentType.NormalContent,
+  };
+};
+
 export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
   let range = `bytes=-${initialSize}`;
   let size = 0;
-  let streamUpdated = true;
+  let lastCompleteByte = -1;
+  let firstChunkSet = false;
 
   return timer(0, interval).pipe(
     concatMap(() => {
@@ -81,7 +148,6 @@ export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
           headers: { range, Accept: 'text/plain' },
         })
           .then((response) => {
-            streamUpdated = false;
             observer.next(response);
             observer.complete();
           })
@@ -91,7 +157,6 @@ export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
           if (error.response?.status !== 416) {
             return throwError(() => error);
           }
-
           return of({
             data: '',
             status: error.response?.status,
@@ -105,44 +170,136 @@ export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
       if (response.status === 416) {
         const currentSize = getTotalBytesFrom416(response);
         if (currentSize === size) {
-          return EMPTY;
+          return of({ type: StreamType.Empty });
         }
-        size = 0;
         range = `bytes=-${initialSize}`;
-        streamUpdated = true;
+        size = 0;
+        lastCompleteByte = -1;
+        firstChunkSet = false;
         return of({ type: StreamType.Reset });
       }
       const { windowStart, windowEnd, totalBytes } =
         getLogfileWindowMetadata(response);
-      let addendum = response.data;
-      let addendumWindowStart = windowStart;
+      const overlap = firstChunkSet
+        ? Math.max(lastCompleteByte - windowStart + 1, 0)
+        : 0;
+      let addendum = substringFromByteOffset(response.data, overlap);
+      let addendumWindowStart = windowStart + overlap;
+      let addendumWindowEnd = windowEnd;
       if (response.status === 206 || response.status === 200) {
         if (totalBytes > size) {
-          streamUpdated = true;
-          const overlap = Math.max(size - windowStart, 0);
-          addendum = addendum.substring(overlap);
-          addendumWindowStart = windowStart + overlap;
+          const trimmed = TrimtoCompleteLines(
+            addendum,
+            addendumWindowStart,
+            windowEnd,
+            firstChunkSet,
+          );
+          if(trimmed.contentType === ContentType.ShortContent){
+            return EMPTY;
+          }
+          if(!firstChunkSet){
+            firstChunkSet = true;
+          }
+          addendum = trimmed.trimmedCompleteLines;
+          addendumWindowStart = trimmed.windowStart;
+          addendumWindowEnd = trimmed.windowEnd;
           size = totalBytes;
-          range = `bytes=${Math.max(size - 1, 0)}-`;
+          lastCompleteByte = trimmed.windowEnd
+          range = `bytes=${lastCompleteByte}-`;
+          return of(
+            {
+              type: StreamType.Data,
+              totalBytes: size,
+              addendum,
+              windowStart: addendumWindowStart,
+              windowEnd: addendumWindowEnd,
+            }
+          )
+        }else{
+          return EMPTY;
         }
       } else {
         throw 'Unexpected response status: ' + response.status;
       }
-      if (size === 0) {
-        return of({ type: StreamType.Empty });
-      }
-
-      if (streamUpdated) {
-        return of({
-          type: StreamType.Data,
-          totalBytes: size,
-          addendum,
-          windowStart: addendumWindowStart,
-          windowEnd,
-        });
-      } else {
-        return EMPTY;
-      }
     }),
   );
 };
+
+export const fetchLogfileRange = async (instance, start, end, direction) => {
+  let { data, totalBytes, windowStart, windowEnd, status } = await instance.fetchLogfileRange(start, end);
+  //manual polling return type
+  if(start == 0 && end == 0){
+    return {
+      data,
+      totalBytes,
+      windowStart,
+      windowEnd,
+      status
+    }
+  }
+  let completeLineStart = data.indexOf('\n');
+  let completeLineEnd = data.lastIndexOf('\n');
+  const hasAtLeastTwoNewLines =
+    completeLineStart !== -1 && (completeLineStart !== completeLineEnd);
+  if(!hasAtLeastTwoNewLines){
+    throw new Error('Too few lines: need at least two lines to display properly');
+  }
+  if(ChunkDirection.NEXT === direction){
+    const trimmedCompleteLines = data.substring(0, completeLineEnd + 1);
+    const newWindowEnd =
+      windowEnd - byteLength(data.substring(completeLineEnd + 1));
+    return {
+      data: trimmedCompleteLines,
+      totalBytes,
+      windowStart,
+      windowEnd: newWindowEnd,
+      status
+    }
+  }
+  if (windowStart === 0) {
+    const trimmedCompleteLines = data.substring(0, completeLineEnd + 1);
+    const newWindowEnd =
+      windowEnd - byteLength(data.substring(completeLineEnd + 1));
+    return {
+      data: trimmedCompleteLines,
+      totalBytes,
+      windowStart,
+      windowEnd: newWindowEnd,
+      status
+    }
+  } else {
+    const trimmedCompleteLines = data.substring(completeLineStart + 1, completeLineEnd + 1);
+    const newWindowEnd =
+      windowEnd - byteLength(data.substring(completeLineEnd + 1));
+    const newWindowStart =
+      newWindowEnd - byteLength(trimmedCompleteLines) + 1;
+    return {
+      data: trimmedCompleteLines,
+      totalBytes,
+      windowStart: newWindowStart,
+      windowEnd: newWindowEnd,
+      status
+    }
+  }
+};
+
+
+// async fetchLogfileRange(start: number, end: number): Promise<LogfileRange> {
+//     const response = await this.axios.get(uri`actuator/logfile`, {
+//       responseType: 'text',
+//       headers: {
+//         Accept: 'text/plain',
+//         Range: `bytes=${start}-${end}`,
+//       },
+//       suppressToast: (error: AxiosError) => error.response?.status === 416,
+//     });
+//     const metadata = getLogfileWindowMetadata(response);
+
+//     return {
+//       data: response.data,
+//       totalBytes: metadata.totalBytes,
+//       windowStart: metadata.windowStart,
+//       windowEnd: metadata.windowEnd,
+//       status: response.status,
+//     };
+//   }
