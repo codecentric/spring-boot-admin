@@ -19,14 +19,18 @@ package de.codecentric.boot.admin.server.ui.web;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.view.AbstractView;
 
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties;
 import de.codecentric.boot.admin.server.ui.config.CssColorUtils;
+import de.codecentric.boot.admin.server.ui.extensions.UiExtension;
 import de.codecentric.boot.admin.server.ui.extensions.UiExtensions;
 import de.codecentric.boot.admin.server.web.servlet.AdminControllerHandlerMapping;
 
@@ -137,6 +141,45 @@ class UiControllerTest {
 					CssColorUtils.hexToRgb(palette.getShade900())));
 	}
 
+	@Test
+	void should_render_login_view_with_anonymous_user_model() throws Exception {
+		UiController.Settings uiSettings = UiController.Settings.builder().build();
+		MockMvc mockMvc = setupControllerWithView("", UiExtensions.EMPTY, uiSettings);
+
+		mockMvc.perform(get("http://example/login"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("login"))
+			.andExpect(model().attribute("baseUrl", "http://example/"))
+			.andExpect(model().attribute("uiSettings", uiSettings))
+			.andExpect(model().attribute("cssExtensions", List.of()))
+			.andExpect(model().attribute("jsExtensions", List.of()))
+			.andExpect(model().attribute("user", Map.of()));
+	}
+
+	@Test
+	void should_render_variables_css_with_public_url_and_ui_extensions() throws Exception {
+		UiController.Settings uiSettings = UiController.Settings.builder()
+			.title("Spring Boot Admin")
+			.brand("codecentric")
+			.routes(List.of("/applications/**"))
+			.rememberMeEnabled(true)
+			.build();
+		UiExtension cssExtension = new UiExtension("custom/custom.css", "classpath:/META-INF/custom/custom.css");
+		UiExtension jsExtension = new UiExtension("custom/custom.js", "classpath:/META-INF/custom/custom.js");
+		UiExtension ignoredExtension = new UiExtension("custom/readme.txt", "classpath:/META-INF/custom/readme.txt");
+		MockMvc mockMvc = setupControllerWithView("https://public:8443/admin",
+				new UiExtensions(List.of(cssExtension, jsExtension, ignoredExtension)), uiSettings);
+
+		mockMvc.perform(get("http://example/variables.css").principal(() -> "jane"))
+			.andExpect(status().isOk())
+			.andExpect(view().name("variables.css"))
+			.andExpect(model().attribute("baseUrl", "https://public:8443/admin/"))
+			.andExpect(model().attribute("uiSettings", uiSettings))
+			.andExpect(model().attribute("cssExtensions", List.of(cssExtension)))
+			.andExpect(model().attribute("jsExtensions", List.of(jsExtension)))
+			.andExpect(model().attribute("user", Map.of("name", "jane")));
+	}
+
 	private MockMvc setupController(String publicUrl, List<UiController.ExternalView> externalViews) {
 		var uiControllerSettings = UiController.Settings.builder().theme(new AdminServerUiProperties.UiTheme());
 		if (!isEmpty(externalViews)) {
@@ -146,6 +189,23 @@ class UiControllerTest {
 			.standaloneSetup(new UiController(publicUrl, UiExtensions.EMPTY, uiControllerSettings.build()))
 			.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
 			.build();
+	}
+
+	private MockMvc setupControllerWithView(String publicUrl, UiExtensions uiExtensions,
+			UiController.Settings uiSettings) {
+		return MockMvcBuilders.standaloneSetup(new UiController(publicUrl, uiExtensions, uiSettings))
+			.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
+			.setSingleView(new NoOpView())
+			.build();
+	}
+
+	private static final class NoOpView extends AbstractView {
+
+		@Override
+		protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
+				HttpServletResponse response) {
+		}
+
 	}
 
 }
