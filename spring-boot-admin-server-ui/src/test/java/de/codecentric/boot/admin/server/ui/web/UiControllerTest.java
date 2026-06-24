@@ -143,7 +143,9 @@ class UiControllerTest {
 
 	@Test
 	void should_render_login_view_with_anonymous_user_model() throws Exception {
-		UiController.Settings uiSettings = UiController.Settings.builder().build();
+		UiController.Settings uiSettings = UiController.Settings.builder()
+			.theme(new AdminServerUiProperties.UiTheme())
+			.build();
 		MockMvc mockMvc = setupControllerWithView("", UiExtensions.EMPTY, uiSettings);
 
 		mockMvc.perform(get("http://example/login"))
@@ -163,6 +165,7 @@ class UiControllerTest {
 			.brand("codecentric")
 			.routes(List.of("/applications/**"))
 			.rememberMeEnabled(true)
+			.theme(new AdminServerUiProperties.UiTheme())
 			.build();
 		UiExtension cssExtension = new UiExtension("custom/custom.css", "classpath:/META-INF/custom/custom.css");
 		UiExtension jsExtension = new UiExtension("custom/custom.js", "classpath:/META-INF/custom/custom.js");
