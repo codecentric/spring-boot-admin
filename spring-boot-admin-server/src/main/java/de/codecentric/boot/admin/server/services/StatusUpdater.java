@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
+import static de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.DEFAULT_STATUS_MISMATCH_STRATEGY;
 import static java.util.Collections.emptyMap;
 
 /**
@@ -59,6 +61,13 @@ public class StatusUpdater {
 	private final InstanceWebClient instanceWebClient;
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
+
+	private final BiPredicate<StatusInfo, StatusInfo> statusInfoMismatchPredicate;
+
+	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
+			ApiMediaTypeHandler apiMediaTypeHandler) {
+		this(repository, instanceWebClient, apiMediaTypeHandler, DEFAULT_STATUS_MISMATCH_STRATEGY.asPredicate());
+	}
 
 	private Duration timeout = Duration.ofSeconds(10);
 
@@ -85,7 +94,7 @@ public class StatusUpdater {
 			.timeout(getTimeoutWithMargin())
 			.doOnError((ex) -> logError(instance, ex))
 			.onErrorResume(this::handleError)
-			.map(instance::withStatusInfo);
+			.map((statusInfo) -> instance.withStatusInfo(statusInfo, statusInfoMismatchPredicate));
 	}
 
 	/*
