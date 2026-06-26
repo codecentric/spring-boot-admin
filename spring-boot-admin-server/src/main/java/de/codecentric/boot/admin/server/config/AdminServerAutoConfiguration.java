@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.config;
 
 import java.time.Duration;
+import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -25,6 +26,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -82,8 +84,19 @@ public class AdminServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SsrfUrlValidator ssrfUrlValidator() {
-		return new SsrfUrlValidator(this.adminServerProperties.getSsrfProtection());
+	public InetAddressFilter ssrfInetAddressFilter() {
+		InetAddressFilter filter = InetAddressFilter.externalAddresses();
+		List<String> allowedCidrs = this.adminServerProperties.getSsrfProtection().getAllowedCidrs();
+		if (!allowedCidrs.isEmpty()) {
+			filter = filter.or(allowedCidrs.toArray(String[]::new));
+		}
+		return filter;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public SsrfUrlValidator ssrfUrlValidator(InetAddressFilter ssrfInetAddressFilter) {
+		return new SsrfUrlValidator(this.adminServerProperties.getSsrfProtection(), ssrfInetAddressFilter);
 	}
 
 	@Bean

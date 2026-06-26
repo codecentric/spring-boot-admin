@@ -22,6 +22,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.http.client.InetAddressFilter;
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties;
@@ -150,7 +151,7 @@ class InstanceRegistryTest {
 		void setUp() {
 			SsrfProtectionProperties ssrfProps = new SsrfProtectionProperties();
 			ssrfProps.setEnabled(true);
-			SsrfUrlValidator ssrfValidator = new SsrfUrlValidator(ssrfProps);
+			SsrfUrlValidator ssrfValidator = new SsrfUrlValidator(ssrfProps, InetAddressFilter.externalAddresses());
 			ssrfRegistry = new InstanceRegistry(repository, idGenerator, (instance) -> true, ssrfValidator);
 		}
 
@@ -158,7 +159,7 @@ class InstanceRegistryTest {
 		void register_rejects_awsMetadataHealthUrl() {
 			Registration reg = Registration.create("evil", "http://169.254.169.254/latest/meta-data/").build();
 			assertThatThrownBy(() -> ssrfRegistry.register(reg).block()).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("link-local");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 		@Test
@@ -167,7 +168,7 @@ class InstanceRegistryTest {
 				.managementUrl("http://127.0.0.1:8080/actuator")
 				.build();
 			assertThatThrownBy(() -> ssrfRegistry.register(reg).block()).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("loopback");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 		@Test
@@ -176,7 +177,7 @@ class InstanceRegistryTest {
 				.serviceUrl("http://192.168.1.1/")
 				.build();
 			assertThatThrownBy(() -> ssrfRegistry.register(reg).block()).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("192.168.0.0/16");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 		@Test
@@ -187,16 +188,48 @@ class InstanceRegistryTest {
 		}
 
 		@Test
-		void register_allows_allowlistedPrivateHost() {
+		void register_allows_privateHost_whenCustomFilterPermitsIt() {
 			SsrfProtectionProperties ssrfProps = new SsrfProtectionProperties();
 			ssrfProps.setEnabled(true);
-			ssrfProps.getAllowedHosts().add("192.168.1.100");
+			// Extend the default external filter to also allow 192.168.1.0/24
+			InetAddressFilter customFilter = InetAddressFilter.externalAddresses().or("192.168.1.0/24");
 			ssrfRegistry = new InstanceRegistry(repository, idGenerator, (instance) -> true,
-					new SsrfUrlValidator(ssrfProps));
+					new SsrfUrlValidator(ssrfProps, customFilter));
 
 			Registration reg = Registration.create("intranet-svc", "http://192.168.1.100/actuator/health").build();
 			InstanceId id = ssrfRegistry.register(reg).block();
 			assertThat(id).isNotNull();
+		}
+
+		@Test
+		void register_allows_cidrRange_whenConfiguredViaProperty() {
+			SsrfProtectionProperties ssrfProps = new SsrfProtectionProperties();
+			ssrfProps.setEnabled(true);
+			ssrfProps.setAllowedCidrs(java.util.List.of("10.0.0.0/8"));
+			InetAddressFilter filter = InetAddressFilter.externalAddresses()
+				.or(ssrfProps.getAllowedCidrs().toArray(String[]::new));
+			ssrfRegistry = new InstanceRegistry(repository, idGenerator, (instance) -> true,
+					new SsrfUrlValidator(ssrfProps, filter));
+
+			Registration reg = Registration.create("pod", "http://10.42.0.5/actuator/health").build();
+			InstanceId id = ssrfRegistry.register(reg).block();
+			assertThat(id).isNotNull();
+		}
+
+		@Test
+		void register_rejects_addressOutsideAllowedCidr() {
+			SsrfProtectionProperties ssrfProps = new SsrfProtectionProperties();
+			ssrfProps.setEnabled(true);
+			ssrfProps.setAllowedCidrs(java.util.List.of("192.168.1.0/24"));
+			InetAddressFilter filter = InetAddressFilter.externalAddresses()
+				.or(ssrfProps.getAllowedCidrs().toArray(String[]::new));
+			ssrfRegistry = new InstanceRegistry(repository, idGenerator, (instance) -> true,
+					new SsrfUrlValidator(ssrfProps, filter));
+
+			// 192.168.2.1 is outside the allowed 192.168.1.0/24
+			Registration reg = Registration.create("evil", "http://192.168.2.1/actuator/health").build();
+			assertThatThrownBy(() -> ssrfRegistry.register(reg).block()).isInstanceOf(SsrfProtectionException.class)
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 	}

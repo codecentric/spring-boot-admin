@@ -27,8 +27,8 @@ network, not just cloud metadata endpoints.
 
 :::warning
 SSRF protection is **disabled by default** to avoid breaking existing deployments where the Admin Server legitimately
-communicates with services on private IP ranges. Enable it explicitly and configure an allowlist for any intranet
-services that need to register.
+communicates with services on private IP ranges. Enable it explicitly and provide a custom `InetAddressFilter` bean
+for any intranet services that need to register.
 :::
 
 ---
@@ -53,7 +53,9 @@ request.
 
 ## What Gets Blocked
 
-When protection is enabled, the following are rejected by default:
+When protection is enabled, address filtering is delegated to Spring Boot's
+[`InetAddressFilter`](https://docs.spring.io/spring-boot/4.1/api/java/org/springframework/boot/http/client/InetAddressFilter.html).
+The default filter (`InetAddressFilter.externalAddresses()`) blocks all non-external addresses, including:
 
 | Category | Examples |
 |---|---|
@@ -64,7 +66,6 @@ When protection is enabled, the following are rejected by default:
 | RFC 1918 Class C | `192.168.0.0/16` |
 | IPv6 link-local | `fe80::/10` |
 | IPv6 unique-local | `fc00::/7` (fc and fd prefixes) |
-| IPv4-mapped IPv6 | `::ffff:` prefix embedding a private IPv4 |
 | Unspecified address | `0.0.0.0` |
 | Disallowed schemes | Anything other than `http` and `https` (e.g. `file://`, `ftp://`) |
 
@@ -72,9 +73,8 @@ Registration attempts targeting any of these return `400 Bad Request`. Proxy req
 return `403 Forbidden`.
 
 :::note
-Hostname-to-IP resolution is **not** performed during validation. Only the literal hostname string from the URL is
-checked. An attacker who controls a public DNS record pointing to a private IP (DNS rebinding) is not blocked by this
-validator alone. Use IMDSv2 on AWS or network-level egress controls as additional layers of defence.
+Hostnames are **resolved via DNS** during validation. This means a public hostname that resolves to a private IP
+(DNS rebinding) is also blocked — not just hostnames that literally look like private addresses.
 :::
 
 ---
@@ -82,24 +82,12 @@ validator alone. Use IMDSv2 on AWS or network-level egress controls as additiona
 ## Allowing Internal Services
 
 If your Admin Server legitimately needs to reach services on private addresses — for example in an on-premises or
-Kubernetes cluster deployment — add those hosts to the allowlist. An allowlisted host bypasses all block checks.
+Kubernetes cluster deployment — you have two options:
 
-### Exact host match
+### Option 1: Configuration properties (recommended)
 
-```yaml
-spring:
-  boot:
-    admin:
-      ssrf-protection:
-        enabled: true
-        allowed-hosts:
-          - 192.168.1.100
-          - monitoring-service.internal
-```
-
-### Glob-style suffix pattern
-
-Use `*.suffix` to allow an entire subdomain:
+Add CIDR ranges to `allowed-cidrs`. Both IPv4 and IPv6 CIDR notation are supported. These ranges are ORed with the
+default `externalAddresses()` filter, so public addresses always remain reachable.
 
 ```yaml
 spring:
@@ -107,39 +95,44 @@ spring:
     admin:
       ssrf-protection:
         enabled: true
-        allowed-hosts:
-          - "*.svc.cluster.local"   # all Kubernetes services
-          - "*.internal.corp"
+        allowed-cidrs:
+          - "192.168.1.0/24"      # single subnet
+          - "10.0.0.0/8"         # entire RFC 1918 Class A
+          - "fd00::/8"           # IPv6 unique-local range
 ```
 
-The glob `*.svc.cluster.local` matches `my-service.svc.cluster.local` but not `svc.cluster.local` itself. Matching
-is case-insensitive.
-
----
-
-## Blocking Additional Hosts
-
-To block hostnames beyond the built-in private ranges — for example internal domains that should never register — add
-regex patterns to `blocked-host-patterns`:
+Single-host entries (equivalent to `/32` or `/128`) are also supported:
 
 ```yaml
-spring:
-  boot:
-    admin:
-      ssrf-protection:
-        enabled: true
-        blocked-host-patterns:
-          - ".*\\.internal\\.corp$"
-          - "metadata\\.google\\.internal"
+        allowed-cidrs:
+          - "192.168.1.100"      # treated as a /32 host entry
 ```
 
-Patterns are matched against the raw hostname using `java.util.regex.Pattern`. Invalid patterns are logged as warnings
-and skipped.
+### Option 2: Custom `InetAddressFilter` bean
 
-:::note
-The allowlist takes precedence over blocked patterns. A host matching both an `allowed-hosts` entry and a
-`blocked-host-patterns` entry is **allowed**.
-:::
+For more control, expose an `InetAddressFilter` bean. It replaces the auto-configured filter entirely.
+
+```java
+import org.springframework.boot.http.client.InetAddressFilter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class SsrfConfig {
+
+    @Bean
+    public InetAddressFilter ssrfInetAddressFilter() {
+        return InetAddressFilter.externalAddresses()
+            .or("10.0.0.0/8")       // pod CIDR
+            .or("172.16.0.0/12");   // service CIDR
+    }
+}
+```
+
+`InetAddressFilter` supports CIDR notation for both IPv4 and IPv6, and can be composed with `.or()`, `.and()`, and
+`.andNot()`. See the
+[Spring Boot reference documentation](https://docs.spring.io/spring-boot/4.1/reference/io/rest-client.html#io.rest-client.global-configuration.inetaddress-filtering)
+for the full API.
 
 ---
 
@@ -167,18 +160,20 @@ spring:
 |---|---|---|---|
 | `spring.boot.admin.ssrf-protection.enabled` | `boolean` | `false` | Enable SSRF URL validation |
 | `spring.boot.admin.ssrf-protection.allowed-schemes` | `Set<String>` | `http, https` | URL schemes that are permitted |
-| `spring.boot.admin.ssrf-protection.allowed-hosts` | `List<String>` | _(empty)_ | Hosts exempt from all block checks. Supports exact names and `*.suffix` glob patterns |
-| `spring.boot.admin.ssrf-protection.blocked-host-patterns` | `List<String>` | _(empty)_ | Additional Java regex patterns matched against the raw hostname |
+| `spring.boot.admin.ssrf-protection.allowed-cidrs` | `List<String>` | _(empty)_ | IP addresses or CIDR ranges (IPv4 and IPv6) that are permitted in addition to public addresses. Examples: `192.168.1.0/24`, `10.0.0.0/8`, `fd00::/8` |
+
+For finer-grained control over address filtering, expose a custom `InetAddressFilter` bean (see [Allowing Internal Services](#allowing-internal-services)).
 
 ---
 
 ## Providing a Custom Validator
 
-Override the default `SsrfUrlValidator` bean to implement custom logic — for example, DNS resolution or CIDR matching:
+Override the entire `SsrfUrlValidator` bean to implement fully custom logic:
 
 ```java
 import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -186,15 +181,9 @@ import org.springframework.context.annotation.Configuration;
 public class CustomSsrfConfig {
 
     @Bean
-    public SsrfUrlValidator ssrfUrlValidator(AdminServerProperties properties) {
-        AdminServerProperties.SsrfProtectionProperties ssrfProps =
-            properties.getSsrfProtection();
-        // Wrap or extend the default validator
-        SsrfUrlValidator defaultValidator = new SsrfUrlValidator(ssrfProps);
-        return url -> {
-            defaultValidator.validate(url);
-            // Add custom checks here
-        };
+    public SsrfUrlValidator ssrfUrlValidator(AdminServerProperties properties,
+                                             InetAddressFilter ssrfInetAddressFilter) {
+        return new SsrfUrlValidator(properties.getSsrfProtection(), ssrfInetAddressFilter);
     }
 }
 ```

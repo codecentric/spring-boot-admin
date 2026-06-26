@@ -266,8 +266,8 @@ public class AdminServerProperties {
 
 		/**
 		 * Whether SSRF protection is enabled. When enabled, registration URLs are
-		 * validated against blocked schemes and private/internal IP ranges. Default:
-		 * false (opt-in).
+		 * validated against blocked schemes and non-external IP addresses. Default: false
+		 * (opt-in).
 		 */
 		private boolean enabled = false;
 
@@ -278,22 +278,15 @@ public class AdminServerProperties {
 		private Set<String> allowedSchemes = new HashSet<>(asList("http", "https"));
 
 		/**
-		 * Hosts (exact match or glob-style suffix patterns) that are explicitly allowed
-		 * even if they would otherwise match a blocked range. Useful for intranet
-		 * deployments where SBA must reach private-IP services.
+		 * Additional IP addresses or CIDR ranges (IPv4 and IPv6) that are permitted even
+		 * if they would otherwise be blocked by the default
+		 * {@code InetAddressFilter.externalAddresses()} filter. Useful for intranet
+		 * deployments where the Admin Server must reach services on private IP ranges.
 		 * <p>
-		 * Example: {@code 192.168.1.100}, {@code *.internal.corp}
+		 * Examples: {@code 192.168.1.100}, {@code 192.168.1.0/24}, {@code 10.0.0.0/8},
+		 * {@code fd00::/8}
 		 */
-		private List<String> allowedHosts = new ArrayList<>();
-
-		/**
-		 * Additional hostname patterns (regex) to block beyond the built-in private
-		 * ranges. Matched against the raw hostname from the URL (before any DNS
-		 * resolution).
-		 * <p>
-		 * Example: {@code .*\.internal\.corp$}
-		 */
-		private List<String> blockedHostPatterns = new ArrayList<>();
+		private List<String> allowedCidrs = new ArrayList<>();
 
 	}
 

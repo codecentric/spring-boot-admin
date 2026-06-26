@@ -27,6 +27,7 @@ import io.netty.handler.timeout.ReadTimeoutException;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -68,11 +69,6 @@ public class InstanceWebProxy {
 	private final ExchangeStrategies strategies = ExchangeStrategies.withDefaults();
 
 	private final SsrfUrlValidator ssrfUrlValidator;
-
-	public InstanceWebProxy(InstanceWebClient instanceWebClient) {
-		this(instanceWebClient, new SsrfUrlValidator(
-				new de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties()));
-	}
 
 	public InstanceWebProxy(InstanceWebClient instanceWebClient, SsrfUrlValidator ssrfUrlValidator) {
 		this.instanceWebClient = instanceWebClient;

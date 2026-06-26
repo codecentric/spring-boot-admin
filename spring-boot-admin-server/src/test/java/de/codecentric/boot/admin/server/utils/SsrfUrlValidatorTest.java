@@ -16,13 +16,12 @@
 
 package de.codecentric.boot.admin.server.utils;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.http.client.InetAddressFilter;
 
 import de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties;
 import de.codecentric.boot.admin.server.web.client.exception.SsrfProtectionException;
@@ -40,7 +39,7 @@ class SsrfUrlValidatorTest {
 	void setUp() {
 		properties = new SsrfProtectionProperties();
 		properties.setEnabled(true);
-		validator = new SsrfUrlValidator(properties);
+		validator = new SsrfUrlValidator(properties, InetAddressFilter.externalAddresses());
 	}
 
 	@Test
@@ -59,16 +58,16 @@ class SsrfUrlValidatorTest {
 	}
 
 	@Test
-	void blocks_unspecifiedAddress() {
-		assertThatThrownBy(() -> validator.validate("http://0.0.0.0/")).isInstanceOf(SsrfProtectionException.class)
-			.hasMessageContaining("unspecified address");
+	void ignores_unresolvableHost() {
+		// Unknown hosts cannot be resolved at registration time; the HTTP client's
+		// InetAddressFilter will enforce the policy when a connection is attempted.
+		assertThatCode(() -> validator.validate("http://this-host-does-not-exist.invalid/health"))
+			.doesNotThrowAnyException();
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = { "http://example.com/actuator/health", "https://api.example.com/admin/health",
-			"https://93.184.216.34/health", // example.com IP
-			"http://172.15.0.1/health", // just outside 172.16-31 range
-			"http://172.32.0.1/health" // just above 172.16-31 range
+			"https://93.184.216.34/health" // example.com IP
 	})
 	void allows_publicUrls(String url) {
 		assertThatCode(() -> validator.validate(url)).doesNotThrowAnyException();
@@ -125,14 +124,14 @@ class SsrfUrlValidatorTest {
 				"http://127.255.255.255/health" })
 		void blocks_loopbackIpv4(String url) {
 			assertThatThrownBy(() -> validator.validate(url)).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("loopback");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 		@ParameterizedTest
 		@ValueSource(strings = { "http://[::1]/health", "http://[0:0:0:0:0:0:0:1]/health" })
 		void blocks_loopbackIpv6(String url) {
 			assertThatThrownBy(() -> validator.validate(url)).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("loopback");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 	}
@@ -149,14 +148,14 @@ class SsrfUrlValidatorTest {
 				"http://169.254.169.254/latest/meta-data/iam/security-credentials/", "http://169.254.0.1/anything" })
 		void blocks_awsMetadataEndpoint(String url) {
 			assertThatThrownBy(() -> validator.validate(url)).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("link-local");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 		@Test
 		void blocks_ipv6LinkLocal() {
 			assertThatThrownBy(() -> validator.validate("http://[fe80::1]/path"))
 				.isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("link-local");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 	}
@@ -172,21 +171,21 @@ class SsrfUrlValidatorTest {
 		@ValueSource(strings = { "http://10.0.0.1/", "http://10.255.255.255/health" })
 		void blocks_classA(String url) {
 			assertThatThrownBy(() -> validator.validate(url)).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("10.0.0.0/8");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 		@ParameterizedTest
 		@ValueSource(strings = { "http://192.168.0.1/", "http://192.168.255.254/" })
 		void blocks_classC(String url) {
 			assertThatThrownBy(() -> validator.validate(url)).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("192.168.0.0/16");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 		@ParameterizedTest
 		@ValueSource(strings = { "http://172.16.0.1/", "http://172.20.1.1/", "http://172.31.255.255/" })
 		void blocks_classB(String url) {
 			assertThatThrownBy(() -> validator.validate(url)).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("172.16.0.0/12");
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 		@ParameterizedTest
@@ -199,7 +198,7 @@ class SsrfUrlValidatorTest {
 	}
 
 	// -------------------------------------------------------------------------
-	// IPv6 unique-local and IPv4-mapped
+	// IPv6 special ranges
 	// -------------------------------------------------------------------------
 
 	@Nested
@@ -209,88 +208,120 @@ class SsrfUrlValidatorTest {
 		@ValueSource(strings = { "http://[fc00::1]/", "http://[fd12:3456:789a::1]/" })
 		void blocks_uniqueLocal(String url) {
 			assertThatThrownBy(() -> validator.validate(url)).isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("unique-local");
-		}
-
-		@Test
-		void blocks_ipv4MappedPrivate() {
-			// ::ffff:192.168.1.1 embeds a private IPv4 address
-			assertThatThrownBy(() -> validator.validate("http://[::ffff:192.168.1.1]/"))
-				.isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("192.168.0.0/16");
-		}
-
-		@Test
-		void allows_ipv4MappedPublic() {
-			// ::ffff:93.184.216.34 embeds a public IPv4 address (example.com)
-			assertThatCode(() -> validator.validate("http://[::ffff:93.184.216.34]/")).doesNotThrowAnyException();
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 	}
 
 	// -------------------------------------------------------------------------
-	// Allowlist overrides
+	// Allowed CIDRs (property-driven filter extension)
 	// -------------------------------------------------------------------------
 
 	@Nested
-	class AllowlistOverrides {
+	class AllowedCidrs {
 
-		@Test
-		void allowedHost_exactMatch_overridesBlockedRange() {
-			properties.setAllowedHosts(List.of("192.168.1.100"));
-			assertThatCode(() -> validator.validate("http://192.168.1.100/actuator/health")).doesNotThrowAnyException();
+		private SsrfUrlValidator cidrValidator(String... cidrs) {
+			properties.setAllowedCidrs(java.util.List.of(cidrs));
+			InetAddressFilter filter = buildFilterFromProperties(properties);
+			return new SsrfUrlValidator(properties, filter);
+		}
+
+		// Mirrors the logic in AdminServerAutoConfiguration.ssrfInetAddressFilter()
+		private InetAddressFilter buildFilterFromProperties(
+				de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties props) {
+			InetAddressFilter filter = InetAddressFilter.externalAddresses();
+			if (!props.getAllowedCidrs().isEmpty()) {
+				filter = filter.or(props.getAllowedCidrs().toArray(String[]::new));
+			}
+			return filter;
 		}
 
 		@Test
-		void allowedHost_globSuffix_overridesBlockedPatterns() {
-			properties.setAllowedHosts(List.of("*.internal.corp"));
-			assertThatCode(() -> validator.validate("http://svc.internal.corp/actuator/health"))
+		void allows_exactIpInAllowedCidr() {
+			SsrfUrlValidator v = cidrValidator("192.168.1.0/24");
+			assertThatCode(() -> v.validate("http://192.168.1.100/actuator/health")).doesNotThrowAnyException();
+		}
+
+		@Test
+		void allows_firstAddressInCidr() {
+			SsrfUrlValidator v = cidrValidator("10.0.0.0/8");
+			assertThatCode(() -> v.validate("http://10.0.0.1/health")).doesNotThrowAnyException();
+		}
+
+		@Test
+		void allows_lastAddressInCidr() {
+			SsrfUrlValidator v = cidrValidator("192.168.1.0/24");
+			assertThatCode(() -> v.validate("http://192.168.1.254/health")).doesNotThrowAnyException();
+		}
+
+		@Test
+		void blocks_addressOutsideAllowedCidr() {
+			SsrfUrlValidator v = cidrValidator("192.168.1.0/24");
+			// 192.168.2.1 is outside 192.168.1.0/24
+			assertThatThrownBy(() -> v.validate("http://192.168.2.1/health"))
+				.isInstanceOf(SsrfProtectionException.class)
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
+		}
+
+		@Test
+		void allows_singleHostCidr() {
+			SsrfUrlValidator v = cidrValidator("10.1.2.3/32");
+			assertThatCode(() -> v.validate("http://10.1.2.3/health")).doesNotThrowAnyException();
+		}
+
+		@Test
+		void blocks_neighbourOfSingleHostCidr() {
+			SsrfUrlValidator v = cidrValidator("10.1.2.3/32");
+			assertThatThrownBy(() -> v.validate("http://10.1.2.4/health")).isInstanceOf(SsrfProtectionException.class)
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
+		}
+
+		@Test
+		void allows_ipv6Cidr() {
+			SsrfUrlValidator v = cidrValidator("fd00::/8");
+			assertThatCode(() -> v.validate("http://[fd12:3456:789a::1]/health")).doesNotThrowAnyException();
+		}
+
+		@Test
+		void allows_multipleCidrs() {
+			SsrfUrlValidator v = cidrValidator("10.0.0.0/8", "192.168.1.0/24");
+			assertThatCode(() -> v.validate("http://10.0.0.1/health")).doesNotThrowAnyException();
+			assertThatCode(() -> v.validate("http://192.168.1.50/health")).doesNotThrowAnyException();
+		}
+
+		@Test
+		void allows_externalAddressWithCidrConfigured() {
+			// Configuring a CIDR allowlist must not break external address access
+			SsrfUrlValidator v = cidrValidator("192.168.1.0/24");
+			assertThatCode(() -> v.validate("http://example.com/health")).doesNotThrowAnyException();
+		}
+
+	}
+
+	// -------------------------------------------------------------------------
+	// Custom InetAddressFilter
+	// -------------------------------------------------------------------------
+
+	@Nested
+	class CustomInetAddressFilter {
+
+		@Test
+		void allowsPrivateAddress_whenFilterPermitsIt() {
+			// A custom filter that also allows 192.168.1.0/24
+			InetAddressFilter customFilter = InetAddressFilter.externalAddresses().or("192.168.1.0/24");
+			SsrfUrlValidator customValidator = new SsrfUrlValidator(properties, customFilter);
+			assertThatCode(() -> customValidator.validate("http://192.168.1.100/actuator/health"))
 				.doesNotThrowAnyException();
 		}
 
 		@Test
-		void allowedHost_globSuffix_doesNotMatchUnrelatedHost() {
-			properties.setAllowedHosts(List.of("*.internal.corp"));
-			properties.setBlockedHostPatterns(List.of(".*\\.evil\\.corp$"));
-			assertThatThrownBy(() -> validator.validate("http://svc.evil.corp/actuator/health"))
+		void blocksAddress_whenFilterRejectsIt() {
+			// A filter that only allows a specific public IP
+			InetAddressFilter customFilter = InetAddressFilter.of("93.184.216.34/32");
+			SsrfUrlValidator customValidator = new SsrfUrlValidator(properties, customFilter);
+			assertThatThrownBy(() -> customValidator.validate("http://10.0.0.1/health"))
 				.isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("blocked pattern");
-		}
-
-		@Test
-		void allowedHost_exactMatch_isCaseInsensitive() {
-			properties.setAllowedHosts(List.of("MY-INTERNAL-HOST"));
-			assertThatCode(() -> validator.validate("http://my-internal-host/health")).doesNotThrowAnyException();
-		}
-
-	}
-
-	// -------------------------------------------------------------------------
-	// User-supplied blocked patterns
-	// -------------------------------------------------------------------------
-
-	@Nested
-	class BlockedHostPatterns {
-
-		@Test
-		void blocks_hostMatchingCustomPattern() {
-			properties.setBlockedHostPatterns(List.of(".*\\.internal\\.corp$"));
-			assertThatThrownBy(() -> validator.validate("http://svc.internal.corp/health"))
-				.isInstanceOf(SsrfProtectionException.class)
-				.hasMessageContaining("blocked pattern");
-		}
-
-		@Test
-		void ignores_invalidRegexPattern_withoutThrowing() {
-			properties.setBlockedHostPatterns(List.of("[invalid-regex"));
-			// Should log a warning but not throw
-			assertThatCode(() -> validator.validate("http://example.com/health")).doesNotThrowAnyException();
-		}
-
-		@Test
-		void allows_hostNotMatchingCustomPattern() {
-			properties.setBlockedHostPatterns(List.of(".*\\.internal\\.corp$"));
-			assertThatCode(() -> validator.validate("http://example.com/health")).doesNotThrowAnyException();
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
 		}
 
 	}

@@ -16,10 +16,12 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.util.Assert;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -42,8 +44,8 @@ public class InstanceRegistry {
 	private final SsrfUrlValidator ssrfUrlValidator;
 
 	public InstanceRegistry(InstanceRepository repository, InstanceIdGenerator generator, InstanceFilter filter) {
-		this(repository, generator, filter, new SsrfUrlValidator(
-				new de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties()));
+		this(repository, generator, filter,
+				new SsrfUrlValidator(new SsrfProtectionProperties(), InetAddressFilter.externalAddresses()));
 	}
 
 	public InstanceRegistry(InstanceRepository repository, InstanceIdGenerator generator, InstanceFilter filter,

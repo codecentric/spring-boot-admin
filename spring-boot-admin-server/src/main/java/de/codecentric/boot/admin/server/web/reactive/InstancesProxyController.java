@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.web.reactive;
 import java.net.URI;
 import java.util.Set;
 
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -66,12 +67,6 @@ public class InstancesProxyController {
 	private final String adminContextPath;
 
 	private final HttpHeaderFilter httpHeadersFilter;
-
-	public InstancesProxyController(String adminContextPath, Set<String> ignoredHeaders, InstanceRegistry registry,
-			InstanceWebClient instanceWebClient) {
-		this(adminContextPath, ignoredHeaders, registry, instanceWebClient, new SsrfUrlValidator(
-				new de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties()));
-	}
 
 	public InstancesProxyController(String adminContextPath, Set<String> ignoredHeaders, InstanceRegistry registry,
 			InstanceWebClient instanceWebClient, SsrfUrlValidator ssrfUrlValidator) {
