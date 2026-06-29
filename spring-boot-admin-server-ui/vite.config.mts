@@ -5,6 +5,7 @@ import { resolve } from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import vueDevTools from 'vite-plugin-vue-devtools';
 
 const frontendDir = resolve(__dirname, 'src/main/frontend');
 const outDir = resolve(__dirname, 'target/dist');
@@ -25,6 +26,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       vue(),
+      vueDevTools(),
       tailwindcss(),
       visualizer(() => {
         return {
