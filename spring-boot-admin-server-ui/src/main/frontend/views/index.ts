@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DefineComponent } from 'vue';
 
 const isStorybook = Object.prototype.hasOwnProperty.call(window, 'STORIES');
 
-const views = [];
+const views: DefineComponent[] = [];
 
 if (!isStorybook) {
-  // Use array of patterns instead of extglob (not supported in Vite 8/Rolldown)
   const context: Record<string, any> = import.meta.glob(
     ['./**/index.js', './**/index.vue', './**/index.ts'],
     { eager: true },
@@ -31,7 +31,7 @@ if (!isStorybook) {
     })
     .forEach(function (key) {
       const defaultExport = context[key].default;
-      if (defaultExport && defaultExport.install) {
+      if (defaultExport?.install) {
         views.push(defaultExport);
       }
     });
