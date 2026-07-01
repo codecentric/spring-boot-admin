@@ -13,12 +13,132 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EMPTY, Observable, catchError, concatMap, of, timer } from './rxjs';
+import {
+  EMPTY,
+  Observable,
+  catchError,
+  concatMap,
+  of,
+  throwError,
+  timer,
+} from './rxjs';
 
-export default (getFn, interval, initialSize = 300 * 1024) => {
+export const DEFAULT_LOGFILE_CHUNK_SIZE = 300 * 1024;
+
+export enum StreamType {
+  Data = 'data',
+  Reset = 'reset',
+  Empty = 'empty',
+}
+
+export const ChunkDirection = Object.freeze({
+  PREVIOUS: 'previous',
+  NEXT: 'next',
+  REPLACE: 'replace',
+});
+
+export enum ContentType {
+  NormalContent = 'normalContent',
+  ShortContent = 'shortContent',
+}
+
+const parseInteger = (value, fallback) => {
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? fallback : parsed;
+};
+
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+const byteLength = (content) => textEncoder.encode(content).length;
+const substringFromByteOffset = (content, offset) =>
+  textDecoder.decode(textEncoder.encode(content).slice(offset));
+
+export const getTotalBytesFrom416 = (response) => {
+  const contentRange = response.headers?.get?.('content-range');
+  const match = contentRange?.match(/^bytes\s+\*\/(\d+)$/i);
+
+  return match ? parseInteger(match[1], undefined) : undefined;
+};
+
+export const getLogfileWindowMetadata = (response) => {
+  const contentLength = byteLength(response.data);
+  const contentRange = response.headers.get('content-range');
+  const rangeMatch = contentRange?.match(/^bytes\s+(\d+)-(\d+)\/(\d+|\*)$/i);
+
+  if (rangeMatch) {
+    return {
+      windowStart: parseInteger(rangeMatch[1], 0),
+      windowEnd: parseInteger(rangeMatch[2], Math.max(contentLength - 1, 0)),
+      totalBytes: parseInteger(rangeMatch[3], contentLength),
+    };
+  }
+
+  const totalBytes = parseInteger(
+    response.headers.get('content-length'),
+    contentLength,
+  );
+
+  return {
+    windowStart: 0,
+    windowEnd: Math.max(contentLength - 1, 0),
+    totalBytes,
+  };
+};
+
+export const TrimtoCompleteLines = (
+  content: string,
+  windowStart: number,
+  windowEnd: number,
+  firstChunkSet: boolean,
+) => {
+  const completeLineStart = content.indexOf('\n');
+  const completeLineEnd = content.lastIndexOf('\n');
+
+  if (completeLineEnd === -1) {
+    return {
+      trimmedCompleteLines: firstChunkSet ? content : undefined,
+      windowStart,
+      windowEnd,
+      contentType: ContentType.ShortContent,
+    };
+  }
+
+  let trimmedStart = 0;
+  if (!firstChunkSet && windowStart > 0) {
+    if (completeLineStart === completeLineEnd) {
+      return {
+        trimmedCompleteLines: undefined,
+        windowStart,
+        windowEnd,
+        contentType: ContentType.ShortContent,
+      };
+    }
+    trimmedStart = completeLineStart + 1;
+  }
+
+  const trimmedCompleteLines = content.substring(
+    trimmedStart,
+    completeLineEnd + 1,
+  );
+  const newWindowEnd =
+    windowEnd - byteLength(content.substring(completeLineEnd + 1));
+  const newWindowStart =
+    newWindowEnd - byteLength(trimmedCompleteLines) + 1;
+
+  return {
+    trimmedCompleteLines,
+    windowStart: newWindowStart,
+    windowEnd: newWindowEnd,
+    contentType: ContentType.NormalContent,
+  };
+};
+
+export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
   let range = `bytes=-${initialSize}`;
   let size = 0;
-  let atTheEnd = false;
+  let lastCompleteByte = -1;
+  let firstChunkSet = false;
 
   return timer(0, interval).pipe(
     concatMap(() => {
@@ -33,58 +153,132 @@ export default (getFn, interval, initialSize = 300 * 1024) => {
           })
           .catch((error) => observer.error(error));
       }).pipe(
-        catchError((error) => of({ data: '', status: error.response.status })),
+        catchError((error) => {
+          if (error.response?.status !== 416) {
+            return throwError(() => error);
+          }
+          return of({
+            data: '',
+            status: error.response?.status,
+            headers: error.response?.headers,
+          });
+        }),
       );
     }),
     concatMap((response) => {
-      let initial = size === 0;
-      const contentLength = response.data.length;
-
-      if (response.status === 200) {
-        if (!initial) {
-          throw 'Expected 206 - Partial Content on subsequent requests.';
+      //resetting when log file is compressed
+      if (response.status === 416) {
+        const currentSize = getTotalBytesFrom416(response);
+        if (currentSize === size) {
+          return of({ type: StreamType.Empty });
         }
-        size = contentLength;
-        range = `bytes=${size - 1}-`;
-      } else if (response.status === 206) {
-        const contentRangeParts = response.headers['content-range'].split('/');
-        size = parseInt(contentRangeParts[1]);
-        // The end value of the range is always one byte less than the size when at the end
-        atTheEnd = parseInt(contentRangeParts[0].split('-')[1]) == size - 1;
-        range = `bytes=${size - 1}-`;
-      } else if (response.status === 416) {
-        size = 0;
         range = `bytes=-${initialSize}`;
-        initial = true;
+        size = 0;
+        lastCompleteByte = -1;
+        firstChunkSet = false;
+        return of({ type: StreamType.Reset });
+      }
+      const { windowStart, windowEnd, totalBytes } =
+        getLogfileWindowMetadata(response);
+      const overlap = firstChunkSet
+        ? Math.max(lastCompleteByte - windowStart + 1, 0)
+        : 0;
+      let addendum = substringFromByteOffset(response.data, overlap);
+      let addendumWindowStart = windowStart + overlap;
+      let addendumWindowEnd = windowEnd;
+      if (response.status === 206 || response.status === 200) {
+        if (totalBytes > size) {
+          const trimmed = TrimtoCompleteLines(
+            addendum,
+            addendumWindowStart,
+            windowEnd,
+            firstChunkSet,
+          );
+          if(trimmed.contentType === ContentType.ShortContent){
+            return EMPTY;
+          }
+          if(!firstChunkSet){
+            firstChunkSet = true;
+          }
+          addendum = trimmed.trimmedCompleteLines;
+          addendumWindowStart = trimmed.windowStart;
+          addendumWindowEnd = trimmed.windowEnd;
+          size = totalBytes;
+          lastCompleteByte = trimmed.windowEnd
+          range = `bytes=${lastCompleteByte}-`;
+          return of(
+            {
+              type: StreamType.Data,
+              totalBytes: size,
+              addendum,
+              windowStart: addendumWindowStart,
+              windowEnd: addendumWindowEnd,
+            }
+          )
+        }else{
+          return EMPTY;
+        }
       } else {
         throw 'Unexpected response status: ' + response.status;
       }
-
-      let addendum = null;
-      let skipped = 0;
-
-      if (initial) {
-        if (contentLength >= size) {
-          addendum = response.data;
-        } else {
-          // In case of a partial response find the first line break.
-          addendum = response.data.substring(response.data.indexOf('\n') + 1);
-          skipped = size - addendum.length;
-        }
-      } else if (response.data.length > 1) {
-        // Remove the first byte which has been part of the previous response.
-        addendum = response.data.substring(1);
-      }
-
-      return addendum
-        ? of({
-            totalBytes: size,
-            skipped,
-            // The log file always temporarily ends with a new line until the next one is written.
-            // Therefore, if we're at the end of it, we drop such a new line.
-            addendum: atTheEnd ? addendum.trimEnd() : addendum,
-          })
-        : EMPTY;
     }),
   );
+};
+
+export const fetchLogfileRange = async (instance, start, end, direction) => {
+  let { data, totalBytes, windowStart, windowEnd, status } = await instance.fetchLogfileRange(start, end);
+  //manual polling return type
+  if(start == 0 && end == 0){
+    return {
+      data,
+      totalBytes,
+      windowStart,
+      windowEnd,
+      status
+    }
+  }
+  let completeLineStart = data.indexOf('\n');
+  let completeLineEnd = data.lastIndexOf('\n');
+  const hasAtLeastTwoNewLines =
+    completeLineStart !== -1 && (completeLineStart !== completeLineEnd);
+  if(!hasAtLeastTwoNewLines){
+    throw new Error('Too few lines: need at least two lines to display properly');
+  }
+  if(ChunkDirection.NEXT === direction){
+    const trimmedCompleteLines = data.substring(0, completeLineEnd + 1);
+    const newWindowEnd =
+      windowEnd - byteLength(data.substring(completeLineEnd + 1));
+    return {
+      data: trimmedCompleteLines,
+      totalBytes,
+      windowStart,
+      windowEnd: newWindowEnd,
+      status
+    }
+  }
+  if (windowStart === 0) {
+    const trimmedCompleteLines = data.substring(0, completeLineEnd + 1);
+    const newWindowEnd =
+      windowEnd - byteLength(data.substring(completeLineEnd + 1));
+    return {
+      data: trimmedCompleteLines,
+      totalBytes,
+      windowStart,
+      windowEnd: newWindowEnd,
+      status
+    }
+  } else {
+    const trimmedCompleteLines = data.substring(completeLineStart + 1, completeLineEnd + 1);
+    const newWindowEnd =
+      windowEnd - byteLength(data.substring(completeLineEnd + 1));
+    const newWindowStart =
+      newWindowEnd - byteLength(trimmedCompleteLines) + 1;
+    return {
+      data: trimmedCompleteLines,
+      totalBytes,
+      windowStart: newWindowStart,
+      windowEnd: newWindowEnd,
+      status
+    }
+  }
 };

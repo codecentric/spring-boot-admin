@@ -2,7 +2,16 @@
   "instances": {
     "logfile": {
       "label": "Arquivo de Log",
-      "download": "Download"
+      "download": "Download",
+      "wrap_lines": "Quebrar linhas",
+      "page_up": "Subir página",
+      "page_down": "Descer página",
+      "previous_chunk": "Trecho anterior",
+      "next_chunk": "Próximo trecho",
+      "resume_follow": "Retomar acompanhamento",
+      "stop_follow": "Parar acompanhamento",
+      "reconnecting": "Reconectando...",
+      "compressed_reset": "Arquivo de log compactado, redefinindo a página"
     }
   }
 }

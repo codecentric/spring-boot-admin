@@ -2,7 +2,16 @@
   "instances": {
     "logfile": {
       "label": "로그파일",
-      "download": "다운로드"
+      "download": "다운로드",
+      "wrap_lines": "줄 바꿈",
+      "page_up": "페이지 위로",
+      "page_down": "페이지 아래로",
+      "previous_chunk": "이전 구간",
+      "next_chunk": "다음 구간",
+      "resume_follow": "실시간 추적 재개",
+      "stop_follow": "실시간 추적 중지",
+      "reconnecting": "다시 연결 중...",
+      "compressed_reset": "로그 파일이 압축되었습니다. 페이지를 재설정합니다"
     }
   }
 }
