@@ -16,9 +16,7 @@
 
 // Spring Boot Admin Server - entity package.
 
-@NonNullApi
-@NonNullFields
+@NullMarked
 package de.codecentric.boot.admin.server.domain.entities;
 
-import org.springframework.lang.NonNullApi;
-import org.springframework.lang.NonNullFields;
+import org.jspecify.annotations.NullMarked;

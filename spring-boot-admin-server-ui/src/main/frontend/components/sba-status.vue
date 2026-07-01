@@ -61,7 +61,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+@reference "../index.css";
+
 .application-status {
   @apply text-center inline-flex flex-col;
 }

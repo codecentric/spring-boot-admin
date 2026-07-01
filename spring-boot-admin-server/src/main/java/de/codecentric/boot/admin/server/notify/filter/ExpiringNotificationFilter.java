@@ -18,15 +18,14 @@ package de.codecentric.boot.admin.server.notify.filter;
 
 import java.time.Instant;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
 public abstract class ExpiringNotificationFilter extends AbstractNotificationFilter {
 
-	@Nullable
-	private final Instant expiry;
+	@Nullable private final Instant expiry;
 
 	public ExpiringNotificationFilter(@Nullable Instant expiry) {
 		this.expiry = expiry;
@@ -43,8 +42,7 @@ public abstract class ExpiringNotificationFilter extends AbstractNotificationFil
 
 	protected abstract boolean doFilter(InstanceEvent event, Instance instance);
 
-	@Nullable
-	public Instant getExpiry() {
+	@Nullable public Instant getExpiry() {
 		return expiry;
 	}
 

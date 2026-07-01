@@ -18,7 +18,7 @@
   <sba-instance-section :error="error" :loading="!hasLoaded">
     <template #before>
       <sba-sticky-subnav>
-        <div class="flex gap-2">
+        <div class="flex gap-2 justify-end">
           <sba-toggle-scope-button
             v-if="instanceCount > 1"
             v-model="scope"
@@ -26,22 +26,20 @@
             :show-info="false"
           />
 
-          <div class="flex-1">
-            <sba-input
-              v-model="filter.name"
-              :placeholder="$t('term.filter')"
-              name="filter"
-              type="search"
-            >
-              <template #prepend>
-                <font-awesome-icon icon="filter" />
-              </template>
-              <template #append>
-                <span v-text="filteredLoggers.length" /> /
-                <span v-text="loggerConfig.loggers.length" />
-              </template>
-            </sba-input>
-          </div>
+          <sba-input
+            v-model="filter.name"
+            :placeholder="$t('term.filter')"
+            name="filter"
+            type="search"
+          >
+            <template #prepend>
+              <font-awesome-icon icon="filter" />
+            </template>
+            <template #append>
+              <span v-text="filteredLoggers.length" /> /
+              <span v-text="loggerConfig.loggers.length" />
+            </template>
+          </sba-input>
 
           <!-- FILTER -->
           <div>

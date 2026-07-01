@@ -21,18 +21,18 @@
       <details-hero :instance="instance" />
     </template>
 
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
+    <div class="instance-grid">
+      <div>
         <details-info v-if="hasInfo" :instance="instance" />
         <details-metadata v-if="hasMetadata" :instance="instance" />
       </div>
-      <div class="flex-1">
+      <div>
         <details-health :instance="instance" />
       </div>
     </div>
 
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
+    <div class="instance-grid">
+      <div>
         <details-process
           v-if="hasProcess"
           :instance="instance"
@@ -40,25 +40,25 @@
         />
         <details-gc v-if="hasGc" :instance="instance" />
       </div>
-      <div class="flex-1">
+      <div>
         <details-threads v-if="hasThreads" :instance="instance" />
       </div>
     </div>
 
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
+    <div class="instance-grid">
+      <div>
         <details-memory v-if="hasMemory" :instance="instance" type="heap" />
       </div>
-      <div class="flex-1">
+      <div>
         <details-memory v-if="hasMemory" :instance="instance" type="nonheap" />
       </div>
     </div>
 
-    <div class="flex gap-6 flex-col lg:flex-row">
-      <div class="flex-1">
+    <div class="instance-grid">
+      <div>
         <details-datasources v-if="hasDatasources" :instance="instance" />
       </div>
-      <div class="flex-1">
+      <div>
         <details-caches v-if="hasCaches" :instance="instance" />
       </div>
     </div>
@@ -111,8 +111,16 @@ export default {
     hasLoaded: true,
     error: null,
     metrics: [],
+    metricFetchToken: 0,
   }),
   computed: {
+    instanceUpdateKey() {
+      return (
+        this.instance.version ??
+        this.instance.statusTimestamp ??
+        this.instance.id
+      );
+    },
     hasCaches() {
       return this.hasMetric('cache.gets');
     },
@@ -139,30 +147,47 @@ export default {
     },
   },
   watch: {
-    instance() {
-      this.fetchMetricIndex();
+    instanceUpdateKey: {
+      handler() {
+        this.fetchMetricIndex();
+      },
+      immediate: true,
     },
-  },
-  created() {
-    this.fetchMetricIndex();
   },
   methods: {
     hasMetric(metric) {
       return this.metrics && this.metrics.includes(metric);
     },
     async fetchMetricIndex() {
-      if (this.instance.hasEndpoint('metrics')) {
-        this.hasLoaded = false;
-        this.error = null;
-        try {
-          const res = await this.instance.fetchMetrics();
-          this.metrics = res.data.names;
-        } catch (error) {
-          console.warn('Fetching metric index failed:', error);
-          this.error = error;
-        } finally {
-          this.hasLoaded = true;
+      // Reset immediately so SSE updates can't leave stale gating behind.
+      this.metrics = [];
+      this.error = null;
+
+      if (!this.instance.hasEndpoint('metrics')) {
+        this.hasLoaded = true;
+        return;
+      }
+
+      const token = ++this.metricFetchToken;
+      this.hasLoaded = false;
+      this.error = null;
+      try {
+        const res = await this.instance.fetchMetrics();
+        if (token !== this.metricFetchToken) {
+          return;
         }
+        this.metrics = res.data.names;
+      } catch (error) {
+        if (token !== this.metricFetchToken) {
+          return;
+        }
+        console.warn('Fetching metric index failed:', error);
+        this.error = error;
+      } finally {
+        if (token !== this.metricFetchToken) {
+          return;
+        }
+        this.hasLoaded = true;
       }
     },
   },
@@ -179,3 +204,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@reference "../../../index.css";
+
+.instance-grid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-4;
+}
+</style>

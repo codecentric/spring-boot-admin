@@ -1,7 +1,7 @@
 <template>
   <component
     :is="as"
-    class="btn relative items-center"
+    class="btn relative items-center cursor-pointer"
     v-bind="componentAttrs"
     @click="handleClick"
   >
@@ -19,21 +19,25 @@ const props = defineProps({
     default: '',
   },
   as: {
-    type: String,
+    type: [String, Object, Function],
     default: 'button',
-    validator(value) {
-      return ['a', 'button'].includes(value);
-    },
   },
   href: {
     type: String,
     default: null,
   },
+  type: {
+    type: String,
+    default: 'button',
+    validator(value) {
+      return ['button', 'submit', 'reset'].includes(value);
+    },
+  },
   size: {
     type: String,
     default: 'sm',
     validator(value) {
-      return ['xs', 'sm', 'base'].includes(value);
+      return ['2xs', 'xs', 'sm', 'base'].includes(value);
     },
   },
   disabled: {
@@ -49,7 +53,7 @@ const attrs = useAttrs();
 
 const cssClasses = computed(() => {
   return {
-    'px-1 py-0 text-xs': props.size === '2xs',
+    'px-1.5 py-0.5 text-xs': props.size === '2xs',
     'px-2 py-2 text-xs': props.size === 'xs',
     'px-3 py-2': props.size === 'sm',
     'px-4 py-3': props.size === 'base',
@@ -79,21 +83,22 @@ const componentAttrs = computed(() => {
       type: props.type,
     };
   }
-  return {};
+  return common;
 });
 
 const emit = defineEmits(['click']);
 const handleClick = (event) => {
-  if (props.as === 'button') {
-    emit('click', event);
-  }
   if (props.as === 'a') {
     event.stopPropagation();
+    return;
   }
+  emit('click', event);
 };
 </script>
 
 <style scoped>
+@reference "../index.css";
+
 .btn {
   @apply rounded-l rounded-r font-medium text-sm text-center text-black border-gray-300 border bg-white;
   @apply focus:ring-2 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500;
@@ -101,7 +106,7 @@ const handleClick = (event) => {
 }
 
 .btn:disabled {
-  @apply text-gray-300;
+  @apply text-gray-500 cursor-not-allowed bg-gray-100 hover:bg-gray-100;
 }
 
 .btn.is-danger {
@@ -142,11 +147,5 @@ const handleClick = (event) => {
 
 .btn.is-primary {
   @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-300;
-}
-
-@supports (-moz-appearance: none) {
-  .backdrop-filter.bg-opacity-40 {
-    --tw-bg-opacity: 1 !important;
-  }
 }
 </style>

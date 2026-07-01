@@ -19,8 +19,9 @@ package de.codecentric.boot.admin.server.notify;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -45,15 +46,18 @@ public class TelegramNotifier extends AbstractContentNotifier {
 	/**
 	 * Unique identifier for the target chat or username of the target channel
 	 */
-	@Nullable
-	private String chatId;
+	@Nullable private String chatId;
+
+	/**
+	 * Unique identifier for the target topic of the target super group
+	 */
+	@Nullable private Integer messageThreadId;
 
 	/**
 	 * The token identifying und authorizing your Telegram bot (e.g.
 	 * `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
 	 */
-	@Nullable
-	private String authToken;
+	@Nullable private String authToken;
 
 	/**
 	 * Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width
@@ -78,13 +82,26 @@ public class TelegramNotifier extends AbstractContentNotifier {
 	}
 
 	protected String buildUrl() {
-		return String.format("%s/bot%s/sendmessage?chat_id={chat_id}&text={text}&parse_mode={parse_mode}"
-				+ "&disable_notification={disable_notification}", this.apiUrl, this.authToken);
+		UriComponentsBuilder builder = UriComponentsBuilder
+			.fromUriString(this.apiUrl + "/bot" + this.authToken + "/sendmessage")
+			.queryParam("chat_id", "{chat_id}")
+			.queryParam("text", "{text}")
+			.queryParam("parse_mode", "{parse_mode}")
+			.queryParam("disable_notification", "{disable_notification}");
+
+		if (this.messageThreadId != null) {
+			builder.queryParam("message_thread_id", "{message_thread_id}");
+		}
+
+		return builder.build().toUriString();
 	}
 
 	private Map<String, Object> createMessage(InstanceEvent event, Instance instance) {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("chat_id", this.chatId);
+		if (this.messageThreadId != null) {
+			parameters.put("message_thread_id", this.messageThreadId);
+		}
 		parameters.put("parse_mode", this.parseMode);
 		parameters.put("disable_notification", this.disableNotify);
 		parameters.put("text", createContent(event, instance));
@@ -108,8 +125,7 @@ public class TelegramNotifier extends AbstractContentNotifier {
 		this.apiUrl = apiUrl;
 	}
 
-	@Nullable
-	public String getChatId() {
+	@Nullable public String getChatId() {
 		return chatId;
 	}
 
@@ -117,8 +133,15 @@ public class TelegramNotifier extends AbstractContentNotifier {
 		this.chatId = chatId;
 	}
 
-	@Nullable
-	public String getAuthToken() {
+	public Integer getMessageThreadId() {
+		return messageThreadId;
+	}
+
+	public void setMessageThreadId(Integer messageThreadId) {
+		this.messageThreadId = messageThreadId;
+	}
+
+	@Nullable public String getAuthToken() {
 		return authToken;
 	}
 

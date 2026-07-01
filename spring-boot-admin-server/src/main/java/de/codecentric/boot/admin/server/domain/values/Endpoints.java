@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -34,9 +34,9 @@ import static java.util.stream.Collectors.toMap;
 @lombok.ToString
 public final class Endpoints implements Iterable<Endpoint>, Serializable {
 
-	private final Map<String, Endpoint> endpoints;
-
 	private static final Endpoints EMPTY = new Endpoints(Collections.emptyList());
+
+	private final Map<String, Endpoint> endpoints;
 
 	private Endpoints(Collection<Endpoint> endpoints) {
 		if (endpoints.isEmpty()) {
@@ -45,19 +45,6 @@ public final class Endpoints implements Iterable<Endpoint>, Serializable {
 		else {
 			this.endpoints = endpoints.stream().collect(toMap(Endpoint::getId, Function.identity()));
 		}
-	}
-
-	public Optional<Endpoint> get(String id) {
-		return Optional.ofNullable(this.endpoints.get(id));
-	}
-
-	public boolean isPresent(String id) {
-		return this.endpoints.containsKey(id);
-	}
-
-	@Override
-	public Iterator<Endpoint> iterator() {
-		return new UnmodifiableIterator<>(this.endpoints.values().iterator());
 	}
 
 	public static Endpoints empty() {
@@ -73,6 +60,19 @@ public final class Endpoints implements Iterable<Endpoint>, Serializable {
 			return empty();
 		}
 		return new Endpoints(endpoints);
+	}
+
+	public Optional<Endpoint> get(String id) {
+		return Optional.ofNullable(this.endpoints.get(id));
+	}
+
+	public boolean isPresent(String id) {
+		return this.endpoints.containsKey(id);
+	}
+
+	@Override
+	public Iterator<Endpoint> iterator() {
+		return new UnmodifiableIterator<>(this.endpoints.values().iterator());
 	}
 
 	public Endpoints withEndpoint(String id, String url) {

@@ -79,8 +79,10 @@
 
 <script>
 import moment from 'moment';
-import { take } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 
+import SbaAccordion from '@/components/sba-accordion.vue';
 import sbaAlert from '@/components/sba-alert.vue';
 
 import subscribing from '@/mixins/subscribing';
@@ -88,7 +90,6 @@ import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import { concatMap, delay, map, retryWhen, timer } from '@/utils/rxjs';
 import cacheChart from '@/views/instances/details/cache-chart';
-import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 export default {
   components: { SbaAccordion, sbaAlert, cacheChart },
@@ -116,6 +117,7 @@ export default {
     shouldFetchCacheMisses: true,
     chartData: [],
     currentInstanceId: null,
+    currentInstanceUpdateKey: null,
   }),
   computed: {
     ratio() {
@@ -139,8 +141,17 @@ export default {
   },
   methods: {
     initCacheMetrics() {
-      if (this.instance.id !== this.currentInstanceId) {
+      const updateKey =
+        this.instance.version ??
+        this.instance.statusTimestamp ??
+        this.instance.id;
+      const firstInit = this.currentInstanceId === null;
+      if (
+        this.instance.id !== this.currentInstanceId ||
+        updateKey !== this.currentInstanceUpdateKey
+      ) {
         this.currentInstanceId = this.instance.id;
+        this.currentInstanceUpdateKey = updateKey;
         this.hasLoaded = false;
         this.error = null;
         this.current = null;
@@ -148,6 +159,15 @@ export default {
         this.shouldFetchCacheSize = true;
         this.shouldFetchCacheHits = true;
         this.shouldFetchCacheMisses = true;
+
+        // Restart polling immediately so SSE updates refresh the view.
+        if (!firstInit) {
+          // Stop old subscription and start fresh
+          this.unsubscribe();
+          // Recreate destroy$ so new subscription can use takeUntil properly
+          this.destroy$ = new Subject();
+          this.subscribe();
+        }
       }
     },
     async fetchMetrics() {
@@ -202,9 +222,14 @@ export default {
     async fetchCacheSize() {
       if (this.shouldFetchCacheSize) {
         try {
-          const response = await this.instance.fetchMetric('cache.size', {
-            name: this.cacheName,
-          });
+          const suppressFn = (err) => err.response?.status === 404;
+          const response = await this.instance.fetchMetric(
+            'cache.size',
+            {
+              name: this.cacheName,
+            },
+            { suppressToast: suppressFn },
+          );
           return response.data.measurements[0].value;
         } catch (error) {
           this.shouldFetchCacheSize = false;
@@ -235,6 +260,8 @@ export default {
         .pipe(
           concatMap(this.fetchMetrics),
           map(this.calculateMetricsPerInterval),
+          // Stop polling when destroy$ emits (on unmount or instance update)
+          takeUntil(this.destroy$),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
           }),

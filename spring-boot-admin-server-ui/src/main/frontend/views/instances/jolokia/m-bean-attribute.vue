@@ -150,6 +150,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
+@reference "../../../index.css";
 .m-bean-attribute--text {
   resize: vertical;
   min-height: 120px;

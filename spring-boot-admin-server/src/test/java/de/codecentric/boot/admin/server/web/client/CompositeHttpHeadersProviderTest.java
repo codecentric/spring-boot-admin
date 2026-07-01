@@ -41,7 +41,7 @@ class CompositeHttpHeadersProviderTest {
 		}));
 
 		HttpHeaders headers = provider.getHeaders(null);
-		assertThat(headers).containsEntry("a", singletonList("1"))
+		assertThat(headers.asMultiValueMap()).containsEntry("a", singletonList("1"))
 			.containsEntry("b", asList("2-a", "2-b"))
 			.containsEntry("c", singletonList("3"));
 	}
@@ -50,7 +50,7 @@ class CompositeHttpHeadersProviderTest {
 	void should_return_empty_headers() {
 		HttpHeadersProvider provider = new CompositeHttpHeadersProvider(emptyList());
 		HttpHeaders headers = provider.getHeaders(null);
-		assertThat(headers).isEmpty();
+		assertThat(headers.toSingleValueMap()).isEmpty();
 	}
 
 }

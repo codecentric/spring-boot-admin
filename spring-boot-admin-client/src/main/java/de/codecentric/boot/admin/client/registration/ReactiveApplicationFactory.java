@@ -19,9 +19,9 @@ package de.codecentric.boot.admin.client.registration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.autoconfigure.ServerProperties;
+import org.springframework.boot.webflux.autoconfigure.WebFluxProperties;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 

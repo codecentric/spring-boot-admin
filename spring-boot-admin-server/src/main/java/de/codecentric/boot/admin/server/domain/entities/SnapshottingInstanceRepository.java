@@ -21,9 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -48,8 +48,7 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 
 	private final InstanceEventStore eventStore;
 
-	@Nullable
-	private Disposable subscription;
+	@Nullable private Disposable subscription;
 
 	public SnapshottingInstanceRepository(InstanceEventStore eventStore) {
 		super(eventStore);

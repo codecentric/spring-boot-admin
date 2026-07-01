@@ -24,7 +24,10 @@ import { useApplicationStore } from '@/composables/useApplicationStore';
 import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import { render } from '@/test-utils';
-import { InstanceEvent } from '@/views/journal/InstanceEvent';
+import {
+  InstanceEvent,
+  InstanceEventType,
+} from '@/views/journal/InstanceEvent';
 
 vi.mock('@/composables/useApplicationStore', () => ({
   useApplicationStore: vi.fn(),
@@ -59,15 +62,15 @@ describe('Journal View', () => {
           new InstanceEvent({
             instance: 'instance-1',
             version: 1,
-            type: 'REGISTERED',
-            timestamp: '2023-01-01T10:00:00Z',
+            type: InstanceEventType.REGISTERED,
+            timestamp: new Date('2023-01-01T10:00:00Z'),
             registration: { name: 'OLD APP NAME' },
           }),
           new InstanceEvent({
             instance: 'instance-1',
             version: 2,
-            type: 'REGISTRATION_UPDATED',
-            timestamp: '2023-01-01T11:00:00Z',
+            type: InstanceEventType.REGISTRATION_UPDATED,
+            timestamp: new Date('2023-01-01T11:00:00Z'),
             registration: { name: 'NEW APP NAME' },
           }),
         ]);
@@ -86,22 +89,22 @@ describe('Journal View', () => {
           new InstanceEvent({
             instance: 'instance-1',
             version: 1,
-            type: 'REGISTERED',
-            timestamp: '2023-01-01T10:00:00Z',
+            type: InstanceEventType.REGISTERED,
+            timestamp: new Date('2023-01-01T10:00:00Z'),
             registration: { name: 'App One' },
           }),
           new InstanceEvent({
             instance: 'instance-2',
             version: 1,
-            type: 'REGISTERED',
-            timestamp: '2023-01-01T10:05:00Z',
+            type: InstanceEventType.REGISTERED,
+            timestamp: new Date('2023-01-01T10:05:00Z'),
             registration: { name: 'App Two' },
           }),
           new InstanceEvent({
             instance: 'instance-2',
             version: 2,
-            type: 'REGISTRATION_UPDATED',
-            timestamp: '2023-01-01T11:00:00Z',
+            type: InstanceEventType.REGISTRATION_UPDATED,
+            timestamp: new Date('2023-01-01T11:00:00Z'),
             registration: { name: 'App Two Updated' },
           }),
         ]);

@@ -3,7 +3,10 @@ import { createI18n } from 'vue-i18n';
 
 import sbaConfig from '@/sba-config';
 
-const context = import.meta.glob('../**/(*.)?i18n.*.json', { eager: true });
+// Use array of patterns instead of extglob (not supported in Vite 8/Rolldown)
+const context = import.meta.glob(['../**/i18n.*.json', '../**/*.i18n.*.json'], {
+  eager: true,
+});
 const messages = Object.keys(context)
   .map((key) => {
     const localeFromFile = /\.*i18n\.?([^/]*)\.json$/.exec(key);

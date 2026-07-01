@@ -76,28 +76,34 @@
                 >
                   <td colspan="6">
                     <table class="table is-fullwidth">
-                      <tr>
-                        <th v-text="$t('instances.liquibase.changelog')" />
-                        <td colspan="3" v-text="changeSet.changeLog" />
-                        <th v-text="$t('instances.liquibase.author')" />
-                        <td v-text="changeSet.author" />
-                      </tr>
-                      <tr>
-                        <th v-text="$t('instances.liquibase.checksum')" />
-                        <td v-text="changeSet.checksum" />
-                        <th v-text="$t('instances.liquibase.comments')" />
-                        <td colspan="3" v-text="changeSet.comments" />
-                      </tr>
-                      <tr>
-                        <th
-                          v-text="$t('instances.liquibase.execution_order')"
-                        />
-                        <td v-text="changeSet.orderExecuted" />
-                        <th v-text="$t('instances.liquibase.execution_date')" />
-                        <td v-text="changeSet.dateExecuted" />
-                        <th v-text="$t('instances.liquibase.deployment_id')" />
-                        <td v-text="changeSet.deploymentId" />
-                      </tr>
+                      <tbody>
+                        <tr>
+                          <th v-text="$t('instances.liquibase.changelog')" />
+                          <td colspan="3" v-text="changeSet.changeLog" />
+                          <th v-text="$t('instances.liquibase.author')" />
+                          <td v-text="changeSet.author" />
+                        </tr>
+                        <tr>
+                          <th v-text="$t('instances.liquibase.checksum')" />
+                          <td v-text="changeSet.checksum" />
+                          <th v-text="$t('instances.liquibase.comments')" />
+                          <td colspan="3" v-text="changeSet.comments" />
+                        </tr>
+                        <tr>
+                          <th
+                            v-text="$t('instances.liquibase.execution_order')"
+                          />
+                          <td v-text="changeSet.orderExecuted" />
+                          <th
+                            v-text="$t('instances.liquibase.execution_date')"
+                          />
+                          <td v-text="changeSet.dateExecuted" />
+                          <th
+                            v-text="$t('instances.liquibase.deployment_id')"
+                          />
+                          <td v-text="changeSet.deploymentId" />
+                        </tr>
+                      </tbody>
                     </table>
                   </td>
                 </tr>

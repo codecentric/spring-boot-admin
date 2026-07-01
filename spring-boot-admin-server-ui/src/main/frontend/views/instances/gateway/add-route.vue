@@ -141,11 +141,18 @@ export default {
     routeFilters: null,
     routeUri: null,
     routeOrder: null,
+    addRouteTimeout: null,
   }),
   computed: {
     isAddingRoutePossible() {
       return this.routeId && this.routePredicates && this.routeUri;
     },
+  },
+  beforeUnmount() {
+    if (this.addRouteTimeout) {
+      clearTimeout(this.addRouteTimeout);
+      this.addRouteTimeout = null;
+    }
   },
   methods: {
     addRoute() {
@@ -166,7 +173,10 @@ export default {
           this.routeUri = null;
           this.routeOrder = null;
           this.error = null;
-          setTimeout(() => this.$emit('route-added'), 2500);
+          this.addRouteTimeout = setTimeout(
+            () => this.$emit('route-added'),
+            2500,
+          );
         },
         error: (error) => {
           this.error = error;

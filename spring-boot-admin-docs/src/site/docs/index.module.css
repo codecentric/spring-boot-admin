@@ -1,0 +1,38 @@
+.hexMeshContainer {
+  height: 600px;
+  margin: 2rem 0;
+}
+
+.hexItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+  height: 100%;
+  width: 100%;
+}
+
+.hexItem:hover {
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.hexIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hexTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.hexDescription {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}

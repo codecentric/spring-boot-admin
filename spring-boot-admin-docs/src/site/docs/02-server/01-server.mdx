@@ -1,0 +1,80 @@
+---
+sidebar_custom_props:
+  icon: 'server'
+---
+import metadataServer from "@sba/spring-boot-admin-server/target/classes/META-INF/spring-configuration-metadata.json";
+import metadataServerCloud from "@sba/spring-boot-admin-server-cloud/target/classes/META-INF/spring-configuration-metadata.json";
+import { PropertyTable } from "@sba/spring-boot-admin-docs/src/site/src/components/PropertyTable";
+
+# Set up server
+
+## Running Behind a Front-end Proxy Server
+
+In case the Spring Boot Admin server is running behind a reverse proxy, it may be requried to configure the public url where the server is reachable via (`spring.boot.admin.ui.public-url`). In addition, when the reverse proxy terminates the https connection, it may be necessary to configure `server.forward-headers-strategy=native` (also see [Spring Boot Reference Guide](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-use-tomcat-behind-a-proxy-server)).
+
+## Spring Cloud Discovery
+
+The Spring Boot Admin Server can use Spring Clouds `DiscoveryClient` to discover applications. The advantage is that the clients don’t have to include the `spring-boot-admin-starter-client`. You just have to add a `DiscoveryClient` implementation to your admin server - everything else is done by AutoConfiguration.
+
+### Static Configuration using SimpleDiscoveryClient
+
+Spring Cloud provides a `SimpleDiscoveryClient`. It allows you to specify client applications via static configuration:
+
+```xml title="pom.xml"
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter</artifactId>
+</dependency>
+```
+
+```yaml title="application.yml"
+spring:
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            test:
+              - uri: http://instance1.intern:8080
+                metadata:
+                  management.context-path: /actuator
+              - uri: http://instance2.intern:8080
+                metadata:
+                  management.context-path: /actuator
+```
+
+### Other DiscoveryClients
+
+Spring Boot Admin supports all other implementations of Spring Cloud's `DiscoveryClient` ([Eureka](https://docs.spring.io/spring-cloud-netflix/docs/current/reference/html/#service-discovery-eureka-clients/), [Zookeeper](https://docs.spring.io/spring-cloud-zookeeper/docs/current/reference/html/#spring-cloud-zookeeper-discovery), [Consul](https://docs.spring.io/spring-cloud-consul/docs/current/reference/html/#spring-cloud-consul-discovery), [Kubernetes](https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#discoveryclient-for-kubernetes), …​). You need to add it to the Spring Boot Admin Server and configure it properly. See the [integration guides](../04-integration/) for detailed setup instructions.
+
+### Converting ServiceInstances
+
+The information from the service registry are converted by the `ServiceInstanceConverter`. Spring Boot Admin ships with a default and Eureka converter implementation. The correct one is selected by AutoConfiguration.
+
+:::tip
+You can modify how the information from the registry is used to register the application by using SBA Server configuration options and instance metadata. The values from the metadata takes precedence over the server config. If the plenty of options don’t fit your needs you can provide your own ServiceInstanceConverter.
+:::
+
+:::tip
+When using Eureka, the healthCheckUrl known to Eureka is used for health-checking, which can be set on your client using eureka.instance.healthCheckUrl.
+:::
+
+<PropertyTable
+  title="Discovery configuration options"
+  properties={metadataServerCloud.properties}
+/>
+
+### CloudFoundry
+
+If you are deploying your applications to CloudFoundry then `vcap.application.application_id` and `vcap.application.instance_index` **_must_** be added to the metadata for proper registration of applications with Spring Boot Admin Server. Here is a sample configuration for Eureka:
+
+```yml title="application.yml"
+eureka:
+  instance:
+    hostname: ${vcap.application.uris[0]}
+    nonSecurePort: 80
+    metadata-map:
+      applicationId: ${vcap.application.application_id}
+      instanceId: ${vcap.application.instance_index}
+```
+

@@ -72,7 +72,7 @@ class BasicAuthHttpHeaderProviderTest {
 	void test_no_header() {
 		Registration registration = Registration.create("foo", "https://health").build();
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
-		assertThat(this.headersProvider.getHeaders(instance)).isEmpty();
+		assertThat(this.headersProvider.getHeaders(instance).toSingleValueMap()).isEmpty();
 	}
 
 	@Test

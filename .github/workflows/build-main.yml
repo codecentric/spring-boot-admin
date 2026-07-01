@@ -16,7 +16,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -29,7 +29,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
-          node-version: 'lts/*'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
@@ -38,7 +38,7 @@ jobs:
 
       - name: Upload surefire reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: surefire-reports
           path: |
@@ -50,12 +50,15 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v7
+
   publish-snapshot:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -68,12 +71,12 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
-          node-version: 'lts/*'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
       - name: Publish SNAPSHOT version to GitHub Packages (we can skip tests, since we only deploy, if the build workflow succeeded)
-        run: ./mvnw -B --no-transfer-progress deploy -DskipTests
+        run: ./mvnw -B deploy --no-transfer-progress -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

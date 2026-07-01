@@ -28,3 +28,4 @@ node/
 
 .DS_Store
 mockServiceWorker.js
+/.github/agents/

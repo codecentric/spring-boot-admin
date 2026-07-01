@@ -25,9 +25,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import reactor.core.publisher.Mono;
 
@@ -100,8 +100,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
 		filters.put(filter.getId(), filter);
 	}
 
-	@Nullable
-	public NotificationFilter removeFilter(String id) {
+	@Nullable public NotificationFilter removeFilter(String id) {
 		LOGGER.debug("Removed filter with id '{}'", id);
 		return filters.remove(id);
 	}

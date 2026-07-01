@@ -105,7 +105,16 @@ export default {
   data: () => ({
     clearing: {},
     clearingAll: null,
+    clearTimeouts: {},
   }),
+  beforeUnmount() {
+    Object.values(this.clearTimeouts).forEach((timeoutId) => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    });
+    this.clearTimeouts = {};
+  },
   methods: {
     clearCache(cache) {
       this._clearCache(cache)
@@ -119,8 +128,9 @@ export default {
         )
         .subscribe({
           complete: () => {
-            setTimeout(() => {
+            this.clearTimeouts[cache.key] = setTimeout(() => {
               delete this.clearing[cache.key];
+              delete this.clearTimeouts[cache.key];
               this.clearing = { ...this.clearing };
             }, 2500);
             return this.$emit('cleared', cache.key);

@@ -105,6 +105,7 @@ export default {
 </script>
 
 <style>
+@reference "../../../index.css";
 .is-truncated {
   overflow: hidden;
   text-overflow: ellipsis;

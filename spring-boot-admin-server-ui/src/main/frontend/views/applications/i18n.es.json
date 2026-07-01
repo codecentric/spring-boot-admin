@@ -4,6 +4,7 @@
     "applications": "Aplicaciones",
     "instances": "Instancias",
     "some_down": "instancias caídas",
+    "last_update": "Última actualización",
     "loading_applications": "Cargando aplicaciones...",
     "no_applications_registered": "No hay aplicaciones registradas.",
     "notifications_suppressed_for": "Notificaciones para <code>{name}</code> estás suspendidas por",
@@ -19,6 +20,7 @@
   },
   "instances": {
     "shutdown": "Detener instancia <code>{name}</code>?",
+    "open_details": "Abrir detalles de la instancia",
     "restart": "Reinciar instancia <code>{name}</code>?",
     "restarted": "Instancia reiniciada exitosamente"
   }

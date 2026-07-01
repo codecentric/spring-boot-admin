@@ -3,10 +3,14 @@
     "actions": {
       "journal": "Journal",
       "notification_filters": "Benachrichtigungsfilter",
-      "unregister": "Deregistrieren",
+      "refresh_applications": "Anwendungen aktualisieren",
+      "restart": "Neu starten",
       "shutdown": "Herunterfahren",
-      "restart": "Neu starten"
+      "switch_to_grouping_by_application": "Aggregiere Instanzen zu Applikationen (gleiche Namen)",
+      "switch_to_grouping_by_group": "Gruppiere Instanzen anhand des Gruppennamens",
+      "unregister": "Deregistrieren"
     },
+    "last_update": "Letzte Aktualisierung",
     "all_up": "Alle verfügbar",
     "all_down": "Alle Instanzen sind ausgefallen",
     "all_unknown": "Alle Instanzen haben unbekannten Status",
@@ -37,6 +41,7 @@
   },
   "instances": {
     "shutdown": "Möchten Sie die Instanz <code>{name}</code> herunterfahren?",
+    "open_details": "Instanzdetails öffnen",
     "restart": "Möchten Sie die Instanz <code>{name}</code> neu starten?",
     "restarted": "Die Instanz {name} wurde neu gestartet.",
     "unregister": "Möchten Sie die Instanz <code>{name}</code> deregistrieren?",

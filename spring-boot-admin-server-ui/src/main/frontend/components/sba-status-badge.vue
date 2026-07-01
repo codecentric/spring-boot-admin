@@ -30,13 +30,16 @@ export default {
 </script>
 
 <style scoped>
+@reference "../index.css";
+
 .status-badge {
   @apply bg-gray-200 text-black text-xs inline-flex items-center uppercase  rounded overflow-hidden px-3 py-1;
 }
 .up {
   @apply bg-green-200 text-green-700;
 }
-.down {
+.down,
+.out_of_service {
   @apply bg-red-200 text-red-700;
 }
 .restricted {

@@ -3,7 +3,18 @@
   "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
     "target": "es2023",
-    "lib": ["es2023", "dom"],
-    "baseUrl": "."
-  }
+    "lib": [
+      "es2023",
+      "dom"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@sba": [
+        "<rootDir>/../../.."
+      ]
+    }
+  },
+  "include": [
+    "**/*.mdx"
+  ]
 }

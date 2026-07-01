@@ -1,6 +1,6 @@
 {
   "wallboard": {
-    "instances_count": "沒有實例 | {count} 個實例 | {count} 個實例",
-    "label": "應用程式"
+    "instances_count": "沒有執行個體 | {count} 個執行個體 | {count} 個執行個體",
+    "label": "資訊看板"
   }
 }

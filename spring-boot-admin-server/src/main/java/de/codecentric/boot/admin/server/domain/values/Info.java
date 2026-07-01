@@ -18,10 +18,13 @@ package de.codecentric.boot.admin.server.domain.values;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.lang.Nullable;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the info fetched from the info actuator endpoint
@@ -33,13 +36,13 @@ public final class Info implements Serializable {
 
 	private static final Info EMPTY = new Info(Collections.emptyMap());
 
-	private final Map<String, Object> values;
+	private Map<String, Object> values = new HashMap<>();
+
+	public Info() {
+	}
 
 	private Info(Map<String, Object> values) {
-		if (values.isEmpty()) {
-			this.values = Collections.emptyMap();
-		}
-		else {
+		if (!values.isEmpty()) {
 			this.values = Collections.unmodifiableMap(new LinkedHashMap<>(values));
 		}
 	}
@@ -53,6 +56,16 @@ public final class Info implements Serializable {
 
 	public static Info empty() {
 		return EMPTY;
+	}
+
+	@JsonAnySetter
+	public void put(String key, Object value) {
+		this.values.put(key, value);
+	}
+
+	@JsonAnyGetter
+	public Map<String, Object> getValues() {
+		return Collections.unmodifiableMap(values);
 	}
 
 }

@@ -17,7 +17,7 @@
 <template>
   <aside
     :class="{ 'w-60': sidebarOpen }"
-    class="h-full flex flex-col bg-white border-r backdrop-filter backdrop-blur-lg bg-opacity-80 z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
+    class="h-full flex flex-col bg-white/80 border-r border-gray-200 backdrop-filter backdrop-blur-lg z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
   >
     <ul class="relative px-1 py-1 overflow-y-auto">
       <!-- Instance info block -->
@@ -52,7 +52,6 @@
         class="relative mb-1"
       >
         <router-link
-          :class="{ 'navbar-link__active': isActiveGroup(group) }"
           :to="{
             name: group.views[0].name,
             params: { instanceId: instance.id },
@@ -67,30 +66,24 @@
                 : $t(group.views[0].label)
             "
           />
-          <svg
+          <button
             v-if="hasMultipleViews(group)"
-            :class="{
-              '-rotate-90': !isActiveGroup(group),
-              '': isActiveGroup(group),
-            }"
-            aria-hidden="true"
-            class="h-3 ml-auto hidden md:block transition"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 448 512"
-            xmlns="http://www.w3.org/2000/svg"
+            class="ml-auto px-2 py-2 cursor-pointer hover:bg-sba-500/50 rounded"
+            @click.prevent="toggleGroup(group.id)"
           >
-            <path
-              d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"
-              fill="currentColor"
+            <font-awesome-icon
+              class="h-3 ml-auto hidden md:block transition"
+              :class="{
+                'rotate-180': isGroupOpen(group),
+              }"
+              :icon="faChevronUp"
             />
-          </svg>
+          </button>
         </router-link>
 
         <!-- Le subnav -->
         <ul
-          v-if="hasMultipleViews(group) && isActiveGroup(group)"
+          v-if="hasMultipleViews(group) && isGroupOpen(group)"
           :class="{ 'hidden md:block': !sidebarOpen }"
           class="relative block"
         >
@@ -112,7 +105,7 @@
       </li>
 
       <template v-if="customLinksFromMetadata?.length > 0">
-        <Divider align="center" class="!my-2">
+        <Divider align="center" class="my-2!">
           <small class="bold">
             {{ $t('sidebar.custom-link.title') }}
           </small>
@@ -162,7 +155,10 @@
 </template>
 
 <script lang="ts" setup>
-import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import {
+  faArrowUpRightFromSquare,
+  faChevronUp,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Divider } from 'primevue';
 import { computed, h, ref, toRaw, watch } from 'vue';
@@ -172,7 +168,7 @@ import { useRoute } from 'vue-router';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { compareBy } from '@/utils/collections';
-import { VIEW_GROUP, VIEW_GROUP_ICON } from '@/views/ViewGroup';
+import { VIEW_GROUP_ICON } from '@/views/ViewGroup';
 
 const props = defineProps<{
   views: any[];
@@ -183,6 +179,7 @@ const props = defineProps<{
 const { t } = useI18n();
 const route = useRoute();
 const sidebarOpen = ref(false);
+const openGroup = ref<string | null>(null);
 
 const customLinksFromMetadata = computed(() => {
   const newVar = props.instance.metadataParsed?.sidebar?.links || [];
@@ -230,14 +227,25 @@ const groups = computed(() => {
 });
 
 watch(
-  () => route.fullPath,
+  [() => route.fullPath, groups],
   () => {
     sidebarOpen.value = false;
+
+    const activeGroup = groups.value.find((group) =>
+      group.views.some((view: SbaView) => toRaw(view) === route.meta.view),
+    );
+
+    openGroup.value = activeGroup?.id ?? null;
   },
+  { immediate: true },
 );
 
 function toggleSidebar() {
   sidebarOpen.value = !sidebarOpen.value;
+}
+
+function toggleGroup(groupId: string) {
+  openGroup.value = openGroup.value === groupId ? null : groupId;
 }
 
 function getGroupTitle(groupId: string) {
@@ -246,15 +254,8 @@ function getGroupTitle(groupId: string) {
   return key === translated ? groupId : translated;
 }
 
-function isActiveGroup(group: any) {
-  if (group.id === VIEW_GROUP.CUSTOM_LINK) {
-    return true;
-  }
-
-  const result = group.views.some(
-    (view: any) => toRaw(view) === route.meta.view,
-  );
-  return result;
+function isGroupOpen(group: any) {
+  return openGroup.value === group.id;
 }
 
 function hasMultipleViews(group: any) {
@@ -263,15 +264,17 @@ function hasMultipleViews(group: any) {
 </script>
 
 <style scoped>
+@reference "../../../index.css";
+
 .instance-info-block {
-  @apply bg-sba-50 bg-opacity-40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
+  @apply bg-sba-50/40 text-sba-900 flex items-center text-sm py-4 px-6 text-left overflow-hidden text-ellipsis rounded transition duration-300 ease-in-out cursor-pointer;
 }
 
 a.navbar-link {
   @apply cursor-pointer;
 }
 .navbar-link {
-  @apply bg-sba-50 bg-opacity-40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
+  @apply bg-sba-50/40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
   @apply text-gray-700;
 }
 .navbar-link--custom {
@@ -280,7 +283,7 @@ a.navbar-link {
 
 .navbar-link:hover,
 .navbar-link__active {
-  @apply bg-sba-50 bg-opacity-80 text-sba-900;
+  @apply bg-sba-50/80 text-sba-900;
 }
 
 .navbar-link__group_item {
@@ -288,6 +291,6 @@ a.navbar-link {
 }
 
 .navbar-link__group {
-  @apply h-12 px-2 md:px-6;
+  @apply h-12 px-2 md:pl-6;
 }
 </style>

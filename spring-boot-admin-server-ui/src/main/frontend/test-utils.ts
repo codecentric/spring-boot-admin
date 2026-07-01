@@ -3,6 +3,7 @@ import { RenderResult, render as tlRender } from '@testing-library/vue';
 import { RouterLinkStub } from '@vue/test-utils';
 import { merge } from 'lodash-es';
 import PrimeVue from 'primevue/config';
+import Tooltip from 'primevue/tooltip';
 import { createI18n } from 'vue-i18n';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
@@ -17,7 +18,8 @@ const modules: Record<string, any> = import.meta.glob('@/**/i18n.en.json', {
   eager: true,
 });
 for (const modulesKey in modules) {
-  terms = { ...terms, ...modules[modulesKey] };
+  const moduleContent = modules[modulesKey].default || modules[modulesKey];
+  terms = { ...terms, ...moduleContent };
 }
 export let router;
 createViewRegistry();
@@ -68,7 +70,16 @@ export const render = (testComponent, options?): RenderResult => {
           ],
           components,
         ],
-        stubs: { RouterLink: RouterLinkStub },
+        directives: {
+          tooltip: Tooltip,
+        },
+        stubs: {
+          RouterLink: RouterLinkStub,
+          'sba-exchanges-chart': true,
+          'font-awesome-icon': {
+            template: '<svg data-testid="icon" />',
+          },
+        },
       },
     },
     options,

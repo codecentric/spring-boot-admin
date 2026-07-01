@@ -2,7 +2,7 @@
 name: Bug
 about: Spring Boot Admin issue template for reporting bugs
 title: ''
-labels: bug, waiting-for-triage
+labels: "type: bug", "status: waiting-for-triage"
 assignees: ''
 
 ---

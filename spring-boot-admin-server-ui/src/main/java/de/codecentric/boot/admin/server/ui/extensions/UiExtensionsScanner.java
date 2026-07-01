@@ -24,11 +24,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
-import org.springframework.lang.Nullable;
 
 public class UiExtensionsScanner {
 
@@ -68,8 +68,7 @@ public class UiExtensionsScanner {
 		return location.replace("classpath:", "classpath*:");
 	}
 
-	@Nullable
-	private String getResourcePath(String location, Resource resource) throws IOException {
+	@Nullable private String getResourcePath(String location, Resource resource) throws IOException {
 		String locationWithoutPrefix = location.replaceFirst("^[^:]+:", "");
 		Matcher m = Pattern.compile(Pattern.quote(locationWithoutPrefix) + "(.+)$")
 			.matcher(resource.getURI().toString());

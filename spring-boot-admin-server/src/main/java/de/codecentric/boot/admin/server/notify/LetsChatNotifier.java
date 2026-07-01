@@ -22,11 +22,11 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -49,20 +49,17 @@ public class LetsChatNotifier extends AbstractContentNotifier {
 	/**
 	 * Host URL for Let´s Chat
 	 */
-	@Nullable
-	private URI url;
+	@Nullable private URI url;
 
 	/**
 	 * Name of the room
 	 */
-	@Nullable
-	private String room;
+	@Nullable private String room;
 
 	/**
 	 * Token for the Let´s chat API
 	 */
-	@Nullable
-	private String token;
+	@Nullable private String token;
 
 	/**
 	 * username which sends notification
@@ -109,8 +106,7 @@ public class LetsChatNotifier extends AbstractContentNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	@Nullable
-	public URI getUrl() {
+	@Nullable public URI getUrl() {
 		return url;
 	}
 
@@ -126,8 +122,7 @@ public class LetsChatNotifier extends AbstractContentNotifier {
 		this.username = username;
 	}
 
-	@Nullable
-	public String getRoom() {
+	@Nullable public String getRoom() {
 		return room;
 	}
 
@@ -135,8 +130,7 @@ public class LetsChatNotifier extends AbstractContentNotifier {
 		this.room = room;
 	}
 
-	@Nullable
-	public String getToken() {
+	@Nullable public String getToken() {
 		return token;
 	}
 

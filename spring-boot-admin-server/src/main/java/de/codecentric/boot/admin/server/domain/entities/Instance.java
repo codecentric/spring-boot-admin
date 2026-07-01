@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
@@ -62,8 +62,7 @@ public final class Instance implements Serializable {
 
 	private final long version;
 
-	@Nullable
-	private final Registration registration;
+	@Nullable private final Registration registration;
 
 	private final boolean registered;
 
@@ -77,8 +76,7 @@ public final class Instance implements Serializable {
 
 	private final Endpoints endpoints;
 
-	@Nullable
-	private final BuildVersion buildVersion;
+	@Nullable private final BuildVersion buildVersion;
 
 	private final Tags tags;
 
@@ -143,7 +141,7 @@ public final class Instance implements Serializable {
 
 	public Instance withStatusInfo(StatusInfo statusInfo) {
 		Assert.notNull(statusInfo, "'statusInfo' must not be null");
-		if (Objects.equals(this.statusInfo.getStatus(), statusInfo.getStatus())) {
+		if (Objects.equals(this.statusInfo, statusInfo)) {
 			return this;
 		}
 		return this.apply(new InstanceStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true);
@@ -218,8 +216,11 @@ public final class Instance implements Serializable {
 		}
 		else if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
 			StatusInfo statusInfo = statusChangedEvent.getStatusInfo();
+			// Preserve the existing status timestamp if only the details have changed
+			Instant statusTimestamp = this.statusInfo.getStatus().equals(statusInfo.getStatus()) ? this.statusTimestamp
+					: event.getTimestamp();
 			return new Instance(this.id, event.getVersion(), this.registration, this.registered, statusInfo,
-					event.getTimestamp(), this.info, this.endpoints, this.buildVersion, this.tags, unsavedEvents);
+					statusTimestamp, this.info, this.endpoints, this.buildVersion, this.tags, unsavedEvents);
 
 		}
 		else if (event instanceof InstanceEndpointsDetectedEvent endpointsDetectedEvent) {

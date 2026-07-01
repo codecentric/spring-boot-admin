@@ -1,11 +1,11 @@
 /// <reference types="vitest" />
+import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
-
-import postcss from './postcss.config';
+import vueDevTools from 'vite-plugin-vue-devtools';
 
 const frontendDir = resolve(__dirname, 'src/main/frontend');
 const outDir = resolve(__dirname, 'target/dist');
@@ -26,6 +26,8 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       vue(),
+      vueDevTools(),
+      tailwindcss(),
       visualizer(() => {
         return {
           filename: resolve(__dirname, 'target/vite.bundle-size-analyzer.html'),
@@ -43,7 +45,6 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     css: {
-      postcss,
       preprocessorOptions: {
         scss: {
           api: 'modern-compiler',
@@ -55,12 +56,12 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: 'jsdom',
       setupFiles: [resolve(frontendDir, 'tests/setup.ts')],
-      include: [
-        resolve(
-          frontendDir,
-          '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-        ),
-      ],
+      env: {
+        LANG: 'de_DE.UTF-8',
+        LC_ALL: 'de_DE.UTF-8',
+        TZ: 'Europe/Berlin',
+      },
+      include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     },
     root: frontendDir,
     build: {

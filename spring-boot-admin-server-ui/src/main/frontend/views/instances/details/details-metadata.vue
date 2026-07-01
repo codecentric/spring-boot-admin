@@ -22,32 +22,38 @@
     :seamless="true"
   >
     <template #title>
-      <div class="ml-2 transition-opacity" :class="{ 'opacity-0': !panelOpen }">
+      <div class="ml-2 transition-opacity" :class="{ 'opacity-0': panelOpen }">
         ({{ Object.keys(metadata).length }})
       </div>
     </template>
-    <sba-key-value-table v-if="!isEmptyMetadata" :map="metadata" />
+    <sba-key-value-table v-if="hasMetadata" :map="metadata" />
+    <p
+      v-else
+      class="mx-4 my-3"
+      v-text="$t('instances.details.metadata.no_data_provided')"
+    />
   </sba-accordion>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 
+import SbaAccordion from '@/components/sba-accordion.vue';
+
 import Instance from '@/services/instance';
 import { sortObject } from '@/utils/sortObject';
-import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
-const { instance } = defineProps<{
+const props = defineProps<{
   instance: Instance;
 }>();
 
 const panelOpen = ref(true);
 
 const metadata = computed(() => {
-  return sortObject(instance.registration.metadata);
+  return sortObject(props.instance.registration.metadata);
 });
 
-const isEmptyMetadata = computed(() => {
-  return Object.keys(instance.registration.metadata).length <= 0;
+const hasMetadata = computed(() => {
+  return Object.keys(metadata.value).length > 0;
 });
 </script>

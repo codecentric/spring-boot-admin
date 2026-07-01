@@ -19,10 +19,10 @@ package de.codecentric.boot.admin.server.notify.filter.web;
 import java.io.IOException;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import tools.jackson.databind.json.JsonMapper;
 
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -79,7 +79,7 @@ class NotificationFilterControllerTest {
 	}
 
 	private String extractId(String response) throws IOException {
-		Map<?, ?> map = new ObjectMapper().readerFor(Map.class).readValue(response);
+		Map<?, ?> map = new JsonMapper().readerFor(Map.class).readValue(response);
 		return map.get("id").toString();
 	}
 

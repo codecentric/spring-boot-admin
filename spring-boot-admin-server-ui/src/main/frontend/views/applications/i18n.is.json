@@ -4,6 +4,7 @@
     "applications": "Forrit",
     "instances": "Eintök",
     "some_down": "Eintök ekki fáanleg",
+    "last_update": "Síðasta uppfærsla",
     "loading_applications": "Forrit eru að ræsa…",
     "no_applications_registered": "Engin forrit skráð.",
     "notifications_suppressed_for": "Tilkynningar fyrir <code>{name}</code> eru hunsuð fyrir",
@@ -19,6 +20,7 @@
   },
   "instances": {
     "shutdown": "Shutdown instance <code>{name}</code>?",
+    "open_details": "Opna upplýsingar um eintak",
     "restart": "Restart instance <code>{name}</code>?",
     "restarted": "Successfully restarted instance"
   }

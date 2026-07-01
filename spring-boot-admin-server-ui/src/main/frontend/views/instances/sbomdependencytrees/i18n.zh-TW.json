@@ -1,0 +1,12 @@
+{
+  "instances": {
+    "sbom": {
+      "label": "相依性樹狀圖",
+      "legend": {
+        "title": "圖例",
+        "node": "無其他相依元件的相依項",
+        "node_with_children": "有其他相依元件的相依項"
+      }
+    }
+  }
+}

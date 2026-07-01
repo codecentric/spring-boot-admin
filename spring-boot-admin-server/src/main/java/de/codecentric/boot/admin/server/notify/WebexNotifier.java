@@ -20,12 +20,12 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -60,14 +60,12 @@ public class WebexNotifier extends AbstractContentNotifier {
 	/**
 	 * Bearer authentication token for Webex API
 	 */
-	@Nullable
-	private String authToken;
+	@Nullable private String authToken;
 
 	/**
 	 * Room identifier in Webex where the message will be sent
 	 */
-	@Nullable
-	private String roomId;
+	@Nullable private String roomId;
 
 	/**
 	 * Creates a new WebexNotifier with the given repository and restTemplate.
@@ -134,8 +132,7 @@ public class WebexNotifier extends AbstractContentNotifier {
 		this.url = url;
 	}
 
-	@Nullable
-	public String getAuthToken() {
+	@Nullable public String getAuthToken() {
 		return authToken;
 	}
 
@@ -143,8 +140,7 @@ public class WebexNotifier extends AbstractContentNotifier {
 		this.authToken = authToken;
 	}
 
-	@Nullable
-	public String getRoomId() {
+	@Nullable public String getRoomId() {
 		return roomId;
 	}
 

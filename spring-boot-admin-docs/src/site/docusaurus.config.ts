@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import path from "path";
 
 const globalVariables = {
   VERSION: process.env.VERSION,
@@ -15,7 +16,6 @@ const config: Config = {
   organizationName: 'codecentric',
   projectName: 'spring-boot-admin',
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
   onBrokenAnchors: 'warn',
   i18n: {
     defaultLocale: "en",
@@ -44,7 +44,29 @@ const config: Config = {
       } satisfies Preset.Options
     ]
   ],
+  plugins: [
+    '@signalwire/docusaurus-plugin-llms-txt',
+    function () {
+      return {
+        name: 'custom-webpack-config',
+        configureWebpack() {
+          return {
+            resolve: {
+              alias: {
+                '@sba': path.resolve(__dirname, '../../..')
+              }
+            }
+          };
+        },
+      };
+    },
+  ],
   markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: "throw",
+      onBrokenMarkdownImages: "throw"
+    },
+    mermaid: true,
     preprocessor: ({fileContent}) => {
       let content = fileContent;
       for (const variable in globalVariables) {
@@ -54,6 +76,7 @@ const config: Config = {
       return content
     },
   },
+  themes: ['@docusaurus/theme-mermaid'],
   themeConfig: {
     image: "img/social-card.jpg",
     tableOfContents: {
@@ -78,13 +101,13 @@ const config: Config = {
       items: [
         {
           type: "docSidebar",
-          sidebarId: "tutorialSidebar",
+          sidebarId: "sidebar",
           position: "left",
           label: "Documentation"
         },
         {
           type: "docSidebar",
-          sidebarId: "tutorialSidebar",
+          sidebarId: "sidebar",
           position: "left",
           label: "FAQ",
           href: "/faq"
@@ -104,7 +127,7 @@ const config: Config = {
           items: [
             {
               label: "Overview",
-              to: "/docs/index"
+              to: "/docs/getting-started/"
             },
             {
               label: "FAQ",
@@ -143,8 +166,8 @@ const config: Config = {
     },
     prism: {
       theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
-      additionalLanguages: ["java"]
+      darkTheme: prismThemes.vsDark,
+      additionalLanguages: ["java", "bash", "javascript", "typescript", "docker", "gradle", "groovy", "yaml"]
     }
   } satisfies Preset.ThemeConfig
 };

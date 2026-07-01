@@ -2,8 +2,7 @@
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 ![Build Status](https://github.com/codecentric/spring-boot-admin/actions/workflows/build-main.yml/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/codecentric/spring-boot-admin/branch/master/graph/badge.svg?token=u5SWsZpj5S)](https://codecov.io/gh/codecentric/spring-boot-admin)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.codecentric/spring-boot-admin/)
-[![Gitter](https://badges.gitter.im/codecentric/spring-boot-admin.svg)](https://gitter.im/codecentric/spring-boot-admin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+![Maven Central Version](https://img.shields.io/maven-central/v/de.codecentric/spring-boot-admin)
 
 This community project provides an admin interface for [Spring Boot <sup>®</sup>](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") web applications that expose actuator endpoints.
 
@@ -16,8 +15,7 @@ In the Spring Boot Admin Server App, the Spring Boot Admin's version matches the
 |---------------------|-------------------|
 | 2.7                 | 2.7.Y             |
 | 3.0                 | 3.0.Y             |
-| ...                 | ...               |
-| 3.3                 | 3.3.Y             |
+| 4.0                 | 4.0.Y             |
 
 Nevertheless, it is possible to monitor any version of a Spring Boot service independently of the underlying Spring Boot version in the service.
 Hence, it is possible to run Spring Boot Admin Server version 2.6 and monitor a service that is running on Spring Boot 2.3 using Spring Boot Admin Client version 2.3.

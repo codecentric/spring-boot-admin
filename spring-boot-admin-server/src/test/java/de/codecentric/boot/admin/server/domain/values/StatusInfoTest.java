@@ -47,26 +47,50 @@ class StatusInfoTest {
 		assertThat(StatusInfo.valueOf("FOO").isDown()).isFalse();
 		assertThat(StatusInfo.valueOf("FOO").isUnknown()).isFalse();
 		assertThat(StatusInfo.valueOf("FOO").isOffline()).isFalse();
+		assertThat(StatusInfo.valueOf("FOO").isOutOfService()).isFalse();
+		assertThat(StatusInfo.valueOf("FOO").isRestricted()).isFalse();
 
 		assertThat(StatusInfo.ofUp().isUp()).isTrue();
 		assertThat(StatusInfo.ofUp().isDown()).isFalse();
 		assertThat(StatusInfo.ofUp().isUnknown()).isFalse();
 		assertThat(StatusInfo.ofUp().isOffline()).isFalse();
+		assertThat(StatusInfo.ofUp().isOutOfService()).isFalse();
+		assertThat(StatusInfo.ofUp().isRestricted()).isFalse();
 
 		assertThat(StatusInfo.ofDown().isUp()).isFalse();
 		assertThat(StatusInfo.ofDown().isDown()).isTrue();
 		assertThat(StatusInfo.ofDown().isUnknown()).isFalse();
 		assertThat(StatusInfo.ofDown().isOffline()).isFalse();
+		assertThat(StatusInfo.ofDown().isOutOfService()).isFalse();
+		assertThat(StatusInfo.ofDown().isRestricted()).isFalse();
 
 		assertThat(StatusInfo.ofUnknown().isUp()).isFalse();
 		assertThat(StatusInfo.ofUnknown().isDown()).isFalse();
 		assertThat(StatusInfo.ofUnknown().isUnknown()).isTrue();
 		assertThat(StatusInfo.ofUnknown().isOffline()).isFalse();
+		assertThat(StatusInfo.ofUnknown().isOutOfService()).isFalse();
+		assertThat(StatusInfo.ofUnknown().isRestricted()).isFalse();
 
 		assertThat(StatusInfo.ofOffline().isUp()).isFalse();
 		assertThat(StatusInfo.ofOffline().isDown()).isFalse();
 		assertThat(StatusInfo.ofOffline().isUnknown()).isFalse();
 		assertThat(StatusInfo.ofOffline().isOffline()).isTrue();
+		assertThat(StatusInfo.ofOffline().isOutOfService()).isFalse();
+		assertThat(StatusInfo.ofOffline().isRestricted()).isFalse();
+
+		assertThat(StatusInfo.ofOutOfService().isUp()).isFalse();
+		assertThat(StatusInfo.ofOutOfService().isDown()).isFalse();
+		assertThat(StatusInfo.ofOutOfService().isUnknown()).isFalse();
+		assertThat(StatusInfo.ofOutOfService().isOffline()).isFalse();
+		assertThat(StatusInfo.ofOutOfService().isOutOfService()).isTrue();
+		assertThat(StatusInfo.ofOutOfService().isRestricted()).isFalse();
+
+		assertThat(StatusInfo.ofRestricted().isUp()).isFalse();
+		assertThat(StatusInfo.ofRestricted().isDown()).isFalse();
+		assertThat(StatusInfo.ofRestricted().isUnknown()).isFalse();
+		assertThat(StatusInfo.ofRestricted().isOffline()).isFalse();
+		assertThat(StatusInfo.ofRestricted().isOutOfService()).isFalse();
+		assertThat(StatusInfo.ofRestricted().isRestricted()).isTrue();
 	}
 
 	@Test
@@ -76,6 +100,21 @@ class StatusInfoTest {
 		map.put("details", singletonMap("foo", "bar"));
 
 		assertThat(StatusInfo.from(map)).isEqualTo(StatusInfo.ofUp(singletonMap("foo", "bar")));
+	}
+
+	@Test
+	void factory_methods_with_details() {
+		Map<String, Object> details = singletonMap("reason", "maintenance");
+
+		StatusInfo outOfService = StatusInfo.ofOutOfService(details);
+		assertThat(outOfService.getStatus()).isEqualTo(STATUS_OUT_OF_SERVICE);
+		assertThat(outOfService.getDetails()).containsEntry("reason", "maintenance");
+		assertThat(outOfService.isOutOfService()).isTrue();
+
+		StatusInfo restricted = StatusInfo.ofRestricted(details);
+		assertThat(restricted.getStatus()).isEqualTo(STATUS_RESTRICTED);
+		assertThat(restricted.getDetails()).containsEntry("reason", "maintenance");
+		assertThat(restricted.isRestricted()).isTrue();
 	}
 
 	@Test

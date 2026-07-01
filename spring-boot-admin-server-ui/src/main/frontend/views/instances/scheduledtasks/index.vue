@@ -257,6 +257,7 @@ export default {
 };
 </script>
 <style lang="css">
+@reference "../../../index.css";
 .scheduledtasks__target {
   width: 250px;
   max-width: 750px;

@@ -23,21 +23,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.context.expression.MapAccessor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.DataBindingPropertyAccessor;
+import org.springframework.expression.spel.support.MapAccessor;
 import org.springframework.expression.spel.support.SimpleEvaluationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -62,13 +64,13 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 
 	private static final String SOURCE_KEY = "Source";
 
-	private static final String DEFAULT_THEME_COLOR_EXPRESSION = "#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? '6db33f' : 'b32d36') : '439fe0'}";
+	private static final String DEFAULT_TITLE_COLOR_EXPRESSION = "#{event.type == 'STATUS_CHANGED' ? (event.statusInfo.status=='UP' ? 'Good' : 'Attention') : 'Accent'}";
 
-	private static final String DEFAULT_DEREGISTER_ACTIVITY_SUBTITLE_EXPRESSION = "#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin";
+	private static final String DEFAULT_DEREGISTER_TEXT_EXPRESSION = "#{instance.registration.name} with id #{instance.id} has de-registered from Spring Boot Admin";
 
-	private static final String DEFAULT_REGISTER_ACTIVITY_SUBTITLE_EXPRESSION = "#{instance.registration.name} with id #{instance.id} has registered with Spring Boot Admin";
+	private static final String DEFAULT_REGISTER_TEXT_EXPRESSION = "#{instance.registration.name} with id #{instance.id} has registered with Spring Boot Admin";
 
-	private static final String DEFAULT_STATUS_ACTIVITY_SUBTITLE_EXPRESSION = "#{instance.registration.name} with id #{instance.id} changed status from #{lastStatus} to #{event.statusInfo.status}";
+	private static final String DEFAULT_STATUS_CHANGED_TEXT_EXPRESSION = "#{instance.registration.name} with id #{instance.id} changed status from #{lastStatus} to #{event.statusInfo.status}";
 
 	private final SpelExpressionParser parser = new SpelExpressionParser();
 
@@ -79,39 +81,36 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	 * Webhook url for Microsoft Teams Channel Webhook connector (i.e.
 	 * <a href="https://outlook.office.com/webhook/">...</a>{webhook-id})
 	 */
-	@Nullable
-	private URI webhookUrl;
+	@Nullable private String webhookUrl;
 
 	/**
-	 * Theme Color is the color of the accent on the message that appears in Microsoft
-	 * Teams. Default is Spring Green
+	 * Expression for the color of the message title, see
+	 * <a href="https://adaptivecards.microsoft.com/?topic=TextBlock#color">supported
+	 * colors</a>
 	 */
-	private Expression themeColor;
+	private Expression titleColorExpression;
 
 	/**
-	 * Message will be used as title of the Activity section of the Teams message when an
-	 * app de-registers.
+	 * Expression for the text that will be displayed when an app deregisters.
 	 */
-	private Expression deregisterActivitySubtitle;
+	private Expression deregisteredTextExpression;
 
 	/**
-	 * Message will be used as title of the Activity section of the Teams message when an
-	 * app registers
+	 * Expression for the text that will be displayed when an app registers
 	 */
-	private Expression registerActivitySubtitle;
+	private Expression registeredTextExpression;
 
 	/**
-	 * Message will be used as title of the Activity section of the Teams message when an
-	 * app changes status
+	 * Expression for the text that will be displayed when an app changes status
 	 */
-	private Expression statusActivitySubtitle;
+	private Expression statusChangedTextExpression;
 
 	/**
-	 * Title of the Teams message when an app de-registers
+	 * Title of the Teams message when an app deregisters
 	 */
 	@Setter
 	@Getter
-	private String deRegisteredTitle = "De-Registered";
+	private String deregisteredTitle = "Deregistered";
 
 	/**
 	 * Title of the Teams message when an app registers
@@ -127,22 +126,16 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	@Getter
 	private String statusChangedTitle = "Status Changed";
 
-	/**
-	 * Summary section of every Teams message originating from Spring Boot Admin
-	 */
-	@Setter
-	@Getter
-	private String messageSummary = "Spring Boot Admin Notification";
-
 	public MicrosoftTeamsNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
 		this.restTemplate = restTemplate;
-		this.themeColor = parser.parseExpression(DEFAULT_THEME_COLOR_EXPRESSION, ParserContext.TEMPLATE_EXPRESSION);
-		this.deregisterActivitySubtitle = parser.parseExpression(DEFAULT_DEREGISTER_ACTIVITY_SUBTITLE_EXPRESSION,
+		this.titleColorExpression = parser.parseExpression(DEFAULT_TITLE_COLOR_EXPRESSION,
 				ParserContext.TEMPLATE_EXPRESSION);
-		this.registerActivitySubtitle = parser.parseExpression(DEFAULT_REGISTER_ACTIVITY_SUBTITLE_EXPRESSION,
+		this.deregisteredTextExpression = parser.parseExpression(DEFAULT_DEREGISTER_TEXT_EXPRESSION,
 				ParserContext.TEMPLATE_EXPRESSION);
-		this.statusActivitySubtitle = parser.parseExpression(DEFAULT_STATUS_ACTIVITY_SUBTITLE_EXPRESSION,
+		this.registeredTextExpression = parser.parseExpression(DEFAULT_REGISTER_TEXT_EXPRESSION,
+				ParserContext.TEMPLATE_EXPRESSION);
+		this.statusChangedTextExpression = parser.parseExpression(DEFAULT_STATUS_CHANGED_TEXT_EXPRESSION,
 				ParserContext.TEMPLATE_EXPRESSION);
 	}
 
@@ -157,7 +150,7 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 			message = getDeregisteredMessage(instance, context);
 		}
 		else if (event instanceof InstanceStatusChangedEvent) {
-			message = getStatusChangedMessage(instance, context);
+			message = getStatusChangedTextExpression(instance, context);
 		}
 		else {
 			return Mono.empty();
@@ -170,8 +163,9 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 			return Mono.error(new IllegalStateException("'webhookUrl' must not be null."));
 		}
 
-		return Mono.fromRunnable(() -> this.restTemplate.postForEntity(webhookUrl,
-				new HttpEntity<Object>(message, headers), Void.class));
+		URI uri = URI.create(webhookUrl);
+		return Mono.fromRunnable(
+				() -> this.restTemplate.postForEntity(uri, new HttpEntity<Object>(message, headers), Void.class));
 	}
 
 	@Override
@@ -181,41 +175,61 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 	}
 
 	protected Message getDeregisteredMessage(Instance instance, EvaluationContext context) {
-		String activitySubtitle = evaluateExpression(context, deregisterActivitySubtitle);
-		return createMessage(instance, deRegisteredTitle, activitySubtitle, context);
+		String textValue = evaluateExpression(context, deregisteredTextExpression);
+		return createMessage(instance, deregisteredTitle, textValue, context);
 	}
 
 	protected Message getRegisteredMessage(Instance instance, EvaluationContext context) {
-		String activitySubtitle = evaluateExpression(context, registerActivitySubtitle);
-		return createMessage(instance, registeredTitle, activitySubtitle, context);
+		String textValue = evaluateExpression(context, registeredTextExpression);
+		return createMessage(instance, registeredTitle, textValue, context);
 	}
 
-	protected Message getStatusChangedMessage(Instance instance, EvaluationContext context) {
-		String activitySubtitle = evaluateExpression(context, statusActivitySubtitle);
-		return createMessage(instance, statusChangedTitle, activitySubtitle, context);
+	protected Message getStatusChangedTextExpression(Instance instance, EvaluationContext context) {
+		String textValue = evaluateExpression(context, statusChangedTextExpression);
+		return createMessage(instance, statusChangedTitle, textValue, context);
 	}
 
 	protected Message createMessage(Instance instance, String registeredTitle, String activitySubtitle,
 			EvaluationContext context) {
 		List<Fact> facts = new ArrayList<>();
-		facts.add(new Fact(STATUS_KEY, instance.getStatusInfo().getStatus()));
-		facts.add(new Fact(SERVICE_URL_KEY, instance.getRegistration().getServiceUrl()));
-		facts.add(new Fact(HEALTH_URL_KEY, instance.getRegistration().getHealthUrl()));
-		facts.add(new Fact(MANAGEMENT_URL_KEY, instance.getRegistration().getManagementUrl()));
-		facts.add(new Fact(SOURCE_KEY, instance.getRegistration().getSource()));
+		addFactIfNotNull(facts, STATUS_KEY, instance.getStatusInfo().getStatus());
+		addFactIfNotNull(facts, SERVICE_URL_KEY, instance.getRegistration().getServiceUrl());
+		addFactIfNotNull(facts, HEALTH_URL_KEY, instance.getRegistration().getHealthUrl());
+		addFactIfNotNull(facts, MANAGEMENT_URL_KEY, instance.getRegistration().getManagementUrl());
+		addFactIfNotNull(facts, SOURCE_KEY, instance.getRegistration().getSource());
 
-		Section section = Section.builder()
-			.activityTitle(instance.getRegistration().getName())
-			.activitySubtitle(activitySubtitle)
-			.facts(facts)
-			.build();
+		String titleColorValue = evaluateExpression(context, titleColorExpression);
 
-		return Message.builder()
-			.title(registeredTitle)
-			.summary(messageSummary)
-			.themeColor(evaluateExpression(context, themeColor))
-			.sections(singletonList(section))
-			.build();
+		List<CardElement> cardBody = new ArrayList<>();
+
+		// Title
+		cardBody.add(CardElement.builder()
+			.type("TextBlock")
+			.text(registeredTitle)
+			.size("Large")
+			.weight("Bolder")
+			.color(titleColorValue)
+			.build());
+
+		// Service Name
+		cardBody.add(CardElement.builder()
+			.type("TextBlock")
+			.text(instance.getRegistration().getName())
+			.size("Medium")
+			.weight("Bolder")
+			.build());
+
+		// Text
+		cardBody.add(CardElement.builder().type("TextBlock").text(activitySubtitle).wrap(true).build());
+
+		// Facts
+		cardBody.add(CardElement.builder().type("FactSet").facts(facts).build());
+
+		AdaptiveCard adaptiveCard = AdaptiveCard.builder().body(cardBody).build();
+
+		Attachment attachment = Attachment.builder().content(adaptiveCard).build();
+
+		return Message.builder().attachments(singletonList(attachment)).build();
 	}
 
 	protected String evaluateExpression(EvaluationContext context, Expression expression) {
@@ -233,78 +247,120 @@ public class MicrosoftTeamsNotifier extends AbstractStatusChangeNotifier {
 			.build();
 	}
 
-	@Nullable
-	public URI getWebhookUrl() {
+	private void addFactIfNotNull(List<Fact> facts, String title, @Nullable String value) {
+		if (value != null && !value.isBlank()) {
+			facts.add(new Fact(title, value));
+		}
+	}
+
+	@Nullable public String getWebhookUrl() {
 		return webhookUrl;
 	}
 
-	public void setWebhookUrl(@Nullable URI webhookUrl) {
+	public void setWebhookUrl(@Nullable String webhookUrl) {
 		this.webhookUrl = webhookUrl;
 	}
 
-	public String getThemeColor() {
-		return themeColor.getExpressionString();
+	public String getTitleColorExpression() {
+		return titleColorExpression.getExpressionString();
 	}
 
-	public void setThemeColor(String themeColor) {
-		this.themeColor = parser.parseExpression(themeColor, ParserContext.TEMPLATE_EXPRESSION);
+	public void setTitleColorExpression(String titleColorExpression) {
+		this.titleColorExpression = parser.parseExpression(titleColorExpression, ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	public String getDeregisterActivitySubtitle() {
-		return deregisterActivitySubtitle.getExpressionString();
+	public String getDeregisteredTextExpression() {
+		return deregisteredTextExpression.getExpressionString();
 	}
 
-	public void setDeregisterActivitySubtitle(String deregisterActivitySubtitle) {
-		this.deregisterActivitySubtitle = parser.parseExpression(deregisterActivitySubtitle,
+	public void setDeregisteredTextExpression(String deregisteredTextExpression) {
+		this.deregisteredTextExpression = parser.parseExpression(deregisteredTextExpression,
 				ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	public String getRegisterActivitySubtitle() {
-		return registerActivitySubtitle.getExpressionString();
+	public String getRegisteredTextExpression() {
+		return registeredTextExpression.getExpressionString();
 	}
 
-	public void setRegisterActivitySubtitle(String registerActivitySubtitle) {
-		this.registerActivitySubtitle = parser.parseExpression(registerActivitySubtitle,
+	public void setRegisteredTextExpression(String registeredTextExpression) {
+		this.registeredTextExpression = parser.parseExpression(registeredTextExpression,
 				ParserContext.TEMPLATE_EXPRESSION);
 	}
 
-	public String getStatusActivitySubtitle() {
-		return statusActivitySubtitle.getExpressionString();
+	public String getStatusChangedTextExpression() {
+		return statusChangedTextExpression.getExpressionString();
 	}
 
-	public void setStatusActivitySubtitle(String statusActivitySubtitle) {
-		this.statusActivitySubtitle = parser.parseExpression(statusActivitySubtitle, ParserContext.TEMPLATE_EXPRESSION);
+	public void setStatusChangedTextExpression(String statusChangedTextExpression) {
+		this.statusChangedTextExpression = parser.parseExpression(statusChangedTextExpression,
+				ParserContext.TEMPLATE_EXPRESSION);
 	}
 
 	@Data
 	@Builder
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class Message {
 
-		private final String summary;
-
-		private final String themeColor;
-
-		private final String title;
+		private final String type = "message";
 
 		@Builder.Default
-		private final List<Section> sections = new ArrayList<>();
+		private final List<Attachment> attachments = new ArrayList<>();
 
 	}
 
 	@Data
 	@Builder
-	public static class Section {
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static class Attachment {
 
-		private final String activityTitle;
+		private final String contentType = "application/vnd.microsoft.card.adaptive";
 
-		private final String activitySubtitle;
+		@Nullable private final String contentUrl = null;
 
-		@Builder.Default
-		private final List<Fact> facts = new ArrayList<>();
+		private final AdaptiveCard content;
 
 	}
 
-	public record Fact(String name, @Nullable String value) {
+	@Data
+	@Builder
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static class AdaptiveCard {
+
+		@Builder.Default
+		@JsonProperty("$schema")
+		private final String schema = "http://adaptivecards.io/schemas/adaptive-card.json";
+
+		private final String type = "AdaptiveCard";
+
+		private final String version = "1.2";
+
+		@Builder.Default
+		private final List<CardElement> body = new ArrayList<>();
+
+	}
+
+	@Data
+	@Builder
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static class CardElement {
+
+		private final String type;
+
+		@Nullable private final String text;
+
+		@Nullable private final String size;
+
+		@Nullable private final String weight;
+
+		@Nullable private final String color;
+
+		@Nullable private final Boolean wrap;
+
+		@Nullable private final List<Fact> facts;
+
+	}
+
+	public record Fact(String title, @Nullable String value) {
 	}
 
 }

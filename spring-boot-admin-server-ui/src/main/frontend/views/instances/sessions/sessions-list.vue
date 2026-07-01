@@ -200,6 +200,7 @@ export default {
 };
 </script>
 <style lang="css">
+@reference "../../../index.css";
 .sessions td,
 .sessions th {
   vertical-align: middle;

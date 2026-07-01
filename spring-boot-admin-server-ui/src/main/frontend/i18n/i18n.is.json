@@ -28,6 +28,7 @@
     "integer": "Integer",
     "milliseconds": "Millisekúndar",
     "minutes": "{count} Mínúta | {count} Mínútur",
+    "percent": "prósent",
     "name": "Nafn",
     "operations": "Rökaðgerðir",
     "save": "Vista",

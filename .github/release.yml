@@ -6,15 +6,22 @@ changelog:
       exclude:
         labels:
           - fix
+          - bug
           - breaking-change
           - dependencies
           - bot
+          - "type: dependency-upgrade"
+          - "type: breaking-change"
     - title: Bug Fixes
       labels:
         - fix
+        - bug
+        - "type: bug"
     - title: Breaking Changes
       labels:
         - breaking-change
+        - "type: breaking-change"
     - title: Dependencies
       labels:
         - dependencies
+        - "type: dependency-upgrade"

@@ -35,7 +35,6 @@
             :allow-reset="logger.name !== 'ROOT'"
             @input="(level) => $emit('configureLogger', { logger, level })"
           />
-
           <sba-alert
             v-if="
               loggersStatus[logger.name] &&

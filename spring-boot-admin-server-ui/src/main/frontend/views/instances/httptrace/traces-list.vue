@@ -182,6 +182,7 @@ export default {
 </script>
 
 <style lang="css">
+@reference "../../../index.css";
 .httptraces {
   table-layout: fixed;
 }

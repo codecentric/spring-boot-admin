@@ -80,4 +80,10 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
+  {
+    files: ['**/*.spec.{js,jsx,ts,tsx,vue}', '**/*.test.{js,jsx,ts,tsx,vue}'],
+    rules: {
+      'vue/one-component-per-file': 'off',
+    },
+  },
 ]);

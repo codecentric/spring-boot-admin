@@ -10,9 +10,6 @@
         "successful_requests": "Farsælar fyrirspurnir",
         "total_requests": "Samtals fyrirspurnir"
       },
-      "content_type_response": "Innihaldstegund svarsins",
-      "content_type_request": "Innihaldstegund beiðninnar",
-      "length_request": "Lengd beiðninnar",
       "limit": "Takmörkun",
       "filter": {
         "client_errors": "Vandamál biðlara",
@@ -20,13 +17,10 @@
         "server_errors": "Vandamál þjóns",
         "success": "farsælt"
       },
-      "length_response": "Stærð svarsins",
       "method": "Aðferð",
-      "no_exchanges_found": "Fundið engin spor.",
       "status": "Staða",
       "time": "Tímalengd",
-      "timestamp": "Tímapunktur",
-      "uri": "URI"
+      "timestamp": "Tímapunktur"
     }
   }
 }

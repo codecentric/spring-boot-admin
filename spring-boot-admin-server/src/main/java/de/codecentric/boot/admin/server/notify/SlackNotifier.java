@@ -21,10 +21,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -49,26 +49,22 @@ public class SlackNotifier extends AbstractContentNotifier {
 	/**
 	 * Webhook url for Slack API (i.e. https://hooks.slack.com/services/xxx)
 	 */
-	@Nullable
-	private URI webhookUrl;
+	@Nullable private URI webhookUrl;
 
 	/**
 	 * Optional channel name without # sign (i.e. somechannel)
 	 */
-	@Nullable
-	private String channel;
+	@Nullable private String channel;
 
 	/**
 	 * Optional emoji icon without colons (i.e. my-emoji)
 	 */
-	@Nullable
-	private String icon;
+	@Nullable private String icon;
 
 	/**
 	 * Optional username which sends notification
 	 */
-	@Nullable
-	private String username = "Spring Boot Admin";
+	@Nullable private String username = "Spring Boot Admin";
 
 	public SlackNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
@@ -118,8 +114,7 @@ public class SlackNotifier extends AbstractContentNotifier {
 		}
 	}
 
-	@Nullable
-	public URI getWebhookUrl() {
+	@Nullable public URI getWebhookUrl() {
 		return webhookUrl;
 	}
 
@@ -127,8 +122,7 @@ public class SlackNotifier extends AbstractContentNotifier {
 		this.webhookUrl = webhookUrl;
 	}
 
-	@Nullable
-	public String getChannel() {
+	@Nullable public String getChannel() {
 		return channel;
 	}
 
@@ -136,8 +130,7 @@ public class SlackNotifier extends AbstractContentNotifier {
 		this.channel = channel;
 	}
 
-	@Nullable
-	public String getIcon() {
+	@Nullable public String getIcon() {
 		return icon;
 	}
 
@@ -145,8 +138,7 @@ public class SlackNotifier extends AbstractContentNotifier {
 		this.icon = icon;
 	}
 
-	@Nullable
-	public String getUsername() {
+	@Nullable public String getUsername() {
 		return username;
 	}
 

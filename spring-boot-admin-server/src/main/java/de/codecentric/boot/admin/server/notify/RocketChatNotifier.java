@@ -20,11 +20,11 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -47,20 +47,17 @@ public class RocketChatNotifier extends AbstractContentNotifier {
 	/**
 	 * Host URL for RocketChat server
 	 */
-	@Nullable
-	private String url;
+	@Nullable private String url;
 
 	/**
 	 * Room Id to send message
 	 */
-	@Nullable
-	private String roomId;
+	@Nullable private String roomId;
 
 	/**
 	 * Token for RocketChat API
 	 */
-	@Nullable
-	private String token;
+	@Nullable private String token;
 
 	/**
 	 * User Id for RocketChat API
@@ -114,8 +111,7 @@ public class RocketChatNotifier extends AbstractContentNotifier {
 		this.restTemplate = restTemplate;
 	}
 
-	@Nullable
-	public String getUrl() {
+	@Nullable public String getUrl() {
 		return url;
 	}
 
@@ -123,8 +119,7 @@ public class RocketChatNotifier extends AbstractContentNotifier {
 		this.url = url;
 	}
 
-	@Nullable
-	public String getRoomId() {
+	@Nullable public String getRoomId() {
 		return roomId;
 	}
 
@@ -132,8 +127,7 @@ public class RocketChatNotifier extends AbstractContentNotifier {
 		this.roomId = roomId;
 	}
 
-	@Nullable
-	public String getToken() {
+	@Nullable public String getToken() {
 		return token;
 	}
 
@@ -141,8 +135,7 @@ public class RocketChatNotifier extends AbstractContentNotifier {
 		this.token = token;
 	}
 
-	@Nullable
-	public String getUserId() {
+	@Nullable public String getUserId() {
 		return userId;
 	}
 

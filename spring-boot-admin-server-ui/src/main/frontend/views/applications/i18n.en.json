@@ -3,10 +3,14 @@
     "actions": {
       "journal": "Journal",
       "notification_filters": "Notification filters",
-      "unregister": "Unregister",
+      "refresh_applications": "Refresh applications",
+      "restart": "Restart",
       "shutdown": "Shutdown",
-      "restart": "Restart"
+      "switch_to_grouping_by_application": "Aggregate same instances as application",
+      "switch_to_grouping_by_group": "Group same instance by same group name",
+      "unregister": "Unregister"
     },
+    "last_update": "Last update",
     "all_up": "all up",
     "all_down": "all down",
     "all_unknown": "all in unknown state",
@@ -43,6 +47,7 @@
     "shutdown": "Shutdown instance <code>{name}</code>?",
     "shutdown_successful": "Successfully shutdown instances {name}.",
     "shutdown_failed": "Failed to shutdown instances {name}.",
+    "open_details": "Open instance details",
     "restart": "Restart instance <code>{name}</code>?",
     "restarted": "Successfully restarted instance {name}.",
     "unregister": "Deregister instance <code>{name}</code>?",

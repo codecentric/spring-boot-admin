@@ -4,26 +4,36 @@ import { CopyButton } from "@site/src/components/CopyButton";
 
 type Props = {
   title?: string;
-  properties: Array<SpringPropertyDefinition>
-  filter?: Array<string>
-  exclusive?: boolean,
-  additionalProperties: Array<SpringPropertyDefinition>
+  properties: Array<SpringPropertyDefinition>;
+  filter?: Array<string>;
+  includeOnly?: boolean;
+  additionalProperties?: Array<SpringPropertyDefinition>;
 }
 
-export function PropertyTable({
-                                title,
-                                properties,
-                                filter = [],
-                                exclusive = true,
-                                additionalProperties = [] as Array<SpringPropertyDefinition>,
-                              }: Readonly<Props>) {
-  const filteredProperties = filterPropertiesByName(properties, filter, exclusive)
+function getFilteredProperties(properties: Array<SpringPropertyDefinition>, filter: Array<string>, includeOnly: boolean) {
+  if (filter.length === 0) {
+    return properties;
+  }
+
+  return filterPropertiesByName(properties, filter, includeOnly)
     .filter((property, index, self) =>
       index === self.findIndex((p) => p.name === property.name)
     )
     .sort((a, b) => {
       return a.name.length - b.name.length || a.name.localeCompare(b.name);
     });
+}
+
+export function PropertyTable({
+                                title,
+                                properties,
+                                filter = [],
+                                includeOnly = true,
+                                additionalProperties = [] as Array<SpringPropertyDefinition>
+                              }: Readonly<Props>) {
+
+
+  const filteredProperties = getFilteredProperties(properties, filter, includeOnly);
 
   const propertiesToShow = [
     ...filteredProperties,
@@ -31,10 +41,8 @@ export function PropertyTable({
   ];
 
   const hasDefaultValueOrType = (property: SpringPropertyDefinition) => {
-    console.log(property.defaultValue, typeof property.defaultValue);
-    console.log(property.type, typeof property.type);
-    return property.defaultValue || property.type
-  }
+    return property.defaultValue || property.type;
+  };
 
   return (
     <table className={styles.propertyTable}>
@@ -42,7 +50,6 @@ export function PropertyTable({
       <thead>
       <tr>
         <th>Property</th>
-        <th>Description</th>
       </tr>
       </thead>
       <tbody>
@@ -50,31 +57,31 @@ export function PropertyTable({
         <>
           <tr key={a.name}>
             <td className={styles.propertyCell}>
-              <div>
+              <div className={styles.propertyBlock}>
                 <CopyButton text={a.name} />
                 <code>
                   {a.name}
                 </code>
               </div>
-            </td>
-            <td>
-              <p dangerouslySetInnerHTML={{__html: a.description}} />
-              {hasDefaultValueOrType(a) && (
-                <dl>
-                  {a.type && (
-                    <div>
-                      <dt><span style={{ fontStyle: "italic" }}>Type:</span>&nbsp;</dt>
-                      <dd><code>{a.type}</code></dd>
-                    </div>
-                  )}
-                  {a.defaultValue && (
-                    <div>
-                      <dt><span style={{ fontStyle: "italic" }}>Default:</span>&nbsp;</dt>
-                      <dd><code>{JSON.stringify(a.defaultValue)}</code></dd>
-                    </div>
-                  )}
-                </dl>
-              )}
+              <div className={styles.descriptionBlock}>
+                <p dangerouslySetInnerHTML={{ __html: a.description }} />
+                {hasDefaultValueOrType(a) && (
+                  <dl>
+                    {a.type && (
+                      <div>
+                        <dt><span style={{ fontStyle: "italic" }}>Type:</span>&nbsp;</dt>
+                        <dd><code>{a.type}</code></dd>
+                      </div>
+                    )}
+                    {a.defaultValue && (
+                      <div>
+                        <dt><span style={{ fontStyle: "italic" }}>Default:</span>&nbsp;</dt>
+                        <dd><code>{JSON.stringify(a.defaultValue)}</code></dd>
+                      </div>
+                    )}
+                  </dl>
+                )}
+              </div>
             </td>
           </tr>
         </>

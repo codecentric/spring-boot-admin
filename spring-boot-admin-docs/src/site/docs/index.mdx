@@ -1,0 +1,36 @@
+---
+sidebar_position: 0
+slug: /index
+id: index
+title: Start
+hide_title: true
+hide_table_of_contents: true
+sidebar_custom_props:
+  icon: 'home'
+---
+
+import { HexMesh } from "@sba/spring-boot-admin-docs/src/site/src/components/HexMesh";
+import Link from "@docusaurus/Link";
+
+<div className={"styles.hexMeshContainer"}>
+  <HexMesh
+    items={[
+      { title: 'Getting Started', description: 'Quick setup guide', link: '/docs/getting-started' },
+      { title: 'Server', description: 'Configure Admin Server', link: '/docs/server' },
+      { title: 'Client', description: 'Register applications', link: '/docs/client' },
+      { title: 'Integration', description: 'Service discovery', link: '/docs/integration' },
+      { title: 'Security', description: 'Authentication & authorization', link: '/docs/security' },
+      { title: 'Customization', description: 'Extend and customize', link: '/docs/customization' },
+      { title: 'Samples', description: 'Example projects', link: '/docs/samples' },
+      { title: 'Reference', description: 'API & configuration', link: '/docs/reference' },
+      { title: 'Upgrading', description: 'Migration guides', link: '/docs/upgrading' },
+    ]}
+    renderItem={(item) => (
+      <Link to={item.link} className={"hex__body"}>
+        <div className={"hex__body__title"}>{item.title}</div>
+        <div className={"hex__body__description"}>{item.description}</div>
+      </Link>
+    )}
+  />
+</div>
+

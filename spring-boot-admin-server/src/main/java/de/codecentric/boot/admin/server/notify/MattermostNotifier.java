@@ -21,10 +21,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -49,20 +49,17 @@ public class MattermostNotifier extends AbstractContentNotifier {
 	/**
 	 * API url for Mattermost (i.e. https://example.mattermost.com/api/v4/posts)
 	 */
-	@Nullable
-	private URI apiUrl;
+	@Nullable private URI apiUrl;
 
 	/**
 	 * Bot access token (i.e. dufc8q78hjgeccwsfhe37pcq1w)
 	 */
-	@Nullable
-	private String botAccessToken;
+	@Nullable private String botAccessToken;
 
 	/**
 	 * Optional channel name without # sign (i.e. h616jh436pysjpopp3259mhwxc)
 	 */
-	@Nullable
-	private String channelId;
+	@Nullable private String channelId;
 
 	public MattermostNotifier(InstanceRepository repository, RestTemplate restTemplate) {
 		super(repository);
@@ -117,8 +114,7 @@ public class MattermostNotifier extends AbstractContentNotifier {
 		}
 	}
 
-	@Nullable
-	public URI getApiUrl() {
+	@Nullable public URI getApiUrl() {
 		return apiUrl;
 	}
 
@@ -126,8 +122,7 @@ public class MattermostNotifier extends AbstractContentNotifier {
 		this.apiUrl = apiUrl;
 	}
 
-	@Nullable
-	public String getChannelId() {
+	@Nullable public String getChannelId() {
 		return channelId;
 	}
 
@@ -135,8 +130,7 @@ public class MattermostNotifier extends AbstractContentNotifier {
 		this.channelId = channelId;
 	}
 
-	@Nullable
-	public String getBotAccessToken() {
+	@Nullable public String getBotAccessToken() {
 		return botAccessToken;
 	}
 

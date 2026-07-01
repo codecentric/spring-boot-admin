@@ -19,14 +19,14 @@
     <sba-toggle-scope-button
       v-if="instanceCount > 1"
       v-model="currentScope"
-      class="!rounded-r-none relative focus:z-10"
+      class="rounded-r-none! relative focus:z-10"
       :instance-count="instanceCount"
       :show-info="showInfo"
       @update:model-value="emitScopeChanged"
     />
     <sba-confirm-button
       class="inline-flex focus:z-10"
-      :class="{ '!rounded-l-none': instanceCount > 1 }"
+      :class="{ 'rounded-l-none!': instanceCount > 1 }"
       :disabled="
         disabled ||
         refreshStatus === 'executing' ||
@@ -88,11 +88,18 @@ export default {
       status: null,
       refreshStatus: '',
       currentScope: ActionScope.INSTANCE,
+      refreshTimeout: null,
     };
+  },
+  beforeUnmount() {
+    if (this.refreshTimeout) {
+      clearTimeout(this.refreshTimeout);
+      this.refreshTimeout = null;
+    }
   },
   methods: {
     resetRefreshState() {
-      setTimeout(() => {
+      this.refreshTimeout = setTimeout(() => {
         this.refreshStatus = null;
       }, 2000);
     },

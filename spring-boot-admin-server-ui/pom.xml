@@ -31,6 +31,10 @@
         <relativePath>../spring-boot-admin-build/pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <ui-resources.relative-path>META-INF/spring-boot-admin-server-ui</ui-resources.relative-path>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>de.codecentric</groupId>
@@ -38,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -73,7 +77,63 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <!--
+        Profile: noNpm
+        Set this profile to skip any frontend related build step in this project.
+        Skipping frontend tests can be achieved by using default flag -D skipTests.
+        -->
+        <profile>
+            <id>noNpm</id>
+            <build>
+                <plugins>
+                    <!--
+                    Run this only when this profile is active since, when it's not, the missing resources are
+                    already generated and provided under the right path from the NPM+Maven build.
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <!--
+                            Copy some predefined resources, which are usually generated during the frontend build,
+                            otherwise some of the tests in
+                            the de.codecentric.boot.admin.server.ui.AdminUiServletApplicationTest will fail because
+                            Thymeleaf can't find the resources like, for example, sba-settings.js.
+                            -->
+                            <execution>
+                                <id>copy-dummy-test-resources</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/${ui-resources.relative-path}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/test/resources/${ui-resources.relative-path}</directory>
+                                            <filtering>false</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+                <excludes>
+                    <!-- These resources are needed only when running with the noNpm profile active -->
+                    <exclude>${ui-resources.relative-path}/*</exclude>
+                </excludes>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <groupId>com.github.eirslett</groupId>
@@ -85,6 +145,7 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
+                            <npmVersion>${npm.version}</npmVersion>
                             <nodeVersion>${node.version}</nodeVersion>
                         </configuration>
                     </execution>
@@ -155,7 +216,7 @@
                         </goals>
                         <configuration>
                             <outputDirectory>
-                                ${project.build.outputDirectory}/META-INF/spring-boot-admin-server-ui
+                                ${project.build.outputDirectory}/${ui-resources.relative-path}
                             </outputDirectory>
                             <resources>
                                 <resource>

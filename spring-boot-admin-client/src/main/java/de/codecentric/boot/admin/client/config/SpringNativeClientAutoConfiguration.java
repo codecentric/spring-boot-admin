@@ -19,8 +19,7 @@ package de.codecentric.boot.admin.client.config;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
+import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -28,8 +27,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
-@AutoConfigureAfter({ WebEndpointAutoConfiguration.class, RestTemplateAutoConfiguration.class,
-		WebClientAutoConfiguration.class })
+@AutoConfigureAfter({ WebEndpointAutoConfiguration.class, RestClientAutoConfiguration.class })
 @ImportRuntimeHints({ ClientRuntimeHints.class })
 public class SpringNativeClientAutoConfiguration {
 

@@ -16,15 +16,16 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import java.time.Duration;
+
 import com.hazelcast.config.Config;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
-import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import reactor.core.publisher.Mono;
 
@@ -37,15 +38,15 @@ import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.services.StatusUpdater;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AdminServerAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-				ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
-				HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
+		.withConfiguration(AutoConfigurations.of(ReactiveHttpClientAutoConfiguration.class,
+				WebClientAutoConfiguration.class, HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
@@ -64,6 +65,28 @@ class AdminServerAutoConfigurationTest {
 			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
 			assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
 		});
+	}
+
+	@Test
+	void shouldApplyConfiguredTimeoutFromProperties() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.monitor.default-timeout=5s",
+					"spring.boot.admin.monitor.status-interval=10s")
+			.run((context) -> {
+				StatusUpdater updater = context.getBean(StatusUpdater.class);
+				assertThat(updater).extracting("timeout").isEqualTo(Duration.ofSeconds(5));
+			});
+	}
+
+	@Test
+	void shouldClampTimeoutToInterval() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.monitor.default-timeout=20s",
+					"spring.boot.admin.monitor.status-interval=10s")
+			.run((context) -> {
+				StatusUpdater updater = context.getBean(StatusUpdater.class);
+				assertThat(updater).extracting("timeout").isEqualTo(Duration.ofSeconds(10));
+			});
 	}
 
 	public static class TestHazelcastConfig {

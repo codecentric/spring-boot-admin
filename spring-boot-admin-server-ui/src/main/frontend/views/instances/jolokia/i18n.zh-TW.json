@@ -1,14 +1,15 @@
 {
   "instances": {
     "jolokia": {
-      "label": "Java管理擴充",
+      "label": "JMX",
       "close": "關閉",
       "domains": "網域",
       "execute": "執行",
       "executing": "執行中...",
+      "execute_modal_header": "確定要執行 <code>{name}</code>？",
       "execution_failed": "執行失敗。",
       "execution_successful": "執行成功。",
-      "mbeans": "可管理資源"
+      "mbeans": "MBeans"
     }
   }
 }

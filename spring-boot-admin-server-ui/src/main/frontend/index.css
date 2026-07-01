@@ -15,10 +15,7 @@
  */
 
 @import './toast-theme.css';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import './theme.css';
 
 body {
   font-family:
@@ -56,7 +53,7 @@ th {
 }
 
 .table thead {
-  @apply border-b bg-gray-100 rounded-md;
+  @apply border-b border-gray-200  bg-gray-100 rounded-md;
 }
 
 .table th,
@@ -77,17 +74,7 @@ th {
 }
 
 .table tr:not(:last-of-type) {
-  @apply border-b;
-}
-
-.-rotate-90 {
-  --tw-rotate: -90deg;
-  transform: rotate(var(--tw-rotate));
-}
-
-.rotate-90 {
-  --tw-rotate: 90deg;
-  transform: rotate(var(--tw-rotate));
+  @apply border-b border-gray-200;
 }
 
 table.table-wide td {

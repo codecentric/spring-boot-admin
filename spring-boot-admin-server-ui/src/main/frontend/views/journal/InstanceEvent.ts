@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-interface IInstanceEvent {
+export interface IInstanceEvent {
   instance: string;
   version: number;
   type: InstanceEventType;
-  timestamp: Date | string;
+  timestamp: Date;
   [key: string]: any;
 }
 
@@ -38,7 +38,7 @@ export class InstanceEvent implements IInstanceEvent {
   }
 
   get key() {
-    return `${this.instance}-${this.version}`;
+    return `${this.instance}-${this.version}-${this.type}-${this.timestamp.getTime()}`;
   }
 }
 

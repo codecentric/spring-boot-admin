@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {
-  InstanceEvent,
+  IInstanceEvent,
   InstanceEventType,
 } from '@/views/journal/InstanceEvent';
 
@@ -23,7 +23,7 @@ import {
  *
  * @param events
  */
-export const getApplicationNamesByInstanceId = (events: InstanceEvent[]) => {
+export const getApplicationNamesByInstanceId = (events: IInstanceEvent[]) => {
   return events
     .filter(
       (event) =>
@@ -37,7 +37,7 @@ export const getApplicationNamesByInstanceId = (events: InstanceEvent[]) => {
     }, {});
 };
 
-export const getApplicationNames = (events: InstanceEvent[]): string[] => {
+export const getApplicationNames = (events: IInstanceEvent[]): string[] => {
   const applicationNames = events
     .filter(
       (event) =>

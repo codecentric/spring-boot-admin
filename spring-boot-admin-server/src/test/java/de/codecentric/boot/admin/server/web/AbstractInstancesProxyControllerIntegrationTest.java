@@ -35,9 +35,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -126,7 +126,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
 			.exchange()
 			.expectStatus()
-			.isEqualTo(HttpStatus.NOT_FOUND);
+			.isNotFound();
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
 			.exchange()
 			.expectStatus()
-			.isEqualTo(HttpStatus.OK)
+			.isOk()
 			.expectHeader()
 			.valueEquals(ALLOW, HttpMethod.HEAD.name(), HttpMethod.GET.name(), HttpMethod.OPTIONS.name());
 
@@ -167,16 +167,16 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
 			.exchange()
 			.expectStatus()
-			.isEqualTo(HttpStatus.OK)
-			.expectBody()
-			.json("{ \"foo\" : \"bar\" }");
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("{ \"foo\" : \"bar\" }");
 
 		this.client.post()
 			.uri("/instances/{instanceId}/actuator/post", this.instanceId)
 			.bodyValue("PAYLOAD")
 			.exchange()
 			.expectStatus()
-			.isEqualTo(HttpStatus.OK);
+			.isOk();
 
 		this.wireMock.verify(postRequestedFor(urlEqualTo("/instance1/post")).withRequestBody(equalTo("PAYLOAD")));
 
@@ -184,9 +184,9 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 			.uri("/instances/{instanceId}/actuator/delete", this.instanceId)
 			.exchange()
 			.expectStatus()
-			.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
-			.expectBody()
-			.json("{\"error\": \"You're doing it wrong!\"}");
+			.isEqualTo(500)
+			.expectBody(String.class)
+			.isEqualTo("{\"error\": \"You're doing it wrong!\"}");
 
 		this.wireMock.verify(deleteRequestedFor(urlEqualTo("/instance1/delete")));
 	}
@@ -198,59 +198,52 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
 			.exchange()
 			.expectStatus()
-			.isEqualTo(HttpStatus.OK)
-			.expectBody()
-			.json("{ \"foo\" : \"bar-with-spaces\" }");
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("{ \"foo\" : \"bar-with-spaces\" }");
 
 		this.wireMock.verify(getRequestedFor(urlEqualTo("/instance1/test/has%20spaces")));
 	}
 
 	@Test
 	public void should_forward_requests_to_multiple_instances() {
-		this.client = createWebTestClientBuilder().responseTimeout(Duration.ofSeconds(30)).build();
-
 		String instance2Id = registerInstance("/instance2");
 
-		this.client.get()
-			.uri("applications/test/actuator/test")
-			.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
-			.exchange()
-			.expectStatus()
-			.isEqualTo(HttpStatus.OK)
-			.expectBody()
-			.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].status")
-			.isEqualTo(200)
-			.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].body")
-			.isEqualTo("{ \"foo\" : \"bar\" }")
-			.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].status")
-			.isEqualTo(200)
-			.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].body")
-			.isEqualTo("{ \"foo\" : \"bar\" }");
+		//@formatter:off
+		StepVerifier
+			.create(this.client.get()
+				.uri("applications/test/actuator/test")
+				.accept(new MediaType(ApiVersion.LATEST.getProducedMimeType()))
+				.exchange()
+				.returnResult(String.class).getResponseBody().single())
+			.assertNext((body) -> {
+				assertThat(body).contains("\"instanceId\":\"" + this.instanceId + "\"");
+				assertThat(body).contains("\"instanceId\":\"" + instance2Id + "\"");
+				assertThat(body).contains("\"status\":200");
+				assertThat(body).contains("{ \\\"foo\\\" : \\\"bar\\\" }");
+			})
+			.verifyComplete();
+		//@formatter:on
 
-		this.client.post()
-			.uri("applications/test/actuator/post")
-			.bodyValue("PAYLOAD")
-			.exchange()
-			.expectStatus()
-			.isEqualTo(HttpStatus.OK);
+		this.client.post().uri("applications/test/actuator/post").bodyValue("PAYLOAD").exchange().expectStatus().isOk();
 
 		this.wireMock.verify(postRequestedFor(urlEqualTo("/instance1/post")).withRequestBody(equalTo("PAYLOAD")));
 		this.wireMock.verify(postRequestedFor(urlEqualTo("/instance2/post")).withRequestBody(equalTo("PAYLOAD")));
 
-		this.client.delete()
-			.uri("applications/test/actuator/delete")
-			.exchange()
-			.expectStatus()
-			.isEqualTo(HttpStatus.OK)
-			.expectBody()
-			.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].status")
-			.isEqualTo(500)
-			.jsonPath("$[?(@.instanceId == '" + this.instanceId + "')].body")
-			.isEqualTo("{\"error\": \"You're doing it wrong!\"}")
-			.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].status")
-			.isEqualTo(500)
-			.jsonPath("$[?(@.instanceId == '" + instance2Id + "')].body")
-			.isEqualTo("{\"error\": \"You're doing it wrong!\"}");
+		//@formatter:off
+		StepVerifier
+			.create(this.client.delete()
+				.uri("applications/test/actuator/delete")
+				.exchange()
+				.returnResult(String.class).getResponseBody().single())
+			.assertNext((body) -> {
+				assertThat(body).contains("\"instanceId\":\"" + this.instanceId + "\"");
+				assertThat(body).contains("\"instanceId\":\"" + instance2Id + "\"");
+				assertThat(body).contains("\"status\":500");
+				assertThat(body).contains("{\\\"error\\\": \\\"You're doing it wrong!\\\"}");
+			})
+			.verifyComplete();
+		//@formatter:on
 
 		this.wireMock.verify(deleteRequestedFor(urlEqualTo("/instance1/delete")));
 		this.wireMock.verify(deleteRequestedFor(urlEqualTo("/instance2/delete")));
@@ -296,7 +289,9 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 		AtomicReference<String> instanceIdRef = new AtomicReference<>();
 		StepVerifier.create(getEventStream())
 			.expectSubscription()
-			.then(() -> instanceIdRef.set(sendRegistration(managementPath)))
+			.then(() -> StepVerifier.create(sendRegistration(managementPath))
+				.consumeNextWith(instanceIdRef::set)
+				.verifyComplete())
 			.thenConsumeWhile((event) -> !event.get("type").equals("ENDPOINTS_DETECTED"))
 			.assertNext((event) -> assertThat(event).containsEntry("type", "ENDPOINTS_DETECTED"))
 			.thenCancel()
@@ -304,7 +299,7 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 		return instanceIdRef.get();
 	}
 
-	private String sendRegistration(String managementPath) {
+	private Mono<String> sendRegistration(String managementPath) {
 		String managementUrl = this.wireMock.url(managementPath);
 
 		//@formatter:off
@@ -312,17 +307,18 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 			"\"healthUrl\": \"" + managementUrl + "/health\", " +
 			"\"managementUrl\": \"" + managementUrl + "\" }";
 
-		EntityExchangeResult<Map<String, Object>> result = this.client.post()
+		return this.client.post()
 			.uri("/instances")
 			.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
 			.bodyValue(registration)
 			.exchange()
 			.expectStatus().isCreated()
-			.expectBody(RESPONSE_TYPE)
-			.returnResult();
+			.returnResult(RESPONSE_TYPE).getResponseBody().single()
+			.map((body) -> {
+				assertThat(body).containsKeys("id");
+				return body.get("id").toString();
+			});
 		//@formatter:on
-		assertThat(result.getResponseBody()).containsKeys("id");
-		return result.getResponseBody().get("id").toString();
 	}
 
 	private Flux<Map<String, Object>> getEventStream() {

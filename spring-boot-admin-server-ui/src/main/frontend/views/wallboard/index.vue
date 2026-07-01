@@ -17,7 +17,7 @@
 <template>
   <section class="wallboard section">
     <div
-      class="flex gap-2 justify-end absolute w-full md:w-[28rem] top-14 right-0 bg-black/20 py-3 px-4 rounded-bl"
+      class="flex gap-2 justify-end absolute w-full md:w-md top-14 right-0 bg-black/20 py-3 px-4 rounded-bl"
     >
       <sba-input
         v-model="routerState.termFilter"
@@ -79,7 +79,10 @@
           <div :key="application.name" class="hex__body application">
             <div class="application__status-indicator" />
             <div class="application__header application__time-ago is-muted">
-              <sba-time-ago :date="application.statusTimestamp" />
+              <sba-time-ago
+                :date="application.statusTimestamp"
+                :precision="true"
+              />
             </div>
             <div class="application__body">
               <h1 class="application__name" v-text="application.name" />
@@ -230,7 +233,8 @@ export default {
 };
 </script>
 
-<style lang="postcss">
+<style>
+@reference "../../index.css";
 .wallboard {
   background-color: #4a4a4a;
   height: calc(100vh - 52px);
@@ -266,6 +270,7 @@ export default {
 .wallboard .application__header {
   width: 90%;
   margin-bottom: 0.5em;
+  font-style: italic;
 }
 
 .wallboard .application__footer {
@@ -273,15 +278,15 @@ export default {
   margin-top: 0.5em;
 }
 
-.up > polygon {
-  stroke: theme('colors.green.400');
-  fill: theme('colors.green.400');
+.up > path {
+  stroke: var(--color-green-400);
+  fill: var(--color-green-400);
 }
 
-.down > polygon,
-.offline > polygon {
-  stroke: theme('colors.red.400');
-  fill: theme('colors.red.400');
+.down > path,
+.offline > path {
+  stroke: var(--color-red-400);
+  fill: var(--color-red-400);
   stroke-width: 2;
 }
 
@@ -308,16 +313,16 @@ export default {
 
 .hex.down .hex__body::after {
   content: '!';
-  color: theme('colors.red.400');
+  color: var(--color-red-500);
 }
 
 .hex.unknown .hex__body::after {
   content: '?';
-  color: theme('colors.gray.500');
+  color: var(--color-gray-500);
 }
 
-.restricted > polygon {
-  stroke: theme('colors.yellow.400');
-  fill: theme('colors.yellow.400');
+.restricted > path {
+  stroke: var(--color-yellow-500);
+  fill: var(--color-yellow-500);
 }
 </style>

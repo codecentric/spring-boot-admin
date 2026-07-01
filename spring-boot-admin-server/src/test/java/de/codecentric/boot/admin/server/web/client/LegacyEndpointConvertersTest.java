@@ -30,7 +30,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.JacksonJsonDecoder;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -38,7 +38,7 @@ public class LegacyEndpointConvertersTest implements WithAssertions {
 
 	private final DataBufferFactory bufferFactory = new DefaultDataBufferFactory();
 
-	private final Jackson2JsonDecoder decoder = new Jackson2JsonDecoder();
+	private final JacksonJsonDecoder decoder = new JacksonJsonDecoder();
 
 	private final ResolvableType type = ResolvableType.forType(new ParameterizedTypeReference<Map<String, Object>>() {
 	});

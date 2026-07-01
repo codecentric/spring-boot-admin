@@ -5,6 +5,7 @@
     <div
       :class="
         classNames({
+          'sba-instance-section-content': true,
           'flex-1': true,
           flex: layoutOptions.isFlex,
           'px-2 md:px-6 py-6': !layoutOptions.noMargin,
@@ -71,6 +72,7 @@ export default {
 </script>
 
 <style scoped>
+@reference "../../../index.css";
 .loading-spinner-wrapper {
   @apply absolute w-full h-screen flex flex-col z-50 top-0 left-0 justify-center items-center opacity-0;
 
@@ -87,11 +89,11 @@ export default {
 
 @keyframes show {
   from {
-    @apply opacity-0;
+    opacity: 0;
   }
 
   to {
-    @apply opacity-100;
+    opacity: 1;
   }
 }
 </style>

@@ -13,6 +13,22 @@ export const enum PrettyTimeUnit {
 }
 
 /**
+ * Formats a Date or ISO string to a localized date-time string.
+ * @param time - Date object or ISO string to format
+ * @param locale - Optional locale string (defaults to browser default)
+ * @returns Formatted date-time string
+ */
+export const formatDateTime = (
+  time: Date | string | number,
+  locale?: string,
+) => {
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeStyle: 'medium',
+  }).format(new Date(time));
+};
+
+/**
  * usePrettyTime provides utility functions for formatting time durations and date-times.
  *
  * - formatTime: Converts a duration in milliseconds to a human-readable string (e.g., "2 days 3 hours").
@@ -52,15 +68,9 @@ export const usePrettyTime = () => {
     }, '');
   };
 
-  const formatDateTime = (time: Date | string) => {
-    return new Intl.DateTimeFormat(locale.value, {
-      dateStyle: 'medium',
-      timeStyle: 'medium',
-    }).format(new Date(time));
-  };
-
   return {
     formatTime,
-    formatDateTime,
+    formatDateTime: (time: Date | string | number) =>
+      formatDateTime(time, locale.value),
   };
 };

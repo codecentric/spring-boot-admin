@@ -33,6 +33,7 @@
     "integer": "Entero",
     "milliseconds": "Milisegundos",
     "minutes": "{count} minuto | {count} minutos",
+    "percent": "por ciento",
     "name": "Nombre",
     "operations": "Operaciones",
     "save": "Guardar",

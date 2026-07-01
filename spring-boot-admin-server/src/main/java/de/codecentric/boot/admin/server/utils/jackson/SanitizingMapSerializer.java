@@ -16,21 +16,16 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
-import java.io.IOException;
-import java.io.Serial;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> {
-
-	@Serial
-	private static final long serialVersionUID = 1L;
 
 	private final Pattern[] keysToSanitize;
 
@@ -45,17 +40,15 @@ public class SanitizingMapSerializer extends StdSerializer<Map<String, String>> 
 	}
 
 	@Override
-	public void serialize(Map<String, String> value, JsonGenerator gen, SerializerProvider provider)
-			throws IOException {
+	public void serialize(Map<String, String> value, JsonGenerator gen, SerializationContext provider) {
 		gen.writeStartObject();
 		for (Map.Entry<String, String> entry : value.entrySet()) {
-			gen.writeStringField(entry.getKey(), sanitize(entry.getKey(), entry.getValue()));
+			gen.writeStringProperty(entry.getKey(), sanitize(entry.getKey(), entry.getValue()));
 		}
 		gen.writeEndObject();
 	}
 
-	@Nullable
-	private String sanitize(String key, @Nullable String value) {
+	@Nullable private String sanitize(String key, @Nullable String value) {
 		if (value == null) {
 			return null;
 		}

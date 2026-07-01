@@ -143,6 +143,7 @@ export default {
 </script>
 
 <style lang="css">
+@reference "../../../index.css";
 .auditevents {
   table-layout: fixed;
 }

@@ -18,10 +18,10 @@ package de.codecentric.boot.admin.server.services;
 
 import java.util.logging.Level;
 
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
@@ -37,11 +37,9 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
 
 	private final Class<T> eventType;
 
-	@Nullable
-	private Disposable subscription;
+	@Nullable private Disposable subscription;
 
-	@Nullable
-	private Scheduler scheduler;
+	@Nullable private Scheduler scheduler;
 
 	protected AbstractEventHandler(Publisher<InstanceEvent> publisher, Class<T> eventType) {
 		this.publisher = publisher;

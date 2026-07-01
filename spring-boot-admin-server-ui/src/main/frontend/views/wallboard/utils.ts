@@ -10,6 +10,10 @@ const calcSideLength = (width, height, cols, rows) => {
 };
 
 export const calcLayout = (minTileCount, width, height) => {
+  if (!width || !height || minTileCount <= 0) {
+    return { cols: 1, rows: 1, sideLength: 0 };
+  }
+
   let cols = 1,
     rows = 1;
   let sideLength = calcSideLength(width, height, cols, rows);

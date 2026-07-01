@@ -16,23 +16,56 @@
 
 <template>
   <dl
-    class="px-4 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
-    :class="{ 'bg-white': index % 2 === 0, 'bg-gray-50': index % 2 !== 0 }"
+    class="px-4 py-3 even:bg-white odd:bg-gray-50 grid grid-cols-3"
+    role="group"
+    :aria-label="name"
   >
-    <dt :id="`health-${id}__${name}`" class="text-sm font-medium text-gray-500">
-      {{ name }}
+    <dt
+      :id="`health-${id}__${safeNameId}`"
+      class="w-48 text-sm font-medium text-gray-500 items-center"
+    >
+      <div class="break-all">
+        {{ name }}
+      </div>
     </dt>
     <dd
-      class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
-      :aria-labelledby="`health-${id}__` + name"
+      :id="`health-details-${id}__${safeNameId}`"
+      class="mt-1 text-sm text-gray-900 sm:mt-0 col-span-2"
+      :aria-labelledby="`health-${id}__${safeNameId}`"
     >
-      <sba-status-badge v-if="health.status" :status="health.status" />
-
-      <dl v-if="details && details.length > 0" class="grid grid-cols-2 mt-2">
-        <template v-for="detail in details" :key="detail.name">
+      <div class="flex gap-1 items-center">
+        <div class="flex-1">
+          <sba-status-badge v-if="health.status" :status="health.status" />
+        </div>
+        <div v-if="details && details.length > 0" class="w-12 text-right">
+          <sba-button
+            class="p-0! border-none"
+            :title="t('instances.details.health.toggle_details', { name })"
+            :aria-label="t('instances.details.health.toggle_details', { name })"
+            :aria-expanded="String(!isCollapsed)"
+            :aria-controls="`health-details-${id}__${safeNameId}`"
+            @click="() => toggleCollapsed()"
+          >
+            <font-awesome-icon
+              :icon="faChevronRight"
+              class="transition-transform"
+              :class="{ 'rotate-90': !isCollapsed }"
+            />
+          </sba-button>
+        </div>
+      </div>
+      <dl
+        v-if="details && details.length > 0"
+        v-show="!isCollapsed"
+        class="grid grid-cols-6 mt-2"
+      >
+        <template
+          v-for="(detail, idx) in details"
+          :key="`${detail.name}_${idx}`"
+        >
           <dt
-            :id="`health-detail-${id}__${detail.name}`"
-            class="font-medium"
+            :id="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
+            class="font-medium col-span-2"
             v-text="detail.name"
           />
           <dd
@@ -40,82 +73,142 @@
               name.toLowerCase().startsWith('diskspace') &&
               typeof detail.value === 'number'
             "
-            :aria-labelledby="`health-detail-${id}__${detail.name}`"
-            v-text="prettyBytes(detail.value)"
+            class="col-span-4"
+            role="definition"
+            :aria-label="detail.name"
+            :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
+            v-text="prettyBytes(detail.value as number)"
           />
           <dd
-            v-else-if="typeof detail.value === 'object'"
-            :aria-labelledby="`health-detail-${id}__${detail.name}`"
+            v-else-if="
+              detail.value !== null && typeof detail.value === 'object'
+            "
+            class="col-span-4"
+            role="definition"
+            :aria-label="detail.name"
+            :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
           >
             <sba-formatted-obj
-              class="overflow-auto !whitespace-pre"
+              class="overflow-auto whitespace-pre!"
               :value="detail.value"
             />
           </dd>
           <dd
             v-else
-            :aria-labelledby="`health-detail-${id}__${detail.name}`"
-            class="break-words whitespace-pre-wrap"
-            v-html="autolink(detail.value)"
+            role="definition"
+            :aria-label="detail.name"
+            :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
+            class="wrap-break-word whitespace-pre-wrap col-span-4"
+            v-html="autolink(String(detail.value ?? ''))"
           />
         </template>
       </dl>
     </dd>
   </dl>
-
   <health-details
     v-for="(child, idx) in childHealth"
-    :key="child.name"
-    :index="idx + 1"
+    :key="`${child.name}_${idx}`"
+    :instance="instance"
     :name="child.name"
     :health="child.value"
   />
 </template>
 
 <script lang="ts" setup>
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import prettyBytes from 'pretty-bytes';
-import { computed, useId } from 'vue';
+import { computed, ref, useId, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
 
+import Instance from '@/services/instance';
 import autolink from '@/utils/autolink';
 
+const { t } = useI18n();
 const id = useId();
 
-const isChildHealth = (value) => {
+const { health, name, instance } = defineProps<{
+  instance: Instance;
+  name: string;
+  health: Record<string, any>;
+}>();
+
+// Sanitised name safe for use in HTML id attributes
+const safeNameId = computed(() => (name ?? '').replace(/[^a-zA-Z0-9_-]/g, '_'));
+
+// Sanitise a detail key for use in HTML ids; fall back to its index when result would be empty
+function safeDetailId(detailName: string, idx: number): string {
+  const safe = detailName.replace(/[^a-zA-Z0-9_-]/g, '_');
+  return safe.length > 0 ? safe : `detail_${idx}`;
+}
+
+const COLLAPSED_KEY = computed(
+  () =>
+    `de.codecentric.spring-boot-admin.health-details.${encodeURIComponent(name ?? '')}.${encodeURIComponent(instance?.id ?? '')}.collapsed`,
+);
+
+function readCollapsedFromStorage(): boolean {
+  if (!instance?.id) return false;
+  try {
+    const stored = localStorage.getItem(COLLAPSED_KEY.value);
+    if (stored !== null) return stored === 'true';
+  } catch {
+    // storage unavailable — fall back to default
+  }
+  return false;
+}
+
+const isCollapsed = ref(readCollapsedFromStorage());
+
+type Details = {
+  name: string;
+  value: unknown;
+};
+
+const isChildHealth = (value: any) => {
   return value !== null && typeof value === 'object' && 'status' in value;
 };
 
-const {
-  health,
-  name,
-  index = 0,
-} = defineProps<{
-  name: string;
-  health: Record<string, any>;
-  index?: number;
-}>();
-
-const details = computed(() => {
-  if (health.details || health.components) {
-    return Object.entries(health.details || health.components)
-      .filter(([, value]) => !isChildHealth(value))
-      .map(([name, value]) => ({ name, value }));
+const healthEntries = computed(() => {
+  const source = health.details ?? health.components;
+  if (source && typeof source === 'object' && !Array.isArray(source)) {
+    return Object.entries(source);
   }
   return [];
 });
 
-const childHealth = computed(() => {
-  if (health.details || health.components) {
-    return Object.entries(health.details || health.components)
-      .filter(([, value]) => isChildHealth(value))
-      .map(([name, value]) => ({ name, value }));
-  }
-  return [];
+const details = computed(() =>
+  healthEntries.value
+    .filter(([, value]) => !isChildHealth(value))
+    .map(([name, value]) => ({ name, value }) as Details),
+);
+
+const childHealth = computed(() =>
+  healthEntries.value
+    .filter(([, value]) => isChildHealth(value))
+    .map(([name, value]) => ({ name, value })),
+);
+
+watch(COLLAPSED_KEY, () => {
+  isCollapsed.value = readCollapsedFromStorage();
 });
+
+const toggleCollapsed = () => {
+  const next = !isCollapsed.value;
+  if (instance?.id) {
+    try {
+      localStorage.setItem(COLLAPSED_KEY.value, JSON.stringify(next));
+    } catch {
+      // storage unavailable — in-memory state still updated
+    }
+  }
+  isCollapsed.value = next;
+};
 </script>
 
 <style scoped>
+@reference "../../../index.css";
 :deep(a[href]) {
   @apply underline;
 }

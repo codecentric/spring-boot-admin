@@ -16,9 +16,7 @@
 
 // Spring Boot Admin Server - events package.
 
-@NonNullApi
-@NonNullFields
+@NullMarked
 package de.codecentric.boot.admin.server.domain.events;
 
-import org.springframework.lang.NonNullApi;
-import org.springframework.lang.NonNullFields;
+import org.jspecify.annotations.NullMarked;

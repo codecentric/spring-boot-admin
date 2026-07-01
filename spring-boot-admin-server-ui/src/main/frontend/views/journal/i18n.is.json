@@ -1,6 +1,21 @@
 {
   "journal": {
     "title": "Atburðaannáll",
-    "label": "Annáll"
+    "label": "Annáll",
+    "auto_update": "Sjálfvirk uppfærsla atburða",
+    "error": {
+      "generic": "Villa við að sækja nýja atburði frá þjóni"
+    },
+    "filter": {
+      "application": {
+        "any": "Allt"
+      },
+      "event_type": {
+        "any": "Allt"
+      },
+      "instance_id": {
+        "any": "Allt"
+      }
+    }
   }
 }

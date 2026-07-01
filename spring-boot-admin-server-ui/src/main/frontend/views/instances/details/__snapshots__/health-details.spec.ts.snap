@@ -2,11 +2,14 @@
 
 exports[`HealthDetails > Health .details > should format object details correctly 1`] = `
 <dd
+  aria-label="validChains"
   aria-labelledby="health-detail-v-7__validChains"
+  class="col-span-4"
   data-v-4727d85f=""
+  role="definition"
 >
   <pre
-    class="formatted overflow-auto !whitespace-pre"
+    class="formatted overflow-auto whitespace-pre!"
     data-v-4727d85f=""
     data-v-4fb4748a=""
   >

@@ -18,11 +18,8 @@ package de.codecentric.boot.admin.server.cloud;
 
 import java.net.URI;
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsonorg.JsonOrgModule;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,21 +28,24 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.discovery.event.InstanceRegisteredEvent;
+import org.springframework.cloud.client.discovery.simple.InstanceProperties;
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
+import org.springframework.http.codec.json.JacksonJsonDecoder;
+import org.springframework.http.codec.json.JacksonJsonEncoder;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.datatype.jsonorg.JsonOrgModule;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
@@ -82,50 +82,51 @@ class AdminApplicationDiscoveryTest {
 		AtomicReference<URI> location = new AtomicReference<>();
 
 		StepVerifier.create(getEventStream().log()).expectSubscription().then(() -> {
-			listEmptyInstances();
-			location.set(registerInstance());
+			StepVerifier.create(listEmptyInstances()).expectNext(true).verifyComplete();
+			StepVerifier.create(registerInstance()).consumeNextWith(location::set).verifyComplete();
 		})
 			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("REGISTERED"))
 			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("STATUS_CHANGED"))
 			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("ENDPOINTS_DETECTED"))
 			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("INFO_CHANGED"))
 			.then(() -> {
-				getInstance(location.get());
-				listInstances();
+				StepVerifier.create(getInstance(location.get())).expectNext(true).verifyComplete();
+				StepVerifier.create(listInstances()).expectNext(true).verifyComplete();
 				deregisterInstance();
 			})
 			.assertNext((event) -> assertThat(event.opt("type")).isEqualTo("DEREGISTERED"))
-			.then(this::listEmptyInstances)
+			.then(() -> StepVerifier.create(listEmptyInstances()).expectNext(true).verifyComplete())
 			.thenCancel()
 			.verify(Duration.ofSeconds(60));
 	}
 
-	private URI registerInstance() {
+	private Mono<URI> registerInstance() {
 		// We register the instance by setting static values for the SimpleDiscoveryClient
 		// and issuing a
 		// InstanceRegisteredEvent that makes sure the instance gets registered.
-		DefaultServiceInstance serviceInstance = new DefaultServiceInstance();
-		serviceInstance.setServiceId("Test-Instance");
-		serviceInstance.setUri(URI.create("http://localhost:" + this.port));
-		serviceInstance.getMetadata().put("management.context-path", "/mgmt");
-		this.simpleDiscovery.getInstances().put("Test-Application", singletonList(serviceInstance));
+		InstanceProperties instanceProps = new InstanceProperties();
+		instanceProps.setServiceId("Test-Instance");
+		instanceProps.setUri(URI.create("http://localhost:" + this.port));
+		instanceProps.getMetadata().put("management.context-path", "/mgmt");
+		this.simpleDiscovery.getInstances().put("Test-Instance", singletonList(instanceProps));
 
 		this.instance.publishEvent(new InstanceRegisteredEvent<>(new Object(), null));
 
 		// To get the location of the registered instances we fetch the instance with the
 		// name.
-		List<JSONObject> applications = this.webClient.get()
+		//@formatter:off
+		return this.webClient.get()
 			.uri("/instances?name=Test-Instance")
 			.accept(MediaType.APPLICATION_JSON)
 			.exchange()
-			.expectStatus()
-			.isOk()
-			.returnResult(JSONObject.class)
-			.getResponseBody()
+			.returnResult(JSONObject.class).getResponseBody()
 			.collectList()
-			.block();
-		assertThat(applications).hasSize(1);
-		return URI.create("http://localhost:" + this.port + "/instances/" + applications.get(0).optString("id"));
+			.map((applications) -> {
+				assertThat(applications).hasSize(1);
+				return URI
+					.create("http://localhost:" + this.port + "/instances/" + applications.get(0).optString("id"));
+			});
+		//@formatter:on
 	}
 
 	private void deregisterInstance() {
@@ -143,46 +144,55 @@ class AdminApplicationDiscoveryTest {
 		//@formatter:on
 	}
 
-	private void getInstance(URI uri) {
+	private Mono<Boolean> getInstance(URI uri) {
 		//@formatter:off
-		this.webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON)
+		return this.webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON)
 				.exchange()
-				.expectStatus().isOk()
-				.expectBody()
-				.jsonPath("$.registration.name").isEqualTo("Test-Instance")
-				.jsonPath("$.statusInfo.status").isEqualTo("UP")
-				.jsonPath("$.info.test").isEqualTo("foobar");
+				.returnResult(String.class).getResponseBody().single()
+				.map((body) -> {
+					assertThat(body).contains("\"name\":\"Test-Instance\"");
+					assertThat(body).contains("\"status\":\"UP\"");
+					assertThat(body).contains("\"test\":\"foobar\"");
+					return true;
+				});
 		//@formatter:on
 	}
 
-	private void listInstances() {
+	private Mono<Boolean> listInstances() {
 		//@formatter:off
-		this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
+		return this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
 				.exchange()
-				.expectStatus().isOk()
-				.expectBody()
-					.jsonPath("$[0].registration.name").isEqualTo("Test-Instance")
-					.jsonPath("$[0].statusInfo.status").isEqualTo("UP")
-					.jsonPath("$[0].info.test").isEqualTo("foobar");
+				.returnResult(String.class).getResponseBody().single()
+				.map((body) -> {
+					assertThat(body).contains("\"name\":\"Test-Instance\"");
+					assertThat(body).contains("\"status\":\"UP\"");
+					assertThat(body).contains("\"test\":\"foobar\"");
+					return true;
+				});
 		//@formatter:on
 	}
 
-	private void listEmptyInstances() {
+	private Mono<Boolean> listEmptyInstances() {
 		//@formatter:off
-		this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
+		return this.webClient.get().uri("/instances").accept(MediaType.APPLICATION_JSON)
 				.exchange()
-				.expectStatus().isOk()
-				.expectBody().json("[]");
+				.returnResult(String.class).getResponseBody()
+				.collectList()
+				.map((list) -> {
+					assertThat(list).hasSize(1);
+					assertThat(list.get(0)).isEqualTo("[]");
+					return true;
+				});
 		//@formatter:on
 	}
 
 	private WebTestClient createWebClient(int port) {
-		ObjectMapper mapper = new ObjectMapper().registerModule(new JsonOrgModule());
+		JsonMapper mapper = JsonMapper.builder().addModule(new JsonOrgModule()).build();
 		return WebTestClient.bindToServer()
 			.baseUrl("http://localhost:" + port)
 			.exchangeStrategies(ExchangeStrategies.builder().codecs((configurer) -> {
-				configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(mapper));
-				configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(mapper));
+				configurer.defaultCodecs().jacksonJsonDecoder(new JacksonJsonDecoder(mapper));
+				configurer.defaultCodecs().jacksonJsonEncoder(new JacksonJsonEncoder(mapper));
 			}).build())
 			.build();
 	}

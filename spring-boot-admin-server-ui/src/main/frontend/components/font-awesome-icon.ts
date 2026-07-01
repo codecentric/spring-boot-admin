@@ -21,6 +21,8 @@ import { faStopCircle as farStopCircle } from '@fortawesome/free-regular-svg-ico
 import { faTimesCircle as farTimesCircle } from '@fortawesome/free-regular-svg-icons/faTimesCircle';
 import {
   faAngleDoubleLeft,
+  faBriefcase,
+  faClock,
   faCogs,
   faExpand,
   faEye,
@@ -34,6 +36,8 @@ import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { faBell } from '@fortawesome/free-solid-svg-icons/faBell';
 import { faBellSlash } from '@fortawesome/free-solid-svg-icons/faBellSlash';
 import { faBook } from '@fortawesome/free-solid-svg-icons/faBook';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons/faCalendar';
+import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons/faCalendarCheck';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons/faCheckCircle';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons/faChevronDown';
@@ -49,13 +53,18 @@ import { faFrownOpen } from '@fortawesome/free-solid-svg-icons/faFrownOpen';
 import { faHeartbeat } from '@fortawesome/free-solid-svg-icons/faHeartbeat';
 import { faHistory } from '@fortawesome/free-solid-svg-icons/faHistory';
 import { faHome } from '@fortawesome/free-solid-svg-icons/faHome';
+import { faHourglass } from '@fortawesome/free-solid-svg-icons/faHourglass';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons/faInfoCircle';
+import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
 import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons/faMapMarkerAlt';
 import { faMinusCircle } from '@fortawesome/free-solid-svg-icons/faMinusCircle';
+import { faPauseCircle } from '@fortawesome/free-solid-svg-icons/faPauseCircle';
 import { faPencilAlt } from '@fortawesome/free-solid-svg-icons/faPencilAlt';
+import { faPlayCircle } from '@fortawesome/free-solid-svg-icons/faPlayCircle';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons/faQuestionCircle';
 import { faRedo } from '@fortawesome/free-solid-svg-icons/faRedo';
 import { faSearch } from '@fortawesome/free-solid-svg-icons/faSearch';
+import { faShield } from '@fortawesome/free-solid-svg-icons/faShield';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons/faSignOutAlt';
 import { faStepBackward } from '@fortawesome/free-solid-svg-icons/faStepBackward';
 import { faStepForward } from '@fortawesome/free-solid-svg-icons/faStepForward';
@@ -77,6 +86,10 @@ library.add(
   faBellSlash,
   faBook,
   faBars,
+  faBriefcase,
+  faCalendar,
+  faCalendarCheck,
+  faClock,
   faCogs,
   faEye,
   faCheck,
@@ -90,9 +103,11 @@ library.add(
   faFrownOpen,
   faHeartbeat,
   faHistory,
+  faHourglass,
   faInfoCircle,
   faExclamationCircle,
   faHome,
+  faLink,
   faList,
   faExpand,
   faMapMarkerAlt,
@@ -100,10 +115,13 @@ library.add(
   faMinusCircle,
   faChevronRight,
   faChevronDown,
+  faPauseCircle,
   faPencilAlt,
+  faPlayCircle,
   faPowerOff,
   faQuestionCircle,
   faSearch,
+  faShield,
   faSignOutAlt,
   faStepBackward,
   faStepForward,

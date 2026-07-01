@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
-import axios from 'axios';
+import axios, {
+  type AxiosError,
+  AxiosInstance,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 
 import sbaConfig from '../sba-config';
 
@@ -24,8 +28,8 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.xsrfHeaderName = sbaConfig.csrf.headerName;
 
 export const redirectOn401 =
-  (predicate = () => true) =>
-  (error) => {
+  (predicate: (error: AxiosError) => boolean = () => true) =>
+  (error: AxiosError) => {
     if (error.response && error.response.status === 401 && predicate(error)) {
       window.location.assign(
         `login?redirectTo=${encodeURIComponent(
@@ -38,25 +42,85 @@ export const redirectOn401 =
 
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['Accept'] = 'application/json';
+
+/**
+ * Adds Accept-Language header to requests with user's selected UI language preference.
+ * Format: selected-language;q=1.0, navigator-language;q=0.9, *;q=0.8
+ *
+ * @param config The axios request configuration
+ * @returns The modified request configuration
+ */
+export const addLanguageHeaderInterceptor = (
+  config: InternalAxiosRequestConfig,
+): InternalAxiosRequestConfig => {
+  try {
+    const i18n = globalThis.SBA?.useI18n?.();
+    if (i18n?.locale.value) {
+      const selectedLanguage = i18n.locale.value;
+      const navigatorLanguage = navigator.language;
+
+      // Build Accept-Language header with selected UI language as primary preference
+      const acceptLanguageParts = [
+        `${selectedLanguage};q=1.0`, // Selected UI language - highest priority
+      ];
+
+      // Add navigator language if it's different from selected language
+      if (
+        navigatorLanguage !== selectedLanguage &&
+        !navigatorLanguage.startsWith(selectedLanguage)
+      ) {
+        acceptLanguageParts.push(`${navigatorLanguage};q=0.9`);
+      }
+
+      // Add wildcard fallback for any other language
+      acceptLanguageParts.push('*;q=0.8');
+
+      config.headers['Accept-Language'] = acceptLanguageParts.join(', ');
+    }
+  } catch (error) {
+    // Log in development mode for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to add language header:', error);
+    }
+    // Silently fail in production if i18n is not yet initialized
+  }
+  return config;
+};
+
+axios.interceptors.request.use(addLanguageHeaderInterceptor);
+
 axios.interceptors.response.use((response) => response, redirectOn401());
 
 export default axios;
 
-export const registerErrorToastInterceptor = (axios) => {
-  if (sbaConfig.uiSettings.enableToasts === true) {
+export const registerErrorToastInterceptor = (
+  axios: AxiosInstance,
+  notificationCenter = nc,
+): void => {
+  if (sbaConfig.uiSettings.enableToasts) {
     axios.interceptors.response.use(
       (response) => response,
-      (error) => {
-        const data = error.request;
-        const message = `
-                Request failed: ${data.statusText}<br>
-                <small>${data.responseURL}</small>
+      (error: AxiosError) => {
+        const suppress = error.config?.suppressToast;
+        let shouldSuppress: boolean;
+        if (typeof suppress === 'function') {
+          shouldSuppress = suppress(error);
+        } else {
+          shouldSuppress = !!suppress;
+        }
+        if (!shouldSuppress) {
+          const data = error.response;
+          const message = `
+                Request failed: ${data?.statusText}<br>
+                <small>${data?.config?.url || data?.request?.responseURL || ''}</small>
         `;
-        nc.error(message, {
-          context: data.status ?? 'axios',
-          title: `Error ${data.status}`,
-          duration: 10000,
-        });
+          notificationCenter.error(message, {
+            context: data?.status ?? 'axios',
+            title: `Error ${data?.status}`,
+            duration: 10000,
+          });
+        }
+        return Promise.reject(error);
       },
     );
   }

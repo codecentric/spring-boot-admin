@@ -20,6 +20,7 @@
       <sba-sticky-subnav>
         <sba-input
           v-model="filter"
+          class="justify-self-end"
           :placeholder="$t('term.filter')"
           name="filter"
           type="search"
@@ -31,8 +32,15 @@
       </sba-sticky-subnav>
     </template>
 
+    <template v-if="hasLoaded && sboms.length === 0">
+      <sba-alert
+        severity="WARN"
+        :error="$t('instances.dependencies.no_data_provided')"
+      />
+    </template>
     <tree-graph
       v-for="sbomId in sboms"
+      v-else
       :key="sbomId"
       :instance="instance"
       :sbom-id="sbomId"
@@ -44,6 +52,7 @@
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
+import SbaAlert from '@/components/sba-alert.vue';
 import SbaInput from '@/components/sba-input';
 import SbaStickySubnav from '@/components/sba-sticky-subnav.vue';
 
@@ -54,6 +63,7 @@ import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
 export default {
   components: {
+    SbaAlert,
     TreeGraph,
     FontAwesomeIcon,
     SbaStickySubnav,
@@ -80,6 +90,7 @@ export default {
   methods: {
     async fetchSboms() {
       this.error = null;
+      this.hasLoaded = false;
       try {
         const res = await this.instance.fetchSbomIds();
         this.sboms = res.data.ids;

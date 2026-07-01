@@ -1,30 +1,30 @@
 {
   "instances": {
     "gateway": {
-      "label": "Gateway",
+      "label": "閘道",
       "route": {
-        "add_route": "添加路由",
-        "adding_failed": "添加路由失敗。",
-        "cache_refreshed": "路由緩存已刷新",
-        "cache_refresh": "刷新路由暫存",
-        "cache_refresh_failed": "刷新失敗",
+        "add_route": "新增路由",
+        "adding_failed": "新增路由失敗。",
+        "cache_refreshed": "路由快取已重新整理",
+        "cache_refresh": "重新整理路由快取",
+        "cache_refresh_failed": "失敗",
         "deleted": "已刪除",
         "delete": "刪除",
-        "delete_failed": "刪除失敗",
-        "filters": "過濾器",
-        "id": "Id",
-        "loading": "下載路由中...",
-        "no_definition_provided": "沒有提供路由定義。",
-        "no_routes_found": "未找到路由。",
-        "order": "列表",
-        "predicates": "謂語",
+        "delete_failed": "失敗",
+        "filters": "篩選器",
+        "id": "ID",
+        "loading": "正在載入路由...",
+        "no_definition_provided": "未提供路由定義。",
+        "no_routes_found": "找不到路由。",
+        "order": "順序",
+        "predicates": "述詞",
         "uri": "URI"
       },
       "filters": {
-        "filter_name": "過濾器名稱",
-        "loading": "下載全局過濾器中...",
-        "no_filters_found": "未找到全局過濾器。",
-        "order": "列表"
+        "filter_name": "篩選器名稱",
+        "loading": "正在載入全域篩選器...",
+        "no_filters_found": "找不到全域篩選器。",
+        "order": "順序"
       }
     }
   }

@@ -2,44 +2,50 @@
   <sba-button-group class="application-list-item__header__actions text-right">
     <router-link v-slot="{ navigate }" :to="journalLink" custom>
       <sba-button
-        :title="$t('applications.actions.journal')"
+        :size="size === 'xs' ? '2xs' : undefined"
+        :title="t('applications.actions.journal')"
         @click.stop="navigate"
       >
-        <font-awesome-icon :icon="faHistory" />
+        <font-awesome-icon :icon="faScroll" :size="size" />
       </sba-button>
     </router-link>
     <sba-button
       v-if="hasNotificationFiltersSupport"
       :id="`nf-settings-${item.name || item.id}`"
+      :size="size === 'xs' ? '2xs' : undefined"
       :title="$t('applications.actions.notification_filters')"
       @click.stop="$emit('filter-settings', item)"
     >
       <font-awesome-icon
+        :size="size"
         :icon="hasActiveNotificationFilter ? faBellSlash : faBell"
       />
     </sba-button>
     <sba-button
       v-if="item.isUnregisterable"
       class="btn-unregister"
-      :title="$t('applications.actions.unregister')"
+      :size="size === 'xs' ? '2xs' : undefined"
+      :title="t('applications.actions.unregister')"
       @click.stop="actionHandler.unregister(item)"
     >
-      <font-awesome-icon :icon="faTrash" />
+      <font-awesome-icon :size="size" :icon="faTrash" />
     </sba-button>
     <sba-button
       v-if="item.hasEndpoint('restart')"
-      :title="$t('applications.actions.restart')"
+      :size="size === 'xs' ? '2xs' : undefined"
+      :title="t('applications.actions.restart')"
       @click.stop="actionHandler.restart(item)"
     >
-      <font-awesome-icon :icon="faUndoAlt" />
+      <font-awesome-icon :size="size" :icon="faUndoAlt" />
     </sba-button>
     <sba-button
       v-if="item.hasEndpoint('shutdown')"
-      :title="$t('applications.actions.shutdown')"
+      :size="size === 'xs' ? '2xs' : undefined"
+      :title="t('applications.actions.shutdown')"
       class="is-danger btn-shutdown"
       @click.stop="actionHandler.shutdown(item)"
     >
-      <font-awesome-icon :icon="faPowerOff" />
+      <font-awesome-icon :size="size" :icon="faPowerOff" />
     </sba-button>
   </sba-button-group>
 </template>
@@ -48,15 +54,17 @@
 import {
   faBell,
   faBellSlash,
-  faHistory,
   faPowerOff,
+  faScroll,
   faTrash,
   faUndoAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNotificationCenter } from '@stekoe/vue-toast-notificationcenter';
-import { inject } from 'vue';
+import { PropType, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { RouteLocationNamedRaw } from 'vue-router';
+
+import SbaButtonGroup from '@/components/sba-button-group.vue';
 
 import Application from '@/services/application';
 import Instance from '@/services/instance';
@@ -83,6 +91,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  size: {
+    type: String as PropType<'xs' | 'sm'>,
+    default: 'sm',
+  },
 });
 
 defineEmits(['filter-settings']);
@@ -106,12 +118,8 @@ if (props.item instanceof Application) {
 </script>
 
 <style scoped>
+@reference "../../index.css";
 .application-list-item__header__actions {
   @apply hidden lg:inline-flex p-1 bg-black/5 rounded-lg;
-}
-
-.btn-shutdown,
-.btn-unregister {
-  @apply ml-1 !important;
 }
 </style>

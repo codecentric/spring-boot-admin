@@ -4,11 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       releaseversion:
-        description: 'Release version'
+        description: "Version to release and publish to maven central."
         required: true
-        default: '3.0.0'
       copyDocsToCurrent:
-        description: "Should the docs be published at https://docs.spring-boot-admin.com? Otherwise they will be accessible by version number only."
+        description: "Mark docs as 'latest'? This will create a redirect from /current to the version being published. This should only be set for the latest version of the documentation."
         required: true
         type: boolean
         default: false
@@ -34,7 +33,7 @@ jobs:
           fi
           df -h
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up settings.xml for Maven Central Repository
         uses: actions/setup-java@v5
@@ -53,7 +52,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Cache node modules
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         env:
           cache-name: cache-node-modules
         with:
@@ -66,7 +65,7 @@ jobs:
         run: ./mvnw versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" --no-transfer-progress
 
       - name: Publish package
-        run: ./mvnw -B deploy --no-transfer-progress -P central-deploy -DskipTests=true
+        run: ./mvnw -B deploy --no-transfer-progress -P central-deploy -DskipTests
         env:
           #TODO: This is a workaround for NEXUS-27902 which uses XStream that fails on JVM >16
           JDK_JAVA_OPTIONS: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED"
@@ -108,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: free disk space
         continue-on-error: true
@@ -124,13 +123,13 @@ jobs:
 
       - name: Generate changelog
         id: changelog
-        uses: metcalfc/changelog-generator@v4.6.2
+        uses: metcalfc/changelog-generator@v4.7.0
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
         id: create_release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.event.inputs.releaseversion }}
           token: ${{ secrets.GITHUB_TOKEN }}

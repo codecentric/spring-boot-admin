@@ -20,10 +20,10 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestTemplate;
 import reactor.core.publisher.Mono;
 
@@ -48,20 +48,17 @@ public class HipchatNotifier extends AbstractContentNotifier {
 	/**
 	 * Base URL for HipChat API (i.e. https://ACCOUNT_NAME.hipchat.com/v2
 	 */
-	@Nullable
-	private URI url;
+	@Nullable private URI url;
 
 	/**
 	 * API token that has access to notify in the room
 	 */
-	@Nullable
-	private String authToken;
+	@Nullable private String authToken;
 
 	/**
 	 * Id of the room to notify
 	 */
-	@Nullable
-	private String roomId;
+	@Nullable private String roomId;
 
 	/**
 	 * TRUE will cause OS notification, FALSE will only notify to room
@@ -116,8 +113,7 @@ public class HipchatNotifier extends AbstractContentNotifier {
 		}
 	}
 
-	@Nullable
-	public URI getUrl() {
+	@Nullable public URI getUrl() {
 		return url;
 	}
 
@@ -125,8 +121,7 @@ public class HipchatNotifier extends AbstractContentNotifier {
 		this.url = url;
 	}
 
-	@Nullable
-	public String getAuthToken() {
+	@Nullable public String getAuthToken() {
 		return authToken;
 	}
 
@@ -134,8 +129,7 @@ public class HipchatNotifier extends AbstractContentNotifier {
 		this.authToken = authToken;
 	}
 
-	@Nullable
-	public String getRoomId() {
+	@Nullable public String getRoomId() {
 		return roomId;
 	}
 

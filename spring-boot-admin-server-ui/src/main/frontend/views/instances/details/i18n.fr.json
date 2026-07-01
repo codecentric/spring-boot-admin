@@ -22,7 +22,8 @@
         "title": "Pauses du Garbage Collector"
       },
       "health": {
-        "title": "État"
+        "title": "État",
+        "toggle_details": "Basculer les détails de santé de {name}"
       },
       "health_group": {
         "title": "Groupe d'État"

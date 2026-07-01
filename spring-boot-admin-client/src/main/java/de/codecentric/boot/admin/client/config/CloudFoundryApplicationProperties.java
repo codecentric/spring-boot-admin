@@ -19,18 +19,16 @@ package de.codecentric.boot.admin.client.config;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.lang.Nullable;
 
 @lombok.Data
 @ConfigurationProperties("vcap.application")
 public class CloudFoundryApplicationProperties {
 
-	@Nullable
-	private String applicationId;
+	@Nullable private String applicationId;
 
-	@Nullable
-	private String instanceIndex;
+	@Nullable private String instanceIndex;
 
 	private List<String> uris = new ArrayList<>();
 

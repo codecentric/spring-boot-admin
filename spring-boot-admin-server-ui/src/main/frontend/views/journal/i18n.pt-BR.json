@@ -1,6 +1,21 @@
 {
   "journal": {
     "title": "Registro de Eventos",
-    "label": "Registro"
+    "label": "Registro",
+    "auto_update": "Atualizar eventos automaticamente",
+    "error": {
+      "generic": "Erro ao recuperar novos eventos do servidor"
+    },
+    "filter": {
+      "application": {
+        "any": "Qualquer"
+      },
+      "event_type": {
+        "any": "Qualquer"
+      },
+      "instance_id": {
+        "any": "Qualquer"
+      }
+    }
   }
 }

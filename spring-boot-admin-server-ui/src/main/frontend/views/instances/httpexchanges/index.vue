@@ -38,7 +38,13 @@
             </template>
           </sba-input>
 
-          <sba-input v-model="limit" :min="0" class="w-32" type="number">
+          <sba-input
+            v-model="limit"
+            name="limit"
+            :min="0"
+            class="w-32"
+            type="number"
+          >
             <template #prepend>
               {{ $t('instances.httpexchanges.limit') }}
             </template>
@@ -58,14 +64,26 @@
               :label="$t('instances.httpexchanges.filter.server_errors')"
             />
             <sba-checkbox
-              v-if="actuatorPath"
               v-model="filter.excludeActuator"
               :label="
                 $t('instances.httpexchanges.filter.exclude_actuator', {
-                  actuator: actuatorPath,
+                  actuator: '/actuator',
                 })
               "
             />
+          </div>
+          <div>
+            <sba-button
+              :title="$t('instances.httpexchanges.auto_follow')"
+              :primary="autoFollow"
+              @click="autoFollow = !autoFollow"
+            >
+              <font-awesome-icon :icon="faArrowsDownToLine" />
+              <span
+                class="sr-only"
+                v-text="$t('instances.httpexchanges.auto_follow')"
+              />
+            </sba-button>
           </div>
         </div>
       </sba-sticky-subnav>
@@ -73,21 +91,20 @@
 
     <sba-panel>
       <sba-exchanges-chart
-        :exchanges="filteredExchanges"
+        :exchanges="visibleExchanges"
         class="mb-6"
-        @selected="updateSelection"
+        @select="selectTimeRange"
       />
+    </sba-panel>
 
-      <sba-exchanges-list
-        :exchanges="listedExchanges"
-        :new-exchanges-count="newExchangesCount"
-        @show-new-exchanges="showNewExchanges"
-      />
+    <sba-panel seamless>
+      <sba-exchanges-list :exchanges="listedExchanges" />
     </sba-panel>
   </sba-instance-section>
 </template>
 
 <script>
+import { faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons';
 import { debounce } from 'lodash-es';
 import moment from 'moment';
 import { take } from 'rxjs/operators';
@@ -127,6 +144,7 @@ export default {
     error: null,
     exchanges: [],
     listOffset: 0,
+    faArrowsDownToLine,
     filter: {
       excludeActuator: true,
       showSuccess: true,
@@ -136,39 +154,26 @@ export default {
     },
     limit: 1000,
     selection: null,
+    autoFollow: true,
   }),
   computed: {
-    actuatorPath() {
-      if (
-        this.instance.registration.managementUrl.includes(
-          this.instance.registration.serviceUrl,
-        )
-      ) {
-        const appendix = this.instance.registration.managementUrl.substring(
-          this.instance.registration.serviceUrl.length,
-        );
-        if (appendix.length > 0) {
-          return appendix.startsWith('/') ? appendix : `/${appendix}`;
-        }
-      }
-      return null;
-    },
     filteredExchanges() {
       return this.filterExchanges(this.exchanges);
     },
-    newExchangesCount() {
-      return this.selection
-        ? 0
-        : this.filterExchanges(this.exchanges.slice(0, this.listOffset)).length;
+
+    visibleExchanges() {
+      return this.filterExchanges(this.exchanges.slice(this.listOffset));
     },
+
     listedExchanges() {
-      const exchanges = this.filterExchanges(
-        this.exchanges.slice(this.listOffset),
-      );
+      const exchanges = this.visibleExchanges;
+
       if (!this.selection) {
         return exchanges;
       }
+
       const [start, end] = this.selection;
+
       return exchanges.filter(
         (exchange) =>
           !exchange.timestamp.isBefore(start) &&
@@ -181,17 +186,22 @@ export default {
         : moment(0);
     },
   },
+
   watch: {
     limit: debounce(function (value) {
       if (this.exchanges.length > value) {
         this.exchanges = Object.freeze(this.exchanges.slice(0, value));
       }
     }, 250),
+    autoFollow: function (value) {
+      if (value) {
+        this.showNewExchanges();
+      }
+    },
   },
   methods: {
-    updateSelection(selection) {
+    selectTimeRange(selection) {
       this.selection = selection;
-      this.showNewExchanges();
     },
     showNewExchanges() {
       this.listOffset = 0;
@@ -220,8 +230,11 @@ export default {
             }
             this.exchanges = [...exchanges, ...this.exchanges].slice(
               0,
-              this.limit,
+              this.limit ?? 1000,
             );
+            if (this.autoFollow && exchanges.length > 0) {
+              this.showNewExchanges();
+            }
           },
           error: (error) => {
             this.hasLoaded = true;
@@ -232,14 +245,13 @@ export default {
     },
     filterExchanges(exchanges) {
       let filterFn = null;
-      if (this.actuatorPath !== null && this.filter.excludeActuator) {
+      if (this.filter.excludeActuator) {
         filterFn = addToFilter(filterFn, (exchange) => {
           try {
             const uri = exchange.request.uri;
             const pathname = new URL(uri).pathname;
-            const raw = this.actuatorPath.replace(/^\/+/, '');
-            const escaped = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`(?:^|/)${escaped}(?:$|/)`);
+            const regex = /\/actuator(\/|$|\?)/;
+
             return !regex.test(pathname);
           } catch {
             return true;

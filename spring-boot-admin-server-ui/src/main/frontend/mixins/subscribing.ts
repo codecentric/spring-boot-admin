@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Subject } from 'rxjs';
 
 export default {
+  data() {
+    return {
+      destroy$: new Subject<void>(),
+    };
+  },
   created() {
     this.subscribe();
   },
   beforeUnmount() {
+    // Emit to signal all subscriptions to complete
+    this.destroy$.next();
+    this.destroy$.complete();
     this.unsubscribe();
   },
   methods: {

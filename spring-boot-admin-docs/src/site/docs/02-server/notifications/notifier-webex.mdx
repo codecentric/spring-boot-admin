@@ -1,0 +1,17 @@
+---
+sidebar_custom_props:
+  icon: 'notifications'
+---
+import metadata from "@sba/spring-boot-admin-server/target/classes/META-INF/spring-configuration-metadata.json";
+import { PropertyTable } from "@sba/spring-boot-admin-docs/src/site/src/components/PropertyTable";
+
+# Webex Notifications
+
+To enable [Webex](https://www.webex.com/) notifications, you need to set the appropriate configuration properties for `auth-token` and `room-id`.
+
+<PropertyTable
+  title="Webex notifications configuration options"
+  properties={metadata.properties}
+  filter={['notify.webex']}
+  includeOnly={true}
+/>

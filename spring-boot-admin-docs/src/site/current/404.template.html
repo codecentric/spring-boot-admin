@@ -11,7 +11,7 @@
           [
             "",
             "@@VERSION@@",
-            l.pathname.split("/").slice(2)
+            ...l.pathname.split("/").slice(2)
           ].join("/")
           +
           l.hash;

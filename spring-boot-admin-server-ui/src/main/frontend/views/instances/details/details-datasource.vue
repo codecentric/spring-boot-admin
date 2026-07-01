@@ -67,14 +67,15 @@
 
 <script>
 import moment from 'moment';
-import { concatMap, delay, retryWhen, timer } from 'rxjs';
+import { Subject, concatMap, delay, retryWhen, takeUntil, timer } from 'rxjs';
 import { take } from 'rxjs/operators';
+
+import SbaAccordion from '@/components/sba-accordion.vue';
 
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import datasourceChart from '@/views/instances/details/datasource-chart';
-import SbaAccordion from '@/views/instances/details/sba-accordion.vue';
 
 export default {
   components: { SbaAccordion, datasourceChart },
@@ -95,6 +96,7 @@ export default {
     current: null,
     chartData: [],
     currentInstanceId: null,
+    currentInstanceUpdateKey: null,
   }),
   watch: {
     instance: {
@@ -104,12 +106,30 @@ export default {
   },
   methods: {
     initDatasourceMetrics() {
-      if (this.instance.id !== this.currentInstanceId) {
+      const updateKey =
+        this.instance.version ??
+        this.instance.statusTimestamp ??
+        this.instance.id;
+      const firstInit = this.currentInstanceId === null;
+      if (
+        this.instance.id !== this.currentInstanceId ||
+        updateKey !== this.currentInstanceUpdateKey
+      ) {
         this.currentInstanceId = this.instance.id;
+        this.currentInstanceUpdateKey = updateKey;
         this.hasLoaded = false;
         this.error = null;
         this.current = null;
         this.chartData = [];
+
+        // Restart polling immediately so SSE updates refresh the view.
+        if (!firstInit) {
+          // Stop old subscription and start fresh
+          this.unsubscribe();
+          // Recreate destroy$ so new subscription can use takeUntil properly
+          this.destroy$ = new Subject();
+          this.subscribe();
+        }
       }
     },
     async fetchMetrics() {
@@ -134,6 +154,8 @@ export default {
       return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
         .pipe(
           concatMap(this.fetchMetrics),
+          // Stop polling when destroy$ emits (on unmount or instance update)
+          takeUntil(this.destroy$),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));
           }),
@@ -159,6 +181,7 @@ export default {
 </script>
 
 <style lang="css">
+@reference "../../../index.css";
 .datasource-current {
   margin-bottom: 0 !important;
 }

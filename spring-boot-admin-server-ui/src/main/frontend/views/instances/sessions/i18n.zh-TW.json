@@ -1,18 +1,18 @@
 {
   "instances": {
     "sessions": {
-      "label": "Sessions",
+      "label": "工作階段",
       "attributes": "屬性",
-      "created_at": "創建於",
+      "created_at": "建立時間",
       "expired": "已過期",
-      "expiry": "到期",
+      "expiry": "到期時間",
 
-      "last_accessed_at": "最後訪問時間",
-      "loading_sessions": "下載Sessions中...",
-      "max_inactive_interval": "Max Inactive<br>Interval",
-      "no_sessions_found": "未找到Session",
-      "session_id": "Session Id",
-      "unlimited": "Unlimited"
+      "last_accessed_at": "最後存取時間",
+      "loading_sessions": "正在載入 Sessions...",
+      "max_inactive_interval": "最大閒置<br>間隔",
+      "no_sessions_found": "找不到 Session",
+      "session_id": "Session ID",
+      "unlimited": "無限制"
     }
   }
 }

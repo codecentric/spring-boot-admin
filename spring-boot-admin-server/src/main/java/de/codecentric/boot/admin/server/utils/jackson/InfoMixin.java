@@ -16,11 +16,12 @@
 
 package de.codecentric.boot.admin.server.utils.jackson;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import org.springframework.lang.Nullable;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 import de.codecentric.boot.admin.server.domain.values.Info;
 
@@ -29,14 +30,26 @@ import de.codecentric.boot.admin.server.domain.values.Info;
  *
  * @author Stefan Rempfer
  */
+@JsonDeserialize(builder = InfoMixin.Builder.class)
 public abstract class InfoMixin {
-
-	@JsonCreator
-	public static Info from(@Nullable Map<String, Object> values) {
-		return Info.from(values);
-	}
 
 	@JsonAnyGetter
 	public abstract Map<String, Object> getValues();
+
+	public static class Builder {
+
+		private final Map<String, Object> values = new LinkedHashMap<>();
+
+		@JsonAnySetter
+		public Builder set(String key, Object value) {
+			this.values.put(key, value);
+			return this;
+		}
+
+		public Info build() {
+			return Info.from(this.values);
+		}
+
+	}
 
 }

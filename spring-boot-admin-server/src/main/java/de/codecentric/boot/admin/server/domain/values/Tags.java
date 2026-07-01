@@ -25,7 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 
 import lombok.Getter;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.StringUtils;
 
 import static java.util.stream.Collectors.toMap;
@@ -35,9 +35,9 @@ import static java.util.stream.Collectors.toMap;
 @lombok.ToString
 public final class Tags implements Serializable {
 
-	private final Map<String, String> values;
-
 	private static final Tags EMPTY = new Tags(Collections.emptyMap());
+
+	private final Map<String, String> values;
 
 	private Tags(Map<String, String> tags) {
 		if (tags.isEmpty()) {
@@ -46,12 +46,6 @@ public final class Tags implements Serializable {
 		else {
 			this.values = Collections.unmodifiableMap(new LinkedHashMap<>(tags));
 		}
-	}
-
-	public Tags append(Tags other) {
-		Map<String, String> newTags = new LinkedHashMap<>(this.values);
-		newTags.putAll(other.values);
-		return new Tags(newTags);
 	}
 
 	public static Tags empty() {
@@ -93,6 +87,12 @@ public final class Tags implements Serializable {
 		return toMap(keyMapper, valueMapper, (u, v) -> {
 			throw new IllegalStateException(String.format("Duplicate key %s", u));
 		}, LinkedHashMap::new);
+	}
+
+	public Tags append(Tags other) {
+		Map<String, String> newTags = new LinkedHashMap<>(this.values);
+		newTags.putAll(other.values);
+		return new Tags(newTags);
 	}
 
 }

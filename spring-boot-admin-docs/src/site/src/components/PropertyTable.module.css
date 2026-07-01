@@ -1,20 +1,51 @@
 .propertyTable {
+    display: table;
+    width: 100%;
+
     caption {
         text-align: left;
         font-weight: bold;
         padding: 0 0 1rem 0;
     }
+
+    tr {
+        --description-background: var(--ifm-table-stripe-background);
+    }
+    tr:nth-child(2n) {
+        --description-background: var(--ifm-background-color);
+    }
+
+    code {
+        word-break: break-all;
+    }
 }
 
-.propertyCell {
-    div {
-        display: inline-flex;
-        gap: .5rem;
+.propertyBlock {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .5rem;
 
-        code {
-            border: none;
-            background: none;
-            text-wrap: wrap;
-        }
+    code {
+        border: none;
+        background: none;
+        text-wrap: nowrap;
+    }
+}
+
+.descriptionBlock {
+    background: var(--description-background);
+    border-radius: 5px;
+    border: var(--ifm-table-border-width) solid var(--ifm-table-border-color);
+    padding: .5rem;
+    overflow: hidden;
+
+    p {
+        margin-bottom: .25rem;
+    }
+
+    dl {
+        margin-top: 0;
+        margin-bottom: 0;
     }
 }

@@ -19,12 +19,12 @@ package de.codecentric.boot.admin.server.config;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
-import org.springframework.boot.autoconfigure.http.client.reactive.ClientHttpConnectorAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
+import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -52,10 +52,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AdminServerNotifierAutoConfigurationTest {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-				ClientHttpConnectorAutoConfiguration.class, WebClientAutoConfiguration.class,
-				HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class, AdminServerAutoConfiguration.class,
-				AdminServerNotifierAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(ReactiveHttpClientAutoConfiguration.class,
+				WebClientAutoConfiguration.class, HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				AdminServerAutoConfiguration.class, AdminServerNotifierAutoConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
@@ -166,6 +165,30 @@ class AdminServerNotifierAutoConfigurationTest {
 	void test_notifierProxyProperties() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.notify.proxy.host")
 			.run((context) -> assertThat(context).hasSingleBean(NotifierProxyProperties.class));
+	}
+
+	@Test
+	void test_autoConfigureAfterAnnotationReferencesExistingClass() {
+		// Get the @AutoConfigureAfter annotation from
+		// AdminServerNotifierAutoConfiguration
+		AutoConfigureAfter autoConfigureAfter = AdminServerNotifierAutoConfiguration.class
+			.getAnnotation(org.springframework.boot.autoconfigure.AutoConfigureAfter.class);
+		assertThat(autoConfigureAfter).isNotNull();
+
+		// Get the class names from the annotation
+		String[] classNames = autoConfigureAfter.name();
+		assertThat(classNames).isNotEmpty();
+
+		// Verify that the class can be loaded
+		for (String className : classNames) {
+			try {
+				Class.forName(className);
+			}
+			catch (ClassNotFoundException ex) {
+				throw new AssertionError(
+						"Class referenced in @AutoConfigureAfter annotation does not exist: " + className, ex);
+			}
+		}
 	}
 
 	public static class TestSingleNotifierConfig {

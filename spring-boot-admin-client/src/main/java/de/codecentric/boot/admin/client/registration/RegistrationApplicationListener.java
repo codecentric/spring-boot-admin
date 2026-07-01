@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.client.registration;
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -28,7 +29,6 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.lang.Nullable;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 /**
@@ -51,11 +51,15 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
 
 	private Duration registerPeriod = Duration.ofSeconds(10);
 
-	@Nullable
-	private volatile ScheduledFuture<?> scheduledTask;
+	@Nullable private volatile ScheduledFuture<?> scheduledTask;
 
 	public RegistrationApplicationListener(ApplicationRegistrator registrator) {
 		this(registrator, registrationTaskScheduler());
+	}
+
+	RegistrationApplicationListener(ApplicationRegistrator registrator, ThreadPoolTaskScheduler taskScheduler) {
+		this.registrator = registrator;
+		this.taskScheduler = taskScheduler;
 	}
 
 	private static ThreadPoolTaskScheduler registrationTaskScheduler() {
@@ -64,11 +68,6 @@ public class RegistrationApplicationListener implements InitializingBean, Dispos
 		taskScheduler.setRemoveOnCancelPolicy(true);
 		taskScheduler.setThreadNamePrefix("registrationTask");
 		return taskScheduler;
-	}
-
-	RegistrationApplicationListener(ApplicationRegistrator registrator, ThreadPoolTaskScheduler taskScheduler) {
-		this.registrator = registrator;
-		this.taskScheduler = taskScheduler;
 	}
 
 	@EventListener

@@ -19,7 +19,8 @@
     <template v-for="(bean, index) in beans" :key="bean.name">
       <div
         :class="{
-          'm-1 border rounded shadow-sm': showDetails[bean.name] === true,
+          'm-1 border border-gray-200 rounded shadow-sm':
+            showDetails[bean.name] === true,
         }"
       >
         <div

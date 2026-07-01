@@ -24,30 +24,32 @@
       class="trace-chart__tooltip"
     >
       <table class="is-narrow is-size-7">
-        <tr>
-          <th v-text="$t('instances.httptrace.chart.total_requests')" />
-          <td v-text="tooltipContent.totalCount" />
-        </tr>
-        <tr>
-          <th v-text="$t('instances.httptrace.chart.successful_requests')" />
-          <td v-text="tooltipContent.totalSuccess" />
-        </tr>
-        <tr>
-          <th v-text="$t('instances.httptrace.chart.status_4xx')" />
-          <td v-text="tooltipContent.totalClientErrors" />
-        </tr>
-        <tr>
-          <th v-text="$t('instances.httptrace.chart.status_5xx')" />
-          <td v-text="tooltipContent.totalServerErrors" />
-        </tr>
-        <tr>
-          <th v-text="$t('instances.httptrace.chart.max_time')" />
-          <td v-text="`${tooltipContent.maxTime}ms`" />
-        </tr>
-        <tr>
-          <th v-text="$t('instances.httptrace.chart.avg_time')" />
-          <td v-text="`${tooltipContent.avgTime}ms`" />
-        </tr>
+        <tbody>
+          <tr>
+            <th v-text="$t('instances.httptrace.chart.total_requests')" />
+            <td v-text="tooltipContent.totalCount" />
+          </tr>
+          <tr>
+            <th v-text="$t('instances.httptrace.chart.successful_requests')" />
+            <td v-text="tooltipContent.totalSuccess" />
+          </tr>
+          <tr>
+            <th v-text="$t('instances.httptrace.chart.status_4xx')" />
+            <td v-text="tooltipContent.totalClientErrors" />
+          </tr>
+          <tr>
+            <th v-text="$t('instances.httptrace.chart.status_5xx')" />
+            <td v-text="tooltipContent.totalServerErrors" />
+          </tr>
+          <tr>
+            <th v-text="$t('instances.httptrace.chart.max_time')" />
+            <td v-text="`${tooltipContent.maxTime}ms`" />
+          </tr>
+          <tr>
+            <th v-text="$t('instances.httptrace.chart.avg_time')" />
+            <td v-text="`${tooltipContent.avgTime}ms`" />
+          </tr>
+        </tbody>
       </table>
     </div>
     <svg class="trace-chart__svg" />
@@ -223,6 +225,20 @@ export default {
 
     this.drawChart(this.chartData);
   },
+  beforeUnmount() {
+    if (this.brushGroup) {
+      this.brushGroup.on('.brush', null);
+      this.brushGroup.on('mousemove', null);
+      this.brushGroup.on('mouseout', null);
+    }
+
+    if (this.chartLayer) {
+      this.chartLayer.selectAll('*').remove();
+    }
+
+    this.brushGroup = null;
+    this.chartLayer = null;
+  },
   methods: {
     drawChart(data) {
       ///setup x and y scale
@@ -346,6 +362,7 @@ export default {
 </script>
 
 <style lang="css">
+@reference "../../../index.css";
 .trace-chart__svg {
   height: 200px;
   width: 100%;
