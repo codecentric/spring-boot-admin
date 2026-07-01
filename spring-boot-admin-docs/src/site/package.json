@@ -20,7 +20,6 @@
     "@iconify/react": "^6.0.0",
     "@mdx-js/react": "^3.1.0",
     "@signalwire/docusaurus-plugin-llms-txt": "^1.2.2",
-    "asciidoctor": "^3.0.4",
     "clsx": "^2.1.1",
     "dotenv": "^17.0.0",
     "glob": "^13.0.0",
