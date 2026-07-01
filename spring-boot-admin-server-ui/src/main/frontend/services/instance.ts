@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AxiosError, AxiosInstance } from 'axios';
+import { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import saveAs from 'file-saver';
 import { Observable, concat, from, ignoreElements } from 'rxjs';
 
@@ -229,6 +229,10 @@ class Instance {
     return await this.axios.get(uri`actuator/health`, {
       validateStatus: null,
     });
+  }
+
+  async fetchCachedHealthGroups(): Promise<AxiosResponse<string[]>> {
+    return this.axios.get<string[]>('health-groups');
   }
 
   async fetchHealthGroup(groupName: string) {

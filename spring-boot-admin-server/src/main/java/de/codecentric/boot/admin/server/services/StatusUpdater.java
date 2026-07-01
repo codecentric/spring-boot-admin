@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.services;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -62,6 +63,8 @@ public class StatusUpdater {
 
 	private Duration timeout = Duration.ofSeconds(10);
 
+	private final HealthGroupsCache healthGroupsCache;
+
 	public StatusUpdater timeout(Duration timeout) {
 		this.timeout = timeout;
 		return this;
@@ -80,7 +83,7 @@ public class StatusUpdater {
 		return this.instanceWebClient.instance(instance)
 			.get()
 			.uri(Endpoint.HEALTH)
-			.exchangeToMono(this::convertStatusInfo)
+			.exchangeToMono((response) -> this.convertStatusInfo(response, instance.getId()))
 			.log(log.getName(), Level.FINEST)
 			.timeout(getTimeoutWithMargin())
 			.doOnError((ex) -> logError(instance, ex))
@@ -97,6 +100,10 @@ public class StatusUpdater {
 	}
 
 	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
+		return convertStatusInfo(response, null);
+	}
+
+	private Mono<StatusInfo> convertStatusInfo(ClientResponse response, InstanceId instanceId) {
 		boolean hasCompatibleContentType = response.headers()
 			.contentType()
 			.filter((mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON)
@@ -105,12 +112,15 @@ public class StatusUpdater {
 
 		StatusInfo statusInfoFromStatus = this.getStatusInfoFromStatus(response.statusCode(), emptyMap());
 		if (hasCompatibleContentType) {
-			return response.bodyToMono(RESPONSE_TYPE).map((body) -> {
-				if (body.get("status") instanceof String) {
-					return StatusInfo.from(body);
-				}
-				return getStatusInfoFromStatus(response.statusCode(), body);
-			}).defaultIfEmpty(statusInfoFromStatus);
+			return response.bodyToMono(RESPONSE_TYPE)
+				.doOnNext((body) -> extractAndCacheHealthGroups(instanceId, body))
+				.map((body) -> {
+					if (body.get("status") instanceof String) {
+						return StatusInfo.from(body);
+					}
+					return getStatusInfoFromStatus(response.statusCode(), body);
+				})
+				.defaultIfEmpty(statusInfoFromStatus);
 		}
 		return response.releaseBody().then(Mono.just(statusInfoFromStatus));
 	}
@@ -145,6 +155,13 @@ public class StatusUpdater {
 		}
 		else {
 			log.info("Couldn't retrieve status for {}", instance, ex);
+		}
+	}
+
+	private void extractAndCacheHealthGroups(InstanceId instanceId, Map<String, Object> body) {
+		if (this.healthGroupsCache != null && body.get("groups") instanceof List<?> groupsList) {
+			List<String> groups = groupsList.stream().filter(String.class::isInstance).map(String.class::cast).toList();
+			this.healthGroupsCache.updateGroups(instanceId, groups);
 		}
 	}
 

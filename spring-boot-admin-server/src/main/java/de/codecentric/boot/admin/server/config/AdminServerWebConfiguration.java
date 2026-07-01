@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2024 the original author or authors.
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import tools.jackson.databind.module.SimpleModule;
 
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.services.ApplicationRegistry;
+import de.codecentric.boot.admin.server.services.HealthGroupsCache;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 import de.codecentric.boot.admin.server.utils.jackson.AdminServerModule;
 import de.codecentric.boot.admin.server.web.ApplicationsController;
@@ -51,8 +52,9 @@ public class AdminServerWebConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public InstancesController instancesController(InstanceRegistry instanceRegistry, InstanceEventStore eventStore) {
-		return new InstancesController(instanceRegistry, eventStore);
+	public InstancesController instancesController(InstanceRegistry instanceRegistry, InstanceEventStore eventStore,
+			HealthGroupsCache healthGroupsCache) {
+		return new InstancesController(instanceRegistry, eventStore, healthGroupsCache);
 	}
 
 	@Bean
