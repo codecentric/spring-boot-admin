@@ -233,11 +233,7 @@ export default {
       if (this.root) {
         const { width, height } = this.root.getBoundingClientRect();
         if (!width || !height) return;
-        const layout = calcLayout(
-          this.itemCount,
-          width,
-          height,
-        );
+        const layout = calcLayout(this.itemCount, width, height);
         this.cols = layout.cols;
         this.rows = layout.rows;
         this.sideLength = layout.sideLength;
