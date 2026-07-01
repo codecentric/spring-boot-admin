@@ -12,13 +12,48 @@
       "name": "spring.boot.admin.hazelcast.event-store",
       "type": "java.lang.String",
       "description": "Name of backing Hazelcast-Map for storing the instance events.",
-      "defaultValue": "spring-boot-admin-application-store"
+      "defaultValue": "spring-boot-admin-event-store"
     },
     {
       "name": "spring.boot.admin.hazelcast.sent-notifications",
       "type": "java.lang.String",
       "description": "Name of backing Hazelcast-Map for storing the sent notifications.",
       "defaultValue": "spring-boot-admin-sent-notifications"
+    },
+    {
+      "name": "spring.boot.admin.hazelcast.response-cache",
+      "type": "java.lang.String",
+      "description": "Name of the Hazelcast IMap used as the shared actuator response cache across cluster nodes.",
+      "defaultValue": "spring-boot-admin-actuator-response-cache"
+    },
+    {
+      "name": "spring.boot.admin.endpoint-cache.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable server-side caching of proxied actuator endpoint GET responses.",
+      "defaultValue": "true"
+    },
+    {
+      "name": "spring.boot.admin.endpoint-cache.default-ttl",
+      "type": "java.time.Duration",
+      "description": "Default time-to-live for cached actuator responses.",
+      "defaultValue": "5m"
+    },
+    {
+      "name": "spring.boot.admin.endpoint-cache.ttl",
+      "type": "java.util.Map<java.lang.String,java.time.Duration>",
+      "description": "Per-endpoint-id TTL overrides. Keys are actuator endpoint ids (e.g. 'mappings'). Defaults to endpoint-cache.default-ttl."
+    },
+    {
+      "name": "spring.boot.admin.endpoint-cache.endpoints",
+      "type": "java.util.Set<java.lang.String>",
+      "description": "Actuator endpoint ids whose GET responses will be cached. Defaults to a conservative set of expensive, mostly-static endpoints.",
+      "defaultValue": "mappings,configprops,beans,conditions,sbom,startup"
+    },
+    {
+      "name": "spring.boot.admin.endpoint-cache.max-payload-size",
+      "type": "java.lang.Long",
+      "description": "Maximum response body size in bytes that will be stored in the cache. Larger responses are forwarded as-is.",
+      "defaultValue": "10485760"
     },
     {
       "name": "spring.boot.admin.monitor.period",
