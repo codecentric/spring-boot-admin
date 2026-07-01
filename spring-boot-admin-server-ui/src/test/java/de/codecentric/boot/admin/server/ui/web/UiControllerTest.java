@@ -21,6 +21,7 @@ import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -205,8 +206,9 @@ class UiControllerTest {
 	private static final class NoOpView extends AbstractView {
 
 		@Override
-		protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
-				HttpServletResponse response) {
+		protected void renderMergedOutputModel(@NonNull Map<String, Object> model, @NonNull HttpServletRequest request,
+				@NonNull HttpServletResponse response) {
+			// no-op: model attribute assertions don't need rendered output
 		}
 
 	}
