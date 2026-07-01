@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunksite=globalThis.webpackChunksite||[]).push([[1387],{8561(e){e.exports=JSON.parse('{"metadata":{"permalink":"/4.1.2-SNAPSHOT/blog","page":1,"postsPerPage":10,"totalPages":1,"totalCount":0,"blogDescription":"Blog","blogTitle":"Blog"}}')}}]);
