@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: spring-boot-admin-sample-oauth2
+  security:
+    oauth2:
+      client:
+        registration:
+          admin:
+            client-id: your-client-id
+            client-secret: your-client-secret
+            authorization-grant-type: client_credentials
+            scope: openid
+        provider:
+          auth0:
+            token-uri: https://YOUR_ISSUER/oauth/token
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
