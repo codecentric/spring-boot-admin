@@ -21,7 +21,7 @@
     "@fortawesome/free-brands-svg-icons": "7.3.0",
     "@fortawesome/free-regular-svg-icons": "7.3.0",
     "@fortawesome/free-solid-svg-icons": "7.3.0",
-    "@fortawesome/vue-fontawesome": "3.2.0",
+    "@fortawesome/vue-fontawesome": "3.3.0",
     "@headlessui/vue": "1.7.23",
     "@primeuix/themes": "^2.0.0",
     "@primevue/core": "^4.4.1",
