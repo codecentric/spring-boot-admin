@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.ui.config;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletResponse;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Nested;
@@ -30,14 +31,18 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.reactive.config.ResourceHandlerRegistry;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilterChain;
+import org.springframework.web.util.UrlPathHelper;
 
 import de.codecentric.boot.admin.server.config.AdminServerMarkerConfiguration;
 import de.codecentric.boot.admin.server.config.AdminServerProperties;
@@ -57,6 +62,32 @@ class AdminServerUiAutoConfigurationTest implements WithAssertions {
 	@Test
 	void testNormalizeHomepageUrl() {
 		assertThat(AdminServerUiAutoConfiguration.normalizeHomepageUrl("/test/")).isEqualTo("/test");
+	}
+
+	@Test
+	void reactiveResourceHandlersUseConfiguredLocations() {
+		AdminServerUiProperties adminUi = new AdminServerUiProperties();
+		AdminServerProperties adminServer = new AdminServerProperties();
+		WebFluxProperties webFluxProperties = new WebFluxProperties();
+		GenericApplicationContext applicationContext = new GenericApplicationContext();
+		AdminServerUiAutoConfiguration.ReactiveUiConfiguration.AdminUiWebfluxConfig config = new AdminServerUiAutoConfiguration.ReactiveUiConfiguration.AdminUiWebfluxConfig(
+				adminUi, adminServer, webFluxProperties, applicationContext);
+		ResourceHandlerRegistry registry = new ResourceHandlerRegistry(applicationContext);
+
+		assertThatCode(() -> config.addResourceHandlers(registry)).doesNotThrowAnyException();
+	}
+
+	@Test
+	void servletResourceHandlersUseConfiguredLocations() {
+		AdminServerUiProperties adminUi = new AdminServerUiProperties();
+		AdminServerProperties adminServer = new AdminServerProperties();
+		GenericApplicationContext applicationContext = new GenericApplicationContext();
+		AdminServerUiAutoConfiguration.ServletUiConfiguration.AdminUiWebMvcConfig config = new AdminServerUiAutoConfiguration.ServletUiConfiguration.AdminUiWebMvcConfig(
+				adminUi, adminServer, applicationContext);
+		org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry = new org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry(
+				applicationContext, mock(ServletContext.class), new ContentNegotiationManager(), new UrlPathHelper());
+
+		assertThatCode(() -> config.addResourceHandlers(registry)).doesNotThrowAnyException();
 	}
 
 	@Nested
