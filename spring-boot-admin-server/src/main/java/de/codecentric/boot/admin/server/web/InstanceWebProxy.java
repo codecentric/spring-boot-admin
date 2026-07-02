@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,10 @@ import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
+import de.codecentric.boot.admin.server.web.client.exception.SsrfProtectionException;
 
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
@@ -65,8 +67,16 @@ public class InstanceWebProxy {
 
 	private final ExchangeStrategies strategies = ExchangeStrategies.withDefaults();
 
+	private final SsrfUrlValidator ssrfUrlValidator;
+
 	public InstanceWebProxy(InstanceWebClient instanceWebClient) {
+		this(instanceWebClient, new SsrfUrlValidator(
+				new de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties()));
+	}
+
+	public InstanceWebProxy(InstanceWebClient instanceWebClient, SsrfUrlValidator ssrfUrlValidator) {
 		this.instanceWebClient = instanceWebClient;
+		this.ssrfUrlValidator = ssrfUrlValidator;
 	}
 
 	public <V> Mono<V> forward(Mono<Instance> instanceMono, ForwardRequest forwardRequest,
@@ -98,6 +108,14 @@ public class InstanceWebProxy {
 	private <V> Mono<V> forward(Instance instance, ForwardRequest forwardRequest,
 			Function<ClientResponse, Mono<V>> responseHandler) {
 		log.trace("Proxy-Request for instance {} with URL '{}'", instance.getId(), forwardRequest.getUri());
+		try {
+			ssrfUrlValidator.validate(forwardRequest.getUri().isAbsolute() ? forwardRequest.getUri().toString() : null);
+		}
+		catch (SsrfProtectionException ex) {
+			log.warn("SSRF protection blocked proxy request for instance {} to '{}': {}", instance.getId(),
+					forwardRequest.getUri(), ex.getMessage());
+			return responseHandler.apply(ClientResponse.create(HttpStatus.FORBIDDEN, this.strategies).build());
+		}
 		WebClient.RequestBodySpec bodySpec = this.instanceWebClient.instance(instance)
 			.method(forwardRequest.getMethod())
 			.uri(forwardRequest.getUri())
