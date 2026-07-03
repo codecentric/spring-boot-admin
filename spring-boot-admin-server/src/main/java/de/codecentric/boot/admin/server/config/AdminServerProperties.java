@@ -98,10 +98,10 @@ public class AdminServerProperties {
 	public static class MonitorProperties {
 
 		/**
-		 * Default {@link StatusInfoMismatchStrategy} applied if nothing different is
-		 * configured for {@link MonitorProperties#statusMismatchStrategy}.
+		 * Default {@link StatusChangeDetectionStrategy} applied if nothing different is
+		 * configured for {@link MonitorProperties#statusChangeDetectionStrategy}.
 		 */
-		public static final StatusInfoMismatchStrategy DEFAULT_STATUS_MISMATCH_STRATEGY = StatusInfoMismatchStrategy.FULL;
+		public static final StatusChangeDetectionStrategy DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY = StatusChangeDetectionStrategy.STATUS_ONLY;
 
 		/**
 		 * Time interval to check the status of instances, must be greater than 1 second.
@@ -117,15 +117,15 @@ public class AdminServerProperties {
 		private Duration statusLifetime = Duration.ofMillis(10_000L);
 
 		/**
-		 * Strategy to use to determinate if, given two {@link StatusInfo} instances,
+		 * Strategy to use to determine if, given two {@link StatusInfo} instances,
 		 * they're different or not in order to decide if a {@code STATUS_UPDATED} event
 		 * should be published or not.
 		 * <p>
 		 * Defaults to
-		 * {@link AdminServerProperties.MonitorProperties#DEFAULT_STATUS_MISMATCH_STRATEGY}
+		 * {@link AdminServerProperties.MonitorProperties#DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY}
 		 * unless a different value is specified.
 		 */
-		private StatusInfoMismatchStrategy statusMismatchStrategy = DEFAULT_STATUS_MISMATCH_STRATEGY;
+		private StatusChangeDetectionStrategy statusChangeDetectionStrategy = DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY;
 
 		/**
 		 * The maximal backoff for status check retries (retry after error has exponential
@@ -179,10 +179,9 @@ public class AdminServerProperties {
 		private Map<String, Duration> timeout = new HashMap<>();
 
 		/**
-		 * Strategy to determinate if two {@link StatusInfo} instances are different or
-		 * not.
+		 * Strategy to determine if two {@link StatusInfo} instances are different or not.
 		 */
-		public enum StatusInfoMismatchStrategy {
+		public enum StatusChangeDetectionStrategy {
 
 			/**
 			 * It considers two {@link StatusInfo} instances different if they're not

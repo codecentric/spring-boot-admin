@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.StatusInfoMismatchStrategy;
+import de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.StatusChangeDetectionStrategy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,8 +39,8 @@ class AdminServerPropertiesTest {
 	void testLoadConfigurationProperties() {
 		assertThat(serverConfig.getContextPath()).isEqualTo("/admin");
 
-		assertThat(serverConfig.getMonitor().getStatusMismatchStrategy())
-			.isEqualTo(StatusInfoMismatchStrategy.STATUS_ONLY);
+		assertThat(serverConfig.getMonitor().getStatusChangeDetectionStrategy())
+			.isEqualTo(StatusChangeDetectionStrategy.STATUS_ONLY);
 
 		assertThat(serverConfig.getInstanceAuth().getDefaultUserName()).isEqualTo("admin");
 		assertThat(serverConfig.getInstanceAuth().getDefaultPassword()).isEqualTo("topsecret");

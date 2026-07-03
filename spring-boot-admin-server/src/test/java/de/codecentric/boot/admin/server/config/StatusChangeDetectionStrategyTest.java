@@ -27,7 +27,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.support.ParameterDeclarations;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.StatusInfoMismatchStrategy;
+import de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.StatusChangeDetectionStrategy;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 import static java.util.Collections.emptyMap;
@@ -35,7 +35,7 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.of;
 
-public class StatusInfoMismatchStrategyTest {
+public class StatusChangeDetectionStrategyTest {
 
 	@ParameterizedTest
 	@ArgumentsSource(FullStrategyArgumentsProvider.class)
@@ -43,7 +43,7 @@ public class StatusInfoMismatchStrategyTest {
 		// given -> test setup
 
 		// when
-		boolean result = StatusInfoMismatchStrategy.FULL.mismatch(s1, s2);
+		boolean result = StatusChangeDetectionStrategy.FULL.mismatch(s1, s2);
 
 		// then
 		assertThat(result).isEqualTo(expectedResult);
@@ -55,7 +55,7 @@ public class StatusInfoMismatchStrategyTest {
 		// given -> test setup
 
 		// when
-		boolean result = StatusInfoMismatchStrategy.STATUS_ONLY.mismatch(s1, s2);
+		boolean result = StatusChangeDetectionStrategy.STATUS_ONLY.mismatch(s1, s2);
 
 		// then
 		assertThat(result).isEqualTo(expectedResult);

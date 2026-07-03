@@ -45,7 +45,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.domain.values.Tags;
 
-import static de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.DEFAULT_STATUS_MISMATCH_STRATEGY;
+import static de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
@@ -60,7 +60,7 @@ import static java.util.Collections.unmodifiableList;
 @lombok.ToString(exclude = "unsavedEvents")
 public final class Instance implements Serializable {
 
-	private static final BiPredicate<StatusInfo, StatusInfo> defaultStatusMismatchPredicate = DEFAULT_STATUS_MISMATCH_STRATEGY
+	private static final BiPredicate<StatusInfo, StatusInfo> defaultStatusChangeDetectionStrategyPredicate = DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY
 		.asPredicate();
 
 	private final InstanceId id;
@@ -145,15 +145,16 @@ public final class Instance implements Serializable {
 	}
 
 	public Instance withStatusInfo(StatusInfo statusInfo) {
-		return withStatusInfo(statusInfo, defaultStatusMismatchPredicate);
+		return withStatusInfo(statusInfo, defaultStatusChangeDetectionStrategyPredicate);
 	}
 
 	public Instance withStatusInfo(StatusInfo statusInfo,
-			BiPredicate<StatusInfo, StatusInfo> statusInfoMismatchPredicate) {
+			BiPredicate<StatusInfo, StatusInfo> statusChangeDetectionStrategyPredicate) {
 		Assert.notNull(statusInfo, "'statusInfo' must not be null");
-		Assert.notNull(statusInfo, "'statusInfoMismatchPredicate' must not be null");
+		Assert.notNull(statusChangeDetectionStrategyPredicate,
+				"'statusChangeDetectionStrategyPredicate' must not be null");
 
-		return (statusInfoMismatchPredicate.test(this.statusInfo, statusInfo))
+		return (statusChangeDetectionStrategyPredicate.test(this.statusInfo, statusInfo))
 				? this.apply(new InstanceStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true) : this;
 	}
 

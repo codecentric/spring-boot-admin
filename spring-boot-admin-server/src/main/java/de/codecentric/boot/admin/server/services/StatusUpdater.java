@@ -40,7 +40,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
-import static de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.DEFAULT_STATUS_MISMATCH_STRATEGY;
+import static de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY;
 import static java.util.Collections.emptyMap;
 
 /**
@@ -62,11 +62,12 @@ public class StatusUpdater {
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
-	private final BiPredicate<StatusInfo, StatusInfo> statusInfoMismatchPredicate;
+	private final BiPredicate<StatusInfo, StatusInfo> statusChangeDetectionPredicate;
 
 	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
 			ApiMediaTypeHandler apiMediaTypeHandler) {
-		this(repository, instanceWebClient, apiMediaTypeHandler, DEFAULT_STATUS_MISMATCH_STRATEGY.asPredicate());
+		this(repository, instanceWebClient, apiMediaTypeHandler,
+				DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY.asPredicate());
 	}
 
 	private Duration timeout = Duration.ofSeconds(10);
@@ -94,7 +95,7 @@ public class StatusUpdater {
 			.timeout(getTimeoutWithMargin())
 			.doOnError((ex) -> logError(instance, ex))
 			.onErrorResume(this::handleError)
-			.map((statusInfo) -> instance.withStatusInfo(statusInfo, statusInfoMismatchPredicate));
+			.map((statusInfo) -> instance.withStatusInfo(statusInfo, statusChangeDetectionPredicate));
 	}
 
 	/*
