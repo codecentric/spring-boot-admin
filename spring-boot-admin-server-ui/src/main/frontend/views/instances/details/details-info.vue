@@ -22,12 +22,12 @@
   >
     <template #title>
       <div class="ml-2 transition-opacity" :class="{ 'opacity-0': panelOpen }">
-        ({{ Object.keys(info).length }})
+        ({{ Object.keys(formattedInfo).length }})
       </div>
     </template>
 
     <div class="content info -mx-4 -my-3">
-      <sba-key-value-table v-if="!isEmptyInfo" :map="info" />
+      <sba-key-value-table v-if="!isEmptyInfo" :map="formattedInfo" />
       <p
         v-else
         class="mx-4 my-3"
@@ -53,12 +53,14 @@ const props = defineProps({
   },
 });
 
-const { instance } = useInstanceData(props.instanceId);
+const { info } = useInstanceData(props.instanceId);
 
 const panelOpen = ref(true);
 
-const info = computed(() => formatInfo(instance.value?.info));
-const isEmptyInfo = computed(() => Object.keys(info.value).length <= 0);
+const formattedInfo = computed(() => formatInfo(info.value));
+const isEmptyInfo = computed(
+  () => Object.keys(formattedInfo.value).length <= 0,
+);
 
 function formatInfo(info) {
   return formatWithDataTypes(info ?? {}, {
