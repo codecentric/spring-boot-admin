@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { computed } from 'vue';
+import { isEqual } from 'lodash-es';
+import { computed, shallowRef, watch } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import { findApplicationForInstance, findInstance } from '@/store';
@@ -32,5 +33,22 @@ export function useInstanceData(instanceId: string) {
     findApplicationForInstance(applications.value, instanceId),
   );
 
-  return { instance, application };
+  const info = shallowRef(instance.value?.info);
+  const metadata = shallowRef(instance.value?.metadata);
+
+  watch(instance, (newInstance) => {
+    if (!isEqual(newInstance?.info, info.value)) {
+      info.value = newInstance?.info;
+    }
+    if (!isEqual(newInstance?.metadata, metadata.value)) {
+      metadata.value = newInstance?.metadata;
+    }
+  });
+
+  return {
+    instance,
+    info,
+    metadata,
+    application,
+  };
 }

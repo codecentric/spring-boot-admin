@@ -55,6 +55,7 @@ class Instance {
   public version?: number;
   public buildVersion: string;
   public statusInfo: StatusInfo;
+  public info: Record<string, any>;
 
   constructor({ id, ...instance }: InstanceData) {
     Object.assign(this, instance);
