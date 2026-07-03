@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.Assert;
@@ -44,6 +45,7 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.domain.values.Tags;
 
+import static de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
@@ -57,6 +59,9 @@ import static java.util.Collections.unmodifiableList;
 @lombok.EqualsAndHashCode(exclude = { "unsavedEvents", "statusTimestamp" })
 @lombok.ToString(exclude = "unsavedEvents")
 public final class Instance implements Serializable {
+
+	private static final BiPredicate<StatusInfo, StatusInfo> defaultStatusChangeDetectionStrategyPredicate = DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY
+		.asPredicate();
 
 	private final InstanceId id;
 
@@ -140,11 +145,17 @@ public final class Instance implements Serializable {
 	}
 
 	public Instance withStatusInfo(StatusInfo statusInfo) {
+		return withStatusInfo(statusInfo, defaultStatusChangeDetectionStrategyPredicate);
+	}
+
+	public Instance withStatusInfo(StatusInfo statusInfo,
+			BiPredicate<StatusInfo, StatusInfo> statusChangeDetectionStrategyPredicate) {
 		Assert.notNull(statusInfo, "'statusInfo' must not be null");
-		if (Objects.equals(this.statusInfo, statusInfo)) {
-			return this;
-		}
-		return this.apply(new InstanceStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true);
+		Assert.notNull(statusChangeDetectionStrategyPredicate,
+				"'statusChangeDetectionStrategyPredicate' must not be null");
+
+		return (statusChangeDetectionStrategyPredicate.test(this.statusInfo, statusInfo))
+				? this.apply(new InstanceStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true) : this;
 	}
 
 	public Instance withEndpoints(Endpoints endpoints) {
@@ -155,10 +166,6 @@ public final class Instance implements Serializable {
 			return this;
 		}
 		return this.apply(new InstanceEndpointsDetectedEvent(this.id, this.nextVersion(), endpoints), true);
-	}
-
-	public boolean isRegistered() {
-		return this.registered;
 	}
 
 	public Registration getRegistration() {

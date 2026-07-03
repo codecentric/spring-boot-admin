@@ -101,10 +101,10 @@ public class AdminServerAutoConfiguration {
 	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 
-		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
-				new ApiMediaTypeHandler());
-
 		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
+
+		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
+				new ApiMediaTypeHandler(), monitorProperties.getStatusChangeDetectionStrategy().asPredicate());
 
 		Duration timeout = monitorProperties.getDefaultTimeout();
 		Duration interval = monitorProperties.getStatusInterval();
