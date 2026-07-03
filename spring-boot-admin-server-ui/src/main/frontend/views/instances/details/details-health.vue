@@ -36,7 +36,7 @@
         :to="{ name: 'journal', query: { instanceId: instanceId } }"
         class="text-sm inline-flex items-center leading-sm border border-gray-400 bg-white text-gray-700 rounded overflow-hidden px-3 py-1 hover:bg-gray-200 ml-1"
       >
-        <font-awesome-icon :icon="faScroll()" />
+        <font-awesome-icon :icon="faScroll" />
       </router-link>
     </template>
 
@@ -70,7 +70,7 @@
               >
                 <font-awesome-icon
                   v-if="isHealthGroupCollapsible(group.name)"
-                  :icon="faChevronRight()"
+                  :icon="faChevronRight"
                   class="transition-transform mr-2 h-4"
                   :class="{
                     'rotate-90': isHealthGroupOpen(group.name),
@@ -108,10 +108,10 @@
   </sba-accordion>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { faChevronRight, faScroll } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { computed, defineComponent } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
@@ -119,127 +119,110 @@ import { useInstanceData } from '@/composables/useInstanceData';
 import { useInstanceService } from '@/composables/useInstanceService';
 import HealthDetails from '@/views/instances/details/health-details.vue';
 
-export default defineComponent({
-  components: { SbaAccordion, FontAwesomeIcon, HealthDetails },
-  props: {
-    instanceId: {
-      type: String,
-      required: true,
-    },
-  },
-  setup(props) {
-    const { instance } = useInstanceData(props.instanceId);
+const props = defineProps<{
+  instanceId: string;
+}>();
 
-    const health = computed(
-      () => instance.value?.statusInfo ?? { status: 'UNKNOWN', details: {} },
-    );
-    const hasHealthUrl = computed(
-      () =>
-        instance.value?.endpoints?.some(
-          (e: { id: string }) => e.id === 'health',
-        ) ?? false,
-    );
+const { instance } = useInstanceData(props.instanceId);
+const { fetchHealth, fetchHealthGroup } = useInstanceService(props.instanceId);
 
-    return { health, hasHealthUrl };
-  },
-  data: () => ({
-    panelOpen: true,
-    healthGroups: [] as Array<{
-      name: string;
-      data: Record<string, any> | null;
-    }>,
-    healthGroupsError: null as Error | null,
-    healthGroupOpenStatus: {} as Record<
-      string,
-      { isOpen: boolean; collapsible: boolean }
-    >,
-    healthGroupLoadingMap: {} as Record<string, boolean>,
-    currentInstanceId: null as string | null,
-  }),
-  watch: {
-    instanceId: {
-      handler(newId: string) {
-        if (newId !== this.currentInstanceId) {
-          this.currentInstanceId = newId;
-          this.healthGroups = [];
-          this.healthGroupOpenStatus = {};
-          this.healthGroupLoadingMap = {};
-          this.healthGroupsError = null;
-          this.fetchHealthGroups();
-        } else {
-          for (const group of this.healthGroups) {
-            group.data = null;
-          }
-          this.healthGroupOpenStatus = {};
-          this.healthGroupLoadingMap = {};
-        }
-      },
-      immediate: true,
-    },
-  },
-  methods: {
-    faScroll() {
-      return faScroll;
-    },
-    faChevronRight() {
-      return faChevronRight;
-    },
-    isHealthGroupOpen(groupName: string) {
-      return this.healthGroupOpenStatus[groupName]?.isOpen ?? false;
-    },
-    isHealthGroupCollapsible(groupName: string) {
-      return this.healthGroupOpenStatus[groupName]?.collapsible ?? true;
-    },
-    toggleHealthGroup(groupName: string) {
-      const group = this.healthGroups.find((g) => g.name === groupName);
-      if (group == undefined) return;
-      if (group.data === null) {
-        this.fetchGroupDetails(groupName);
-      } else if (this.isHealthGroupCollapsible(groupName)) {
-        this.healthGroupOpenStatus[groupName].isOpen =
-          !this.healthGroupOpenStatus[groupName].isOpen;
+const panelOpen = ref(true);
+
+const health = computed(
+  () => instance.value?.statusInfo ?? { status: 'UNKNOWN', details: {} },
+);
+const hasHealthUrl = computed(
+  () =>
+    instance.value?.endpoints?.some((e: { id: string }) => e.id === 'health') ??
+    false,
+);
+
+interface HealthGroup {
+  name: string;
+  data: Record<string, any> | null;
+}
+
+const healthGroups = ref<HealthGroup[]>([]);
+const healthGroupsError = ref<Error | null>(null);
+const healthGroupOpenStatus = ref<
+  Record<string, { isOpen: boolean; collapsible: boolean }>
+>({});
+const healthGroupLoadingMap = ref<Record<string, boolean>>({});
+
+const isHealthGroupOpen = (groupName: string) =>
+  healthGroupOpenStatus.value[groupName]?.isOpen ?? false;
+
+const isHealthGroupCollapsible = (groupName: string) =>
+  healthGroupOpenStatus.value[groupName]?.collapsible ?? true;
+
+async function fetchHealthGroups() {
+  if (!hasHealthUrl.value) return;
+  healthGroupsError.value = null;
+  try {
+    const res = await fetchHealth();
+    if (Array.isArray(res.data.groups)) {
+      healthGroups.value = res.data.groups.map((name: string) => ({
+        name,
+        data: null,
+      }));
+      healthGroupOpenStatus.value = {};
+      healthGroupLoadingMap.value = {};
+    } else {
+      healthGroups.value = [];
+    }
+  } catch (error) {
+    console.warn('Fetching health groups failed:', error);
+    healthGroupsError.value = error as Error;
+  }
+}
+
+async function fetchGroupDetails(groupName: string) {
+  healthGroupLoadingMap.value[groupName] = true;
+  try {
+    const res = await fetchHealthGroup(groupName);
+    const group = healthGroups.value.find((g) => g.name === groupName);
+    if (group) {
+      group.data = res.data;
+      healthGroupOpenStatus.value[groupName] = {
+        isOpen: true,
+        collapsible: res.data !== undefined,
+      };
+    }
+  } catch (error) {
+    console.warn(`Fetching health group '${groupName}' failed:`, error);
+  } finally {
+    healthGroupLoadingMap.value[groupName] = false;
+  }
+}
+
+function toggleHealthGroup(groupName: string) {
+  const group = healthGroups.value.find((g) => g.name === groupName);
+  if (group == undefined) return;
+  if (group.data === null) {
+    fetchGroupDetails(groupName);
+  } else if (isHealthGroupCollapsible(groupName)) {
+    healthGroupOpenStatus.value[groupName].isOpen =
+      !healthGroupOpenStatus.value[groupName].isOpen;
+  }
+}
+
+watch(
+  () => props.instanceId,
+  (newId, oldId) => {
+    if (newId === oldId) {
+      for (const group of healthGroups.value) {
+        group.data = null;
       }
-    },
-    async fetchHealthGroups() {
-      if (!this.hasHealthUrl) return;
-      this.healthGroupsError = null;
-      try {
-        const { fetchHealth } = useInstanceService(this.instanceId);
-        const res = await fetchHealth();
-        if (Array.isArray(res.data.groups)) {
-          this.healthGroups = res.data.groups.map((name: string) => ({
-            name,
-            data: null,
-          }));
-          this.healthGroupOpenStatus = {};
-          this.healthGroupLoadingMap = {};
-        } else {
-          this.healthGroups = [];
-        }
-      } catch (error) {
-        console.warn('Fetching health groups failed:', error);
-        this.healthGroupsError = error as Error;
-      }
-    },
-    async fetchGroupDetails(groupName: string) {
-      this.healthGroupLoadingMap[groupName] = true;
-      try {
-        const { fetchHealthGroup } = useInstanceService(this.instanceId);
-        const res = await fetchHealthGroup(groupName);
-        const group = this.healthGroups.find((g) => g.name === groupName);
-        if (group) {
-          group.data = res.data;
-          this.healthGroupOpenStatus[groupName] = {
-            isOpen: true,
-            collapsible: res.data !== undefined,
-          };
-        }
-      } catch (error) {
-        console.warn(`Fetching health group '${groupName}' failed:`, error);
-      } finally {
-        this.healthGroupLoadingMap[groupName] = false;
-      }
-    },
+      healthGroupOpenStatus.value = {};
+      healthGroupLoadingMap.value = {};
+    } else {
+      healthGroups.value = [];
+      healthGroupOpenStatus.value = {};
+      healthGroupLoadingMap.value = {};
+      healthGroupsError.value = null;
+    }
+    fetchHealthGroups();
   },
-});
+  { immediate: true },
+);
 </script>
