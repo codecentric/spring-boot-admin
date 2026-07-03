@@ -84,11 +84,6 @@ interface UptimeData {
   baseUnit: string | null;
 }
 
-interface MetricResponse {
-  measurements: Array<{ value: number }>;
-  baseUnit: string;
-}
-
 interface CpuLoadMetrics {
   processCpuLoad: number | null;
   systemCpuLoad: number | null;
@@ -115,6 +110,9 @@ const props = defineProps<{
 }>();
 
 const { instance } = useInstanceData(props.instanceId);
+const { fetchMetric, fetchEnv, fetchInfo } = useInstanceService(
+  props.instanceId,
+);
 
 const { t, locale } = useI18n();
 
@@ -174,18 +172,12 @@ const tableData = computed<TableDataMap>(() => {
 });
 
 // Hilfsfunktionen
-const fetchMetric = async (name: string): Promise<MetricResponse> => {
-  const { fetchMetric: svcFetchMetric } = useInstanceService(props.instanceId);
-  const response = await svcFetchMetric(name);
-  return response.data;
-};
-
 const fetchUptime = async (): Promise<void> => {
   try {
     const response = await fetchMetric('process.uptime');
     uptime.value = {
-      value: response.measurements[0].value,
-      baseUnit: response.baseUnit,
+      value: response.data.measurements[0].value,
+      baseUnit: response.data.baseUnit,
     };
   } catch (err) {
     error.value = err instanceof Error ? err : new Error('Unknown error');
@@ -196,7 +188,6 @@ const fetchUptime = async (): Promise<void> => {
 const fetchPid = async (): Promise<void> => {
   if (instance.value?.endpoints?.some((e: any) => e.id === 'env')) {
     try {
-      const { fetchEnv } = useInstanceService(props.instanceId);
       const response = await fetchEnv('PID');
       pid.value = response.data.property.value;
     } catch (err) {
@@ -208,7 +199,7 @@ const fetchPid = async (): Promise<void> => {
 const fetchCpuCount = async (): Promise<void> => {
   try {
     const response = await fetchMetric('system.cpu.count');
-    systemCpuCount.value = response.measurements[0].value;
+    systemCpuCount.value = response.data.measurements[0].value;
   } catch (err) {
     console.warn('Fetching Cpu Count failed:', err);
   }
@@ -216,7 +207,6 @@ const fetchCpuCount = async (): Promise<void> => {
 
 const fetchProcessInfo = async (): Promise<void> => {
   try {
-    const { fetchInfo } = useInstanceService(props.instanceId);
     const response = await fetchInfo();
     const processInfo = response.data.process;
     if (processInfo) {
@@ -230,22 +220,19 @@ const fetchProcessInfo = async (): Promise<void> => {
 };
 
 const fetchCpuLoadMetrics = async (): Promise<CpuLoadMetrics> => {
-  const fetchProcessCpuLoad = fetchMetric('process.cpu.usage');
-  const fetchSystemCpuLoad = fetchMetric('system.cpu.usage');
-
   let processCpuLoadValue: number | null = null;
   let systemCpuLoadValue: number | null = null;
 
   try {
-    const response = await fetchProcessCpuLoad;
-    processCpuLoadValue = response.measurements[0].value;
+    const response = await fetchMetric('process.cpu.usage');
+    processCpuLoadValue = response.data.measurements[0].value;
   } catch (err) {
     console.warn('Fetching Process CPU Load failed:', err);
   }
 
   try {
-    const response = await fetchSystemCpuLoad;
-    systemCpuLoadValue = response.measurements[0].value;
+    const response = await fetchMetric('system.cpu.usage');
+    systemCpuLoadValue = response.data.measurements[0].value;
   } catch (err) {
     console.warn('Fetching System CPU Load failed:', err);
   }
