@@ -23,10 +23,10 @@
   >
     <template #title>
       <div class="ml-2 transition-opacity" :class="{ 'opacity-0': panelOpen }">
-        ({{ Object.keys(metadata).length }})
+        ({{ Object.keys(sortedMetadata).length }})
       </div>
     </template>
-    <sba-key-value-table v-if="hasMetadata" :map="metadata" />
+    <sba-key-value-table v-if="hasMetadata" :map="sortedMetadata" />
     <p
       v-else
       class="mx-4 my-3"
@@ -47,13 +47,12 @@ const props = defineProps<{
   instanceId: string;
 }>();
 
-const { instance } = useInstanceData(props.instanceId);
+const { metadata } = useInstanceData(props.instanceId);
 
 const panelOpen = ref(true);
 
-const metadata = computed(() =>
-  sortObject(instance.value?.registration?.metadata ?? {}),
+const sortedMetadata = computed(() => sortObject(metadata.value ?? {}));
+const hasMetadata = computed(
+  () => Object.keys(sortedMetadata.value).length > 0,
 );
-
-const hasMetadata = computed(() => Object.keys(metadata.value).length > 0);
 </script>
