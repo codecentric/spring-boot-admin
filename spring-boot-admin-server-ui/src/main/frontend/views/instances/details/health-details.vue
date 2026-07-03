@@ -75,10 +75,10 @@
             "
             class="col-span-4"
             role="definition"
-            :title="String(detail.value) + ' Byte'"
+            :title="formatWithDataTypes(detail.value) + ' Byte'"
             :aria-label="detail.name"
             :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
-            v-text="prettyBytes(detail.value as number)"
+            v-text="prettyBytes(detail.value as number, { locale })"
           />
           <dd
             v-else-if="
@@ -124,8 +124,9 @@ import { useI18n } from 'vue-i18n';
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
 
 import autolink from '@/utils/autolink';
+import { formatWithDataTypes } from '@/utils/formatWithDataTypes';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const id = useId();
 
 const { health, name, instanceId } = defineProps<{
@@ -184,7 +185,7 @@ const details = computed(() =>
     .map(([name, value]) => ({ name, value }) as Details),
 );
 
-const childHealth = computed(() =>
+const childHealth = computed<{ name: string; value: any }>(() =>
   healthEntries.value
     .filter(([, value]) => isChildHealth(value))
     .map(([name, value]) => ({ name, value })),
