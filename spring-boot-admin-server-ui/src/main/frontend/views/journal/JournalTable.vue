@@ -200,7 +200,6 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
-import Application from '@/services/application';
 import { pushFlattened } from '@/utils/array';
 import { InstanceEvent } from '@/views/journal/InstanceEvent';
 import {
@@ -213,7 +212,6 @@ const router = useRouter();
 
 const { events = [] } = defineProps<{
   events?: Array<InstanceEvent>;
-  applications: Array<Application>;
 }>();
 
 const { formatDateTime } = useDateTimeFormatter();

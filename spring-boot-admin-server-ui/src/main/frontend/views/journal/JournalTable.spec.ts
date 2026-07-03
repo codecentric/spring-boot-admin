@@ -32,7 +32,6 @@ import JournalTable from './JournalTable.vue';
 import components from '@/components/index';
 
 import SbaModalPlugin from '@/plugins/modal';
-import Application from '@/services/application';
 import { render } from '@/test-utils';
 import {
   InstanceEvent,
@@ -49,7 +48,6 @@ for (const modulesKey in modules) {
 
 describe('JournalTable', () => {
   let events: InstanceEvent[];
-  let applications: Application[];
 
   beforeEach(() => {
     events = [
@@ -110,44 +108,6 @@ describe('JournalTable', () => {
         registration: { name: 'Alpha App' },
       }),
     ];
-
-    applications = [
-      new Application({
-        id: 'app-1',
-        name: 'Zebra App',
-        instances: [{ id: 'instance-1' }],
-      }),
-      new Application({
-        id: 'app-2',
-        name: 'Alpha App',
-        instances: [{ id: 'instance-2' }],
-      }),
-      new Application({
-        id: 'app-3',
-        name: 'Beta App',
-        instances: [{ id: 'instance-3' }],
-      }),
-      new Application({
-        id: 'app-4',
-        name: 'Gamma App',
-        instances: [{ id: 'instance-4' }],
-      }),
-      new Application({
-        id: 'app-5',
-        name: 'Delta App',
-        instances: [{ id: 'instance-5' }],
-      }),
-      new Application({
-        id: 'app-6',
-        name: 'Epsilon App',
-        instances: [{ id: 'instance-6' }],
-      }),
-      new Application({
-        id: 'app-7',
-        name: 'Theta App',
-        instances: [{ id: 'instance-7' }],
-      }),
-    ];
   });
 
   describe('Application name', () => {
@@ -157,7 +117,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -195,7 +154,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -231,7 +189,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -255,7 +212,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -287,7 +243,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -318,7 +273,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -358,7 +312,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -398,7 +351,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -421,7 +373,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -454,7 +405,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -487,7 +437,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -522,7 +471,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -562,7 +510,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -602,7 +549,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -628,7 +574,6 @@ describe('JournalTable', () => {
       render(JournalTable, {
         props: {
           events,
-          applications,
         },
       });
 
@@ -663,7 +608,6 @@ describe('JournalTable', () => {
 
       await renderJournalTableWithRouter({
         events,
-        applications,
         query: {
           q: 'Alpha',
           application: ['Alpha App'],
@@ -790,11 +734,9 @@ async function expectPreselectedOption(
 
 async function renderJournalTableWithRouter({
   events,
-  applications,
   query = {},
 }: {
   events: InstanceEvent[];
-  applications: Application[];
   query?: LocationQueryRaw;
 }) {
   const router = createRouter({
@@ -808,7 +750,6 @@ async function renderJournalTableWithRouter({
   return tlRender(JournalTable, {
     props: {
       events,
-      applications,
     },
     global: {
       plugins: [

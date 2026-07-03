@@ -44,7 +44,7 @@
 
     <sba-alert :error="error" />
 
-    <JournalTable :events="listedEvents" :applications="applications" />
+    <JournalTable :events="listedEvents" />
   </div>
 </template>
 
@@ -54,7 +54,6 @@ import { useI18n } from 'vue-i18n';
 
 import SbaAlert from '@/components/sba-alert';
 
-import { useApplicationStore } from '@/composables/useApplicationStore';
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
@@ -71,14 +70,12 @@ export default {
   mixins: [subscribing],
   setup() {
     const { formatDateTime } = useDateTimeFormatter();
-    const { applications } = useApplicationStore();
     const i18n = useI18n();
 
     return {
       t: i18n.t,
       formatDate: formatDateTime,
       faArrowsDownToLine,
-      applications,
     };
   },
   data: () => ({
