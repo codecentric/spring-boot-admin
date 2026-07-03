@@ -159,8 +159,12 @@ public class StatusUpdater {
 	}
 
 	private void extractAndCacheHealthGroups(InstanceId instanceId, Map<String, Object> body) {
-		if (this.healthGroupsCache != null && body.get("groups") instanceof List<?> groupsList) {
-			List<String> groups = groupsList.stream().filter(String.class::isInstance).map(String.class::cast).toList();
+		if (this.healthGroupsCache != null && instanceId != null && body.get("groups") instanceof List<?> groupsList) {
+			List<String> groups = groupsList.stream()
+				.filter(String.class::isInstance)
+				.map(String.class::cast)
+				.distinct()
+				.toList();
 			this.healthGroupsCache.updateGroups(instanceId, groups);
 		}
 	}

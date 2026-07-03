@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.services;
 
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.test.publisher.TestPublisher;
@@ -29,20 +30,25 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-class HealthGroupsCacheCleanupTriggerTest {
+class HealthGroupsCacheCleanupListenerTest {
 
 	private final TestPublisher<InstanceEvent> events = TestPublisher.create();
 
 	private HealthGroupsCache cache;
 
-	private HealthGroupsCacheCleanupTrigger trigger;
+	private HealthGroupsCacheCleanupListener listener;
 
 	@BeforeEach
 	void setUp() {
 		this.cache = new InMemoryHealthGroupsCache();
-		this.trigger = new HealthGroupsCacheCleanupTrigger(this.events.flux(), this.cache);
-		this.trigger.start();
+		this.listener = new HealthGroupsCacheCleanupListener(this.events.flux(), this.cache);
+		this.listener.start();
 		await().until(this.events::wasSubscribed);
+	}
+
+	@AfterEach
+	void tearDown() {
+		this.listener.stop();
 	}
 
 	@Test

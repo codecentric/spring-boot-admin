@@ -43,7 +43,7 @@ import de.codecentric.boot.admin.server.services.EndpointDetectionTrigger;
 import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
 import de.codecentric.boot.admin.server.services.HealthGroupsCache;
-import de.codecentric.boot.admin.server.services.HealthGroupsCacheCleanupTrigger;
+import de.codecentric.boot.admin.server.services.HealthGroupsCacheCleanupListener;
 import de.codecentric.boot.admin.server.services.InMemoryHealthGroupsCache;
 import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdater;
@@ -145,11 +145,11 @@ public class AdminServerAutoConfiguration {
 				monitorProperties.getStatusMaxBackoff());
 	}
 
-	@Bean(initMethod = "start", destroyMethod = "stop")
+	@Bean
 	@ConditionalOnMissingBean
-	public HealthGroupsCacheCleanupTrigger healthGroupsCacheCleanupTrigger(Publisher<InstanceEvent> events,
+	public HealthGroupsCacheCleanupListener healthGroupsCacheCleanupListener(Publisher<InstanceEvent> events,
 			HealthGroupsCache healthGroupsCache) {
-		return new HealthGroupsCacheCleanupTrigger(events, healthGroupsCache);
+		return new HealthGroupsCacheCleanupListener(events, healthGroupsCache);
 	}
 
 	@Bean

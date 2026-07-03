@@ -154,9 +154,13 @@ export default defineComponent({
       }
       return false;
     },
+    healthGroupsKey() {
+      // Only re-fetch on meaningful status changes; deliberately excludes
+      return `${this.instance.id}:${this.instance.statusInfo?.status ?? ''}:${this.instance.statusTimestamp ?? ''}`;
+    },
   },
   watch: {
-    instance: {
+    healthGroupsKey: {
       handler: 'onInstanceChanged',
       immediate: true,
     },
@@ -211,7 +215,19 @@ export default defineComponent({
         const res = await this.instance.fetchCachedHealthGroups();
 
         if (Array.isArray(res.data)) {
-          this.healthGroups = res.data.map((name: string) => ({
+          const currentNames = this.healthGroups.map((g) => g.name);
+          const incomingNames = res.data;
+          const unchanged =
+            currentNames.length === incomingNames.length &&
+            currentNames.every((name, idx) => name === incomingNames[idx]);
+
+          // Skip reassignment when the group list is unchanged to preserve
+          // the accordion open/loading state and avoid needless re-renders.
+          if (unchanged) {
+            return;
+          }
+
+          this.healthGroups = incomingNames.map((name: string) => ({
             name,
             data: null,
           }));
