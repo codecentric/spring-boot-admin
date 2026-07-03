@@ -17,7 +17,7 @@
 <template>
   <sba-accordion
     v-if="hasLoaded"
-    :id="`health-datasource-panel__${instance.id}`"
+    :id="`health-datasource-panel__${instanceId}`"
     :title="
       $t('instances.details.datasource.title', { dataSource: dataSource })
     "
@@ -72,17 +72,17 @@ import { take } from 'rxjs/operators';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
+import { useInstanceService } from '@/composables/useInstanceService';
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
-import Instance from '@/services/instance';
 import datasourceChart from '@/views/instances/details/datasource-chart';
 
 export default {
   components: { SbaAccordion, datasourceChart },
   mixins: [subscribing],
   props: {
-    instance: {
-      type: Instance,
+    instanceId: {
+      type: String,
       required: true,
     },
     dataSource: {
@@ -95,52 +95,30 @@ export default {
     error: null,
     current: null,
     chartData: [],
-    currentInstanceId: null,
-    currentInstanceUpdateKey: null,
   }),
   watch: {
-    instance: {
-      handler: 'initDatasourceMetrics',
-      immediate: true,
-    },
-  },
-  methods: {
-    initDatasourceMetrics() {
-      const updateKey =
-        this.instance.version ??
-        this.instance.statusTimestamp ??
-        this.instance.id;
-      const firstInit = this.currentInstanceId === null;
-      if (
-        this.instance.id !== this.currentInstanceId ||
-        updateKey !== this.currentInstanceUpdateKey
-      ) {
-        this.currentInstanceId = this.instance.id;
-        this.currentInstanceUpdateKey = updateKey;
+    instanceId: {
+      handler() {
         this.hasLoaded = false;
         this.error = null;
         this.current = null;
         this.chartData = [];
-
-        // Restart polling immediately so SSE updates refresh the view.
-        if (!firstInit) {
-          // Stop old subscription and start fresh
-          this.unsubscribe();
-          // Recreate destroy$ so new subscription can use takeUntil properly
-          this.destroy$ = new Subject();
-          this.subscribe();
-        }
-      }
+        this.unsubscribe();
+        this.destroy$ = new Subject();
+        this.subscribe();
+      },
     },
+  },
+  methods: {
     async fetchMetrics() {
-      const responseActive = this.instance.fetchMetric(
-        'jdbc.connections.active',
-        { name: this.dataSource },
-      );
-      const responseMin = this.instance.fetchMetric('jdbc.connections.min', {
+      const { fetchMetric } = useInstanceService(this.instanceId);
+      const responseActive = fetchMetric('jdbc.connections.active', {
         name: this.dataSource,
       });
-      const responseMax = this.instance.fetchMetric('jdbc.connections.max', {
+      const responseMin = fetchMetric('jdbc.connections.min', {
+        name: this.dataSource,
+      });
+      const responseMax = fetchMetric('jdbc.connections.max', {
         name: this.dataSource,
       });
 
@@ -154,7 +132,6 @@ export default {
       return timer(0, sbaConfig.uiSettings.pollTimer.datasource)
         .pipe(
           concatMap(this.fetchMetrics),
-          // Stop polling when destroy$ emits (on unmount or instance update)
           takeUntil(this.destroy$),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));

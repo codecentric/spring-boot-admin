@@ -16,7 +16,7 @@
 
 <template>
   <sba-accordion
-    :id="`info-details-panel__${instance.id}`"
+    :id="`info-details-panel__${instanceId}`"
     v-model="panelOpen"
     :title="$t('instances.details.info.title')"
   >
@@ -43,23 +43,25 @@ import { computed, ref } from 'vue';
 import SbaAccordion from '@/components/sba-accordion.vue';
 import SbaKeyValueTable from '@/components/sba-key-value-table.vue';
 
-import Instance from '@/services/instance';
+import { useInstanceData } from '@/composables/useInstanceData';
 import { formatWithDataTypes } from '@/utils/formatWithDataTypes';
 
 const props = defineProps({
-  instance: {
-    type: Instance,
+  instanceId: {
+    type: String,
     required: true,
   },
 });
 
+const { instance } = useInstanceData(props.instanceId);
+
 const panelOpen = ref(true);
 
-const info = computed(() => formatInfo(props.instance.info));
+const info = computed(() => formatInfo(instance.value?.info));
 const isEmptyInfo = computed(() => Object.keys(info.value).length <= 0);
 
 function formatInfo(info) {
-  return formatWithDataTypes(info, {
+  return formatWithDataTypes(info ?? {}, {
     'build.time': 'date',
     'process.memory.heap.committed': 'bytes',
     'process.memory.heap.init': 'bytes',

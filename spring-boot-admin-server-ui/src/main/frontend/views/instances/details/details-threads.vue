@@ -17,7 +17,7 @@
 <template>
   <sba-accordion
     v-if="hasLoaded"
-    :id="`threads-details-panel__${instance.id}`"
+    :id="`threads-details-panel__${instanceId}`"
     v-model="panelOpen"
     :title="$t('instances.details.threads.title')"
   >
@@ -85,9 +85,9 @@ import { take, takeUntil } from 'rxjs/operators';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
+import { useInstanceService } from '@/composables/useInstanceService';
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
-import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
 import threadsChart from '@/views/instances/details/threads-chart';
 
@@ -95,8 +95,8 @@ export default {
   components: { SbaAccordion, threadsChart },
   mixins: [subscribing],
   props: {
-    instance: {
-      type: Instance,
+    instanceId: {
+      type: String,
       required: true,
     },
   },
@@ -106,47 +106,26 @@ export default {
     error: null,
     current: null,
     chartData: [],
-    currentInstanceId: null,
-    currentInstanceUpdateKey: null,
   }),
   watch: {
-    instance: {
-      handler: 'initMetrics',
-      immediate: true,
+    instanceId: {
+      handler() {
+        this.hasLoaded = false;
+        this.error = null;
+        this.current = null;
+        this.chartData = [];
+        this.unsubscribe();
+        this.destroy$ = new Subject();
+        this.subscribe();
+      },
     },
   },
   methods: {
-    initMetrics() {
-      const updateKey =
-        this.instance.version ??
-        this.instance.statusTimestamp ??
-        this.instance.id;
-      const firstInit = this.currentInstanceId === null;
-      if (
-        this.instance.id !== this.currentInstanceId ||
-        updateKey !== this.currentInstanceUpdateKey
-      ) {
-        this.currentInstanceId = this.instance.id;
-        this.currentInstanceUpdateKey = updateKey;
-        this.error = null;
-        this.hasLoaded = false;
-        this.current = null;
-        this.chartData = [];
-
-        // Restart polling immediately so SSE updates refresh the view.
-        if (!firstInit) {
-          // Stop old subscription and start fresh
-          this.unsubscribe();
-          // Recreate destroy$ so new subscription can use takeUntil properly
-          this.destroy$ = new Subject();
-          this.subscribe();
-        }
-      }
-    },
     async fetchMetrics() {
-      const responseLive = this.instance.fetchMetric('jvm.threads.live');
-      const responsePeak = this.instance.fetchMetric('jvm.threads.peak');
-      const responseDaemon = this.instance.fetchMetric('jvm.threads.daemon');
+      const { fetchMetric } = useInstanceService(this.instanceId);
+      const responseLive = fetchMetric('jvm.threads.live');
+      const responsePeak = fetchMetric('jvm.threads.peak');
+      const responseDaemon = fetchMetric('jvm.threads.daemon');
 
       return {
         live: (await responseLive).data.measurements[0].value,

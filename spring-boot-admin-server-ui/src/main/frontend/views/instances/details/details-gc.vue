@@ -17,7 +17,7 @@
 <template>
   <sba-accordion
     v-if="hasLoaded"
-    :id="`gc-details-panel__${instance.id}`"
+    :id="`gc-details-panel__${instanceId}`"
     v-model="panelOpen"
     :title="$t('instances.details.gc.title')"
   >
@@ -80,9 +80,9 @@ import { take } from 'rxjs/operators';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
+import { useInstanceService } from '@/composables/useInstanceService';
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
-import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
 import { toMillis } from '@/views/instances/metrics/metric';
 
@@ -90,8 +90,8 @@ export default {
   components: { SbaAccordion },
   mixins: [subscribing],
   props: {
-    instance: {
-      type: Instance,
+    instanceId: {
+      type: String,
       required: true,
     },
   },
@@ -103,7 +103,8 @@ export default {
   }),
   methods: {
     async fetchMetrics() {
-      const response = await this.instance.fetchMetric('jvm.gc.pause');
+      const { fetchMetric } = useInstanceService(this.instanceId);
+      const response = await fetchMetric('jvm.gc.pause');
       const measurements = response.data.measurements.reduce(
         (current, measurement) => ({
           ...current,

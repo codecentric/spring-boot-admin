@@ -17,7 +17,7 @@
 <template>
   <sba-accordion
     v-if="hasLoaded"
-    :id="`process-details-panel__${instance.id}`"
+    :id="`process-details-panel__${instanceId}`"
     v-model="panelOpen"
     :title="$t('instances.details.process.title')"
   >
@@ -69,8 +69,9 @@ import { useI18n } from 'vue-i18n';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
+import { useInstanceData } from '@/composables/useInstanceData';
+import { useInstanceService } from '@/composables/useInstanceService';
 import sbaConfig from '@/sba-config';
-import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
 import processUptime from '@/views/instances/details/process-uptime';
 import { toMillis } from '@/views/instances/metrics/metric';
@@ -110,8 +111,10 @@ interface TableDataMap {
 
 // Props Definition
 const props = defineProps<{
-  instance: Instance;
+  instanceId: string;
 }>();
+
+const { instance } = useInstanceData(props.instanceId);
 
 const { t, locale } = useI18n();
 
@@ -172,7 +175,8 @@ const tableData = computed<TableDataMap>(() => {
 
 // Hilfsfunktionen
 const fetchMetric = async (name: string): Promise<MetricResponse> => {
-  const response = await props.instance.fetchMetric(name);
+  const { fetchMetric: svcFetchMetric } = useInstanceService(props.instanceId);
+  const response = await svcFetchMetric(name);
   return response.data;
 };
 
@@ -190,9 +194,10 @@ const fetchUptime = async (): Promise<void> => {
 };
 
 const fetchPid = async (): Promise<void> => {
-  if (props.instance.hasEndpoint('env')) {
+  if (instance.value?.endpoints?.some((e: any) => e.id === 'env')) {
     try {
-      const response = await props.instance.fetchEnv('PID');
+      const { fetchEnv } = useInstanceService(props.instanceId);
+      const response = await fetchEnv('PID');
       pid.value = response.data.property.value;
     } catch (err) {
       console.warn('Fetching PID failed:', err);
@@ -211,7 +216,8 @@ const fetchCpuCount = async (): Promise<void> => {
 
 const fetchProcessInfo = async (): Promise<void> => {
   try {
-    const response = await props.instance.fetchInfo();
+    const { fetchInfo } = useInstanceService(props.instanceId);
+    const response = await fetchInfo();
     const processInfo = response.data.process;
     if (processInfo) {
       pid.value = processInfo.pid;

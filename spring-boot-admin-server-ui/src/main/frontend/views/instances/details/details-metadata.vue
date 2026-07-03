@@ -16,7 +16,7 @@
 
 <template>
   <sba-accordion
-    :id="`metadata-details-panel__${instance.id}`"
+    :id="`metadata-details-panel__${instanceId}`"
     v-model="panelOpen"
     :title="$t('instances.details.metadata.title')"
     :seamless="true"
@@ -40,20 +40,20 @@ import { computed, ref } from 'vue';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
-import Instance from '@/services/instance';
+import { useInstanceData } from '@/composables/useInstanceData';
 import { sortObject } from '@/utils/sortObject';
 
 const props = defineProps<{
-  instance: Instance;
+  instanceId: string;
 }>();
+
+const { instance } = useInstanceData(props.instanceId);
 
 const panelOpen = ref(true);
 
-const metadata = computed(() => {
-  return sortObject(props.instance.registration.metadata);
-});
+const metadata = computed(() =>
+  sortObject(instance.value?.registration?.metadata ?? {}),
+);
 
-const hasMetadata = computed(() => {
-  return Object.keys(metadata.value).length > 0;
-});
+const hasMetadata = computed(() => Object.keys(metadata.value).length > 0);
 </script>

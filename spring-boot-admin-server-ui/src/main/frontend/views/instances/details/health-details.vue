@@ -75,6 +75,7 @@
             "
             class="col-span-4"
             role="definition"
+            :title="String(detail.value) + ' Byte'"
             :aria-label="detail.name"
             :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
             v-text="prettyBytes(detail.value as number)"
@@ -108,7 +109,7 @@
   <health-details
     v-for="(child, idx) in childHealth"
     :key="`${child.name}_${idx}`"
-    :instance="instance"
+    :instance-id="instanceId"
     :name="child.name"
     :health="child.value"
   />
@@ -122,14 +123,13 @@ import { useI18n } from 'vue-i18n';
 
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
 
-import Instance from '@/services/instance';
 import autolink from '@/utils/autolink';
 
 const { t } = useI18n();
 const id = useId();
 
-const { health, name, instance } = defineProps<{
-  instance: Instance;
+const { health, name, instanceId } = defineProps<{
+  instanceId: string;
   name: string;
   health: Record<string, any>;
 }>();
@@ -145,11 +145,11 @@ function safeDetailId(detailName: string, idx: number): string {
 
 const COLLAPSED_KEY = computed(
   () =>
-    `de.codecentric.spring-boot-admin.health-details.${encodeURIComponent(name ?? '')}.${encodeURIComponent(instance?.id ?? '')}.collapsed`,
+    `de.codecentric.spring-boot-admin.health-details.${encodeURIComponent(name ?? '')}.${encodeURIComponent(instanceId ?? '')}.collapsed`,
 );
 
 function readCollapsedFromStorage(): boolean {
-  if (!instance?.id) return false;
+  if (!instanceId) return false;
   try {
     const stored = localStorage.getItem(COLLAPSED_KEY.value);
     if (stored !== null) return stored === 'true';
@@ -196,7 +196,7 @@ watch(COLLAPSED_KEY, () => {
 
 const toggleCollapsed = () => {
   const next = !isCollapsed.value;
-  if (instance?.id) {
+  if (instanceId) {
     try {
       localStorage.setItem(COLLAPSED_KEY.value, JSON.stringify(next));
     } catch {

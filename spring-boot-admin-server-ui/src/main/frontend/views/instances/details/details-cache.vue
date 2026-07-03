@@ -17,7 +17,7 @@
 <template>
   <sba-accordion
     v-if="hasLoaded"
-    :id="`cache-details-panel__${instance.id}`"
+    :id="`cache-details-panel__${instanceId}`"
     :title="`Cache: ${cacheName}`"
   >
     <sba-alert v-if="error" :error="error" :title="$t('term.fetch_failed')" />
@@ -85,9 +85,9 @@ import { take, takeUntil } from 'rxjs/operators';
 import SbaAccordion from '@/components/sba-accordion.vue';
 import sbaAlert from '@/components/sba-alert.vue';
 
+import { useInstanceService } from '@/composables/useInstanceService';
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
-import Instance from '@/services/instance';
 import { concatMap, delay, map, retryWhen, timer } from '@/utils/rxjs';
 import cacheChart from '@/views/instances/details/cache-chart';
 
@@ -95,8 +95,8 @@ export default {
   components: { SbaAccordion, sbaAlert, cacheChart },
   mixins: [subscribing],
   props: {
-    instance: {
-      type: Instance,
+    instanceId: {
+      type: String,
       required: true,
     },
     cacheName: {
@@ -116,8 +116,6 @@ export default {
     shouldFetchCacheHits: true,
     shouldFetchCacheMisses: true,
     chartData: [],
-    currentInstanceId: null,
-    currentInstanceUpdateKey: null,
   }),
   computed: {
     ratio() {
@@ -134,24 +132,8 @@ export default {
     },
   },
   watch: {
-    instance: {
-      handler: 'initCacheMetrics',
-      immediate: true,
-    },
-  },
-  methods: {
-    initCacheMetrics() {
-      const updateKey =
-        this.instance.version ??
-        this.instance.statusTimestamp ??
-        this.instance.id;
-      const firstInit = this.currentInstanceId === null;
-      if (
-        this.instance.id !== this.currentInstanceId ||
-        updateKey !== this.currentInstanceUpdateKey
-      ) {
-        this.currentInstanceId = this.instance.id;
-        this.currentInstanceUpdateKey = updateKey;
+    instanceId: {
+      handler() {
         this.hasLoaded = false;
         this.error = null;
         this.current = null;
@@ -159,17 +141,13 @@ export default {
         this.shouldFetchCacheSize = true;
         this.shouldFetchCacheHits = true;
         this.shouldFetchCacheMisses = true;
-
-        // Restart polling immediately so SSE updates refresh the view.
-        if (!firstInit) {
-          // Stop old subscription and start fresh
-          this.unsubscribe();
-          // Recreate destroy$ so new subscription can use takeUntil properly
-          this.destroy$ = new Subject();
-          this.subscribe();
-        }
-      }
+        this.unsubscribe();
+        this.destroy$ = new Subject();
+        this.subscribe();
+      },
     },
+  },
+  methods: {
     async fetchMetrics() {
       const [hit, miss, size] = await Promise.all([
         this.fetchCacheHits(),
@@ -186,7 +164,8 @@ export default {
     async fetchCacheHits() {
       if (this.shouldFetchCacheHits) {
         try {
-          const response = await this.instance.fetchMetric('cache.gets', {
+          const { fetchMetric } = useInstanceService(this.instanceId);
+          const response = await fetchMetric('cache.gets', {
             name: this.cacheName,
             result: 'hit',
           });
@@ -204,7 +183,8 @@ export default {
     async fetchCacheMisses() {
       if (this.shouldFetchCacheMisses) {
         try {
-          const response = await this.instance.fetchMetric('cache.gets', {
+          const { fetchMetric } = useInstanceService(this.instanceId);
+          const response = await fetchMetric('cache.gets', {
             name: this.cacheName,
             result: 'miss',
           });
@@ -223,11 +203,10 @@ export default {
       if (this.shouldFetchCacheSize) {
         try {
           const suppressFn = (err) => err.response?.status === 404;
-          const response = await this.instance.fetchMetric(
+          const { fetchMetric } = useInstanceService(this.instanceId);
+          const response = await fetchMetric(
             'cache.size',
-            {
-              name: this.cacheName,
-            },
+            { name: this.cacheName },
             { suppressToast: suppressFn },
           );
           return response.data.measurements[0].value;

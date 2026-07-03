@@ -17,7 +17,7 @@
 <template>
   <sba-accordion
     v-if="hasLoaded"
-    :id="`memory-details-panel__${type}__${instance.id}`"
+    :id="`memory-details-panel__${type}__${instanceId}`"
     v-model="panelOpen"
     :title="$t('instances.details.memory.title') + `: ${name}`"
   >
@@ -98,9 +98,9 @@ import { defineComponent } from 'vue';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
+import { useInstanceService } from '@/composables/useInstanceService';
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
-import Instance from '@/services/instance';
 import MemChart from '@/views/instances/details/mem-chart.vue';
 
 export default defineComponent({
@@ -108,8 +108,8 @@ export default defineComponent({
   components: { SbaAccordion, MemChart },
   mixins: [subscribing],
   props: {
-    instance: {
-      type: Instance,
+    instanceId: {
+      type: String,
       required: true,
     },
     type: {
@@ -123,8 +123,6 @@ export default defineComponent({
     error: null,
     current: null,
     chartData: [],
-    currentInstanceId: null,
-    currentInstanceUpdateKey: null,
   }),
   computed: {
     name() {
@@ -139,66 +137,42 @@ export default defineComponent({
     },
   },
   watch: {
-    instance: {
-      handler: 'initMetrics',
-      immediate: true,
-    },
-  },
-  methods: {
-    initMetrics() {
-      const updateKey =
-        this.instance.version ??
-        this.instance.statusTimestamp ??
-        this.instance.id;
-      const firstInit = this.currentInstanceId === null;
-      if (
-        this.instance.id !== this.currentInstanceId ||
-        updateKey !== this.currentInstanceUpdateKey
-      ) {
-        this.currentInstanceId = this.instance.id;
-        this.currentInstanceUpdateKey = updateKey;
+    instanceId: {
+      handler() {
         this.hasLoaded = false;
         this.error = null;
         this.current = null;
         this.chartData = [];
-
-        // Restart polling immediately so SSE updates refresh the view.
-        if (!firstInit) {
-          // Stop old subscription and start fresh
-          this.unsubscribe();
-          // Recreate destroy$ so new subscription can use takeUntil properly
-          this.destroy$ = new Subject();
-          this.subscribe();
-        }
-      }
+        this.unsubscribe();
+        this.destroy$ = new Subject();
+        this.subscribe();
+      },
     },
+  },
+  methods: {
     prettyBytes,
     async fetchMetrics() {
-      const responseMax = this.instance.fetchMetric('jvm.memory.max', {
-        area: this.type,
-      });
-      const responseUsed = this.instance.fetchMetric('jvm.memory.used', {
-        area: this.type,
-      });
+      const { fetchMetric } = useInstanceService(this.instanceId);
+
+      const responseMax = fetchMetric('jvm.memory.max', { area: this.type });
+      const responseUsed = fetchMetric('jvm.memory.used', { area: this.type });
+
       const hasMetaspace = (await responseUsed).data.availableTags.some(
         (tag) => tag.tag === 'id' && tag.values.includes('Metaspace'),
       );
-      const responeMetaspace =
+      const responseMetaspace =
         this.type === 'nonheap' && hasMetaspace
-          ? this.instance.fetchMetric('jvm.memory.used', {
-              area: this.type,
-              id: 'Metaspace',
-            })
+          ? fetchMetric('jvm.memory.used', { area: this.type, id: 'Metaspace' })
           : null;
-      const responseCommitted = this.instance.fetchMetric(
-        'jvm.memory.committed',
-        { area: this.type },
-      );
+      const responseCommitted = fetchMetric('jvm.memory.committed', {
+        area: this.type,
+      });
+
       return {
         max: (await responseMax).data.measurements[0].value,
         used: (await responseUsed).data.measurements[0].value,
-        metaspace: responeMetaspace
-          ? (await responeMetaspace).data.measurements[0].value
+        metaspace: responseMetaspace
+          ? (await responseMetaspace).data.measurements[0].value
           : null,
         committed: (await responseCommitted).data.measurements[0].value,
       };
@@ -207,7 +181,6 @@ export default defineComponent({
       return timer(0, sbaConfig.uiSettings.pollTimer.memory)
         .pipe(
           concatMap(this.fetchMetrics),
-          // Stop polling when destroy$ emits (on unmount or instance update)
           takeUntil(this.destroy$),
           retryWhen((err) => {
             return err.pipe(delay(1000), take(5));

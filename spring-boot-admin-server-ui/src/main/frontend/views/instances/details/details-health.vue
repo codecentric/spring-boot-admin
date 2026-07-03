@@ -16,7 +16,7 @@
 
 <template>
   <sba-accordion
-    :id="`health-details-panel__${instance.id}`"
+    :id="`health-details-panel__${instanceId}`"
     v-model="panelOpen"
     :title="$t('instances.details.health.title')"
   >
@@ -33,7 +33,7 @@
       <router-link
         v-if="hasHealthUrl"
         :title="$t('applications.actions.journal')"
-        :to="{ name: 'journal', query: { instanceId: instance.id } }"
+        :to="{ name: 'journal', query: { instanceId: instanceId } }"
         class="text-sm inline-flex items-center leading-sm border border-gray-400 bg-white text-gray-700 rounded overflow-hidden px-3 py-1 hover:bg-gray-200 ml-1"
       >
         <font-awesome-icon :icon="faScroll()" />
@@ -49,7 +49,7 @@
       />
       <div class="-mx-4 -my-3">
         <health-details
-          :instance="instance"
+          :instance-id="instanceId"
           :health="health"
           :index="0"
           name="Instance"
@@ -96,7 +96,7 @@
           </div>
           <div v-if="isHealthGroupOpen(group.name) && group.data">
             <health-details
-              :instance="instance"
+              :instance-id="instanceId"
               :health="group.data"
               :name="group.name"
               :index="groupIdx + 1"
@@ -111,20 +111,36 @@
 <script lang="ts">
 import { faChevronRight, faScroll } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 
 import SbaAccordion from '@/components/sba-accordion.vue';
 
-import Instance from '@/services/instance';
+import { useInstanceData } from '@/composables/useInstanceData';
+import { useInstanceService } from '@/composables/useInstanceService';
 import HealthDetails from '@/views/instances/details/health-details.vue';
 
 export default defineComponent({
   components: { SbaAccordion, FontAwesomeIcon, HealthDetails },
   props: {
-    instance: {
-      type: Instance,
+    instanceId: {
+      type: String,
       required: true,
     },
+  },
+  setup(props) {
+    const { instance } = useInstanceData(props.instanceId);
+
+    const health = computed(
+      () => instance.value?.statusInfo ?? { status: 'UNKNOWN', details: {} },
+    );
+    const hasHealthUrl = computed(
+      () =>
+        instance.value?.endpoints?.some(
+          (e: { id: string }) => e.id === 'health',
+        ) ?? false,
+    );
+
+    return { health, hasHealthUrl };
   },
   data: () => ({
     panelOpen: true,
@@ -140,24 +156,24 @@ export default defineComponent({
     healthGroupLoadingMap: {} as Record<string, boolean>,
     currentInstanceId: null as string | null,
   }),
-  computed: {
-    health() {
-      return this.instance.statusInfo;
-    },
-    hasHealthUrl() {
-      if (this.instance.endpoints) {
-        return (
-          this.instance.endpoints.findIndex(
-            (endpoint: { id: string }) => endpoint.id === 'health',
-          ) >= 0
-        );
-      }
-      return false;
-    },
-  },
   watch: {
-    instance: {
-      handler: 'onInstanceChanged',
+    instanceId: {
+      handler(newId: string) {
+        if (newId !== this.currentInstanceId) {
+          this.currentInstanceId = newId;
+          this.healthGroups = [];
+          this.healthGroupOpenStatus = {};
+          this.healthGroupLoadingMap = {};
+          this.healthGroupsError = null;
+          this.fetchHealthGroups();
+        } else {
+          for (const group of this.healthGroups) {
+            group.data = null;
+          }
+          this.healthGroupOpenStatus = {};
+          this.healthGroupLoadingMap = {};
+        }
+      },
       immediate: true,
     },
   },
@@ -168,23 +184,6 @@ export default defineComponent({
     faChevronRight() {
       return faChevronRight;
     },
-    onInstanceChanged() {
-      if (this.instance.id !== this.currentInstanceId) {
-        this.currentInstanceId = this.instance.id;
-        this.healthGroups = [];
-        this.healthGroupOpenStatus = {};
-        this.healthGroupLoadingMap = {};
-        this.healthGroupsError = null;
-        this.fetchHealthGroups();
-      } else {
-        // Same instance, SSE update (e.g. status change) — collapse groups and clear stale data
-        for (const group of this.healthGroups) {
-          group.data = null;
-        }
-        this.healthGroupOpenStatus = {};
-        this.healthGroupLoadingMap = {};
-      }
-    },
     isHealthGroupOpen(groupName: string) {
       return this.healthGroupOpenStatus[groupName]?.isOpen ?? false;
     },
@@ -193,13 +192,8 @@ export default defineComponent({
     },
     toggleHealthGroup(groupName: string) {
       const group = this.healthGroups.find((g) => g.name === groupName);
-
-      if (group == undefined) {
-        return;
-      }
-
+      if (group == undefined) return;
       if (group.data === null) {
-        // First click — fetch group details
         this.fetchGroupDetails(groupName);
       } else if (this.isHealthGroupCollapsible(groupName)) {
         this.healthGroupOpenStatus[groupName].isOpen =
@@ -207,15 +201,11 @@ export default defineComponent({
       }
     },
     async fetchHealthGroups() {
-      if (!this.hasHealthUrl) {
-        return;
-      }
-
+      if (!this.hasHealthUrl) return;
       this.healthGroupsError = null;
-
       try {
-        const res = await this.instance.fetchHealth();
-
+        const { fetchHealth } = useInstanceService(this.instanceId);
+        const res = await fetchHealth();
         if (Array.isArray(res.data.groups)) {
           this.healthGroups = res.data.groups.map((name: string) => ({
             name,
@@ -233,11 +223,10 @@ export default defineComponent({
     },
     async fetchGroupDetails(groupName: string) {
       this.healthGroupLoadingMap[groupName] = true;
-
       try {
-        const res = await this.instance.fetchHealthGroup(groupName);
+        const { fetchHealthGroup } = useInstanceService(this.instanceId);
+        const res = await fetchHealthGroup(groupName);
         const group = this.healthGroups.find((g) => g.name === groupName);
-
         if (group) {
           group.data = res.data;
           this.healthGroupOpenStatus[groupName] = {

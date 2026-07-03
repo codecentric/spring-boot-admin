@@ -3,28 +3,28 @@
     <div class="m-auto text-center">
       <h1
         class="text-2xl md:text-4xl text-center font-bold text-gray-900 tracking-tight"
-        v-text="instance.registration.name"
+        v-text="instance?.registration?.name"
       />
-      <small><em v-text="instance.id" /></small>
+      <small><em v-text="instanceId" /></small>
     </div>
     <div class="mt-4 text-center">
-      <sba-tags v-if="instance" :tags="instance.tags" class="justify-center" />
+      <sba-tags
+        v-if="instance?.tags"
+        :tags="instance.tags"
+        class="justify-center"
+      />
     </div>
   </div>
 </template>
 
-<script>
-import Instance from '@/services/instance';
+<script setup lang="ts">
+import { useInstanceData } from '@/composables/useInstanceData';
 
-export default {
-  name: 'DetailsHero',
-  props: {
-    instance: {
-      type: Instance,
-      required: true,
-    },
-  },
-};
+const props = defineProps<{
+  instanceId: string;
+}>();
+
+const { instance } = useInstanceData(props.instanceId);
 </script>
 
 <style scoped></style>

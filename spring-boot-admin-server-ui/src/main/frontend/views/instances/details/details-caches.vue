@@ -21,7 +21,7 @@
       :key="cache"
       :index="index"
       :cache-name="cache"
-      :instance="instance"
+      :instance-id="instanceId"
     />
   </div>
 </template>
@@ -30,9 +30,9 @@
 import { uniq } from 'lodash-es';
 import { take } from 'rxjs/operators';
 
+import { useInstanceService } from '@/composables/useInstanceService';
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
-import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
 import detailsCache from '@/views/instances/details/details-cache';
 
@@ -40,8 +40,8 @@ export default {
   components: { detailsCache },
   mixins: [subscribing],
   props: {
-    instance: {
-      type: Instance,
+    instanceId: {
+      type: String,
       required: true,
     },
   },
@@ -50,7 +50,8 @@ export default {
   }),
   methods: {
     async fetchCaches() {
-      const response = await this.instance.fetchMetric('cache.gets');
+      const { fetchMetric } = useInstanceService(this.instanceId);
+      const response = await fetchMetric('cache.gets');
       return uniq(
         response.data.availableTags.filter((tag) => tag.tag === 'name')[0]
           .values,

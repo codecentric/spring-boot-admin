@@ -3,9 +3,8 @@ import { enableAutoUnmount } from '@vue/test-utils';
 import { HttpResponse, http } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { applications } from '@/mocks/applications/data';
+import { instance as instanceData } from '@/mocks/applications/data';
 import { server } from '@/mocks/server';
-import Application from '@/services/application';
 import { render } from '@/test-utils';
 import DetailsCache from '@/views/instances/details/details-cache.vue';
 
@@ -27,6 +26,7 @@ describe('DetailsCache', () => {
   enableAutoUnmount(afterEach);
 
   const CACHE_NAME = 'foo-cache';
+  const INSTANCE_ID = instanceData.id;
   const HITS = [24.0, 32.0, 48.0];
   const MISSES = [8.0, 8.0, 16.0];
   const TOTAL = [32, 40, 64];
@@ -43,15 +43,13 @@ describe('DetailsCache', () => {
       `,
   };
 
-  const renderComponent = async (stubs = {}) => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
+  const renderComponent = async (stubs = {}, instanceId = INSTANCE_ID) => {
     return render(DetailsCache, {
       global: {
         stubs: { cacheChart: stubChart, ...stubs },
       },
       props: {
-        instance,
+        instanceId,
         cacheName: CACHE_NAME,
         index: 0,
       },
@@ -116,149 +114,69 @@ describe('DetailsCache', () => {
 
     expect(
       await screen.findByLabelText('instances.details.cache.hit_ratio'),
-    ).toHaveTextContent('75.00%'); // 24 hits, 8 misses
+    ).toHaveTextContent('75.00%');
   });
 
   it('should calculate total', async () => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
+    const { container } = await renderComponent();
 
-    const { container } = await render(DetailsCache, {
-      global: { stubs: { cacheChart: stubChart } },
-      props: {
-        instance,
-        cacheName: CACHE_NAME,
-        index: 0,
-      },
-    });
-
-    // wait until chart stub receives at least 3 data points
     await waitFor(
       () => {
         const el = container.querySelector('[data-test="chart"]');
         expect(el).toBeTruthy();
-        const text = (el?.textContent as string) || '[]';
-        const parsed = JSON.parse(text);
+        const parsed = JSON.parse((el?.textContent as string) || '[]');
         expect(parsed).toHaveLength(3);
       },
       { timeout: 2000 },
     );
 
-    const chartText =
+    const chartData = JSON.parse(
       (container.querySelector('[data-test="chart"]')?.textContent as string) ||
-      '[]';
-    const chartData = JSON.parse(chartText);
+        '[]',
+    );
 
-    for (let index = 0; index < chartData.length; index++) {
-      expect(chartData[index].total).toEqual(TOTAL[index]);
+    for (let i = 0; i < chartData.length; i++) {
+      expect(chartData[i].total).toEqual(TOTAL[i]);
     }
   });
 
   it('should calculate hits, misses and total per interval', async () => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
+    const { container } = await renderComponent();
 
-    const { container } = await render(DetailsCache, {
-      global: { stubs: { cacheChart: stubChart } },
-      props: {
-        instance,
-        cacheName: CACHE_NAME,
-        index: 0,
-      },
-    });
-
-    // wait until chart stub receives at least 3 data points
     await waitFor(
       () => {
         const el = container.querySelector('[data-test="chart"]');
         expect(el).toBeTruthy();
-        const text = (el?.textContent as string) || '[]';
-        const parsed = JSON.parse(text);
+        const parsed = JSON.parse((el?.textContent as string) || '[]');
         expect(parsed).toHaveLength(3);
       },
       { timeout: 2000 },
     );
 
-    const chartText2 =
+    const chartData = JSON.parse(
       (container.querySelector('[data-test="chart"]')?.textContent as string) ||
-      '[]';
-    const chartData = JSON.parse(chartText2);
+        '[]',
+    );
 
-    for (let index = 0; index < chartData.length; index++) {
-      expect(chartData[index].hitsPerInterval).toEqual(
-        HITS_PER_INTERVAL[index],
-      );
-      expect(chartData[index].missesPerInterval).toEqual(
-        MISSES_PER_INTERVAL[index],
-      );
-      expect(chartData[index].totalPerInterval).toEqual(
-        TOTAL_PER_INTERVAL[index],
-      );
+    for (let i = 0; i < chartData.length; i++) {
+      expect(chartData[i].hitsPerInterval).toEqual(HITS_PER_INTERVAL[i]);
+      expect(chartData[i].missesPerInterval).toEqual(MISSES_PER_INTERVAL[i]);
+      expect(chartData[i].totalPerInterval).toEqual(TOTAL_PER_INTERVAL[i]);
     }
   });
 
-  it('should reinitialize metrics when instance changes', async () => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
+  it('should reinitialize metrics when instanceId changes', async () => {
+    const { getByText, rerender, queryByText } = await renderComponent();
 
-    const { getByText, rerender, queryByText } = await render(DetailsCache, {
-      props: {
-        instance,
-        cacheName: CACHE_NAME,
-        index: 0,
-      },
-    });
-
-    // wait until initial fetch rendered a numeric value
     await waitFor(() => {
       expect(getByText(`${HITS[0]}`)).toBeTruthy();
     });
 
-    // simulate switching to a different instance
-    const newApp = new Application({
-      name: 'Other',
-      statusTimestamp: Date.now(),
-      instances: [{ id: 'other-1', statusInfo: { status: 'UP' } }],
+    await rerender({
+      instanceId: 'other-instance-id',
+      cacheName: CACHE_NAME,
+      index: 0,
     });
-    const newInstance = newApp.instances[0];
-
-    await rerender({ instance: newInstance, cacheName: CACHE_NAME, index: 0 });
-
-    // component should have reset its rendered data
-    await waitFor(() => {
-      expect(queryByText(`${HITS[0]}`)).not.toBeInTheDocument();
-    });
-  });
-
-  it('should reinitialize metrics when instance version changes (SSE update)', async () => {
-    const application = new Application(applications[0]);
-    const instance1 = application.instances[0];
-
-    const { getByText, rerender, queryByText } = await render(DetailsCache, {
-      props: {
-        instance: instance1,
-        cacheName: CACHE_NAME,
-        index: 0,
-      },
-    });
-
-    // wait until initial fetch rendered a numeric value
-    await waitFor(() => {
-      expect(getByText(`${HITS[0]}`)).toBeTruthy();
-    });
-
-    const instance2 = new Application({
-      ...application,
-      instances: [
-        {
-          ...instance1,
-          id: instance1.id,
-          version: (instance1.version ?? 0) + 1,
-        },
-      ],
-    }).instances[0];
-
-    await rerender({ instance: instance2, cacheName: CACHE_NAME, index: 0 });
 
     await waitFor(() => {
       expect(queryByText(`${HITS[0]}`)).not.toBeInTheDocument();

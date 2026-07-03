@@ -17,17 +17,17 @@
 <template>
   <sba-instance-section :error="error" :loading="!hasLoaded">
     <template #before>
-      <details-nav :application="application" :instance="instance" />
-      <details-hero :instance="instance" />
+      <details-nav :instance-id="instance.id" />
+      <details-hero :instance-id="instance.id" />
     </template>
 
     <div class="instance-grid">
       <div>
-        <details-info v-if="hasInfo" :instance="instance" />
-        <details-metadata v-if="hasMetadata" :instance="instance" />
+        <details-info v-if="hasInfo" :instance-id="instance.id" />
+        <details-metadata v-if="hasMetadata" :instance-id="instance.id" />
       </div>
       <div>
-        <details-health :instance="instance" />
+        <details-health :instance-id="instance.id" />
       </div>
     </div>
 
@@ -35,38 +35,46 @@
       <div>
         <details-process
           v-if="hasProcess"
-          :instance="instance"
+          :instance-id="instance.id"
           class="break-inside-avoid"
         />
-        <details-gc v-if="hasGc" :instance="instance" />
+        <details-gc v-if="hasGc" :instance-id="instance.id" />
       </div>
       <div>
-        <details-threads v-if="hasThreads" :instance="instance" />
-      </div>
-    </div>
-
-    <div class="instance-grid">
-      <div>
-        <details-memory v-if="hasMemory" :instance="instance" type="heap" />
-      </div>
-      <div>
-        <details-memory v-if="hasMemory" :instance="instance" type="nonheap" />
+        <details-threads v-if="hasThreads" :instance-id="instance.id" />
       </div>
     </div>
 
     <div class="instance-grid">
       <div>
-        <details-datasources v-if="hasDatasources" :instance="instance" />
+        <details-memory
+          v-if="hasMemory"
+          :instance-id="instance.id"
+          type="heap"
+        />
       </div>
       <div>
-        <details-caches v-if="hasCaches" :instance="instance" />
+        <details-memory
+          v-if="hasMemory"
+          :instance-id="instance.id"
+          type="nonheap"
+        />
+      </div>
+    </div>
+
+    <div class="instance-grid">
+      <div>
+        <details-datasources v-if="hasDatasources" :instance-id="instance.id" />
+      </div>
+      <div>
+        <details-caches v-if="hasCaches" :instance-id="instance.id" />
       </div>
     </div>
   </sba-instance-section>
 </template>
 
 <script>
-import Application from '@/services/application';
+import { useInstanceService } from '@/composables/useInstanceService';
 import Instance from '@/services/instance';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import detailsCaches from '@/views/instances/details/details-caches';
@@ -98,10 +106,6 @@ export default {
     detailsMetadata,
   },
   props: {
-    application: {
-      type: Application,
-      default: () => ({}),
-    },
     instance: {
       type: Instance,
       required: true,
@@ -115,11 +119,7 @@ export default {
   }),
   computed: {
     instanceUpdateKey() {
-      return (
-        this.instance.version ??
-        this.instance.statusTimestamp ??
-        this.instance.id
-      );
+      return this.instance.id;
     },
     hasCaches() {
       return this.hasMetric('cache.gets');
@@ -159,7 +159,6 @@ export default {
       return this.metrics && this.metrics.includes(metric);
     },
     async fetchMetricIndex() {
-      // Reset immediately so SSE updates can't leave stale gating behind.
       this.metrics = [];
       this.error = null;
 
@@ -172,7 +171,8 @@ export default {
       this.hasLoaded = false;
       this.error = null;
       try {
-        const res = await this.instance.fetchMetrics();
+        const { fetchMetrics } = useInstanceService(this.instance.id);
+        const res = await fetchMetrics();
         if (token !== this.metricFetchToken) {
           return;
         }

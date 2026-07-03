@@ -1,21 +1,37 @@
 import { screen } from '@testing-library/vue';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { computed } from 'vue';
 
 import DetailsMetadata from './details-metadata.vue';
 
-import { applications } from '@/mocks/applications/data';
-import Application from '@/services/application';
-import Instance from '@/services/instance';
+import { useInstanceData } from '@/composables/useInstanceData';
+import { instance as instanceData } from '@/mocks/applications/data';
 import { render } from '@/test-utils';
 
-describe('DetailsMetadata', () => {
-  it('should render metadata table with keys and values', () => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
+vi.mock('@/composables/useInstanceData', () => ({
+  useInstanceData: vi.fn(),
+}));
 
-    render(DetailsMetadata, {
-      props: { instance },
-    });
+function setupInstance(registrationOverrides = {}) {
+  (useInstanceData as any).mockReturnValue({
+    instance: computed(() => ({
+      ...instanceData,
+      registration: {
+        ...instanceData.registration,
+        ...registrationOverrides,
+      },
+    })),
+    application: computed(() => null),
+  });
+}
+
+describe('DetailsMetadata', () => {
+  beforeEach(() => {
+    setupInstance();
+  });
+
+  it('should render metadata table with keys and values', () => {
+    render(DetailsMetadata, { props: { instanceId: instanceData.id } });
 
     expect(screen.getByText('startup')).toBeVisible();
     expect(screen.getByText('2021-10-29T08:50:07.486289+02:00')).toBeVisible();
@@ -24,29 +40,13 @@ describe('DetailsMetadata', () => {
   });
 
   it('should show metadata count in title', () => {
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
-
-    render(DetailsMetadata, {
-      props: { instance },
-    });
-
+    render(DetailsMetadata, { props: { instanceId: instanceData.id } });
     expect(screen.getByText('(2)')).toBeVisible();
   });
 
   it('should show no metadata message if metadata is empty', () => {
-    const application = new Application(applications[0]);
-    const instance = new Instance({
-      ...application.instances[0],
-      registration: {
-        ...application.instances[0].registration,
-        metadata: {},
-      },
-    });
-
-    render(DetailsMetadata, {
-      props: { instance },
-    });
+    setupInstance({ metadata: {} });
+    render(DetailsMetadata, { props: { instanceId: instanceData.id } });
 
     expect(
       screen.getByText('instances.details.metadata.no_data_provided'),
@@ -54,39 +54,16 @@ describe('DetailsMetadata', () => {
   });
 
   it('should show count as (0) when metadata is empty', () => {
-    const application = new Application(applications[0]);
-    const instance = new Instance({
-      ...application.instances[0],
-      registration: {
-        ...application.instances[0].registration,
-        metadata: {},
-      },
-    });
-
-    render(DetailsMetadata, {
-      props: { instance },
-    });
-
+    setupInstance({ metadata: {} });
+    render(DetailsMetadata, { props: { instanceId: instanceData.id } });
     expect(screen.getByText('(0)')).toBeVisible();
   });
 
   it('should sort metadata keys alphabetically', () => {
-    const application = new Application(applications[0]);
-    const instance = new Instance({
-      ...application.instances[0],
-      registration: {
-        ...application.instances[0].registration,
-        metadata: {
-          zebra: 'value1',
-          apple: 'value2',
-          banana: 'value3',
-        },
-      },
+    setupInstance({
+      metadata: { zebra: 'value1', apple: 'value2', banana: 'value3' },
     });
-
-    render(DetailsMetadata, {
-      props: { instance },
-    });
+    render(DetailsMetadata, { props: { instanceId: instanceData.id } });
 
     const keys = screen.getAllByRole('term');
     expect(keys[0]).toHaveTextContent('apple');

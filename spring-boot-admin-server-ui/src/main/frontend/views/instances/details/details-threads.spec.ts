@@ -2,9 +2,8 @@ import { screen } from '@testing-library/vue';
 import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { applications } from '@/mocks/applications/data';
+import { instance as instanceData } from '@/mocks/applications/data';
 import { server } from '@/mocks/server';
-import Application from '@/services/application';
 import { render } from '@/test-utils';
 import DetailsThreads from '@/views/instances/details/details-threads.vue';
 
@@ -71,20 +70,16 @@ describe('DetailsThreads', () => {
     );
   });
 
-  const renderComponent = async () => {
+  const renderComponent = async (instanceId = instanceData.id) => {
     const stubChart = {
       props: ['data'],
-      template: `
-        <div data-testid="chart">{{ JSON.stringify($props.data) }}</div>
-      `,
+      template:
+        '<div data-testid="chart">{{ JSON.stringify($props.data) }}</div>',
     };
-
-    const application = new Application(applications[0]);
-    const instance = application.instances[0];
 
     return render(DetailsThreads, {
       global: { stubs: { threadsChart: stubChart } },
-      props: { instance },
+      props: { instanceId },
     });
   };
 
@@ -94,60 +89,15 @@ describe('DetailsThreads', () => {
     const text = (await screen.findByTestId('chart')).textContent;
     const data = JSON.parse(text);
 
-    // first sample matches generators
     expect(data[0].live).toEqual(LIVE[0]);
     expect(data[0].peak).toEqual(PEAK[0]);
     expect(data[0].daemon).toEqual(DAEMON[0]);
   });
 
-  it('should reinitialize metrics when instance changes', async () => {
+  it('should reinitialize metrics when instanceId changes', async () => {
     const { rerender } = await renderComponent();
 
-    const newApp = new Application({
-      name: 'Other',
-      statusTimestamp: Date.now(),
-      instances: [{ id: 'other-1', statusInfo: { status: 'UP' } }],
-    });
-    const newInstance = newApp.instances[0];
-
-    await rerender({ instance: newInstance });
-
-    const text = (await screen.findByTestId('chart')).textContent;
-    const data = JSON.parse(text);
-
-    // first sample matches generators
-    expect(data[0].live).toEqual(LIVE[0]);
-    expect(data[0].peak).toEqual(PEAK[0]);
-    expect(data[0].daemon).toEqual(DAEMON[0]);
-  });
-
-  it('should reinitialize metrics when instance version changes (SSE update)', async () => {
-    const stubChart = {
-      props: ['data'],
-      template:
-        '<div data-testid="chart">{{ JSON.stringify($props.data) }}</div>',
-    };
-
-    const application = new Application(applications[0]);
-    const instance1 = application.instances[0];
-
-    const { rerender } = render(DetailsThreads, {
-      global: { stubs: { threadsChart: stubChart } },
-      props: { instance: instance1 },
-    });
-
-    const instance2 = new Application({
-      ...application,
-      instances: [
-        {
-          ...instance1,
-          id: instance1.id,
-          version: (instance1.version ?? 0) + 1,
-        },
-      ],
-    }).instances[0];
-
-    await rerender({ instance: instance2 });
+    await rerender({ instanceId: 'other-instance-id' });
 
     const text = (await screen.findByTestId('chart')).textContent;
     const data = JSON.parse(text);

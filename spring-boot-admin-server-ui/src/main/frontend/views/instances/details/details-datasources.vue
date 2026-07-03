@@ -20,7 +20,7 @@
       v-for="dataSource in dataSources"
       :key="dataSource"
       :data-source="dataSource"
-      :instance="instance"
+      :instance-id="instanceId"
     />
   </div>
 </template>
@@ -28,9 +28,9 @@
 <script>
 import { take } from 'rxjs/operators';
 
+import { useInstanceService } from '@/composables/useInstanceService';
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
-import Instance from '@/services/instance';
 import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
 import detailsDatasource from '@/views/instances/details/details-datasource';
 
@@ -38,8 +38,8 @@ export default {
   components: { detailsDatasource },
   mixins: [subscribing],
   props: {
-    instance: {
-      type: Instance,
+    instanceId: {
+      type: String,
       required: true,
     },
   },
@@ -48,9 +48,8 @@ export default {
   }),
   methods: {
     async fetchDataSources() {
-      const response = await this.instance.fetchMetric(
-        'jdbc.connections.active',
-      );
+      const { fetchMetric } = useInstanceService(this.instanceId);
+      const response = await fetchMetric('jdbc.connections.active');
       return response.data.availableTags.filter((tag) => tag.tag === 'name')[0]
         .values;
     },
