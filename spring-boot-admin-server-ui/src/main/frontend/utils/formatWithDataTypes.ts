@@ -41,6 +41,10 @@ type DataTypeConfig = {
  * @param config - Optional configuration mapping property paths to data types.
  *                 Uses dot notation for nested properties (e.g., 'memory.heap.committed').
  * @returns A new object with formatted values, or the original input if it's not an object.
+ *          When called with a number ≥ 1000 (no config), returns a locale-formatted string
+ *          (e.g. 4200000 → '4.200.000'). The return type widens to string in that case
+ *          despite the generic T signature — callers that need strict typing should check
+ *          typeof before use.
  *
  * @example
  * const data = { memory: { heap: { committed: 1024 } }, timestamp: 1717243496000 };

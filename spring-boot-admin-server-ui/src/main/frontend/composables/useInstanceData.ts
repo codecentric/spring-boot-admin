@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { isEqual } from 'lodash-es';
-import { computed, shallowRef, watch } from 'vue';
+import { MaybeRefOrGetter, computed, shallowRef, toValue, watch } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import { findApplicationForInstance, findInstance } from '@/store';
@@ -23,27 +23,38 @@ import { findApplicationForInstance, findInstance } from '@/store';
  * Reads reactive instance and application data from the SSE-driven store.
  * Components using this composable receive live updates without holding a
  * reference to the Instance class — they only depend on the instanceId string.
+ *
+ * Accepts a plain string, a Ref<string>, or a getter () => string so that
+ * components whose instanceId prop changes (e.g. via router navigation) stay
+ * reactive without re-calling the composable.
  */
-export function useInstanceData(instanceId: string) {
+export function useInstanceData(instanceId: MaybeRefOrGetter<string>) {
   const { applications } = useApplicationStore();
 
-  const instance = computed(() => findInstance(applications.value, instanceId));
+  const instance = computed(() =>
+    findInstance(applications.value, toValue(instanceId)),
+  );
 
   const application = computed(() =>
-    findApplicationForInstance(applications.value, instanceId),
+    findApplicationForInstance(applications.value, toValue(instanceId)),
   );
 
   const info = shallowRef(instance.value?.info);
   const metadata = shallowRef(instance.value?.metadata);
 
-  watch(instance, (newInstance) => {
-    if (!isEqual(newInstance?.info, info.value)) {
-      info.value = newInstance?.info;
-    }
-    if (!isEqual(newInstance?.metadata, metadata.value)) {
-      metadata.value = newInstance?.metadata;
-    }
-  });
+  watch(
+    instance,
+    (newInstance) => {
+      if (!isEqual(newInstance?.info, info.value)) {
+        info.value = newInstance?.info;
+      }
+      if (!isEqual(newInstance?.metadata, metadata.value)) {
+        metadata.value = newInstance?.metadata;
+        console.log('updated metadata');
+      }
+    },
+    { immediate: true },
+  );
 
   return {
     instance,

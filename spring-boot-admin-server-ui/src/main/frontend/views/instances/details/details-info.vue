@@ -53,7 +53,7 @@ const props = defineProps({
   },
 });
 
-const { info } = useInstanceData(props.instanceId);
+const { info } = useInstanceData(() => props.instanceId);
 
 const panelOpen = ref(true);
 

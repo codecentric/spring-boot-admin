@@ -45,11 +45,15 @@
           class="rounded-lg shadow-lg ring-1 ring-black/5 overflow-hidden overflow-y-auto max-h-32 md:max-h-96"
         >
           <div class="relative grid gap-4 bg-white p-4">
-            <a
+            <router-link
               v-for="otherInstance in otherInstances"
               :key="otherInstance.id"
               class="-m-3 p-3 flex items-center rounded-lg hover:bg-gray-50"
-              @click.stop="switchToInstance(otherInstance)"
+              :to="{
+                name: 'instances/details',
+                params: { instanceId: otherInstance.id },
+              }"
+              @click="showInstances = false"
             >
               <sba-status
                 :status="otherInstance.statusInfo.status"
@@ -59,7 +63,7 @@
                 <div v-text="otherInstance.registration.name" />
                 <div class="text-xs italic" v-text="otherInstance.id" />
               </div>
-            </a>
+            </router-link>
           </div>
         </div>
       </div>
@@ -67,43 +71,22 @@
   </div>
 </template>
 
-<script>
-import { directive as onClickaway } from 'vue3-click-away';
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import { directive as vOnClickaway } from 'vue3-click-away';
 
 import Instance from '@/services/instance';
 
-export default {
-  directives: { onClickaway },
-  props: {
-    instances: {
-      type: Array,
-      required: true,
-    },
-    currentInstance: {
-      type: Instance,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      showInstances: false,
-    };
-  },
-  computed: {
-    otherInstances() {
-      return this.instances
-        .filter((i) => i.id !== this.currentInstance.id)
-        .sort((a, b) => a.id.localeCompare(b.id));
-    },
-  },
-  methods: {
-    switchToInstance(instance) {
-      this.showInstances = false;
-      this.$router.push({
-        name: 'instances/details',
-        params: { instanceId: instance.id },
-      });
-    },
-  },
-};
+const props = defineProps<{
+  instances: Instance[];
+  currentInstance: Instance;
+}>();
+
+const showInstances = ref(false);
+
+const otherInstances = computed(() =>
+  props.instances
+    .filter((i) => i.id !== props.currentInstance.id)
+    .sort((a, b) => a.id.localeCompare(b.id)),
+);
 </script>

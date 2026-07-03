@@ -24,7 +24,7 @@ const props = defineProps<{
   instanceId: string;
 }>();
 
-const { instance } = useInstanceData(props.instanceId);
+const { instance } = useInstanceData(() => props.instanceId);
 </script>
 
 <style scoped></style>

@@ -185,7 +185,7 @@ const details = computed(() =>
     .map(([name, value]) => ({ name, value }) as Details),
 );
 
-const childHealth = computed<{ name: string; value: any }>(() =>
+const childHealth = computed<Array<{ name: string; value: any }>>(() =>
   healthEntries.value
     .filter(([, value]) => isChildHealth(value))
     .map(([name, value]) => ({ name, value })),

@@ -19,7 +19,7 @@ beforeEach(() => {
   currentInstanceData.value = { ...instanceData };
   (useInstanceData as any).mockReturnValue({
     instance: computed(() => currentInstanceData.value),
-    instanceInfo: computed(() => currentInstanceData.value?.info),
+    info: computed(() => currentInstanceData.value?.info),
     application: computed(() => null),
   });
 });

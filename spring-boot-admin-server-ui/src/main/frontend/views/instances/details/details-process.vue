@@ -109,7 +109,7 @@ const props = defineProps<{
   instanceId: string;
 }>();
 
-const { instance } = useInstanceData(props.instanceId);
+const { instance } = useInstanceData(() => props.instanceId);
 const { fetchMetric, fetchEnv, fetchInfo } = useInstanceService(
   props.instanceId,
 );

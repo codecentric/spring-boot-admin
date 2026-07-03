@@ -72,17 +72,16 @@ const props = defineProps<{
   instanceId: string;
 }>();
 
-const { instance, application } = useInstanceData(props.instanceId);
+const { instance, application } = useInstanceData(() => props.instanceId);
+const sbaConfig = useSbaConfig();
 
 const showUrl = computed(() => {
-  const sbaConfig = useSbaConfig();
   if (sbaConfig.uiSettings.hideInstanceUrl) return false;
   const hideUrlMetadata = instance.value?.registration?.metadata?.['hide-url'];
   return hideUrlMetadata !== 'true';
 });
 
 const isUrlDisabled = computed(() => {
-  const sbaConfig = useSbaConfig();
   if (sbaConfig.uiSettings.disableInstanceUrl) return true;
   const disableUrl = instance.value?.registration?.metadata?.['disable-url'];
   return disableUrl === 'true';

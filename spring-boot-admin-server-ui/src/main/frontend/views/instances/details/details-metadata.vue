@@ -47,8 +47,7 @@ const props = defineProps<{
   instanceId: string;
 }>();
 
-const { metadata } = useInstanceData(props.instanceId);
-
+const { metadata } = useInstanceData(() => props.instanceId);
 const panelOpen = ref(true);
 
 const sortedMetadata = computed(() => sortObject(metadata.value ?? {}));

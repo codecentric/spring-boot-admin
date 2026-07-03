@@ -13,14 +13,13 @@ vi.mock('@/composables/useInstanceData', () => ({
 }));
 
 function setupInstance(registrationOverrides = {}) {
+  const registration = {
+    ...instanceData.registration,
+    ...registrationOverrides,
+  };
   (useInstanceData as any).mockReturnValue({
-    instance: computed(() => ({
-      ...instanceData,
-      registration: {
-        ...instanceData.registration,
-        ...registrationOverrides,
-      },
-    })),
+    instance: computed(() => ({ ...instanceData, registration })),
+    metadata: computed(() => registration.metadata),
     application: computed(() => null),
   });
 }

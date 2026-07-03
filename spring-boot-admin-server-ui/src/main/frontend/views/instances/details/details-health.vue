@@ -123,7 +123,7 @@ const props = defineProps<{
   instanceId: string;
 }>();
 
-const { instance } = useInstanceData(props.instanceId);
+const { instance } = useInstanceData(() => props.instanceId);
 const { fetchHealth, fetchHealthGroup } = useInstanceService(props.instanceId);
 
 const panelOpen = ref(true);
