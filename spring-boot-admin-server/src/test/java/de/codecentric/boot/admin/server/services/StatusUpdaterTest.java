@@ -32,6 +32,7 @@ import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.StatusChangeDetectionStrategy;
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -96,13 +97,17 @@ class StatusUpdaterTest {
 		StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1).verifyComplete();
 
 		this.healthGroupsCache = new InMemoryHealthGroupsCache();
-		this.updater = new StatusUpdater(this.repository,
+		this.updater = createWith(StatusChangeDetectionStrategy.STATUS_ONLY);
+	}
+
+	private StatusUpdater createWith(StatusChangeDetectionStrategy statusChangeDetectionStrategy) {
+		return new StatusUpdater(this.repository,
 				InstanceWebClient.builder()
 					.filter(rewriteEndpointUrl())
 					.filter(retry(0, singletonMap(Endpoint.HEALTH, 1)))
 					.filter(timeout(Duration.ofSeconds(2), emptyMap()))
 					.build(),
-				new ApiMediaTypeHandler(), this.healthGroupsCache);
+				new ApiMediaTypeHandler(), statusChangeDetectionStrategy.asPredicate(), this.healthGroupsCache));
 	}
 
 	@AfterEach
@@ -275,6 +280,9 @@ class StatusUpdaterTest {
 
 	@Test
 	void should_update_status_details() {
+		// given
+		this.updater = createWith(StatusChangeDetectionStrategy.FULL);
+
 		// 1st pass -> initial details
 		shouldUpdateStatusDetails(singletonMap("foo", "bar"));
 

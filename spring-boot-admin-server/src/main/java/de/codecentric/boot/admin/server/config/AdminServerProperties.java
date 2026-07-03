@@ -21,11 +21,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiPredicate;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.web.PathUtils;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider.InstanceCredentials;
 
@@ -95,6 +98,12 @@ public class AdminServerProperties {
 	public static class MonitorProperties {
 
 		/**
+		 * Default {@link StatusChangeDetectionStrategy} applied if nothing different is
+		 * configured for {@link MonitorProperties#statusChangeDetectionStrategy}.
+		 */
+		public static final StatusChangeDetectionStrategy DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY = StatusChangeDetectionStrategy.STATUS_ONLY;
+
+		/**
 		 * Time interval to check the status of instances, must be greater than 1 second.
 		 */
 		@DurationUnit(ChronoUnit.MILLIS)
@@ -106,6 +115,17 @@ public class AdminServerProperties {
 		 */
 		@DurationUnit(ChronoUnit.MILLIS)
 		private Duration statusLifetime = Duration.ofMillis(10_000L);
+
+		/**
+		 * Strategy to use to determine if, given two {@link StatusInfo} instances,
+		 * they're different or not in order to decide if a {@code STATUS_UPDATED} event
+		 * should be published or not.
+		 * <p>
+		 * Defaults to
+		 * {@link AdminServerProperties.MonitorProperties#DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY}
+		 * unless a different value is specified.
+		 */
+		private StatusChangeDetectionStrategy statusChangeDetectionStrategy = DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY;
 
 		/**
 		 * The maximal backoff for status check retries (retry after error has exponential
@@ -147,7 +167,7 @@ public class AdminServerProperties {
 
 		/**
 		 * Default timeout when making requests. Individual values for specific endpoints
-		 * can be overriden using `spring.boot.admin.monitor.timeout.*`.
+		 * can be overridden using `spring.boot.admin.monitor.timeout.*`.
 		 */
 		@DurationUnit(ChronoUnit.MILLIS)
 		private Duration defaultTimeout = Duration.ofMillis(10_000L);
@@ -157,6 +177,40 @@ public class AdminServerProperties {
 		 */
 		@DurationUnit(ChronoUnit.MILLIS)
 		private Map<String, Duration> timeout = new HashMap<>();
+
+		/**
+		 * Strategy to determine if two {@link StatusInfo} instances are different or not.
+		 */
+		public enum StatusChangeDetectionStrategy {
+
+			/**
+			 * It considers two {@link StatusInfo} instances different if they're not
+			 * equal.
+			 */
+			FULL {
+				@Override
+				public boolean mismatch(StatusInfo statusInfo, StatusInfo newStatusInfo) {
+					return !Objects.equals(statusInfo, newStatusInfo);
+				}
+			},
+			/**
+			 * It considers two {@link StatusInfo} instances different if only their
+			 * {@code status} is not equal.
+			 */
+			STATUS_ONLY {
+				@Override
+				public boolean mismatch(StatusInfo statusInfo, StatusInfo newStatusInfo) {
+					return !Objects.equals(statusInfo.getStatus(), newStatusInfo.getStatus());
+				}
+			};
+
+			public abstract boolean mismatch(StatusInfo statusInfo, StatusInfo newStatusInfo);
+
+			public BiPredicate<StatusInfo, StatusInfo> asPredicate() {
+				return this::mismatch;
+			}
+
+		}
 
 	}
 
