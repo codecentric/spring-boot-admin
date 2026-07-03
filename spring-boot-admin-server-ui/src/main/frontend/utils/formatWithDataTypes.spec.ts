@@ -20,6 +20,7 @@ import { formatWithDataTypes } from './formatWithDataTypes';
 describe('formatWithDataTypes', () => {
   it('returns primitive values unchanged', () => {
     expect(formatWithDataTypes(42)).toBe(42);
+    expect(formatWithDataTypes(4_200_000)).toBe('4.200.000');
     expect(formatWithDataTypes('foo')).toBe('foo');
     expect(formatWithDataTypes(null)).toBe(null);
     expect(formatWithDataTypes(undefined)).toBe(undefined);

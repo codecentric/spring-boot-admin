@@ -51,6 +51,10 @@ type DataTypeConfig = {
  * // Returns: { memory: { heap: { committed: '1.02 kB' } }, timestamp: 'Jun 1, 2024, 12:34:56 PM' }
  */
 export function formatWithDataTypes<T>(input: T, config?: DataTypeConfig): T {
+  if (typeof input === 'number' && Math.abs(input) >= 1000) {
+    return input.toLocaleString() as unknown as T;
+  }
+
   if (typeof input !== 'object' || input === null) {
     return input;
   }
@@ -59,7 +63,7 @@ export function formatWithDataTypes<T>(input: T, config?: DataTypeConfig): T {
     return input;
   }
 
-  const result = JSON.parse(JSON.stringify(input)) as any;
+  const result = JSON.parse(JSON.stringify(input)) as Record<string, any>;
 
   // Process each configured property path
   for (const [path, dataType] of Object.entries(config)) {
@@ -75,8 +79,8 @@ export function formatWithDataTypes<T>(input: T, config?: DataTypeConfig): T {
     }
 
     // Apply formatting to the target property
-    const lastKey = keys[keys.length - 1];
-    if (current && current[lastKey] !== undefined) {
+    const lastKey = keys.at(-1);
+    if (lastKey && current?.[lastKey] !== undefined) {
       try {
         if (dataType === 'bytes' && current[lastKey] >= 0) {
           current[lastKey] = prettyBytes(current[lastKey]);
