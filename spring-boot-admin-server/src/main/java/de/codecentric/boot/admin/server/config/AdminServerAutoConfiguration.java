@@ -110,13 +110,11 @@ public class AdminServerAutoConfiguration {
 	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder, HealthGroupsCache healthGroupsCache) {
 
-		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
-				new ApiMediaTypeHandler(), healthGroupsCache);
-
 		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
 
 		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
-				new ApiMediaTypeHandler(), monitorProperties.getStatusChangeDetectionStrategy().asPredicate());
+				new ApiMediaTypeHandler(), monitorProperties.getStatusChangeDetectionStrategy().asPredicate(),
+				healthGroupsCache);
 
 		Duration timeout = monitorProperties.getDefaultTimeout();
 		Duration interval = monitorProperties.getStatusInterval();

@@ -43,8 +43,7 @@ public class HealthGroupsCacheCleanupListener {
 
 	private final HealthGroupsCache healthGroupsCache;
 
-	@Nullable
-	private Disposable subscription;
+	@Nullable private Disposable subscription;
 
 	/**
 	 * Creates a listener evicting health groups cache entries on deregistration of an
@@ -61,8 +60,10 @@ public class HealthGroupsCacheCleanupListener {
 
 	@PostConstruct
 	public void start() {
-		this.subscription = Flux.from(this.publisher).ofType(InstanceDeregisteredEvent.class)
-				.doOnNext((event) -> this.healthGroupsCache.remove(event.getInstance())).subscribe();
+		this.subscription = Flux.from(this.publisher)
+			.ofType(InstanceDeregisteredEvent.class)
+			.doOnNext((event) -> this.healthGroupsCache.remove(event.getInstance()))
+			.subscribe();
 	}
 
 	@PreDestroy

@@ -65,15 +65,15 @@ public class StatusUpdater {
 
 	private final BiPredicate<StatusInfo, StatusInfo> statusChangeDetectionPredicate;
 
-	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
-			ApiMediaTypeHandler apiMediaTypeHandler) {
-		this(repository, instanceWebClient, apiMediaTypeHandler,
-				DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY.asPredicate());
-	}
+	private final HealthGroupsCache healthGroupsCache;
 
 	private Duration timeout = Duration.ofSeconds(10);
 
-	private final HealthGroupsCache healthGroupsCache;
+	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
+			ApiMediaTypeHandler apiMediaTypeHandler, HealthGroupsCache healthGroupsCache) {
+		this(repository, instanceWebClient, apiMediaTypeHandler, DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY.asPredicate(),
+				healthGroupsCache);
+	}
 
 	public StatusUpdater timeout(Duration timeout) {
 		this.timeout = timeout;

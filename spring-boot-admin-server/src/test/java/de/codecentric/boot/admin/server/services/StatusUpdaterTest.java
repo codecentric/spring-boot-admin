@@ -107,7 +107,7 @@ class StatusUpdaterTest {
 					.filter(retry(0, singletonMap(Endpoint.HEALTH, 1)))
 					.filter(timeout(Duration.ofSeconds(2), emptyMap()))
 					.build(),
-				new ApiMediaTypeHandler(), statusChangeDetectionStrategy.asPredicate(), this.healthGroupsCache));
+				new ApiMediaTypeHandler(), statusChangeDetectionStrategy.asPredicate(), this.healthGroupsCache);
 	}
 
 	@AfterEach
