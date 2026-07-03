@@ -76,13 +76,13 @@
   `java.lang.Integer`
 
   0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `spring.boot.admin.monitor.default-timeout`Default timeout when making requests. Individual values for specific endpoints can be overriden using \`spring.boot.admin.monitor.timeout.\*\`.- Type: 
+| `spring.boot.admin.monitor.default-timeout`Default timeout when making requests. Individual values for specific endpoints can be overridden using \`spring.boot.admin.monitor.timeout.\*\`.- Type: 
 
   `java.time.Duration`
 
 - Default: 
 
-  `"10000ms"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+  `"10000ms"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `spring.boot.admin.monitor.status-interval`Time interval to check the status of instances, must be greater than 1 second.- Type: 
 
   `java.time.Duration`
@@ -137,3 +137,10 @@
 | `spring.boot.admin.instance-auth.default-user-name`Default username used for authentication to each instance. Individual values for specific instances can be overriden using \`spring.boot.admin.instance-auth.service-map.\*.user-name\`.<br />Default: null- Type: 
 
   `java.lang.String`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `spring.boot.admin.monitor.status-change-detection-strategy`Strategy to use to determine if, given two {@link StatusInfo} instances, they're different or not in order to decide if a {@code STATUS\_UPDATED} event should be published or not.Defaults to {@link AdminServerProperties.MonitorProperties#DEFAULT\_STATUS\_CHANGE\_DETECTION\_STRATEGY} unless a different value is specified.- Type: 
+
+  `de.codecentric.boot.admin.server.config.AdminServerProperties$MonitorProperties$StatusChangeDetectionStrategy`
+
+- Default: 
+
+  `"status-only"`                                                                                                                                                                                                                                                                                                                                        |
