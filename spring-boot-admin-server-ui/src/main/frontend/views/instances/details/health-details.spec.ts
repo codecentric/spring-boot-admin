@@ -430,7 +430,7 @@ describe('HealthDetails', () => {
         props: {
           name: 'db',
           health: healthMock,
-          instance: mockInstance,
+          instanceId: mockInstance.id,
         },
       });
 
