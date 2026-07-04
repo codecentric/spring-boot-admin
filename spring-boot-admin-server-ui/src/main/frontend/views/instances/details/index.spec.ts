@@ -1,13 +1,35 @@
 import { screen, waitFor } from '@testing-library/vue';
 import { HttpResponse, http } from 'msw';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ref } from 'vue';
 
 import DetailsView from './index.vue';
 
+import { useApplicationStore } from '@/composables/useApplicationStore';
+import { useInstanceService } from '@/composables/useInstanceService';
 import { applications } from '@/mocks/applications/data';
 import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import { render } from '@/test-utils';
+
+vi.mock('@/composables/useApplicationStore', () => ({
+  useApplicationStore: vi.fn(),
+}));
+
+vi.mock('@/composables/useInstanceService', () => ({
+  useInstanceService: vi.fn(),
+}));
+
+const storeApplications = ref<Application[]>([]);
+
+const fetchMetricsMock = vi.fn();
+
+beforeEach(() => {
+  storeApplications.value = [];
+  (useApplicationStore as any).mockReturnValue({ applications: storeApplications });
+  fetchMetricsMock.mockResolvedValue({ data: { names: [] } });
+  (useInstanceService as any).mockReturnValue({ fetchMetrics: fetchMetricsMock });
+});
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -24,6 +46,7 @@ describe('InstanceDetails', () => {
     it('should hide loading spinner, when network call fails', async () => {
       const application = new Application(applications[0]);
       const instance = application.instances[0];
+      storeApplications.value = [application];
 
       server.use(
         http.get('/instances/:instanceId/actuator/metrics', () => {
@@ -48,6 +71,7 @@ describe('InstanceDetails', () => {
     it('should hide loading spinner, when metrics endpoint is not exposed', async () => {
       const application = new Application(applications[0]);
       const instance = application.instances[0];
+      storeApplications.value = [application];
 
       instance.hasEndpoint = vi.fn().mockImplementation(function (endpoint) {
         return endpoint !== 'metrics';
@@ -67,59 +91,44 @@ describe('InstanceDetails', () => {
       });
     });
 
-    it('should refetch metric index when instance version changes (SSE update)', async () => {
+    it('should refetch metric index when the instance id changes (navigation to different instance)', async () => {
       const application = new Application(applications[0]);
       const instance1 = application.instances[0];
-
-      const fetchMetricsSpy = vi
-        .fn()
-        .mockResolvedValue({ data: { names: ['jvm.memory.max'] } });
-      instance1.fetchMetrics = fetchMetricsSpy;
+      storeApplications.value = [application];
+      fetchMetricsMock.mockResolvedValue({ data: { names: ['jvm.memory.max'] } });
       instance1.hasEndpoint = vi.fn().mockImplementation(() => true);
 
       const { rerender } = render(DetailsView, {
-        props: {
-          instance: instance1,
-          application,
-        },
+        props: { instance: instance1, application },
       });
 
       await waitFor(() => {
-        expect(fetchMetricsSpy).toHaveBeenCalledTimes(1);
+        expect(fetchMetricsMock).toHaveBeenCalledTimes(1);
       });
 
       const instance2 = new Application({
         ...application,
-        instances: [
-          {
-            ...instance1,
-            id: instance1.id,
-            version: (instance1.version ?? 0) + 1,
-          },
-        ],
+        instances: [{ ...instance1, id: 'different-instance-id' }],
       }).instances[0];
-
-      instance2.fetchMetrics = fetchMetricsSpy;
       instance2.hasEndpoint = instance1.hasEndpoint;
 
       await rerender({ instance: instance2, application });
 
       await waitFor(() => {
-        expect(fetchMetricsSpy).toHaveBeenCalledTimes(2);
+        expect(fetchMetricsMock).toHaveBeenCalledTimes(2);
       });
     });
 
-    it('should ignore stale metric index response when instance updates quickly', async () => {
+    it('should ignore stale metric index response when instance id changes quickly', async () => {
       const application = new Application(applications[0]);
       const instance1 = application.instances[0];
+      storeApplications.value = [application];
 
       const p1 = deferred<{ data: { names: string[] } }>();
       const p2 = deferred<{ data: { names: string[] } }>();
-      const fetchMetricsSpy = vi
-        .fn()
+      fetchMetricsMock
         .mockReturnValueOnce(p1.promise)
         .mockReturnValueOnce(p2.promise);
-      instance1.fetchMetrics = fetchMetricsSpy;
       instance1.hasEndpoint = vi.fn().mockImplementation(() => true);
 
       const { rerender } = render(DetailsView, {
@@ -131,34 +140,23 @@ describe('InstanceDetails', () => {
             },
           },
         },
-        props: {
-          instance: instance1,
-          application,
-        },
+        props: { instance: instance1, application },
       });
 
       await waitFor(() => {
-        expect(fetchMetricsSpy).toHaveBeenCalledTimes(1);
+        expect(fetchMetricsMock).toHaveBeenCalledTimes(1);
       });
 
       const instance2 = new Application({
         ...application,
-        instances: [
-          {
-            ...instance1,
-            id: instance1.id,
-            version: (instance1.version ?? 0) + 1,
-          },
-        ],
+        instances: [{ ...instance1, id: 'different-instance-id' }],
       }).instances[0];
-
-      instance2.fetchMetrics = fetchMetricsSpy;
       instance2.hasEndpoint = instance1.hasEndpoint;
 
       await rerender({ instance: instance2, application });
 
       await waitFor(() => {
-        expect(fetchMetricsSpy).toHaveBeenCalledTimes(2);
+        expect(fetchMetricsMock).toHaveBeenCalledTimes(2);
       });
 
       // Resolve second (newer) response first.
@@ -174,7 +172,7 @@ describe('InstanceDetails', () => {
         expect(screen.getAllByTestId('details-memory')).toHaveLength(2);
       });
 
-      // Resolve first (older) response afterwards; UI must not regress.
+      // Resolve first (older/stale) response afterwards; UI must not regress.
       p1.resolve({ data: { names: [] } });
       await waitFor(() => {
         expect(screen.getAllByTestId('details-memory')).toHaveLength(2);
