@@ -50,7 +50,6 @@ export function useInstanceData(instanceId: MaybeRefOrGetter<string>) {
       }
       if (!isEqual(newInstance?.metadata, metadata.value)) {
         metadata.value = newInstance?.metadata;
-        console.log('updated metadata');
       }
     },
     { immediate: true },
