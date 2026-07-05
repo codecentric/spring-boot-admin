@@ -41,7 +41,6 @@ describe('useInstanceData', () => {
   beforeEach(() => {
     applications = ref([]);
 
-    // @ts-ignore
     useApplicationStore.mockReturnValue({ applications });
   });
 

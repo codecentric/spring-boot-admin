@@ -26,9 +26,13 @@ const fetchMetricsMock = vi.fn();
 
 beforeEach(() => {
   storeApplications.value = [];
-  (useApplicationStore as any).mockReturnValue({ applications: storeApplications });
+  (useApplicationStore as any).mockReturnValue({
+    applications: storeApplications,
+  });
   fetchMetricsMock.mockResolvedValue({ data: { names: [] } });
-  (useInstanceService as any).mockReturnValue({ fetchMetrics: fetchMetricsMock });
+  (useInstanceService as any).mockReturnValue({
+    fetchMetrics: fetchMetricsMock,
+  });
 });
 
 function deferred<T>() {
@@ -95,7 +99,9 @@ describe('InstanceDetails', () => {
       const application = new Application(applications[0]);
       const instance1 = application.instances[0];
       storeApplications.value = [application];
-      fetchMetricsMock.mockResolvedValue({ data: { names: ['jvm.memory.max'] } });
+      fetchMetricsMock.mockResolvedValue({
+        data: { names: ['jvm.memory.max'] },
+      });
       instance1.hasEndpoint = vi.fn().mockImplementation(() => true);
 
       const { rerender } = render(DetailsView, {
