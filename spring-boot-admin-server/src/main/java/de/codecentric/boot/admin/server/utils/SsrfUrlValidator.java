@@ -86,7 +86,8 @@ public class SsrfUrlValidator {
 			uri = new URI(url);
 		}
 		catch (URISyntaxException ex) {
-			return;
+			throw new SsrfProtectionException(
+					"URL '" + url + "' is not a valid URI and cannot be validated: " + ex.getMessage());
 		}
 
 		checkScheme(url, uri.getScheme());

@@ -19,7 +19,6 @@ package de.codecentric.boot.admin.server.web.reactive;
 import java.net.URI;
 import java.util.Set;
 
-import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;

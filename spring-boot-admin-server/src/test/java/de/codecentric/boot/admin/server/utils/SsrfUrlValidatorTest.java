@@ -58,6 +58,16 @@ class SsrfUrlValidatorTest {
 	}
 
 	@Test
+	void rejects_malformedUrl() {
+		// A syntactically invalid URI must be rejected, not silently accepted.
+		// Otherwise a crafted string that new URI() cannot parse but an HTTP client
+		// would normalise to a private address bypasses all checks.
+		assertThatThrownBy(() -> validator.validate("http://169.254.169.254\\ @evil.com/"))
+			.isInstanceOf(SsrfProtectionException.class)
+			.hasMessageContaining("not a valid URI");
+	}
+
+	@Test
 	void ignores_unresolvableHost() {
 		// Unknown hosts cannot be resolved at registration time; the HTTP client's
 		// InetAddressFilter will enforce the policy when a connection is attempted.

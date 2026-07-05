@@ -27,7 +27,6 @@ import io.netty.handler.timeout.ReadTimeoutException;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -105,6 +104,10 @@ public class InstanceWebProxy {
 			Function<ClientResponse, Mono<V>> responseHandler) {
 		log.trace("Proxy-Request for instance {} with URL '{}'", instance.getId(), forwardRequest.getUri());
 		try {
+			// ForwardRequest.uri is a relative path built by the proxy controllers (no
+			// host). The actual host is supplied by InstanceWebClient when it resolves
+			// the instance's management URL. Absolute URIs (if ever present) are
+			// validated; relative ones have no host to check.
 			ssrfUrlValidator.validate(forwardRequest.getUri().isAbsolute() ? forwardRequest.getUri().toString() : null);
 		}
 		catch (SsrfProtectionException ex) {

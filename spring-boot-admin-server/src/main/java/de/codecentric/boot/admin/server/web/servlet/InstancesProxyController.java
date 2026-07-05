@@ -74,9 +74,8 @@ public class InstancesProxyController {
 
 	private final String adminContextPath;
 
-
 	public InstancesProxyController(String adminContextPath, Set<String> ignoredHeaders, InstanceRegistry registry,
-	                                InstanceWebClient instanceWebClient, SsrfUrlValidator ssrfUrlValidator) {
+			InstanceWebClient instanceWebClient, SsrfUrlValidator ssrfUrlValidator) {
 		this.adminContextPath = adminContextPath;
 		this.registry = registry;
 		this.httpHeadersFilter = new HttpHeaderFilter(ignoredHeaders);
@@ -84,8 +83,8 @@ public class InstancesProxyController {
 	}
 
 	@ResponseBody
-	@RequestMapping(path = INSTANCE_MAPPED_PATH, method = {RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST,
-		RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
+	@RequestMapping(path = INSTANCE_MAPPED_PATH, method = { RequestMethod.GET, RequestMethod.HEAD, RequestMethod.POST,
+			RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS })
 	public void instanceProxy(@PathVariable("instanceId") String instanceId, HttpServletRequest servletRequest) {
 		// start async because we will commit from different thread.
 		// otherwise incorrect thread local objects (session and security context) will be
@@ -97,15 +96,15 @@ public class InstancesProxyController {
 		// for us
 		try {
 			ServletServerHttpRequest request = new ServletServerHttpRequest(
-				(HttpServletRequest) asyncContext.getRequest());
+					(HttpServletRequest) asyncContext.getRequest());
 			Flux<DataBuffer> requestBody = DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 4096);
 			InstanceWebProxy.ForwardRequest fwdRequest = createForwardRequest(request, requestBody,
-				this.adminContextPath + INSTANCE_MAPPED_PATH);
+					this.adminContextPath + INSTANCE_MAPPED_PATH);
 
 			this.instanceWebProxy
 				.forward(this.registry.getInstance(InstanceId.of(instanceId)), fwdRequest, (clientResponse) -> {
 					ServerHttpResponse response = new ServletServerHttpResponse(
-						(HttpServletResponse) asyncContext.getResponse());
+							(HttpServletResponse) asyncContext.getResponse());
 					response.setStatusCode(clientResponse.statusCode());
 					response.getHeaders()
 						.addAll(this.httpHeadersFilter.filterHeaders(clientResponse.headers().asHttpHeaders()));
@@ -133,22 +132,22 @@ public class InstancesProxyController {
 	}
 
 	@ResponseBody
-	@RequestMapping(path = APPLICATION_MAPPED_PATH, method = {RequestMethod.GET, RequestMethod.HEAD,
-		RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS})
+	@RequestMapping(path = APPLICATION_MAPPED_PATH, method = { RequestMethod.GET, RequestMethod.HEAD,
+			RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE, RequestMethod.OPTIONS })
 	public Flux<InstanceWebProxy.InstanceResponse> endpointProxy(
-		@PathVariable("applicationName") String applicationName, HttpServletRequest servletRequest) {
+			@PathVariable("applicationName") String applicationName, HttpServletRequest servletRequest) {
 
 		ServletServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
 		Flux<DataBuffer> cachedBody = DataBufferUtils.readInputStream(request::getBody, this.bufferFactory, 4096)
 			.cache();
 
 		InstanceWebProxy.ForwardRequest fwdRequest = createForwardRequest(request, cachedBody,
-			this.adminContextPath + APPLICATION_MAPPED_PATH);
+				this.adminContextPath + APPLICATION_MAPPED_PATH);
 		return this.instanceWebProxy.forward(this.registry.getInstances(applicationName), fwdRequest);
 	}
 
 	private InstanceWebProxy.ForwardRequest createForwardRequest(ServletServerHttpRequest request,
-	                                                             Flux<DataBuffer> body, String pathPattern) {
+			Flux<DataBuffer> body, String pathPattern) {
 		String endpointLocalPath = this.getLocalPath(pathPattern, request);
 		URI uri = UriComponentsBuilder.fromPath(endpointLocalPath)
 			.query(request.getURI().getRawQuery())

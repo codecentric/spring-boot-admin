@@ -86,8 +86,10 @@ Kubernetes cluster deployment — you have two options:
 
 ### Option 1: Configuration properties (recommended)
 
-Add CIDR ranges to `allowed-cidrs`. Both IPv4 and IPv6 CIDR notation are supported. These ranges are ORed with the
-default `externalAddresses()` filter, so public addresses always remain reachable.
+Add entries to `allowed-cidrs`. Both individual IP addresses and CIDR subnet masks are supported for IPv4 and IPv6.
+These ranges are ORed with the default `externalAddresses()` filter, so public addresses always remain reachable.
+
+**Single host** (exact IP address):
 
 ```yaml
 spring:
@@ -96,16 +98,34 @@ spring:
       ssrf-protection:
         enabled: true
         allowed-cidrs:
-          - "192.168.1.0/24"      # single subnet
-          - "10.0.0.0/8"         # entire RFC 1918 Class A
-          - "fd00::/8"           # IPv6 unique-local range
+          - "192.168.1.100"      # single host, equivalent to 192.168.1.100/32
 ```
 
-Single-host entries (equivalent to `/32` or `/128`) are also supported:
+**Subnet** (CIDR mask):
 
 ```yaml
+spring:
+  boot:
+    admin:
+      ssrf-protection:
+        enabled: true
         allowed-cidrs:
-          - "192.168.1.100"      # treated as a /32 host entry
+          - "192.168.1.0/24"     # all hosts in 192.168.1.x
+```
+
+**Multiple ranges** (subnets, whole classes, IPv6):
+
+```yaml
+spring:
+  boot:
+    admin:
+      ssrf-protection:
+        enabled: true
+        allowed-cidrs:
+          - "192.168.1.0/24"     # single subnet
+          - "10.0.0.0/8"         # entire RFC 1918 Class A
+          - "172.16.0.0/12"      # entire RFC 1918 Class B
+          - "fd00::/8"           # IPv6 unique-local range
 ```
 
 ### Option 2: Custom `InetAddressFilter` bean

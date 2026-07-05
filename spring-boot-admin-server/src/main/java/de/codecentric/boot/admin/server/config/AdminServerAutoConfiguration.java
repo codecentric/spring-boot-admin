@@ -83,7 +83,7 @@ public class AdminServerAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(name = "ssrfInetAddressFilter")
 	public InetAddressFilter ssrfInetAddressFilter() {
 		InetAddressFilter filter = InetAddressFilter.externalAddresses();
 		List<String> allowedCidrs = this.adminServerProperties.getSsrfProtection().getAllowedCidrs();
