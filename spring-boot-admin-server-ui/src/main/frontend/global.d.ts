@@ -133,12 +133,4 @@ declare global {
     label: string;
     order?: number;
   }
-
-  type HealthStatus =
-    | 'DOWN'
-    | 'UP'
-    | 'RESTRICTED'
-    | 'UNKNOWN'
-    | 'OUT_OF_SERVICE'
-    | 'OFFLINE';
 }
