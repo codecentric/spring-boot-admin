@@ -91,7 +91,17 @@ public class SsrfUrlValidator {
 		}
 
 		checkScheme(url, uri.getScheme());
-		checkAddress(url, uri.getHost());
+
+		String host = uri.getHost();
+		// If the URI has an authority component but getHost() returned null, the host
+		// literal could not be parsed as a standard hostname or IP by java.net.URI
+		// (e.g. octal notation "0251.0376.0251.0376", Unicode digits). Reject it —
+		// we cannot safely validate what we cannot parse.
+		if (host == null && uri.getAuthority() != null) {
+			throw new SsrfProtectionException("URL '" + url
+					+ "' contains a host that cannot be parsed and validated. Rejecting to prevent bypass.");
+		}
+		checkAddress(url, host);
 	}
 
 	private void checkScheme(String url, @Nullable String scheme) {

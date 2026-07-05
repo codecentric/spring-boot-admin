@@ -84,6 +84,59 @@ class SsrfUrlValidatorTest {
 	}
 
 	// -------------------------------------------------------------------------
+	// URL encoding / notation bypass attempts
+	// -------------------------------------------------------------------------
+
+	@Nested
+	class BypassAttempts {
+
+		@Test
+		void blocks_decimalEncodedPrivateIp() {
+			// 169.254.169.254 expressed as a single 32-bit decimal integer.
+			// java.net.URI parses "2852039166" as a hostname; InetAddress resolves
+			// it to the link-local metadata address. Verifies SBA relies correctly
+			// on InetAddress resolution rather than string matching.
+			assertThatThrownBy(() -> validator.validate("http://2852039166/latest/meta-data"))
+				.isInstanceOf(SsrfProtectionException.class);
+		}
+
+		@Test
+		void blocks_decimalEncodedLoopback() {
+			// 127.0.0.1 as a 32-bit decimal integer (2130706433).
+			assertThatThrownBy(() -> validator.validate("http://2130706433/"))
+				.isInstanceOf(SsrfProtectionException.class);
+		}
+
+		@Test
+		void rejects_octalEncodedPrivateIp() {
+			// 0251.0376.0251.0376 is octal for 169.254.169.254.
+			// java.net.URI cannot parse octal notation and returns host=null with a
+			// non-null authority — rejected to prevent bypass.
+			assertThatThrownBy(() -> validator.validate("http://0251.0376.0251.0376/"))
+				.isInstanceOf(SsrfProtectionException.class)
+				.hasMessageContaining("cannot be parsed and validated");
+		}
+
+		@Test
+		void rejects_unicodeDigitHost() {
+			// Unicode digit characters that look like "127.0.0.1" — URI returns
+			// host=null with a non-null authority, so we reject rather than skip.
+			assertThatThrownBy(() -> validator.validate("http://①②⑦.0.0.1/"))
+				.isInstanceOf(SsrfProtectionException.class)
+				.hasMessageContaining("cannot be parsed and validated");
+		}
+
+		@Test
+		void blocks_schemeCaseVariant_upper() {
+			// HTTP:// (uppercase) must still be normalised and blocked when pointing
+			// to a private address — SBA's checkScheme() uses scheme.toLowerCase().
+			assertThatThrownBy(() -> validator.validate("HTTP://127.0.0.1/"))
+				.isInstanceOf(SsrfProtectionException.class);
+		}
+
+	}
+
+	// -------------------------------------------------------------------------
 	// Scheme checks
 	// -------------------------------------------------------------------------
 
