@@ -38,8 +38,8 @@
         <npm.build.args>run build</npm.build.args>
         <npm.lint.args>run lint</npm.lint.args>
         <npm.test.args>run test</npm.test.args>
-        <!-- To be set explicitly with -Dnpm.registry=https://foo.bar if the standard registry is not wanted or not accessible -->
-        <npm.registry />
+        <!-- To be overridden with -Dnpm.registry=https://foo.bar if the standard registry is not wanted or not accessible -->
+        <npm.registry>https://registry.npmjs.org/</npm.registry>
     </properties>
 
     <dependencies>
