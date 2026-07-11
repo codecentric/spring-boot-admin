@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.web;
 import java.net.URI;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
+import de.codecentric.boot.admin.server.services.HealthGroupsCache;
 import de.codecentric.boot.admin.server.services.InstanceRegistry;
 
 /**
@@ -62,9 +64,13 @@ public class InstancesController {
 
 	private final InstanceEventStore eventStore;
 
-	public InstancesController(InstanceRegistry registry, InstanceEventStore eventStore) {
+	private final HealthGroupsCache healthGroupsCache;
+
+	public InstancesController(InstanceRegistry registry, InstanceEventStore eventStore,
+			HealthGroupsCache healthGroupsCache) {
 		this.registry = registry;
 		this.eventStore = eventStore;
+		this.healthGroupsCache = healthGroupsCache;
 	}
 
 	/**
@@ -115,6 +121,19 @@ public class InstancesController {
 		return registry.getInstance(InstanceId.of(id))
 			.filter(Instance::isRegistered)
 			.map(ResponseEntity::ok)
+			.defaultIfEmpty(ResponseEntity.notFound().build());
+	}
+
+	/**
+	 * Get health groups for an instance.
+	 * @param id the instance identifier.
+	 * @return the health groups list.
+	 */
+	@GetMapping(path = "/instances/{id}/health-groups", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<ResponseEntity<List<String>>> healthGroups(@PathVariable String id) {
+		InstanceId instanceId = InstanceId.of(id);
+		return this.registry.getInstance(instanceId)
+			.map((_instance) -> ResponseEntity.ok(this.healthGroupsCache.getGroups(instanceId)))
 			.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 

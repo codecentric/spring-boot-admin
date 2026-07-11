@@ -32,6 +32,7 @@ import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.StatusChangeDetectionStrategy;
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
@@ -71,6 +72,10 @@ class StatusUpdaterTest {
 
 	private Instance instance;
 
+	private HealthGroupsCache healthGroupsCache;
+
+	private InstanceId instanceId;
+
 	@BeforeAll
 	static void setUp() {
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
@@ -86,17 +91,23 @@ class StatusUpdaterTest {
 		this.wireMock.start();
 		this.eventStore = new InMemoryEventStore();
 		this.repository = new EventsourcingInstanceRepository(this.eventStore);
-		this.instance = Instance.create(InstanceId.of("id"))
+		this.instanceId = InstanceId.of("id");
+		this.instance = Instance.create(this.instanceId)
 			.register(Registration.create("foo", this.wireMock.url("/health")).build());
 		StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1).verifyComplete();
 
-		this.updater = new StatusUpdater(this.repository,
+		this.healthGroupsCache = new InMemoryHealthGroupsCache();
+		this.updater = createWith(StatusChangeDetectionStrategy.STATUS_ONLY);
+	}
+
+	private StatusUpdater createWith(StatusChangeDetectionStrategy statusChangeDetectionStrategy) {
+		return new StatusUpdater(this.repository,
 				InstanceWebClient.builder()
 					.filter(rewriteEndpointUrl())
 					.filter(retry(0, singletonMap(Endpoint.HEALTH, 1)))
 					.filter(timeout(Duration.ofSeconds(2), emptyMap()))
 					.build(),
-				new ApiMediaTypeHandler());
+				new ApiMediaTypeHandler(), statusChangeDetectionStrategy.asPredicate(), this.healthGroupsCache);
 	}
 
 	@AfterEach
@@ -269,6 +280,9 @@ class StatusUpdaterTest {
 
 	@Test
 	void should_update_status_details() {
+		// given
+		this.updater = createWith(StatusChangeDetectionStrategy.FULL);
+
 		// 1st pass -> initial details
 		shouldUpdateStatusDetails(singletonMap("foo", "bar"));
 
@@ -302,6 +316,30 @@ class StatusUpdaterTest {
 			assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP");
 			assertThat(app.getStatusInfo().getDetails()).isEqualTo(details);
 		}).verifyComplete();
+	}
+
+	@Test
+	void should_cache_health_groups() {
+		String body = "{ \"status\" : \"UP\", \"groups\" : [\"liveness\", \"readiness\"] }";
+		this.wireMock.stubFor(
+				get("/health").willReturn(okForContentType(ApiVersion.LATEST.getProducedMimeType().toString(), body)
+					.withHeader("Content-Length", Integer.toString(body.length()))));
+
+		StepVerifier.create(this.updater.updateStatus(this.instanceId)).verifyComplete();
+
+		assertThat(this.healthGroupsCache.getGroups(this.instanceId)).containsExactly("liveness", "readiness");
+	}
+
+	@Test
+	void should_handle_missing_groups_in_health_response() {
+		String body = "{ \"status\" : \"UP\" }";
+		this.wireMock.stubFor(
+				get("/health").willReturn(okForContentType(ApiVersion.LATEST.getProducedMimeType().toString(), body)
+					.withHeader("Content-Length", Integer.toString(body.length()))));
+
+		StepVerifier.create(this.updater.updateStatus(this.instanceId)).verifyComplete();
+
+		assertThat(this.healthGroupsCache.getGroups(this.instanceId)).isEmpty();
 	}
 
 }

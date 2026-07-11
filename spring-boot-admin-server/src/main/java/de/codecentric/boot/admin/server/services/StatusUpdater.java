@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2025 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ package de.codecentric.boot.admin.server.services;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 
 import lombok.RequiredArgsConstructor;
@@ -39,6 +41,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
+import static de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY;
 import static java.util.Collections.emptyMap;
 
 /**
@@ -60,7 +63,17 @@ public class StatusUpdater {
 
 	private final ApiMediaTypeHandler apiMediaTypeHandler;
 
+	private final BiPredicate<StatusInfo, StatusInfo> statusChangeDetectionPredicate;
+
+	private final HealthGroupsCache healthGroupsCache;
+
 	private Duration timeout = Duration.ofSeconds(10);
+
+	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
+			ApiMediaTypeHandler apiMediaTypeHandler, HealthGroupsCache healthGroupsCache) {
+		this(repository, instanceWebClient, apiMediaTypeHandler, DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY.asPredicate(),
+				healthGroupsCache);
+	}
 
 	public StatusUpdater timeout(Duration timeout) {
 		this.timeout = timeout;
@@ -80,12 +93,12 @@ public class StatusUpdater {
 		return this.instanceWebClient.instance(instance)
 			.get()
 			.uri(Endpoint.HEALTH)
-			.exchangeToMono(this::convertStatusInfo)
+			.exchangeToMono((response) -> this.convertStatusInfo(response, instance.getId()))
 			.log(log.getName(), Level.FINEST)
 			.timeout(getTimeoutWithMargin())
 			.doOnError((ex) -> logError(instance, ex))
 			.onErrorResume(this::handleError)
-			.map(instance::withStatusInfo);
+			.map((statusInfo) -> instance.withStatusInfo(statusInfo, statusChangeDetectionPredicate));
 	}
 
 	/*
@@ -97,6 +110,10 @@ public class StatusUpdater {
 	}
 
 	protected Mono<StatusInfo> convertStatusInfo(ClientResponse response) {
+		return convertStatusInfo(response, null);
+	}
+
+	private Mono<StatusInfo> convertStatusInfo(ClientResponse response, InstanceId instanceId) {
 		boolean hasCompatibleContentType = response.headers()
 			.contentType()
 			.filter((mt) -> mt.isCompatibleWith(MediaType.APPLICATION_JSON)
@@ -105,12 +122,15 @@ public class StatusUpdater {
 
 		StatusInfo statusInfoFromStatus = this.getStatusInfoFromStatus(response.statusCode(), emptyMap());
 		if (hasCompatibleContentType) {
-			return response.bodyToMono(RESPONSE_TYPE).map((body) -> {
-				if (body.get("status") instanceof String) {
-					return StatusInfo.from(body);
-				}
-				return getStatusInfoFromStatus(response.statusCode(), body);
-			}).defaultIfEmpty(statusInfoFromStatus);
+			return response.bodyToMono(RESPONSE_TYPE)
+				.doOnNext((body) -> extractAndCacheHealthGroups(instanceId, body))
+				.map((body) -> {
+					if (body.get("status") instanceof String) {
+						return StatusInfo.from(body);
+					}
+					return getStatusInfoFromStatus(response.statusCode(), body);
+				})
+				.defaultIfEmpty(statusInfoFromStatus);
 		}
 		return response.releaseBody().then(Mono.just(statusInfoFromStatus));
 	}
@@ -145,6 +165,17 @@ public class StatusUpdater {
 		}
 		else {
 			log.info("Couldn't retrieve status for {}", instance, ex);
+		}
+	}
+
+	private void extractAndCacheHealthGroups(InstanceId instanceId, Map<String, Object> body) {
+		if (this.healthGroupsCache != null && instanceId != null && body.get("groups") instanceof List<?> groupsList) {
+			List<String> groups = groupsList.stream()
+				.filter(String.class::isInstance)
+				.map(String.class::cast)
+				.distinct()
+				.toList();
+			this.healthGroupsCache.updateGroups(instanceId, groups);
 		}
 	}
 

@@ -34,7 +34,7 @@
 
         <java.version>17</java.version>
         <npm.version>11.12.1</npm.version>
-        <node.version>v24.17.0</node.version>
+        <node.version>v24.18.0</node.version>
 
         <require.maven.version>3.9</require.maven.version>
 
@@ -59,7 +59,7 @@
         <wiremock.version>3.13.2</wiremock.version>
         <hazelcast.version>5.7.0</hazelcast.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <jetty.version>12.1.10</jetty.version>
+        <jetty.version>12.1.11</jetty.version>
 
         <!-- plugin versions -->
         <build-helper-maven-plugin.version>3.6.1</build-helper-maven-plugin.version>
@@ -83,7 +83,7 @@
         <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
         <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
-        <cyclonedx-maven-plugin.version>2.9.1</cyclonedx-maven-plugin.version>
+        <cyclonedx-maven-plugin.version>2.9.2</cyclonedx-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <spring-javaformat-maven-plugin.version>0.0.47</spring-javaformat-maven-plugin.version>
         <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>

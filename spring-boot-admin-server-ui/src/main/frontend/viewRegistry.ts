@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { remove } from 'lodash-es';
-import { Text, VNode, h, markRaw, reactive, shallowRef, toRaw } from 'vue';
+import { Text, VNode, defineComponent, h, markRaw, reactive, toRaw } from 'vue';
 import { Router, createRouter, createWebHistory } from 'vue-router';
 
 import sbaConfig from './sba-config';
@@ -23,12 +23,11 @@ import { VIEW_GROUP, VIEW_GROUP_ICON } from './views/ViewGroup';
 let router: Router;
 
 const createI18nTextVNode = (label: string) =>
-  shallowRef({
+  defineComponent({
     render(): VNode {
       return h(Text, this.$t(label));
     },
   });
-
 type ViewFilterFunction = (view: SbaView) => boolean;
 type ViewConfig = {
   isEnabled?: (obj?) => boolean;

@@ -191,7 +191,10 @@ export default {
   },
   watch: {
     sideLength(newVal) {
-      this.root.style['font-size'] = `${newVal / 9.5}px`;
+      const newFontSize = `${newVal / 9.5}px`;
+      if (this.root.style['font-size'] !== newFontSize) {
+        this.root.style['font-size'] = newFontSize;
+      }
     },
     itemCount: {
       handler: 'updateLayout',
@@ -228,12 +231,9 @@ export default {
     },
     updateLayout() {
       if (this.root) {
-        const boundingClientRect = this.root.getBoundingClientRect();
-        const layout = calcLayout(
-          this.itemCount,
-          boundingClientRect.width,
-          boundingClientRect.height,
-        );
+        const { width, height } = this.root.getBoundingClientRect();
+        if (!width || !height) return;
+        const layout = calcLayout(this.itemCount, width, height);
         this.cols = layout.cols;
         this.rows = layout.rows;
         this.sideLength = layout.sideLength;

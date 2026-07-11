@@ -145,6 +145,14 @@ public final class StatusInfo implements Serializable {
 		return Comparator.comparingInt(STATUS_ORDER::indexOf);
 	}
 
+	public StatusInfo withStatus(String status) {
+		return StatusInfo.valueOf(status, details);
+	}
+
+	public StatusInfo withDetails(@Nullable Map<String, ?> details) {
+		return StatusInfo.valueOf(status, details);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static StatusInfo from(Map<String, ?> body) {
 		Map<String, ?> details = Collections.emptyMap();
