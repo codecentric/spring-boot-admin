@@ -345,17 +345,17 @@ export default {
       let nextByte = windowStart;
       const lines = content.split(/\n/);
       return lines
-      .filter((line, index) => index < lines.length - 1)
-      .map((line, index) => {
-        const lineBytes = this.byteLength(line) + this.byteLength('\n');
-        const renderedLine = this.createLine(
-          line,
-          nextByte,
-          nextByte + lineBytes - 1,
-        );
-        nextByte += lineBytes;
-        return renderedLine;
-      });
+        .filter((_, index) => index < lines.length - 1)
+        .map((line) => {
+          const lineBytes = this.byteLength(line) + this.byteLength('\n');
+          const renderedLine = this.createLine(
+            line,
+            nextByte,
+            nextByte + lineBytes - 1,
+          );
+          nextByte += lineBytes;
+          return renderedLine;
+        });
     },
     calculateLoadedBytes() {
       return Math.max(this.windowEnd - this.windowStart + 1, 0);
@@ -367,10 +367,10 @@ export default {
     appendRenderedLines(lines, windowStart, windowEnd) {
       let linesToAppend = [...lines];
       this.renderedLines = [...this.renderedLines, ...linesToAppend];
-      if(this.windowStart == -1){
+      if (this.windowStart == -1) {
         //first append
         this.windowStart = windowStart;
-      }else{
+      } else {
         this.windowStart = Math.min(windowStart, this.windowStart);
       }
       this.windowEnd = windowEnd;
@@ -393,8 +393,7 @@ export default {
         evictedLines += 1;
       }
       this.renderedLines.splice(0, evictedLines);
-      this.windowStart =
-        this.renderedLines[0]?.startByte ?? this.windowEnd + 1;
+      this.windowStart = this.renderedLines[0]?.startByte ?? this.windowEnd + 1;
     },
     renderLine(line) {
       return autolink(this.ansiUp.ansi_to_html(line));
@@ -541,14 +540,14 @@ export default {
       }
     },
     async setManualChunk(response, direction, scrollAnchorByte = null) {
-      let {data, totalBytes, windowStart, windowEnd, status} = response;
+      let { data, totalBytes, windowStart, windowEnd } = response;
 
       let renderedLines = this.splitLines(data, windowStart);
       this.windowStart = windowStart;
       this.windowEnd = windowEnd;
       this.totalBytes = totalBytes;
       this.displayLines = renderedLines;
-      
+
       this.hasLoaded = true;
       await this.$nextTick();
       if (scrollAnchorByte != null) {
@@ -644,7 +643,12 @@ export default {
     async loadChunk(start, end, direction, scrollAnchorByte = null) {
       this.isChunkLoading = true;
       try {
-        const response = await fetchLogfileRange(this.instance, start, end, direction);
+        const response = await fetchLogfileRange(
+          this.instance,
+          start,
+          end,
+          direction,
+        );
         await this.setManualChunk(response, direction, scrollAnchorByte);
       } catch (error) {
         if (this.isLogfileRangeInvalid(error)) {
@@ -658,7 +662,7 @@ export default {
       }
     },
     async loadPreviousChunk() {
-       const currentWindowStart =
+      const currentWindowStart =
         this.displayLines[0]?.startByte ?? this.windowStart;
       let end = currentWindowStart - 1;
       const start = Math.max(0, end - this.chunkSize + 1);
@@ -910,7 +914,7 @@ export default {
   100% {
     background: transparent;
   }
-   }
+}
 
 .log-viewer a[href] {
   @apply underline;

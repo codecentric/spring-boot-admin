@@ -123,8 +123,7 @@ export const TrimtoCompleteLines = (
   );
   const newWindowEnd =
     windowEnd - byteLength(content.substring(completeLineEnd + 1));
-  const newWindowStart =
-    newWindowEnd - byteLength(trimmedCompleteLines) + 1;
+  const newWindowStart = newWindowEnd - byteLength(trimmedCompleteLines) + 1;
 
   return {
     trimmedCompleteLines,
@@ -194,28 +193,26 @@ export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
             windowEnd,
             firstChunkSet,
           );
-          if(trimmed.contentType === ContentType.ShortContent){
+          if (trimmed.contentType === ContentType.ShortContent) {
             return EMPTY;
           }
-          if(!firstChunkSet){
+          if (!firstChunkSet) {
             firstChunkSet = true;
           }
           addendum = trimmed.trimmedCompleteLines;
           addendumWindowStart = trimmed.windowStart;
           addendumWindowEnd = trimmed.windowEnd;
           size = totalBytes;
-          lastCompleteByte = trimmed.windowEnd
+          lastCompleteByte = trimmed.windowEnd;
           range = `bytes=${lastCompleteByte}-`;
-          return of(
-            {
-              type: StreamType.Data,
-              totalBytes: size,
-              addendum,
-              windowStart: addendumWindowStart,
-              windowEnd: addendumWindowEnd,
-            }
-          )
-        }else{
+          return of({
+            type: StreamType.Data,
+            totalBytes: size,
+            addendum,
+            windowStart: addendumWindowStart,
+            windowEnd: addendumWindowEnd,
+          });
+        } else {
           return EMPTY;
         }
       } else {
@@ -226,25 +223,28 @@ export default (getFn, interval, initialSize = DEFAULT_LOGFILE_CHUNK_SIZE) => {
 };
 
 export const fetchLogfileRange = async (instance, start, end, direction) => {
-  let { data, totalBytes, windowStart, windowEnd, status } = await instance.fetchLogfileRange(start, end);
+  const { data, totalBytes, windowStart, windowEnd, status } =
+    await instance.fetchLogfileRange(start, end);
   //manual polling return type
-  if(start == 0 && end == 0){
+  if (start == 0 && end == 0) {
     return {
       data,
       totalBytes,
       windowStart,
       windowEnd,
-      status
-    }
+      status,
+    };
   }
-  let completeLineStart = data.indexOf('\n');
-  let completeLineEnd = data.lastIndexOf('\n');
+  const completeLineStart = data.indexOf('\n');
+  const completeLineEnd = data.lastIndexOf('\n');
   const hasAtLeastTwoNewLines =
-    completeLineStart !== -1 && (completeLineStart !== completeLineEnd);
-  if(!hasAtLeastTwoNewLines){
-    throw new Error('Too few lines: need at least two lines to display properly');
+    completeLineStart !== -1 && completeLineStart !== completeLineEnd;
+  if (!hasAtLeastTwoNewLines) {
+    throw new Error(
+      'Too few lines: need at least two lines to display properly',
+    );
   }
-  if(ChunkDirection.NEXT === direction){
+  if (ChunkDirection.NEXT === direction) {
     const trimmedCompleteLines = data.substring(0, completeLineEnd + 1);
     const newWindowEnd =
       windowEnd - byteLength(data.substring(completeLineEnd + 1));
@@ -253,8 +253,8 @@ export const fetchLogfileRange = async (instance, start, end, direction) => {
       totalBytes,
       windowStart,
       windowEnd: newWindowEnd,
-      status
-    }
+      status,
+    };
   }
   if (windowStart === 0) {
     const trimmedCompleteLines = data.substring(0, completeLineEnd + 1);
@@ -265,20 +265,22 @@ export const fetchLogfileRange = async (instance, start, end, direction) => {
       totalBytes,
       windowStart,
       windowEnd: newWindowEnd,
-      status
-    }
+      status,
+    };
   } else {
-    const trimmedCompleteLines = data.substring(completeLineStart + 1, completeLineEnd + 1);
+    const trimmedCompleteLines = data.substring(
+      completeLineStart + 1,
+      completeLineEnd + 1,
+    );
     const newWindowEnd =
       windowEnd - byteLength(data.substring(completeLineEnd + 1));
-    const newWindowStart =
-      newWindowEnd - byteLength(trimmedCompleteLines) + 1;
+    const newWindowStart = newWindowEnd - byteLength(trimmedCompleteLines) + 1;
     return {
       data: trimmedCompleteLines,
       totalBytes,
       windowStart: newWindowStart,
       windowEnd: newWindowEnd,
-      status
-    }
+      status,
+    };
   }
 };
