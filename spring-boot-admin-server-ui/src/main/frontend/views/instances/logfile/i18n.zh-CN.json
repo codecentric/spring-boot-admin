@@ -2,7 +2,16 @@
   "instances": {
     "logfile": {
       "label": "日志文件",
-      "download": "下载"
+      "download": "下载",
+      "wrap_lines": "自动换行",
+      "page_up": "向上翻页",
+      "page_down": "向下翻页",
+      "previous_chunk": "上一段",
+      "next_chunk": "下一段",
+      "resume_follow": "恢复跟踪",
+      "stop_follow": "停止跟踪",
+      "reconnecting": "正在重新连接...",
+      "compressed_reset": "日志文件已压缩，正在重置页面。"
     }
   }
 }

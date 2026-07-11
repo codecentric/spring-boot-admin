@@ -23,7 +23,7 @@ import axios, {
   registerErrorToastInterceptor,
 } from '../utils/axios';
 import waitForPolyfill from '../utils/eventsource-polyfill';
-import logtail from '../utils/logtail';
+import logtail, { getLogfileWindowMetadata } from '../utils/logtail';
 import uri from '../utils/uri';
 
 import { useSbaConfig } from '@/sba-config';
@@ -416,9 +416,33 @@ class Instance {
 
   streamLogfile(interval: number) {
     return logtail(
-      (opt) => this.axios.get(uri`actuator/logfile`, opt),
+      (opt) =>
+        this.axios.get(uri`actuator/logfile`, {
+          ...opt,
+          suppressToast: (error: AxiosError) => error.response?.status === 416,
+        }),
       interval,
     );
+  }
+
+  async fetchLogfileRange(start: number, end: number): Promise<LogfileRange> {
+    const response = await this.axios.get(uri`actuator/logfile`, {
+      responseType: 'text',
+      headers: {
+        Accept: 'text/plain',
+        Range: `bytes=${start}-${end}`,
+      },
+      suppressToast: (error: AxiosError) => error.response?.status === 416,
+    });
+    const metadata = getLogfileWindowMetadata(response);
+
+    return {
+      data: response.data,
+      totalBytes: metadata.totalBytes,
+      windowStart: metadata.windowStart,
+      windowEnd: metadata.windowEnd,
+      status: response.status,
+    };
   }
 
   async listMBeans() {
@@ -546,6 +570,14 @@ type InstanceData = {
 type Endpoint = {
   id: string;
   url: string;
+};
+
+export type LogfileRange = {
+  data: string;
+  totalBytes: number;
+  windowStart: number;
+  windowEnd: number;
+  status: number;
 };
 
 export const DOWN_STATES = ['OUT_OF_SERVICE', 'DOWN', 'OFFLINE', 'RESTRICTED'];

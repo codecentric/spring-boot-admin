@@ -3,7 +3,15 @@
     "logfile": {
       "label": "Log",
       "download": "Herunterladen",
-      "wrap_lines": "Zeilen umbrechen"
+      "wrap_lines": "Zeilen umbrechen",
+      "page_up": "Seite nach oben",
+      "page_down": "Seite nach unten",
+      "previous_chunk": "Vorheriger Abschnitt",
+      "next_chunk": "Nächster Abschnitt",
+      "resume_follow": "Live-Ansicht fortsetzen",
+      "stop_follow": "Live-Ansicht anhalten",
+      "reconnecting": "Verbindung wird wiederhergestellt...",
+      "compressed_reset": "Logdatei komprimiert, Seite wird zurückgesetzt."
     }
   }
 }

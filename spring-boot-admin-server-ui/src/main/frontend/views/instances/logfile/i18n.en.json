@@ -3,7 +3,15 @@
     "logfile": {
       "label": "Logfile",
       "download": "Download",
-      "wrap_lines": "Wrap lines"
+      "wrap_lines": "Wrap lines",
+      "page_up": "Page up",
+      "page_down": "Page down",
+      "previous_chunk": "Previous chunk",
+      "next_chunk": "Next chunk",
+      "resume_follow": "Resume follow",
+      "stop_follow": "Stop following",
+      "reconnecting": "Reconnecting...",
+      "compressed_reset": "Logfile compressed, resetting page."
     }
   }
 }
