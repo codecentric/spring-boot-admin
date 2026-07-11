@@ -196,7 +196,7 @@ describe('Instance', () => {
     });
 
     it('should handle single JSON log line correctly', async () => {
-      const payload = '{"foo":"bar"}';
+      const payload = '{"foo":"bar"}\n';
       server.use(
         http.get(
           '/instances/:instanceId/actuator/logfile',
