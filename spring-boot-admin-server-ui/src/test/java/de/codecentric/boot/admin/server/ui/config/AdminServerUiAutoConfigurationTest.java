@@ -74,7 +74,10 @@ class AdminServerUiAutoConfigurationTest implements WithAssertions {
 				adminUi, adminServer, webFluxProperties, applicationContext);
 		ResourceHandlerRegistry registry = new ResourceHandlerRegistry(applicationContext);
 
-		assertThatCode(() -> config.addResourceHandlers(registry)).doesNotThrowAnyException();
+		config.addResourceHandlers(registry);
+
+		assertThat(registry.hasMappingForPattern(adminServer.path("/**"))).isTrue();
+		assertThat(registry.hasMappingForPattern(adminServer.path("/extensions/**"))).isTrue();
 	}
 
 	@Test
@@ -87,7 +90,10 @@ class AdminServerUiAutoConfigurationTest implements WithAssertions {
 		org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry = new org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry(
 				applicationContext, mock(ServletContext.class), new ContentNegotiationManager(), new UrlPathHelper());
 
-		assertThatCode(() -> config.addResourceHandlers(registry)).doesNotThrowAnyException();
+		config.addResourceHandlers(registry);
+
+		assertThat(registry.hasMappingForPattern(adminServer.path("/**"))).isTrue();
+		assertThat(registry.hasMappingForPattern(adminServer.path("/extensions/**"))).isTrue();
 	}
 
 	@Nested
