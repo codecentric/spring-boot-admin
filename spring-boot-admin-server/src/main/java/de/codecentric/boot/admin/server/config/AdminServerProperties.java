@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ package de.codecentric.boot.admin.server.config;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -51,6 +53,8 @@ public class AdminServerProperties {
 	private InstanceAuthProperties instanceAuth = new InstanceAuthProperties();
 
 	private InstanceProxyProperties instanceProxy = new InstanceProxyProperties();
+
+	private SsrfProtectionProperties ssrfProtection = new SsrfProtectionProperties();
 
 	/**
 	 * The metadata keys which should be sanitized when serializing to JSON
@@ -254,6 +258,35 @@ public class AdminServerProperties {
 		 * Headers not to be forwarded when making requests to clients.
 		 */
 		private Set<String> ignoredHeaders = new HashSet<>(asList("Cookie", "Set-Cookie", "Authorization"));
+
+	}
+
+	@lombok.Data
+	public static class SsrfProtectionProperties {
+
+		/**
+		 * Whether SSRF protection is enabled. When enabled, registration URLs are
+		 * validated against blocked schemes and non-external IP addresses. Default: false
+		 * (opt-in).
+		 */
+		private boolean enabled = false;
+
+		/**
+		 * URL schemes that are permitted. Any scheme not in this list is blocked.
+		 * Default: http, https.
+		 */
+		private Set<String> allowedSchemes = new HashSet<>(asList("http", "https"));
+
+		/**
+		 * Additional IP addresses or CIDR ranges (IPv4 and IPv6) that are permitted even
+		 * if they would otherwise be blocked by the default
+		 * {@code InetAddressFilter.externalAddresses()} filter. Useful for intranet
+		 * deployments where the Admin Server must reach services on private IP ranges.
+		 * <p>
+		 * Examples: {@code 192.168.1.100}, {@code 192.168.1.0/24}, {@code 10.0.0.0/8},
+		 * {@code fd00::/8}
+		 */
+		private List<String> allowedCidrs = new ArrayList<>();
 
 	}
 

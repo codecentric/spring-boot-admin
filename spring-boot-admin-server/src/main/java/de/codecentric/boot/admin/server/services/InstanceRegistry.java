@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,17 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.util.Assert;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import de.codecentric.boot.admin.server.config.AdminServerProperties.SsrfProtectionProperties;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 
 /**
  * Registry for all application instances that should be managed/administrated by the
@@ -38,10 +41,19 @@ public class InstanceRegistry {
 
 	private final InstanceFilter filter;
 
+	private final SsrfUrlValidator ssrfUrlValidator;
+
 	public InstanceRegistry(InstanceRepository repository, InstanceIdGenerator generator, InstanceFilter filter) {
+		this(repository, generator, filter,
+				new SsrfUrlValidator(new SsrfProtectionProperties(), InetAddressFilter.externalAddresses()));
+	}
+
+	public InstanceRegistry(InstanceRepository repository, InstanceIdGenerator generator, InstanceFilter filter,
+			SsrfUrlValidator ssrfUrlValidator) {
 		this.repository = repository;
 		this.generator = generator;
 		this.filter = filter;
+		this.ssrfUrlValidator = ssrfUrlValidator;
 	}
 
 	/**
@@ -51,6 +63,9 @@ public class InstanceRegistry {
 	 */
 	public Mono<InstanceId> register(Registration registration) {
 		Assert.notNull(registration, "'registration' must not be null");
+		ssrfUrlValidator.validate(registration.getHealthUrl());
+		ssrfUrlValidator.validate(registration.getManagementUrl());
+		ssrfUrlValidator.validate(registration.getServiceUrl());
 		InstanceId id = generator.generateId(registration);
 		Assert.notNull(id, "'id' must not be null");
 		return repository.compute(id, (key, instance) -> {

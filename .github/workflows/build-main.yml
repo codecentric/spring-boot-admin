@@ -15,6 +15,7 @@ jobs:
         os: [ ubuntu-latest ]
 
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
 
@@ -56,6 +57,7 @@ jobs:
   publish-snapshot:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v7
