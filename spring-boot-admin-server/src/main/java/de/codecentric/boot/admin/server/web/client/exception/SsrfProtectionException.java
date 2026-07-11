@@ -26,4 +26,8 @@ public class SsrfProtectionException extends IllegalArgumentException {
 		super(message);
 	}
 
+	public SsrfProtectionException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }

@@ -106,9 +106,9 @@ public class InstanceWebProxy {
 		try {
 			// ForwardRequest.uri is a relative path built by the proxy controllers (no
 			// host). The actual host is supplied by InstanceWebClient when it resolves
-			// the instance's management URL. Absolute URIs (if ever present) are
-			// validated; relative ones have no host to check.
-			ssrfUrlValidator.validate(forwardRequest.getUri().isAbsolute() ? forwardRequest.getUri().toString() : null);
+			// the instance's management URL. The validator skips relative URIs and only
+			// inspects absolute ones (if ever present).
+			ssrfUrlValidator.validate(forwardRequest.getUri());
 		}
 		catch (SsrfProtectionException ex) {
 			log.warn("SSRF protection blocked proxy request for instance {} to '{}': {}", instance.getId(),

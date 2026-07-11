@@ -70,6 +70,8 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 @Lazy(false)
 public class AdminServerAutoConfiguration {
 
+	public static final String SSRF_INET_ADDRESS_FILTER_BEAN_NAME = "ssrfInetAddressFilter";
+
 	private final AdminServerProperties adminServerProperties;
 
 	public AdminServerAutoConfiguration(AdminServerProperties adminServerProperties) {
@@ -82,8 +84,8 @@ public class AdminServerAutoConfiguration {
 		return (instance) -> true;
 	}
 
-	@Bean
-	@ConditionalOnMissingBean(name = "ssrfInetAddressFilter")
+	@Bean(name = SSRF_INET_ADDRESS_FILTER_BEAN_NAME)
+	@ConditionalOnMissingBean(name = SSRF_INET_ADDRESS_FILTER_BEAN_NAME)
 	public InetAddressFilter ssrfInetAddressFilter() {
 		InetAddressFilter filter = InetAddressFilter.externalAddresses();
 		List<String> allowedCidrs = this.adminServerProperties.getSsrfProtection().getAllowedCidrs();

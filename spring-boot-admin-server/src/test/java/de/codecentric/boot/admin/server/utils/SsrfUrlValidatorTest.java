@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.utils;
 
+import java.net.URI;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -52,7 +54,8 @@ class SsrfUrlValidatorTest {
 
 	@Test
 	void ignores_nullAndBlankUrls() {
-		assertThatCode(() -> validator.validate(null)).doesNotThrowAnyException();
+		assertThatCode(() -> validator.validate((String) null)).doesNotThrowAnyException();
+		assertThatCode(() -> validator.validate((URI) null)).doesNotThrowAnyException();
 		assertThatCode(() -> validator.validate("")).doesNotThrowAnyException();
 		assertThatCode(() -> validator.validate("   ")).doesNotThrowAnyException();
 	}

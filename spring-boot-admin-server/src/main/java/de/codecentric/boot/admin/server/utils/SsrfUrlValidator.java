@@ -74,10 +74,7 @@ public class SsrfUrlValidator {
 	 * protection is enabled
 	 */
 	public void validate(@Nullable String url) {
-		if (!properties.isEnabled()) {
-			return;
-		}
-		if (!StringUtils.hasText(url)) {
+		if (!properties.isEnabled() || !StringUtils.hasText(url)) {
 			return;
 		}
 
@@ -87,9 +84,34 @@ public class SsrfUrlValidator {
 		}
 		catch (URISyntaxException ex) {
 			throw new SsrfProtectionException(
-					"URL '" + url + "' is not a valid URI and cannot be validated: " + ex.getMessage());
+					"URL '" + url + "' is not a valid URI and cannot be validated: " + ex.getMessage(), ex);
 		}
 
+		validate(uri);
+	}
+
+	/**
+	 * Validates the given URI against the configured SSRF protection rules.
+	 * @param uri the URI to validate (may be {@code null}, which is skipped)
+	 * @throws SsrfProtectionException if the URI violates a protection rule and
+	 * protection is enabled
+	 */
+	public void validate(@Nullable URI uri) {
+		if (!properties.isEnabled()) {
+			return;
+		}
+		if (uri == null) {
+			return;
+		}
+		// Relative URIs (e.g. path-only proxy requests built by the proxy controllers)
+		// have no host to validate; the actual host is supplied downstream by the HTTP
+		// client and enforced there via the InetAddressFilter. Only absolute URIs carry
+		// a scheme/host we can inspect here.
+		if (!uri.isAbsolute()) {
+			return;
+		}
+
+		String url = uri.toString();
 		checkScheme(url, uri.getScheme());
 
 		String host = uri.getHost();
