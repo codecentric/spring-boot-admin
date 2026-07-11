@@ -33,6 +33,13 @@
 
     <properties>
         <ui-resources.relative-path>META-INF/spring-boot-admin-server-ui</ui-resources.relative-path>
+
+        <npm.install.args>ci --prefer-offline --no-progress --no-audit --silent</npm.install.args>
+        <npm.build.args>run build</npm.build.args>
+        <npm.lint.args>run lint</npm.lint.args>
+        <npm.test.args>run test</npm.test.args>
+        <!-- To be overridden with -Dnpm.registry=https://foo.bar if the standard registry is not wanted or not accessible -->
+        <npm.registry>https://registry.npmjs.org/</npm.registry>
     </properties>
 
     <dependencies>
@@ -122,6 +129,83 @@
                 </plugins>
             </build>
         </profile>
+        <!--
+        Profile: localNpm
+        Set this profile to run frontend related build steps using the local NPM installation.
+        Skipping frontend tests can be achieved by using default flag -D skipTests.
+        -->
+        <profile>
+            <id>localNpm</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>npm-install</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>npm</executable>
+                                    <commandlineArgs>${npm.install.args}</commandlineArgs>
+                                    <environmentVariables>
+                                        <NPM_CONFIG_REGISTRY>${npm.registry}</NPM_CONFIG_REGISTRY>
+                                    </environmentVariables>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm-build</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>npm</executable>
+                                    <commandlineArgs>${npm.build.args}</commandlineArgs>
+                                    <environmentVariables>
+                                        <PROJECT_VERSION>${project.version}</PROJECT_VERSION>
+                                    </environmentVariables>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm-lint</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>npm</executable>
+                                    <commandlineArgs>${npm.lint.args}</commandlineArgs>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm-test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skipTests}</skip>
+                                    <executable>npm</executable>
+                                    <commandlineArgs>${npm.test.args}</commandlineArgs>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <build>
@@ -155,7 +239,7 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>ci --prefer-offline --no-progress --no-audit --silent</arguments>
+                            <arguments>${npm.install.args}</arguments>
                         </configuration>
                     </execution>
                     <execution>
@@ -164,7 +248,7 @@
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build</arguments>
+                            <arguments>${npm.build.args}</arguments>
                             <environmentVariables>
                                 <PROJECT_VERSION>${project.version}</PROJECT_VERSION>
                             </environmentVariables>
@@ -177,7 +261,7 @@
                         </goals>
                         <phase>verify</phase>
                         <configuration>
-                            <arguments>run lint</arguments>
+                            <arguments>${npm.lint.args}</arguments>
                         </configuration>
                     </execution>
                     <execution>
@@ -187,7 +271,7 @@
                         </goals>
                         <phase>test</phase>
                         <configuration>
-                            <arguments>run test</arguments>
+                            <arguments>${npm.test.args}</arguments>
                         </configuration>
                     </execution>
                 </executions>
