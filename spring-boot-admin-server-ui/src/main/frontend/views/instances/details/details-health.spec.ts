@@ -13,10 +13,10 @@ describe('DetailsHealth', () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
 
-    // Mock fetchHealth for groups (will be called once on mount)
-    instance.fetchHealth = vi
+    // Mock fetchCachedHealthGroups for groups (will be called once on mount)
+    instance.fetchCachedHealthGroups = vi
       .fn()
-      .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
+      .mockResolvedValue({ data: ['liveness'] });
 
     render(DetailsHealth, {
       props: {
@@ -32,9 +32,9 @@ describe('DetailsHealth', () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
 
-    instance.fetchHealth = vi
+    instance.fetchCachedHealthGroups = vi
       .fn()
-      .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
+      .mockResolvedValue({ data: ['liveness'] });
 
     render(DetailsHealth, {
       props: {
@@ -56,9 +56,9 @@ describe('DetailsHealth', () => {
   it('should update when instance prop changes', async () => {
     const application = new Application(applications[0]);
     const instance1 = application.instances[0];
-    instance1.fetchHealth = vi
+    instance1.fetchCachedHealthGroups = vi
       .fn()
-      .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
+      .mockResolvedValue({ data: ['liveness'] });
 
     const { rerender } = render(DetailsHealth, {
       props: {
@@ -78,9 +78,7 @@ describe('DetailsHealth', () => {
         },
       ],
     }).instances[0];
-    instance2.fetchHealth = vi
-      .fn()
-      .mockResolvedValue({ data: { status: 'DOWN', groups: [] } });
+    instance2.fetchCachedHealthGroups = vi.fn().mockResolvedValue({ data: [] });
 
     await rerender({ instance: instance2 });
 
@@ -92,9 +90,9 @@ describe('DetailsHealth', () => {
     const application = new Application(applications[0]);
     const instance = application.instances[0];
     instance.statusInfo = { status: 'UP', details: {} };
-    instance.fetchHealth = vi
+    instance.fetchCachedHealthGroups = vi
       .fn()
-      .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
+      .mockResolvedValue({ data: ['liveness'] });
 
     render(DetailsHealth, {
       props: {
@@ -107,22 +105,22 @@ describe('DetailsHealth', () => {
   });
 
   describe('SSE reactive updates', () => {
-    it('should call fetchHealth once on mount, not on SSE version changes', async () => {
+    it('should re-fetch cached health groups on SSE version changes', async () => {
       const baseApp = applications[0];
       const instance1 = new Application(baseApp).instances[0];
-      const fetchHealthSpy1 = vi.spyOn(instance1, 'fetchHealth');
-      fetchHealthSpy1.mockResolvedValue({
-        data: { status: 'UP', groups: ['liveness'] },
-      } as AxiosResponse);
+      instance1.fetchCachedHealthGroups = vi
+        .fn()
+        .mockResolvedValue({ data: ['liveness'] });
 
       const { rerender } = render(DetailsHealth, {
         props: { instance: instance1 },
       });
 
       await screen.findAllByRole('status');
-      expect(fetchHealthSpy1).toHaveBeenCalledTimes(1);
+      expect(instance1.fetchCachedHealthGroups).toHaveBeenCalledTimes(1);
 
-      // Same instance, different version (SSE update) — should NOT call fetchHealth again
+      // Same instance, different version (SSE update) — should re-fetch the
+      // (server-cached) group list so it self-corrects when groups change.
       const instance2 = new Application({
         ...baseApp,
         instances: [
@@ -133,24 +131,25 @@ describe('DetailsHealth', () => {
           },
         ],
       }).instances[0];
-      const fetchHealthSpy2 = vi.spyOn(instance2, 'fetchHealth');
-      fetchHealthSpy2.mockResolvedValue({
-        data: { status: 'DOWN', groups: [] },
-      } as AxiosResponse);
+      instance2.fetchCachedHealthGroups = vi
+        .fn()
+        .mockResolvedValue({ data: ['liveness', 'readiness'] });
 
       await rerender({ instance: instance2 });
 
-      // Original instance's spy should still be 1 (no additional calls)
-      expect(fetchHealthSpy1).toHaveBeenCalledTimes(1);
+      // The new instance's cached groups should have been fetched on the SSE update.
+      await waitFor(() => {
+        expect(instance2.fetchCachedHealthGroups).toHaveBeenCalledTimes(1);
+      });
     });
 
-    it('should reactively update through multiple SSE status changes without extra HTTP calls', async () => {
+    it('should reactively update health status and details through SSE status changes', async () => {
       const baseApp = applications[0];
 
       const instance1 = new Application(baseApp).instances[0];
-      instance1.fetchHealth = vi
+      instance1.fetchCachedHealthGroups = vi
         .fn()
-        .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
+        .mockResolvedValue({ data: ['liveness'] });
 
       const { rerender } = render(DetailsHealth, {
         props: { instance: instance1 },
@@ -178,9 +177,9 @@ describe('DetailsHealth', () => {
           },
         ],
       }).instances[0];
-      instance2.fetchHealth = vi
+      instance2.fetchCachedHealthGroups = vi
         .fn()
-        .mockResolvedValue({ data: { status: 'DOWN', groups: [] } });
+        .mockResolvedValue({ data: [] });
 
       await rerender({ instance: instance2 });
 
@@ -197,8 +196,8 @@ describe('DetailsHealth', () => {
     it('should display health group buttons after mount', async () => {
       const application = new Application(applications[0]);
       const instance = application.instances[0];
-      instance.fetchHealth = vi.fn().mockResolvedValue({
-        data: { status: 'UP', groups: ['liveness', 'readiness'] },
+      instance.fetchCachedHealthGroups = vi.fn().mockResolvedValue({
+        data: ['liveness', 'readiness'],
       });
       const fetchGroupSpy = vi.spyOn(instance, 'fetchHealthGroup');
 
@@ -220,8 +219,8 @@ describe('DetailsHealth', () => {
     it('should fetch group details on first click', async () => {
       const application = new Application(applications[0]);
       const instance = application.instances[0];
-      instance.fetchHealth = vi.fn().mockResolvedValue({
-        data: { status: 'UP', groups: ['custom-group'] },
+      instance.fetchCachedHealthGroups = vi.fn().mockResolvedValue({
+        data: ['custom-group'],
       });
       const fetchGroupSpy = vi.spyOn(instance, 'fetchHealthGroup');
       fetchGroupSpy.mockResolvedValue({
@@ -270,8 +269,8 @@ describe('DetailsHealth', () => {
     it('should toggle group visibility after data is loaded', async () => {
       const application = new Application(applications[0]);
       const instance = application.instances[0];
-      instance.fetchHealth = vi.fn().mockResolvedValue({
-        data: { status: 'UP', groups: ['custom-group'] },
+      instance.fetchCachedHealthGroups = vi.fn().mockResolvedValue({
+        data: ['custom-group'],
       });
       const fetchGroupSpy = vi.spyOn(instance, 'fetchHealthGroup');
       fetchGroupSpy.mockResolvedValue({
@@ -309,8 +308,8 @@ describe('DetailsHealth', () => {
     it('should not show groups when none exist', async () => {
       const application = new Application(applications[0]);
       const instance = application.instances[0];
-      instance.fetchHealth = vi.fn().mockResolvedValue({
-        data: { status: 'UP', groups: [] },
+      instance.fetchCachedHealthGroups = vi.fn().mockResolvedValue({
+        data: [],
       });
 
       render(DetailsHealth, {
@@ -326,16 +325,16 @@ describe('DetailsHealth', () => {
 
     it('should re-fetch groups when instance id changes', async () => {
       const app1 = new Application(applications[0]).instances[0];
-      app1.fetchHealth = vi
+      app1.fetchCachedHealthGroups = vi
         .fn()
-        .mockResolvedValue({ data: { status: 'UP', groups: ['liveness'] } });
+        .mockResolvedValue({ data: ['liveness'] });
 
       const { rerender } = render(DetailsHealth, {
         props: { instance: app1 },
       });
 
       await waitFor(() => {
-        expect(app1.fetchHealth).toHaveBeenCalledTimes(1);
+        expect(app1.fetchCachedHealthGroups).toHaveBeenCalledTimes(1);
       });
 
       const app2 = new Application({
@@ -347,18 +346,18 @@ describe('DetailsHealth', () => {
           },
         ],
       }).instances[0];
-      app2.fetchHealth = vi
+      app2.fetchCachedHealthGroups = vi
         .fn()
-        .mockResolvedValue({ data: { status: 'UP', groups: ['readiness'] } });
+        .mockResolvedValue({ data: ['readiness'] });
 
       await rerender({ instance: app2 });
 
       await waitFor(() => {
-        expect(app2.fetchHealth).toHaveBeenCalledTimes(1);
+        expect(app2.fetchCachedHealthGroups).toHaveBeenCalledTimes(1);
       });
 
       // Original instance should still have only 1 call
-      expect(app1.fetchHealth).toHaveBeenCalledTimes(1);
+      expect(app1.fetchCachedHealthGroups).toHaveBeenCalledTimes(1);
     });
   });
 });

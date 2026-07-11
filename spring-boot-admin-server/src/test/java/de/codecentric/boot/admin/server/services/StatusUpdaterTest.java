@@ -72,6 +72,10 @@ class StatusUpdaterTest {
 
 	private Instance instance;
 
+	private HealthGroupsCache healthGroupsCache;
+
+	private InstanceId instanceId;
+
 	@BeforeAll
 	static void setUp() {
 		StepVerifier.setDefaultTimeout(Duration.ofSeconds(5));
@@ -87,10 +91,12 @@ class StatusUpdaterTest {
 		this.wireMock.start();
 		this.eventStore = new InMemoryEventStore();
 		this.repository = new EventsourcingInstanceRepository(this.eventStore);
-		this.instance = Instance.create(InstanceId.of("id"))
+		this.instanceId = InstanceId.of("id");
+		this.instance = Instance.create(this.instanceId)
 			.register(Registration.create("foo", this.wireMock.url("/health")).build());
 		StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1).verifyComplete();
 
+		this.healthGroupsCache = new InMemoryHealthGroupsCache();
 		this.updater = createWith(StatusChangeDetectionStrategy.STATUS_ONLY);
 	}
 
@@ -101,7 +107,7 @@ class StatusUpdaterTest {
 					.filter(retry(0, singletonMap(Endpoint.HEALTH, 1)))
 					.filter(timeout(Duration.ofSeconds(2), emptyMap()))
 					.build(),
-				new ApiMediaTypeHandler(), statusChangeDetectionStrategy.asPredicate());
+				new ApiMediaTypeHandler(), statusChangeDetectionStrategy.asPredicate(), this.healthGroupsCache);
 	}
 
 	@AfterEach
@@ -310,6 +316,30 @@ class StatusUpdaterTest {
 			assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP");
 			assertThat(app.getStatusInfo().getDetails()).isEqualTo(details);
 		}).verifyComplete();
+	}
+
+	@Test
+	void should_cache_health_groups() {
+		String body = "{ \"status\" : \"UP\", \"groups\" : [\"liveness\", \"readiness\"] }";
+		this.wireMock.stubFor(
+				get("/health").willReturn(okForContentType(ApiVersion.LATEST.getProducedMimeType().toString(), body)
+					.withHeader("Content-Length", Integer.toString(body.length()))));
+
+		StepVerifier.create(this.updater.updateStatus(this.instanceId)).verifyComplete();
+
+		assertThat(this.healthGroupsCache.getGroups(this.instanceId)).containsExactly("liveness", "readiness");
+	}
+
+	@Test
+	void should_handle_missing_groups_in_health_response() {
+		String body = "{ \"status\" : \"UP\" }";
+		this.wireMock.stubFor(
+				get("/health").willReturn(okForContentType(ApiVersion.LATEST.getProducedMimeType().toString(), body)
+					.withHeader("Content-Length", Integer.toString(body.length()))));
+
+		StepVerifier.create(this.updater.updateStatus(this.instanceId)).verifyComplete();
+
+		assertThat(this.healthGroupsCache.getGroups(this.instanceId)).isEmpty();
 	}
 
 }

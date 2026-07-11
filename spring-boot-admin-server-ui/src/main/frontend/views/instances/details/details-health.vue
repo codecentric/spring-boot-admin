@@ -154,9 +154,13 @@ export default defineComponent({
       }
       return false;
     },
+    healthGroupsKey() {
+      // Only re-fetch on meaningful status changes; deliberately excludes
+      return `${this.instance.id}:${this.instance.statusInfo?.status ?? ''}:${this.instance.statusTimestamp ?? ''}`;
+    },
   },
   watch: {
-    instance: {
+    healthGroupsKey: {
       handler: 'onInstanceChanged',
       immediate: true,
     },
@@ -175,15 +179,9 @@ export default defineComponent({
         this.healthGroupOpenStatus = {};
         this.healthGroupLoadingMap = {};
         this.healthGroupsError = null;
-        this.fetchHealthGroups();
-      } else {
-        // Same instance, SSE update (e.g. status change) — collapse groups and clear stale data
-        for (const group of this.healthGroups) {
-          group.data = null;
-        }
-        this.healthGroupOpenStatus = {};
-        this.healthGroupLoadingMap = {};
       }
+      // Re-fetch the (server-cached) group list on every instance change
+      this.fetchHealthGroups();
     },
     isHealthGroupOpen(groupName: string) {
       return this.healthGroupOpenStatus[groupName]?.isOpen ?? false;
@@ -214,10 +212,22 @@ export default defineComponent({
       this.healthGroupsError = null;
 
       try {
-        const res = await this.instance.fetchHealth();
+        const res = await this.instance.fetchCachedHealthGroups();
 
-        if (Array.isArray(res.data.groups)) {
-          this.healthGroups = res.data.groups.map((name: string) => ({
+        if (Array.isArray(res.data)) {
+          const currentNames = this.healthGroups.map((g) => g.name);
+          const incomingNames = res.data;
+          const unchanged =
+            currentNames.length === incomingNames.length &&
+            currentNames.every((name, idx) => name === incomingNames[idx]);
+
+          // Skip reassignment when the group list is unchanged to preserve
+          // the accordion open/loading state and avoid needless re-renders.
+          if (unchanged) {
+            return;
+          }
+
+          this.healthGroups = incomingNames.map((name: string) => ({
             name,
             data: null,
           }));

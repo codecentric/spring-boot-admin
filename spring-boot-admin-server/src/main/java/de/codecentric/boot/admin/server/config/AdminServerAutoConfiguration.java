@@ -42,6 +42,9 @@ import de.codecentric.boot.admin.server.services.ApplicationRegistry;
 import de.codecentric.boot.admin.server.services.EndpointDetectionTrigger;
 import de.codecentric.boot.admin.server.services.EndpointDetector;
 import de.codecentric.boot.admin.server.services.HashingInstanceUrlIdGenerator;
+import de.codecentric.boot.admin.server.services.HealthGroupsCache;
+import de.codecentric.boot.admin.server.services.HealthGroupsCacheCleanupListener;
+import de.codecentric.boot.admin.server.services.InMemoryHealthGroupsCache;
 import de.codecentric.boot.admin.server.services.InfoUpdateTrigger;
 import de.codecentric.boot.admin.server.services.InfoUpdater;
 import de.codecentric.boot.admin.server.services.InstanceFilter;
@@ -98,13 +101,20 @@ public class AdminServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	public HealthGroupsCache healthGroupsCache() {
+		return new InMemoryHealthGroupsCache();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
 	public StatusUpdater statusUpdater(InstanceRepository instanceRepository,
-			InstanceWebClient.Builder instanceWebClientBuilder) {
+			InstanceWebClient.Builder instanceWebClientBuilder, HealthGroupsCache healthGroupsCache) {
 
 		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
 
 		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
-				new ApiMediaTypeHandler(), monitorProperties.getStatusChangeDetectionStrategy().asPredicate());
+				new ApiMediaTypeHandler(), monitorProperties.getStatusChangeDetectionStrategy().asPredicate(),
+				healthGroupsCache);
 
 		Duration timeout = monitorProperties.getDefaultTimeout();
 		Duration interval = monitorProperties.getStatusInterval();
@@ -134,6 +144,13 @@ public class AdminServerAutoConfiguration {
 
 		return new StatusUpdateTrigger(statusUpdater, events, statusInterval, monitorProperties.getStatusLifetime(),
 				monitorProperties.getStatusMaxBackoff());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public HealthGroupsCacheCleanupListener healthGroupsCacheCleanupListener(Publisher<InstanceEvent> events,
+			HealthGroupsCache healthGroupsCache) {
+		return new HealthGroupsCacheCleanupListener(events, healthGroupsCache);
 	}
 
 	@Bean
