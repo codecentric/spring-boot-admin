@@ -21,10 +21,13 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
@@ -86,6 +89,7 @@ public class AdminServerAutoConfiguration {
 
 	@Bean(name = SSRF_INET_ADDRESS_FILTER_BEAN_NAME)
 	@ConditionalOnMissingBean(name = SSRF_INET_ADDRESS_FILTER_BEAN_NAME)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.ssrf-protection", name = "enabled", havingValue = "true")
 	public InetAddressFilter ssrfInetAddressFilter() {
 		InetAddressFilter filter = InetAddressFilter.externalAddresses();
 		List<String> allowedCidrs = this.adminServerProperties.getSsrfProtection().getAllowedCidrs();
@@ -97,8 +101,14 @@ public class AdminServerAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SsrfUrlValidator ssrfUrlValidator(InetAddressFilter ssrfInetAddressFilter) {
-		return new SsrfUrlValidator(this.adminServerProperties.getSsrfProtection(), ssrfInetAddressFilter);
+	public SsrfUrlValidator ssrfUrlValidator(
+			@Qualifier(SSRF_INET_ADDRESS_FILTER_BEAN_NAME) ObjectProvider<InetAddressFilter> ssrfInetAddressFilter) {
+		// The InetAddressFilter bean is only registered when SSRF protection is enabled
+		// (see ssrfInetAddressFilter()). When absent, fall back to the default external
+		// filter; SsrfUrlValidator only consults it while protection is enabled, so this
+		// fallback is never exercised in the default (disabled) configuration.
+		InetAddressFilter filter = ssrfInetAddressFilter.getIfAvailable(InetAddressFilter::externalAddresses);
+		return new SsrfUrlValidator(this.adminServerProperties.getSsrfProtection(), filter);
 	}
 
 	@Bean

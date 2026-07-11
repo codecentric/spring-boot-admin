@@ -22,6 +22,7 @@ import com.hazelcast.config.Config;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
+import org.springframework.boot.http.client.InetAddressFilter;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.webclient.autoconfigure.WebClientAutoConfiguration;
@@ -39,6 +40,7 @@ import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.services.StatusUpdater;
+import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -87,6 +89,22 @@ class AdminServerAutoConfigurationTest {
 				StatusUpdater updater = context.getBean(StatusUpdater.class);
 				assertThat(updater).extracting("timeout").isEqualTo(Duration.ofSeconds(10));
 			});
+	}
+
+	@Test
+	void shouldNotRegisterInetAddressFilterByDefault() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(InetAddressFilter.class);
+			assertThat(context).hasSingleBean(SsrfUrlValidator.class);
+		});
+	}
+
+	@Test
+	void shouldRegisterInetAddressFilterWhenSsrfProtectionEnabled() {
+		this.contextRunner.withPropertyValues("spring.boot.admin.ssrf-protection.enabled=true").run((context) -> {
+			assertThat(context).hasSingleBean(InetAddressFilter.class);
+			assertThat(context).hasSingleBean(SsrfUrlValidator.class);
+		});
 	}
 
 	public static class TestHazelcastConfig {
