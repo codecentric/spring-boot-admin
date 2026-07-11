@@ -1087,4 +1087,5 @@ public class SecurityConfig {
 
 * [Server Authentication](/4.1.2-SNAPSHOT/docs/security/server-authentication.md) - Configure Spring Security
 * [Actuator Security](/4.1.2-SNAPSHOT/docs/security/actuator-security.md) - Secure client endpoints
+* [SSRF Protection](/4.1.2-SNAPSHOT/docs/security/ssrf-protection.md) - Block SSRF attacks via the instance registration endpoint
 * [Spring Security CSRF Documentation](https://docs.spring.io/spring-security/reference/servlet/exploits/csrf.html)

@@ -39,6 +39,7 @@
 - [Actuator Security](/docs/security/actuator-security.md): Secure your client application's actuator endpoints and configure Spring Boot Admin Server to access them.
 - [CSRF Protection](/docs/security/csrf-protection.md): Configure Cross-Site Request Forgery (CSRF) protection for Spring Boot Admin while allowing client registration.
 - [Server Authentication](/docs/security/server-authentication.md): Secure your Spring Boot Admin Server using Spring Security to protect the UI and API endpoints.
+- [SSRF Protection](/docs/security/ssrf-protection.md): Spring Boot Admin Server includes opt-in protection against Server-Side Request Forgery (SSRF) attacks that can be
 - [Spring Boot Admin Server](/docs/server.md): The Spring Boot Admin Server acts as the core component for managing and monitoring multiple Spring Boot applications.
 - [Clustering](/docs/server/Clustering.md): Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a HazelcastConfig\- or HazelcastInstance\-Bean is present.
 - [Server(-Sent) Events](/docs/server/Events.md): Spring Boot Admin uses event sourcing per default to track changes of registered applications.

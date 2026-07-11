@@ -41,7 +41,18 @@ Configure CSRF tokens for Admin UI while allowing client registration:
 
 **See**: [CSRF Protection](/4.1.2-SNAPSHOT/docs/security/csrf-protection.md)
 
-### 4. Mutual TLS (Optional)[​](#4-mutual-tls-optional "Direct link to 4. Mutual TLS (Optional)")
+### 4. SSRF Protection[​](#4-ssrf-protection "Direct link to 4. SSRF Protection")
+
+Prevent Server-Side Request Forgery via the instance registration API:
+
+* **IP Range Blocking**: Reject private/internal addresses in registered URLs
+* **Scheme Allowlist**: Permit only `http` and `https`
+* **Allowlist Override**: Explicitly permit intranet services by hostname
+* **Proxy-time Validation**: Re-validate resolved URLs before each outbound request
+
+**See**: [SSRF Protection](/4.1.2-SNAPSHOT/docs/security/ssrf-protection.md)
+
+### 5. Mutual TLS (Optional)[​](#5-mutual-tls-optional "Direct link to 5. Mutual TLS (Optional)")
 
 Enhanced security with client certificates:
 
@@ -181,6 +192,8 @@ Use this checklist to ensure your deployment is secure:
   Enable HTTP Basic for API/programmatic access
 * <!-- -->
   Configure CSRF protection with exemptions for `/instances`
+* <!-- -->
+  Enable SSRF protection (`spring.boot.admin.ssrf-protection.enabled=true`)
 * <!-- -->
   Set up remember-me with secure random key
 * <!-- -->
@@ -676,6 +689,7 @@ public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
 * [Server Authentication](/4.1.2-SNAPSHOT/docs/security/server-authentication.md) - Secure Admin Server with Spring Security
 * [Actuator Security](/4.1.2-SNAPSHOT/docs/security/actuator-security.md) - Secure client actuator endpoints
 * [CSRF Protection](/4.1.2-SNAPSHOT/docs/security/csrf-protection.md) - Configure CSRF for UI and API
+* [SSRF Protection](/4.1.2-SNAPSHOT/docs/security/ssrf-protection.md) - Block SSRF attacks via instance registration
 
 ***
 
