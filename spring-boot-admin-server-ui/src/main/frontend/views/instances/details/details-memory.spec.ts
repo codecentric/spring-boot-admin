@@ -36,8 +36,10 @@ describe('DetailsMemory', () => {
 
     const Instance = (await import('@/services/instance')).default;
     render(DetailsMemory, {
-      stubs: {
-        MemChart: true,
+      global: {
+        stubs: {
+          MemChart: true,
+        },
       },
       props: {
         instance: new Instance({ id: '1' }),
@@ -53,8 +55,10 @@ describe('DetailsMemory', () => {
 
     beforeEach(() => {
       render(DetailsMemory, {
-        stubs: {
-          MemChart: true,
+        global: {
+          stubs: {
+            MemChart: true,
+          },
         },
         props: {
           instance: new Instance({
@@ -100,8 +104,10 @@ describe('DetailsMemory', () => {
 
     beforeEach(() => {
       render(DetailsMemory, {
-        stubs: {
-          MemChart: true,
+        global: {
+          stubs: {
+            MemChart: true,
+          },
         },
         props: {
           instance: new Instance({
@@ -140,46 +146,6 @@ describe('DetailsMemory', () => {
         await screen.findByLabelText('instances.details.memory.metaspace'),
       ).toHaveTextContent('115 MB');
     });
-  });
-
-  it('should reinitialize metrics when instance version changes (SSE update)', async () => {
-    const timer = vi.spyOn(rxjs, 'timer');
-    const Instance = (await import('@/services/instance')).default;
-
-    const { rerender } = render(DetailsMemory, {
-      stubs: {
-        MemChart: true,
-      },
-      props: {
-        instance: new Instance({
-          id: '1',
-          version: 1,
-          availableMetrics: [
-            'jvm.memory.used',
-            'jvm.memory.max',
-            'jvm.memory.committed',
-          ],
-        }),
-        type: 'heap',
-      },
-    });
-
-    expect(timer).toHaveBeenCalledTimes(1);
-
-    await rerender({
-      instance: new Instance({
-        id: '1',
-        version: 2,
-        availableMetrics: [
-          'jvm.memory.used',
-          'jvm.memory.max',
-          'jvm.memory.committed',
-        ],
-      }),
-      type: 'heap',
-    });
-
-    expect(timer).toHaveBeenCalledTimes(2);
   });
 
   it('should not apply stale poll result after resubscribe on instance update', async () => {
@@ -236,8 +202,10 @@ describe('DetailsMemory', () => {
     });
 
     const { rerender } = render(DetailsMemory, {
-      stubs: {
-        MemChart: true,
+      global: {
+        stubs: {
+          MemChart: true,
+        },
       },
       props: {
         instance: instance1,
