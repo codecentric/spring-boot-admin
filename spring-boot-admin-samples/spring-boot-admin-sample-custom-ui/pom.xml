@@ -21,7 +21,7 @@
 
     <artifactId>spring-boot-admin-sample-custom-ui</artifactId>
 
-    <name>Spring Boot Admin Server custom UI</name>
+    <name>Spring Boot Admin Sample Custom UI</name>
     <description>Spring Boot Admin Server custom UI</description>
 
     <parent>
