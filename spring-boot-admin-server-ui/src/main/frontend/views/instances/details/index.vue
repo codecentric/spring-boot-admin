@@ -115,11 +115,7 @@ export default {
   }),
   computed: {
     instanceUpdateKey() {
-      return (
-        this.instance.version ??
-        this.instance.statusTimestamp ??
-        this.instance.id
-      );
+      return this.instance.id;
     },
     hasCaches() {
       return this.hasMetric('cache.gets');

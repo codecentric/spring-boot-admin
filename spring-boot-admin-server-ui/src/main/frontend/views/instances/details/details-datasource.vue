@@ -106,10 +106,7 @@ export default {
   },
   methods: {
     initDatasourceMetrics() {
-      const updateKey =
-        this.instance.version ??
-        this.instance.statusTimestamp ??
-        this.instance.id;
+      const updateKey = this.instance.id;
       const firstInit = this.currentInstanceId === null;
       if (
         this.instance.id !== this.currentInstanceId ||
