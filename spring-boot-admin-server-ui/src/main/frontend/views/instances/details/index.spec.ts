@@ -9,16 +9,6 @@ import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import { render } from '@/test-utils';
 
-function deferred<T>() {
-  let resolve!: (value: T) => void;
-  let reject!: (reason?: any) => void;
-  const promise = new Promise<T>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  return { promise, resolve, reject };
-}
-
 describe('InstanceDetails', () => {
   describe('Metrics', () => {
     it('should hide loading spinner, when network call fails', async () => {
