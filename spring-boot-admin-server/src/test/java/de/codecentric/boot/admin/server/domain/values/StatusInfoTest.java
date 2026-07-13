@@ -17,10 +17,13 @@
 package de.codecentric.boot.admin.server.domain.values;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_DOWN;
 import static de.codecentric.boot.admin.server.domain.values.StatusInfo.STATUS_OFFLINE;
@@ -117,13 +120,25 @@ class StatusInfoTest {
 		assertThat(restricted.isRestricted()).isTrue();
 	}
 
-	@Test
-	void when_first_level_key_is_components() {
+	@ParameterizedTest
+	@ValueSource(strings = { "components", "details" })
+	void when_first_level_key_expected_nested_details(String key) {
+		Map<String, Object> details = singletonMap("foo", "bar");
 		Map<String, Object> map = new HashMap<>();
 		map.put("status", "UP");
-		map.put("components", singletonMap("foo", "bar"));
+		map.put(key, details);
 
-		assertThat(StatusInfo.from(map)).isEqualTo(StatusInfo.ofUp(singletonMap("foo", "bar")));
+		assertThat(StatusInfo.from(map)).isEqualTo(StatusInfo.ofUp(details));
+	}
+
+	@Test
+	void should_preserve_details_order() {
+		Map<String, Object> details = new LinkedHashMap<>();
+		details.put("a", "x");
+		details.put("c", "z");
+		details.put("b", "y");
+
+		assertThat(StatusInfo.valueOf("UP", details).getDetails()).isEqualTo(details);
 	}
 
 	@Test

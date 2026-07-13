@@ -19,7 +19,7 @@ package de.codecentric.boot.admin.server.notify;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -93,9 +93,9 @@ class MailNotifierTest {
 
 	@Test
 	void should_send_mail_using_default_template() throws IOException, MessagingException {
-		Map<String, Object> details = new HashMap<>();
-		details.put("Simple Value", 1234);
+		Map<String, Object> details = new LinkedHashMap<>();
 		details.put("Complex Value", singletonMap("Nested Simple Value", "99!"));
+		details.put("Simple Value", 1234);
 
 		StepVerifier.create(notifier.notify(
 				new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown(details))))
