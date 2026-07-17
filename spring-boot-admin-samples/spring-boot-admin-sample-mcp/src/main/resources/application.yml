@@ -1,16 +1,3 @@
-logging:
-  file:
-    name: "target/boot-admin-sample-mcp.log"
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: ALWAYS
-
 spring:
   application:
     name: spring-boot-admin-sample-mcp
@@ -30,3 +17,20 @@ spring:
   profiles:
     active:
       - insecure
+
+logging:
+  file:
+    name: "target/boot-admin-sample-mcp.log"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+    restart:
+      enabled: true
+    refresh:
+      enabled: true
