@@ -35,6 +35,8 @@ jobs:
           df -h
 
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
 
       - name: Set up settings.xml for Maven Central Repository
         uses: actions/setup-java@v5
