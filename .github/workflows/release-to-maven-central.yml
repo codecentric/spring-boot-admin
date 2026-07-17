@@ -6,11 +6,11 @@ on:
       releaseversion:
         description: "Version to release and publish to maven central."
         required: true
-      copyDocsToCurrent:
-        description: "Mark docs as 'latest'? This will create a redirect from /current to the version being published. This should only be set for the latest version of the documentation."
+      latest:
+        description: "Is this the latest version?"
         required: true
         type: boolean
-        default: false
+        default: true
 
 env:
   VERSION: ${{ github.event.inputs.releaseversion }}
@@ -86,7 +86,7 @@ jobs:
 
       - name: Deploy redirect for /current to /${{ github.event.inputs.releaseversion }}
         uses: JamesIves/github-pages-deploy-action@v4.8.0
-        if: github.event.inputs.copyDocsToCurrent == 'true'
+        if: github.event.inputs.latest == 'true'
         with:
           branch: gh-pages
           folder: spring-boot-admin-docs/target/generated-docs/build/current
@@ -95,7 +95,7 @@ jobs:
 
       - name: Deploy deeplink redirect for /current/* to /${{ github.event.inputs.releaseversion }}/*
         uses: JamesIves/github-pages-deploy-action@v4.8.0
-        if: github.event.inputs.copyDocsToCurrent == 'true'
+        if: github.event.inputs.latest == 'true'
         with:
           branch: gh-pages
           folder: spring-boot-admin-docs/target/generated-docs/build/current
@@ -135,5 +135,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: ${{ contains(github.event.inputs.releaseversion, '-') }}
-
+          make_latest: ${{ github.event.inputs.latest }}
+          body: ${{ steps.changelog.outputs.changelog }}
 
