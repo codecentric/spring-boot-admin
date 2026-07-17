@@ -13,18 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import NotificationcenterPlugin from '@stekoe/vue-toast-notificationcenter';
 import userEvent from '@testing-library/user-event';
-import { screen, within } from '@testing-library/vue';
+import { screen, render as tlRender, within } from '@testing-library/vue';
+import { RouterLinkStub } from '@vue/test-utils';
+import PrimeVue from 'primevue/config';
+import Tooltip from 'primevue/tooltip';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { createI18n } from 'vue-i18n';
+import {
+  type LocationQueryRaw,
+  createMemoryHistory,
+  createRouter,
+} from 'vue-router';
 
 import JournalTable from './JournalTable.vue';
 
+import components from '@/components/index';
+
+import SbaModalPlugin from '@/plugins/modal';
 import Application from '@/services/application';
 import { render } from '@/test-utils';
 import {
   InstanceEvent,
   InstanceEventType,
 } from '@/views/journal/InstanceEvent';
+
+let terms = {};
+const modules: Record<string, any> = import.meta.glob('@/**/i18n.en.json', {
+  eager: true,
+});
+for (const modulesKey in modules) {
+  terms = { ...terms, ...modules[modulesKey] };
+}
 
 describe('JournalTable', () => {
   let events: InstanceEvent[];
@@ -215,44 +236,17 @@ describe('JournalTable', () => {
       });
 
       // Get all rows before filtering
-      let rows = screen.getAllByRole('row');
-      let dataRows = rows.slice(1);
-      expect(dataRows).toHaveLength(8);
+      expect(getVisibleRows()).toHaveLength(8);
 
-      // Find and click the application column filter button
-      const applicationHeader = screen.getByText('Application');
-      const filterButton = applicationHeader
-        .closest('th')
-        ?.querySelector('[data-pc-section="columnfilter"]');
+      const { dialog, multiselect, listbox } = await openMultiSelectFilter(
+        user,
+        'Application',
+      );
 
-      if (filterButton) {
-        await user.click(filterButton);
+      await selectOption(user, listbox, 'Alpha App');
+      await applyFilter(user, dialog, multiselect);
 
-        // Find and select "Alpha App" from the MultiSelect dropdown
-        const alphaOption = await screen.findByText('Alpha App');
-        await user.click(alphaOption);
-
-        // Close the filter menu by clicking outside or on the filter button again
-        await user.click(filterButton);
-
-        // Get rows after filtering
-        rows = screen.getAllByRole('row');
-        dataRows = rows.slice(1);
-
-        // Extract application names from visible rows
-        const applicationNames = dataRows
-          .map((row) => {
-            const cells = within(row).queryAllByRole('cell');
-            return cells[1]?.textContent?.trim();
-          })
-          .filter(Boolean);
-
-        // Verify only "Alpha App" events are shown
-        expect(applicationNames.every((name) => name === 'Alpha App')).toBe(
-          true,
-        );
-        expect(dataRows).toHaveLength(2);
-      }
+      expect(getVisibleColumnValues(1)).toEqual(['Alpha App', 'Alpha App']);
     });
 
     it('should filter by multiple applications', async () => {
@@ -265,50 +259,55 @@ describe('JournalTable', () => {
         },
       });
 
-      // Find and click the application column filter button
-      const applicationHeader = screen.getByText('Application');
-      const filterButton = applicationHeader
-        .closest('th')
-        ?.querySelector('[data-pc-section="columnfilter"]');
+      const { dialog, multiselect, listbox } = await openMultiSelectFilter(
+        user,
+        'Application',
+      );
 
-      if (filterButton) {
-        await user.click(filterButton);
+      await selectOptions(user, listbox, [
+        'Alpha App',
+        'Delta App',
+        'Zebra App',
+      ]);
+      await applyFilter(user, dialog, multiselect);
 
-        // Select multiple applications
-        const alphaOption = await screen.findByText('Alpha App');
-        await user.click(alphaOption);
+      const applicationNames = getVisibleColumnValues(1);
 
-        const betaOption = await screen.findByText('Beta App');
-        await user.click(betaOption);
+      expect(applicationNames).toHaveLength(4);
+      expect(applicationNames).toEqual(
+        expect.arrayContaining(['Alpha App', 'Delta App', 'Zebra App']),
+      );
+      expect(applicationNames).not.toContain('Beta App');
+      expect(applicationNames).not.toContain('Gamma App');
+    });
 
-        const gammaOption = await screen.findByText('Gamma App');
-        await user.click(gammaOption);
+    it('keeps the multiselect overlay open for multiple mouse selections', async () => {
+      const user = userEvent.setup();
 
-        // Close the filter
-        await user.click(filterButton);
+      render(JournalTable, {
+        props: {
+          events,
+          applications,
+        },
+      });
 
-        // Get rows after filtering
-        const rows = screen.getAllByRole('row');
-        const dataRows = rows.slice(1);
+      const { dialog, multiselect, listbox } = await openMultiSelectFilter(
+        user,
+        'Application',
+      );
 
-        // Extract application names
-        const applicationNames = dataRows
-          .map((row) => {
-            const cells = within(row).queryAllByRole('cell');
-            return cells[1]?.textContent?.trim();
-          })
-          .filter(Boolean);
+      await selectOption(user, listbox, 'Alpha App');
 
-        // Verify only selected apps are shown
-        expect(dataRows).toHaveLength(4);
-        expect(applicationNames).toContain('Alpha App');
-        expect(applicationNames).toContain('Beta App');
-        expect(applicationNames).toContain('Gamma App');
-        expect(applicationNames).not.toContain('Delta App');
-        expect(applicationNames).not.toContain('Epsilon App');
-        expect(applicationNames).not.toContain('Theta App');
-        expect(applicationNames).not.toContain('Zebra App');
-      }
+      expect(listbox).toBeVisible();
+      expect(getOption(listbox, 'Delta App')).toBeVisible();
+
+      await selectOption(user, listbox, 'Delta App');
+
+      expect(listbox).toBeVisible();
+      expectOptionSelected(listbox, 'Alpha App');
+      expectOptionSelected(listbox, 'Delta App');
+
+      await applyFilter(user, dialog, multiselect);
     });
   });
 
@@ -403,43 +402,17 @@ describe('JournalTable', () => {
         },
       });
 
-      // Get all rows before filtering
-      let rows = screen.getAllByRole('row');
-      let dataRows = rows.slice(1);
-      expect(dataRows).toHaveLength(8);
+      expect(getVisibleRows()).toHaveLength(8);
 
-      // Find and click the instance column filter button
-      const instanceHeader = screen.getByText('Instance');
-      const filterButton = instanceHeader
-        .closest('th')
-        ?.querySelector('[data-pc-section="columnfilter"]');
+      const { dialog, multiselect, listbox } = await openMultiSelectFilter(
+        user,
+        'Instance',
+      );
 
-      if (filterButton) {
-        await user.click(filterButton);
+      await selectOption(user, listbox, 'instance-2');
+      await applyFilter(user, dialog, multiselect);
 
-        // Find and select "instance-2" from the MultiSelect dropdown
-        const instance2Option = await screen.findByText('instance-2');
-        await user.click(instance2Option);
-
-        // Close the filter menu
-        await user.click(filterButton);
-
-        // Get rows after filtering
-        rows = screen.getAllByRole('row');
-        dataRows = rows.slice(1);
-
-        // Extract instance IDs from visible rows
-        const instanceIds = dataRows
-          .map((row) => {
-            const cells = within(row).queryAllByRole('cell');
-            return cells[2]?.textContent?.trim();
-          })
-          .filter(Boolean);
-
-        // Verify only "instance-2" events are shown
-        expect(instanceIds.every((id) => id === 'instance-2')).toBe(true);
-        expect(dataRows).toHaveLength(2);
-      }
+      expect(getVisibleColumnValues(2)).toEqual(['instance-2', 'instance-2']);
     });
 
     it('should filter by multiple instances', async () => {
@@ -452,50 +425,25 @@ describe('JournalTable', () => {
         },
       });
 
-      // Find and click the instance column filter button
-      const instanceHeader = screen.getByText('Instance');
-      const filterButton = instanceHeader
-        .closest('th')
-        ?.querySelector('[data-pc-section="columnfilter"]');
+      const { dialog, multiselect, listbox } = await openMultiSelectFilter(
+        user,
+        'Instance',
+      );
 
-      if (filterButton) {
-        await user.click(filterButton);
+      await selectOptions(user, listbox, [
+        'instance-1',
+        'instance-3',
+        'instance-5',
+      ]);
+      await applyFilter(user, dialog, multiselect);
 
-        // Select multiple instances
-        const instance1Option = await screen.findByText('instance-1');
-        await user.click(instance1Option);
+      const instanceIds = getVisibleColumnValues(2);
 
-        const instance3Option = await screen.findByText('instance-3');
-        await user.click(instance3Option);
-
-        const instance5Option = await screen.findByText('instance-5');
-        await user.click(instance5Option);
-
-        // Close the filter
-        await user.click(filterButton);
-
-        // Get rows after filtering
-        const rows = screen.getAllByRole('row');
-        const dataRows = rows.slice(1);
-
-        // Extract instance IDs
-        const instanceIds = dataRows
-          .map((row) => {
-            const cells = within(row).queryAllByRole('cell');
-            return cells[2]?.textContent?.trim();
-          })
-          .filter(Boolean);
-
-        // Verify only selected instances are shown
-        expect(dataRows).toHaveLength(3);
-        expect(instanceIds).toContain('instance-1');
-        expect(instanceIds).toContain('instance-3');
-        expect(instanceIds).toContain('instance-5');
-        expect(instanceIds).not.toContain('instance-2');
-        expect(instanceIds).not.toContain('instance-4');
-        expect(instanceIds).not.toContain('instance-6');
-        expect(instanceIds).not.toContain('instance-7');
-      }
+      expect(instanceIds).toHaveLength(3);
+      expect(instanceIds).toEqual(
+        expect.arrayContaining(['instance-1', 'instance-3', 'instance-5']),
+      );
+      expect(instanceIds).not.toContain('instance-2');
     });
   });
 
@@ -658,43 +606,20 @@ describe('JournalTable', () => {
         },
       });
 
-      // Get all rows before filtering
-      let rows = screen.getAllByRole('row');
-      let dataRows = rows.slice(1);
-      expect(dataRows).toHaveLength(8);
+      expect(getVisibleRows()).toHaveLength(8);
 
-      // Find and click the event column filter button
-      const eventHeader = screen.getByText('Event');
-      const filterButton = eventHeader
-        .closest('th')
-        ?.querySelector('[data-pc-section="columnfilter"]');
+      const { dialog, multiselect, listbox } = await openMultiSelectFilter(
+        user,
+        'Event',
+      );
 
-      if (filterButton) {
-        await user.click(filterButton);
+      await selectOption(user, listbox, 'INFO_CHANGED');
+      await applyFilter(user, dialog, multiselect);
 
-        // Find and select "INFO_CHANGED" from the MultiSelect dropdown
-        const infoChangedOption = await screen.findByText('INFO_CHANGED');
-        await user.click(infoChangedOption);
-
-        // Close the filter menu
-        await user.click(filterButton);
-
-        // Get rows after filtering
-        rows = screen.getAllByRole('row');
-        dataRows = rows.slice(1);
-
-        // Extract event types from visible rows
-        const eventTypes = dataRows
-          .map((row) => {
-            const cells = within(row).queryAllByRole('cell');
-            return cells[4]?.textContent?.trim();
-          })
-          .filter(Boolean);
-
-        // Verify only "INFO_CHANGED" events are shown
-        expect(eventTypes.every((type) => type === 'INFO_CHANGED')).toBe(true);
-        expect(dataRows).toHaveLength(2);
-      }
+      expect(getVisibleColumnValues(4)).toEqual([
+        'INFO_CHANGED',
+        'INFO_CHANGED',
+      ]);
     });
 
     it('should filter by multiple event types', async () => {
@@ -707,49 +632,220 @@ describe('JournalTable', () => {
         },
       });
 
-      // Find and click the event column filter button
-      const eventHeader = screen.getByText('Event');
-      const filterButton = eventHeader
-        .closest('th')
-        ?.querySelector('[data-pc-section="columnfilter"]');
+      const { dialog, multiselect, listbox } = await openMultiSelectFilter(
+        user,
+        'Event',
+      );
 
-      if (filterButton) {
-        await user.click(filterButton);
+      await selectOptions(user, listbox, [
+        'REGISTERED',
+        'DEREGISTERED',
+        'STATUS_CHANGED',
+      ]);
+      await applyFilter(user, dialog, multiselect);
 
-        // Select multiple event types
-        const registeredOption = await screen.findByText('REGISTERED');
-        await user.click(registeredOption);
+      const eventTypes = getVisibleColumnValues(4);
 
-        const deregisteredOption = await screen.findByText('DEREGISTERED');
-        await user.click(deregisteredOption);
+      expect(eventTypes).toHaveLength(4);
+      expect(eventTypes).toEqual(
+        expect.arrayContaining([
+          'REGISTERED',
+          'DEREGISTERED',
+          'STATUS_CHANGED',
+        ]),
+      );
+      expect(eventTypes).not.toContain('INFO_CHANGED');
+      expect(eventTypes).not.toContain('REGISTRATION_UPDATED');
+    });
 
-        const statusChangedOption = await screen.findByText('STATUS_CHANGED');
-        await user.click(statusChangedOption);
+    it('preselects filters from route query on mount and shows selected values', async () => {
+      const user = userEvent.setup();
 
-        // Close the filter
-        await user.click(filterButton);
+      await renderJournalTableWithRouter({
+        events,
+        applications,
+        query: {
+          q: 'Alpha',
+          application: ['Alpha App'],
+          instanceId: ['instance-2'],
+          type: ['INFO_CHANGED'],
+        },
+      });
 
-        // Get rows after filtering
-        const rows = screen.getAllByRole('row');
-        const dataRows = rows.slice(1);
+      expect(screen.getByRole('textbox')).toHaveValue('Alpha');
 
-        // Extract event types
-        const eventTypes = dataRows
-          .map((row) => {
-            const cells = within(row).queryAllByRole('cell');
-            return cells[4]?.textContent?.trim();
-          })
-          .filter(Boolean);
+      expect(getVisibleColumnValues(1)).toEqual(['Alpha App']);
+      expect(getVisibleColumnValues(2)).toEqual(['instance-2']);
+      expect(getVisibleColumnValues(4)).toEqual(['INFO_CHANGED']);
 
-        // Verify only selected event types are shown
-        expect(dataRows).toHaveLength(4);
-        expect(eventTypes).toContain('REGISTERED');
-        expect(eventTypes).toContain('DEREGISTERED');
-        expect(eventTypes).toContain('STATUS_CHANGED');
-        expect(eventTypes).not.toContain('INFO_CHANGED');
-        expect(eventTypes).not.toContain('REGISTRATION_UPDATED');
-        expect(eventTypes).not.toContain('ENDPOINTS_DETECTED');
-      }
+      await expectPreselectedOption(user, 'Application', 'Alpha App');
+      await expectPreselectedOption(user, 'Instance', 'instance-2');
+      await expectPreselectedOption(user, 'Event', 'INFO_CHANGED');
     });
   });
 });
+
+function getColumnFilterButton(headerText: string) {
+  const header = screen.getByText(headerText);
+  const headerCell = header.closest('th');
+
+  if (!headerCell) {
+    throw new Error(`Header cell for ${headerText} not found`);
+  }
+
+  return within(headerCell).getByRole('button', { name: /Filter Menu/ });
+}
+
+function getVisibleColumnValues(columnIndex: number) {
+  return getVisibleRows()
+    .map((row) =>
+      within(row).queryAllByRole('cell')[columnIndex]?.textContent?.trim(),
+    )
+    .filter(Boolean);
+}
+
+function getVisibleRows() {
+  return screen.getAllByRole('row').slice(1);
+}
+
+function getOption(listbox: HTMLElement, name: string) {
+  return within(listbox).getByRole('option', { name });
+}
+
+function expectOptionSelected(listbox: HTMLElement, name: string) {
+  expect(getOption(listbox, name)).toHaveAttribute('aria-selected', 'true');
+}
+
+function getMultiSelectTrigger(container: HTMLElement) {
+  const combobox = within(container).getByRole('combobox');
+  const trigger = combobox.closest('[data-pc-name="multiselect"]');
+
+  if (!(trigger instanceof HTMLElement)) {
+    throw new Error('MultiSelect trigger not found');
+  }
+
+  return trigger;
+}
+
+async function openMultiSelectFilter(
+  user: ReturnType<typeof userEvent.setup>,
+  headerText: string,
+) {
+  await user.click(getColumnFilterButton(headerText));
+
+  const dialog = await screen.findByRole('dialog');
+  const multiselect = getMultiSelectTrigger(dialog);
+
+  await user.click(multiselect);
+
+  return {
+    dialog,
+    multiselect,
+    listbox: await screen.findByRole('listbox'),
+  };
+}
+
+async function selectOption(
+  user: ReturnType<typeof userEvent.setup>,
+  listbox: HTMLElement,
+  optionName: string,
+) {
+  await user.click(getOption(listbox, optionName));
+}
+
+async function selectOptions(
+  user: ReturnType<typeof userEvent.setup>,
+  listbox: HTMLElement,
+  optionNames: string[],
+) {
+  for (const optionName of optionNames) {
+    await selectOption(user, listbox, optionName);
+  }
+}
+
+async function applyFilter(
+  user: ReturnType<typeof userEvent.setup>,
+  dialog: HTMLElement,
+  multiselect: HTMLElement,
+) {
+  await user.click(multiselect);
+  await user.click(within(dialog).getByRole('button', { name: 'Apply' }));
+}
+
+async function expectPreselectedOption(
+  user: ReturnType<typeof userEvent.setup>,
+  headerText: string,
+  optionName: string,
+) {
+  const { multiselect, listbox } = await openMultiSelectFilter(
+    user,
+    headerText,
+  );
+
+  expectOptionSelected(listbox, optionName);
+
+  await user.click(multiselect);
+  await user.click(getColumnFilterButton(headerText));
+}
+
+async function renderJournalTableWithRouter({
+  events,
+  applications,
+  query = {},
+}: {
+  events: InstanceEvent[];
+  applications: Application[];
+  query?: LocationQueryRaw;
+}) {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', component: JournalTable }],
+  });
+
+  await router.push({ path: '/', query });
+  await router.isReady();
+
+  return tlRender(JournalTable, {
+    props: {
+      events,
+      applications,
+    },
+    global: {
+      plugins: [
+        router,
+        createI18n({
+          locale: 'en',
+          messages: {
+            en: terms,
+          },
+          legacy: false,
+          fallbackWarn: false,
+          missingWarn: false,
+        }),
+        NotificationcenterPlugin,
+        SbaModalPlugin,
+        [
+          PrimeVue,
+          {
+            theme: {
+              options: {
+                darkModeSelector: false,
+              },
+            },
+          },
+        ],
+        components,
+      ],
+      directives: {
+        tooltip: Tooltip,
+      },
+      stubs: {
+        RouterLink: RouterLinkStub,
+        'sba-exchanges-chart': true,
+        'font-awesome-icon': {
+          template: '<svg data-testid="icon" />',
+        },
+      },
+    },
+  });
+}
