@@ -1,82 +1,108 @@
 # Spring Boot Admin by [codecentric](https://codecentric.de)
+
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 ![Build Status](https://github.com/codecentric/spring-boot-admin/actions/workflows/build-main.yml/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/codecentric/spring-boot-admin/branch/master/graph/badge.svg?token=u5SWsZpj5S)](https://codecov.io/gh/codecentric/spring-boot-admin)
 ![Maven Central Version](https://img.shields.io/maven-central/v/de.codecentric/spring-boot-admin)
 
-This community project provides an admin interface for [Spring Boot <sup>®</sup>](http://projects.spring.io/spring-boot/ "Official Spring-Boot website") web applications that expose actuator endpoints.
+**Admin UI for Spring Boot applications**
 
-Monitoring Python applications is available using [Pyctuator](https://github.com/SolarEdgeTech/pyctuator).
+Spring Boot Admin provides a web-based dashboard for monitoring and
+managing [Spring Boot®](https://spring.io/projects/spring-boot) applications. It displays application health, metrics,
+logs, thread information, and configuration through an intuitive web interface.
 
-## Compatibility Matrix
-In the Spring Boot Admin Server App, the Spring Boot Admin's version matches the major and minor versions of Spring Boot.
+## Purpose & Goals
 
-| Spring Boot Version | Spring Boot Admin |
-|---------------------|-------------------|
-| 2.7                 | 2.7.Y             |
-| 3.0                 | 3.0.Y             |
-| 4.0                 | 4.0.Y             |
+### Why Spring Boot Admin?
 
-Nevertheless, it is possible to monitor any version of a Spring Boot service independently of the underlying Spring Boot version in the service.
-Hence, it is possible to run Spring Boot Admin Server version 2.6 and monitor a service that is running on Spring Boot 2.3 using Spring Boot Admin Client version 2.3.
+Spring Boot Actuator exposes rich runtime data, but consuming it through raw REST endpoints or JMX is cumbersome. Spring
+Boot Admin bridges this gap with **operational visibility** out-of-the-box for any application that exposes actuator
+endpoints—no custom dashboards or monitoring tools required.
 
-## Getting Started
+### Design Philosophy
 
-[A quick guide](https://docs.spring-boot-admin.com/current) to get started can be found in our docs.
+**Simplicity without sacrificing power.** Add a dependency and monitoring starts immediately. The interface stays
+readable at a glance, while remaining production-ready and extensible for security, multi-application deployments, and
+custom UIs.
 
-There are introductory talks available on YouTube:
+### Who Benefits from Spring Boot Admin?
 
-<a href="https://youtu.be/Ql1Gnz4L_-c" target="_blank"><img src="https://i.ytimg.com/vi/Ql1Gnz4L_-c/maxresdefault.jpg"
-alt="Cloud Native Spring Boot® Admin by Johannes Edmeier @ Spring I/O 2019" width="240" height="135" border="10" /></a><br>
-**Cloud Native Spring Boot® Admin by Johannes Edmeier @ Spring I/O 2019**
+Development teams diagnose issues during development, operations teams monitor production, and DevOps/SRE teams fold it
+into their observability stack. It scales from a single application to hundreds of microservices with minimal overhead.
 
-<a href="https://youtu.be/__zkypwjSMs" target="_blank"><img src="https://i.ytimg.com/vi/__zkypwjSMs/maxresdefault.jpg"
-alt="Monitoring Spring Boot® Applications with Spring Boot Admin @ Spring I/O 2018" width="240" height="135" border="10" /></a><br>
-**Monitoring Spring Boot® Applications with Spring Boot Admin @ Spring I/O 2018**
+## ✨ Features
 
-<a href="https://goo.gl/2tRiUi" target="_blank"><img src="https://i.ytimg.com/vi/PWd9Q8_4OFo/maxresdefault.jpg"
-alt="Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime" width="240" height="135" border="10" /></a><br>
-**Spring Boot® Admin - Monitoring and Configuring Spring Boot Applications at Runtime**
+- **Real-time Monitoring** - Application health, metrics, and performance dashboard
+- **Log Viewer** - Stream and search application logs directly from the UI
+- **Environment Inspector** - Browse application properties and environment variables
+- **Thread Viewer** - Inspect thread dumps and thread information
+- **HTTP Trace** - Monitor HTTP requests and responses
+- **JMX Beans** - Manage and inspect JMX beans
+- **Multi-Application Support** - Monitor multiple applications from a single server
+- **Cross-Platform** - Monitor applications running on different Spring Boot versions
+- **Fully Extensible** - Customize the UI and add custom views
+- **Secure** - Built-in authentication and authorization support
 
-## Getting Help
+## Compatibility
 
-Having trouble with codecentric's Spring Boot Admin? We’d like to help!
+Spring Boot Admin versions track Spring Boot's major and minor versions as follows:
 
- * Check the [reference documentation](http://codecentric.github.io/spring-boot-admin/current/).
+| Spring Boot | Spring Boot Admin |
+|-------------|-------------------|
+| 3.Y.Z       | 3.X.c             |
+| 4.0.Y       | 4.0.c             |
+| 4.1.Y       | 4.1.c             |
 
- * Ask a question on [stackoverflow.com](http://stackoverflow.com/questions/tagged/spring-boot-admin) - we monitor questions tagged with `spring-boot-admin`.
+**Note:** You can monitor applications running on any Spring Boot version, independently of the admin server version.
+For example, monitor a Spring Boot 2.7 application using the 2.7.y client with a 4.1.x admin server.
 
- * Ask for help in our [spring-boot-admin Gitter chat](https://gitter.im/codecentric/spring-boot-admin)
+### Snapshot Builds
 
- * Report bugs at http://github.com/codecentric/spring-boot-admin/issues.
+For the latest development version, add this repository:
 
-## Reference Guide
-### Translated versions
-The following reference guides have been translated by users of Spring Boot Admin and are not part of the official bundle.
-The maintainers of Spring Boot Admin will not update and maintain the guides mentioned below.
-
-[Version 2.6.6 (Chinese translated by @qq253498229)](https://consolelog.gitee.io/docs-spring-boot-admin-docs-chinese/)
-
-## Trademarks and licenses
-The source code of codecentric's Spring Boot Admin is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-
-Spring, Spring Boot and Spring Cloud are trademarks of [Pivotal Software, Inc.](https://pivotal.io/) in the U.S. and other countries.
-
-## Snapshot builds
-You can access snapshot builds from the github snapshot repository by adding the following to your `repositories`:
 ```xml
+
 <repository>
-	<id>sba-snapshot</id>
-	<name>Spring Boot Admin Snapshots</name>
-	<url>https://maven.pkg.github.com/codecentric/spring-boot-admin</url>
-	<snapshots>
-		<enabled>true</enabled>
-	</snapshots>
-	<releases>
-		<enabled>false</enabled>
-	</releases>
+    <id>sba-snapshot</id>
+    <name>Spring Boot Admin Snapshots</name>
+    <url>https://maven.pkg.github.com/codecentric/spring-boot-admin</url>
+    <snapshots>
+        <enabled>true</enabled>
+    </snapshots>
+    <releases>
+        <enabled>false</enabled>
+    </releases>
 </repository>
 ```
 
 ## Contributing
-See [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting a pull request.
+
+| Resource                    | Link                                                                                                                                |
+|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| Contribution Guide          | [CONTRIBUTING.md](CONTRIBUTING.md)                                                                                                  |
+| Good first issues           | [label: ideal-for-contribution](https://github.com/codecentric/spring-boot-admin/issues?q=is%3Aopen+label%3Aideal-for-contribution) |
+| Open Issues                 | [GitHub Issues](https://github.com/codecentric/spring-boot-admin/issues)                                                            |
+| Spring Java Format Plugin   | [spring-io/spring-javaformat](https://github.com/spring-io/spring-javaformat)                                                       |
+| Spring Framework Code Style | [Code Style Wiki](https://github.com/spring-projects/spring-framework/wiki/Code-Style)                                              |
+| IntelliJ Formatter Plugin   | [spring-javaformat#intellij-idea](https://github.com/spring-io/spring-javaformat#intellij-idea)                                     |
+
+## Getting Help
+
+- **Documentation** — [Reference Guide](https://docs.spring-boot-admin.com/current)
+- **Stack Overflow** — [Ask questions tagged
+  `spring-boot-admin`](https://stackoverflow.com/questions/tagged/spring-boot-admin)
+- **Chat** — [Gitter Community](https://gitter.im/codecentric/spring-boot-admin)
+- **Issues** — [Report bugs on GitHub](https://github.com/codecentric/spring-boot-admin/issues)
+
+## License
+
+Spring Boot Admin is open source software released under
+the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+Spring, Spring Boot, and Spring Cloud are trademarks of [VMware, Inc.](https://www.vmware.com/)
+
+---
+
+Built by [codecentric](https://codecentric.de)
