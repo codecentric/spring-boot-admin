@@ -326,10 +326,24 @@ Then pass credentials in the MCP client configuration:
 | Property | Default | Description |
 |---|---|---|
 | `spring.boot.admin.mcp.enabled` | `false` | Enable the MCP server integration |
+| `spring.boot.admin.mcp.tools.applications` | `true` | Register the `list-applications` tool |
+| `spring.boot.admin.mcp.tools.health` | `true` | Register the `get-health` and `get-status` tools |
+| `spring.boot.admin.mcp.tools.metrics` | `true` | Register the `list-metrics` and `get-metrics` tools |
+| `spring.boot.admin.mcp.tools.env` | `true` | Register the `get-env` and `list-env` tools |
+| `spring.boot.admin.mcp.tools.logs` | `true` | Register the `get-logs` tool |
+| `spring.boot.admin.mcp.tools.operations` | `true` | Register the write tools `restart-application` and `refresh-configuration` |
 | `spring.ai.mcp.server.type` | `SYNC` | Server type — use `ASYNC` for reactive tool methods |
 | `spring.ai.mcp.server.protocol` | `SSE` | Transport protocol — use `STATELESS` for HTTP clients |
-| `spring.ai.mcp.server.name` | `mcp-server` | Server name reported to MCP clients |
-| `spring.ai.mcp.server.version` | `1.0.0` | Server version reported to MCP clients |
+| `spring.ai.mcp.server.name` | `Spring Boot Admin MCP Server` | Server name reported to MCP clients. Override to report a custom value. |
+| `spring.ai.mcp.server.version` | current Spring Boot Admin version | Server version reported to MCP clients. Defaults to the running Spring Boot Admin version; override to report a custom value. |
+
+:::note
+The `spring.boot.admin.mcp.tools.*` flags toggle tool availability **on the Spring Boot Admin server** — a disabled
+category is never advertised to MCP clients. They are independent of the monitored applications'
+`management.endpoint.*.enabled` settings, which are enforced at runtime by each target application (a call to a disabled
+endpoint simply returns an error). For example, to run a read-only monitoring deployment, set
+`spring.boot.admin.mcp.tools.operations=false`. Changes take effect on server restart.
+:::
 
 ## Sample Application
 
