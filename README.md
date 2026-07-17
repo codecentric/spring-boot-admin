@@ -59,64 +59,6 @@ enterprise, Spring Boot Admin scales from small teams to large organizations wit
 - **Fully Extensible** - Customize the UI and add custom views
 - **Secure** - Built-in authentication and authorization support
 
-## Quick Start
-
-### Server
-
-1. Create a new Spring Boot application or use an existing one
-2. Add the dependency:
-
-```xml
-
-<dependency>
-    <groupId>de.codecentric</groupId>
-    <artifactId>spring-boot-admin-starter-server</artifactId>
-    <version>${latest-version}</version>
-</dependency>
-```
-
-3. Enable Spring Boot Admin in your main class:
-
-```java
-
-@SpringBootApplication
-@EnableAdminServer
-public class AdminApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(AdminApplication.class, args);
-	}
-}
-```
-
-4. Start the application and open `http://localhost:8080`
-
-### Client
-
-Add the client dependency to any Spring Boot application you want to monitor:
-
-```xml
-
-<dependency>
-    <groupId>de.codecentric</groupId>
-    <artifactId>spring-boot-admin-starter-client</artifactId>
-    <version>${latest-version}</version>
-</dependency>
-```
-
-Configure the connection:
-
-```yaml
-spring:
-  boot:
-    admin:
-      client:
-        url: http://localhost:8080
-```
-
-For more detailed information, see the [reference documentation](https://docs.spring-boot-admin.com/current). For
-service-discovery setups (Eureka, Consul, Zookeeper), see
-the [Integration Guide](https://docs.spring-boot-admin.com/current/docs/integration).
-
 ## Compatibility
 
 Spring Boot Admin versions track Spring Boot's major and minor versions as follows:
@@ -129,49 +71,6 @@ Spring Boot Admin versions track Spring Boot's major and minor versions as follo
 
 **Note:** You can monitor applications running on any Spring Boot version, independently of the admin server version.
 For example, monitor a Spring Boot 2.7 application using the 2.7.y client with a 4.1.x admin server.
-
-## For Users
-
-| Resource                  | Link                                                                                                                                     |
-|---------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| Reference Documentation   | [docs.spring-boot-admin.com/current](https://docs.spring-boot-admin.com/current)                                                         |
-| Getting Started Guide     | [Getting Started](https://docs.spring-boot-admin.com/current/docs/getting-started)                                                       |
-| Upgrade Guide (3.x → 4.x) | [Upgrading to SBA 4](https://docs.spring-boot-admin.com/current/docs/upgrading/spring-boot-admin-4)                                      |
-| Releases & Changelog      | [GitHub Releases](https://github.com/codecentric/spring-boot-admin/releases)                                                             |
-| Maven Central (stable)    | [de.codecentric:spring-boot-admin-starter-server](https://central.sonatype.com/artifact/de.codecentric/spring-boot-admin-starter-server) |
-| Sample Applications       | [spring-boot-admin-samples/](spring-boot-admin-samples/)                                                                                 |
-| Stack Overflow Q&A        | [tag: spring-boot-admin](https://stackoverflow.com/questions/tagged/spring-boot-admin)                                                   |
-| Community Chat            | [Gitter](https://gitter.im/codecentric/spring-boot-admin)                                                                                |
-| Bug Reports               | [GitHub Issues](https://github.com/codecentric/spring-boot-admin/issues)                                                                 |
-
-## For Developers
-
-| Resource               | Link                                                                                |
-|------------------------|-------------------------------------------------------------------------------------|
-| GitHub Repository      | [codecentric/spring-boot-admin](https://github.com/codecentric/spring-boot-admin)   |
-| Security Documentation | [Security Guide](https://docs.spring-boot-admin.com/current/docs/security)          |
-| Customization Guide    | [Customization Docs](https://docs.spring-boot-admin.com/current/docs/customization) |
-| REST API Reference     | [REST API](https://docs.spring-boot-admin.com/current/docs/reference/rest-api)      |
-| UI Development Guide   | [spring-boot-admin-server-ui/README.md](spring-boot-admin-server-ui/README.md)      |
-| UI Component Explorer  | Storybook — run `npm run storybook` inside `spring-boot-admin-server-ui/`           |
-| Snapshot Builds        | [GitHub Packages](https://maven.pkg.github.com/codecentric/spring-boot-admin)       |
-
-### Building from Source
-
-Requires Java 17+ and Maven 3.9+ (wrapper included).
-
-```bash
-git clone https://github.com/codecentric/spring-boot-admin.git
-cd spring-boot-admin
-./mvnw clean install
-```
-
-### Running Tests
-
-```bash
-./mvnw test                  # all tests
-./mvnw test -pl spring-boot-admin-server-ui  # UI unit tests only (Vitest)
-```
 
 ### Snapshot Builds
 
