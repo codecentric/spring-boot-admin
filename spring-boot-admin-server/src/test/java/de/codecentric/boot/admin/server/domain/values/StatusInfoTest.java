@@ -138,7 +138,7 @@ class StatusInfoTest {
 		details.put("c", "z");
 		details.put("b", "y");
 
-		assertThat(StatusInfo.valueOf("UP", details).getDetails()).isEqualTo(details);
+		assertThat(StatusInfo.valueOf("UP", details).getDetails()).containsExactlyEntriesOf(details);
 	}
 
 	@Test
