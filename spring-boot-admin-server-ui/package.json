@@ -99,7 +99,7 @@
     "rollup-plugin-visualizer": "7.0.1",
     "storybook": "10.5.0",
     "storybook-vue3-router": "^7.0.0",
-    "typescript": "^6.0.0",
+    "typescript": "^7.0.0",
     "vite": "8.1.4",
     "vite-plugin-static-copy": "3.4.0",
     "vite-plugin-vue-devtools": "8.1.5",
