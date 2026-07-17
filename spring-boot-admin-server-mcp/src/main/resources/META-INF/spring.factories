@@ -1,0 +1,2 @@
+org.springframework.boot.EnvironmentPostProcessor=\
+de.codecentric.boot.admin.server.mcp.config.McpServerDefaultsEnvironmentPostProcessor

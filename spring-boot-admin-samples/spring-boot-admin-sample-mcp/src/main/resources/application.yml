@@ -12,8 +12,6 @@ spring:
       server:
         type: ASYNC
         protocol: STATELESS
-        name: "Spring Boot Admin"
-        version: "1.0.0"
   profiles:
     active:
       - insecure
