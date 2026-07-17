@@ -1,4 +1,4 @@
-# Spring Boot Admin
+# Spring Boot Admin by [codecentric](https://codecentric.de)
 
 [![Apache License 2](https://img.shields.io/badge/license-ASF2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 ![Build Status](https://github.com/codecentric/spring-boot-admin/actions/workflows/build-main.yml/badge.svg?branch=master)
@@ -15,36 +15,20 @@ logs, thread information, and configuration through an intuitive web interface.
 
 ### Why Spring Boot Admin?
 
-Operating Spring Boot applications in production requires visibility into their runtime behavior. The Spring Boot
-Actuator provides the data, but accessing it through raw REST endpoints or JMX can be cumbersome. Spring Boot Admin
-bridges this gap by providing **operational visibility** without requiring custom dashboards or monitoring tools.
-Developers can troubleshoot issues directly through a user-friendly interface instead of interpreting raw metrics, and
-operations teams can monitor dozens or hundreds of microservices from a single location rather than managing each
-application individually. The integration works out-of-the-box with any Spring Boot application that exposes actuator
-endpoints, providing non-technical team members (operators, QA, support) with visibility into application state without
-requiring deep technical knowledge.
+Spring Boot Actuator exposes rich runtime data, but consuming it through raw REST endpoints or JMX is cumbersome. Spring
+Boot Admin bridges this gap with **operational visibility** out-of-the-box for any application that exposes actuator
+endpoints—no custom dashboards or monitoring tools required.
 
 ### Design Philosophy
 
-Spring Boot Admin is built on the principle of **simplicity without sacrificing power**. The project requires minimal
-configuration—just add a dependency to your Spring Boot application and the monitoring starts working immediately. The
-interface is designed so that operations teams can understand application state at a glance, without needing to
-interpret raw metrics or understand implementation details. At the same time, Spring Boot Admin is production-ready,
-handling real-world scenarios including security, multi-application deployments, and scalability concerns. The
-architecture supports extensibility, allowing you to customize the UI and behavior for your organizational needs while
-maintaining sensible defaults for teams who want to use it out-of-the-box. It also works across different Spring Boot
-versions, architectures, and deployment strategies, and is designed to be lightweight—consuming minimal resources on
-both the admin server and monitoring clients.
+**Simplicity without sacrificing power.** Add a dependency and monitoring starts immediately. The interface stays
+readable at a glance, while remaining production-ready and extensible for security, multi-application deployments, and
+custom UIs.
 
 ### Who Benefits from Spring Boot Admin?
 
-Spring Boot Admin serves a broad range of users across different roles and organizational structures. **Development
-teams** use it to quickly diagnose application issues during development and testing phases. **Operations teams**
-leverage it to monitor production applications and respond to issues faster, while **DevOps engineers** integrate it
-into their microservices management workflows in containerized or cloud environments. **Site reliability engineers (
-SREs)** add Spring Boot Admin to their observability stack for Spring Boot-specific insights that complement broader
-monitoring systems. Whether you're running a single application or managing hundreds of microservices across an
-enterprise, Spring Boot Admin scales from small teams to large organizations with minimal operational overhead.
+Development teams diagnose issues during development, operations teams monitor production, and DevOps/SRE teams fold it
+into their observability stack. It scales from a single application to hundreds of microservices with minimal overhead.
 
 ## ✨ Features
 
