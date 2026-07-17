@@ -44,15 +44,15 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Spring Boot Admin: Web UI + server -->
+        <!-- Spring Boot Admin: MCP server, only -->
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-server-mcp</artifactId>
+        </dependency>
+        <!-- Spring Boot Admin: UI and server  -->
         <dependency>
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-server</artifactId>
-        </dependency>
-        <!-- Spring Boot Admin: MCP server -->
-        <dependency>
-            <groupId>de.codecentric</groupId>
-            <artifactId>spring-boot-admin-server-mcp</artifactId>
         </dependency>
         <!-- Register this app itself as a monitored client -->
         <dependency>
