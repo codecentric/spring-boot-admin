@@ -4,7 +4,7 @@ sidebar_custom_props:
   icon: 'cpu'
 ---
 
-# MCP Integration
+# MCP Integration (experimental)
 
 Spring Boot Admin can act as a **Model Context Protocol (MCP) server**, exposing your registered applications to AI
 assistants. This lets you monitor and manage your Spring Boot applications conversationally — without leaving your chat
