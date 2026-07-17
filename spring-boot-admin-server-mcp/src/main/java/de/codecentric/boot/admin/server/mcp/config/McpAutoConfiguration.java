@@ -49,6 +49,8 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link ApplicationTools}
 	 */
 	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "applications", havingValue = "true",
+			matchIfMissing = true)
 	public ApplicationTools applicationTools(InstanceRepository instanceRepository) {
 		return new ApplicationTools(instanceRepository);
 	}
@@ -61,6 +63,8 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link HealthTools}
 	 */
 	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "health", havingValue = "true",
+			matchIfMissing = true)
 	public HealthTools healthTools(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		return new HealthTools(instanceRepository, instanceWebClientBuilder.build());
@@ -74,6 +78,8 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link MetricsTools}
 	 */
 	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "metrics", havingValue = "true",
+			matchIfMissing = true)
 	public MetricsTools metricsTools(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		return new MetricsTools(instanceRepository, instanceWebClientBuilder.build());
@@ -87,6 +93,8 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link EnvTools}
 	 */
 	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "env", havingValue = "true",
+			matchIfMissing = true)
 	public EnvTools envTools(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		return new EnvTools(instanceRepository, instanceWebClientBuilder.build());
@@ -100,6 +108,8 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link LogsTools}
 	 */
 	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "logs", havingValue = "true",
+			matchIfMissing = true)
 	public LogsTools logsTools(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		return new LogsTools(instanceRepository, instanceWebClientBuilder.build());
@@ -114,6 +124,8 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link OperationsTools}
 	 */
 	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "operations", havingValue = "true",
+			matchIfMissing = true)
 	public OperationsTools operationsTools(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		return new OperationsTools(instanceRepository, instanceWebClientBuilder.build());

@@ -60,4 +60,54 @@ public class McpProperties {
 	 */
 	private boolean enabled = false;
 
+	/**
+	 * Server-side toggles controlling which MCP tool categories are registered and
+	 * advertised to clients. These operate on the Spring Boot Admin server itself and are
+	 * independent of the monitored applications' {@code management.endpoint.*} settings
+	 * (which are enforced at runtime by the target application). All categories default
+	 * to {@code true}.
+	 */
+	private Tools tools = new Tools();
+
+	/**
+	 * Category-level enablement flags for the exposed MCP tools. Disabling a category
+	 * prevents the corresponding tool bean from being created, so its tools are never
+	 * advertised. Changes take effect on server restart.
+	 */
+	@lombok.Data
+	public static class Tools {
+
+		/**
+		 * Whether the {@code list-applications} tool is available.
+		 */
+		private boolean applications = true;
+
+		/**
+		 * Whether the {@code get-health} and {@code get-status} tools are available.
+		 */
+		private boolean health = true;
+
+		/**
+		 * Whether the {@code list-metrics} and {@code get-metrics} tools are available.
+		 */
+		private boolean metrics = true;
+
+		/**
+		 * Whether the {@code get-env} and {@code list-env} tools are available.
+		 */
+		private boolean env = true;
+
+		/**
+		 * Whether the {@code get-logs} tool is available.
+		 */
+		private boolean logs = true;
+
+		/**
+		 * Whether the write operation tools ({@code restart-application} and
+		 * {@code refresh-configuration}) are available.
+		 */
+		private boolean operations = true;
+
+	}
+
 }
