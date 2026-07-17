@@ -1,11 +1,6 @@
 name: Build Pull Request
 
 on:
-  push:
-    branches-ignore:
-      - master
-      - 1.*
-      - 2.*
   pull_request:
 
 concurrency:
@@ -14,6 +9,7 @@ concurrency:
 
 jobs:
   build:
+    name: build-and-test-pull-request
     strategy:
       matrix:
         os: [ubuntu-latest]
