@@ -25,7 +25,6 @@
         v-if="health.status"
         :status="health.status"
         class="ml-2 transition-opacity"
-        :class="{ 'opacity-0': panelOpen }"
       />
     </template>
 
@@ -47,60 +46,62 @@
         class="border-l-4"
         :title="$t('term.fetch_failed')"
       />
-      <div class="-mx-4 -my-3">
-        <health-details
-          :instance="instance"
-          :health="health"
-          :index="0"
-          name="Instance"
-        />
 
-        <template v-for="(group, groupIdx) in healthGroups" :key="group.name">
-          <div
-            class="px-4 py-2 border-t border-gray-200 sm:px-6"
-            :class="{ 'border-b': isHealthGroupOpen(group.name) }"
-          >
-            <h4 class="leading-6 font-medium text-gray-900">
-              <button
-                class="flex items-center"
-                :aria-label="
-                  $t('instances.details.health_group.title') + ': ' + group.name
-                "
-                @click="toggleHealthGroup(group.name)"
-              >
-                <font-awesome-icon
-                  v-if="isHealthGroupCollapsible(group.name)"
-                  :icon="faChevronRight()"
-                  class="transition-transform mr-2 h-4"
-                  :class="{
-                    'rotate-90': isHealthGroupOpen(group.name),
-                  }"
-                />
-                <span
-                  v-text="$t('instances.details.health_group.title')"
-                />:&nbsp; <span v-text="group.name"></span>
+      <div class="health-panel">
+        <!-- ── Component list ─────────────────────────────────────────── -->
+        <div v-if="hasComponents" class="health-section">
+          <div class="health-section__body">
+            <health-details
+              v-for="([compName, compData], idx) in componentEntries"
+              :key="`${compName}_${idx}`"
+              :instance="instance"
+              :name="compName"
+              :health="compData"
+            />
+          </div>
+        </div>
+
+        <!-- ── Health groups ──────────────────────────────────────────── -->
+        <template v-for="group in healthGroups" :key="group.name">
+          <div class="health-group">
+            <button
+              class="health-group__header"
+              :aria-label="
+                $t('instances.details.health_group.title') + ': ' + group.name
+              "
+              @click="toggleHealthGroup(group.name)"
+            >
+              <span class="health-group__name">{{ group.name }}</span>
+              <div class="health-group__body-col">
                 <sba-status-badge
                   v-if="group.data?.status"
-                  class="ml-2 fade"
-                  :status="group.data?.status"
+                  :status="group.data.status"
                 />
-
                 <font-awesome-icon
                   v-if="healthGroupLoadingMap[group.name]"
                   icon="sync-alt"
                   spin
-                  class="ml-2 h-3"
+                  class="h-3 text-gray-400"
                 />
-              </button>
-            </h4>
-          </div>
-          <div v-if="isHealthGroupOpen(group.name) && group.data">
-            <health-details
-              :instance="instance"
-              :health="group.data"
-              :name="group.name"
-              :index="groupIdx + 1"
-            />
+              </div>
+              <font-awesome-icon
+                v-if="isHealthGroupCollapsible(group.name)"
+                :icon="faChevronRight()"
+                class="health-group__chevron transition-transform"
+                :class="{ 'rotate-90': isHealthGroupOpen(group.name) }"
+              />
+            </button>
+
+            <div
+              v-if="isHealthGroupOpen(group.name) && group.data"
+              class="health-group__body"
+            >
+              <health-details
+                :instance="instance"
+                :health="group.data"
+                :name="group.name"
+              />
+            </div>
           </div>
         </template>
       </div>
@@ -144,6 +145,26 @@ export default defineComponent({
     health() {
       return this.instance.statusInfo;
     },
+    overallStatusClass(): string {
+      return (this.health?.status ?? 'unknown')
+        .toLowerCase()
+        .replace(/_/g, '-');
+    },
+    hasComponents(): boolean {
+      const source = this.health?.details ?? this.health?.components;
+      return (
+        source != null &&
+        typeof source === 'object' &&
+        Object.keys(source).length > 0
+      );
+    },
+    componentEntries(): [string, any][] {
+      const source = this.health?.details ?? this.health?.components;
+      if (source && typeof source === 'object') {
+        return Object.entries(source);
+      }
+      return [];
+    },
     hasHealthUrl() {
       if (this.instance.endpoints) {
         return (
@@ -155,7 +176,6 @@ export default defineComponent({
       return false;
     },
     healthGroupsKey() {
-      // Only re-fetch on meaningful status changes; deliberately excludes
       return `${this.instance.id}:${this.instance.statusInfo?.status ?? ''}:${this.instance.statusTimestamp ?? ''}`;
     },
   },
@@ -180,7 +200,6 @@ export default defineComponent({
         this.healthGroupLoadingMap = {};
         this.healthGroupsError = null;
       }
-      // Re-fetch the (server-cached) group list on every instance change
       this.fetchHealthGroups();
     },
     isHealthGroupOpen(groupName: string) {
@@ -191,13 +210,9 @@ export default defineComponent({
     },
     toggleHealthGroup(groupName: string) {
       const group = this.healthGroups.find((g) => g.name === groupName);
-
-      if (group == undefined) {
-        return;
-      }
+      if (group == undefined) return;
 
       if (group.data === null) {
-        // First click — fetch group details
         this.fetchGroupDetails(groupName);
       } else if (this.isHealthGroupCollapsible(groupName)) {
         this.healthGroupOpenStatus[groupName].isOpen =
@@ -205,9 +220,7 @@ export default defineComponent({
       }
     },
     async fetchHealthGroups() {
-      if (!this.hasHealthUrl) {
-        return;
-      }
+      if (!this.hasHealthUrl) return;
 
       this.healthGroupsError = null;
 
@@ -221,11 +234,7 @@ export default defineComponent({
             currentNames.length === incomingNames.length &&
             currentNames.every((name, idx) => name === incomingNames[idx]);
 
-          // Skip reassignment when the group list is unchanged to preserve
-          // the accordion open/loading state and avoid needless re-renders.
-          if (unchanged) {
-            return;
-          }
+          if (unchanged) return;
 
           this.healthGroups = incomingNames.map((name: string) => ({
             name,
@@ -264,3 +273,79 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+@reference "../../../index.css";
+
+/* ── Status colour tokens ──────────────────────────────────────────────── */
+.status--up {
+  --status-color: theme('colors.green.500');
+}
+.status--down,
+.status--offline,
+.status--out-of-service {
+  --status-color: theme('colors.red.500');
+}
+.status--restricted {
+  --status-color: theme('colors.yellow.500');
+}
+.status--unknown {
+  --status-color: theme('colors.gray.400');
+}
+
+/* ── Outer panel wrapper ───────────────────────────────────────────────── */
+.health-panel {
+  @apply -mx-4 -my-3 divide-y divide-gray-100;
+}
+
+/* ── Overview row (overall status) ────────────────────────────────────── */
+.health-overview {
+  @apply flex items-stretch bg-gray-50;
+}
+
+.health-overview__bar {
+  @apply w-1 shrink-0;
+  background-color: var(--status-color, theme('colors.gray.400'));
+}
+
+.health-overview__label {
+  @apply w-52 shrink-0 px-4 py-3 text-sm font-semibold text-gray-700 self-center;
+}
+
+.health-overview__body {
+  @apply flex-1 py-3 min-w-0 self-center;
+}
+
+/* ── Component section ─────────────────────────────────────────────────── */
+.health-section__body {
+  @apply divide-y divide-gray-100;
+}
+
+/* ── Health group ──────────────────────────────────────────────────────── */
+.health-group {
+  @apply bg-white border-b border-gray-100;
+}
+
+.health-group__header {
+  @apply w-full flex items-center text-left
+         hover:bg-gray-50 transition-colors cursor-pointer
+         border-none bg-transparent p-0;
+}
+
+.health-group__name {
+  @apply w-52 shrink-0 px-4 py-3 text-xs font-semibold text-gray-500
+         tracking-wide break-all self-center;
+}
+
+.health-group__body-col {
+  @apply flex-1 py-3 min-w-0 flex items-center gap-2;
+}
+
+.health-group__chevron {
+  @apply text-gray-400 text-xs shrink-0 px-4 self-center;
+}
+
+.health-group__body {
+  @apply border-t border-gray-100;
+}
+</style>
