@@ -51,7 +51,25 @@ calls against your registered applications. Responses are formatted as plain tex
 
 ### 1. Add the MCP module
 
-Add `spring-boot-admin-server-mcp` alongside your existing Spring Boot Admin server dependency:
+The `spring-boot-admin-starter-server-mcp` starter brings in the Spring Boot Admin server together with the MCP
+server. It works as a fully functional Spring Boot Admin server on its own — you get the registry and all MCP tools,
+but **without the Web UI**:
+
+```xml title="pom.xml"
+<dependency>
+    <groupId>de.codecentric</groupId>
+    <artifactId>spring-boot-admin-starter-server-mcp</artifactId>
+</dependency>
+```
+
+:::tip
+Add `spring-boot-admin-starter-server` alongside the MCP starter if you also want the Web UI. Both run on the same
+port, giving you the UI and the MCP server side by side.
+:::
+
+:::note
+If you already depend on `spring-boot-admin-starter-server` and only want to add MCP capabilities, you can instead add
+the standalone `spring-boot-admin-server-mcp` module:
 
 ```xml title="pom.xml"
 <dependency>
@@ -59,10 +77,6 @@ Add `spring-boot-admin-server-mcp` alongside your existing Spring Boot Admin ser
     <artifactId>spring-boot-admin-server-mcp</artifactId>
 </dependency>
 ```
-
-:::tip
-The MCP module is independent — add it alongside `spring-boot-admin-starter-server` to get both the Web UI and MCP
-server on the same port.
 :::
 
 ### 2. Enable MCP in your configuration
@@ -78,12 +92,24 @@ spring:
       server:
         type: ASYNC
         protocol: STATELESS
-        name: "Spring Boot Admin"
-        version: "1.0.0"
 ```
 
 :::note
 `spring.boot.admin.mcp.enabled` defaults to `false`. Existing deployments are unaffected until you opt in.
+:::
+
+:::note
+You don't need to set `spring.ai.mcp.server.name` or `spring.ai.mcp.server.version` — Spring Boot Admin provides
+sensible defaults for both. You can still override them explicitly if you want a custom name or version:
+
+```yaml title="application.yml"
+spring:
+  ai:
+    mcp:
+      server:
+        name: "My Spring Boot Admin"
+        version: "1.0.0"
+```
 :::
 
 ### 3. Connect your AI assistant
