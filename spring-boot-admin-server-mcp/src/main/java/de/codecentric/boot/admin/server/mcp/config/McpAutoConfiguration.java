@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.mcp.tools.ApplicationTools;
+import de.codecentric.boot.admin.server.mcp.tools.EnvTools;
 import de.codecentric.boot.admin.server.mcp.tools.HealthTools;
 import de.codecentric.boot.admin.server.mcp.tools.LogsTools;
 import de.codecentric.boot.admin.server.mcp.tools.MetricsTools;
@@ -76,6 +77,19 @@ public class McpAutoConfiguration {
 	public MetricsTools metricsTools(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		return new MetricsTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link EnvTools} bean for resolving application environment properties.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link EnvTools}
+	 */
+	@Bean
+	public EnvTools envTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new EnvTools(instanceRepository, instanceWebClientBuilder.build());
 	}
 
 	/**
