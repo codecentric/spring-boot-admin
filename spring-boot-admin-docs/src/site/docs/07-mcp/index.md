@@ -41,6 +41,8 @@ calls against your registered applications. Responses are formatted as plain tex
 | `get-health` | Fetches full health details from `/actuator/health` |
 | `list-metrics` | Lists all available metric names for a named application |
 | `get-metrics` | Fetches the current value of a specific metric |
+| `get-env` | Resolves a single configuration property or environment variable via `/actuator/env/{name}` |
+| `list-env` | Lists environment properties grouped by property source via `/actuator/env`, with an optional name filter |
 | `get-logs` | Returns the last N lines from `/actuator/logfile` |
 | `restart-application` | Restarts an application via `/actuator/restart` |
 | `refresh-configuration` | Refreshes configuration via `/actuator/refresh` |
@@ -232,6 +234,22 @@ Assistant: payment-service — jvm.memory.used:
   VALUE: 1258291200 bytes
 ```
 
+### Inspecting configuration
+
+```
+You: list the env properties for payment-service filtered by datasource
+Assistant: Environment for payment-service (filtered by "datasource"):
+
+[application.yml] (2):
+  spring.datasource.url = jdbc:postgresql://db:5432/payment
+  spring.datasource.username = payment
+
+You: what is the HELLO env variable for payment-service?
+Assistant: payment-service — HELLO:
+  value: world
+  source: systemEnvironment
+```
+
 ### Configuration refresh
 
 ```
@@ -246,6 +264,7 @@ Certain tools require additional setup in the monitored applications:
 | Tool | Requirement |
 |---|---|
 | `get-logs` | `logging.file.name` or `logging.file.path` configured; `logfile` actuator endpoint exposed |
+| `get-env` / `list-env` | `env` actuator endpoint exposed. Values are masked (`******`) unless `management.endpoint.env.show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` |
 | `restart-application` | `management.endpoint.restart.enabled=true`; restart actuator endpoint exposed |
 | `refresh-configuration` | Spring Cloud Context on classpath (`spring-cloud-starter`); `refresh` endpoint exposed |
 | All read tools | Actuator endpoints exposed: `management.endpoints.web.exposure.include=*` |
