@@ -70,6 +70,7 @@
           v-model="filterModel.value"
           :options="applicationNames"
           :placeholder="t('journal.filter.application.any')"
+          append-to="self"
           :show-toggle-all="false"
           :max-selected-labels="1"
         >
@@ -108,6 +109,7 @@
           v-model="filterModel.value"
           :options="instanceIds"
           :placeholder="t('journal.filter.instance_id.any')"
+          append-to="self"
           :show-toggle-all="false"
           :max-selected-labels="1"
         >
@@ -158,6 +160,7 @@
           v-model="filterModel.value"
           :options="eventTypes"
           :placeholder="t('journal.filter.event_type.any')"
+          append-to="self"
           :show-toggle-all="false"
           :max-selected-labels="1"
         >
