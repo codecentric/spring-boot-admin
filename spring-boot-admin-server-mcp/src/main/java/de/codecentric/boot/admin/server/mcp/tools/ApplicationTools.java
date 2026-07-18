@@ -48,13 +48,13 @@ public class ApplicationTools {
 
 	/**
 	 * Lists all Spring Boot applications currently registered with Spring Boot Admin,
-	 * including their name, status, and management URL.
+	 * including their name, instance ID, status, and management URL.
 	 * @return a plain-text list of registered applications, or a message indicating none
 	 * are registered
 	 */
 	@McpTool(name = "list-applications",
 			description = "List all Spring Boot applications currently registered with Spring Boot Admin. "
-					+ "Returns name, status (UP/DOWN/UNKNOWN) and management URL for each instance.")
+					+ "Returns name, status (UP/DOWN/UNKNOWN), instance ID and management URL for each instance.")
 	public Mono<String> listApplications() {
 		return this.instanceRepository.findAll().collectList().map((instances) -> {
 			if (instances.isEmpty()) {
@@ -64,10 +64,13 @@ public class ApplicationTools {
 			for (Instance instance : instances) {
 				String name = instance.getRegistration().getName();
 				String status = instance.getStatusInfo().getStatus();
+				String id = instance.getId().getValue();
 				String managementUrl = (instance.getRegistration().getManagementUrl() != null)
 						? instance.getRegistration().getManagementUrl() : "N/A";
 				sb.append("- ")
 					.append(name)
+					.append(" | id: ")
+					.append(id)
 					.append(" | status: ")
 					.append(status)
 					.append(" | management: ")

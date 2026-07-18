@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -42,6 +43,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.rewriteEndpointUrl;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,6 +69,7 @@ class LoggersToolsTest {
 	void setUp() {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
+		when(this.instanceRepository.find(any())).thenReturn(Mono.empty());
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
 		this.loggersTools = new LoggersTools(
 				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));

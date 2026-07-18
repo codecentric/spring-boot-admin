@@ -29,6 +29,7 @@ import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
@@ -68,16 +69,23 @@ public class ActuatorClient {
 	}
 
 	/**
-	 * Resolves the first registered instance for the given application name, applies
+	 * Resolves a registered instance by application name or instance ID, applies
 	 * {@code action}, and falls back to a plain-text "not found" message when no instance
-	 * is registered.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * matches.
+	 *
+	 * <p>
+	 * The lookup first tries to find an instance by the given {@code applicationName}. If
+	 * no match is found it attempts to interpret the value as an instance ID.
+	 * </p>
+	 * @param applicationName the registered application name (case-sensitive) or instance
+	 * ID
 	 * @param action function to execute against the resolved instance
 	 * @return the action result, or a plain-text "not found" message
 	 */
 	public Mono<String> withInstance(String applicationName, Function<Instance, Mono<String>> action) {
 		return this.instanceRepository.findByName(applicationName)
 			.next()
+			.switchIfEmpty(this.instanceRepository.find(InstanceId.of(applicationName)))
 			.flatMap(action)
 			.switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
 	}

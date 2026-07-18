@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -43,6 +44,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.rewriteEndpointUrl;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,6 +70,7 @@ class HealthToolsTest {
 	void setUp() {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
+		when(this.instanceRepository.find(any())).thenReturn(Mono.empty());
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
 		this.healthTools = new HealthTools(
 				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));
@@ -152,9 +155,24 @@ class HealthToolsTest {
 	@Test
 	void getStatus_appNotFound_returnsNotFoundMessage() {
 		when(this.instanceRepository.findByName("ghost")).thenReturn(Flux.empty());
+		when(this.instanceRepository.find(InstanceId.of("ghost"))).thenReturn(Mono.empty());
 
 		StepVerifier.create(this.healthTools.getStatus("ghost"))
 			.assertNext((result) -> assertThat(result).isEqualTo("Application 'ghost' not found in registry."))
+			.verifyComplete();
+	}
+
+	@Test
+	void getStatus_byInstanceId_returnsStatus() {
+		Instance instance = Instance.create(InstanceId.of("id-5"))
+			.register(Registration.create("inventory-service", "http://localhost/health").build())
+			.withStatusInfo(StatusInfo.ofUp());
+
+		when(this.instanceRepository.findByName("id-5")).thenReturn(Flux.empty());
+		when(this.instanceRepository.find(InstanceId.of("id-5"))).thenReturn(Mono.just(instance));
+
+		StepVerifier.create(this.healthTools.getStatus("id-5"))
+			.assertNext((result) -> assertThat(result).contains("status: UP"))
 			.verifyComplete();
 	}
 

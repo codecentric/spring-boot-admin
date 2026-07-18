@@ -62,8 +62,10 @@ class ApplicationToolsTest {
 		StepVerifier.create(this.applicationTools.listApplications()).assertNext((result) -> {
 			assertThat(result).contains("Registered applications (2)");
 			assertThat(result).contains("payment-service");
+			assertThat(result).contains("id: id-1");
 			assertThat(result).contains("UP");
 			assertThat(result).contains("order-service");
+			assertThat(result).contains("id: id-2");
 			assertThat(result).contains("DOWN");
 		}).verifyComplete();
 	}
