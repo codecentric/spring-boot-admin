@@ -28,7 +28,7 @@ public class MessageBrokerHealthIndicator implements HealthIndicator {
 	@Override
 	public Health health() {
 		// Simulate a healthy message broker
-		return Health.up().withDetail("broker", "in-memory-stub").withDetail("queueDepth", 0).build();
+		return Health.unknown().withDetail("broker", "in-memory-stub").withDetail("queueDepth", 0).build();
 	}
 
 }

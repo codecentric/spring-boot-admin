@@ -28,7 +28,7 @@ public class ExternalApiHealthIndicator implements HealthIndicator {
 	@Override
 	public Health health() {
 		// Simulate a reachable external API
-		return Health.up().withDetail("url", "https://api.example.com").withDetail("responseTime", "42ms").build();
+		return Health.down().withDetail("url", "https://api.example.com").withDetail("responseTime", "42ms").build();
 	}
 
 }
