@@ -250,20 +250,20 @@ const toggleCollapsed = () => {
 <style scoped>
 @reference "../../../index.css";
 
-/* ── Status colour tokens ──────────────────────────────────────────────── */
+/* ── Status colour tokens — sourced from theme.css @theme ──────────────── */
 .status--up {
-  --status-color: theme('colors.green.500');
+  --status-color: var(--color-status-up);
 }
 .status--down,
 .status--offline,
 .status--out-of-service {
-  --status-color: theme('colors.red.500');
+  --status-color: var(--color-status-down);
 }
 .status--restricted {
-  --status-color: theme('colors.yellow.500');
+  --status-color: var(--color-status-restricted);
 }
 .status--unknown {
-  --status-color: theme('colors.gray.400');
+  --status-color: var(--color-status-unknown);
 }
 
 /* ── Composite section header (flat, no card chrome) ───────────────────── */
@@ -278,7 +278,7 @@ const toggleCollapsed = () => {
 
 .health-section-header__indicator {
   @apply w-1 shrink-0;
-  background-color: var(--status-color, theme('colors.gray.400'));
+  background-color: var(--status-color, var(--color-status-unknown));
 }
 
 .health-section-header__name {
@@ -294,9 +294,14 @@ const toggleCollapsed = () => {
   @apply text-gray-400 self-center;
 }
 
-/* ── Children of composite: indented below the section header ──────────── */
+/* ── Children of composite: indented text, flush indicator bar ─────────── */
 .health-section-children {
-  @apply border-b border-gray-100 pl-3 divide-y divide-gray-100;
+  @apply border-b border-gray-100 divide-y divide-gray-100;
+}
+
+.health-section-children :deep(.health-row__name),
+.health-section-children :deep(.health-section-header__name) {
+  @apply pl-8;
 }
 
 /* ── Leaf row ──────────────────────────────────────────────────────────── */
@@ -307,7 +312,7 @@ const toggleCollapsed = () => {
 
 .health-row__indicator {
   @apply w-1 self-stretch shrink-0;
-  background-color: var(--status-color, theme('colors.gray.400'));
+  background-color: var(--status-color, var(--color-status-unknown));
 }
 
 .health-row__name {

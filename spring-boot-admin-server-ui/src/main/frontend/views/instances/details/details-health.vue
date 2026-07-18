@@ -47,64 +47,66 @@
         :title="$t('term.fetch_failed')"
       />
 
-      <div class="health-panel">
-        <!-- ── Component list ─────────────────────────────────────────── -->
-        <div v-if="hasComponents" class="health-section">
-          <div class="health-section__body">
-            <health-details
-              v-for="([compName, compData], idx) in componentEntries"
-              :key="`${compName}_${idx}`"
-              :instance="instance"
-              :name="compName"
-              :health="compData"
-            />
-          </div>
-        </div>
-
-        <!-- ── Health groups ──────────────────────────────────────────── -->
-        <template v-for="group in healthGroups" :key="group.name">
-          <div class="health-group">
-            <button
-              class="health-group__header"
-              :aria-label="
-                $t('instances.details.health_group.title') + ': ' + group.name
-              "
-              @click="toggleHealthGroup(group.name)"
-            >
-              <span class="health-group__name">{{ group.name }}</span>
-              <div class="health-group__body-col">
-                <sba-status-badge
-                  v-if="group.data?.status"
-                  :status="group.data.status"
-                />
-                <font-awesome-icon
-                  v-if="healthGroupLoadingMap[group.name]"
-                  icon="sync-alt"
-                  spin
-                  class="h-3 text-gray-400"
-                />
-              </div>
-              <font-awesome-icon
-                v-if="isHealthGroupCollapsible(group.name)"
-                :icon="faChevronRight()"
-                class="health-group__chevron transition-transform"
-                :class="{ 'rotate-90': isHealthGroupOpen(group.name) }"
-              />
-            </button>
-
-            <div
-              v-if="isHealthGroupOpen(group.name) && group.data"
-              class="health-group__body"
-            >
+      <template v-if="!healthGroupsError">
+        <div class="health-panel">
+          <!-- ── Component list ─────────────────────────────────────────── -->
+          <div v-if="hasComponents" class="health-section">
+            <div class="health-section__body">
               <health-details
+                v-for="([compName, compData], idx) in componentEntries"
+                :key="`${compName}_${idx}`"
                 :instance="instance"
-                :health="group.data"
-                :name="group.name"
+                :name="compName"
+                :health="compData"
               />
             </div>
           </div>
-        </template>
-      </div>
+
+          <!-- ── Health groups ──────────────────────────────────────────── -->
+          <template v-for="group in healthGroups" :key="group.name">
+            <div class="health-group">
+              <button
+                class="health-group__header"
+                :aria-label="
+                  $t('instances.details.health_group.title') + ': ' + group.name
+                "
+                @click="toggleHealthGroup(group.name)"
+              >
+                <span class="health-group__name">{{ group.name }}</span>
+                <div class="health-group__body-col">
+                  <sba-status-badge
+                    v-if="group.data?.status"
+                    :status="group.data.status"
+                  />
+                  <font-awesome-icon
+                    v-if="healthGroupLoadingMap[group.name]"
+                    icon="sync-alt"
+                    spin
+                    class="h-3 text-gray-400"
+                  />
+                </div>
+                <font-awesome-icon
+                  v-if="isHealthGroupCollapsible(group.name)"
+                  :icon="faChevronRight()"
+                  class="health-group__chevron transition-transform"
+                  :class="{ 'rotate-90': isHealthGroupOpen(group.name) }"
+                />
+              </button>
+
+              <div
+                v-if="isHealthGroupOpen(group.name) && group.data"
+                class="health-group__body"
+              >
+                <health-details
+                  :instance="instance"
+                  :health="group.data"
+                  :name="group.name"
+                />
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
     </template>
   </sba-accordion>
 </template>
@@ -277,20 +279,20 @@ export default defineComponent({
 <style scoped>
 @reference "../../../index.css";
 
-/* ── Status colour tokens ──────────────────────────────────────────────── */
+/* ── Status colour tokens — sourced from theme.css @theme ──────────────── */
 .status--up {
-  --status-color: theme('colors.green.500');
+  --status-color: var(--color-status-up);
 }
 .status--down,
 .status--offline,
 .status--out-of-service {
-  --status-color: theme('colors.red.500');
+  --status-color: var(--color-status-down);
 }
 .status--restricted {
-  --status-color: theme('colors.yellow.500');
+  --status-color: var(--color-status-restricted);
 }
 .status--unknown {
-  --status-color: theme('colors.gray.400');
+  --status-color: var(--color-status-unknown);
 }
 
 /* ── Outer panel wrapper ───────────────────────────────────────────────── */
@@ -305,7 +307,7 @@ export default defineComponent({
 
 .health-overview__bar {
   @apply w-1 shrink-0;
-  background-color: var(--status-color, theme('colors.gray.400'));
+  background-color: var(--status-color, var(--color-status-unknown));
 }
 
 .health-overview__label {
