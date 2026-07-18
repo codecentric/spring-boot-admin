@@ -44,7 +44,7 @@ Each tool group below corresponds to an actuator endpoint. For a tool to work, t
 
 | Tool | Description |
 |---|---|
-| `list-applications` | Lists all registered applications with their status and management URL |
+| `list-applications` | Lists all registered applications with their instance ID, status, and management URL |
 | `get-status` | Returns the cached status (UP/DOWN/UNKNOWN) for a named application without making an actuator call |
 
 ### Beans
@@ -292,10 +292,10 @@ Any MCP client that supports **Streamable HTTP** transport can connect:
 ```
 You: list all registered applications
 Assistant: Registered applications (4):
-- payment-service   | status: UP   | management: http://payment:8080/actuator
-- order-service     | status: UP   | management: http://order:8080/actuator
-- checkout-service  | status: DOWN | management: http://checkout:8080/actuator
-- inventory-service | status: UP   | management: http://inventory:8080/actuator
+- payment-service   | id: a1b2c3d4e5f6 | status: UP   | management: http://payment:8080/actuator
+- order-service     | id: b2c3d4e5f6a1 | status: UP   | management: http://order:8080/actuator
+- checkout-service  | id: c3d4e5f6a1b2 | status: DOWN | management: http://checkout:8080/actuator
+- inventory-service | id: d4e5f6a1b2c3 | status: UP   | management: http://inventory:8080/actuator
 ```
 
 ### Debugging a failing service

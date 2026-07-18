@@ -27,6 +27,7 @@ patterns. These samples provide working examples you can use as starting points 
 
 - **[Hazelcast Sample](./60-sample-hazelcast.md)** - Clustered deployment with Hazelcast
 - **[Custom UI Sample](./70-sample-custom-ui.md)** - Custom UI extensions and branding
+- **[MCP Sample](../07-mcp/)** - AI assistant integration via Model Context Protocol
 
 ## Repository Location
 
@@ -42,7 +43,8 @@ spring-boot-admin-samples/
 ├── spring-boot-admin-sample-consul/
 ├── spring-boot-admin-sample-zookeeper/
 ├── spring-boot-admin-sample-hazelcast/
-└── spring-boot-admin-sample-custom-ui/
+├── spring-boot-admin-sample-custom-ui/
+└── spring-boot-admin-sample-mcp/
 ```
 
 ## Running the Samples
@@ -79,15 +81,16 @@ Most secured samples use:
 
 ## Sample Features Comparison
 
-| Feature           | Servlet | Reactive | Eureka  | Consul  | Zookeeper | Hazelcast | Custom UI | WAR     |
-|-------------------|---------|----------|---------|---------|-----------|-----------|-----------|---------|
-| Web Stack         | Servlet | WebFlux  | Servlet | Servlet | Servlet   | Servlet   | Servlet   | Servlet |
-| Security          | ✅       | ✅        | ✅       | ✅       | -         | -         | -         | -       |
-| Service Discovery | Static  | Static   | Eureka  | Consul  | Zookeeper | Static    | Static    | Static  |
-| Clustering        | -       | -        | -       | -       | -         | ✅         | -         | -       |
-| Custom UI         | -       | -        | -       | -       | -         | -         | ✅         | -       |
-| JMX Support       | ✅       | -        | -       | -       | -         | -         | -         | ✅       |
-| Notifications     | ✅       | -        | -       | -       | -         | -         | -         | -       |
+| Feature           | Servlet | Reactive | Eureka  | Consul  | Zookeeper | Hazelcast | Custom UI | WAR     | MCP     |
+|-------------------|---------|----------|---------|---------|-----------|-----------|-----------|---------|---------|
+| Web Stack         | Servlet | WebFlux  | Servlet | Servlet | Servlet   | Servlet   | Servlet   | Servlet | WebFlux |
+| Security          | ✅       | ✅        | ✅       | ✅       | -         | -         | -         | -       | -       |
+| Service Discovery | Static  | Static   | Eureka  | Consul  | Zookeeper | Static    | Static    | Static  | Static  |
+| Clustering        | -       | -        | -       | -       | -         | ✅         | -         | -       | -       |
+| Custom UI         | -       | -        | -       | -       | -         | -         | ✅         | -       | -       |
+| JMX Support       | ✅       | -        | -       | -       | -         | -         | -         | ✅       | -       |
+| Notifications     | ✅       | -        | -       | -       | -         | -         | -         | -       | -       |
+| MCP Server        | -       | -        | -       | -       | -         | -         | -         | -       | ✅       |
 
 ## Common Configuration
 
