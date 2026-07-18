@@ -430,7 +430,9 @@ Then pass credentials in the MCP client configuration:
 
 | Property                                      | Default                           | Description                                                                                                                   |
 |-----------------------------------------------|-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| `spring.boot.admin.mcp.enabled`               | `false`                           | Enable the MCP server integration                                                                                             |
+| `spring.boot.admin.mcp.enabled` | `false` | Enable the MCP server integration |
+| `spring.boot.admin.mcp.timeout` | `450ms` | Timeout for actuator calls made by MCP tools |
+| `spring.boot.admin.mcp.thread-dump-timeout` | `10s` | Timeout for `/actuator/threaddump` calls, which can be slower than standard endpoints |
 | `spring.boot.admin.mcp.tools.applications`    | `true`                            | Register the `list-applications` tool                                                                                         |
 | `spring.boot.admin.mcp.tools.health`          | `true`                            | Register the `get-health` and `get-status` tools                                                                              |
 | `spring.boot.admin.mcp.tools.metrics`         | `true`                            | Register the `list-metrics` and `get-metrics` tools                                                                           |

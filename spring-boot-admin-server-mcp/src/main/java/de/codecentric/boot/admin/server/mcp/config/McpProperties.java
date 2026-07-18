@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.mcp.config;
 
+import java.time.Duration;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -59,6 +61,19 @@ public class McpProperties {
 	 * zero impact on existing Spring Boot Admin deployments.
 	 */
 	private boolean enabled = false;
+
+	/**
+	 * Timeout for actuator calls made by MCP tools. Applies to all standard actuator
+	 * endpoints. Defaults to {@code 450ms}. The thread dump endpoint uses
+	 * {@code threadDumpTimeout} instead.
+	 */
+	private Duration timeout = Duration.ofMillis(450);
+
+	/**
+	 * Timeout for {@code /actuator/threaddump} calls, which can be slower than standard
+	 * actuator endpoints. Defaults to {@code 10s}.
+	 */
+	private Duration threadDumpTimeout = Duration.ofSeconds(10);
 
 	/**
 	 * Server-side toggles controlling which MCP tool categories are registered and
