@@ -66,7 +66,8 @@ class BeansToolsTest {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
-		this.beansTools = new BeansTools(this.instanceRepository, instanceWebClient);
+		this.beansTools = new BeansTools(
+				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));
 	}
 
 	@AfterEach

@@ -66,7 +66,8 @@ class MetricsToolsTest {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
-		this.metricsTools = new MetricsTools(this.instanceRepository, instanceWebClient);
+		this.metricsTools = new MetricsTools(
+				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));
 	}
 
 	@AfterEach

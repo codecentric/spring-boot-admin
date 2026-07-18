@@ -16,20 +16,13 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
-import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for inspecting the Spring application context beans of registered Spring Boot
@@ -42,25 +35,14 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
  */
 public class BeansTools {
 
-	private static final Logger log = LoggerFactory.getLogger(BeansTools.class);
-
-	private static final Duration TIMEOUT = Duration.ofMillis(450);
-
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
-	};
-
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final ActuatorClient actuatorClient;
 
 	/**
 	 * Creates a new {@code BeansTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
 	 */
-	public BeansTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public BeansTools(ActuatorClient actuatorClient) {
+		this.actuatorClient = actuatorClient;
 	}
 
 	/**
@@ -84,19 +66,7 @@ public class BeansTools {
 					required = true) String applicationName,
 			@McpToolParam(description = "Optional case-insensitive substring; only beans whose name or type contain "
 					+ "it are returned. Omit to return all beans.", required = false) String filter) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/beans";
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatBeans(applicationName, filter, body))
-				.doOnError((ex) -> log.warn("Failed to list beans for {}", applicationName, ex))
-				.onErrorResume(
-						(ex) -> Mono.just("Error listing beans for " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.query(applicationName, "/beans", (app, body) -> formatBeans(app, filter, body));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -67,7 +67,8 @@ class OperationsToolsTest {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
-		this.operationsTools = new OperationsTools(this.instanceRepository, instanceWebClient);
+		this.operationsTools = new OperationsTools(
+				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));
 	}
 
 	@AfterEach

@@ -24,11 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
-import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for capturing thread dumps from registered Spring Boot applications.
@@ -42,23 +38,19 @@ public class ThreadDumpTools {
 
 	private static final Logger log = LoggerFactory.getLogger(ThreadDumpTools.class);
 
-	private static final Duration TIMEOUT = Duration.ofSeconds(10);
+	private final ActuatorClient actuatorClient;
 
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
-	};
-
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final Duration timeout;
 
 	/**
 	 * Creates a new {@code ThreadDumpTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
+	 * @param timeout the request timeout for thread dump calls (can be slower than
+	 * standard actuator endpoints)
 	 */
-	public ThreadDumpTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public ThreadDumpTools(ActuatorClient actuatorClient, Duration timeout) {
+		this.actuatorClient = actuatorClient;
+		this.timeout = timeout;
 	}
 
 	/**
@@ -76,19 +68,13 @@ public class ThreadDumpTools {
 					+ "Requires the threaddump actuator endpoint to be exposed.")
 	public Mono<String> getThreadDump(@McpToolParam(description = "The registered application name (case-insensitive)",
 			required = true) String applicationName) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
+		return this.actuatorClient.withInstance(applicationName, (instance) -> {
 			String url = instance.getRegistration().getManagementUrl() + "/threaddump";
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
+			return this.actuatorClient.fetch(instance, url, this.timeout, log, "thread dump for " + applicationName)
 				.map((body) -> formatThreadDump(applicationName, body))
-				.doOnError((ex) -> log.warn("Failed to get thread dump for {}", applicationName, ex))
 				.onErrorResume((ex) -> Mono
 					.just("Error retrieving thread dump for " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		});
 	}
 
 	@SuppressWarnings("unchecked")
@@ -98,7 +84,6 @@ public class ThreadDumpTools {
 			return "No thread dump available for " + applicationName + ".";
 		}
 
-		// Aggregate thread counts by state
 		java.util.Map<String, Integer> stateCounts = new java.util.LinkedHashMap<>();
 		StringBuilder detail = new StringBuilder();
 

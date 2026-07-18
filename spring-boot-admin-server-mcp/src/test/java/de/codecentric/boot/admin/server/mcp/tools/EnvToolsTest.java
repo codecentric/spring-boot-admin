@@ -66,7 +66,8 @@ class EnvToolsTest {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
-		this.envTools = new EnvTools(this.instanceRepository, instanceWebClient);
+		this.envTools = new EnvTools(
+				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));
 	}
 
 	@AfterEach

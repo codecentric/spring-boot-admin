@@ -16,20 +16,13 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
-import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for querying the environment of registered Spring Boot applications.
@@ -43,25 +36,14 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
  */
 public class EnvTools {
 
-	private static final Logger log = LoggerFactory.getLogger(EnvTools.class);
-
-	private static final Duration TIMEOUT = Duration.ofMillis(450);
-
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
-	};
-
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final ActuatorClient actuatorClient;
 
 	/**
 	 * Creates a new {@code EnvTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
 	 */
-	public EnvTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public EnvTools(ActuatorClient actuatorClient) {
+		this.actuatorClient = actuatorClient;
 	}
 
 	/**
@@ -83,19 +65,8 @@ public class EnvTools {
 					required = true) String applicationName,
 			@McpToolParam(description = "The property or environment variable name (e.g. HELLO)",
 					required = true) String propertyName) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/env/" + propertyName;
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatProperty(applicationName, propertyName, body))
-				.doOnError((ex) -> log.warn("Failed to get env property {} for {}", propertyName, applicationName, ex))
-				.onErrorResume((ex) -> Mono.just("Error retrieving env property '" + propertyName + "' for "
-						+ applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.query(applicationName, "/env/" + propertyName,
+				(app, body) -> formatProperty(app, propertyName, body));
 	}
 
 	/**
@@ -123,19 +94,7 @@ public class EnvTools {
 					required = true) String applicationName,
 			@McpToolParam(description = "Optional case-insensitive substring; only property names containing it are "
 					+ "returned. Omit to return all properties.", required = false) String filter) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/env";
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatEnv(applicationName, filter, body))
-				.doOnError((ex) -> log.warn("Failed to list env for {}", applicationName, ex))
-				.onErrorResume(
-						(ex) -> Mono.just("Error retrieving env for " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.query(applicationName, "/env", (app, body) -> formatEnv(app, filter, body));
 	}
 
 	@SuppressWarnings("unchecked")

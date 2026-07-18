@@ -66,7 +66,9 @@ class ThreadDumpToolsTest {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
-		this.threadDumpTools = new ThreadDumpTools(this.instanceRepository, instanceWebClient);
+		this.threadDumpTools = new ThreadDumpTools(
+				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)),
+				Duration.ofSeconds(10));
 	}
 
 	@AfterEach

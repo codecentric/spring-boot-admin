@@ -66,7 +66,8 @@ class CachesToolsTest {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
-		this.cachesTools = new CachesTools(this.instanceRepository, instanceWebClient);
+		this.cachesTools = new CachesTools(
+				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));
 	}
 
 	@AfterEach

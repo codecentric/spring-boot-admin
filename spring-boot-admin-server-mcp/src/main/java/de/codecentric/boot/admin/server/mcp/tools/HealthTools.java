@@ -16,19 +16,15 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
-import java.time.Duration;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
-import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
 
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for querying the health of registered Spring Boot applications.
@@ -46,23 +42,14 @@ public class HealthTools {
 
 	private static final Logger log = LoggerFactory.getLogger(HealthTools.class);
 
-	private static final Duration TIMEOUT = Duration.ofMillis(450);
-
-	private static final ParameterizedTypeReference<Map<String, Object>> HEALTH_RESPONSE_TYPE = new ParameterizedTypeReference<>() {
-	};
-
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final ActuatorClient actuatorClient;
 
 	/**
 	 * Creates a new {@code HealthTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
 	 */
-	public HealthTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public HealthTools(ActuatorClient actuatorClient) {
+		this.actuatorClient = actuatorClient;
 	}
 
 	/**
@@ -78,19 +65,11 @@ public class HealthTools {
 					+ "/actuator/health endpoint. Returns overall status and per-component breakdown.")
 	public Mono<String> getHealth(@McpToolParam(description = "The registered application name (case-insensitive)",
 			required = true) String applicationName) {
-		return this.instanceRepository.findByName(applicationName)
-			.next()
-			.flatMap((instance) -> this.instanceWebClient.instance(instance)
-				.get()
-				.uri(Endpoint.HEALTH)
-				.retrieve()
-				.bodyToMono(HEALTH_RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatHealthResponse(applicationName, body))
-				.doOnError((ex) -> log.warn("Failed to get health for {}", applicationName, ex))
-				.onErrorResume(
-						(ex) -> Mono.just("Error retrieving health for " + applicationName + ": " + ex.getMessage())))
-			.switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.withInstance(applicationName, (instance) -> this.actuatorClient
+			.fetch(instance, Endpoint.HEALTH, log, "health for " + applicationName)
+			.map((body) -> formatHealthResponse(applicationName, body))
+			.onErrorResume(
+					(ex) -> Mono.just("Error retrieving health for " + applicationName + ": " + ex.getMessage())));
 	}
 
 	/**
@@ -106,12 +85,8 @@ public class HealthTools {
 					+ "Use get-health for full component details.")
 	public Mono<String> getStatus(@McpToolParam(description = "The registered application name (case-insensitive)",
 			required = true) String applicationName) {
-		return this.instanceRepository.findByName(applicationName)
-			.next()
-			.map((instance) -> applicationName + " status: " + instance.getStatusInfo().getStatus())
-			.switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."))
-			.doOnError((ex) -> log.warn("Failed to get status for {}", applicationName, ex))
-			.onErrorReturn("Error retrieving status for " + applicationName + ".");
+		return this.actuatorClient.withInstance(applicationName,
+				(instance) -> Mono.just(applicationName + " status: " + instance.getStatusInfo().getStatus()));
 	}
 
 	@SuppressWarnings("unchecked")

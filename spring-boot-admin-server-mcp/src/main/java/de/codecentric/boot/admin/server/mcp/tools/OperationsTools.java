@@ -16,24 +16,18 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
-import java.time.Duration;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
-import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for performing write operations on registered Spring Boot applications.
  *
  * <ul>
  * <li>{@code restart-application} — restarts the application via
- * {@code /actuator/restart} or {@code /actuator/shutdown}</li>
+ * {@code /actuator/restart}</li>
  * <li>{@code refresh-configuration} — refreshes the application configuration via
  * {@code /actuator/refresh}</li>
  * </ul>
@@ -42,26 +36,19 @@ public class OperationsTools {
 
 	private static final Logger log = LoggerFactory.getLogger(OperationsTools.class);
 
-	private static final Duration TIMEOUT = Duration.ofMillis(450);
-
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final ActuatorClient actuatorClient;
 
 	/**
 	 * Creates a new {@code OperationsTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
 	 */
-	public OperationsTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public OperationsTools(ActuatorClient actuatorClient) {
+		this.actuatorClient = actuatorClient;
 	}
 
 	/**
 	 * Restarts the named application by calling its {@code /actuator/restart} endpoint.
-	 * Falls back to {@code /actuator/shutdown} if restart is not available. Requires the
-	 * actuator restart or shutdown endpoint to be enabled and exposed in the monitored
+	 * Requires the actuator restart endpoint to be enabled and exposed in the monitored
 	 * application.
 	 * @param applicationName the registered application name (case-insensitive)
 	 * @return confirmation message or an error message
@@ -72,25 +59,17 @@ public class OperationsTools {
 	public Mono<String> restartApplication(
 			@McpToolParam(description = "The registered application name (case-insensitive)",
 					required = true) String applicationName) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
+		return this.actuatorClient.withInstance(applicationName, (instance) -> {
 			String url = instance.getRegistration().getManagementUrl() + "/restart";
-			return this.instanceWebClient.instance(instance)
-				.post()
-				.uri(url)
-				.contentType(MediaType.APPLICATION_JSON)
-				.retrieve()
-				.toBodilessEntity()
-				.timeout(TIMEOUT)
-				.map((response) -> {
-					int status = response.getStatusCode().value();
+			return this.actuatorClient.postBodiless(instance, url, "{}", log, "restart of " + applicationName)
+				.map((status) -> {
 					if ((status >= 200) && (status < 300)) {
 						return applicationName + " restart initiated successfully.";
 					}
 					return "Restart returned unexpected status " + status + " for " + applicationName + ".";
 				})
-				.doOnError((ex) -> log.warn("Failed to restart {}", applicationName, ex))
 				.onErrorResume((ex) -> Mono.just("Error restarting " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		});
 	}
 
 	/**
@@ -107,20 +86,13 @@ public class OperationsTools {
 	public Mono<String> refreshConfiguration(
 			@McpToolParam(description = "The registered application name (case-insensitive)",
 					required = true) String applicationName) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
+		return this.actuatorClient.withInstance(applicationName, (instance) -> {
 			String url = instance.getRegistration().getManagementUrl() + "/refresh";
-			return this.instanceWebClient.instance(instance)
-				.post()
-				.uri(url)
-				.contentType(MediaType.APPLICATION_JSON)
-				.retrieve()
-				.bodyToMono(String.class)
-				.timeout(TIMEOUT)
+			return this.actuatorClient.post(instance, url, "{}", log, "refresh of " + applicationName)
 				.map((body) -> formatRefreshResponse(applicationName, body))
-				.doOnError((ex) -> log.warn("Failed to refresh configuration for {}", applicationName, ex))
 				.onErrorResume((ex) -> Mono
 					.just("Error refreshing configuration for " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		});
 	}
 
 	private String formatRefreshResponse(String applicationName, String body) {

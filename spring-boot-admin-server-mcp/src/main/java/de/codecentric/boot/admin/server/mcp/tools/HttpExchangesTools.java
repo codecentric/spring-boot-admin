@@ -16,19 +16,12 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
-import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for inspecting recent HTTP exchanges of registered Spring Boot applications.
@@ -40,29 +33,18 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
  */
 public class HttpExchangesTools {
 
-	private static final Logger log = LoggerFactory.getLogger(HttpExchangesTools.class);
-
-	private static final Duration TIMEOUT = Duration.ofMillis(450);
-
 	private static final int DEFAULT_LIMIT = 20;
 
 	private static final int MAX_LIMIT = 100;
 
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
-	};
-
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final ActuatorClient actuatorClient;
 
 	/**
 	 * Creates a new {@code HttpExchangesTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
 	 */
-	public HttpExchangesTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public HttpExchangesTools(ActuatorClient actuatorClient) {
+		this.actuatorClient = actuatorClient;
 	}
 
 	/**
@@ -85,20 +67,8 @@ public class HttpExchangesTools {
 			@McpToolParam(description = "Maximum number of exchanges to return (default 20, max 100)",
 					required = false) Integer limit) {
 		int effectiveLimit = (limit != null) ? Math.min(Math.max(limit, 1), MAX_LIMIT) : DEFAULT_LIMIT;
-
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/httpexchanges";
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatExchanges(applicationName, body, effectiveLimit))
-				.doOnError((ex) -> log.warn("Failed to get HTTP exchanges for {}", applicationName, ex))
-				.onErrorResume((ex) -> Mono
-					.just("Error retrieving HTTP exchanges for " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.query(applicationName, "/httpexchanges",
+				(app, body) -> formatExchanges(app, body, effectiveLimit));
 	}
 
 	@SuppressWarnings("unchecked")

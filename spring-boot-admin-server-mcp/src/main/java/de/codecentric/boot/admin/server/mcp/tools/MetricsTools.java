@@ -16,19 +16,12 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
-import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for querying metrics of registered Spring Boot applications.
@@ -40,25 +33,14 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
  */
 public class MetricsTools {
 
-	private static final Logger log = LoggerFactory.getLogger(MetricsTools.class);
-
-	private static final Duration TIMEOUT = Duration.ofMillis(450);
-
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
-	};
-
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final ActuatorClient actuatorClient;
 
 	/**
 	 * Creates a new {@code MetricsTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
 	 */
-	public MetricsTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public MetricsTools(ActuatorClient actuatorClient) {
+		this.actuatorClient = actuatorClient;
 	}
 
 	/**
@@ -72,19 +54,7 @@ public class MetricsTools {
 					+ "Use the returned names with get-metrics to fetch specific values.")
 	public Mono<String> listMetrics(@McpToolParam(description = "The registered application name (case-insensitive)",
 			required = true) String applicationName) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/metrics";
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatMetricNames(applicationName, body))
-				.doOnError((ex) -> log.warn("Failed to list metrics for {}", applicationName, ex))
-				.onErrorResume(
-						(ex) -> Mono.just("Error listing metrics for " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.query(applicationName, "/metrics", this::formatMetricNames);
 	}
 
 	/**
@@ -102,19 +72,8 @@ public class MetricsTools {
 			@McpToolParam(description = "The registered application name (case-insensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "The metric name (e.g. jvm.memory.used)", required = true) String metricName) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/metrics/" + metricName;
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatMetricValue(applicationName, metricName, body))
-				.doOnError((ex) -> log.warn("Failed to get metric {} for {}", metricName, applicationName, ex))
-				.onErrorResume((ex) -> Mono.just("Error retrieving metric '" + metricName + "' for " + applicationName
-						+ ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.query(applicationName, "/metrics/" + metricName,
+				(app, body) -> formatMetricValue(app, metricName, body));
 	}
 
 	@SuppressWarnings("unchecked")

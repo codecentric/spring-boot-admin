@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.mcp.tools.ActuatorClient;
 import de.codecentric.boot.admin.server.mcp.tools.ApplicationTools;
 import de.codecentric.boot.admin.server.mcp.tools.BeansTools;
 import de.codecentric.boot.admin.server.mcp.tools.CachesTools;
@@ -49,6 +50,7 @@ class McpAutoConfigurationTest {
 	@Test
 	void mcpDisabled_noToolBeansCreated() {
 		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(ActuatorClient.class);
 			assertThat(context).doesNotHaveBean(ApplicationTools.class);
 			assertThat(context).doesNotHaveBean(HealthTools.class);
 			assertThat(context).doesNotHaveBean(MetricsTools.class);
@@ -67,6 +69,7 @@ class McpAutoConfigurationTest {
 	@Test
 	void mcpEnabled_allToolBeansCreatedByDefault() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.mcp.enabled=true").run((context) -> {
+			assertThat(context).hasSingleBean(ActuatorClient.class);
 			assertThat(context).hasSingleBean(ApplicationTools.class);
 			assertThat(context).hasSingleBean(HealthTools.class);
 			assertThat(context).hasSingleBean(MetricsTools.class);

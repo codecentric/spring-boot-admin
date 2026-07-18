@@ -66,7 +66,8 @@ class HttpExchangesToolsTest {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
-		this.httpExchangesTools = new HttpExchangesTools(this.instanceRepository, instanceWebClient);
+		this.httpExchangesTools = new HttpExchangesTools(
+				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));
 	}
 
 	@AfterEach

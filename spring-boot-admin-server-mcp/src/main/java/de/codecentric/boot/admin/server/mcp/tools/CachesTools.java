@@ -16,18 +16,11 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
-import java.time.Duration;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
-import org.springframework.core.ParameterizedTypeReference;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for inspecting caches of registered Spring Boot applications.
@@ -39,25 +32,14 @@ import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
  */
 public class CachesTools {
 
-	private static final Logger log = LoggerFactory.getLogger(CachesTools.class);
-
-	private static final Duration TIMEOUT = Duration.ofMillis(450);
-
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
-	};
-
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final ActuatorClient actuatorClient;
 
 	/**
 	 * Creates a new {@code CachesTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
 	 */
-	public CachesTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public CachesTools(ActuatorClient actuatorClient) {
+		this.actuatorClient = actuatorClient;
 	}
 
 	/**
@@ -74,19 +56,7 @@ public class CachesTools {
 					+ "Requires the caches actuator endpoint to be exposed.")
 	public Mono<String> listCaches(@McpToolParam(description = "The registered application name (case-insensitive)",
 			required = true) String applicationName) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/caches";
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatCaches(applicationName, body))
-				.doOnError((ex) -> log.warn("Failed to list caches for {}", applicationName, ex))
-				.onErrorResume(
-						(ex) -> Mono.just("Error listing caches for " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.query(applicationName, "/caches", this::formatCaches);
 	}
 
 	@SuppressWarnings("unchecked")

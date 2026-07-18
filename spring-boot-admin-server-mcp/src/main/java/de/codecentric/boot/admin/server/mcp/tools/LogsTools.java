@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -25,9 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for accessing logs of registered Spring Boot applications.
@@ -40,24 +36,18 @@ public class LogsTools {
 
 	private static final Logger log = LoggerFactory.getLogger(LogsTools.class);
 
-	private static final Duration TIMEOUT = Duration.ofMillis(450);
-
 	private static final int DEFAULT_LINES = 50;
 
 	private static final int MAX_LINES = 500;
 
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final ActuatorClient actuatorClient;
 
 	/**
 	 * Creates a new {@code LogsTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
 	 */
-	public LogsTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public LogsTools(ActuatorClient actuatorClient) {
+		this.actuatorClient = actuatorClient;
 	}
 
 	/**
@@ -79,20 +69,13 @@ public class LogsTools {
 					required = false) Integer lines) {
 		int lineCount = (lines != null) ? Math.min(Math.max(lines, 1), MAX_LINES) : DEFAULT_LINES;
 
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
+		return this.actuatorClient.withInstance(applicationName, (instance) -> {
 			String url = instance.getRegistration().getManagementUrl() + "/logfile";
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(String.class)
-				.defaultIfEmpty("")
-				.timeout(TIMEOUT)
+			return this.actuatorClient.fetchText(instance, url, log, "logs for " + applicationName)
 				.map((body) -> formatLogTail(applicationName, body, lineCount))
-				.doOnError((ex) -> log.warn("Failed to get logs for {}", applicationName, ex))
 				.onErrorResume(
 						(ex) -> Mono.just("Error retrieving logs for " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		});
 	}
 
 	private String formatLogTail(String applicationName, String body, int lineCount) {

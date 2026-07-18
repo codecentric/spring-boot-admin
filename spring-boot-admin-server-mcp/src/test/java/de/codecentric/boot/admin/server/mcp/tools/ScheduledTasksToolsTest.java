@@ -66,7 +66,8 @@ class ScheduledTasksToolsTest {
 		this.wireMock.start();
 		this.instanceRepository = mock(InstanceRepository.class);
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
-		this.scheduledTasksTools = new ScheduledTasksTools(this.instanceRepository, instanceWebClient);
+		this.scheduledTasksTools = new ScheduledTasksTools(
+				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));
 	}
 
 	@AfterEach

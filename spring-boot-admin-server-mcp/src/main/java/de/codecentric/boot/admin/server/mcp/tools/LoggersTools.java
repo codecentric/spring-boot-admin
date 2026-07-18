@@ -16,7 +16,6 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,12 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
-
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
-import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
  * MCP tools for querying and configuring log levels of registered Spring Boot
@@ -48,23 +42,14 @@ public class LoggersTools {
 
 	private static final Logger log = LoggerFactory.getLogger(LoggersTools.class);
 
-	private static final Duration TIMEOUT = Duration.ofMillis(450);
-
-	private static final ParameterizedTypeReference<Map<String, Object>> RESPONSE_TYPE = new ParameterizedTypeReference<>() {
-	};
-
-	private final InstanceRepository instanceRepository;
-
-	private final InstanceWebClient instanceWebClient;
+	private final ActuatorClient actuatorClient;
 
 	/**
 	 * Creates a new {@code LoggersTools} instance.
-	 * @param instanceRepository the repository used to look up registered instances
-	 * @param instanceWebClient the client used to call actuator endpoints on instances
+	 * @param actuatorClient the shared actuator call helper
 	 */
-	public LoggersTools(InstanceRepository instanceRepository, InstanceWebClient instanceWebClient) {
-		this.instanceRepository = instanceRepository;
-		this.instanceWebClient = instanceWebClient;
+	public LoggersTools(ActuatorClient actuatorClient) {
+		this.actuatorClient = actuatorClient;
 	}
 
 	/**
@@ -86,19 +71,7 @@ public class LoggersTools {
 					required = true) String applicationName,
 			@McpToolParam(description = "Optional case-insensitive substring; only logger names containing it are "
 					+ "returned. Omit to return all loggers.", required = false) String filter) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/loggers";
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatLoggers(applicationName, filter, body))
-				.doOnError((ex) -> log.warn("Failed to list loggers for {}", applicationName, ex))
-				.onErrorResume(
-						(ex) -> Mono.just("Error listing loggers for " + applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.query(applicationName, "/loggers", (app, body) -> formatLoggers(app, filter, body));
 	}
 
 	/**
@@ -118,19 +91,8 @@ public class LoggersTools {
 					required = true) String applicationName,
 			@McpToolParam(description = "The fully-qualified logger name (e.g. com.example.MyService)",
 					required = true) String loggerName) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/loggers/" + loggerName;
-			return this.instanceWebClient.instance(instance)
-				.get()
-				.uri(url)
-				.retrieve()
-				.bodyToMono(RESPONSE_TYPE)
-				.timeout(TIMEOUT)
-				.map((body) -> formatLogger(applicationName, loggerName, body))
-				.doOnError((ex) -> log.warn("Failed to get logger {} for {}", loggerName, applicationName, ex))
-				.onErrorResume((ex) -> Mono.just("Error retrieving logger '" + loggerName + "' for " + applicationName
-						+ ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		return this.actuatorClient.query(applicationName, "/loggers/" + loggerName,
+				(app, body) -> formatLogger(app, loggerName, body));
 	}
 
 	/**
@@ -156,20 +118,13 @@ public class LoggersTools {
 					required = true) String loggerName,
 			@McpToolParam(description = "The log level to set: TRACE, DEBUG, INFO, WARN, ERROR, OFF, or null to reset",
 					required = true) String level) {
-		return this.instanceRepository.findByName(applicationName).next().flatMap((instance) -> {
+		return this.actuatorClient.withInstance(applicationName, (instance) -> {
 			String url = instance.getRegistration().getManagementUrl() + "/loggers/" + loggerName;
 			String body = (level == null || "null".equalsIgnoreCase(level)) ? "{}"
 					: "{\"configuredLevel\":\"" + level.toUpperCase(Locale.ROOT) + "\"}";
-			return this.instanceWebClient.instance(instance)
-				.post()
-				.uri(url)
-				.contentType(MediaType.APPLICATION_JSON)
-				.bodyValue(body)
-				.retrieve()
-				.toBodilessEntity()
-				.timeout(TIMEOUT)
-				.map((response) -> {
-					int status = response.getStatusCode().value();
+			return this.actuatorClient
+				.postBodiless(instance, url, body, log, "set log level for " + loggerName + " in " + applicationName)
+				.map((status) -> {
 					if ((status >= 200) && (status < 300)) {
 						String effectiveLevel = (level == null || "null".equalsIgnoreCase(level)) ? "inherited"
 								: level.toUpperCase(Locale.ROOT);
@@ -178,10 +133,9 @@ public class LoggersTools {
 					}
 					return "Setting log level returned unexpected status " + status + " for " + applicationName + ".";
 				})
-				.doOnError((ex) -> log.warn("Failed to set log level for {} in {}", loggerName, applicationName, ex))
 				.onErrorResume((ex) -> Mono.just("Error setting log level for '" + loggerName + "' in "
 						+ applicationName + ": " + ex.getMessage()));
-		}).switchIfEmpty(Mono.just("Application '" + applicationName + "' not found in registry."));
+		});
 	}
 
 	@SuppressWarnings("unchecked")
