@@ -7,11 +7,6 @@ spring:
         url: http://localhost:8080
       mcp:
         enabled: true
-  ai:
-    mcp:
-      server:
-        type: ASYNC
-        protocol: STATELESS
   profiles:
     active:
       - insecure
