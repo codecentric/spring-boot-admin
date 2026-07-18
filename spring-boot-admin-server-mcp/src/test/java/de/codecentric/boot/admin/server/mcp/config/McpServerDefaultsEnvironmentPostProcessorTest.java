@@ -65,6 +65,50 @@ class McpServerDefaultsEnvironmentPostProcessorTest {
 	}
 
 	@Test
+	void shouldContributeDefaultServerProtocol() {
+		MockEnvironment environment = new MockEnvironment();
+
+		this.postProcessor.postProcessEnvironment(environment, null);
+
+		assertThat(environment.getProperty(McpServerDefaultsEnvironmentPostProcessor.PROTOCOL_PROPERTY))
+			.isEqualTo("streamable");
+	}
+
+	@Test
+	void shouldNotOverrideUserProvidedProtocol() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.getPropertySources()
+			.addFirst(new MapPropertySource("userConfig", Collections
+				.singletonMap(McpServerDefaultsEnvironmentPostProcessor.PROTOCOL_PROPERTY, "stateless")));
+
+		this.postProcessor.postProcessEnvironment(environment, null);
+
+		assertThat(environment.getProperty(McpServerDefaultsEnvironmentPostProcessor.PROTOCOL_PROPERTY))
+			.isEqualTo("stateless");
+	}
+
+	@Test
+	void shouldContributeDefaultServerType() {
+		MockEnvironment environment = new MockEnvironment();
+
+		this.postProcessor.postProcessEnvironment(environment, null);
+
+		assertThat(environment.getProperty(McpServerDefaultsEnvironmentPostProcessor.TYPE_PROPERTY)).isEqualTo("async");
+	}
+
+	@Test
+	void shouldNotOverrideUserProvidedType() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.getPropertySources()
+			.addFirst(new MapPropertySource("userConfig",
+					Collections.singletonMap(McpServerDefaultsEnvironmentPostProcessor.TYPE_PROPERTY, "sync")));
+
+		this.postProcessor.postProcessEnvironment(environment, null);
+
+		assertThat(environment.getProperty(McpServerDefaultsEnvironmentPostProcessor.TYPE_PROPERTY)).isEqualTo("sync");
+	}
+
+	@Test
 	void defaultsPropertySourceShouldHaveLowestPrecedence() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.getPropertySources().addLast(new MapPropertySource("dummy", Collections.emptyMap()));

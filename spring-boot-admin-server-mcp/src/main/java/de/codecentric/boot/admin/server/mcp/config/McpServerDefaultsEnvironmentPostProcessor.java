@@ -46,6 +46,28 @@ import org.springframework.util.StringUtils;
  * absent; in that case no version default is contributed and Spring AI's own fallback
  * applies.
  * </p>
+ *
+ * <p>
+ * The MCP server API type defaults to {@value #DEFAULT_SERVER_TYPE}. Spring Boot Admin
+ * runs on a reactive WebFlux/Netty stack and its actuator calls are non-blocking, so the
+ * asynchronous MCP server is the natural fit. Spring AI's own default is {@code sync},
+ * which would introduce blocking bridges on the reactive event loop. Contributing
+ * {@code async} here means users only need to enable the MCP server via
+ * {@code spring.boot.admin.mcp.enabled=true} without also setting any {@code spring.ai.*}
+ * properties.
+ * </p>
+ *
+ * <p>
+ * The transport protocol defaults to {@value #DEFAULT_SERVER_PROTOCOL}. Although Spring
+ * AI's {@code McpServerProperties} Java default is {@code STREAMABLE}, the transport
+ * autoconfiguration selects the active transport via {@code @ConditionalOnProperty}
+ * evaluated against the {@code Environment} — before the properties object is bound.
+ * {@code McpServerSseWebFluxAutoConfiguration} carries {@code matchIfMissing=true} on its
+ * SSE condition, so when {@code spring.ai.mcp.server.protocol} is absent from the
+ * environment the legacy SSE transport wins and {@code /mcp} returns 404. Contributing
+ * {@code streamable} here ensures the Streamable HTTP transport is active out of the box,
+ * exposing the single {@code /mcp} endpoint that modern MCP clients expect.
+ * </p>
  */
 public class McpServerDefaultsEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
@@ -60,9 +82,34 @@ public class McpServerDefaultsEnvironmentPostProcessor implements EnvironmentPos
 	static final String VERSION_PROPERTY = "spring.ai.mcp.server.version";
 
 	/**
+	 * The property that selects the MCP server API type ({@code sync} or {@code async}).
+	 */
+	static final String TYPE_PROPERTY = "spring.ai.mcp.server.type";
+
+	/**
+	 * The property that selects the MCP transport protocol ({@code streamable},
+	 * {@code stateless}, or the legacy {@code sse}).
+	 */
+	static final String PROTOCOL_PROPERTY = "spring.ai.mcp.server.protocol";
+
+	/**
 	 * Default server name advertised to MCP clients.
 	 */
 	static final String DEFAULT_SERVER_NAME = "Spring Boot Admin MCP Server";
+
+	/**
+	 * Default MCP server API type. Spring Boot Admin runs on a reactive WebFlux/Netty
+	 * stack, so the asynchronous server is the natural fit.
+	 */
+	static final String DEFAULT_SERVER_TYPE = "async";
+
+	/**
+	 * Default MCP transport protocol. Must be set explicitly in the environment because
+	 * Spring AI's SSE transport condition carries {@code matchIfMissing=true} and wins
+	 * when the property is absent, even though {@code McpServerProperties} defaults to
+	 * {@code STREAMABLE}.
+	 */
+	static final String DEFAULT_SERVER_PROTOCOL = "streamable";
 
 	/**
 	 * Name of the property source contributing the defaults.
@@ -80,6 +127,8 @@ public class McpServerDefaultsEnvironmentPostProcessor implements EnvironmentPos
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		Map<String, Object> defaults = new HashMap<>();
 		defaults.put(NAME_PROPERTY, DEFAULT_SERVER_NAME);
+		defaults.put(TYPE_PROPERTY, DEFAULT_SERVER_TYPE);
+		defaults.put(PROTOCOL_PROPERTY, DEFAULT_SERVER_PROTOCOL);
 		String version = resolveVersion();
 		if (StringUtils.hasText(version)) {
 			defaults.put(VERSION_PROPERTY, version);
