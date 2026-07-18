@@ -33,26 +33,90 @@ calls against your registered applications. Responses are formatted as plain tex
 
 ## Available Tools
 
-| Tool                    | Description                                                                                                               |
-|-------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| `list-applications`     | Lists all registered applications with status and management URL                                                          |
-| `get-status`            | Returns the cached status (UP/DOWN/UNKNOWN) for a named application                                                       |
-| `get-health`            | Fetches full health details from `/actuator/health`                                                                       |
-| `list-metrics`          | Lists all available metric names for a named application                                                                  |
-| `get-metrics`           | Fetches the current value of a specific metric                                                                            |
-| `get-env`               | Resolves a single configuration property or environment variable via `/actuator/env/{name}`                               |
-| `list-env`              | Lists environment properties grouped by property source via `/actuator/env`, with an optional name filter                 |
-| `get-logs`              | Returns the last N lines from `/actuator/logfile`                                                                         |
-| `restart-application`   | Restarts an application via `/actuator/restart`                                                                           |
-| `refresh-configuration` | Refreshes configuration via `/actuator/refresh`                                                                           |
-| `list-loggers`          | Lists all loggers and their effective log levels via `/actuator/loggers`, with an optional name filter                    |
-| `get-logger`            | Returns the configured and effective log level for a single logger                                                        |
-| `set-logger-level`      | Changes a logger's level at runtime via `POST /actuator/loggers/{name}`; resets to inherited when level is `null`         |
-| `get-thread-dump`       | Captures a thread dump via `/actuator/threaddump`; useful for diagnosing deadlocks and hung threads                       |
-| `get-http-exchanges`    | Returns recent HTTP exchanges (method, URI, status, duration) via `/actuator/httpexchanges`                               |
-| `get-scheduled-tasks`   | Lists all `@Scheduled` tasks with their cron expressions or interval settings via `/actuator/scheduledtasks`              |
-| `list-caches`           | Lists all caches grouped by `CacheManager` via `/actuator/caches`                                                         |
-| `list-beans`            | Lists Spring application context beans with their type and scope via `/actuator/beans`, with an optional name/type filter |
+:::info
+Each tool group below corresponds to an actuator endpoint. For a tool to work, two conditions must be met:
+
+1. **The tool must be enabled on the MCP server** — all tool groups are enabled by default and can be toggled via `spring.boot.admin.mcp.tools.<name>=false` (see [Configuration Reference](#configuration-reference)).
+2. **The monitored application must expose the corresponding actuator endpoint** — see [Requirements in Monitored Applications](#requirements-in-monitored-applications) for the exact setup needed per tool.
+:::
+
+### Registry (no actuator call)
+
+| Tool | Description |
+|---|---|
+| `list-applications` | Lists all registered applications with their status and management URL |
+| `get-status` | Returns the cached status (UP/DOWN/UNKNOWN) for a named application without making an actuator call |
+
+### Beans
+
+| Tool | Description |
+|---|---|
+| `list-beans` | Lists Spring application context beans with their type and scope; supports an optional name/type filter |
+
+### Caches
+
+| Tool | Description |
+|---|---|
+| `list-caches` | Lists all caches grouped by `CacheManager` |
+
+### Env
+
+| Tool | Description |
+|---|---|
+| `get-env` | Resolves a single configuration property or environment variable |
+| `list-env` | Lists all environment properties grouped by property source; supports an optional name filter |
+
+### Health
+
+| Tool | Description |
+|---|---|
+| `get-health` | Fetches full health details including per-component breakdown |
+
+### HTTP Exchanges
+
+| Tool | Description |
+|---|---|
+| `get-http-exchanges` | Returns recent HTTP exchanges (method, URI, status, duration); supports a limit parameter |
+
+### Logfile
+
+| Tool | Description |
+|---|---|
+| `get-logs` | Returns the last N lines from the application log file |
+
+### Loggers
+
+| Tool | Description |
+|---|---|
+| `list-loggers` | Lists all loggers and their effective log levels; supports an optional name filter |
+| `get-logger` | Returns the configured and effective log level for a single logger |
+| `set-logger-level` | Changes a logger's level at runtime; pass `null` to reset to the inherited level |
+
+### Metrics
+
+| Tool | Description |
+|---|---|
+| `list-metrics` | Lists all available metric names |
+| `get-metrics` | Fetches the current value of a specific metric |
+
+### Restart · Refresh
+
+| Tool | Description |
+|---|---|
+| `restart-application` | Restarts an application via `/actuator/restart` |
+| `refresh-configuration` | Triggers a Spring Cloud config refresh via `/actuator/refresh` |
+
+### Scheduled Tasks
+
+| Tool | Description |
+|---|---|
+| `get-scheduled-tasks` | Lists all `@Scheduled` tasks with their cron expressions or interval settings |
+
+### Thread Dump
+
+| Tool | Description |
+|---|---|
+| `get-thread-dump` | Captures a thread dump; useful for diagnosing deadlocks and hung threads |
 
 ## Quick Start
 
@@ -384,8 +448,8 @@ Then pass credentials in the MCP client configuration:
 | `spring.ai.mcp.server.name`                   | `Spring Boot Admin MCP Server`    | Server name reported to MCP clients. Override to report a custom value.                                                       |
 | `spring.ai.mcp.server.version`                | current Spring Boot Admin version | Server version reported to MCP clients. Defaults to the running Spring Boot Admin version; override to report a custom value. |
 
-:::note The `spring.boot.admin.mcp.tools.*` flags toggle tool availability **on the Spring Boot Admin server** — a
-disabled category is never advertised to MCP clients. They are independent of the monitored applications'
+:::note The `spring.boot.admin.mcp.tools.*` flags toggle tool availability **on the Spring Boot Admin server**
+a disabled category is never advertised to MCP clients. They are independent of the monitored applications'
 `management.endpoint.*.enabled` settings, which are enforced at runtime by each target application (a call to a disabled
 endpoint simply returns an error). For example, to run a read-only monitoring deployment, set
 `spring.boot.admin.mcp.tools.operations=false`. Changes take effect on server restart.
@@ -397,7 +461,7 @@ A runnable sample combining the Web UI and MCP server is available at
 `spring-boot-admin-samples/spring-boot-admin-sample-mcp`. Start it with:
 
 ```bash
-./mvnw spring-boot:run -pl spring-boot-admin-samples/spring-boot-admin-sample-mcp -DexcludeSpringCloud
+./mvnw spring-boot:run -pl spring-boot-admin-samples/spring-boot-admin-sample-mcp
 ```
 
 The Web UI is available at `http://localhost:8080` and the MCP endpoint at `http://localhost:8080/mcp`.
