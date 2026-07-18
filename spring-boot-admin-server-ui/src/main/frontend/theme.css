@@ -15,6 +15,7 @@
  */
 
 @import 'tailwindcss';
+
 @custom-variant dark (&:where(.dark, .dark *));
 @plugin "@tailwindcss/forms";
 @plugin "@tailwindcss/typography";
@@ -32,23 +33,23 @@
   --color-sba-900: var(--main-900);
 
   /* ── Status colour tokens ─────────────────────────────────────────────
-   * Tailwind utilities: text-status-up, bg-status-up-bg, etc.
-   * Single source of truth for UP/DOWN/RESTRICTED/UNKNOWN across all
-   * components (sba-status-badge, sba-status, wallboard, health panel).
-   */
-  --color-status-up:               var(--color-green-400);
-  --color-status-up-bg:            var(--color-green-200);
-  --color-status-up-text:          var(--color-green-700);
+     * Tailwind utilities: text-status-up, bg-status-up-bg, etc.
+     * Single source of truth for UP/DOWN/RESTRICTED/UNKNOWN across all
+     * components (sba-status-badge, sba-status, wallboard, health panel).
+     */
+  --color-status-up: var(--color-green-400);
+  --color-status-up-bg: var(--color-green-200);
+  --color-status-up-text: var(--color-green-700);
 
-  --color-status-down:             var(--color-red-400);
-  --color-status-down-bg:          var(--color-red-200);
-  --color-status-down-text:        var(--color-red-700);
+  --color-status-down: var(--color-red-400);
+  --color-status-down-bg: var(--color-red-200);
+  --color-status-down-text: var(--color-red-700);
 
-  --color-status-restricted:       var(--color-yellow-500);
-  --color-status-restricted-bg:    var(--color-yellow-200);
-  --color-status-restricted-text:  var(--color-yellow-700);
+  --color-status-restricted: var(--color-yellow-500);
+  --color-status-restricted-bg: var(--color-yellow-200);
+  --color-status-restricted-text: var(--color-yellow-700);
 
-  --color-status-unknown:          var(--color-gray-400);
-  --color-status-unknown-bg:       var(--color-gray-200);
-  --color-status-unknown-text:     var(--color-gray-700);
+  --color-status-unknown: var(--color-gray-400);
+  --color-status-unknown-bg: var(--color-gray-200);
+  --color-status-unknown-text: var(--color-gray-700);
 }
