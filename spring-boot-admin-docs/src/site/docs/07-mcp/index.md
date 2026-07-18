@@ -159,19 +159,18 @@ spring:
     admin:
       mcp:
         enabled: true
-  ai:
-    mcp:
-      server:
-        type: ASYNC
-        protocol: STATELESS
 ```
 
 :::note
 `spring.boot.admin.mcp.enabled` defaults to `false`. Existing deployments are unaffected until you opt in.
 :::
 
-:::note You don't need to set `spring.ai.mcp.server.name` or `spring.ai.mcp.server.version` — Spring Boot Admin provides
-sensible defaults for both. You can still override them explicitly if you want a custom name or version:
+:::note You don't need to set any `spring.ai.mcp.server.*` properties. Spring Boot Admin automatically contributes
+`type=async` and `protocol=streamable` as low-precedence defaults. Both are necessary: Spring AI's `sync` default
+would block the reactive event loop, and its SSE transport condition carries `matchIfMissing=true` — meaning when
+`protocol` is absent from the environment the legacy SSE transport activates instead of the Streamable HTTP endpoint
+at `/mcp`. All values can still be overridden explicitly if needed — for example to report a custom name or
+version:
 
 ```yaml title="application.yml"
 spring:
@@ -280,10 +279,10 @@ Add to your Cursor MCP settings (`~/.cursor/mcp.json`):
 
 ### Generic MCP Client
 
-Any MCP client that supports **Stateless Streamable HTTP** transport can connect:
+Any MCP client that supports **Streamable HTTP** transport can connect:
 
 - **Endpoint**: `POST http://localhost:8080/mcp`
-- **Transport**: Stateless Streamable HTTP (MCP spec 2025-03-26)
+- **Transport**: Streamable HTTP (MCP spec 2025-03-26)
 - **Auth**: none by default (see [Security](#security))
 
 ## Example Conversations
@@ -445,8 +444,8 @@ Then pass credentials in the MCP client configuration:
 | `spring.boot.admin.mcp.tools.scheduled-tasks` | `true`                            | Register the `get-scheduled-tasks` tool                                                                                       |
 | `spring.boot.admin.mcp.tools.caches`          | `true`                            | Register the `list-caches` tool                                                                                               |
 | `spring.boot.admin.mcp.tools.beans`           | `true`                            | Register the `list-beans` tool                                                                                                |
-| `spring.ai.mcp.server.type`                   | `SYNC`                            | Server type — use `ASYNC` for reactive tool methods                                                                           |
-| `spring.ai.mcp.server.protocol`               | `SSE`                             | Transport protocol — use `STATELESS` for HTTP clients                                                                         |
+| `spring.ai.mcp.server.type`                   | `async`                           | Server API type. Spring Boot Admin overrides Spring AI's `sync` default to `async` to match its reactive WebFlux/Netty stack. Override to `sync` only if you have a specific reason. |
+| `spring.ai.mcp.server.protocol`               | `streamable`                      | Transport protocol. Spring Boot Admin sets this to `streamable` so the `/mcp` endpoint is active. Without it, Spring AI's SSE transport condition (`matchIfMissing=true`) activates the legacy SSE transport instead. Set to `stateless` for stateless HTTP or `sse` for the legacy SSE transport. |
 | `spring.ai.mcp.server.name`                   | `Spring Boot Admin MCP Server`    | Server name reported to MCP clients. Override to report a custom value.                                                       |
 | `spring.ai.mcp.server.version`                | current Spring Boot Admin version | Server version reported to MCP clients. Defaults to the running Spring Boot Admin version; override to report a custom value. |
 
