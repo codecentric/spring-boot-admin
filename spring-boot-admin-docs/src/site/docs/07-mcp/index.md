@@ -24,7 +24,6 @@ flowchart LR
     AI[AI Assistant\nOpenCode / Claude / ChatGPT]
     SBA[Spring Boot Admin\nMCP Server]
     Apps[Spring Boot\nApplications]
-
     AI -->|MCP tools| SBA
     SBA -->|/actuator/*| Apps
 ```
@@ -34,49 +33,58 @@ calls against your registered applications. Responses are formatted as plain tex
 
 ## Available Tools
 
-| Tool | Description |
-|---|---|
-| `list-applications` | Lists all registered applications with status and management URL |
-| `get-status` | Returns the cached status (UP/DOWN/UNKNOWN) for a named application |
-| `get-health` | Fetches full health details from `/actuator/health` |
-| `list-metrics` | Lists all available metric names for a named application |
-| `get-metrics` | Fetches the current value of a specific metric |
-| `get-env` | Resolves a single configuration property or environment variable via `/actuator/env/{name}` |
-| `list-env` | Lists environment properties grouped by property source via `/actuator/env`, with an optional name filter |
-| `get-logs` | Returns the last N lines from `/actuator/logfile` |
-| `restart-application` | Restarts an application via `/actuator/restart` |
-| `refresh-configuration` | Refreshes configuration via `/actuator/refresh` |
+| Tool                    | Description                                                                                                               |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `list-applications`     | Lists all registered applications with status and management URL                                                          |
+| `get-status`            | Returns the cached status (UP/DOWN/UNKNOWN) for a named application                                                       |
+| `get-health`            | Fetches full health details from `/actuator/health`                                                                       |
+| `list-metrics`          | Lists all available metric names for a named application                                                                  |
+| `get-metrics`           | Fetches the current value of a specific metric                                                                            |
+| `get-env`               | Resolves a single configuration property or environment variable via `/actuator/env/{name}`                               |
+| `list-env`              | Lists environment properties grouped by property source via `/actuator/env`, with an optional name filter                 |
+| `get-logs`              | Returns the last N lines from `/actuator/logfile`                                                                         |
+| `restart-application`   | Restarts an application via `/actuator/restart`                                                                           |
+| `refresh-configuration` | Refreshes configuration via `/actuator/refresh`                                                                           |
+| `list-loggers`          | Lists all loggers and their effective log levels via `/actuator/loggers`, with an optional name filter                    |
+| `get-logger`            | Returns the configured and effective log level for a single logger                                                        |
+| `set-logger-level`      | Changes a logger's level at runtime via `POST /actuator/loggers/{name}`; resets to inherited when level is `null`         |
+| `get-thread-dump`       | Captures a thread dump via `/actuator/threaddump`; useful for diagnosing deadlocks and hung threads                       |
+| `get-http-exchanges`    | Returns recent HTTP exchanges (method, URI, status, duration) via `/actuator/httpexchanges`                               |
+| `get-scheduled-tasks`   | Lists all `@Scheduled` tasks with their cron expressions or interval settings via `/actuator/scheduledtasks`              |
+| `list-caches`           | Lists all caches grouped by `CacheManager` via `/actuator/caches`                                                         |
+| `list-beans`            | Lists Spring application context beans with their type and scope via `/actuator/beans`, with an optional name/type filter |
 
 ## Quick Start
 
 ### 1. Add the MCP module
 
-The `spring-boot-admin-starter-server-mcp` starter brings in the Spring Boot Admin server together with the MCP
-server. It works as a fully functional Spring Boot Admin server on its own — you get the registry and all MCP tools,
-but **without the Web UI**:
+The `spring-boot-admin-starter-server-mcp` starter brings in the Spring Boot Admin server together with the MCP server.
+It works as a fully functional Spring Boot Admin server on its own — you get the registry and all MCP tools, but
+**without the Web UI**:
 
 ```xml title="pom.xml"
+
 <dependency>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin-starter-server-mcp</artifactId>
 </dependency>
 ```
 
-:::tip
-Add `spring-boot-admin-starter-server` alongside the MCP starter if you also want the Web UI. Both run on the same
-port, giving you the UI and the MCP server side by side.
+:::tip Add `spring-boot-admin-starter-server` alongside the MCP starter if you also want the Web UI. Both run on the
+same port, giving you the UI and the MCP server side by side.
 :::
 
-:::note
-If you already depend on `spring-boot-admin-starter-server` and only want to add MCP capabilities, you can instead add
-the standalone `spring-boot-admin-server-mcp` module:
+:::note If you already depend on `spring-boot-admin-starter-server` and only want to add MCP capabilities, you can
+instead add the standalone `spring-boot-admin-server-mcp` module:
 
 ```xml title="pom.xml"
+
 <dependency>
     <groupId>de.codecentric</groupId>
     <artifactId>spring-boot-admin-server-mcp</artifactId>
 </dependency>
 ```
+
 :::
 
 ### 2. Enable MCP in your configuration
@@ -98,8 +106,7 @@ spring:
 `spring.boot.admin.mcp.enabled` defaults to `false`. Existing deployments are unaffected until you opt in.
 :::
 
-:::note
-You don't need to set `spring.ai.mcp.server.name` or `spring.ai.mcp.server.version` — Spring Boot Admin provides
+:::note You don't need to set `spring.ai.mcp.server.name` or `spring.ai.mcp.server.version` — Spring Boot Admin provides
 sensible defaults for both. You can still override them explicitly if you want a custom name or version:
 
 ```yaml title="application.yml"
@@ -110,6 +117,7 @@ spring:
         name: "My Spring Boot Admin"
         version: "1.0.0"
 ```
+
 :::
 
 ### 3. Connect your AI assistant
@@ -287,13 +295,19 @@ Assistant: Configuration refreshed for inventory-service. Changed keys: ["app.fe
 
 Certain tools require additional setup in the monitored applications:
 
-| Tool | Requirement |
-|---|---|
-| `get-logs` | `logging.file.name` or `logging.file.path` configured; `logfile` actuator endpoint exposed |
-| `get-env` / `list-env` | `env` actuator endpoint exposed. Values are masked (`******`) unless `management.endpoint.env.show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` |
-| `restart-application` | `management.endpoint.restart.enabled=true`; restart actuator endpoint exposed |
-| `refresh-configuration` | Spring Cloud Context on classpath (`spring-cloud-starter`); `refresh` endpoint exposed |
-| All read tools | Actuator endpoints exposed: `management.endpoints.web.exposure.include=*` |
+| Tool                                               | Requirement                                                                                                                                        |
+|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `get-logs`                                         | `logging.file.name` or `logging.file.path` configured; `logfile` actuator endpoint exposed                                                         |
+| `get-env` / `list-env`                             | `env` actuator endpoint exposed. Values are masked (`******`) unless `management.endpoint.env.show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` |
+| `restart-application`                              | `management.endpoint.restart.enabled=true`; restart actuator endpoint exposed                                                                      |
+| `refresh-configuration`                            | Spring Cloud Context on classpath (`spring-cloud-starter`); `refresh` endpoint exposed                                                             |
+| `list-loggers` / `get-logger` / `set-logger-level` | `loggers` actuator endpoint exposed                                                                                                                |
+| `get-thread-dump`                                  | `threaddump` actuator endpoint exposed                                                                                                             |
+| `get-http-exchanges`                               | `management.httpexchanges.recording.enabled=true`; `httpexchanges` actuator endpoint exposed (Spring Boot 3.x)                                     |
+| `get-scheduled-tasks`                              | `scheduledtasks` actuator endpoint exposed                                                                                                         |
+| `list-caches`                                      | `caches` actuator endpoint exposed; application must use Spring's cache abstraction                                                                |
+| `list-beans`                                       | `beans` actuator endpoint exposed                                                                                                                  |
+| All read tools                                     | Actuator endpoints exposed: `management.endpoints.web.exposure.include=*`                                                                          |
 
 ```yaml title="application.yml (monitored application)"
 management:
@@ -318,16 +332,17 @@ By default, MCP endpoints are open. For production deployments, restrict access 
 The simplest approach is to use the existing Spring Boot Admin security configuration and extend it to protect `/mcp`:
 
 ```java title="SecurityConfiguration.java"
+
 @Bean
 @Profile("secure")
 public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-    return http
-        .authorizeExchange((auth) -> auth
-            .pathMatchers("/mcp").authenticated()
-            .anyExchange().authenticated())
-        .httpBasic(Customizer.withDefaults())
-        .csrf(ServerHttpSecurity.CsrfSpec::disable)
-        .build();
+	return http
+			.authorizeExchange((auth) -> auth
+					.pathMatchers("/mcp").authenticated()
+					.anyExchange().authenticated())
+			.httpBasic(Customizer.withDefaults())
+			.csrf(ServerHttpSecurity.CsrfSpec::disable)
+			.build();
 }
 ```
 
@@ -349,23 +364,28 @@ Then pass credentials in the MCP client configuration:
 
 ## Configuration Reference
 
-| Property | Default | Description |
-|---|---|---|
-| `spring.boot.admin.mcp.enabled` | `false` | Enable the MCP server integration |
-| `spring.boot.admin.mcp.tools.applications` | `true` | Register the `list-applications` tool |
-| `spring.boot.admin.mcp.tools.health` | `true` | Register the `get-health` and `get-status` tools |
-| `spring.boot.admin.mcp.tools.metrics` | `true` | Register the `list-metrics` and `get-metrics` tools |
-| `spring.boot.admin.mcp.tools.env` | `true` | Register the `get-env` and `list-env` tools |
-| `spring.boot.admin.mcp.tools.logs` | `true` | Register the `get-logs` tool |
-| `spring.boot.admin.mcp.tools.operations` | `true` | Register the write tools `restart-application` and `refresh-configuration` |
-| `spring.ai.mcp.server.type` | `SYNC` | Server type — use `ASYNC` for reactive tool methods |
-| `spring.ai.mcp.server.protocol` | `SSE` | Transport protocol — use `STATELESS` for HTTP clients |
-| `spring.ai.mcp.server.name` | `Spring Boot Admin MCP Server` | Server name reported to MCP clients. Override to report a custom value. |
-| `spring.ai.mcp.server.version` | current Spring Boot Admin version | Server version reported to MCP clients. Defaults to the running Spring Boot Admin version; override to report a custom value. |
+| Property                                      | Default                           | Description                                                                                                                   |
+|-----------------------------------------------|-----------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| `spring.boot.admin.mcp.enabled`               | `false`                           | Enable the MCP server integration                                                                                             |
+| `spring.boot.admin.mcp.tools.applications`    | `true`                            | Register the `list-applications` tool                                                                                         |
+| `spring.boot.admin.mcp.tools.health`          | `true`                            | Register the `get-health` and `get-status` tools                                                                              |
+| `spring.boot.admin.mcp.tools.metrics`         | `true`                            | Register the `list-metrics` and `get-metrics` tools                                                                           |
+| `spring.boot.admin.mcp.tools.env`             | `true`                            | Register the `get-env` and `list-env` tools                                                                                   |
+| `spring.boot.admin.mcp.tools.logs`            | `true`                            | Register the `get-logs` tool                                                                                                  |
+| `spring.boot.admin.mcp.tools.operations`      | `true`                            | Register the write tools `restart-application` and `refresh-configuration`                                                    |
+| `spring.boot.admin.mcp.tools.loggers`         | `true`                            | Register the `list-loggers`, `get-logger`, and `set-logger-level` tools                                                       |
+| `spring.boot.admin.mcp.tools.thread-dump`     | `true`                            | Register the `get-thread-dump` tool                                                                                           |
+| `spring.boot.admin.mcp.tools.http-exchanges`  | `true`                            | Register the `get-http-exchanges` tool                                                                                        |
+| `spring.boot.admin.mcp.tools.scheduled-tasks` | `true`                            | Register the `get-scheduled-tasks` tool                                                                                       |
+| `spring.boot.admin.mcp.tools.caches`          | `true`                            | Register the `list-caches` tool                                                                                               |
+| `spring.boot.admin.mcp.tools.beans`           | `true`                            | Register the `list-beans` tool                                                                                                |
+| `spring.ai.mcp.server.type`                   | `SYNC`                            | Server type — use `ASYNC` for reactive tool methods                                                                           |
+| `spring.ai.mcp.server.protocol`               | `SSE`                             | Transport protocol — use `STATELESS` for HTTP clients                                                                         |
+| `spring.ai.mcp.server.name`                   | `Spring Boot Admin MCP Server`    | Server name reported to MCP clients. Override to report a custom value.                                                       |
+| `spring.ai.mcp.server.version`                | current Spring Boot Admin version | Server version reported to MCP clients. Defaults to the running Spring Boot Admin version; override to report a custom value. |
 
-:::note
-The `spring.boot.admin.mcp.tools.*` flags toggle tool availability **on the Spring Boot Admin server** — a disabled
-category is never advertised to MCP clients. They are independent of the monitored applications'
+:::note The `spring.boot.admin.mcp.tools.*` flags toggle tool availability **on the Spring Boot Admin server** — a
+disabled category is never advertised to MCP clients. They are independent of the monitored applications'
 `management.endpoint.*.enabled` settings, which are enforced at runtime by each target application (a call to a disabled
 endpoint simply returns an error). For example, to run a read-only monitoring deployment, set
 `spring.boot.admin.mcp.tools.operations=false`. Changes take effect on server restart.

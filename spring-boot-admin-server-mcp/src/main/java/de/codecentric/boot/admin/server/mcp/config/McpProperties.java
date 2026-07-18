@@ -108,6 +108,37 @@ public class McpProperties {
 		 */
 		private boolean operations = true;
 
+		/**
+		 * Whether the {@code list-loggers}, {@code get-logger}, and
+		 * {@code set-logger-level} tools are available.
+		 */
+		private boolean loggers = true;
+
+		/**
+		 * Whether the {@code get-thread-dump} tool is available.
+		 */
+		private boolean threadDump = true;
+
+		/**
+		 * Whether the {@code get-http-exchanges} tool is available.
+		 */
+		private boolean httpExchanges = true;
+
+		/**
+		 * Whether the {@code get-scheduled-tasks} tool is available.
+		 */
+		private boolean scheduledTasks = true;
+
+		/**
+		 * Whether the {@code list-caches} tool is available.
+		 */
+		private boolean caches = true;
+
+		/**
+		 * Whether the {@code list-beans} tool is available.
+		 */
+		private boolean beans = true;
+
 	}
 
 }

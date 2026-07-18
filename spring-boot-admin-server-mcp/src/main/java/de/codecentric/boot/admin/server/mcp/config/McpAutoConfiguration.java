@@ -23,11 +23,17 @@ import org.springframework.context.annotation.Bean;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.mcp.tools.ApplicationTools;
+import de.codecentric.boot.admin.server.mcp.tools.BeansTools;
+import de.codecentric.boot.admin.server.mcp.tools.CachesTools;
 import de.codecentric.boot.admin.server.mcp.tools.EnvTools;
 import de.codecentric.boot.admin.server.mcp.tools.HealthTools;
+import de.codecentric.boot.admin.server.mcp.tools.HttpExchangesTools;
+import de.codecentric.boot.admin.server.mcp.tools.LoggersTools;
 import de.codecentric.boot.admin.server.mcp.tools.LogsTools;
 import de.codecentric.boot.admin.server.mcp.tools.MetricsTools;
 import de.codecentric.boot.admin.server.mcp.tools.OperationsTools;
+import de.codecentric.boot.admin.server.mcp.tools.ScheduledTasksTools;
+import de.codecentric.boot.admin.server.mcp.tools.ThreadDumpTools;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 /**
@@ -129,6 +135,97 @@ public class McpAutoConfiguration {
 	public OperationsTools operationsTools(InstanceRepository instanceRepository,
 			InstanceWebClient.Builder instanceWebClientBuilder) {
 		return new OperationsTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link LoggersTools} bean for querying and configuring log levels.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link LoggersTools}
+	 */
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "loggers", havingValue = "true",
+			matchIfMissing = true)
+	public LoggersTools loggersTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new LoggersTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link ThreadDumpTools} bean for capturing thread dumps.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link ThreadDumpTools}
+	 */
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "thread-dump", havingValue = "true",
+			matchIfMissing = true)
+	public ThreadDumpTools threadDumpTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new ThreadDumpTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link HttpExchangesTools} bean for inspecting recent HTTP exchanges.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link HttpExchangesTools}
+	 */
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "http-exchanges", havingValue = "true",
+			matchIfMissing = true)
+	public HttpExchangesTools httpExchangesTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new HttpExchangesTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link ScheduledTasksTools} bean for inspecting scheduled tasks.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link ScheduledTasksTools}
+	 */
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "scheduled-tasks", havingValue = "true",
+			matchIfMissing = true)
+	public ScheduledTasksTools scheduledTasksTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new ScheduledTasksTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link CachesTools} bean for inspecting application caches.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link CachesTools}
+	 */
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "caches", havingValue = "true",
+			matchIfMissing = true)
+	public CachesTools cachesTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new CachesTools(instanceRepository, instanceWebClientBuilder.build());
+	}
+
+	/**
+	 * Creates the {@link BeansTools} bean for inspecting Spring application context
+	 * beans.
+	 * @param instanceRepository the repository used to look up registered instances
+	 * @param instanceWebClientBuilder builder for the web client used to call actuator
+	 * endpoints
+	 * @return the configured {@link BeansTools}
+	 */
+	@Bean
+	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "beans", havingValue = "true",
+			matchIfMissing = true)
+	public BeansTools beansTools(InstanceRepository instanceRepository,
+			InstanceWebClient.Builder instanceWebClientBuilder) {
+		return new BeansTools(instanceRepository, instanceWebClientBuilder.build());
 	}
 
 }

@@ -24,11 +24,17 @@ import org.springframework.context.annotation.Configuration;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.mcp.tools.ApplicationTools;
+import de.codecentric.boot.admin.server.mcp.tools.BeansTools;
+import de.codecentric.boot.admin.server.mcp.tools.CachesTools;
 import de.codecentric.boot.admin.server.mcp.tools.EnvTools;
 import de.codecentric.boot.admin.server.mcp.tools.HealthTools;
+import de.codecentric.boot.admin.server.mcp.tools.HttpExchangesTools;
+import de.codecentric.boot.admin.server.mcp.tools.LoggersTools;
 import de.codecentric.boot.admin.server.mcp.tools.LogsTools;
 import de.codecentric.boot.admin.server.mcp.tools.MetricsTools;
 import de.codecentric.boot.admin.server.mcp.tools.OperationsTools;
+import de.codecentric.boot.admin.server.mcp.tools.ScheduledTasksTools;
+import de.codecentric.boot.admin.server.mcp.tools.ThreadDumpTools;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,6 +55,12 @@ class McpAutoConfigurationTest {
 			assertThat(context).doesNotHaveBean(EnvTools.class);
 			assertThat(context).doesNotHaveBean(LogsTools.class);
 			assertThat(context).doesNotHaveBean(OperationsTools.class);
+			assertThat(context).doesNotHaveBean(LoggersTools.class);
+			assertThat(context).doesNotHaveBean(ThreadDumpTools.class);
+			assertThat(context).doesNotHaveBean(HttpExchangesTools.class);
+			assertThat(context).doesNotHaveBean(ScheduledTasksTools.class);
+			assertThat(context).doesNotHaveBean(CachesTools.class);
+			assertThat(context).doesNotHaveBean(BeansTools.class);
 		});
 	}
 
@@ -61,6 +73,12 @@ class McpAutoConfigurationTest {
 			assertThat(context).hasSingleBean(EnvTools.class);
 			assertThat(context).hasSingleBean(LogsTools.class);
 			assertThat(context).hasSingleBean(OperationsTools.class);
+			assertThat(context).hasSingleBean(LoggersTools.class);
+			assertThat(context).hasSingleBean(ThreadDumpTools.class);
+			assertThat(context).hasSingleBean(HttpExchangesTools.class);
+			assertThat(context).hasSingleBean(ScheduledTasksTools.class);
+			assertThat(context).hasSingleBean(CachesTools.class);
+			assertThat(context).hasSingleBean(BeansTools.class);
 		});
 	}
 
