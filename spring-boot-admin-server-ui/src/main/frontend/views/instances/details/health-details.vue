@@ -255,13 +255,13 @@ const toggleCollapsed = () => {
   --status-color: var(--color-status-up);
 }
 .status--down,
-.status--offline,
 .status--out-of-service {
   --status-color: var(--color-status-down);
 }
 .status--restricted {
   --status-color: var(--color-status-restricted);
 }
+.status--offline,
 .status--unknown {
   --status-color: var(--color-status-unknown);
 }
