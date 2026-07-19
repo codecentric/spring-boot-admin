@@ -107,7 +107,7 @@ declare global {
     path?: string;
     href?: string;
     order: number;
-    isEnabled: () => boolean;
+    isEnabled: () => boolean | Promise<boolean>;
     component: Raw<any>;
     group: string;
     hasChildren: boolean;
@@ -124,7 +124,7 @@ declare global {
     order?: number;
     group?: string;
     component: Component;
-    isEnabled?: () => boolean;
+    isEnabled?: () => boolean | Promise<boolean>;
   }
 
   interface LinkView {

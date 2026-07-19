@@ -29,8 +29,8 @@ const createI18nTextVNode = (label: string) =>
     },
   });
 type ViewFilterFunction = (view: SbaView) => boolean;
-type ViewConfig = {
-  isEnabled?: (obj?) => boolean;
+type ViewConfig<T> = {
+  isEnabled?: (obj?: T) => boolean | Promise<boolean>;
   [key: string]: any;
 };
 
@@ -84,7 +84,7 @@ export default class ViewRegistry {
     return Array.prototype.find.call(this._views, (v) => v.name === name);
   }
 
-  addView(...views: View[]): SbaView[] {
+  addView(...views: View[]): Promise<SbaView>[] {
     return views.map((view) => this._addView(view));
   }
 
@@ -96,7 +96,7 @@ export default class ViewRegistry {
     }
   }
 
-  _addView(viewConfig: ViewConfig): SbaView {
+  async _addView(viewConfig: ViewConfig): Promise<SbaView> {
     const view = { ...viewConfig } as SbaView;
     view.hasChildren = !!viewConfig.children;
 
@@ -126,7 +126,7 @@ export default class ViewRegistry {
         const viewSettings = sbaConfig.uiSettings.viewSettings.find(
           (vs) => vs.name === viewConfig.name,
         );
-        return !viewSettings || viewSettings.enabled === true;
+        return !viewSettings || viewSettings.enabled;
       };
     } else {
       view.isEnabled = viewConfig.isEnabled;
