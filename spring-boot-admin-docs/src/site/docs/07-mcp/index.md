@@ -165,24 +165,6 @@ spring:
 `spring.boot.admin.mcp.enabled` defaults to `false`. Existing deployments are unaffected until you opt in.
 :::
 
-:::note You don't need to set any `spring.ai.mcp.server.*` properties. Spring Boot Admin automatically contributes
-`type=async` and `protocol=streamable` as low-precedence defaults. Both are necessary: Spring AI's `sync` default
-would block the reactive event loop, and its SSE transport condition carries `matchIfMissing=true` — meaning when
-`protocol` is absent from the environment the legacy SSE transport activates instead of the Streamable HTTP endpoint
-at `/mcp`. All values can still be overridden explicitly if needed — for example to report a custom name or
-version:
-
-```yaml title="application.yml"
-spring:
-  ai:
-    mcp:
-      server:
-        name: "My Spring Boot Admin"
-        version: "1.0.0"
-```
-
-:::
-
 ### 3. Connect your AI assistant
 
 Once the server is running, point your AI tool at the MCP endpoint:
@@ -432,6 +414,7 @@ Then pass credentials in the MCP client configuration:
 | `spring.boot.admin.mcp.enabled` | `false` | Enable the MCP server integration |
 | `spring.boot.admin.mcp.timeout` | `450ms` | Timeout for actuator calls made by MCP tools |
 | `spring.boot.admin.mcp.thread-dump-timeout` | `10s` | Timeout for `/actuator/threaddump` calls, which can be slower than standard endpoints |
+| `spring.boot.admin.mcp.tools.enabled`         | `true`                            | Global default for all tool categories. When `false`, every category is disabled unless its individual flag explicitly overrides it to `true`. |
 | `spring.boot.admin.mcp.tools.applications`    | `true`                            | Register the `list-applications` tool                                                                                         |
 | `spring.boot.admin.mcp.tools.health`          | `true`                            | Register the `get-health` and `get-status` tools                                                                              |
 | `spring.boot.admin.mcp.tools.metrics`         | `true`                            | Register the `list-metrics` and `get-metrics` tools                                                                           |
@@ -444,16 +427,23 @@ Then pass credentials in the MCP client configuration:
 | `spring.boot.admin.mcp.tools.scheduled-tasks` | `true`                            | Register the `get-scheduled-tasks` tool                                                                                       |
 | `spring.boot.admin.mcp.tools.caches`          | `true`                            | Register the `list-caches` tool                                                                                               |
 | `spring.boot.admin.mcp.tools.beans`           | `true`                            | Register the `list-beans` tool                                                                                                |
-| `spring.ai.mcp.server.type`                   | `async`                           | Server API type. Spring Boot Admin overrides Spring AI's `sync` default to `async` to match its reactive WebFlux/Netty stack. Override to `sync` only if you have a specific reason. |
-| `spring.ai.mcp.server.protocol`               | `streamable`                      | Transport protocol. Spring Boot Admin sets this to `streamable` so the `/mcp` endpoint is active. Without it, Spring AI's SSE transport condition (`matchIfMissing=true`) activates the legacy SSE transport instead. Set to `stateless` for stateless HTTP or `sse` for the legacy SSE transport. |
-| `spring.ai.mcp.server.name`                   | `Spring Boot Admin MCP Server`    | Server name reported to MCP clients. Override to report a custom value.                                                       |
-| `spring.ai.mcp.server.version`                | current Spring Boot Admin version | Server version reported to MCP clients. Defaults to the running Spring Boot Admin version; override to report a custom value. |
 
-:::note The `spring.boot.admin.mcp.tools.*` flags toggle tool availability **on the Spring Boot Admin server**
+:::note The `spring.boot.admin.mcp.tools.*` flags toggle tool availability **on the Spring Boot Admin server** —
 a disabled category is never advertised to MCP clients. They are independent of the monitored applications'
 `management.endpoint.*.enabled` settings, which are enforced at runtime by each target application (a call to a disabled
-endpoint simply returns an error). For example, to run a read-only monitoring deployment, set
-`spring.boot.admin.mcp.tools.operations=false`. Changes take effect on server restart.
+endpoint simply returns an error).
+
+Use `spring.boot.admin.mcp.tools.enabled=false` to disable all tool categories at once, then selectively re-enable
+individual categories with their specific flag. For example, to expose only health and metrics tools:
+
+```yaml
+spring.boot.admin.mcp.tools.enabled: false
+spring.boot.admin.mcp.tools.health: true
+spring.boot.admin.mcp.tools.metrics: true
+```
+
+For a read-only monitoring deployment, set `spring.boot.admin.mcp.tools.operations=false` to suppress the
+`restart-application` and `refresh-configuration` tools. Changes take effect on server restart.
 :::
 
 ## Sample Application
