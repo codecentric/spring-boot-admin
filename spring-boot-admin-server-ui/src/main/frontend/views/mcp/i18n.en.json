@@ -1,0 +1,17 @@
+{
+  "mcp": {
+    "title": "MCP-Server",
+    "label": "MCP-Server",
+    "description": "This Spring Boot Admin server exposes an MCP (Model Context Protocol) endpoint at /mcp. AI assistants and MCP clients can connect to it and use the following tools to inspect and manage registered Spring Boot applications.",
+    "loading": "Loading tools...",
+    "error": "Failed to load tools",
+    "toolCount": "{count} tools available",
+    "param": "Parameter",
+    "type": "Type",
+    "paramDescription": "Description",
+    "required": "Required",
+    "yes": "yes",
+    "no": "no",
+    "noParams": "No parameters"
+  }
+}
