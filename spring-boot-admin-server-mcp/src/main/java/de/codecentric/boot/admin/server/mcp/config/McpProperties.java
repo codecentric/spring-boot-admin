@@ -88,9 +88,32 @@ public class McpProperties {
 	 * Category-level enablement flags for the exposed MCP tools. Disabling a category
 	 * prevents the corresponding tool bean from being created, so its tools are never
 	 * advertised. Changes take effect on server restart.
+	 *
+	 * <p>
+	 * {@code enabled} acts as a global default for all categories. When set to
+	 * {@code false}, every category is disabled unless its individual flag is explicitly
+	 * set to {@code true}. When {@code true} (the default), each category flag controls
+	 * whether that category is registered.
+	 * </p>
+	 *
+	 * <p>
+	 * Example — disable all tools except health:
+	 * </p>
+	 *
+	 * <pre>
+	 * spring.boot.admin.mcp.tools.enabled=false
+	 * spring.boot.admin.mcp.tools.health=true
+	 * </pre>
 	 */
 	@lombok.Data
 	public static class Tools {
+
+		/**
+		 * Global default for all tool categories. When {@code false}, every category is
+		 * disabled unless its individual flag explicitly overrides it to {@code true}.
+		 * Defaults to {@code true}.
+		 */
+		private boolean enabled = true;
 
 		/**
 		 * Whether the {@code list-applications} tool is available.

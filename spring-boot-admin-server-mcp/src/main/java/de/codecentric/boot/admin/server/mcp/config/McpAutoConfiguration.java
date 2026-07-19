@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.mcp.config.ConditionalOnMcpToolEnabled.OnMcpToolEnabled;
 import de.codecentric.boot.admin.server.mcp.tools.ActuatorClient;
 import de.codecentric.boot.admin.server.mcp.tools.ApplicationTools;
 import de.codecentric.boot.admin.server.mcp.tools.BeansTools;
@@ -71,8 +72,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link ApplicationTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "applications", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("applications")
 	public ApplicationTools applicationTools(InstanceRepository instanceRepository) {
 		return new ApplicationTools(instanceRepository);
 	}
@@ -83,8 +83,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link HealthTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "health", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("health")
 	public HealthTools healthTools(ActuatorClient actuatorClient) {
 		return new HealthTools(actuatorClient);
 	}
@@ -95,8 +94,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link MetricsTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "metrics", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("metrics")
 	public MetricsTools metricsTools(ActuatorClient actuatorClient) {
 		return new MetricsTools(actuatorClient);
 	}
@@ -107,8 +105,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link EnvTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "env", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("env")
 	public EnvTools envTools(ActuatorClient actuatorClient) {
 		return new EnvTools(actuatorClient);
 	}
@@ -119,8 +116,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link LogsTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "logs", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("logs")
 	public LogsTools logsTools(ActuatorClient actuatorClient) {
 		return new LogsTools(actuatorClient);
 	}
@@ -132,8 +128,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link OperationsTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "operations", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("operations")
 	public OperationsTools operationsTools(ActuatorClient actuatorClient) {
 		return new OperationsTools(actuatorClient);
 	}
@@ -144,8 +139,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link LoggersTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "loggers", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("loggers")
 	public LoggersTools loggersTools(ActuatorClient actuatorClient) {
 		return new LoggersTools(actuatorClient);
 	}
@@ -157,8 +151,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link ThreadDumpTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "thread-dump", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("thread-dump")
 	public ThreadDumpTools threadDumpTools(ActuatorClient actuatorClient, McpProperties mcpProperties) {
 		return new ThreadDumpTools(actuatorClient, mcpProperties.getThreadDumpTimeout());
 	}
@@ -169,8 +162,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link HttpExchangesTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "http-exchanges", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("http-exchanges")
 	public HttpExchangesTools httpExchangesTools(ActuatorClient actuatorClient) {
 		return new HttpExchangesTools(actuatorClient);
 	}
@@ -181,8 +173,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link ScheduledTasksTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "scheduled-tasks", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("scheduled-tasks")
 	public ScheduledTasksTools scheduledTasksTools(ActuatorClient actuatorClient) {
 		return new ScheduledTasksTools(actuatorClient);
 	}
@@ -193,8 +184,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link CachesTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "caches", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("caches")
 	public CachesTools cachesTools(ActuatorClient actuatorClient) {
 		return new CachesTools(actuatorClient);
 	}
@@ -206,8 +196,7 @@ public class McpAutoConfiguration {
 	 * @return the configured {@link BeansTools}
 	 */
 	@Bean
-	@ConditionalOnProperty(prefix = "spring.boot.admin.mcp.tools", name = "beans", havingValue = "true",
-			matchIfMissing = true)
+	@OnMcpToolEnabled("beans")
 	public BeansTools beansTools(ActuatorClient actuatorClient) {
 		return new BeansTools(actuatorClient);
 	}

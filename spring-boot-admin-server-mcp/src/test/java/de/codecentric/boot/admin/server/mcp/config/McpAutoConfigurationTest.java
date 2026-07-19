@@ -107,6 +107,47 @@ class McpAutoConfigurationTest {
 			});
 	}
 
+	@Test
+	void toolsEnabledFalse_allToolBeansAbsent() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.mcp.enabled=true", "spring.boot.admin.mcp.tools.enabled=false")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(ApplicationTools.class);
+				assertThat(context).doesNotHaveBean(HealthTools.class);
+				assertThat(context).doesNotHaveBean(MetricsTools.class);
+				assertThat(context).doesNotHaveBean(EnvTools.class);
+				assertThat(context).doesNotHaveBean(LogsTools.class);
+				assertThat(context).doesNotHaveBean(OperationsTools.class);
+				assertThat(context).doesNotHaveBean(LoggersTools.class);
+				assertThat(context).doesNotHaveBean(ThreadDumpTools.class);
+				assertThat(context).doesNotHaveBean(HttpExchangesTools.class);
+				assertThat(context).doesNotHaveBean(ScheduledTasksTools.class);
+				assertThat(context).doesNotHaveBean(CachesTools.class);
+				assertThat(context).doesNotHaveBean(BeansTools.class);
+			});
+	}
+
+	@Test
+	void toolsEnabledFalse_perToolOverrideReenable() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.mcp.enabled=true", "spring.boot.admin.mcp.tools.enabled=false",
+					"spring.boot.admin.mcp.tools.health=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HealthTools.class);
+				assertThat(context).doesNotHaveBean(ApplicationTools.class);
+				assertThat(context).doesNotHaveBean(MetricsTools.class);
+				assertThat(context).doesNotHaveBean(EnvTools.class);
+				assertThat(context).doesNotHaveBean(LogsTools.class);
+				assertThat(context).doesNotHaveBean(OperationsTools.class);
+				assertThat(context).doesNotHaveBean(LoggersTools.class);
+				assertThat(context).doesNotHaveBean(ThreadDumpTools.class);
+				assertThat(context).doesNotHaveBean(HttpExchangesTools.class);
+				assertThat(context).doesNotHaveBean(ScheduledTasksTools.class);
+				assertThat(context).doesNotHaveBean(CachesTools.class);
+				assertThat(context).doesNotHaveBean(BeansTools.class);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class RequiredBeansConfiguration {
 
