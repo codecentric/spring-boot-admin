@@ -160,6 +160,7 @@ import {
   faChevronUp,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computedAsync } from '@vueuse/core';
 import { Divider } from 'primevue';
 import { computed, h, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -193,18 +194,29 @@ const customLinksFromMetadata = computed(() => {
   });
 });
 
-const enabledViews = computed(() => {
+// Each view gets its own computedAsync so results appear as soon as each resolves
+// rather than waiting for the slowest one (no Promise.all barrier).
+const viewEnabledStates = computed(() => {
   if (!props.instance) {
     return [];
   }
-  return [...props.views]
-    .filter(
-      (view) =>
+  return props.views.map((view) => ({
+    view,
+    enabled: computedAsync(
+      () =>
         typeof view.isEnabled === 'undefined' ||
-        view.isEnabled({ instance: props.instance }),
-    )
-    .sort(compareBy((v: any) => v.order));
+        Promise.resolve(view.isEnabled({ instance: props.instance })),
+      false, // initially hide the view
+    ),
+  }));
 });
+
+const enabledViews = computed(() =>
+  viewEnabledStates.value
+    .filter(({ enabled }) => enabled.value)
+    .map(({ view }) => view)
+    .sort(compareBy((v: any) => v.order)),
+);
 
 const groups = computed(() => {
   const groups = new Map();

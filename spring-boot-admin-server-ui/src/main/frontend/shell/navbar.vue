@@ -68,14 +68,17 @@
           icon="question-circle"
         />
       </sba-nav-item>
+      <sba-nav-item v-if="isMcpEnabled" :to="{ name: 'mcp' }">
+        <McpHandle />
+      </sba-nav-item>
     </sba-navbar-nav>
   </sba-navbar>
 </template>
 
 <script lang="ts" setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computedAsync } from '@vueuse/core';
 import moment from 'moment';
-import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import SbaDropdownItem from '@/components/sba-dropdown/sba-dropdown-item.vue';
@@ -90,6 +93,7 @@ import sbaConfig, { getCurrentUser } from '@/sba-config';
 import SbaNavLanguageSelector from '@/shell/sba-nav-language-selector.vue';
 import SbaNavUsermenu from '@/shell/sba-nav-usermenu.vue';
 import { compareBy } from '@/utils/collections';
+import McpHandle from '@/views/mcp/Handle.vue';
 
 defineProps({
   error: {
@@ -109,30 +113,44 @@ const t = i18n.t;
 
 const brand = sbaConfig.uiSettings.brand;
 
-const topLevelViews = computed(() => {
+const topLevelViews = computedAsync(async () => {
   let rootViews = views
     .filter((view) => {
       return (
         !view.parent &&
         !view.name?.includes('instance') &&
         !view.name?.includes('about') &&
-        !view.path?.includes('/instance') &&
-        view.isEnabled()
+        !view.name?.includes('mcp') &&
+        !view.path?.includes('/instance')
       );
     })
     .sort(compareBy((v) => v.order));
 
-  return rootViews.map((rootView) => {
-    const children = views.filter((v) => v.parent === rootView.name);
+  const enabledChecks = await Promise.all(
+    rootViews.map(async (view) => ({
+      view,
+      isEnabled: await view.isEnabled(),
+    })),
+  );
 
-    return {
-      ...rootView,
-      children,
-    };
-  });
+  return enabledChecks
+    .filter(({ isEnabled }) => isEnabled)
+    .map(({ view }) => {
+      const children = views.filter((v) => v.parent === view.name);
+
+      return {
+        ...view,
+        children,
+      };
+    });
 });
 
-const isAboutEnabled = getViewByName('about')?.isEnabled();
+const isAboutEnabled = computedAsync(
+  () => getViewByName('about')?.isEnabled() ?? false,
+);
+const isMcpEnabled = computedAsync(
+  () => getViewByName('mcp')?.isEnabled() ?? false,
+);
 const changeLocale = (locale) => {
   i18n.locale.value = locale;
   moment.locale(locale);

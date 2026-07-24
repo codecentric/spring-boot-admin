@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: spring-boot-admin-sample-mcp
+  boot:
+    admin:
+      client:
+        url: http://localhost:8080
+        instance:
+          service-host-type: IP
+      mcp:
+        enabled: true
+  profiles:
+    active:
+      - insecure
+
+logging:
+  file:
+    name: "target/boot-admin-sample-mcp.log"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+    restart:
+      enabled: true
+    refresh:
+      enabled: true

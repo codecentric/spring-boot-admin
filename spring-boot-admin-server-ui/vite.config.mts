@@ -3,7 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { defineConfig, loadEnv } from 'vite';
+import { Plugin, defineConfig, loadEnv } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import vueDevTools from 'vite-plugin-vue-devtools';
 
@@ -94,9 +94,19 @@ export default defineConfig(({ mode }) => {
             const isEventStream = req.headers.accept === 'text/event-stream';
             const isAjaxCall =
               req.headers['x-requested-with'] === 'XMLHttpRequest';
-            const isFile = req.url.indexOf('.js') !== -1;
+            const isFile = req.url.includes('.js');
             const redirectToIndex = !(isAjaxCall || isEventStream) && !isFile;
             if (redirectToIndex) {
+              return '/index.html';
+            }
+          },
+        },
+        '^/mcp$': {
+          target: 'http://localhost:8080',
+          changeOrigin: true,
+          bypass: (req) => {
+            // Only proxy POST requests (MCP protocol); GET goes to Vue Router
+            if (req.method !== 'POST') {
               return '/index.html';
             }
           },
