@@ -20,6 +20,7 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jspecify.annotations.Nullable;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
@@ -36,7 +37,8 @@ public abstract class InstanceRegistrationUpdatedEventMixin {
 	@JsonCreator
 	public InstanceRegistrationUpdatedEventMixin(@JsonProperty("instance") InstanceId instance,
 			@JsonProperty("version") long version, @JsonProperty("timestamp") Instant timestamp,
-			@JsonProperty("registration") Registration registration) {
+			@JsonProperty("registration") Registration registration,
+			@JsonProperty("previous") @Nullable Registration previous) {
 	}
 
 }
