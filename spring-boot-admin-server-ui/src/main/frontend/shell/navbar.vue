@@ -136,17 +136,21 @@ const topLevelViews = computedAsync(async () => {
   return enabledChecks
     .filter(({ isEnabled }) => isEnabled)
     .map(({ view }) => {
-    const children = views.filter((v) => v.parent === view.name);
+      const children = views.filter((v) => v.parent === view.name);
 
-    return {
-      ...view,
-      children,
-    };
-  });
+      return {
+        ...view,
+        children,
+      };
+    });
 });
 
-const isAboutEnabled = computedAsync(() => getViewByName('about')?.isEnabled() ?? false);
-const isMcpEnabled = computedAsync(() => getViewByName('mcp')?.isEnabled() ?? false);
+const isAboutEnabled = computedAsync(
+  () => getViewByName('about')?.isEnabled() ?? false,
+);
+const isMcpEnabled = computedAsync(
+  () => getViewByName('mcp')?.isEnabled() ?? false,
+);
 const changeLocale = (locale) => {
   i18n.locale.value = locale;
   moment.locale(locale);
