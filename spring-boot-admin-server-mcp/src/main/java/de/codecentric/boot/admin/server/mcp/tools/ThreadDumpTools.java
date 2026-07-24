@@ -58,7 +58,7 @@ public class ThreadDumpTools {
 	 * {@code /actuator/threaddump} endpoint. Returns a human-readable summary of all
 	 * threads including their state and stack traces. Useful for diagnosing deadlocks,
 	 * hung threads, and thread pool saturation.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @return plain-text thread dump summary, or an error message
 	 */
 	@McpTool(name = "get-thread-dump",
@@ -66,7 +66,7 @@ public class ThreadDumpTools {
 					+ "/actuator/threaddump endpoint. Returns all threads with their state and stack traces. "
 					+ "Useful for diagnosing deadlocks, hung threads, and thread pool saturation. "
 					+ "Requires the threaddump actuator endpoint to be exposed.")
-	public Mono<String> getThreadDump(@McpToolParam(description = "The registered application name (case-insensitive)",
+	public Mono<String> getThreadDump(@McpToolParam(description = "The registered application name (case-sensitive)",
 			required = true) String applicationName) {
 		return this.actuatorClient.withInstance(applicationName, (instance) -> {
 			String url = instance.getRegistration().getManagementUrl() + "/threaddump";

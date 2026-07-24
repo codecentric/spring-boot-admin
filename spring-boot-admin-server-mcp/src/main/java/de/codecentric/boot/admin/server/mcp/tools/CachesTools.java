@@ -46,7 +46,7 @@ public class CachesTools {
 	 * Lists all caches for the named application by calling its {@code /actuator/caches}
 	 * endpoint. Returns cache names grouped by their {@code CacheManager}, which is
 	 * useful for identifying stale or oversized caches.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @return plain-text listing of caches grouped by cache manager, or an error message
 	 */
 	@McpTool(name = "list-caches",
@@ -54,7 +54,7 @@ public class CachesTools {
 					+ "via its /actuator/caches endpoint. Returns cache names grouped by their CacheManager. "
 					+ "Useful for identifying stale or oversized caches. "
 					+ "Requires the caches actuator endpoint to be exposed.")
-	public Mono<String> listCaches(@McpToolParam(description = "The registered application name (case-insensitive)",
+	public Mono<String> listCaches(@McpToolParam(description = "The registered application name (case-sensitive)",
 			required = true) String applicationName) {
 		return this.actuatorClient.query(applicationName, "/caches", this::formatCaches);
 	}

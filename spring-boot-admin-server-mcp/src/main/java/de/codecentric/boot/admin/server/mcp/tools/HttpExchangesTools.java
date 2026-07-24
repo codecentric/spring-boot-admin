@@ -51,7 +51,7 @@ public class HttpExchangesTools {
 	 * Retrieves recent HTTP exchanges for the named application by calling its
 	 * {@code /actuator/httpexchanges} endpoint. Returns a summary of recent HTTP requests
 	 * and their responses including method, URI, status code, and duration.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param limit maximum number of exchanges to return (default 20, max 100)
 	 * @return plain-text listing of recent HTTP exchanges, or an error message
 	 */
@@ -62,7 +62,7 @@ public class HttpExchangesTools {
 					+ "Requires management.httpexchanges.recording.enabled=true and the httpexchanges actuator "
 					+ "endpoint to be exposed (Spring Boot 3.x).")
 	public Mono<String> getHttpExchanges(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
+			@McpToolParam(description = "The registered application name (case-sensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "Maximum number of exchanges to return (default 20, max 100)",
 					required = false) Integer limit) {

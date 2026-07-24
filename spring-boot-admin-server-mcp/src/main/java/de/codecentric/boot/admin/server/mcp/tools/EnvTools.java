@@ -16,12 +16,14 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
+import org.springframework.web.util.UriUtils;
 import reactor.core.publisher.Mono;
 
 /**
@@ -50,7 +52,7 @@ public class EnvTools {
 	 * Resolves a single configuration property for the named application by calling its
 	 * {@code /actuator/env/{propertyName}} endpoint. This covers environment variables
 	 * (e.g. {@code HELLO}), system properties and any other property source.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param propertyName the property or environment variable name (e.g. {@code HELLO})
 	 * @return plain-text resolved value with its originating property sources, or an
 	 * error message
@@ -61,11 +63,12 @@ public class EnvTools {
 					+ "environment variables (e.g. HELLO), system properties and application properties. "
 					+ "Requires the env actuator endpoint to be exposed on the monitored application.")
 	public Mono<String> getEnv(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
+			@McpToolParam(description = "The registered application name (case-sensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "The property or environment variable name (e.g. HELLO)",
 					required = true) String propertyName) {
-		return this.actuatorClient.query(applicationName, "/env/" + propertyName,
+		return this.actuatorClient.query(applicationName,
+				"/env/" + UriUtils.encodePathSegment(propertyName, StandardCharsets.UTF_8),
 				(app, body) -> formatProperty(app, propertyName, body));
 	}
 
@@ -75,7 +78,7 @@ public class EnvTools {
 	 * property source (e.g. {@code systemEnvironment}, {@code systemProperties},
 	 * application config). An optional case-insensitive filter restricts the result to
 	 * property names containing the given text.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param filter optional case-insensitive substring; only property names containing
 	 * it are returned. When {@code null} or blank, all properties are returned.
 	 * @return plain-text listing of every (matching) property grouped by property source,
@@ -90,7 +93,7 @@ public class EnvTools {
 					+ "does not expose them. Requires the env actuator endpoint to be exposed on the monitored "
 					+ "application.")
 	public Mono<String> listEnv(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
+			@McpToolParam(description = "The registered application name (case-sensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "Optional case-insensitive substring; only property names containing it are "
 					+ "returned. Omit to return all properties.", required = false) String filter) {

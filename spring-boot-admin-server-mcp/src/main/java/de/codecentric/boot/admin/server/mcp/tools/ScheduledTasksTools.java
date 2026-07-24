@@ -48,7 +48,7 @@ public class ScheduledTasksTools {
 	 * {@code /actuator/scheduledtasks} endpoint. Returns a summary of all
 	 * {@code @Scheduled} methods, including their cron expressions, fixed-rate, and
 	 * fixed-delay configurations.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @return plain-text listing of scheduled tasks, or an error message
 	 */
 	@McpTool(name = "get-scheduled-tasks",
@@ -56,9 +56,8 @@ public class ScheduledTasksTools {
 					+ "Spring Boot application via its /actuator/scheduledtasks endpoint. Returns cron expressions, "
 					+ "fixed-rate, and fixed-delay settings. Useful for verifying that batch jobs and cron tasks "
 					+ "are configured as expected. Requires the scheduledtasks actuator endpoint to be exposed.")
-	public Mono<String> getScheduledTasks(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
-					required = true) String applicationName) {
+	public Mono<String> getScheduledTasks(@McpToolParam(
+			description = "The registered application name (case-sensitive)", required = true) String applicationName) {
 		return this.actuatorClient.query(applicationName, "/scheduledtasks", this::formatScheduledTasks);
 	}
 

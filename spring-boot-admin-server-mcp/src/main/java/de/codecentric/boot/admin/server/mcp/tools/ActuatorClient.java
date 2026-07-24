@@ -83,6 +83,9 @@ public class ActuatorClient {
 	 * @return the action result, or a plain-text "not found" message
 	 */
 	public Mono<String> withInstance(String applicationName, Function<Instance, Mono<String>> action) {
+		if (applicationName == null || applicationName.isBlank()) {
+			return Mono.just("Application '" + applicationName + "' not found in registry.");
+		}
 		return this.instanceRepository.findByName(applicationName)
 			.next()
 			.switchIfEmpty(this.instanceRepository.find(InstanceId.of(applicationName)))
@@ -95,7 +98,7 @@ public class ActuatorClient {
 	 * applies {@code formatter} to the JSON body, and maps any error to a plain-text
 	 * message. The endpoint label used in logs and error messages is derived from
 	 * {@code urlSuffix} by stripping the leading slash.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param urlSuffix the actuator endpoint path, including the leading slash (e.g.
 	 * {@code "/caches"} or {@code "/metrics/jvm.memory.used"})
 	 * @param formatter function that converts the application name and parsed response

@@ -16,11 +16,13 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
+import org.springframework.web.util.UriUtils;
 import reactor.core.publisher.Mono;
 
 /**
@@ -46,13 +48,13 @@ public class MetricsTools {
 	/**
 	 * Lists all available metric names for the named application by calling its
 	 * {@code /actuator/metrics} endpoint.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @return plain-text list of metric names, or an error message
 	 */
 	@McpTool(name = "list-metrics",
 			description = "List all available metric names for a registered Spring Boot application. "
 					+ "Use the returned names with get-metrics to fetch specific values.")
-	public Mono<String> listMetrics(@McpToolParam(description = "The registered application name (case-insensitive)",
+	public Mono<String> listMetrics(@McpToolParam(description = "The registered application name (case-sensitive)",
 			required = true) String applicationName) {
 		return this.actuatorClient.query(applicationName, "/metrics", this::formatMetricNames);
 	}
@@ -60,7 +62,7 @@ public class MetricsTools {
 	/**
 	 * Fetches the value of a specific metric for the named application by calling its
 	 * {@code /actuator/metrics/{metricName}} endpoint.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param metricName the metric name (e.g. {@code jvm.memory.used})
 	 * @return plain-text metric value with unit, or an error message
 	 */
@@ -69,10 +71,11 @@ public class MetricsTools {
 					+ "Common metrics: jvm.memory.used, jvm.memory.max, system.cpu.usage, "
 					+ "http.server.requests, jvm.threads.live. Use list-metrics to discover available names.")
 	public Mono<String> getMetrics(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
+			@McpToolParam(description = "The registered application name (case-sensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "The metric name (e.g. jvm.memory.used)", required = true) String metricName) {
-		return this.actuatorClient.query(applicationName, "/metrics/" + metricName,
+		return this.actuatorClient.query(applicationName,
+				"/metrics/" + UriUtils.encodePathSegment(metricName, StandardCharsets.UTF_8),
 				(app, body) -> formatMetricValue(app, metricName, body));
 	}
 

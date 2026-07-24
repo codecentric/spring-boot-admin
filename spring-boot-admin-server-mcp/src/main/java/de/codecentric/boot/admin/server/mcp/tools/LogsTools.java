@@ -53,7 +53,7 @@ public class LogsTools {
 	/**
 	 * Fetches the last N lines from the logfile of the named application by calling its
 	 * {@code /actuator/logfile} endpoint.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param lines number of lines to return from the end of the log (default 50, max
 	 * 500)
 	 * @return plain-text log tail, or an error message
@@ -63,7 +63,7 @@ public class LogsTools {
 					+ "Requires logging.file.name or logging.file.path to be configured in the application. "
 					+ "Default is 50 lines, maximum is 500.")
 	public Mono<String> getLogs(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
+			@McpToolParam(description = "The registered application name (case-sensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "Number of lines to return from the end of the log (default 50, max 500)",
 					required = false) Integer lines) {

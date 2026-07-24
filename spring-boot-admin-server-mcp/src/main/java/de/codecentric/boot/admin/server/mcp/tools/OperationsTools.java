@@ -50,15 +50,14 @@ public class OperationsTools {
 	 * Restarts the named application by calling its {@code /actuator/restart} endpoint.
 	 * Requires the actuator restart endpoint to be enabled and exposed in the monitored
 	 * application.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @return confirmation message or an error message
 	 */
 	@McpTool(name = "restart-application",
 			description = "Restart a registered Spring Boot application via its /actuator/restart endpoint. "
 					+ "Requires management.endpoint.restart.enabled=true in the monitored application.")
-	public Mono<String> restartApplication(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
-					required = true) String applicationName) {
+	public Mono<String> restartApplication(@McpToolParam(
+			description = "The registered application name (case-sensitive)", required = true) String applicationName) {
 		return this.actuatorClient.withInstance(applicationName, (instance) -> {
 			String url = instance.getRegistration().getManagementUrl() + "/restart";
 			return this.actuatorClient.postBodiless(instance, url, "{}", log, "restart of " + applicationName)
@@ -76,16 +75,15 @@ public class OperationsTools {
 	 * Refreshes the configuration of the named application by calling its
 	 * {@code /actuator/refresh} endpoint. Requires Spring Cloud Context on the monitored
 	 * application's classpath.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @return confirmation message listing refreshed keys, or an error message
 	 */
 	@McpTool(name = "refresh-configuration",
 			description = "Refresh the configuration of a registered Spring Boot application via its "
 					+ "/actuator/refresh endpoint. Requires Spring Cloud Context (spring-cloud-starter) "
 					+ "on the monitored application's classpath.")
-	public Mono<String> refreshConfiguration(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
-					required = true) String applicationName) {
+	public Mono<String> refreshConfiguration(@McpToolParam(
+			description = "The registered application name (case-sensitive)", required = true) String applicationName) {
 		return this.actuatorClient.withInstance(applicationName, (instance) -> {
 			String url = instance.getRegistration().getManagementUrl() + "/refresh";
 			return this.actuatorClient.post(instance, url, "{}", log, "refresh of " + applicationName)

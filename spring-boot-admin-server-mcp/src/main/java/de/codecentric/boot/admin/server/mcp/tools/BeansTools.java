@@ -49,7 +49,7 @@ public class BeansTools {
 	 * Lists all beans in the Spring application context of the named application by
 	 * calling its {@code /actuator/beans} endpoint. An optional filter restricts the
 	 * result to bean names or types containing the given text.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param filter optional case-insensitive substring; only beans whose name or type
 	 * contains it are returned. When {@code null} or blank, all beans are returned.
 	 * @return plain-text listing of beans with their types, scopes, and dependencies, or
@@ -62,7 +62,7 @@ public class BeansTools {
 					+ "resource. Useful for inspecting which beans are active in production. "
 					+ "Requires the beans actuator endpoint to be exposed.")
 	public Mono<String> listBeans(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
+			@McpToolParam(description = "The registered application name (case-sensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "Optional case-insensitive substring; only beans whose name or type contain "
 					+ "it are returned. Omit to return all beans.", required = false) String filter) {

@@ -56,14 +56,14 @@ public class HealthTools {
 	 * Fetches the full health details for the named application by calling its
 	 * {@code /actuator/health} endpoint. Returns a plain-text summary including the
 	 * overall status and individual health component statuses.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @return plain-text health summary, or an error message if the app is not found or
 	 * the actuator call fails
 	 */
 	@McpTool(name = "get-health",
 			description = "Fetch health details for a registered Spring Boot application by calling its "
 					+ "/actuator/health endpoint. Returns overall status and per-component breakdown.")
-	public Mono<String> getHealth(@McpToolParam(description = "The registered application name (case-insensitive)",
+	public Mono<String> getHealth(@McpToolParam(description = "The registered application name (case-sensitive)",
 			required = true) String applicationName) {
 		return this.actuatorClient.withInstance(applicationName, (instance) -> this.actuatorClient
 			.fetch(instance, Endpoint.HEALTH, log, "health for " + applicationName)
@@ -76,14 +76,14 @@ public class HealthTools {
 	 * Returns the cached status for the named application from the registry without
 	 * making an actuator call. This is a fast, lightweight alternative to
 	 * {@code get-health}.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @return plain-text status line, or an error message if the app is not found
 	 */
 	@McpTool(name = "get-status",
 			description = "Return the cached health status (UP/DOWN/UNKNOWN/etc.) for a registered "
 					+ "Spring Boot application from the registry — no actuator call is made. "
 					+ "Use get-health for full component details.")
-	public Mono<String> getStatus(@McpToolParam(description = "The registered application name (case-insensitive)",
+	public Mono<String> getStatus(@McpToolParam(description = "The registered application name (case-sensitive)",
 			required = true) String applicationName) {
 		return this.actuatorClient.withInstance(applicationName,
 				(instance) -> Mono.just(applicationName + " status: " + instance.getStatusInfo().getStatus()));

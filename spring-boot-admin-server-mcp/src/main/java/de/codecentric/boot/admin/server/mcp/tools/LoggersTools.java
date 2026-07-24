@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.mcp.tools;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.mcp.annotation.McpTool;
 import org.springframework.ai.mcp.annotation.McpToolParam;
+import org.springframework.web.util.UriUtils;
 import reactor.core.publisher.Mono;
 
 /**
@@ -56,7 +58,7 @@ public class LoggersTools {
 	 * Lists all loggers and their effective log levels for the named application by
 	 * calling its {@code /actuator/loggers} endpoint. An optional filter restricts the
 	 * result to logger names containing the given text.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param filter optional case-insensitive substring; only logger names containing it
 	 * are returned. When {@code null} or blank, all loggers are returned.
 	 * @return plain-text listing of loggers with their levels, or an error message
@@ -67,7 +69,7 @@ public class LoggersTools {
 					+ "logger names containing that text (case-insensitive). Use set-logger-level to change a "
 					+ "level at runtime. Requires the loggers actuator endpoint to be exposed.")
 	public Mono<String> listLoggers(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
+			@McpToolParam(description = "The registered application name (case-sensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "Optional case-insensitive substring; only logger names containing it are "
 					+ "returned. Omit to return all loggers.", required = false) String filter) {
@@ -77,7 +79,7 @@ public class LoggersTools {
 	/**
 	 * Retrieves the configured and effective log level for a single logger by calling the
 	 * {@code /actuator/loggers/{loggerName}} endpoint.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param loggerName the fully-qualified logger name (e.g.
 	 * {@code com.example.MyService})
 	 * @return plain-text level information, or an error message
@@ -87,11 +89,12 @@ public class LoggersTools {
 					+ "Spring Boot application. Use list-loggers to discover logger names. "
 					+ "Requires the loggers actuator endpoint to be exposed.")
 	public Mono<String> getLogger(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
+			@McpToolParam(description = "The registered application name (case-sensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "The fully-qualified logger name (e.g. com.example.MyService)",
 					required = true) String loggerName) {
-		return this.actuatorClient.query(applicationName, "/loggers/" + loggerName,
+		return this.actuatorClient.query(applicationName,
+				"/loggers/" + UriUtils.encodePathSegment(loggerName, StandardCharsets.UTF_8),
 				(app, body) -> formatLogger(app, loggerName, body));
 	}
 
@@ -99,7 +102,7 @@ public class LoggersTools {
 	 * Changes the log level of a logger at runtime for the named application by calling
 	 * {@code POST /actuator/loggers/{loggerName}}. Pass {@code null} or {@code "null"} as
 	 * the level to reset to the inherited level.
-	 * @param applicationName the registered application name (case-insensitive)
+	 * @param applicationName the registered application name (case-sensitive)
 	 * @param loggerName the fully-qualified logger name (e.g.
 	 * {@code com.example.MyService})
 	 * @param level the log level to set (TRACE, DEBUG, INFO, WARN, ERROR, OFF) or null to
@@ -112,14 +115,15 @@ public class LoggersTools {
 					+ "Pass null to reset to the inherited level. Changes are lost on restart. "
 					+ "Requires the loggers actuator endpoint to be exposed.")
 	public Mono<String> setLoggerLevel(
-			@McpToolParam(description = "The registered application name (case-insensitive)",
+			@McpToolParam(description = "The registered application name (case-sensitive)",
 					required = true) String applicationName,
 			@McpToolParam(description = "The fully-qualified logger name (e.g. com.example.MyService)",
 					required = true) String loggerName,
 			@McpToolParam(description = "The log level to set: TRACE, DEBUG, INFO, WARN, ERROR, OFF, or null to reset",
 					required = true) String level) {
 		return this.actuatorClient.withInstance(applicationName, (instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/loggers/" + loggerName;
+			String url = instance.getRegistration().getManagementUrl() + "/loggers/"
+					+ UriUtils.encodePathSegment(loggerName, StandardCharsets.UTF_8);
 			String body = (level == null || "null".equalsIgnoreCase(level)) ? "{}"
 					: "{\"configuredLevel\":\"" + level.toUpperCase(Locale.ROOT) + "\"}";
 			return this.actuatorClient
