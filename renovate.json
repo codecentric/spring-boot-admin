@@ -46,6 +46,37 @@
       "allowedVersions": "<13"
     },
     {
+      "description": "PrimeVue went non-MIT (proprietary PrimeUI License) at v5; stay on last MIT major (4.x) for Apache-2.0 compliance",
+      "matchPackageNames": [
+        "primevue",
+        "@primevue/core",
+        "@primevue/icons"
+      ],
+      "allowedVersions": "<5"
+    },
+    {
+      "description": "@primeuix/themes and @primeuix/styles went non-MIT at v3; stay on last MIT major (2.x)",
+      "matchPackageNames": [
+        "@primeuix/themes",
+        "@primeuix/styles"
+      ],
+      "allowedVersions": "<3"
+    },
+    {
+      "description": "@primeuix/styled went non-MIT at v1; stay on last MIT (0.7.x)",
+      "matchPackageNames": [
+        "@primeuix/styled"
+      ],
+      "allowedVersions": "<1"
+    },
+    {
+      "description": "@primeuix/utils went non-MIT at 0.8; stay on last MIT (0.7.x)",
+      "matchPackageNames": [
+        "@primeuix/utils"
+      ],
+      "allowedVersions": "<0.8"
+    },
+    {
       "description": "Group all Node.js and npm version updates (pom.xml, .nvmrc, package.json engines, GitHub Actions) into one PR",
       "matchDepNames": ["node", "npm"],
       "matchDatasources": ["node-version", "npm"],
