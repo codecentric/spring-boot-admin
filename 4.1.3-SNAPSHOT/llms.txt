@@ -23,6 +23,7 @@
 - [Eureka Integration](/docs/integration/eureka.md): Netflix Eureka is a service discovery and registration solution that integrates seamlessly with Spring Boot Admin. This
 - [Hazelcast Clustering](/docs/integration/hazelcast.md): Hazelcast provides distributed data structures for clustering multiple Spring Boot Admin Server instances. This enables
 - [Zookeeper Integration](/docs/integration/zookeeper.md): Apache Zookeeper is a centralized coordination service that can be used for service discovery with Spring Cloud
+- [MCP Integration (experimental)](/docs/mcp.md): Spring Boot Admin can act as a Model Context Protocol (MCP) server, exposing your registered applications to AI
 - [Reference Documentation](/docs/reference.md): Comprehensive reference material for Spring Boot Admin including event types, REST API, and configuration properties.
 - [Supported Spring Boot Actuator Endpoints](/docs/reference/actuator-endpoints.md): Below is a comprehensive list of actuator endpoints which are supported by Spring Boot Admin.
 - [Event Types Reference](/docs/reference/event-types.md): Complete reference of all InstanceEvent types emitted by Spring Boot Admin Server during instance lifecycle.
