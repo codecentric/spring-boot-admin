@@ -36,7 +36,7 @@
         <npm.version>11.12.1</npm.version>
         <node.version>v24.18.0</node.version>
 
-        <require.maven.version>3.9</require.maven.version>
+        <require.maven.version>[4.0.0-rc-5,)</require.maven.version>
 
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <resource.delimiter>@</resource.delimiter>
@@ -45,6 +45,9 @@
 
         <!-- disable default maven site generation, but allow docusarus to hook into site lifecycle -->
         <maven.site.skip>true</maven.site.skip>
+
+        <!-- required for later replacement of argLine -->
+        <argLine/>
 
         <!-- used dependencies versions -->
         <spring-boot.version>4.1.0</spring-boot.version>
@@ -366,6 +369,7 @@
                         <useUnlimitedThreads>false</useUnlimitedThreads>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <rerunFailingTestsCount>2</rerunFailingTestsCount>
+                        <argLine>@{argLine} -Xshare:off</argLine>
                         <includes>
                             <include>**/*Tests.java</include>
                             <include>**/*Test.java</include>
