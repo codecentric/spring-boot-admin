@@ -5,6 +5,8 @@ spring:
     admin:
       client:
         url: http://localhost:8080
+        instance:
+          service-host-type: IP
       mcp:
         enabled: true
   profiles:
