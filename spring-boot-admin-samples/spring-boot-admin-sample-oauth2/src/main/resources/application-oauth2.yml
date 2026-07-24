@@ -1,0 +1,15 @@
+spring:
+  profiles: oauth2
+
+  security:
+    oauth2:
+      client:
+        registration:
+          admin:
+            client-id: ${OAUTH_CLIENT_ID}
+            client-secret: ${OAUTH_CLIENT_SECRET}
+            authorization-grant-type: client_credentials
+            scope: openid
+        provider:
+          auth0:
+            token-uri: ${OAUTH_TOKEN_URI}
