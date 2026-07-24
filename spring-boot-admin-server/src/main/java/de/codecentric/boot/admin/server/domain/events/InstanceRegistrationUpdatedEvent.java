@@ -19,11 +19,18 @@ package de.codecentric.boot.admin.server.domain.events;
 import java.io.Serial;
 import java.time.Instant;
 
+import org.jspecify.annotations.Nullable;
+
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 
 /**
  * This event gets emitted when an instance updates it's registration.
+ * <p>
+ * The optional {@link #getPrevious() previous} registration holds the registration as it
+ * was <em>before</em> the update. This allows listeners to detect an application rename
+ * (i.e. when the instance id stays the same but {@link Registration#getName()} changes).
+ * When no previous registration is known the field is {@code null}.
  *
  * @author Johannes Edmeier
  */
@@ -39,14 +46,27 @@ public class InstanceRegistrationUpdatedEvent extends InstanceEvent {
 
 	Registration registration;
 
+	@Nullable Registration previous;
+
 	public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Registration registration) {
-		this(instance, version, Instant.now(), registration);
+		this(instance, version, Instant.now(), registration, null);
 	}
 
 	public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Instant timestamp,
 			Registration registration) {
+		this(instance, version, timestamp, registration, null);
+	}
+
+	public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Registration registration,
+			@Nullable Registration previous) {
+		this(instance, version, Instant.now(), registration, previous);
+	}
+
+	public InstanceRegistrationUpdatedEvent(InstanceId instance, long version, Instant timestamp,
+			Registration registration, @Nullable Registration previous) {
 		super(instance, version, TYPE, timestamp);
 		this.registration = registration;
+		this.previous = previous;
 	}
 
 }

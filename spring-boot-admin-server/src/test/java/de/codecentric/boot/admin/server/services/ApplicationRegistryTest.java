@@ -16,7 +16,9 @@
 
 package de.codecentric.boot.admin.server.services;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -30,6 +32,8 @@ import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.entities.Application;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
@@ -48,11 +52,13 @@ class ApplicationRegistryTest {
 
 	private ApplicationRegistry applicationRegistry;
 
+	private TestInstanceEventPublisher eventPublisher;
+
 	@BeforeEach
 	void setUp() {
 		this.instanceRegistry = mock(InstanceRegistry.class);
-		InstanceEventPublisher instanceEventPublisher = mock(InstanceEventPublisher.class);
-		this.applicationRegistry = new ApplicationRegistry(this.instanceRegistry, instanceEventPublisher);
+		this.eventPublisher = new TestInstanceEventPublisher();
+		this.applicationRegistry = new ApplicationRegistry(this.instanceRegistry, this.eventPublisher);
 	}
 
 	@Test
@@ -172,6 +178,124 @@ class ApplicationRegistryTest {
 			.verifyComplete();
 	}
 
+	@Test
+	void getApplicationStream_emitsNewApplicationAndRemovesOldOneWhenInstanceRenamed() {
+		// The instance keeps a stable id (based on healthUrl) but changes its name from
+		// old to new.
+		Registration oldRegistration = Registration.create("old-service", "http://localhost:8080/health").build();
+		Registration newRegistration = Registration.create("new-service", "http://localhost:8080/health").build();
+		InstanceId id = InstanceId.of("renamed-instance");
+		Instance renamedInstance = Instance.create(id).register(oldRegistration).register(newRegistration);
+
+		InstanceRegistrationUpdatedEvent event = new InstanceRegistrationUpdatedEvent(id, renamedInstance.getVersion(),
+				newRegistration, oldRegistration);
+
+		when(this.instanceRegistry.getInstance(id)).thenReturn(Mono.just(renamedInstance));
+		when(this.instanceRegistry.getInstances("new-service"))
+			.thenReturn(Flux.just(renamedInstance).filter(Instance::isRegistered));
+		when(this.instanceRegistry.getInstances("old-service")).thenReturn(Flux.empty());
+
+		List<Application> applications = Flux.from(this.applicationRegistry.getApplicationStream())
+			.doOnSubscribe((sub) -> this.eventPublisher.emit(event))
+			.filter((application) -> application.getName().equals("new-service")
+					|| application.getName().equals("old-service"))
+			.take(2)
+			.collectList()
+			.block(Duration.ofSeconds(5));
+
+		assertThat(applications).extracting(Application::getName)
+			.containsExactlyInAnyOrder("new-service", "old-service");
+		Application renamed = applications.stream()
+			.filter((a) -> a.getName().equals("new-service"))
+			.findFirst()
+			.orElseThrow();
+		assertThat(renamed.getInstances()).extracting(Instance::getId).containsExactly(id);
+
+		Application previous = applications.stream()
+			.filter((a) -> a.getName().equals("old-service"))
+			.findFirst()
+			.orElseThrow();
+		assertThat(previous.getInstances()).isEmpty();
+	}
+
+	@Test
+	void getApplicationStream_recomputesOldApplicationWhenSiblingInstanceRemainsAfterRename() {
+		// old-service still has instance-2; instance-1 moves to new-service.
+		Registration oldRegistration1 = Registration.create("old-service", "http://localhost:8080/health").build();
+		Registration newRegistration1 = Registration.create("new-service", "http://localhost:8080/health").build();
+		InstanceId id1 = InstanceId.of("instance-1");
+		Instance renamedInstance = Instance.create(id1).register(oldRegistration1).register(newRegistration1);
+
+		Registration oldRegistration2 = Registration.create("old-service", "http://localhost:8081/health").build();
+		Instance remainingInstance = Instance.create(InstanceId.of("instance-2")).register(oldRegistration2);
+
+		InstanceRegistrationUpdatedEvent event = new InstanceRegistrationUpdatedEvent(id1, renamedInstance.getVersion(),
+				newRegistration1, oldRegistration1);
+
+		when(this.instanceRegistry.getInstance(id1)).thenReturn(Mono.just(renamedInstance));
+		when(this.instanceRegistry.getInstances("new-service"))
+			.thenReturn(Flux.just(renamedInstance).filter(Instance::isRegistered));
+		when(this.instanceRegistry.getInstances("old-service"))
+			.thenReturn(Flux.just(remainingInstance).filter(Instance::isRegistered));
+
+		List<Application> applications = Flux.from(this.applicationRegistry.getApplicationStream())
+			.doOnSubscribe((sub) -> this.eventPublisher.emit(event))
+			.filter((application) -> application.getName().equals("new-service")
+					|| application.getName().equals("old-service"))
+			.take(2)
+			.collectList()
+			.block(Duration.ofSeconds(5));
+
+		assertThat(applications).extracting(Application::getName)
+			.containsExactlyInAnyOrder("new-service", "old-service");
+		Application renamed = applications.stream()
+			.filter((a) -> a.getName().equals("new-service"))
+			.findFirst()
+			.orElseThrow();
+		assertThat(renamed.getInstances()).extracting(Instance::getId).containsExactly(id1);
+
+		Application previous = applications.stream()
+			.filter((a) -> a.getName().equals("old-service"))
+			.findFirst()
+			.orElseThrow();
+		assertThat(previous.getInstances()).extracting(Instance::getId).containsExactly(remainingInstance.getId());
+	}
+
+	@Test
+	void getApplicationStream_doesNotEmitExtraApplicationWhenOnlyNonNameFieldsChange() {
+		// Same name, only the managementUrl differs - the event should result in a single
+		// update for the same application and not a spurious delete/empty event.
+		Registration oldRegistration = Registration.create("service", "http://localhost:8080/health")
+			.managementUrl("http://localhost:8080/actuator")
+			.build();
+		Registration newRegistration = Registration.create("service", "http://localhost:8080/health")
+			.managementUrl("http://localhost:9090/actuator")
+			.build();
+		InstanceId id = InstanceId.of("stable-instance");
+		Instance updatedInstance = Instance.create(id).register(oldRegistration).register(newRegistration);
+
+		InstanceRegistrationUpdatedEvent event = new InstanceRegistrationUpdatedEvent(id, updatedInstance.getVersion(),
+				newRegistration, oldRegistration);
+
+		when(this.instanceRegistry.getInstance(id)).thenReturn(Mono.just(updatedInstance));
+		when(this.instanceRegistry.getInstances("service"))
+			.thenReturn(Flux.just(updatedInstance).filter(Instance::isRegistered));
+
+		// Emit the event right after the stream is subscribed; expect exactly one
+		// application named "service" to be re-published (no empty/delete event).
+		List<Application> applications = Flux.from(this.applicationRegistry.getApplicationStream())
+			.doOnSubscribe((sub) -> this.eventPublisher.emit(event))
+			.filter((application) -> application.getName().equals("service"))
+			.take(1)
+			.collectList()
+			.block(Duration.ofSeconds(5));
+
+		assertThat(applications).hasSize(1);
+		Application application = applications.iterator().next();
+		assertThat(application.getName()).isEqualTo("service");
+		assertThat(application.getInstances()).extracting(Instance::getId).containsExactly(id);
+	}
+
 	private Instance getInstance(String applicationName, String version) {
 		Registration registration = Registration.create(applicationName, "http://localhost:8080/health")
 			.metadata("version", version)
@@ -182,6 +306,28 @@ class ApplicationRegistryTest {
 
 	private Instance getInstance(String applicationName) {
 		return getInstance(applicationName, "FooBarVersion");
+	}
+
+	/**
+	 * Test helper that exposes the protected publish method so tests can push events.
+	 */
+	static class TestInstanceEventPublisher extends InstanceEventPublisher {
+
+		private final reactor.core.publisher.Sinks.Many<InstanceEvent> sink = reactor.core.publisher.Sinks.many()
+			.multicast()
+			.onBackpressureBuffer();
+
+		@Override
+		public void subscribe(org.reactivestreams.Subscriber<? super InstanceEvent> subscriber) {
+			this.sink.asFlux().subscribe(subscriber);
+		}
+
+		void emit(InstanceEvent... events) {
+			for (InstanceEvent event : events) {
+				this.sink.emitNext(event, reactor.core.publisher.Sinks.EmitFailureHandler.FAIL_FAST);
+			}
+		}
+
 	}
 
 }
