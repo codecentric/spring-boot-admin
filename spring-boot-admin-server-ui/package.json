@@ -56,7 +56,7 @@
     "popper.js": "1.16.1",
     "pretty-bytes": "7.1.1",
     "primelocale": "^2.1.7",
-    "primevue": "^4.4.1",
+    "primevue": "^5.0.0",
     "qs": "^6.13.0",
     "react": "19.2.7",
     "resize-observer-polyfill": "1.5.1",
