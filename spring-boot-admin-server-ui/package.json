@@ -76,7 +76,7 @@
     "@storybook/addon-links": "10.5.3",
     "@storybook/vue3-vite": "10.5.3",
     "@tailwindcss/vite": "^4.2.2",
-    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/jest-dom": "7.0.0",
     "@testing-library/user-event": "14.6.1",
     "@testing-library/vue": "8.1.0",
     "@trivago/prettier-plugin-sort-imports": "^6.0.0",
