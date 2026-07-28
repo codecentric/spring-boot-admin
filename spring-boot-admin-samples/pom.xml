@@ -26,6 +26,11 @@
     <name>Spring Boot Admin Samples</name>
     <description>Spring Boot Admin Samples</description>
 
+    <properties>
+        <!-- Do not deploy/publish samples to maven central -->
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <parent>
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
