@@ -73,6 +73,7 @@ declare global {
     externalViews: ExternalView[];
     viewSettings: ViewSettings[];
     enableToasts: boolean;
+    browserNotificationTimeout: number;
     hideInstanceUrl: boolean;
     disableInstanceUrl: boolean;
     allowUnsafeHtml: boolean;

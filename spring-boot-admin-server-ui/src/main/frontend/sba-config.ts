@@ -28,6 +28,7 @@ const DEFAULT_CONFIG: SBASettings = {
     },
     rememberMeEnabled: true,
     enableToasts: false,
+    browserNotificationTimeout: 5000,
     externalViews: [] as ExternalView[],
     favicon: 'assets/img/favicon.png',
     faviconDanger: 'assets/img/favicon-danger.png',

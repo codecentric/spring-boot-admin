@@ -17,9 +17,44 @@ import { groupBy, values } from 'lodash-es';
 import { Subject, bufferTime, filter } from 'rxjs';
 
 import { HealthStatus } from './HealthStatus';
+import Application from './services/application';
 import sbaConfig from './sba-config';
 
 let granted = false;
+
+type BrowserNotificationOptions = NotificationOptions & {
+  timeout?: number;
+  url?: string;
+};
+
+export const buildInstanceDetailsUrl = (instanceId: string) =>
+  `/instances/${instanceId}/details`;
+
+export const findChangedInstanceId = (
+  application: Application,
+  oldApplication: Application,
+) => {
+  const changedInstanceIds = application.instances
+    .filter((instance) => {
+      const oldInstance = oldApplication.findInstance(instance.id);
+      return (
+        oldInstance &&
+        oldInstance.statusInfo.status !== instance.statusInfo.status
+      );
+    })
+    .map((instance) => instance.id);
+
+  if (changedInstanceIds.length === 1) {
+    return changedInstanceIds[0];
+  }
+  if (application.instances.length === 1) {
+    return application.instances[0].id;
+  }
+  return undefined;
+};
+
+const getNotificationTimeout = () =>
+  sbaConfig.uiSettings.browserNotificationTimeout ?? 5000;
 
 const requestPermissions = async () => {
   if ('Notification' in window) {
@@ -33,6 +68,9 @@ const requestPermissions = async () => {
 };
 
 const notifyForSingleChange = (application, oldApplication) => {
+  const instanceId = findChangedInstanceId(application, oldApplication);
+  const url = instanceId ? buildInstanceDetailsUrl(instanceId) : undefined;
+
   return createNotification(
     `${application.name} is now ${application.status}`,
     {
@@ -44,7 +82,8 @@ const notifyForSingleChange = (application, oldApplication) => {
           ? sbaConfig.uiSettings.favicon
           : sbaConfig.uiSettings.faviconDanger,
       renotify: true,
-      timeout: 5000,
+      timeout: getNotificationTimeout(),
+      url,
     },
   );
 };
@@ -57,14 +96,14 @@ const notifyForBulkChange = ({ count, status, oldStatus }) => {
       status === HealthStatus.UP
         ? sbaConfig.uiSettings.favicon
         : sbaConfig.uiSettings.faviconDanger,
-    timeout: 5000,
+    timeout: getNotificationTimeout(),
   });
 };
 
-const createNotification = (title, options) => {
+const createNotification = (title, options: BrowserNotificationOptions) => {
   if (granted) {
     const notification = new window.Notification(title, options);
-    if (options.url !== null) {
+    if (options.url) {
       notification.onclick = () => {
         window.focus();
         window.open(options.url, '_self');

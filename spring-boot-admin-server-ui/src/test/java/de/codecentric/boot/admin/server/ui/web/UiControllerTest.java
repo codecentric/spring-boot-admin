@@ -143,6 +143,21 @@ class UiControllerTest {
 	}
 
 	@Test
+	void should_expose_browser_notification_timeout_in_settings() throws Exception {
+		UiController.Settings uiSettings = UiController.Settings.builder()
+			.browserNotificationTimeout(10000)
+			.theme(new AdminServerUiProperties.UiTheme())
+			.build();
+		MockMvc mockMvc = setupControllerWithView("", UiExtensions.EMPTY, uiSettings);
+
+		mockMvc.perform(get("http://example/login"))
+			.andExpect(status().isOk())
+			.andExpect(model().attribute("uiSettings", uiSettings));
+
+		assertThat(uiSettings.getBrowserNotificationTimeout()).isEqualTo(10000);
+	}
+
+	@Test
 	void should_render_login_view_with_anonymous_user_model() throws Exception {
 		UiController.Settings uiSettings = UiController.Settings.builder()
 			.theme(new AdminServerUiProperties.UiTheme())
