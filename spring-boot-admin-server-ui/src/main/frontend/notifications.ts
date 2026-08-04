@@ -102,17 +102,23 @@ const notifyForBulkChange = ({ count, status, oldStatus }) => {
 
 const createNotification = (title, options: BrowserNotificationOptions) => {
   if (granted) {
-    const notification = new window.Notification(title, options);
-    if (options.url) {
+    const { timeout = 0, url, ...notificationOptions } = options;
+    const notification = new window.Notification(title, {
+      ...notificationOptions,
+      // Keep visible until the user dismisses when timeout is <= 0
+      requireInteraction: !(timeout > 0),
+    });
+    if (url) {
       notification.onclick = () => {
         window.focus();
-        window.open(options.url, '_self');
+        window.open(url, '_self');
       };
     }
-    if (options.timeout > 0) {
-      notification.onshow = () =>
-        setTimeout(() => notification.close(), options.timeout);
-    }
+    notification.onshow = () => {
+      if (timeout > 0) {
+        setTimeout(() => notification.close(), timeout);
+      }
+    };
   }
 };
 
