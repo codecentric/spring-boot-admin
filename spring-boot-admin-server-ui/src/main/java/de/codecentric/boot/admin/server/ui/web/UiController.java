@@ -167,7 +167,7 @@ public class UiController {
 
 		private final Boolean enableToasts;
 
-		private final int browserNotificationTimeout;
+		private final long browserNotificationTimeout;
 
 		private final Boolean hideInstanceUrl;
 

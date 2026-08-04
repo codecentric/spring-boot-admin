@@ -145,7 +145,7 @@ class UiControllerTest {
 	@Test
 	void should_expose_browser_notification_timeout_in_settings() throws Exception {
 		UiController.Settings uiSettings = UiController.Settings.builder()
-			.browserNotificationTimeout(10000)
+			.browserNotificationTimeout(10000L)
 			.theme(new AdminServerUiProperties.UiTheme())
 			.build();
 		MockMvc mockMvc = setupControllerWithView("", UiExtensions.EMPTY, uiSettings);
@@ -154,7 +154,7 @@ class UiControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(model().attribute("uiSettings", uiSettings));
 
-		assertThat(uiSettings.getBrowserNotificationTimeout()).isEqualTo(10000);
+		assertThat(uiSettings.getBrowserNotificationTimeout()).isEqualTo(10000L);
 	}
 
 	@Test
