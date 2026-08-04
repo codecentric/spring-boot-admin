@@ -104,7 +104,8 @@ public class AdminServerUiAutoConfiguration {
 			.favicon(this.adminUi.getFavicon())
 			.faviconDanger(this.adminUi.getFaviconDanger())
 			.enableToasts(this.adminUi.getEnableToasts())
-			.browserNotificationTimeout(this.adminUi.getBrowserNotificationTimeout())
+			.browserNotificationTimeout(
+					(int) this.adminUi.getBrowserNotificationTimeout().toMillis())
 			.hideInstanceUrl(this.adminUi.getHideInstanceUrl())
 			.disableInstanceUrl(this.adminUi.getDisableInstanceUrl())
 			.notificationFilterEnabled(
