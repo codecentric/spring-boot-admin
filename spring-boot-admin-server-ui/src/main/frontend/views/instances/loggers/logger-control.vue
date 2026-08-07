@@ -88,16 +88,17 @@ export default {
     cssClass(level) {
       return {
         'logger-control__level--inherited': !this.hasConfiguredLevel(level),
-        'is-active is-danger':
-          level === 'TRACE' && this.hasEffectiveLevel('TRACE'),
-        'is-active is-warning':
-          level === 'DEBUG' && this.hasEffectiveLevel('DEBUG'),
-        'is-active is-info': level === 'INFO' && this.hasEffectiveLevel('INFO'),
-        'is-active is-success':
-          level === 'WARN' && this.hasEffectiveLevel('WARN'),
-        'is-active is-light':
-          level === 'ERROR' && this.hasEffectiveLevel('ERROR'),
         'is-active is-extra-light':
+          level === 'TRACE' && this.hasEffectiveLevel('TRACE'),
+        'is-active is-info':
+          level === 'DEBUG' && this.hasEffectiveLevel('DEBUG'),
+        'is-active is-success':
+          level === 'INFO' && this.hasEffectiveLevel('INFO'),
+        'is-active is-warning':
+          level === 'WARN' && this.hasEffectiveLevel('WARN'),
+        'is-active is-danger':
+          level === 'ERROR' && this.hasEffectiveLevel('ERROR'),
+        'is-active is-light':
           level === 'FATAL' && this.hasEffectiveLevel('FATAL'),
         'is-active is-black': level === 'OFF' && this.hasEffectiveLevel('OFF'),
         'is-loading': this.getStatusForLevel(level) === 'executing',
