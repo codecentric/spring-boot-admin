@@ -106,7 +106,7 @@ const createNotification = (title, options: BrowserNotificationOptions) => {
     const notification = new window.Notification(title, {
       ...notificationOptions,
       // Keep visible until the user dismisses when timeout is <= 0
-      requireInteraction: !(timeout > 0),
+      requireInteraction: timeout <= 0,
     });
     if (url) {
       notification.onclick = () => {
