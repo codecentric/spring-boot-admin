@@ -114,11 +114,10 @@ const createNotification = (title, options: BrowserNotificationOptions) => {
         window.open(url, '_self');
       };
     }
-    notification.onshow = () => {
-      if (timeout > 0) {
+    if (timeout > 0) {
+      notification.onshow = () =>
         setTimeout(() => notification.close(), timeout);
-      }
-    };
+    }
   }
 };
 
