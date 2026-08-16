@@ -51,7 +51,7 @@
         <spring-cloud.version>2025.1.2</spring-cloud.version>
         <spring-ai.version>2.0.0</spring-ai.version>
 
-        <jolokia-support-springboot.version>2.6.0</jolokia-support-springboot.version>
+        <jolokia-support-springboot.version>2.6.1</jolokia-support-springboot.version>
 
         <checkstyle.version>12.3.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
