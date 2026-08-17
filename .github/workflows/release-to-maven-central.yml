@@ -79,7 +79,7 @@ jobs:
         run: ./mvnw -B --no-transfer-progress  -pl spring-boot-admin-docs site
 
       - name: Deploy documentation to GitHub Pages for version ${{ github.event.inputs.releaseversion }}
-        uses: JamesIves/github-pages-deploy-action@v4.8.0
+        uses: JamesIves/github-pages-deploy-action@v4.9.0
         with:
           branch: gh-pages
           folder: spring-boot-admin-docs/target/generated-docs/build
@@ -87,7 +87,7 @@ jobs:
           clean: true
 
       - name: Deploy redirect for /current to /${{ github.event.inputs.releaseversion }}
-        uses: JamesIves/github-pages-deploy-action@v4.8.0
+        uses: JamesIves/github-pages-deploy-action@v4.9.0
         if: github.event.inputs.latest == 'true'
         with:
           branch: gh-pages
@@ -96,7 +96,7 @@ jobs:
           clean: true
 
       - name: Deploy deeplink redirect for /current/* to /${{ github.event.inputs.releaseversion }}/*
-        uses: JamesIves/github-pages-deploy-action@v4.8.0
+        uses: JamesIves/github-pages-deploy-action@v4.9.0
         if: github.event.inputs.latest == 'true'
         with:
           branch: gh-pages
