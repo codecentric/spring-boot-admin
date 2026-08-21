@@ -28,12 +28,12 @@ This plugin scans Java files with the project's custom CheckStyle rules from wit
 Install and configure the Checkstyle Plugin, and enable the configuration file.
 
 ##### Configuration
-Before configuration, add the  `spring-javaformat-checkstyle` JAR to the Third-Party checks.
+Before configuration, add the `spring-javaformat-checkstyle` JAR to the Third-Party checks.
 1. Preferences > Tools > Checkstyle > Third-Party Checks
 2. Add `~/.m2/repository/io/spring/javaformat/spring-javaformat-checkstyle/0.0.26/spring-javaformat-checkstyle-0.0.26.jar`
 
 ##### Configuration File
-Add the configuration file and enabled it:
+Add the configuration file and enable it:
 1. Preferences > Tools > Checkstyle > Configuration File > +
 2. Add a Name, ex. Spring Boot Admin
 3. Use a local Checkstyle File, Browse to `src/checkstyle/checkstyle.xml` and click Next
@@ -41,7 +41,7 @@ Add the configuration file and enabled it:
 5. Select the new configuration file to enable it
 
 #### Prettier Plugin
-This plugin is able to run Prettier from within IntelliJ. It can even be configured to run on "Reformat Code" action. It comes bundles with the IDE but needs to be enabled.
+This plugin is able to run Prettier from within IntelliJ. It can even be configured to run on "Reformat Code" action. It comes bundled with the IDE but needs to be enabled.
 
 ##### Configuration
 1. Preferences > Languages & Frameworks > JavaScript > Prettier
