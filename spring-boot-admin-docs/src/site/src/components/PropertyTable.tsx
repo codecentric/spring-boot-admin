@@ -1,6 +1,7 @@
 import { filterPropertiesByName } from "@site/src/propertiesUtil";
 import styles from "./PropertyTable.module.css";
 import { CopyButton } from "@site/src/components/CopyButton";
+import { convertJavadocToHtml } from "@site/src/utils/javadocConverter";
 
 type Props = {
   title?: string;
@@ -64,7 +65,7 @@ export function PropertyTable({
                 </code>
               </div>
               <div className={styles.descriptionBlock}>
-                <p dangerouslySetInnerHTML={{ __html: a.description }} />
+                <p dangerouslySetInnerHTML={{ __html: convertJavadocToHtml(a.description) }} />
                 {hasDefaultValueOrType(a) && (
                   <dl>
                     {a.type && (
