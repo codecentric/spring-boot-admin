@@ -86,7 +86,7 @@
         <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
         <cyclonedx-maven-plugin.version>2.9.3</cyclonedx-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-        <spring-javaformat-maven-plugin.version>0.0.47</spring-javaformat-maven-plugin.version>
+        <spring-javaformat-maven-plugin.version>0.0.48</spring-javaformat-maven-plugin.version>
         <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
         <spring-conf-prop-documenter-maven-plugin.version>0.7.2</spring-conf-prop-documenter-maven-plugin.version>
     </properties>
