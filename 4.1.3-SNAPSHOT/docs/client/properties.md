@@ -79,9 +79,9 @@
 | `spring.boot.admin.client.instance.prefer-ip`Should the registered urls be built with server.address or with hostname. @deprecated Use serviceHostType instead.- Type: 
 
   `java.lang.Boolean`                                                     |
-| `spring.boot.admin.client.auto-deregistration`Enable automatic deregistration on shutdown If not set it defaults to true if an active {@link CloudPlatform} is present;- Type: 
+| `spring.boot.admin.client.auto-deregistration`Enable automatic deregistration on shutdown If not set it defaults to true if an active `CloudPlatform` is present;- Type: 
 
-  `java.lang.Boolean`                                             |
+  `java.lang.Boolean`                                                   |
 | `spring.boot.admin.client.instance.health-url`Client-health-URL to register with. Inferred at runtime, can be overridden in case the reachable URL is different (e.g. Docker). Must be unique all services registry.- Type: 
 
   `java.lang.String` |
