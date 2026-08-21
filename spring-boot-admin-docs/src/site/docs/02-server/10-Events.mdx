@@ -54,6 +54,11 @@ This event is used to update the displayed details about the instance in the UI.
 Occurs when the status of an instance changes (e.g., from UP to DOWN, or vice versa).
 This event is used to update the health indicator and status badge in the UI, and may trigger notifications or alerts.
 
+### InstanceStatusDetailsChangedEvent
+Occurs when the health details of an instance change but the top-level status code (e.g., `UP`, `DOWN`) remains the same.
+For example, disk space metrics, database connection counts, or custom health indicator details that fluctuate between polls will emit this event instead of an `InstanceStatusChangedEvent`.
+This finer-grained event allows the UI to refresh health details without triggering a full status-change notification.
+
 ### InstanceDeregisteredEvent
 Indicates that an instance has been unregistered from Spring Boot Admin.
 This event is used to remove the instance from the UI and stop monitoring its status and endpoints.

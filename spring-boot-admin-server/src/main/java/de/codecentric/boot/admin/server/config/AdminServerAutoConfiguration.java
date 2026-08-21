@@ -145,8 +145,7 @@ public class AdminServerAutoConfiguration {
 		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
 
 		StatusUpdater updater = new StatusUpdater(instanceRepository, instanceWebClientBuilder.build(),
-				new ApiMediaTypeHandler(), monitorProperties.getStatusChangeDetectionStrategy().asPredicate(),
-				healthGroupsCache);
+				new ApiMediaTypeHandler(), healthGroupsCache);
 
 		Duration timeout = monitorProperties.getDefaultTimeout();
 		Duration interval = monitorProperties.getStatusInterval();

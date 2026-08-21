@@ -36,6 +36,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusDetailsChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.Info;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
@@ -119,6 +120,56 @@ public abstract class AbstractEventStoreTest {
 		StepVerifier.create(store.append(asList(event0, event1))).verifyComplete();
 
 		StepVerifier.create(store.append(singletonList(event1b))).verifyError(OptimisticLockingException.class);
+	}
+
+	@Test
+	public void should_store_and_retrieve_status_details_changed_event() {
+		InstanceEventStore store = createStore(100);
+
+		Instant now = Instant.now();
+		InstanceEvent registered = new InstanceRegisteredEvent(id, 0L, now, registration);
+		InstanceEvent detailsChanged = new InstanceStatusDetailsChangedEvent(id, 1L, now.plusMillis(10),
+				java.util.Map.of("error", "Connection refused", "retries", 3));
+
+		StepVerifier.create(store.append(asList(registered, detailsChanged))).verifyComplete();
+
+		StepVerifier.create(store.find(id)).expectNext(registered, detailsChanged).verifyComplete();
+	}
+
+	@Test
+	public void should_keep_only_latest_status_details_changed_event_on_compaction() {
+		InstanceEventStore store = createStore(3);
+
+		// event1 is kept as the sole REGISTERED event (no discriminator, just latest per
+		// type)
+		InstanceEvent event1 = new InstanceRegisteredEvent(id, 0L, registration);
+		// event2 will be dropped — superseded by event4 (same type, no discriminator)
+		InstanceEvent event2 = new InstanceStatusDetailsChangedEvent(id, 1L, java.util.Map.of("db", "timeout"));
+		// event3 will be dropped — superseded by event4 (same type, no discriminator)
+		InstanceEvent event3 = new InstanceStatusDetailsChangedEvent(id, 2L,
+				java.util.Map.of("db", "timeout", "cache", "miss"));
+		// event4 is the latest STATUS_DETAILS_CHANGED — survives compaction
+		InstanceEvent event4 = new InstanceStatusDetailsChangedEvent(id, 3L, java.util.Map.of("db", "ok"));
+
+		StepVerifier.create(store.append(asList(event1, event2, event3, event4))).verifyComplete();
+
+		StepVerifier.create(store.find(id)).expectNext(event1, event4).verifyComplete();
+	}
+
+	@Test
+	public void should_publish_status_details_changed_event_to_live_subscribers() {
+		InstanceEventStore store = createStore(100);
+
+		Instant now = Instant.now();
+		InstanceEvent detailsChanged = new InstanceStatusDetailsChangedEvent(id, 0L, now,
+				java.util.Map.of("reason", "health-check failed"));
+
+		StepVerifier.create(store)
+			.expectSubscription()
+			.then(() -> StepVerifier.create(store.append(singletonList(detailsChanged))).verifyComplete())
+			.expectNext(detailsChanged)
+			.thenCancel()
+			.verify();
 	}
 
 	@Test

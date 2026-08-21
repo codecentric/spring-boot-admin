@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiPredicate;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.util.Assert;
@@ -36,6 +35,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusDetailsChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
@@ -45,7 +45,6 @@ import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.domain.values.Tags;
 
-import static de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
@@ -59,9 +58,6 @@ import static java.util.Collections.unmodifiableList;
 @lombok.EqualsAndHashCode(exclude = { "unsavedEvents", "statusTimestamp" })
 @lombok.ToString(exclude = "unsavedEvents")
 public final class Instance implements Serializable {
-
-	private static final BiPredicate<StatusInfo, StatusInfo> defaultStatusChangeDetectionStrategyPredicate = DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY
-		.asPredicate();
 
 	private final InstanceId id;
 
@@ -145,17 +141,18 @@ public final class Instance implements Serializable {
 	}
 
 	public Instance withStatusInfo(StatusInfo statusInfo) {
-		return withStatusInfo(statusInfo, defaultStatusChangeDetectionStrategyPredicate);
-	}
-
-	public Instance withStatusInfo(StatusInfo statusInfo,
-			BiPredicate<StatusInfo, StatusInfo> statusChangeDetectionStrategyPredicate) {
 		Assert.notNull(statusInfo, "'statusInfo' must not be null");
-		Assert.notNull(statusChangeDetectionStrategyPredicate,
-				"'statusChangeDetectionStrategyPredicate' must not be null");
 
-		return (statusChangeDetectionStrategyPredicate.test(this.statusInfo, statusInfo))
-				? this.apply(new InstanceStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true) : this;
+		if (!Objects.equals(this.statusInfo.getStatus(), statusInfo.getStatus())) {
+			return this.apply(new InstanceStatusChangedEvent(this.id, this.nextVersion(), statusInfo), true);
+		}
+
+		if (!Objects.equals(this.statusInfo, statusInfo)) {
+			return this.apply(
+					new InstanceStatusDetailsChangedEvent(this.id, this.nextVersion(), statusInfo.getDetails()), true);
+		}
+
+		return this;
 	}
 
 	public Instance withEndpoints(Endpoints endpoints) {
@@ -243,6 +240,11 @@ public final class Instance implements Serializable {
 					this.statusTimestamp, info, this.endpoints, updateBuildVersion(metaData, info.getValues()),
 					updateTags(metaData, info.getValues()), unsavedEvents);
 
+		}
+		else if (event instanceof InstanceStatusDetailsChangedEvent statusDetailsChangedEvent) {
+			StatusInfo statusInfo = this.statusInfo.withDetails(statusDetailsChangedEvent.getDetails());
+			return new Instance(this.id, event.getVersion(), this.registration, this.registered, statusInfo,
+					this.statusTimestamp, this.info, this.endpoints, this.buildVersion, this.tags, unsavedEvents);
 		}
 		else if (event instanceof InstanceDeregisteredEvent) {
 			return new Instance(this.id, event.getVersion(), this.registration, false, StatusInfo.ofUnknown(),

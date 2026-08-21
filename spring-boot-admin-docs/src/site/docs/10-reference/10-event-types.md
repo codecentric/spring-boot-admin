@@ -37,10 +37,11 @@ Typical event sequence for an instance:
 1. REGISTERED           → Instance first registers
 2. ENDPOINTS_DETECTED   → Actuator endpoints discovered
 3. STATUS_CHANGED       → Health status updated to UP
-4. INFO_CHANGED         → Info endpoint data loaded
-5. STATUS_CHANGED       → Status changes during lifecycle
-6. REGISTRATION_UPDATED → Registration info changes (optional)
-7. DEREGISTERED         → Instance unregisters
+4. STATUS_DETAILS_CHANGED → Health details change (status code unchanged)
+5. INFO_CHANGED         → Info endpoint data loaded
+6. STATUS_CHANGED       → Status changes during lifecycle
+7. REGISTRATION_UPDATED → Registration info changes (optional)
+8. DEREGISTERED         → Instance unregisters
 ```
 
 ## Event Types
@@ -304,7 +305,79 @@ public void onStatusChanged(InstanceStatusChangedEvent event) {
 
 ---
 
-### 5. ENDPOINTS_DETECTED
+### 5. STATUS_DETAILS_CHANGED
+
+**Class**: `InstanceStatusDetailsChangedEvent`
+
+**Type Constant**: `"STATUS_DETAILS_CHANGED"`
+
+**When Emitted**: Health details change but the top-level status code remains the same
+
+**Payload**:
+
+```java
+public class InstanceStatusDetailsChangedEvent extends InstanceEvent {
+	Map<String, Object> details;  // Updated health details map
+}
+```
+
+**Key Distinction from STATUS_CHANGED**:
+
+| Event | Status code changes | Details change |
+|---|---|---|
+| `STATUS_CHANGED` | yes | yes (full `StatusInfo` carried) |
+| `STATUS_DETAILS_CHANGED` | no | yes (only `details` map carried) |
+
+**Common Triggers**:
+
+- Disk space metrics fluctuate between polls
+- Database connection pool counts change
+- Custom health indicator details update
+- Any `/actuator/health` response where `status` stays the same but component details differ
+
+**Example**:
+
+```json
+{
+  "instance": "abc123def456",
+  "version": 4,
+  "timestamp": "2026-02-07T10:07:00Z",
+  "type": "STATUS_DETAILS_CHANGED",
+  "details": {
+    "diskSpace": {
+      "status": "UP",
+      "total": 500000000000,
+      "free": 198000000000
+    },
+    "db": {
+      "status": "UP",
+      "database": "PostgreSQL",
+      "validationQuery": "isValid()"
+    }
+  }
+}
+```
+
+**Use Cases**:
+
+- Refresh health detail panels in the UI without triggering status-change alerts
+- Track health detail trends over time
+- Detect degrading resources before a full status change occurs
+
+**Example Listener**:
+
+```java
+
+@EventListener
+public void onStatusDetailsChanged(InstanceStatusDetailsChangedEvent event) {
+	Map<String, Object> details = event.getDetails();
+	log.debug("Instance {} health details updated: {}", event.getInstance(), details);
+}
+```
+
+---
+
+### 6. ENDPOINTS_DETECTED
 
 **Class**: `InstanceEndpointsDetectedEvent`
 
@@ -382,7 +455,7 @@ public void onEndpointsDetected(InstanceEndpointsDetectedEvent event) {
 
 ---
 
-### 6. INFO_CHANGED
+### 7. INFO_CHANGED
 
 **Class**: `InstanceInfoChangedEvent`
 
@@ -453,9 +526,10 @@ version 0: REGISTERED
 version 1: ENDPOINTS_DETECTED
 version 2: STATUS_CHANGED (to UP)
 version 3: INFO_CHANGED
-version 4: STATUS_CHANGED (to DOWN)
-version 5: STATUS_CHANGED (to UP)
-version 6: DEREGISTERED
+version 4: STATUS_DETAILS_CHANGED (details only)
+version 5: STATUS_CHANGED (to DOWN)
+version 6: STATUS_CHANGED (to UP)
+version 7: DEREGISTERED
 ```
 
 **Important**: Version numbers are unique per instance and always increase.
@@ -514,14 +588,17 @@ public class CustomNotifier extends AbstractEventNotifier {
 	protected Mono<Void> doNotify(InstanceEvent event, Instance instance) {
 		return Mono.fromRunnable(() -> {
 			switch (event.getType()) {
-				case "STATUS_CHANGED":
-					handleStatusChange((InstanceStatusChangedEvent) event);
-					break;
-				case "REGISTERED":
-					handleRegistration((InstanceRegisteredEvent) event);
-					break;
-				// Handle other events
-			}
+			case "STATUS_CHANGED":
+				handleStatusChange((InstanceStatusChangedEvent) event);
+				break;
+			case "STATUS_DETAILS_CHANGED":
+				handleDetailsChange((InstanceStatusDetailsChangedEvent) event);
+				break;
+			case "REGISTERED":
+				handleRegistration((InstanceRegisteredEvent) event);
+				break;
+			// Handle other events
+		}
 		});
 	}
 }
@@ -543,6 +620,8 @@ data:{"instance":"abc123","version":0,"type":"REGISTERED",...}
 data:{"instance":"abc123","version":1,"type":"ENDPOINTS_DETECTED",...}
 
 data:{"instance":"abc123","version":2,"type":"STATUS_CHANGED",...}
+
+data:{"instance":"abc123","version":3,"type":"STATUS_DETAILS_CHANGED",...}
 ```
 
 ## Event Filtering
@@ -576,10 +655,13 @@ public FilteringNotifier filteringNotifier(Notifier delegate,
 "type == 'STATUS_CHANGED' && statusInfo.status == 'DOWN'"
 
 // Exclude INFO_CHANGED and ENDPOINTS_DETECTED
-		"!(type == 'INFO_CHANGED' || type == 'ENDPOINTS_DETECTED')"
+"!(type == 'INFO_CHANGED' || type == 'ENDPOINTS_DETECTED')"
+
+// Exclude detail-only changes (suppress high-frequency detail updates)
+"type != 'STATUS_DETAILS_CHANGED'"
 
 // Only production instances (via metadata)
-		"metadata['environment'] == 'production'"
+"metadata['environment'] == 'production'"
 ```
 
 ## Event Reminders

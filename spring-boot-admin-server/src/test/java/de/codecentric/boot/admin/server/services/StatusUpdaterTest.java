@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
-import java.util.Map;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.Options;
@@ -32,11 +31,11 @@ import org.springframework.http.MediaType;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import de.codecentric.boot.admin.server.config.AdminServerProperties.MonitorProperties.StatusChangeDetectionStrategy;
 import de.codecentric.boot.admin.server.domain.entities.EventsourcingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusDetailsChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
@@ -56,7 +55,6 @@ import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilter
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.timeout;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
-import static java.util.stream.Collectors.joining;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class StatusUpdaterTest {
@@ -97,17 +95,13 @@ class StatusUpdaterTest {
 		StepVerifier.create(this.repository.save(this.instance)).expectNextCount(1).verifyComplete();
 
 		this.healthGroupsCache = new InMemoryHealthGroupsCache();
-		this.updater = createWith(StatusChangeDetectionStrategy.STATUS_ONLY);
-	}
-
-	private StatusUpdater createWith(StatusChangeDetectionStrategy statusChangeDetectionStrategy) {
-		return new StatusUpdater(this.repository,
+		this.updater = new StatusUpdater(this.repository,
 				InstanceWebClient.builder()
 					.filter(rewriteEndpointUrl())
 					.filter(retry(0, singletonMap(Endpoint.HEALTH, 1)))
 					.filter(timeout(Duration.ofSeconds(2), emptyMap()))
 					.build(),
-				new ApiMediaTypeHandler(), statusChangeDetectionStrategy.asPredicate(), this.healthGroupsCache);
+				new ApiMediaTypeHandler(), this.healthGroupsCache);
 	}
 
 	@AfterEach
@@ -279,42 +273,35 @@ class StatusUpdaterTest {
 	}
 
 	@Test
-	void should_update_status_details() {
-		// given
-		this.updater = createWith(StatusChangeDetectionStrategy.FULL);
+	void should_emit_status_details_changed_event_when_status_code_unchanged_but_details_differ() {
+		// First update: status becomes UP with initial details
+		String firstBody = "{ \"status\" : \"UP\", \"details\" : { \"foo\" : \"bar\" } }";
+		this.wireMock.stubFor(get("/health")
+			.willReturn(okForContentType(ApiVersion.LATEST.getProducedMimeType().toString(), firstBody)
+				.withHeader("Content-Length", Integer.toString(firstBody.length()))));
 
-		// 1st pass -> initial details
-		shouldUpdateStatusDetails(singletonMap("foo", "bar"));
+		StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete();
 
-		// 2nd pass -> details changed
-		shouldUpdateStatusDetails(singletonMap("foo", "baz"));
-	}
-
-	private void shouldUpdateStatusDetails(Map<String, String> details) {
-		String body = "{ \"status\" : \"UP\", \"details\" : %s }".formatted(details.entrySet()
-			.stream()
-			.map((e) -> "\"%s\" : \"%s\"".formatted(e.getKey(), e.getValue()))
-			.collect(joining(", ", "{ ", " }")));
-		this.wireMock.stubFor(
-				get("/health").willReturn(okForContentType(ApiVersion.LATEST.getProducedMimeType().toString(), body)
-					.withHeader("Content-Length", Integer.toString(body.length()))));
+		// Second update: same status UP, but details changed
+		String secondBody = "{ \"status\" : \"UP\", \"details\" : { \"foo\" : \"baz\" } }";
+		this.wireMock.stubFor(get("/health")
+			.willReturn(okForContentType(ApiVersion.LATEST.getProducedMimeType().toString(), secondBody)
+				.withHeader("Content-Length", Integer.toString(secondBody.length()))));
 
 		StepVerifier.create(this.eventStore)
 			.expectSubscription()
 			.then(() -> StepVerifier.create(this.updater.updateStatus(this.instance.getId())).verifyComplete())
 			.assertNext((event) -> {
-				assertThat(event).isInstanceOf(InstanceStatusChangedEvent.class);
-				assertThat(event.getInstance()).isEqualTo(this.instance.getId());
-				InstanceStatusChangedEvent statusChangedEvent = (InstanceStatusChangedEvent) event;
-				assertThat(statusChangedEvent.getStatusInfo().getStatus()).isEqualTo("UP");
-				assertThat(statusChangedEvent.getStatusInfo().getDetails()).isEqualTo(details);
+				assertThat(event).isInstanceOf(InstanceStatusDetailsChangedEvent.class);
+				InstanceStatusDetailsChangedEvent detailsEvent = (InstanceStatusDetailsChangedEvent) event;
+				assertThat(detailsEvent.getDetails()).containsEntry("foo", "baz");
 			})
 			.thenCancel()
 			.verify();
 
 		StepVerifier.create(this.repository.find(this.instance.getId())).assertNext((app) -> {
 			assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP");
-			assertThat(app.getStatusInfo().getDetails()).isEqualTo(details);
+			assertThat(app.getStatusInfo().getDetails()).containsEntry("foo", "baz");
 		}).verifyComplete();
 	}
 
