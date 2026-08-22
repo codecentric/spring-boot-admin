@@ -132,6 +132,14 @@ public class AdminServerUiProperties {
 	private Boolean enableToasts = false;
 
 	/**
+	 * Auto-dismiss timeout for browser notifications triggered on application status
+	 * changes. Values {@code <= 0} disable auto-dismiss. Converted to milliseconds when
+	 * passed to the UI.
+	 */
+	@DurationUnit(ChronoUnit.MILLIS)
+	private Duration browserNotificationTimeout = Duration.ofMillis(5000);
+
+	/**
 	 * Set to <code>true</code> to hide service URLs as well as actions that require them
 	 * in UI (e.g. jump to /health or /actuator).
 	 */
