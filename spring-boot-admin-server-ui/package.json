@@ -97,7 +97,7 @@
     "msw": "2.15.0",
     "msw-storybook-addon": "2.0.7",
     "prettier": "^3.0.3",
-    "rollup-plugin-visualizer": "7.0.1",
+    "rollup-plugin-visualizer": "7.1.1",
     "storybook": "10.5.8",
     "storybook-vue3-router": "^7.0.0",
     "typescript": "^6.0.0",
