@@ -217,4 +217,57 @@ class InstanceRegistrationUpdatedEventMixinTest {
 		assertThat(jsonContent).extractingJsonPathMapValue("$.registration").isNull();
 	}
 
+	@Test
+	void verifySerializeWithPrevious() throws IOException {
+		InstanceId id = InstanceId.of("test123");
+		Instant timestamp = Instant.ofEpochSecond(1587751031).truncatedTo(ChronoUnit.SECONDS);
+		Registration registration = Registration.create("new-service", "http://localhost:9080/health").build();
+		Registration previous = Registration.create("old-service", "http://localhost:9080/health").build();
+
+		InstanceRegistrationUpdatedEvent event = new InstanceRegistrationUpdatedEvent(id, 12345678L, timestamp,
+				registration, previous);
+
+		JsonContent<InstanceRegistrationUpdatedEvent> jsonContent = jsonTester.write(event);
+		assertThat(jsonContent).extractingJsonPathStringValue("$.registration.name").isEqualTo("new-service");
+		assertThat(jsonContent).extractingJsonPathStringValue("$.previous.name").isEqualTo("old-service");
+		assertThat(jsonContent).extractingJsonPathStringValue("$.previous.healthUrl")
+			.isEqualTo("http://localhost:9080/health");
+	}
+
+	@Test
+	void verifyDeserializeWithoutPreviousRemainsBackwardCompatible() throws JSONException, JacksonException {
+		// Legacy JSON payload without the previous field must still deserialize (previous
+		// is null).
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "REGISTRATION_UPDATED")
+			.put("registration", new JSONObject().put("name", "test").put("healthUrl", "http://localhost:9080/health"))
+			.toString();
+
+		InstanceRegistrationUpdatedEvent event = jsonMapper.readValue(json, InstanceRegistrationUpdatedEvent.class);
+		assertThat(event).isNotNull();
+		assertThat(event.getRegistration().getName()).isEqualTo("test");
+		assertThat(event.getPrevious()).isNull();
+	}
+
+	@Test
+	void verifyDeserializeWithPrevious() throws JSONException, JacksonException {
+		String json = new JSONObject().put("instance", "test123")
+			.put("version", 12345678L)
+			.put("timestamp", 1587751031.000000000)
+			.put("type", "REGISTRATION_UPDATED")
+			.put("registration",
+					new JSONObject().put("name", "new-service").put("healthUrl", "http://localhost:9080/health"))
+			.put("previous",
+					new JSONObject().put("name", "old-service").put("healthUrl", "http://localhost:9080/health"))
+			.toString();
+
+		InstanceRegistrationUpdatedEvent event = jsonMapper.readValue(json, InstanceRegistrationUpdatedEvent.class);
+		assertThat(event).isNotNull();
+		assertThat(event.getRegistration().getName()).isEqualTo("new-service");
+		assertThat(event.getPrevious()).isNotNull();
+		assertThat(event.getPrevious().getName()).isEqualTo("old-service");
+	}
+
 }

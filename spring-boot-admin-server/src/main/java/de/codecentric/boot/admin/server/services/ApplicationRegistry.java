@@ -29,8 +29,11 @@ import reactor.util.function.Tuples;
 
 import de.codecentric.boot.admin.server.domain.entities.Application;
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.values.BuildVersion;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 
@@ -79,9 +82,36 @@ public class ApplicationRegistry {
 
 	public Flux<Application> getApplicationStream() {
 		return Flux.from(this.instanceEventPublisher)
-			.flatMap((event) -> this.instanceRegistry.getInstance(event.getInstance()))
-			.map(this::getApplicationForInstance)
+			.flatMap(this::resolveAffectedApplicationGroups)
 			.flatMap((group) -> toApplication(group.getT1(), group.getT2()));
+	}
+
+	/**
+	 * Resolves the application groups that are affected by the given event.
+	 * <p>
+	 * For most events this is only the application the instance currently belongs to.
+	 * When an {@link InstanceRegistrationUpdatedEvent} indicates that an instance was
+	 * renamed (i.e. the previous registration carries a different name) the previously
+	 * associated application is included as well so that it gets re-aggregated. If no
+	 * instances remain under the previous name the resulting {@link Application} will
+	 * have an empty instance list which is the signal for clients to remove it.
+	 * @param event the event that was published
+	 * @return a flux of name / instances tuples that need to be (re-)published
+	 */
+	protected Flux<Tuple2<String, Flux<Instance>>> resolveAffectedApplicationGroups(InstanceEvent event) {
+		return this.instanceRegistry.getInstance(event.getInstance()).flatMapMany((instance) -> {
+			Flux<Tuple2<String, Flux<Instance>>> groups = Flux.just(getApplicationForInstance(instance));
+
+			if (event instanceof InstanceRegistrationUpdatedEvent updatedEvent) {
+				Registration previous = updatedEvent.getPrevious();
+				String currentName = instance.getRegistration().getName();
+				if (previous != null && !Objects.equals(previous.getName(), currentName)) {
+					groups = Flux.merge(groups, Flux.just(getApplicationForName(previous.getName())));
+				}
+			}
+
+			return groups;
+		});
 	}
 
 	public Flux<InstanceId> deregister(String name) {
@@ -91,6 +121,10 @@ public class ApplicationRegistry {
 
 	protected Tuple2<String, Flux<Instance>> getApplicationForInstance(Instance instance) {
 		String name = instance.getRegistration().getName();
+		return getApplicationForName(name);
+	}
+
+	protected Tuple2<String, Flux<Instance>> getApplicationForName(String name) {
 		return Tuples.of(name, this.instanceRegistry.getInstances(name).filter(Instance::isRegistered));
 	}
 
