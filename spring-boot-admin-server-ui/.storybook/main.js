@@ -11,7 +11,14 @@ module.exports = {
   },
 
   async viteFinal(config) {
-    config.plugins = config.plugins.filter((p) => p.name !== 'vue-docgen');
+    const removedPlugins = [
+      'vue-docgen',
+      'vite-plugin-static-copy:build',
+      'vite-plugin-static-copy:serve',
+    ];
+    config.plugins = config.plugins
+      .flat(Infinity)
+      .filter((p) => p && !removedPlugins.includes(p.name));
     return mergeConfig(config, {
       resolve: {
         alias: {
@@ -20,5 +27,5 @@ module.exports = {
         extensions: ['.vue', '.js', '.json'],
       },
     });
-  }
+  },
 };

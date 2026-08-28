@@ -1,3 +1,4 @@
+import { setup } from '@storybook/vue3-vite';
 import { mswLoader } from 'msw-storybook-addon/csf3';
 import { createRouter, createWebHistory } from 'vue-router';
 
@@ -16,15 +17,14 @@ const router = createRouter({
 });
 
 const applicationStore = createApplicationStore();
-const install = (app) => {
+setup((app) => {
   app.use(components);
   app.use(i18n);
   app.use(router);
   app.use(applicationStore);
-};
+});
 
 export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
   controls: {
     matchers: {
       color: /(background|color)$/i,
@@ -37,23 +37,10 @@ export const parameters = {
       others: [...mappingsEndpoint, ...applicationsEndpoint],
     },
   },
-  loader: { '.js': 'jsx' },
 };
 
 export const preview = {
   parameters,
   loaders: [mswLoader()],
   tags: ['autodocs'],
-  decorators: [
-    (story) => ({
-      components: { story },
-      setup() {
-        return { install };
-      },
-      template: '<story />',
-      mounted() {
-        install(this.$.appContext.app);
-      },
-    }),
-  ],
 };

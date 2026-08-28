@@ -5,35 +5,46 @@ import { applications } from '../../../mocks/applications/data';
 import Instance from '../../../services/instance';
 import Sidebar from './sidebar.vue';
 
-import i18n from '@/i18n';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 
-const TestComponent = defineComponent({
-  render() {
-    return h('div');
-  },
-});
+const RouteComponent = markRaw(
+  defineComponent({
+    render() {
+      return h('div');
+    },
+  }),
+);
+
+const createHandle = (text: string) =>
+  markRaw(
+    defineComponent({
+      render() {
+        return h('span', text);
+      },
+    }),
+  );
 
 const views = [
-  'webOverviewView',
-  'webHealthView',
-  'dataEnvView',
-  'dataConfigpropsView',
-].map((name, index) => ({
-  id: name,
-  name: `instances/${name
-    .replace('View', '')
-    .replace(/([A-Z])/g, '/$1')
-    .toLowerCase()}`,
+  { name: 'instances/web/overview', group: VIEW_GROUP.WEB, label: 'Overview' },
+  { name: 'instances/web/health', group: VIEW_GROUP.WEB, label: 'Health' },
+  { name: 'instances/data/env', group: VIEW_GROUP.DATA, label: 'Environment' },
+  {
+    name: 'instances/data/configprops',
+    group: VIEW_GROUP.DATA,
+    label: 'Config Props',
+  },
+].map((view, index) => ({
+  id: view.name,
+  name: view.name,
   parent: 'instances',
-  handle: markRaw(TestComponent),
-  order: index + 1,
-  component: markRaw(TestComponent),
-  group: index < 2 ? VIEW_GROUP.WEB : VIEW_GROUP.DATA,
+  handle: createHandle(view.label),
+  order: (index + 1) * 10,
+  component: RouteComponent,
+  group: view.group,
   hasChildren: false,
   props: {},
   isEnabled: () => true,
-  label: name,
+  label: view.label,
 }));
 
 export default {
@@ -41,18 +52,7 @@ export default {
   title: 'Sidebar',
 };
 
-const TemplateWithProps = (args) => ({
-  components: { Sidebar },
-  setup() {
-    return { args };
-  },
-  template: '<Sidebar v-bind="args" />',
-  i18n,
-});
-
 export const Test = {
-  render: TemplateWithProps,
-
   args: {
     instance: new Instance({
       id: 'bba333956ae6',
@@ -64,13 +64,14 @@ export const Test = {
   decorators: [
     vueRouter(
       [
-        {
-          name: 'instances/details',
-          path: '/',
-          component: TemplateWithProps,
-        },
+        { name: 'instances/details', path: '/', component: RouteComponent },
+        ...views.map((view) => ({
+          name: view.name,
+          path: `/${view.name}`,
+          component: RouteComponent,
+        })),
       ],
-      { initialRoute: '/' },
+      { initialRoute: '/instances/web/health' },
     ),
   ],
 };
