@@ -1,5 +1,4 @@
-import { setup } from '@storybook/vue3-vite';
-import { initialize, mswLoader } from 'msw-storybook-addon';
+import { mswLoader } from 'msw-storybook-addon/csf3';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import './storybook.css';
@@ -11,19 +10,18 @@ import i18n from '@/i18n';
 import applicationsEndpoint from '@/mocks/applications';
 import mappingsEndpoint from '@/mocks/instance/mappings';
 
-initialize();
 const router = createRouter({
   history: createWebHistory(),
   routes: [],
 });
 
 const applicationStore = createApplicationStore();
-setup((app) => {
+const install = (app) => {
   app.use(components);
   app.use(i18n);
   app.use(router);
   app.use(applicationStore);
-});
+};
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
@@ -44,7 +42,18 @@ export const parameters = {
 
 export const preview = {
   parameters,
-  loaders: [mswLoader],
+  loaders: [mswLoader()],
+  tags: ['autodocs'],
+  decorators: [
+    (story) => ({
+      components: { story },
+      setup() {
+        return { install };
+      },
+      template: '<story />',
+      mounted() {
+        install(this.$.appContext.app);
+      },
+    }),
+  ],
 };
-
-export const tags = ['autodocs'];
