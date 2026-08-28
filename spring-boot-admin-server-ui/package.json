@@ -95,7 +95,7 @@
     "happy-dom": "^20.0.0",
     "jsdom": "^29.0.0",
     "msw": "2.15.0",
-    "msw-storybook-addon": "2.0.7",
+    "msw-storybook-addon": "3.0.0",
     "prettier": "^3.0.3",
     "rollup-plugin-visualizer": "7.1.1",
     "storybook": "10.5.9",
