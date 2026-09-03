@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import Application from '@/services/application';
 import {
   buildInstanceDetailsUrl,
   findChangedInstanceId,
 } from '@/notifications';
+import Application from '@/services/application';
 
 const createApplication = (
   name: string,
@@ -30,7 +30,9 @@ const createApplication = (
 describe('notifications', () => {
   describe('buildInstanceDetailsUrl', () => {
     it('builds instance details path', () => {
-      expect(buildInstanceDetailsUrl('abc123')).toBe('/instances/abc123/details');
+      expect(buildInstanceDetailsUrl('abc123')).toBe(
+        '/instances/abc123/details',
+      );
     });
   });
 

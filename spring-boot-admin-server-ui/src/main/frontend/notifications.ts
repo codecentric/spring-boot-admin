@@ -17,8 +17,8 @@ import { groupBy, values } from 'lodash-es';
 import { Subject, bufferTime, filter } from 'rxjs';
 
 import { HealthStatus } from './HealthStatus';
-import Application from './services/application';
 import sbaConfig from './sba-config';
+import Application from './services/application';
 
 let granted = false;
 
