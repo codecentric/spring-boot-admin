@@ -123,7 +123,9 @@ public final class Instance implements Serializable {
 		}
 
 		if (!Objects.equals(this.registration, registration)) {
-			return this.apply(new InstanceRegistrationUpdatedEvent(this.id, this.nextVersion(), registration), true);
+			return this.apply(
+					new InstanceRegistrationUpdatedEvent(this.id, this.nextVersion(), registration, this.registration),
+					true);
 		}
 
 		return this;
