@@ -45,9 +45,18 @@ public class HazelcastEventStore extends ConcurrentMapEventStore {
 
 		eventLog.addEntryListener(new EntryAdapter<InstanceId, List<InstanceEvent>>() {
 			@Override
+			public void entryAdded(EntryEvent<InstanceId, List<InstanceEvent>> event) {
+				log.debug("Added {}", event);
+				publishNewEvents(event, NO_LATEST_VERSION);
+			}
+
+			@Override
 			public void entryUpdated(EntryEvent<InstanceId, List<InstanceEvent>> event) {
 				log.debug("Updated {}", event);
-				long lastKnownVersion = getLastVersion(event.getOldValue());
+				publishNewEvents(event, getLastVersion(event.getOldValue()));
+			}
+
+			private void publishNewEvents(EntryEvent<InstanceId, List<InstanceEvent>> event, long lastKnownVersion) {
 				List<InstanceEvent> newEvents = event.getValue()
 					.stream()
 					.filter((e) -> e.getVersion() > lastKnownVersion)

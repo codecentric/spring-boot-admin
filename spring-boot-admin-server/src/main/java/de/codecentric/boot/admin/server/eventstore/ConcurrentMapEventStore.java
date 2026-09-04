@@ -45,6 +45,8 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 
 	private static final Logger log = LoggerFactory.getLogger(ConcurrentMapEventStore.class);
 
+	protected static final long NO_LATEST_VERSION = -1;
+
 	private static final Comparator<InstanceEvent> byTimestampAndIdAndVersion = comparing(InstanceEvent::getTimestamp)
 		.thenComparing(InstanceEvent::getInstance)
 		.thenComparing(InstanceEvent::getVersion);
@@ -130,7 +132,7 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 	}
 
 	protected static long getLastVersion(List<InstanceEvent> events) {
-		return events.isEmpty() ? -1 : events.get(events.size() - 1).getVersion();
+		return events.isEmpty() ? NO_LATEST_VERSION : events.get(events.size() - 1).getVersion();
 	}
 
 	private static DistinctEventType getDistinctEventTypeFor(InstanceEvent event) {

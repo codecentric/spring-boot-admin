@@ -35,10 +35,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import reactor.core.publisher.Flux;
 
+import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventPublisher;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
@@ -162,7 +165,8 @@ public class AdminServerAutoConfiguration {
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
-	public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events) {
+	public StatusUpdateTrigger statusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> events,
+			InstanceRegistry instanceRegistry) {
 		AdminServerProperties.MonitorProperties monitorProperties = this.adminServerProperties.getMonitor();
 
 		Duration defaultTimeout = monitorProperties.getDefaultTimeout();
@@ -175,7 +179,7 @@ public class AdminServerAutoConfiguration {
 		}
 
 		return new StatusUpdateTrigger(statusUpdater, events, statusInterval, monitorProperties.getStatusLifetime(),
-				monitorProperties.getStatusMaxBackoff());
+				monitorProperties.getStatusMaxBackoff(), getExistingInstanceIds(instanceRegistry));
 	}
 
 	@Bean
@@ -212,10 +216,11 @@ public class AdminServerAutoConfiguration {
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
-	public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> events) {
+	public InfoUpdateTrigger infoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> events,
+			InstanceRegistry instanceRegistry) {
 		return new InfoUpdateTrigger(infoUpdater, events, this.adminServerProperties.getMonitor().getInfoInterval(),
 				this.adminServerProperties.getMonitor().getInfoLifetime(),
-				this.adminServerProperties.getMonitor().getInfoMaxBackoff());
+				this.adminServerProperties.getMonitor().getInfoMaxBackoff(), getExistingInstanceIds(instanceRegistry));
 	}
 
 	@Bean
@@ -228,6 +233,29 @@ public class AdminServerAutoConfiguration {
 	@ConditionalOnMissingBean(InstanceRepository.class)
 	public SnapshottingInstanceRepository instanceRepository(InstanceEventStore eventStore) {
 		return new SnapshottingInstanceRepository(eventStore);
+	}
+
+	/*
+	 * Fetches the existing registered instance IDs from the instance registry to use them
+	 * as initial data set for the StatusUpdateTrigger and InfoUpdaterTrigger. This
+	 * ensures that the triggers will update the status and info for all existing
+	 * instances on startup and correctly start polling for the updates. This is necessary
+	 * because the IntervalCheck used in the triggers only updates the status and info for
+	 * instances that have been updated since the last check by checking the local
+	 * "lastChecked" map. On rolling updates with Hazelcast, the details about the
+	 * instances will be migrated from an instance to another, but the "lastChecked" map
+	 * will be empty for the new instance, so the triggers will not update the status and
+	 * info for the existing instances. As such, the existing instance IDs are fetched and
+	 * passed to the triggers to ensure that the "lastChecked" map is aware of them
+	 * accordingly.
+	 *
+	 * @param instanceRegistry the registry to fetch the existing registered instance IDs
+	 * from
+	 *
+	 * @return a Flux of existing registered instance IDs
+	 */
+	private static Flux<InstanceId> getExistingInstanceIds(InstanceRegistry instanceRegistry) {
+		return instanceRegistry.getInstances().filter(Instance::isRegistered).map(Instance::getId).distinct();
 	}
 
 }
