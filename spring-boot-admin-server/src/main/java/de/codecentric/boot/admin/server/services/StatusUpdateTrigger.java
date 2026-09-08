@@ -18,9 +18,11 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -37,12 +39,22 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	private final IntervalCheck intervalCheck;
 
+	private final Publisher<InstanceId> existingInstanceIds;
+
+	@Nullable private Disposable startupSubscription;
+
 	public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher, Duration updateInterval,
 			Duration statusLifetime, Duration maxBackoff) {
+		this(statusUpdater, publisher, updateInterval, statusLifetime, maxBackoff, Flux.empty());
+	}
+
+	public StatusUpdateTrigger(StatusUpdater statusUpdater, Publisher<InstanceEvent> publisher, Duration updateInterval,
+			Duration statusLifetime, Duration maxBackoff, Publisher<InstanceId> existingInstanceIds) {
 		super(publisher, InstanceEvent.class);
 		this.statusUpdater = statusUpdater;
 		this.intervalCheck = new IntervalCheck("status", this::updateStatus, updateInterval, statusLifetime,
 				maxBackoff);
+		this.existingInstanceIds = existingInstanceIds;
 	}
 
 	@Override
@@ -67,10 +79,15 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 	public void start() {
 		super.start();
 		this.intervalCheck.start();
+		this.startupSubscription = Flux.from(this.existingInstanceIds).flatMap(this::updateStatus).subscribe();
 	}
 
 	@Override
 	public void stop() {
+		if (this.startupSubscription != null) {
+			this.startupSubscription.dispose();
+			this.startupSubscription = null;
+		}
 		super.stop();
 		this.intervalCheck.stop();
 	}
