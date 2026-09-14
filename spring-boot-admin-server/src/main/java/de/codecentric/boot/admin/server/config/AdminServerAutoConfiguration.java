@@ -221,7 +221,7 @@ public class AdminServerAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(InstanceEventStore.class)
 	public InMemoryEventStore eventStore() {
-		return new InMemoryEventStore();
+		return new InMemoryEventStore(100, this.adminServerProperties.getEventStore().isPruneInfoUpdatedEvents());
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")

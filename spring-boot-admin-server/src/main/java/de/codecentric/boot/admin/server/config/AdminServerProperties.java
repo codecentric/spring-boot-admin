@@ -56,6 +56,8 @@ public class AdminServerProperties {
 
 	private SsrfProtectionProperties ssrfProtection = new SsrfProtectionProperties();
 
+	private EventStoreProperties eventStore = new EventStoreProperties();
+
 	/**
 	 * The metadata keys which should be sanitized when serializing to JSON
 	 */
@@ -287,6 +289,17 @@ public class AdminServerProperties {
 		 * {@code fd00::/8}
 		 */
 		private List<String> allowedCidrs = new ArrayList<>();
+
+	}
+
+	@lombok.Data
+	public static class EventStoreProperties {
+
+		/**
+		 * Whether to keep only the latest INFO_UPDATED event per instance instead of
+		 * retaining all of them until compaction. Default: false (opt-in).
+		 */
+		private boolean pruneInfoUpdatedEvents = false;
 
 	}
 
