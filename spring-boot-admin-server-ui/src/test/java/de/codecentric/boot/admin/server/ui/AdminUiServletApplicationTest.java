@@ -29,6 +29,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
@@ -71,6 +73,16 @@ class AdminUiServletApplicationTest extends AbstractAdminUiApplicationTest {
 					.authorizeHttpRequests((authz) -> authz.anyRequest().permitAll())
 					.anonymous((config) -> config.principal("anonymousUser"))
 					.build();
+			}
+
+			@Bean
+			WebMvcConfigurer defaultJsonContentNegotiation() {
+				return new WebMvcConfigurer() {
+					@Override
+					public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+						configurer.defaultContentType(MediaType.APPLICATION_JSON);
+					}
+				};
 			}
 
 		}
