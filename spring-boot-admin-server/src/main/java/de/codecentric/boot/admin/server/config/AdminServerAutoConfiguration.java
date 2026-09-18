@@ -255,7 +255,8 @@ public class AdminServerAutoConfiguration {
 	 * @return a Flux of existing registered instance IDs
 	 */
 	private static Flux<InstanceId> getExistingInstanceIds(InstanceRegistry instanceRegistry) {
-		return instanceRegistry.getInstances().filter(Instance::isRegistered).map(Instance::getId).distinct();
+		return Flux.defer(
+				() -> instanceRegistry.getInstances().filter(Instance::isRegistered).map(Instance::getId).distinct());
 	}
 
 }

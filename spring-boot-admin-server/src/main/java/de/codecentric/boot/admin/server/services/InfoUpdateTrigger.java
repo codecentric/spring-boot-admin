@@ -32,6 +32,8 @@ import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdate
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
+import static de.codecentric.boot.admin.server.utils.concurrency.ConcurrencyUtils.halfCpus;
+
 public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	private static final Logger log = LoggerFactory.getLogger(InfoUpdateTrigger.class);
@@ -76,7 +78,9 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 	public void start() {
 		super.start();
 		this.intervalCheck.start();
-		this.startupSubscription = Flux.from(this.existingInstanceIds).flatMap(this::updateInfo).subscribe();
+		this.startupSubscription = Flux.from(this.existingInstanceIds)
+			.flatMap(this::updateInfo, halfCpus())
+			.subscribe(null, (ex) -> log.warn("Unexpected error during startup info update", ex));
 	}
 
 	@Override

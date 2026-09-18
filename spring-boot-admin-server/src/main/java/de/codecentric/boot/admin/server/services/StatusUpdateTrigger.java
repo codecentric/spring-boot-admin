@@ -31,6 +31,8 @@ import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
+import static de.codecentric.boot.admin.server.utils.concurrency.ConcurrencyUtils.halfCpus;
+
 public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	private static final Logger log = LoggerFactory.getLogger(StatusUpdateTrigger.class);
@@ -79,7 +81,9 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 	public void start() {
 		super.start();
 		this.intervalCheck.start();
-		this.startupSubscription = Flux.from(this.existingInstanceIds).flatMap(this::updateStatus).subscribe();
+		this.startupSubscription = Flux.from(this.existingInstanceIds)
+			.flatMap(this::updateStatus, halfCpus())
+			.subscribe(null, (ex) -> log.warn("Unexpected error during startup status update", ex));
 	}
 
 	@Override
