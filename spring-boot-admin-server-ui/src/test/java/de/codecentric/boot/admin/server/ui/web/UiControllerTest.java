@@ -25,13 +25,9 @@ import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.support.StaticListableBeanFactory;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.servlet.view.AbstractView;
-import org.thymeleaf.ITemplateEngine;
-import org.thymeleaf.TemplateEngine;
 
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties;
 import de.codecentric.boot.admin.server.ui.config.CssColorUtils;
@@ -129,7 +125,7 @@ class UiControllerTest {
 		theme.setPalette(palette);
 
 		UiController.Settings settings = UiController.Settings.builder().theme(theme).build();
-		UiController controller = new UiController("", UiExtensions.EMPTY, settings, templateEngine());
+		UiController controller = new UiController("", UiExtensions.EMPTY, settings);
 
 		Map<String, String> actualPalette = controller.getPalette();
 
@@ -209,24 +205,17 @@ class UiControllerTest {
 			uiControllerSettings.externalViews(externalViews);
 		}
 		return MockMvcBuilders
-			.standaloneSetup(
-					new UiController(publicUrl, UiExtensions.EMPTY, uiControllerSettings.build(), templateEngine()))
+			.standaloneSetup(new UiController(publicUrl, UiExtensions.EMPTY, uiControllerSettings.build()))
 			.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
 			.build();
 	}
 
 	private MockMvc setupControllerWithView(String publicUrl, UiExtensions uiExtensions,
 			UiController.Settings uiSettings) {
-		return MockMvcBuilders.standaloneSetup(new UiController(publicUrl, uiExtensions, uiSettings, templateEngine()))
+		return MockMvcBuilders.standaloneSetup(new UiController(publicUrl, uiExtensions, uiSettings))
 			.setCustomHandlerMapping(() -> new AdminControllerHandlerMapping(""))
 			.setSingleView(new NoOpView())
 			.build();
-	}
-
-	private static ObjectProvider<ITemplateEngine> templateEngine() {
-		StaticListableBeanFactory beanFactory = new StaticListableBeanFactory();
-		beanFactory.addBean("templateEngine", new TemplateEngine());
-		return beanFactory.getBeanProvider(ITemplateEngine.class);
 	}
 
 	private static final class NoOpView extends AbstractView {
