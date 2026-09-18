@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
 
@@ -145,6 +146,23 @@ class StatusUpdateTriggerTest {
 
 		// then should update
 		verify(this.updater, times(2)).updateStatus(this.instance.getId());
+	}
+
+	@Test
+	void should_update_existing_instances_on_start() {
+		this.trigger.stop();
+		clearInvocations(this.updater);
+
+		StatusUpdateTrigger trigger = new StatusUpdateTrigger(this.updater, Flux.empty(), Duration.ofDays(1),
+				Duration.ofDays(1), Duration.ofDays(1), Flux.just(this.instance.getId()));
+		try {
+			trigger.start();
+			await().atMost(Duration.ofSeconds(1))
+				.untilAsserted(() -> verify(this.updater, times(1)).updateStatus(this.instance.getId()));
+		}
+		finally {
+			trigger.stop();
+		}
 	}
 
 }

@@ -18,9 +18,11 @@ package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
 
+import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -30,6 +32,8 @@ import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdate
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
+import static de.codecentric.boot.admin.server.utils.concurrency.ConcurrencyUtils.halfCpus;
+
 public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	private static final Logger log = LoggerFactory.getLogger(InfoUpdateTrigger.class);
@@ -38,11 +42,21 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	private final IntervalCheck intervalCheck;
 
+	private final Publisher<InstanceId> existingInstanceIds;
+
+	@Nullable private Disposable startupSubscription;
+
 	public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher, Duration updateInterval,
 			Duration infoLifetime, Duration maxBackoff) {
+		this(infoUpdater, publisher, updateInterval, infoLifetime, maxBackoff, Flux.empty());
+	}
+
+	public InfoUpdateTrigger(InfoUpdater infoUpdater, Publisher<InstanceEvent> publisher, Duration updateInterval,
+			Duration infoLifetime, Duration maxBackoff, Publisher<InstanceId> existingInstanceIds) {
 		super(publisher, InstanceEvent.class);
 		this.infoUpdater = infoUpdater;
 		this.intervalCheck = new IntervalCheck("info", this::updateInfo, updateInterval, infoLifetime, maxBackoff);
+		this.existingInstanceIds = existingInstanceIds;
 	}
 
 	@Override
@@ -64,10 +78,17 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 	public void start() {
 		super.start();
 		this.intervalCheck.start();
+		this.startupSubscription = Flux.from(this.existingInstanceIds)
+			.flatMap(this::updateInfo, halfCpus())
+			.subscribe(null, (ex) -> log.warn("Unexpected error during startup info update", ex));
 	}
 
 	@Override
 	public void stop() {
+		if (this.startupSubscription != null) {
+			this.startupSubscription.dispose();
+			this.startupSubscription = null;
+		}
 		super.stop();
 		this.intervalCheck.stop();
 	}

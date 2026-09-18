@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
+import java.time.Instant;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
@@ -98,6 +101,24 @@ class SnapshottingInstanceRepositoryTest extends AbstractInstanceRepositoryTest 
 		StepVerifier.create(this.repository.find(InstanceId.of("broken")))
 			.assertNext((i) -> assertThat(i.getVersion()).isEqualTo(1L))
 			.verifyComplete();
+	}
+
+	@Test
+	void should_replay_initial_events_in_version_order() {
+		this.repository.stop();
+		InstanceId id = InstanceId.of("clock-skewed");
+		Instant now = Instant.now();
+		Registration registration = Registration.create("app", "https://health").build();
+		when(this.eventStore.findAll())
+			.thenReturn(Flux.just(new InstanceStatusChangedEvent(id, 1L, now.minusSeconds(30), StatusInfo.ofDown()),
+					new InstanceRegisteredEvent(id, 0L, now, registration)));
+
+		this.repository.start();
+
+		StepVerifier.create(this.repository.find(id)).assertNext((instance) -> {
+			assertThat(instance.isRegistered()).isTrue();
+			assertThat(instance.getStatusInfo().getStatus()).isEqualTo(StatusInfo.STATUS_DOWN);
+		}).verifyComplete();
 	}
 
 	@Test

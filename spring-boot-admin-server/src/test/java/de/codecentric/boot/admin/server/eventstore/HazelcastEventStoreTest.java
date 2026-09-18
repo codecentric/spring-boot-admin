@@ -16,9 +16,22 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
+import java.time.Duration;
+import java.util.List;
+
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
+import org.junit.jupiter.api.Test;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+
+import static java.util.Collections.singletonList;
 
 public class HazelcastEventStoreTest extends AbstractEventStoreTest {
 
@@ -38,6 +51,32 @@ public class HazelcastEventStoreTest extends AbstractEventStoreTest {
 	protected void shutdownStore() {
 		if (this.hazelcast != null) {
 			this.hazelcast.shutdown();
+		}
+	}
+
+	@Test
+	public void should_publish_events_for_added_entries() {
+		Config config = new Config();
+		config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
+		config.getNetworkConfig().getJoin().getAutoDetectionConfig().setEnabled(false);
+		HazelcastInstance hazelcastInstance = Hazelcast.newHazelcastInstance(config);
+		try {
+			InstanceId id = InstanceId.of("id");
+			Registration registration = Registration.create("foo", "https://health").build();
+			InstanceEvent event = new InstanceRegisteredEvent(id, 0L, registration);
+			IMap<InstanceId, List<InstanceEvent>> eventLog = hazelcastInstance
+				.getMap("testList" + System.currentTimeMillis());
+			InstanceEventStore store = new HazelcastEventStore(100, eventLog);
+
+			StepVerifier.create(store)
+				.expectSubscription()
+				.then(() -> eventLog.put(id, singletonList(event)))
+				.expectNext(event)
+				.thenCancel()
+				.verify(Duration.ofSeconds(10));
+		}
+		finally {
+			hazelcastInstance.shutdown();
 		}
 	}
 

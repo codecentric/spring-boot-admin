@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
+import java.util.Comparator;
 import java.util.function.BiFunction;
 
 import org.slf4j.Logger;
@@ -38,6 +39,8 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
 
 	private static final Logger log = LoggerFactory.getLogger(EventsourcingInstanceRepository.class);
 
+	private static final Comparator<InstanceEvent> byVersion = Comparator.comparingLong(InstanceEvent::getVersion);
+
 	private final InstanceEventStore eventStore;
 
 	private final Retry retryOptimisticLockException = Retry.max(10)
@@ -57,7 +60,7 @@ public class EventsourcingInstanceRepository implements InstanceRepository {
 	public Flux<Instance> findAll() {
 		return this.eventStore.findAll()
 			.groupBy(InstanceEvent::getInstance)
-			.flatMap((f) -> f.reduce(Instance.create(f.key()), Instance::apply));
+			.flatMap((f) -> f.sort(byVersion).reduce(Instance.create(f.key()), Instance::apply));
 	}
 
 	@Override
