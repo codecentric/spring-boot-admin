@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
@@ -92,7 +94,8 @@ public class AdminServerUiAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public UiController homeUiController(UiExtensions uiExtensions) throws IOException {
+	public UiController homeUiController(UiExtensions uiExtensions, ObjectProvider<ITemplateEngine> templateEngine)
+			throws IOException {
 		List<String> extensionRoutes = new UiRoutesScanner(this.applicationContext)
 			.scan(this.adminUi.getExtensionResourceLocations());
 		List<String> routes = Stream.concat(DEFAULT_UI_ROUTES.stream(), extensionRoutes.stream()).toList();
@@ -120,7 +123,7 @@ public class AdminServerUiAutoConfiguration {
 
 		String publicUrl = (this.adminUi.getPublicUrl() != null) ? this.adminUi.getPublicUrl()
 				: this.adminServer.getContextPath();
-		return new UiController(publicUrl, uiExtensions, uiSettings);
+		return new UiController(publicUrl, uiExtensions, uiSettings, templateEngine);
 	}
 
 	@Bean

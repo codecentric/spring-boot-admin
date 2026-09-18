@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.ui.web;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -25,12 +26,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import org.jspecify.annotations.Nullable;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.thymeleaf.ITemplateEngine;
+import org.thymeleaf.context.Context;
 
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.Palette;
 import de.codecentric.boot.admin.server.ui.config.AdminServerUiProperties.PollTimer;
@@ -53,10 +59,14 @@ public class UiController {
 
 	private final Settings uiSettings;
 
-	public UiController(String publicUrl, UiExtensions uiExtensions, Settings uiSettings) {
+	private final ObjectProvider<ITemplateEngine> templateEngine;
+
+	public UiController(String publicUrl, UiExtensions uiExtensions, Settings uiSettings,
+			ObjectProvider<ITemplateEngine> templateEngine) {
 		this.publicUrl = publicUrl;
 		this.uiExtensions = uiExtensions;
 		this.uiSettings = uiSettings;
+		this.templateEngine = templateEngine;
 	}
 
 	@ModelAttribute(value = "baseUrl", binding = false)
@@ -115,9 +125,12 @@ public class UiController {
 		return "index";
 	}
 
-	@GetMapping(path = "/sba-settings.js")
-	public String sbaSettings() {
-		return "sba-settings.js";
+	@GetMapping(path = "/sba-settings.js", produces = { "application/javascript", MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<String> sbaSettings(Model model, Locale locale) {
+		Context context = new Context(locale, model.asMap());
+		return ResponseEntity.ok()
+			.contentType(MediaType.parseMediaType("application/javascript"))
+			.body(this.templateEngine.getObject().process("sba-settings.js", context));
 	}
 
 	@GetMapping(path = "/variables.css", produces = "text/css")
