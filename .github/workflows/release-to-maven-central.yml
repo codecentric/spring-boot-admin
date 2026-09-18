@@ -38,7 +38,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Set up settings.xml for Maven Central Repository
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -125,7 +125,7 @@ jobs:
 
       - name: Generate changelog
         id: changelog
-        uses: metcalfc/changelog-generator@v4.9.1
+        uses: metcalfc/changelog-generator@v5.0.1
         with:
           myToken: ${{ secrets.GITHUB_TOKEN }}
 

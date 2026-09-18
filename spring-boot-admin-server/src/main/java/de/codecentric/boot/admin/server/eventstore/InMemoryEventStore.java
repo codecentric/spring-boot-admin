@@ -35,7 +35,11 @@ public class InMemoryEventStore extends ConcurrentMapEventStore {
 	}
 
 	public InMemoryEventStore(int maxLogSizePerAggregate) {
-		super(maxLogSizePerAggregate, new ConcurrentHashMap<>());
+		this(maxLogSizePerAggregate, false);
+	}
+
+	public InMemoryEventStore(int maxLogSizePerAggregate, boolean pruneInfoUpdatedEvents) {
+		super(maxLogSizePerAggregate, new ConcurrentHashMap<>(), pruneInfoUpdatedEvents);
 	}
 
 	@Override

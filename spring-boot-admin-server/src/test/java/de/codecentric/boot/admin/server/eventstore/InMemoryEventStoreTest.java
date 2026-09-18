@@ -16,6 +16,18 @@
 
 package de.codecentric.boot.admin.server.eventstore;
 
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import reactor.test.StepVerifier;
+
+import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
+import de.codecentric.boot.admin.server.domain.values.Info;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+
 public class InMemoryEventStoreTest extends AbstractEventStoreTest {
 
 	@Override
@@ -26,6 +38,37 @@ public class InMemoryEventStoreTest extends AbstractEventStoreTest {
 	@Override
 	protected void shutdownStore() {
 		// NOOP;
+	}
+
+	@Test
+	public void should_prune_info_updated_events_when_enabled() {
+		InstanceEventStore store = new InMemoryEventStore(100, true);
+		InstanceId id = InstanceId.of("id");
+		Registration registration = Registration.create("foo", "https://health").build();
+
+		InstanceEvent event1 = new InstanceRegisteredEvent(id, 0L, registration);
+		InstanceEvent event2 = new InstanceInfoChangedEvent(id, 1L, Info.empty());
+		InstanceEvent event3 = new InstanceInfoChangedEvent(id, 2L, Info.empty());
+		InstanceEvent event4 = new InstanceInfoChangedEvent(id, 3L, Info.empty());
+
+		StepVerifier.create(store.append(List.of(event1, event2, event3, event4))).verifyComplete();
+
+		StepVerifier.create(store.findAll()).expectNext(event1, event4).verifyComplete();
+	}
+
+	@Test
+	public void should_not_prune_info_updated_events_when_disabled() {
+		InstanceEventStore store = new InMemoryEventStore(100, false);
+		InstanceId id = InstanceId.of("id");
+		Registration registration = Registration.create("foo", "https://health").build();
+
+		InstanceEvent event1 = new InstanceRegisteredEvent(id, 0L, registration);
+		InstanceEvent event2 = new InstanceInfoChangedEvent(id, 1L, Info.empty());
+		InstanceEvent event3 = new InstanceInfoChangedEvent(id, 2L, Info.empty());
+
+		StepVerifier.create(store.append(List.of(event1, event2, event3))).verifyComplete();
+
+		StepVerifier.create(store.findAll()).expectNext(event1, event2, event3).verifyComplete();
 	}
 
 }

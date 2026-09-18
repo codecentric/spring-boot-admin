@@ -34,6 +34,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
@@ -53,12 +54,20 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 
 	private final int maxLogSizePerAggregate;
 
+	private final boolean pruneInfoUpdatedEvents;
+
 	private final ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog;
 
 	protected ConcurrentMapEventStore(int maxLogSizePerAggregate,
 			ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog) {
+		this(maxLogSizePerAggregate, eventLog, false);
+	}
+
+	protected ConcurrentMapEventStore(int maxLogSizePerAggregate,
+			ConcurrentMap<InstanceId, List<InstanceEvent>> eventLog, boolean pruneInfoUpdatedEvents) {
 		this.eventLog = eventLog;
 		this.maxLogSizePerAggregate = maxLogSizePerAggregate;
+		this.pruneInfoUpdatedEvents = pruneInfoUpdatedEvents;
 	}
 
 	@Override
@@ -105,6 +114,10 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 		List<InstanceEvent> newEvents = new ArrayList<>(oldEvents);
 		newEvents.addAll(events);
 
+		if (pruneInfoUpdatedEvents) {
+			pruneObsoleteInfoUpdatedEvents(newEvents);
+		}
+
 		if (newEvents.size() > maxLogSizePerAggregate) {
 			log.debug("Threshold for {} reached. Compacting events", id);
 			compact(newEvents);
@@ -117,6 +130,20 @@ public abstract class ConcurrentMapEventStore extends InstanceEventPublisher imp
 
 		log.debug("Unsuccessful attempt append the events {} ", events);
 		return false;
+	}
+
+	private void pruneObsoleteInfoUpdatedEvents(List<InstanceEvent> events) {
+		InstanceEvent latestInfoUpdated = events.stream()
+			.filter((e) -> InstanceInfoChangedEvent.TYPE.equals(e.getType()))
+			.max(Comparator.comparingLong(InstanceEvent::getVersion))
+			.orElse(null);
+
+		if (latestInfoUpdated == null) {
+			return;
+		}
+
+		events.removeIf(
+				(e) -> InstanceInfoChangedEvent.TYPE.equals(e.getType()) && !Objects.equals(e, latestInfoUpdated));
 	}
 
 	private void compact(List<InstanceEvent> events) {
