@@ -34,7 +34,9 @@
     {
       "matchPackageNames": [
         "org.apache.maven.plugins:maven-site-plugin",
-        "spring-boot-admin"
+        "spring-boot-admin",
+        "de.codecentric:spring-boot-admin-server-mcp",
+        "de.codecentric:spring-boot-admin-starter-server-mcp"
       ],
       "enabled": false
     },
