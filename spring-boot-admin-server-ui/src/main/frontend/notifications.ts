@@ -19,6 +19,7 @@ import { Subject, bufferTime, filter } from 'rxjs';
 import { HealthStatus } from './HealthStatus';
 import sbaConfig from './sba-config';
 import Application from './services/application';
+import uri from './utils/uri';
 
 let granted = false;
 
@@ -28,7 +29,7 @@ type BrowserNotificationOptions = NotificationOptions & {
 };
 
 export const buildInstanceDetailsUrl = (instanceId: string) =>
-  `/instances/${instanceId}/details`;
+  uri`/instances/${instanceId}/details`;
 
 export const findChangedInstanceId = (
   application: Application,
