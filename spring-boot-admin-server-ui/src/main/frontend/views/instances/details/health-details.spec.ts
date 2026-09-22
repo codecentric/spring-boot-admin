@@ -513,5 +513,36 @@ describe('HealthDetails', () => {
       const toggleButton = screen.queryByRole('button');
       expect(toggleButton).not.toBeInTheDocument();
     });
+
+    it('should not render HTML/script markup contained in a string detail value', async () => {
+      const maliciousValue =
+        '<img src="/__nonexistent__.png" onerror="window.__xss = 1">';
+
+      const healthMock = {
+        status: 'UP',
+        details: {
+          canary: maliciousValue,
+        },
+      };
+
+      render(HealthDetails, {
+        props: {
+          name: 'db',
+          health: healthMock,
+          instance: mockInstance,
+        },
+      });
+
+      const canaryDetail = await screen.findByRole('definition', {
+        name: 'canary',
+      });
+
+      // sanitize-html strips disallowed tags (e.g. <img>) entirely, so no
+      // markup and no onerror handler must reach the DOM.
+      expect(canaryDetail.innerHTML).not.toContain('<img');
+      expect(canaryDetail.innerHTML).not.toContain('onerror');
+      expect(document.querySelectorAll('img').length).toBe(0);
+      expect((window as any).__xss).toBeUndefined();
+    });
   });
 });
