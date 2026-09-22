@@ -19,13 +19,12 @@
     <template v-if="!activeFilter">
       <div class="field">
         <p class="control has-inline-text">
-          <span
-            v-html="
-              t('applications.suppress_notifications_on', {
-                name: object.id || object.name,
-              })
-            "
-          />&nbsp;
+          <i18n-t keypath="applications.suppress_notifications_on" tag="span">
+            <template #name>
+              <code v-text="object.id || object.name" />
+            </template>
+          </i18n-t>
+          &nbsp;
           <sba-select
             v-model="ttl"
             class="inline-flex"
@@ -51,13 +50,15 @@
     <template v-else>
       <div class="field">
         <p class="control has-inline-text">
-          <span
-            v-html="
-              t('applications.notifications_suppressed_for', {
-                name: object.id || object.name,
-              })
-            "
-          />&nbsp;
+          <i18n-t
+            keypath="applications.notifications_suppressed_for"
+            tag="span"
+          >
+            <template #name>
+              <code v-text="object.id || object.name" />
+            </template>
+          </i18n-t>
+          &nbsp;
           <strong
             v-text="
               activeFilter.expiry

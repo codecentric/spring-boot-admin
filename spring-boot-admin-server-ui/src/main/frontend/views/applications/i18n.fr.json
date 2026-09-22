@@ -7,21 +7,21 @@
     "last_update": "Dernière mise à jour",
     "loading_applications": "Chargement des applications...",
     "no_applications_registered": "Aucune application enregistrée.",
-    "notifications_suppressed_for": "Les notifications sur <code>{name}</code> sont supprimées",
+    "notifications_suppressed_for": "Les notifications sur {name} sont supprimées",
     "restricted": "limité",
     "server_connection_failed": "Echec de la connexion au serveur.",
-    "suppress_notifications_on": "Supression des notifications sur <code>{name}</code>",
+    "suppress_notifications_on": "Supression des notifications sur {name}",
     "status": "Statut",
     "label": "Applications",
     "up": "OK",
-    "shutdown": "Shutdown application <code>{name}</code>?",
-    "restart": "Restart application <code>{name}</code>?",
-    "restarted": "Successfully restarted application <code>{name}</code>"
+    "shutdown": "Shutdown application {name}?",
+    "restart": "Restart application {name}?",
+    "restarted": "Successfully restarted application {name}"
   },
   "instances": {
-    "shutdown": "Shutdown instance <code>{name}</code>?",
+    "shutdown": "Shutdown instance {name}?",
     "open_details": "Ouvrir les détails de l'instance",
-    "restart": "Restart instance <code>{name}</code>?",
+    "restart": "Restart instance {name}?",
     "restarted": "Successfully restarted instance"
   }
 }

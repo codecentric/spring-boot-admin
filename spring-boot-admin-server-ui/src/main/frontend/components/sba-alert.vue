@@ -27,7 +27,7 @@
       </div>
       <div class="grid grid-cols-1 place-content-center">
         <p v-if="title" class="font-bold" v-text="title" />
-        <p class="text-sm" v-html="message" />
+        <p class="text-sm" v-text="message" />
       </div>
     </div>
   </div>

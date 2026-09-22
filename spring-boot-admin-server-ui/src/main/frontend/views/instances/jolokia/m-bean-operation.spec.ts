@@ -58,4 +58,23 @@ describe('m-bean-operation.vue', () => {
 
     expect(screen.queryByTestId('mBeanOperationModal')).toBeNull();
   });
+
+  it('does not render HTML/script markup contained in the operation name', async () => {
+    const maliciousName = '<img src=x onerror="window.__xss = 1">()';
+
+    render(MBeanOperation, {
+      props: {
+        name: maliciousName,
+        descriptor: { args: [], ret: 'void' },
+      },
+    });
+
+    await userEvent.click(screen.getByText(maliciousName));
+
+    await screen.findAllByTestId('mBeanOperationModal');
+
+    // The malicious markup must show up as plain text, never be parsed as HTML.
+    expect(document.querySelectorAll('img').length).toBe(0);
+    expect((window as any).__xss).toBeUndefined();
+  });
 });

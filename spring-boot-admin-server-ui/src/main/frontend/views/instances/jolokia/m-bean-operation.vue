@@ -38,11 +38,11 @@
 
   <sba-modal v-model="isModalOpen" data-testid="mBeanOperationModal">
     <template #header>
-      <span
-        v-html="
-          $t('instances.jolokia.execute_modal_header', { name: shortenedName })
-        "
-      />
+      <i18n-t keypath="instances.jolokia.execute_modal_header" tag="span">
+        <template #name>
+          <code v-text="shortenedName" />
+        </template>
+      </i18n-t>
     </template>
     <template #footer>
       <sba-button @click="closeModal">{{ $t('term.close') }}</sba-button>

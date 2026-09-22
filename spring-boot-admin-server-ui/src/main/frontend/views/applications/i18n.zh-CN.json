@@ -7,21 +7,21 @@
     "last_update": "最后更新",
     "loading_applications": "应用加载中...",
     "no_applications_registered": "暂无应用注册。",
-    "notifications_suppressed_for": "Notifications on <code>{name}</code> are suppressed for",
+    "notifications_suppressed_for": "Notifications on {name} are suppressed for",
     "restricted": "受限的",
     "server_connection_failed": "服务连接失败。",
-    "suppress_notifications_on": "Suppress notifications on <code>{name}</code> for",
+    "suppress_notifications_on": "Suppress notifications on {name} for",
     "status": "实例状态",
     "label": "应用",
     "up": "在线",
-    "shutdown": "Shutdown application <code>{name}</code>?",
-    "restart": "Restart application <code>{name}</code>?",
-    "restarted": "Successfully restarted application <code>{name}</code>"
+    "shutdown": "Shutdown application {name}?",
+    "restart": "Restart application {name}?",
+    "restarted": "Successfully restarted application {name}"
   },
   "instances": {
-    "shutdown": "Shutdown instance <code>{name}</code>?",
+    "shutdown": "Shutdown instance {name}?",
     "open_details": "打开实例详情",
-    "restart": "Restart instance <code>{name}</code>?",
+    "restart": "Restart instance {name}?",
     "restarted": "Successfully restarted instance"
   }
 }
