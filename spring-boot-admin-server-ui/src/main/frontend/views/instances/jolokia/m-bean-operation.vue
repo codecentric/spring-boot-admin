@@ -38,11 +38,15 @@
 
   <sba-modal v-model="isModalOpen" data-testid="mBeanOperationModal">
     <template #header>
-      <i18n-t keypath="instances.jolokia.execute_modal_header" tag="span">
-        <template #name>
-          <code v-text="shortenedName" />
-        </template>
-      </i18n-t>
+      <span
+        v-html="
+          sanitizeHtml(
+            $t('instances.jolokia.execute_modal_header', {
+              name: shortenedName,
+            }),
+          )
+        "
+      />
     </template>
     <template #footer>
       <sba-button @click="closeModal">{{ $t('term.close') }}</sba-button>
@@ -54,6 +58,7 @@
 </template>
 
 <script>
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 import { truncateJavaType } from '@/views/instances/jolokia/utils';
 
 export default {
@@ -86,6 +91,7 @@ export default {
     },
   },
   methods: {
+    sanitizeHtml,
     closeModal() {
       this.isModalOpen = false;
     },

@@ -6,7 +6,7 @@
       "domains": "網域",
       "execute": "執行",
       "executing": "執行中...",
-      "execute_modal_header": "確定要執行 {name}？",
+      "execute_modal_header": "確定要執行 <code>{name}</code>？",
       "execution_failed": "執行失敗。",
       "execution_successful": "執行成功。",
       "mbeans": "MBeans"

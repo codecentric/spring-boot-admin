@@ -20,8 +20,8 @@ import { render } from '@/test-utils';
 import NotificationFilterSettings from '@/views/applications/NotificationFilterSettings.vue';
 
 describe('NotificationFilterSettings', () => {
-  it('does not render HTML/script markup contained in the object name', async () => {
-    const maliciousName = '<img src=x onerror="window.__xss = 1">';
+  it('strips dangerous markup contained in the object name', async () => {
+    const maliciousName = '<img src=x onerror="window.__xss = 1">rogue-app';
 
     render(NotificationFilterSettings, {
       props: {
@@ -30,16 +30,38 @@ describe('NotificationFilterSettings', () => {
       },
     });
 
-    // The malicious markup must show up as plain text, never be parsed as HTML.
-    expect(await screen.findByText(maliciousName)).toBeInTheDocument();
+    // The application name still shows up as text ...
+    expect(await screen.findByText(/rogue-app/)).toBeInTheDocument();
 
-    // No <img> element must have been created from the payload.
+    // ... but the <img onerror=...> must have been stripped by sanitizeHtml,
+    // it must never be parsed into a real element / fire its handler.
     expect(document.querySelectorAll('img').length).toBe(0);
     expect((window as any).__xss).toBeUndefined();
   });
 
-  it('renders the suppressed-for label with the instance/application id as plain text', async () => {
-    const maliciousId = '<b>bold</b>';
+  it('renders safe HTML markup contained in the object id', async () => {
+    const nameWithMarkup = '<b>bold-instance</b>';
+
+    render(NotificationFilterSettings, {
+      props: {
+        object: { id: nameWithMarkup },
+        notificationFilters: [
+          {
+            affects: () => true,
+            expiry: null,
+          },
+        ],
+      },
+    });
+
+    // sanitize-html allows harmless formatting tags like <b> by default,
+    // so they render as real elements ...
+    const bold = await screen.findByText('bold-instance');
+    expect(bold.tagName).toBe('B');
+  });
+
+  it('strips script tags contained in the object id', async () => {
+    const maliciousId = '<script>window.__xss = 1</script>evil-instance';
 
     render(NotificationFilterSettings, {
       props: {
@@ -53,7 +75,8 @@ describe('NotificationFilterSettings', () => {
       },
     });
 
-    expect(await screen.findByText(maliciousId)).toBeInTheDocument();
-    expect(document.querySelectorAll('b').length).toBe(0);
+    expect(await screen.findByText(/evil-instance/)).toBeInTheDocument();
+    expect(document.querySelectorAll('script').length).toBe(0);
+    expect((window as any).__xss).toBeUndefined();
   });
 });

@@ -9,7 +9,7 @@
       "execution_failed": "Ошибка при выполнении.",
       "execution_successful": "Выполнено успешно.",
       "mbeans": "MBeans",
-      "execute_modal_header": "Выполнить {name}?"
+      "execute_modal_header": "Выполнить <code>{name}</code>?"
     }
   }
 }

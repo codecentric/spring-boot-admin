@@ -7,21 +7,21 @@
     "last_update": "Última atualização",
     "loading_applications": "Carregando aplicações...",
     "no_applications_registered": "Nenhuma aplicação registrada.",
-    "notifications_suppressed_for": "As notificações de {name} estão suspensas por",
+    "notifications_suppressed_for": "As notificações de <code>{name}</code> estão suspensas por",
     "restricted": "restrito",
     "server_connection_failed": "Falha na conexão do servidor.",
-    "suppress_notifications_on": "Suspenda notificações de {name} por",
+    "suppress_notifications_on": "Suspenda notificações de <code>{name}</code> por",
     "status": "Estado",
     "label": "Aplicações",
     "up": "up",
-    "shutdown": "Shutdown application {name}?",
-    "restart": "Restart application {name}?",
-    "restarted": "Successfully restarted application {name}"
+    "shutdown": "Shutdown application <code>{name}</code>?",
+    "restart": "Restart application <code>{name}</code>?",
+    "restarted": "Successfully restarted application <code>{name}</code>"
   },
   "instances": {
-    "shutdown": "Shutdown instance {name}?",
+    "shutdown": "Shutdown instance <code>{name}</code>?",
     "open_details": "Abrir detalhes da instância",
-    "restart": "Restart instance {name}?",
+    "restart": "Restart instance <code>{name}</code>?",
     "restarted": "Successfully restarted instance"
   }
 }
