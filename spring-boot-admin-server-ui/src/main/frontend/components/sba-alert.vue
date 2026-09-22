@@ -27,7 +27,7 @@
       </div>
       <div class="grid grid-cols-1 place-content-center">
         <p v-if="title" class="font-bold" v-text="title" />
-        <p class="text-sm" v-text="message" />
+        <p class="text-sm" v-html="message" />
       </div>
     </div>
   </div>
@@ -41,6 +41,8 @@ import classNames from 'classnames';
 import { defineComponent } from 'vue';
 
 import FontAwesomeIcon from '@/components/font-awesome-icon';
+
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 
 export const Severity = {
   ERROR: 'ERROR',
@@ -90,10 +92,10 @@ export default defineComponent({
   computed: {
     message() {
       if (this.error instanceof Error) {
-        return this.error.message;
+        return sanitizeHtml(this.error.message);
       }
       if (typeof this.error === 'string') {
-        return this.error;
+        return sanitizeHtml(this.error);
       }
 
       return null;
