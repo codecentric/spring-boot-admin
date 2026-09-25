@@ -111,6 +111,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref }}
 
       - name: free disk space
         continue-on-error: true
