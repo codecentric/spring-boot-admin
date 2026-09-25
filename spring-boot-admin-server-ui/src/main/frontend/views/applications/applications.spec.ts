@@ -1,13 +1,14 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/vue';
 import { HttpResponse, http } from 'msw';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Ref, ref } from 'vue';
 
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import Instance, { Registration } from '@/services/instance';
+import NotificationFilter from '@/services/notification-filter';
 import { render } from '@/test-utils';
 import Applications from '@/views/applications/index.vue';
 
@@ -282,5 +283,127 @@ describe('Applications', () => {
         consoleErrorSpy.mockRestore();
       });
     });
+  });
+});
+
+describe('Applications add notification filter', () => {
+  const renderWithApplication = (application: Application) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    useApplicationStore.mockReturnValue({
+      applicationStore: {
+        findApplicationByInstanceId: (id: string) =>
+          application.instances.find((i) => i.id === id) ? application : null,
+      },
+      applicationsInitialized: ref(true),
+      applications: ref([application]),
+      error: ref(null),
+    });
+
+    render(Applications);
+  };
+
+  const createApplication = (name: string, instanceId: string) =>
+    new Application({
+      id: 'app-id',
+      name,
+      status: 'UP',
+      instances: [
+        new Instance({
+          id: instanceId,
+          statusInfo: { status: 'UP' },
+          registration: {
+            name,
+            serviceUrl: 'serviceUrl',
+            metadata: {},
+          } as Registration,
+        }),
+      ],
+    });
+
+  const clearToasts = () =>
+    // The toasts are rendered outside of the component tree, hence they are
+    // not removed by the testing-library cleanup.
+    document
+      .querySelectorAll('.v-toast-container')
+      .forEach((container) => container.remove());
+
+  const getToast = async () =>
+    await waitFor(() => {
+      const toast = document.querySelector('.v-toast__message');
+      expect(toast).not.toBeNull();
+      return toast as HTMLElement;
+    });
+
+  beforeEach(() => {
+    clearToasts();
+    vi.spyOn(NotificationFilter, 'isSupported').mockReturnValue(true);
+    vi.spyOn(NotificationFilter, 'getFilters').mockResolvedValue({
+      data: [],
+    } as any);
+  });
+
+  afterEach(() => {
+    clearToasts();
+    delete (window as any).__xss;
+  });
+
+  it('strips dangerous markup contained in the application name from the success toast', async () => {
+    const maliciousName = '<img src=x onerror="window.__xss=1">rogue-app';
+    vi.spyOn(NotificationFilter, 'addFilter').mockResolvedValue({
+      data: new NotificationFilter({
+        id: 'filter-id',
+        applicationName: maliciousName,
+        expiry: Date.now() + 5 * 60 * 1000,
+      }),
+    } as any);
+
+    renderWithApplication(createApplication(maliciousName, 'instance-id'));
+
+    await userEvent.click(await screen.findByTitle('Notification filters'));
+    await userEvent.click(await screen.findByText('Suppress'));
+
+    const toast = await getToast();
+
+    // The application name still shows up as text ...
+    expect(toast.textContent).toContain('rogue-app');
+    // ... and so does the expiry, which is intentionally rendered as markup ...
+    expect(toast.querySelector('strong')).toHaveTextContent('5 minutes');
+    // ... but the <img onerror=...> must have been stripped by sanitizeHtml,
+    // it must never be parsed into a real element / fire its handler.
+    expect(toast.querySelector('img')).toBeNull();
+    expect((window as any).__xss).toBeUndefined();
+  });
+
+  it('strips script tags contained in the instance id from the success toast', async () => {
+    const maliciousId = '<script>window.__xss=1</script>evil-instance';
+    vi.spyOn(NotificationFilter, 'addFilter').mockResolvedValue({
+      data: new NotificationFilter({
+        id: 'filter-id',
+        instanceId: maliciousId,
+        expiry: Date.now() + 5 * 60 * 1000,
+      }),
+    } as any);
+
+    renderWithApplication(createApplication('an-application', maliciousId));
+
+    // Expand the application to get hold of the instance level actions.
+    await userEvent.click(
+      await screen.findByRole('button', { name: /an-application/i }),
+    );
+    await userEvent.click(
+      await waitFor(() => {
+        const button = document.getElementById(`nf-settings-${maliciousId}`);
+        expect(button).not.toBeNull();
+        return button as HTMLElement;
+      }),
+    );
+    await userEvent.click(await screen.findByText('Suppress'));
+
+    const toast = await getToast();
+
+    expect(toast.textContent).toContain('evil-instance');
+    expect(toast.querySelector('script')).toBeNull();
+    expect((window as any).__xss).toBeUndefined();
   });
 });
