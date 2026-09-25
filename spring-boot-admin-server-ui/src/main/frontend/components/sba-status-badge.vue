@@ -36,13 +36,13 @@ export default {
   @apply bg-gray-200 text-black text-xs inline-flex items-center uppercase  rounded overflow-hidden px-3 py-1;
 }
 .up {
-  @apply bg-green-200 text-green-700;
+  @apply bg-status-up-bg text-status-up-text;
 }
 .down,
 .out_of_service {
-  @apply bg-red-200 text-red-700;
+  @apply bg-status-down-bg text-status-down-text;
 }
 .restricted {
-  @apply bg-yellow-200 text-yellow-700;
+  @apply bg-status-restricted-bg text-status-restricted-text;
 }
 </style>

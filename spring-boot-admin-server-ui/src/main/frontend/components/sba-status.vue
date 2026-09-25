@@ -71,17 +71,17 @@ export default {
   @apply text-gray-500 mx-auto;
 }
 .application-status__icon--UP {
-  color: #48c78e;
+  color: var(--color-status-up);
 }
 .application-status__icon--RESTRICTED {
-  color: #ffe08a;
+  color: var(--color-status-restricted);
 }
 .application-status__icon--OUT_OF_SERVICE,
 .application-status__icon--DOWN {
-  color: #f14668;
+  color: var(--color-status-down);
 }
 .application-status__icon--UNKNOWN,
 .application-status__icon--OFFLINE {
-  color: #7a7a7a;
+  color: var(--color-status-unknown);
 }
 </style>
