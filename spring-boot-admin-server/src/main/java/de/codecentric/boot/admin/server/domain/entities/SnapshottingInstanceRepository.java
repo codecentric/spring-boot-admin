@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.domain.entities;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -41,6 +42,8 @@ import de.codecentric.boot.admin.server.eventstore.OptimisticLockingException;
 public class SnapshottingInstanceRepository extends EventsourcingInstanceRepository {
 
 	private static final Logger log = LoggerFactory.getLogger(SnapshottingInstanceRepository.class);
+
+	private static final Comparator<InstanceEvent> byVersion = Comparator.comparingLong(InstanceEvent::getVersion);
 
 	private final ConcurrentMap<InstanceId, Instance> snapshots = new ConcurrentHashMap<>();
 
@@ -79,7 +82,10 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 	}
 
 	public void start() {
-		this.subscription = this.eventStore.findAll().concatWith(this.eventStore).subscribe(this::updateSnapshot);
+		Flux<InstanceEvent> initialEvents = this.eventStore.findAll()
+			.groupBy(InstanceEvent::getInstance)
+			.flatMap((events) -> events.sort(byVersion));
+		this.subscription = initialEvents.concatWith(this.eventStore).subscribe(this::updateSnapshot);
 	}
 
 	public void stop() {
