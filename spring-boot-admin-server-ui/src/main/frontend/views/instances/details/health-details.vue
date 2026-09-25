@@ -56,7 +56,7 @@
             v-else
             :aria-labelledby="`health-detail-${id}__${detail.name}`"
             class="break-words whitespace-pre-wrap"
-            v-html="autolink(detail.value)"
+            v-html="autolink(sanitizeHtml(String(detail.value ?? '')))"
           />
         </template>
       </dl>
@@ -79,6 +79,7 @@ import { computed, useId } from 'vue';
 import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
 
 import autolink from '@/utils/autolink';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 
 const id = useId();
 

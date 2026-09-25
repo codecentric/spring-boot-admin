@@ -203,6 +203,7 @@ import NotificationFilter from '@/services/notification-filter';
 import axios from '@/utils/axios';
 import { anyValueMatches } from '@/utils/collections';
 import { Subject, concatMap, mergeWith, timer } from '@/utils/rxjs';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 import { useRouterState } from '@/utils/useRouterState';
 import { useSubscription } from '@/utils/useSubscription';
 import ApplicationListItemAction from '@/views/applications/ApplicationListItemAction.vue';
@@ -426,10 +427,12 @@ async function addFilter({ object, ttl }) {
     let notificationFilter = response.data;
     notificationFilterSubject.next(notificationFilter);
     notificationCenter.success(
-      `${t('applications.notifications_suppressed_for', {
-        name:
-          notificationFilter.applicationName || notificationFilter.instanceId,
-      })} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`,
+      sanitizeHtml(
+        `${t('applications.notifications_suppressed_for', {
+          name:
+            notificationFilter.applicationName || notificationFilter.instanceId,
+        })} <strong>${notificationFilter.expiry.fromNow(true)}</strong>.`,
+      ),
     );
   } catch (error) {
     console.warn('Adding notification filter failed:', error);

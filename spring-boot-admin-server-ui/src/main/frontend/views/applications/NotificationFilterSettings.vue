@@ -21,9 +21,11 @@
         <p class="control has-inline-text">
           <span
             v-html="
-              t('applications.suppress_notifications_on', {
-                name: object.id || object.name,
-              })
+              sanitizeHtml(
+                t('applications.suppress_notifications_on', {
+                  name: object.id || object.name,
+                }),
+              )
             "
           />&nbsp;
           <sba-select
@@ -53,9 +55,11 @@
         <p class="control has-inline-text">
           <span
             v-html="
-              t('applications.notifications_suppressed_for', {
-                name: object.id || object.name,
-              })
+              sanitizeHtml(
+                t('applications.notifications_suppressed_for', {
+                  name: object.id || object.name,
+                }),
+              )
             "
           />&nbsp;
           <strong
@@ -85,6 +89,8 @@
 <script>
 import { useI18n } from 'vue-i18n';
 
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
+
 export default {
   props: {
     object: {
@@ -102,6 +108,7 @@ export default {
     return {
       t: i18n.t,
       currentLocale: i18n.locale,
+      sanitizeHtml,
     };
   },
   data() {
