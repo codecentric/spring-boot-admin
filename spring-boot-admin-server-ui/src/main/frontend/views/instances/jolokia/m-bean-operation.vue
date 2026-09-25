@@ -40,7 +40,11 @@
     <template #header>
       <span
         v-html="
-          $t('instances.jolokia.execute_modal_header', { name: shortenedName })
+          sanitizeHtml(
+            $t('instances.jolokia.execute_modal_header', {
+              name: shortenedName,
+            }),
+          )
         "
       />
     </template>
@@ -54,6 +58,7 @@
 </template>
 
 <script>
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 import { truncateJavaType } from '@/views/instances/jolokia/utils';
 
 export default {
@@ -86,6 +91,7 @@ export default {
     },
   },
   methods: {
+    sanitizeHtml,
     closeModal() {
       this.isModalOpen = false;
     },

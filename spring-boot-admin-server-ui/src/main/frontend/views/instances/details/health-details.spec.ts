@@ -184,4 +184,30 @@ describe('HealthDetails', () => {
       },
     );
   });
+
+  describe('XSS in string-valued details', () => {
+    it('should not render HTML/script markup contained in a string detail value', async () => {
+      render(HealthDetails, {
+        props: {
+          name: 'db',
+          health: {
+            status: 'UP',
+            details: {
+              canary:
+                '<img src="/__nonexistent__.png" onerror="window.__xss = 1">',
+            },
+          },
+        },
+      });
+
+      const canaryDetail = await screen.findByRole('definition', {
+        name: 'canary',
+      });
+
+      expect(canaryDetail.innerHTML).not.toContain('<img');
+      expect(canaryDetail.innerHTML).not.toContain('onerror');
+      expect(document.querySelectorAll('img').length).toBe(0);
+      expect((window as any).__xss).toBeUndefined();
+    });
+  });
 });
