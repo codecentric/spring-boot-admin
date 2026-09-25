@@ -99,7 +99,7 @@
             :aria-label="detail.name"
             :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
             class="wrap-break-word whitespace-pre-wrap col-span-4"
-            v-html="autolink(String(detail.value ?? ''))"
+            v-html="autolink(sanitizeHtml(String(detail.value ?? '')))"
           />
         </template>
       </dl>
@@ -124,6 +124,7 @@ import SbaFormattedObj from '@/components/sba-formatted-obj.vue';
 
 import Instance from '@/services/instance';
 import autolink from '@/utils/autolink';
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
 
 const { t } = useI18n();
 const id = useId();

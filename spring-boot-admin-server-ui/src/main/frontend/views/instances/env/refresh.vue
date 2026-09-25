@@ -21,8 +21,29 @@
       <span v-text="$t('instances.env.context_refreshed')" />
     </template>
     <template #body>
-      <span v-html="$t('instances.env.refreshed_configurations')" />
-      <p v-html="refreshedPropertiesHtml" />
+      <span v-text="$t('instances.env.refreshed_configurations')" />
+      <ul v-if="currentScope === 'instance'" class="properties-list">
+        <li
+          v-for="(entry, idx) in instanceChangedProperties"
+          :key="idx"
+          v-text="entry"
+        />
+      </ul>
+      <ul v-else class="properties-list">
+        <template
+          v-for="(entry, idx) in applicationChangedProperties"
+          :key="idx"
+        >
+          <li v-text="`instanceId: ${entry.instanceId}`" />
+          <ul class="properties-list">
+            <li
+              v-for="(property, pIdx) in entry.changedProperties"
+              :key="pIdx"
+              v-text="property"
+            />
+          </ul>
+        </template>
+      </ul>
     </template>
     <template #footer>
       <button class="button is-success" @click="closeModal">
@@ -61,37 +82,16 @@ export default {
     instanceCount() {
       return this.application.instances.length;
     },
-    refreshedPropertiesHtml() {
-      if (
-        this.currentScope === 'instance' &&
-        this.refreshedProperties.length > 0
-      ) {
-        return (
-          '<ul class="properties-list">' +
-          this.refreshedProperties[0].changedProperties
-            .map((entry) => '<li>' + entry + '</li>')
-            .join('') +
-          '</ul>'
-        );
-      } else {
-        return (
-          '<ul class="properties-list">' +
-          this.refreshedProperties
-            .filter((property) => property.changedProperties.length > 0)
-            .map(
-              (entry) =>
-                '<li>instanceId: ' +
-                entry.instanceId +
-                '<ul class="properties-list">' +
-                entry.changedProperties
-                  .map((property) => '<li>' + property + '</li>')
-                  .join('') +
-                '</ul>',
-            )
-            .join('') +
-          '</ul>'
-        );
+    instanceChangedProperties() {
+      if (this.refreshedProperties.length === 0) {
+        return [];
       }
+      return this.refreshedProperties[0].changedProperties;
+    },
+    applicationChangedProperties() {
+      return this.refreshedProperties.filter(
+        (property) => property.changedProperties.length > 0,
+      );
     },
   },
   methods: {

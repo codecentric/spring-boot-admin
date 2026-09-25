@@ -42,6 +42,8 @@ import { defineComponent } from 'vue';
 
 import FontAwesomeIcon from '@/components/font-awesome-icon';
 
+import { sanitizeHtml } from '@/utils/sanitizeHtml';
+
 export const Severity = {
   ERROR: 'ERROR',
   WARN: 'WARN',
@@ -90,10 +92,10 @@ export default defineComponent({
   computed: {
     message() {
       if (this.error instanceof Error) {
-        return this.error.message;
+        return sanitizeHtml(this.error.message);
       }
       if (typeof this.error === 'string') {
-        return this.error;
+        return sanitizeHtml(this.error);
       }
 
       return null;
