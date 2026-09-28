@@ -44,6 +44,8 @@ import static java.util.stream.Collectors.reducing;
 
 public abstract class ConcurrentMapEventStore extends InstanceEventPublisher implements InstanceEventStore {
 
+	public static final int DEFAULT_MAX_LOG_SIZE_PER_AGGREGATE = 100;
+
 	private static final Logger log = LoggerFactory.getLogger(ConcurrentMapEventStore.class);
 
 	private static final Comparator<InstanceEvent> byTimestampAndIdAndVersion = comparing(InstanceEvent::getTimestamp)

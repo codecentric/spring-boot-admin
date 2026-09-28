@@ -45,9 +45,9 @@ public class HazelcastEventStoreWithClientConfigTest extends AbstractEventStoreT
 	}
 
 	@Override
-	protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
+	protected InstanceEventStore createStore(int maxLogSizePerAggregate, boolean pruneInfoUpdatedEvents) {
 		IMap<InstanceId, List<InstanceEvent>> eventLog = this.hazelcast.getMap("testList" + System.currentTimeMillis());
-		return new HazelcastEventStore(maxLogSizePerAggregate, eventLog);
+		return new HazelcastEventStore(maxLogSizePerAggregate, eventLog, pruneInfoUpdatedEvents);
 	}
 
 	@Override

@@ -31,7 +31,7 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 public class InMemoryEventStore extends ConcurrentMapEventStore {
 
 	public InMemoryEventStore() {
-		this(100);
+		this(DEFAULT_MAX_LOG_SIZE_PER_AGGREGATE);
 	}
 
 	public InMemoryEventStore(int maxLogSizePerAggregate) {

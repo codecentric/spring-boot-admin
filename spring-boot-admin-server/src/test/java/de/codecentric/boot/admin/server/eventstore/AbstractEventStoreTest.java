@@ -24,12 +24,15 @@ import java.util.stream.LongStream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
+import reactor.test.StepVerifier.Step;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
@@ -55,7 +58,11 @@ public abstract class AbstractEventStoreTest {
 		.metadata("test", "dummy")
 		.build();
 
-	protected abstract InstanceEventStore createStore(int maxLogSizePerAggregate);
+	protected abstract InstanceEventStore createStore(int maxLogSizePerAggregate, boolean pruneInfoUpdatedEvents);
+
+	protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
+		return createStore(maxLogSizePerAggregate, false);
+	}
 
 	protected abstract void shutdownStore();
 
@@ -146,6 +153,30 @@ public abstract class AbstractEventStoreTest {
 		List<Long> versions = store.find(instanceId).map(InstanceEvent::getVersion).collectList().block();
 		List<Long> expected = LongStream.range(0, 500).boxed().toList();
 		assertThat(versions).containsExactlyElementsOf(expected);
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { true, false })
+	public void should_prune_info_updated_events_if_enabled(boolean enabled) {
+		InstanceEventStore store = createStore(100, enabled);
+		InstanceId id = InstanceId.of("id");
+		Registration registration = Registration.create("foo", "https://health").build();
+
+		InstanceEvent event1 = new InstanceRegisteredEvent(id, 0L, registration);
+		InstanceEvent event2 = new InstanceInfoChangedEvent(id, 1L, Info.empty());
+		InstanceEvent event3 = new InstanceInfoChangedEvent(id, 2L, Info.empty());
+		InstanceEvent event4 = new InstanceInfoChangedEvent(id, 3L, Info.empty());
+
+		StepVerifier.create(store.append(List.of(event1, event2, event3, event4))).verifyComplete();
+
+		Step<InstanceEvent> step = StepVerifier.create(store.findAll());
+		if (enabled) {
+			step = step.expectNext(event1, event4);
+		}
+		else {
+			step = step.expectNext(event1, event2, event3, event4);
+		}
+		step.verifyComplete();
 	}
 
 }

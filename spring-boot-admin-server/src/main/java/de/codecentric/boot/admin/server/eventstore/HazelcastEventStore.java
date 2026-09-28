@@ -37,11 +37,20 @@ public class HazelcastEventStore extends ConcurrentMapEventStore {
 	private static final Logger log = LoggerFactory.getLogger(HazelcastEventStore.class);
 
 	public HazelcastEventStore(IMap<InstanceId, List<InstanceEvent>> eventLogs) {
-		this(100, eventLogs);
+		this(DEFAULT_MAX_LOG_SIZE_PER_AGGREGATE, eventLogs, false);
+	}
+
+	public HazelcastEventStore(IMap<InstanceId, List<InstanceEvent>> eventLogs, boolean pruneInfoUpdatedEvents) {
+		this(DEFAULT_MAX_LOG_SIZE_PER_AGGREGATE, eventLogs, pruneInfoUpdatedEvents);
 	}
 
 	public HazelcastEventStore(int maxLogSizePerAggregate, IMap<InstanceId, List<InstanceEvent>> eventLog) {
-		super(maxLogSizePerAggregate, eventLog);
+		this(maxLogSizePerAggregate, eventLog, false);
+	}
+
+	public HazelcastEventStore(int maxLogSizePerAggregate, IMap<InstanceId, List<InstanceEvent>> eventLog,
+			boolean pruneInfoUpdatedEvents) {
+		super(maxLogSizePerAggregate, eventLog, pruneInfoUpdatedEvents);
 
 		eventLog.addEntryListener(new EntryAdapter<InstanceId, List<InstanceEvent>>() {
 			@Override
