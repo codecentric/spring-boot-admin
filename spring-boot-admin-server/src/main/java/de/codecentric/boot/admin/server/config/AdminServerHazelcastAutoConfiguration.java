@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2023 the original author or authors.
+ * Copyright 2014-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.List;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
-import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -37,9 +36,6 @@ import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
-import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
-import de.codecentric.boot.admin.server.notify.NotificationTrigger;
-import de.codecentric.boot.admin.server.notify.Notifier;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
@@ -54,6 +50,8 @@ public class AdminServerHazelcastAutoConfiguration {
 
 	public static final String DEFAULT_NAME_SENT_NOTIFICATIONS_MAP = "spring-boot-admin-sent-notifications";
 
+	public static final String SENT_NOTIFICATIONS_BEAN_NAME = "sentNotificationsMap";
+
 	@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP + "}")
 	private final String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
 
@@ -64,21 +62,21 @@ public class AdminServerHazelcastAutoConfiguration {
 		return new HazelcastEventStore(map);
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(Notifier.class)
-	public static class NotifierTriggerConfiguration {
-
-		@Value("${spring.boot.admin.hazelcast.sent-notifications:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP + "}")
-		private final String nameSentNotificationsMap = DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
-
-		@Bean(initMethod = "start", destroyMethod = "stop")
-		@ConditionalOnMissingBean(NotificationTrigger.class)
-		public NotificationTrigger notificationTrigger(HazelcastInstance hazelcastInstance, Notifier notifier,
-				Publisher<InstanceEvent> events) {
-			return new HazelcastNotificationTrigger(notifier, events,
-					hazelcastInstance.getMap(this.nameSentNotificationsMap));
-		}
-
+	/**
+	 * Distributed map used to deduplicate notifications across the cluster. It is picked
+	 * up by {@link AdminServerNotifierAutoConfiguration}, which is evaluated after all
+	 * notifiers have been registered.
+	 * @param hazelcastInstance the Hazelcast instance
+	 * @param nameSentNotificationsMap the name of the backing map
+	 * @return the map holding the version of the last event a notification was sent for
+	 */
+	@Bean(name = SENT_NOTIFICATIONS_BEAN_NAME)
+	@Lazy
+	@ConditionalOnMissingBean(name = SENT_NOTIFICATIONS_BEAN_NAME)
+	public IMap<InstanceId, Long> sentNotificationsMap(HazelcastInstance hazelcastInstance,
+			@Value("${spring.boot.admin.hazelcast.sent-notifications:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP
+					+ "}") String nameSentNotificationsMap) {
+		return hazelcastInstance.getMap(nameSentNotificationsMap);
 	}
 
 }
