@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.config;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.map.IMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 
 import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
+import de.codecentric.boot.admin.server.notify.SlackNotifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -70,6 +72,24 @@ class AdminServerHazelcastAutoConfigurationTest {
 				assertThat(context).getBean(NotificationTrigger.class)
 					.isNotInstanceOf(HazelcastNotificationTrigger.class);
 			});
+	}
+
+	@Test
+	void should_share_last_status_between_members_via_hazelcast() {
+		this.contextRunner.withPropertyValues("spring.boot.admin.notify.slack.webhook-url:https://example.com")
+			.run((context) -> assertThat(context.getBean(SlackNotifier.class)).extracting("lastStatusStore")
+				.extracting("statuses")
+				.isInstanceOf(IMap.class));
+	}
+
+	@Test
+	void should_keep_last_status_local_when_hazelcast_is_disabled() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.hazelcast.enabled:false",
+					"spring.boot.admin.notify.slack.webhook-url:https://example.com")
+			.run((context) -> assertThat(context.getBean(SlackNotifier.class)).extracting("lastStatusStore")
+				.extracting("statuses")
+				.isNotInstanceOf(IMap.class));
 	}
 
 	public static class HazelcastOnlyConfig {
