@@ -45,14 +45,11 @@ import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.okForContentType;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.retry;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.rewriteEndpointUrl;
@@ -180,20 +177,6 @@ class StatusUpdaterTest {
 			.verify();
 
 		StepVerifier.create(this.repository.find(this.instance.getId()))
-			.assertNext((app) -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP"))
-			.verifyComplete();
-	}
-
-	@Test
-	void should_not_run_concurrent_status_updates_for_same_instance() {
-		this.wireMock.stubFor(get("/health").willReturn(ok().withFixedDelay(100)));
-
-		StepVerifier
-			.create(Mono.when(this.updater.updateStatus(this.instanceId), this.updater.updateStatus(this.instanceId)))
-			.verifyComplete();
-
-		this.wireMock.verify(exactly(1), getRequestedFor(urlEqualTo("/health")));
-		StepVerifier.create(this.repository.find(this.instanceId))
 			.assertNext((app) -> assertThat(app.getStatusInfo().getStatus()).isEqualTo("UP"))
 			.verifyComplete();
 	}

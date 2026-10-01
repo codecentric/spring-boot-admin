@@ -22,8 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiPredicate;
 import java.util.logging.Level;
 
@@ -69,8 +67,6 @@ public class StatusUpdater {
 
 	private final HealthGroupsCache healthGroupsCache;
 
-	private final ConcurrentMap<InstanceId, Mono<Void>> updates = new ConcurrentHashMap<>();
-
 	private Duration timeout = Duration.ofSeconds(10);
 
 	public StatusUpdater(InstanceRepository repository, InstanceWebClient instanceWebClient,
@@ -85,13 +81,6 @@ public class StatusUpdater {
 	}
 
 	public Mono<Void> updateStatus(InstanceId id) {
-		return this.updates.computeIfAbsent(id,
-				(instanceId) -> Mono.defer(() -> this.updateStatusInternal(instanceId))
-					.doFinally((signal) -> this.updates.remove(instanceId))
-					.cache());
-	}
-
-	private Mono<Void> updateStatusInternal(InstanceId id) {
 		return this.repository.computeIfPresent(id, (key, instance) -> this.doUpdateStatus(instance)).then();
 	}
 
