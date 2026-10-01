@@ -30,11 +30,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.webflux.autoconfigure.WebFluxProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -52,6 +54,7 @@ import de.codecentric.boot.admin.server.ui.extensions.UiRoutesScanner;
 import de.codecentric.boot.admin.server.ui.web.HomepageForwardingFilterConfig;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 import de.codecentric.boot.admin.server.ui.web.UiController.Settings;
+import de.codecentric.boot.admin.server.ui.web.servlet.SbaSettingsAcceptHeaderFilter;
 import de.codecentric.boot.admin.server.web.PathUtils;
 
 import static java.util.Arrays.asList;
@@ -278,6 +281,17 @@ public class AdminServerUiAutoConfiguration {
 					HomepageForwardingFilterConfig homepageForwardingFilterConfig) {
 				return new de.codecentric.boot.admin.server.ui.web.servlet.HomepageForwardingFilter(
 						homepageForwardingFilterConfig);
+			}
+
+			@Bean
+			@ConditionalOnMissingBean(name = "sbaSettingsAcceptHeaderFilter")
+			public FilterRegistrationBean<SbaSettingsAcceptHeaderFilter> sbaSettingsAcceptHeaderFilter() {
+				FilterRegistrationBean<SbaSettingsAcceptHeaderFilter> registration = new FilterRegistrationBean<>(
+						new SbaSettingsAcceptHeaderFilter());
+				registration.addUrlPatterns(this.adminServer.path("/sba-settings.js"));
+				registration.setName("sbaSettingsAcceptHeaderFilter");
+				registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+				return registration;
 			}
 
 		}

@@ -136,6 +136,17 @@ public abstract class AbstractAdminUiApplicationTest {
 	}
 
 	@Test
+	public void should_not_return_sba_settings_for_json_accept() {
+		//@formatter:off
+		this.webClient.get()
+					.uri("/sba-settings.js")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchange()
+					.expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE);
+		//@formatter:on
+	}
+
+	@Test
 	public void should_return_defaults_for_pollTimers() {
 		//@formatter:off
 		this.webClient.get()
