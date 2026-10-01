@@ -15,10 +15,22 @@
       "defaultValue": "spring-boot-admin-application-store"
     },
     {
+      "name": "spring.boot.admin.hazelcast.event-store-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable the Hazelcast map for storing instance events.",
+      "defaultValue": "true"
+    },
+    {
       "name": "spring.boot.admin.hazelcast.sent-notifications",
       "type": "java.lang.String",
       "description": "Name of backing Hazelcast-Map for storing the sent notifications.",
       "defaultValue": "spring-boot-admin-sent-notifications"
+    },
+    {
+      "name": "spring.boot.admin.hazelcast.sent-notifications-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable the Hazelcast map for storing sent notifications.",
+      "defaultValue": "true"
     },
     {
       "name": "spring.boot.admin.monitor.period",

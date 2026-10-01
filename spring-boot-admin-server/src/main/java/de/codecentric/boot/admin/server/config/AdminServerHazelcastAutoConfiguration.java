@@ -59,6 +59,7 @@ public class AdminServerHazelcastAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(InstanceEventStore.class)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "event-store-enabled", matchIfMissing = true)
 	public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance,
 			AdminServerProperties adminServerProperties) {
 		IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
@@ -74,6 +75,8 @@ public class AdminServerHazelcastAutoConfiguration {
 
 		@Bean(initMethod = "start", destroyMethod = "stop")
 		@ConditionalOnMissingBean(NotificationTrigger.class)
+		@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "sent-notifications-enabled",
+				matchIfMissing = true)
 		public NotificationTrigger notificationTrigger(HazelcastInstance hazelcastInstance, Notifier notifier,
 				Publisher<InstanceEvent> events) {
 			return new HazelcastNotificationTrigger(notifier, events,
