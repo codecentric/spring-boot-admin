@@ -18,19 +18,11 @@ package de.codecentric.boot.admin.server.ui.config;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -45,9 +37,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
@@ -64,6 +54,7 @@ import de.codecentric.boot.admin.server.ui.extensions.UiRoutesScanner;
 import de.codecentric.boot.admin.server.ui.web.HomepageForwardingFilterConfig;
 import de.codecentric.boot.admin.server.ui.web.UiController;
 import de.codecentric.boot.admin.server.ui.web.UiController.Settings;
+import de.codecentric.boot.admin.server.ui.web.servlet.SbaSettingsAcceptHeaderFilter;
 import de.codecentric.boot.admin.server.web.PathUtils;
 
 import static java.util.Arrays.asList;
@@ -293,75 +284,14 @@ public class AdminServerUiAutoConfiguration {
 			}
 
 			@Bean
-			public FilterRegistrationBean<Filter> sbaSettingsAcceptHeaderFilter() {
-				FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>(
+			@ConditionalOnMissingBean(name = "sbaSettingsAcceptHeaderFilter")
+			public FilterRegistrationBean<SbaSettingsAcceptHeaderFilter> sbaSettingsAcceptHeaderFilter() {
+				FilterRegistrationBean<SbaSettingsAcceptHeaderFilter> registration = new FilterRegistrationBean<>(
 						new SbaSettingsAcceptHeaderFilter());
 				registration.addUrlPatterns(this.adminServer.path("/sba-settings.js"));
+				registration.setName("sbaSettingsAcceptHeaderFilter");
 				registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
 				return registration;
-			}
-
-			private static final class SbaSettingsAcceptHeaderFilter extends OncePerRequestFilter {
-
-				@Override
-				protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-						FilterChain filterChain) throws ServletException, IOException {
-					filterChain.doFilter(
-							shouldRewriteAcceptHeader(request) ? new AcceptHeaderRequestWrapper(request) : request,
-							response);
-				}
-
-				private static boolean shouldRewriteAcceptHeader(HttpServletRequest request) {
-					String accept = request.getHeader(HttpHeaders.ACCEPT);
-					if (accept == null || accept.isBlank()) {
-						return true;
-					}
-					try {
-						return MediaType.parseMediaTypes(accept)
-							.stream()
-							.allMatch((mediaType) -> "*".equals(mediaType.getType())
-									&& "*".equals(mediaType.getSubtype()));
-					}
-					catch (IllegalArgumentException ex) {
-						return false;
-					}
-				}
-
-			}
-
-			private static final class AcceptHeaderRequestWrapper extends HttpServletRequestWrapper {
-
-				private static final String ACCEPT = "application/javascript";
-
-				private AcceptHeaderRequestWrapper(HttpServletRequest request) {
-					super(request);
-				}
-
-				@Override
-				public String getHeader(String name) {
-					if (HttpHeaders.ACCEPT.equalsIgnoreCase(name)) {
-						return ACCEPT;
-					}
-					return super.getHeader(name);
-				}
-
-				@Override
-				public Enumeration<String> getHeaders(String name) {
-					if (HttpHeaders.ACCEPT.equalsIgnoreCase(name)) {
-						return Collections.enumeration(List.of(ACCEPT));
-					}
-					return super.getHeaders(name);
-				}
-
-				@Override
-				public Enumeration<String> getHeaderNames() {
-					List<String> names = Collections.list(super.getHeaderNames());
-					if (names.stream().noneMatch(HttpHeaders.ACCEPT::equalsIgnoreCase)) {
-						names.add(HttpHeaders.ACCEPT);
-					}
-					return Collections.enumeration(names);
-				}
-
 			}
 
 		}
