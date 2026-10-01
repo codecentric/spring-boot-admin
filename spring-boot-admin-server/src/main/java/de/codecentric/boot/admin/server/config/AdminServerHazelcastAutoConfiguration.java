@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +36,7 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
+import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
@@ -47,7 +47,6 @@ import de.codecentric.boot.admin.server.notify.filter.NotificationFilter;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnSingleCandidate(HazelcastInstance.class)
-@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ AdminServerAutoConfiguration.class, AdminServerNotifierAutoConfiguration.class })
 @AutoConfigureAfter(HazelcastAutoConfiguration.class)
 @Lazy(false)
@@ -59,35 +58,55 @@ public class AdminServerHazelcastAutoConfiguration {
 
 	public static final String DEFAULT_NAME_NOTIFICATION_FILTERS_MAP = "spring-boot-admin-notification-filters";
 
+	@Value("${spring.boot.admin.hazelcast.enabled:true}")
+	private final boolean hazelcastEnabled = true;
+
 	@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP + "}")
 	private final String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
 
+	@Value("${spring.boot.admin.hazelcast.event-store-enabled:true}")
+	private final boolean eventStoreEnabled = true;
+
+	@Value("${spring.boot.admin.hazelcast.sent-notifications:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP + "}")
+	private final String nameSentNotificationsMap = DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
+
+	@Value("${spring.boot.admin.hazelcast.sent-notifications-enabled:true}")
+	private final boolean sentNotificationsEnabled = true;
+
+	@Value("${spring.boot.admin.hazelcast.notification-filters:" + DEFAULT_NAME_NOTIFICATION_FILTERS_MAP + "}")
+	private final String nameNotificationFiltersMap = DEFAULT_NAME_NOTIFICATION_FILTERS_MAP;
+
+	@Value("${spring.boot.admin.hazelcast.notification-filters-enabled:true}")
+	private final boolean notificationFiltersEnabled = true;
+
 	@Bean
 	@ConditionalOnMissingBean(InstanceEventStore.class)
-	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "event-store-enabled", matchIfMissing = true)
-	public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance,
+	public InstanceEventStore eventStore(HazelcastInstance hazelcastInstance,
 			AdminServerProperties adminServerProperties) {
-		IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
 		AdminServerProperties.EventStoreProperties eventStoreProperties = adminServerProperties.getEventStore();
-		return new HazelcastEventStore(eventStoreProperties.getMaxLogSizePerAggregate(), map,
-				eventStoreProperties.isPruneInfoUpdatedEvents());
+		int maxLogSizePerAggregate = eventStoreProperties.getMaxLogSizePerAggregate();
+		boolean pruneInfoUpdatedEvents = eventStoreProperties.isPruneInfoUpdatedEvents();
+		if (this.hazelcastEnabled && this.eventStoreEnabled) {
+			IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
+			return new HazelcastEventStore(maxLogSizePerAggregate, map, pruneInfoUpdatedEvents);
+		}
+		return new InMemoryEventStore(maxLogSizePerAggregate, pruneInfoUpdatedEvents);
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Notifier.class)
-	public static class NotifierTriggerConfiguration {
-
-		@Value("${spring.boot.admin.hazelcast.sent-notifications:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP + "}")
-		private final String nameSentNotificationsMap = DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
+	public class NotifierTriggerConfiguration {
 
 		@Bean(initMethod = "start", destroyMethod = "stop")
 		@ConditionalOnMissingBean(NotificationTrigger.class)
-		@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "sent-notifications-enabled",
-				matchIfMissing = true)
 		public NotificationTrigger notificationTrigger(HazelcastInstance hazelcastInstance, Notifier notifier,
 				Publisher<InstanceEvent> events) {
+			if (!AdminServerHazelcastAutoConfiguration.this.hazelcastEnabled
+					|| !AdminServerHazelcastAutoConfiguration.this.sentNotificationsEnabled) {
+				return new NotificationTrigger(notifier, events);
+			}
 			return new HazelcastNotificationTrigger(notifier, events,
-					hazelcastInstance.getMap(this.nameSentNotificationsMap));
+					hazelcastInstance.getMap(AdminServerHazelcastAutoConfiguration.this.nameSentNotificationsMap));
 		}
 
 	}
@@ -95,16 +114,18 @@ public class AdminServerHazelcastAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Notifier.class)
 	@AutoConfigureBefore({ AdminServerNotifierAutoConfiguration.NotifierTriggerConfiguration.class })
-	public static class NotificationFilterConfiguration {
-
-		@Value("${spring.boot.admin.hazelcast.notification-filters:" + DEFAULT_NAME_NOTIFICATION_FILTERS_MAP + "}")
-		private final String nameNotificationFiltersMap = DEFAULT_NAME_NOTIFICATION_FILTERS_MAP;
+	public class NotificationFilterConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(FilteringNotifier.class)
 		public FilteringNotifier filteringNotifier(HazelcastInstance hazelcastInstance, Notifier delegate,
 				InstanceRepository repository) {
-			IMap<String, NotificationFilter> filtersMap = hazelcastInstance.getMap(this.nameNotificationFiltersMap);
+			if (!AdminServerHazelcastAutoConfiguration.this.hazelcastEnabled
+					|| !AdminServerHazelcastAutoConfiguration.this.notificationFiltersEnabled) {
+				return new FilteringNotifier(delegate, repository);
+			}
+			IMap<String, NotificationFilter> filtersMap = hazelcastInstance
+				.getMap(AdminServerHazelcastAutoConfiguration.this.nameNotificationFiltersMap);
 			return new FilteringNotifier(delegate, repository, filtersMap);
 		}
 
