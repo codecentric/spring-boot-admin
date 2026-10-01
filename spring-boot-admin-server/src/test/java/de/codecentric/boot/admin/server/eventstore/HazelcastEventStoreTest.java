@@ -25,13 +25,13 @@ public class HazelcastEventStoreTest extends AbstractEventStoreTest {
 	HazelcastInstance hazelcast;
 
 	@Override
-	protected InstanceEventStore createStore(int maxLogSizePerAggregate) {
+	protected InstanceEventStore createStore(int maxLogSizePerAggregate, boolean pruneInfoUpdatedEvents) {
 		Config config = new Config();
 		config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
 		config.getNetworkConfig().getJoin().getAutoDetectionConfig().setEnabled(false);
 		hazelcast = Hazelcast.newHazelcastInstance(config);
 		return new HazelcastEventStore(maxLogSizePerAggregate,
-				hazelcast.getMap("testList" + System.currentTimeMillis()));
+				hazelcast.getMap("testList" + System.currentTimeMillis()), pruneInfoUpdatedEvents);
 	}
 
 	@Override

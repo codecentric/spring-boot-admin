@@ -59,9 +59,10 @@ public class AdminServerHazelcastAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(InstanceEventStore.class)
-	public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance) {
+	public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance,
+			AdminServerProperties adminServerProperties) {
 		IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
-		return new HazelcastEventStore(map);
+		return new HazelcastEventStore(map, adminServerProperties.getEventStore().isPruneInfoUpdatedEvents());
 	}
 
 	@Configuration(proxyBeanMethods = false)
