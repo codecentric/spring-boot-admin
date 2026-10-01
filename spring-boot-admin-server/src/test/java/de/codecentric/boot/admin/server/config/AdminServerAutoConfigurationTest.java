@@ -39,6 +39,7 @@ import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
+import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.services.StatusUpdater;
 import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 
@@ -66,6 +67,7 @@ class AdminServerAutoConfigurationTest {
 		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class).run((context) -> {
 			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
 			assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
+			assertThat(context).hasSingleBean(FilteringNotifier.class);
 		});
 	}
 
