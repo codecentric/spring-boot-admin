@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.config;
 import java.time.Duration;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.map.IMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
@@ -68,6 +69,8 @@ class AdminServerAutoConfigurationTest {
 			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
 			assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
 			assertThat(context).hasSingleBean(FilteringNotifier.class);
+			FilteringNotifier filteringNotifier = context.getBean(FilteringNotifier.class);
+			assertThat(filteringNotifier).extracting("filters").isInstanceOf(IMap.class);
 		});
 	}
 
