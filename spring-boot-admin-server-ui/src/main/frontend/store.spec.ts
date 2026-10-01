@@ -79,6 +79,27 @@ describe('store', () => {
     expect(removedListener).not.toHaveBeenCalled();
   });
 
+  it('does not replace an application with an older status update', async () => {
+    mockSubject.next({
+      data: {
+        ...registerWithOneInstance,
+        status: 'DOWN',
+        statusTimestamp: '2022-12-19T10:07:21.646905Z',
+      },
+    });
+    mockSubject.next({
+      data: {
+        ...registerWithOneInstance,
+        status: 'UP',
+        statusTimestamp: '2022-12-19T10:07:20.646905Z',
+      },
+    });
+
+    await waitFor(() => {
+      expect(applicationStore.applications[0].status).toBe('DOWN');
+    });
+  });
+
   it('deregisters an instance', async () => {
     mockSubject.next({ data: registerWithTwoInstances });
     mockSubject.next({ data: registerWithOneInstance });
