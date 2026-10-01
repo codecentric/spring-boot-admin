@@ -84,7 +84,7 @@ export default class ViewRegistry {
     return Array.prototype.find.call(this._views, (v) => v.name === name);
   }
 
-  addView(...views: View[]): Promise<SbaView>[] {
+  addView(...views: View[]): SbaView[] {
     return views.map((view) => this._addView(view));
   }
 
@@ -96,7 +96,7 @@ export default class ViewRegistry {
     }
   }
 
-  async _addView(viewConfig: ViewConfig): Promise<SbaView> {
+  _addView(viewConfig: ViewConfig): SbaView {
     const view = { ...viewConfig } as SbaView;
     view.hasChildren = !!viewConfig.children;
 
