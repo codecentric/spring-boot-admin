@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Lazy;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
+import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.NotificationFilter;
@@ -61,15 +62,21 @@ public class AdminServerHazelcastAutoConfiguration {
 	@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP + "}")
 	private final String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
 
+	@Value("${spring.boot.admin.hazelcast.event-store-enabled:true}")
+	private final boolean eventStoreEnabled = true;
+
 	@Bean
 	@ConditionalOnMissingBean(InstanceEventStore.class)
-	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "event-store-enabled", matchIfMissing = true)
-	public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance,
+	public InstanceEventStore eventStore(HazelcastInstance hazelcastInstance,
 			AdminServerProperties adminServerProperties) {
-		IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
 		AdminServerProperties.EventStoreProperties eventStoreProperties = adminServerProperties.getEventStore();
-		return new HazelcastEventStore(eventStoreProperties.getMaxLogSizePerAggregate(), map,
-				eventStoreProperties.isPruneInfoUpdatedEvents());
+		int maxLogSizePerAggregate = eventStoreProperties.getMaxLogSizePerAggregate();
+		boolean pruneInfoUpdatedEvents = eventStoreProperties.isPruneInfoUpdatedEvents();
+		if (this.eventStoreEnabled) {
+			IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
+			return new HazelcastEventStore(maxLogSizePerAggregate, map, pruneInfoUpdatedEvents);
+		}
+		return new InMemoryEventStore(maxLogSizePerAggregate, pruneInfoUpdatedEvents);
 	}
 
 	/**
