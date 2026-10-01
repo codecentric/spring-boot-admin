@@ -62,7 +62,9 @@ public class AdminServerHazelcastAutoConfiguration {
 	public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance,
 			AdminServerProperties adminServerProperties) {
 		IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
-		return new HazelcastEventStore(map, adminServerProperties.getEventStore().isPruneInfoUpdatedEvents());
+		AdminServerProperties.EventStoreProperties eventStoreProperties = adminServerProperties.getEventStore();
+		return new HazelcastEventStore(eventStoreProperties.getMaxLogSizePerAggregate(), map,
+				eventStoreProperties.isPruneInfoUpdatedEvents());
 	}
 
 	@Configuration(proxyBeanMethods = false)

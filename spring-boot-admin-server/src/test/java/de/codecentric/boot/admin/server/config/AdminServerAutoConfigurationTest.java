@@ -70,6 +70,14 @@ class AdminServerAutoConfigurationTest {
 	}
 
 	@Test
+	void shouldApplyConfiguredEventStoreMaximumSizeToHazelcastStore() {
+		this.contextRunner.withPropertyValues("spring.boot.admin.event-store.max-log-size-per-aggregate=10")
+			.withUserConfiguration(TestHazelcastConfig.class)
+			.run((context) -> assertThat(context.getBean(InstanceEventStore.class)).extracting("maxLogSizePerAggregate")
+				.isEqualTo(10));
+	}
+
+	@Test
 	void shouldApplyConfiguredTimeoutFromProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.boot.admin.monitor.default-timeout=5s",
@@ -78,6 +86,13 @@ class AdminServerAutoConfigurationTest {
 				StatusUpdater updater = context.getBean(StatusUpdater.class);
 				assertThat(updater).extracting("timeout").isEqualTo(Duration.ofSeconds(5));
 			});
+	}
+
+	@Test
+	void shouldApplyConfiguredEventStoreMaximumSize() {
+		this.contextRunner.withPropertyValues("spring.boot.admin.event-store.max-log-size-per-aggregate=10")
+			.run((context) -> assertThat(context.getBean(InstanceEventStore.class)).extracting("maxLogSizePerAggregate")
+				.isEqualTo(10));
 	}
 
 	@Test

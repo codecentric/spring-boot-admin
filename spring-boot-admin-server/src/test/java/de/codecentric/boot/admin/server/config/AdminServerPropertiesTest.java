@@ -39,6 +39,8 @@ class AdminServerPropertiesTest {
 	void testLoadConfigurationProperties() {
 		assertThat(serverConfig.getContextPath()).isEqualTo("/admin");
 
+		assertThat(serverConfig.getEventStore().getMaxLogSizePerAggregate()).isEqualTo(100);
+
 		assertThat(serverConfig.getMonitor().getStatusChangeDetectionStrategy())
 			.isEqualTo(StatusChangeDetectionStrategy.STATUS_ONLY);
 

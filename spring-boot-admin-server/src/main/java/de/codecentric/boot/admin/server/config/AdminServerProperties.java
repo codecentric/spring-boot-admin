@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
 import de.codecentric.boot.admin.server.domain.values.StatusInfo;
+import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.web.PathUtils;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider.InstanceCredentials;
 
@@ -294,6 +295,12 @@ public class AdminServerProperties {
 
 	@lombok.Data
 	public static class EventStoreProperties {
+
+		/**
+		 * Maximum number of events to retain per instance aggregate. Default:
+		 * {@link ConcurrentMapEventStore#DEFAULT_MAX_LOG_SIZE_PER_AGGREGATE}.
+		 */
+		private int maxLogSizePerAggregate = ConcurrentMapEventStore.DEFAULT_MAX_LOG_SIZE_PER_AGGREGATE;
 
 		/**
 		 * Whether to keep only the latest INFO_UPDATED event per instance instead of
