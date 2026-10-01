@@ -54,19 +54,27 @@ public class AdminServerHazelcastAutoConfiguration {
 
 	public static final String DEFAULT_NAME_SENT_NOTIFICATIONS_MAP = "spring-boot-admin-sent-notifications";
 
-	@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP + "}")
-	private final String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "event-store-enabled", matchIfMissing = true)
+	public static class EventStoreConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean(InstanceEventStore.class)
-	public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance,
-			AdminServerProperties adminServerProperties) {
-		IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
-		return new HazelcastEventStore(map, adminServerProperties.getEventStore().isPruneInfoUpdatedEvents());
+		@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP + "}")
+		private final String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
+
+		@Bean
+		@ConditionalOnMissingBean(InstanceEventStore.class)
+		public HazelcastEventStore eventStore(HazelcastInstance hazelcastInstance,
+				AdminServerProperties adminServerProperties) {
+			IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
+			return new HazelcastEventStore(map, adminServerProperties.getEventStore().isPruneInfoUpdatedEvents());
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Notifier.class)
+	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "sent-notifications-enabled",
+			matchIfMissing = true)
 	public static class NotifierTriggerConfiguration {
 
 		@Value("${spring.boot.admin.hazelcast.sent-notifications:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP + "}")

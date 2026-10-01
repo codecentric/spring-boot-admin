@@ -34,6 +34,7 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
+import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
@@ -49,7 +50,8 @@ class AdminServerAutoConfigurationTest {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ReactiveHttpClientAutoConfiguration.class,
 				WebClientAutoConfiguration.class, HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class))
+				AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class,
+				AdminServerNotifierAutoConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
@@ -67,6 +69,28 @@ class AdminServerAutoConfigurationTest {
 			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
 			assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
 		});
+	}
+
+	@Test
+	void shouldDisableHazelcastEventStore() {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
+			.withPropertyValues("spring.boot.admin.hazelcast.event-store-enabled=false")
+			.run((context) -> {
+				assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(InMemoryEventStore.class);
+				assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
+			});
+	}
+
+	@Test
+	void shouldDisableHazelcastSentNotifications() {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
+			.withPropertyValues("spring.boot.admin.hazelcast.sent-notifications-enabled=false")
+			.run((context) -> {
+				assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
+				assertThat(context).getBean(NotificationTrigger.class)
+					.isInstanceOf(NotificationTrigger.class)
+					.isNotInstanceOf(HazelcastNotificationTrigger.class);
+			});
 	}
 
 	@Test
