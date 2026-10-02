@@ -29,6 +29,17 @@ deployments and development environments.
 
 **Configuration:**
 
+The maximum number of events retained per instance can be configured with
+`spring.boot.admin.event-store.max-log-size-per-aggregate`. It defaults to `100`.
+
+```yaml
+spring:
+  boot:
+    admin:
+      event-store:
+        max-log-size-per-aggregate: 100
+```
+
 ```java
 @Bean
 public InstanceEventStore eventStore() {
