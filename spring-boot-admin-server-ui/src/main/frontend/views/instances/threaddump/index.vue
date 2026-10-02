@@ -32,7 +32,7 @@
       :title="$t('instances.threaddump.download_failed')"
     />
     <sba-panel>
-      <threads-list v-if="threads" :thread-timelines="threads" />
+      <threads-list v-if="threads" :thread-timelines="orderedThreads" />
     </sba-panel>
   </sba-instance-section>
 </template>
@@ -64,11 +64,17 @@ export default {
     errorFetch: null,
     errorDownload: null,
     threads: {},
+    threadOrder: [],
   }),
-  computed: {},
+  computed: {
+    orderedThreads() {
+      return this.threadOrder.map((threadId) => this.threads[threadId]);
+    },
+  },
   methods: {
     updateTimelines(threads) {
       const now = moment().valueOf();
+      const returnedThreadIds = threads.map((thread) => thread.threadId);
       //initialize with all known live threads, which will be removed from the list if still alive
       const terminatedThreads = Object.entries(this.threads)
         .filter(([, value]) => value.threadState !== 'TERMINATED')
@@ -112,6 +118,13 @@ export default {
         entry.threadState = 'TERMINATED';
         entry.timeline[entry.timeline.length - 1].end = now;
       });
+
+      this.threadOrder = [
+        ...returnedThreadIds,
+        ...this.threadOrder.filter(
+          (threadId) => !returnedThreadIds.includes(threadId),
+        ),
+      ];
     },
     async fetchThreaddump() {
       const response = await this.instance.fetchThreaddump();
