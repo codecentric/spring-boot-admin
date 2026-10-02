@@ -38,6 +38,15 @@
         </dependency>
         <dependency>
             <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-flightrecorder-ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.mirkosertic</groupId>
+            <artifactId>flight-recorder-starter</artifactId>
+            <version>3.4.5</version>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-server</artifactId>
         </dependency>
         <dependency>
