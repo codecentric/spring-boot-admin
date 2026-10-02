@@ -27,7 +27,7 @@
         <groupId>de.codecentric</groupId>
         <artifactId>spring-boot-admin-build</artifactId>
         <version>${revision}</version>
-        <relativePath>../spring-boot-admin-build</relativePath>
+        <relativePath>../spring-boot-admin-build/pom.xml</relativePath>
     </parent>
 
     <dependencies>
