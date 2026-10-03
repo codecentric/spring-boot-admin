@@ -9,34 +9,52 @@ export type SbomDependency = {
 export const normalizeNodeName = (name: string): string =>
   name.replace(/^[^\/]*\//, '').replace(/\?.*$/, '');
 
-function getChildren(sbomDependencies: SbomDependency[], item: string) {
-  return retrieveChildren(
-    sbomDependencies
-      .filter((node) => node.ref === item && node.dependsOn.length)
-      .flatMap((node) => node.dependsOn),
-    sbomDependencies,
-  );
+function expandDependency(
+  ref: string,
+  dependenciesByRef: Map<string, SbomDependency>,
+  ancestors: Set<string>,
+): DependencyTreeData {
+  const name = normalizeNodeName(ref);
+  if (ancestors.has(ref)) return { name, cycle: true };
+
+  // Only ancestors on this path form a cycle; shared dependencies in other
+  // branches must still be expanded. Keep full references for identity.
+  const path = new Set(ancestors).add(ref);
+  const dependsOn = dependenciesByRef.get(ref)?.dependsOn ?? [];
+  return {
+    name,
+    children: dependsOn.length
+      ? dependsOn.map((child) =>
+          expandDependency(child, dependenciesByRef, path),
+        )
+      : undefined,
+  };
 }
 
 export const retrieveChildren = (
   dependsOn: string[],
   sbomDependencies: SbomDependency[],
+  ancestors: Set<string> = new Set(),
 ): DependencyTreeData[] | undefined => {
   if (!dependsOn.length) return undefined;
 
-  return dependsOn.map((item) => ({
-    name: normalizeNodeName(item),
-    children: getChildren(sbomDependencies, item),
-  }));
+  const dependenciesByRef = new Map(
+    sbomDependencies.map((dependency) => [dependency.ref, dependency]),
+  );
+  return dependsOn.map((item) =>
+    expandDependency(item, dependenciesByRef, ancestors),
+  );
 };
 
 export const normalizeData = (
   sbomDependencies: SbomDependency[],
 ): DependencyTreeData => {
-  const children = sbomDependencies[0].dependsOn.map((item) => ({
-    name: normalizeNodeName(item),
-    children: getChildren(sbomDependencies, item),
-  }));
+  const children =
+    retrieveChildren(
+      sbomDependencies[0].dependsOn ?? [],
+      sbomDependencies,
+      new Set([sbomDependencies[0].ref]),
+    ) ?? [];
 
   return {
     name: normalizeNodeName(sbomDependencies[0].ref),

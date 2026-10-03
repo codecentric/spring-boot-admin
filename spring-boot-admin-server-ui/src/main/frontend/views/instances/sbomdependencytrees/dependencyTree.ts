@@ -28,6 +28,7 @@ const extractArtifactId = (dependency: string): string =>
 export type DependencyTreeData = {
   name: string;
   children?: DependencyTreeData[];
+  cycle?: boolean;
 };
 
 type HierarchyNodeData = HierarchyNode<DependencyTreeData>;
@@ -189,7 +190,8 @@ const updateDependencyTree = async (
     .attr('ry', 6)
     .attr('stroke-width', 1)
     .attr('fill-opacity', 0.8)
-    .attr('class', (d) => `node ${d._children ? 'node-with-children' : ''}`);
+    .attr('class', (d) => `node ${d._children ? 'node-with-children' : ''}`)
+    .classed('node-cycle', (d) => !!d.data.cycle);
 
   nodeEnter
     .append('text')
@@ -205,7 +207,9 @@ const updateDependencyTree = async (
     .attr('dy', '.75rem')
     .attr('x', 12)
     .attr('text-anchor', 'start')
-    .text((d) => extractArtifactId(d.data.name));
+    .text(
+      (d) => `${d.data.cycle ? '↩ ' : ''}${extractArtifactId(d.data.name)}`,
+    );
 
   nodeEnter
     .on('mouseover', (event, d) => {

@@ -1,11 +1,68 @@
-import { RenderResult, screen, waitFor } from '@testing-library/vue';
+import { RenderResult, fireEvent, screen, waitFor } from '@testing-library/vue';
+import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { applications } from '@/mocks/applications/data';
+import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 import TreeGraph from '@/views/instances/sbomdependencytrees/tree.vue';
+
+describe('TreeGraph cyclic dependencies', () => {
+  beforeEach(() => vi.useFakeTimers({ ignoreMissingTimers: true }));
+  afterEach(() => vi.useRealTimers());
+
+  it('renders terminal cycle references and preserves them when filtering', async () => {
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+    server.use(
+      http.get('/instances/:instanceId/actuator/sbom/application', () =>
+        HttpResponse.json({
+          metadata: { component: { 'bom-ref': 'app' } },
+          dependencies: [
+            { ref: 'app', dependsOn: ['a'] },
+            { ref: 'a', dependsOn: ['b'] },
+            { ref: 'b', dependsOn: ['a'] },
+          ],
+        }),
+      ),
+    );
+    const component = render(TreeGraph, {
+      props: { instance, sbomId: 'application' },
+    });
+
+    await screen.findAllByText('app');
+    await fireEvent.click(screen.getAllByText('a')[0]);
+    await fireEvent.click(screen.getAllByText('b')[0]);
+    expect(screen.getByText('↩ a')).toBeInTheDocument();
+    expect(component.container.querySelectorAll('.node-cycle')).toHaveLength(1);
+    expect(screen.getByText('instances.sbom.legend.cycle')).toBeInTheDocument();
+
+    // Clicking a cycle reference must not expand it again.
+    const nodeCount = component.container.querySelectorAll('rect.node').length;
+    await fireEvent.click(screen.getByText('↩ a'));
+    expect(component.container.querySelectorAll('rect.node')).toHaveLength(
+      nodeCount,
+    );
+
+    await component.rerender({ filter: 'a' });
+    vi.advanceTimersByTime(2000);
+    expect(screen.getByText('↩ a')).toBeInTheDocument();
+    expect(component.container.querySelectorAll('.node-cycle')).toHaveLength(1);
+
+    await component.rerender({ filter: 'no-match' });
+    vi.advanceTimersByTime(2000);
+    expect(screen.getByTestId('treecontainer-svg')).not.toBeVisible();
+
+    await component.rerender({ filter: '' });
+    vi.advanceTimersByTime(2000);
+    expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
+    await fireEvent.click(screen.getAllByText('a')[0]);
+    await fireEvent.click(screen.getAllByText('b')[0]);
+    expect(screen.getByText('↩ a')).toBeInTheDocument();
+  });
+});
 
 const setUnknownFilter = async (
   dependencyTree: RenderResult,
