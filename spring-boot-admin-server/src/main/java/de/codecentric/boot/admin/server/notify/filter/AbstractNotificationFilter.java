@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class AbstractNotificationFilter implements NotificationFilter {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final AtomicLong instanceCounter = new AtomicLong(0L);
 
 	private final String id;
