@@ -5,7 +5,8 @@
       "legend": {
         "title": "Legend",
         "node": "Dependency with no further dependencies",
-        "node_with_children": "Dependency with other dependencies"
+        "node_with_children": "Dependency with other dependencies",
+        "cycle": "Cycle reference (already shown on this path)"
       }
     }
   }
