@@ -3,11 +3,128 @@ import { describe, expect, it } from 'vitest';
 import {
   SbomDependency,
   filterTree,
+  normalizeData,
   normalizeNodeName,
   retrieveChildren,
 } from './sbomUtils';
 
 import { DependencyTreeData } from '@/views/instances/sbomdependencytrees/dependencyTree';
+
+describe('cyclic dependencies', () => {
+  const graph = [
+    { ref: 'app', dependsOn: ['a'] },
+    { ref: 'a', dependsOn: ['b'] },
+    { ref: 'b', dependsOn: ['a'] },
+  ];
+
+  it('terminates a reachable cycle without modifying the graph', () => {
+    const original = structuredClone(graph);
+    const tree = normalizeData(graph);
+    expect(tree).toEqual({
+      name: 'app',
+      children: [
+        {
+          name: 'a',
+          children: [{ name: 'b', children: [{ name: 'a', cycle: true }] }],
+        },
+      ],
+    });
+    expect(() => JSON.stringify(tree)).not.toThrow();
+    expect(graph).toEqual(original);
+  });
+
+  it('terminates a self-reference at the root', () => {
+    expect(normalizeData([{ ref: 'app', dependsOn: ['app'] }])).toEqual({
+      name: 'app',
+      children: [{ name: 'app', cycle: true }],
+    });
+  });
+
+  it('includes the root in the ancestor path', () => {
+    expect(
+      normalizeData([
+        { ref: 'app', dependsOn: ['a'] },
+        { ref: 'a', dependsOn: ['app'] },
+      ]),
+    ).toEqual({
+      name: 'app',
+      children: [{ name: 'a', children: [{ name: 'app', cycle: true }] }],
+    });
+  });
+
+  it('retains shared dependencies under independent parents', () => {
+    expect(
+      normalizeData([
+        { ref: 'app', dependsOn: ['a', 'b'] },
+        { ref: 'a', dependsOn: ['c'] },
+        { ref: 'b', dependsOn: ['c'] },
+        { ref: 'c', dependsOn: ['d'] },
+        { ref: 'd', dependsOn: [] },
+      ]),
+    ).toEqual({
+      name: 'app',
+      children: ['a', 'b'].map((name) => ({
+        name,
+        children: [
+          { name: 'c', children: [{ name: 'd', children: undefined }] },
+        ],
+      })),
+    });
+  });
+
+  it('compares full references rather than normalized labels', () => {
+    const jar = 'pkg:maven/example/lib@1?type=jar';
+    const pom = 'pkg:maven/example/lib@1?type=pom';
+    expect(
+      normalizeData([
+        { ref: jar, dependsOn: [pom] },
+        { ref: pom, dependsOn: [jar] },
+      ]),
+    ).toEqual({
+      name: 'example/lib@1',
+      children: [
+        {
+          name: 'example/lib@1',
+          children: [{ name: 'example/lib@1', cycle: true }],
+        },
+      ],
+    });
+  });
+
+  it('also protects direct calls to retrieveChildren', () => {
+    expect(retrieveChildren(['a'], [{ ref: 'a', dependsOn: ['a'] }])).toEqual([
+      { name: 'a', children: [{ name: 'a', cycle: true }] },
+    ]);
+  });
+
+  it('keeps noncyclic siblings and tolerates missing dependency records', () => {
+    expect(
+      normalizeData([
+        { ref: 'app', dependsOn: ['a', 'missing', 'leaf'] },
+        { ref: 'a', dependsOn: ['a'] },
+        { ref: 'leaf' },
+      ]),
+    ).toEqual({
+      name: 'app',
+      children: [
+        { name: 'a', children: [{ name: 'a', cycle: true }] },
+        { name: 'missing', children: undefined },
+        { name: 'leaf', children: undefined },
+      ],
+    });
+  });
+
+  it('filters a finite tree while preserving cycle markers', () => {
+    const tree = normalizeData(graph);
+    expect(filterTree(tree, 'a')?.children[0].children[0].children[0]).toEqual({
+      name: 'a',
+      cycle: true,
+      children: undefined,
+    });
+    expect(filterTree(tree, 'no-match')).toBeNull();
+    expect(filterTree(tree, '')).toBe(tree);
+  });
+});
 
 describe('normalizeNodeName', () => {
   it('should remove the path before the first forward slash', () => {
