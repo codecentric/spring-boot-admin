@@ -17,9 +17,8 @@
 package de.codecentric.boot.admin.server.notify;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
+import org.springframework.util.Assert;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -36,7 +35,7 @@ import de.codecentric.boot.admin.server.domain.values.InstanceId;
  */
 public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier {
 
-	private final Map<InstanceId, String> lastStatuses = new HashMap<>();
+	private LastStatusStore lastStatusStore = new LastStatusStore();
 
 	/**
 	 * List of changes to ignore. Must be in Format OLD:NEW, for any status use * as
@@ -66,16 +65,28 @@ public abstract class AbstractStatusChangeNotifier extends AbstractEventNotifier
 	}
 
 	protected final String getLastStatus(InstanceId instanceId) {
-		return lastStatuses.getOrDefault(instanceId, "UNKNOWN");
+		String status = this.lastStatusStore.get(instanceId);
+		return (status != null) ? status : "UNKNOWN";
 	}
 
 	protected void updateLastStatus(InstanceEvent event) {
 		if (event instanceof InstanceDeregisteredEvent) {
-			lastStatuses.remove(event.getInstance());
+			this.lastStatusStore.remove(event.getInstance());
 		}
 		if (event instanceof InstanceStatusChangedEvent statusChangedEvent) {
-			lastStatuses.put(event.getInstance(), statusChangedEvent.getStatusInfo().getStatus());
+			this.lastStatusStore.put(event.getInstance(), statusChangedEvent.getStatusInfo().getStatus());
 		}
+	}
+
+	/**
+	 * Replace the store holding the last known status of the instances, e.g. with one
+	 * that is shared between the members of a cluster.
+	 * @param lastStatusStore the store to use
+	 * @since 4.1.4
+	 */
+	public void setLastStatusStore(LastStatusStore lastStatusStore) {
+		Assert.notNull(lastStatusStore, "'lastStatusStore' must not be null");
+		this.lastStatusStore = lastStatusStore;
 	}
 
 	public void setIgnoreChanges(String[] ignoreChanges) {

@@ -17,6 +17,8 @@ its own set of registered clients. This means each node monitors all application
 load on the monitored services. If that is a concern, ensure that each application is registered with only one
 instance of Spring Boot Admin.
 
+The last known status of each instance is kept per notifier in the Hazelcast map `spring-boot-admin-last-statuses` (configurable via `spring.boot.admin.hazelcast.last-statuses`), so that all members agree on the previous status when deciding whether to notify.
+
 ![Architecture](hazelcast-component-diagram.png)
 
 :::info

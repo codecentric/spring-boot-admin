@@ -21,6 +21,12 @@
       "defaultValue": "spring-boot-admin-sent-notifications"
     },
     {
+      "name": "spring.boot.admin.hazelcast.last-statuses",
+      "type": "java.lang.String",
+      "description": "Name of backing Hazelcast-Map for storing the last known status of the instances, per notifier.",
+      "defaultValue": "spring-boot-admin-last-statuses"
+    },
+    {
       "name": "spring.boot.admin.monitor.period",
       "type": "java.lang.Long",
       "deprecation": {
