@@ -1,7 +1,9 @@
 import { RenderResult, screen, waitFor } from '@testing-library/vue';
+import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { applications } from '@/mocks/applications/data';
+import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { render } from '@/test-utils';
@@ -28,6 +30,89 @@ const setUnknownFilter = async (
     expect(screen.getByTestId('treecontainer-svg')).not.toBeVisible();
   });
 };
+
+describe('TreeGraph root selection', () => {
+  beforeEach(() => vi.useFakeTimers({ ignoreMissingTimers: true }));
+  afterEach(() => vi.useRealTimers());
+
+  const application = new Application(applications[0]);
+  const instance: Instance = application.instances[0];
+  const dependencies = [
+    { ref: 'library-a', dependsOn: ['library-c'] },
+    { ref: 'root-app', dependsOn: ['library-a', 'library-b'] },
+    { ref: 'library-b', dependsOn: [] },
+    { ref: 'library-c', dependsOn: [] },
+  ];
+
+  it('uses the metadata root from the fetched SBOM', async () => {
+    server.use(
+      http.get('/instances/:instanceId/actuator/sbom/application', () =>
+        HttpResponse.json({
+          metadata: { component: { 'bom-ref': 'root-app' } },
+          dependencies,
+        }),
+      ),
+    );
+    render(TreeGraph, { props: { instance, sbomId: 'application' } });
+
+    expect(await screen.findAllByText('root-app')).not.toHaveLength(0);
+    expect(screen.getAllByText('library-a')).not.toHaveLength(0);
+    expect(screen.getAllByText('library-b')).not.toHaveLength(0);
+  });
+
+  it('renders the resolved root after clearing an initially unmatched filter', async () => {
+    server.use(
+      http.get('/instances/:instanceId/actuator/sbom/application', () =>
+        HttpResponse.json({
+          metadata: { component: { 'bom-ref': 'root-app' } },
+          dependencies,
+        }),
+      ),
+    );
+    const component = render(TreeGraph, {
+      props: { instance, sbomId: 'application', filter: 'no-match' },
+    });
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('instance-section-loading-spinner'),
+      ).not.toBeInTheDocument(),
+    );
+    expect(screen.queryByTestId('treecontainer-svg')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('instances.dependencies.no_data_provided'),
+    ).not.toBeInTheDocument();
+
+    await component.rerender({ filter: '' });
+    vi.advanceTimersByTime(2000);
+
+    expect(await screen.findAllByText('root-app')).not.toHaveLength(0);
+    expect(screen.getAllByText('library-b')).not.toHaveLength(0);
+  });
+
+  it.each([
+    { dependencies },
+    { metadata: { component: {} }, dependencies },
+    { metadata: { component: { 'bom-ref': 'missing' } }, dependencies },
+    { metadata: { component: { 'bom-ref': 'root-app' } } },
+    { metadata: { component: { 'bom-ref': 'root-app' } }, dependencies: [] },
+  ])(
+    'shows an empty state when the root cannot be resolved: %j',
+    async (sbom) => {
+      server.use(
+        http.get('/instances/:instanceId/actuator/sbom/application', () =>
+          HttpResponse.json(sbom),
+        ),
+      );
+      render(TreeGraph, { props: { instance, sbomId: 'application' } });
+
+      expect(
+        await screen.findByText('instances.dependencies.no_data_provided'),
+      ).toBeInTheDocument();
+      expect(screen.queryByTestId('treecontainer-svg')).not.toBeInTheDocument();
+      expect(screen.queryByText('library-a')).not.toBeInTheDocument();
+    },
+  );
+});
 
 describe('TreeGraph', () => {
   const application = new Application(applications[0]);

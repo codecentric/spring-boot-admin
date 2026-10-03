@@ -3,11 +3,77 @@ import { describe, expect, it } from 'vitest';
 import {
   SbomDependency,
   filterTree,
+  normalizeData,
   normalizeNodeName,
   retrieveChildren,
 } from './sbomUtils';
 
 import { DependencyTreeData } from '@/views/instances/sbomdependencytrees/dependencyTree';
+
+describe('normalizeData', () => {
+  const root = { ref: 'app', dependsOn: ['a', 'b'] };
+  const libraries = [
+    { ref: 'a', dependsOn: ['c'] },
+    { ref: 'b', dependsOn: [] },
+    { ref: 'c', dependsOn: [] },
+  ];
+
+  it.each([0, 1, 3])('uses the metadata root at index %s', (index) => {
+    const dependencies = [...libraries];
+    dependencies.splice(index, 0, root);
+    const original = structuredClone(dependencies);
+
+    expect(normalizeData(dependencies, 'app')).toEqual({
+      name: 'app',
+      children: [
+        { name: 'a', children: [{ name: 'c', children: undefined }] },
+        { name: 'b', children: undefined },
+      ],
+    });
+    expect(dependencies).toEqual(original);
+  });
+
+  it('matches the full reference before normalizing its label', () => {
+    const jar = 'pkg:maven/example/app@1.0?type=jar';
+    const pom = 'pkg:maven/example/app@1.0?type=pom';
+    expect(
+      normalizeData(
+        [
+          { ref: pom, dependsOn: ['wrong'] },
+          { ref: jar, dependsOn: ['a'] },
+        ],
+        jar,
+      ),
+    ).toEqual({
+      name: 'example/app@1.0',
+      children: [{ name: 'a', children: undefined }],
+    });
+  });
+
+  it.each([undefined, '', 'missing'])('does not guess a root for %s', (ref) => {
+    expect(normalizeData([root, ...libraries], ref)).toBeNull();
+  });
+
+  it('handles an empty dependency graph', () => {
+    expect(normalizeData([], 'app')).toBeNull();
+  });
+
+  it.each([[], undefined])('handles root dependencies %s', (dependsOn) => {
+    expect(normalizeData([{ ref: 'app', dependsOn }], 'app')).toEqual({
+      name: 'app',
+      children: undefined,
+    });
+  });
+
+  it('handles a child whose dependency list is absent', () => {
+    expect(
+      normalizeData([{ ref: 'app', dependsOn: ['a'] }, { ref: 'a' }], 'app'),
+    ).toEqual({
+      name: 'app',
+      children: [{ name: 'a', children: undefined }],
+    });
+  });
+});
 
 describe('normalizeNodeName', () => {
   it('should remove the path before the first forward slash', () => {
