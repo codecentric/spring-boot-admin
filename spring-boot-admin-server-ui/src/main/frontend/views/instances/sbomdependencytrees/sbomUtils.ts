@@ -48,12 +48,13 @@ export const retrieveChildren = (
 
 export const normalizeData = (
   sbomDependencies: SbomDependency[],
-  rootRef: string | undefined,
-): DependencyTreeData | null => {
-  if (!rootRef) return null;
-
-  const root = sbomDependencies.find((node) => node.ref === rootRef);
-  if (!root) return null;
+): DependencyTreeData => {
+  const children =
+    retrieveChildren(
+      sbomDependencies[0].dependsOn ?? [],
+      sbomDependencies,
+      new Set([sbomDependencies[0].ref]),
+    ) ?? [];
 
   return {
     name: normalizeNodeName(root.ref),
