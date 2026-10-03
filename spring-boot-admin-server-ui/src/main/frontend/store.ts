@@ -122,6 +122,15 @@ export default class ApplicationStore {
 
   updateApplication(application: Application) {
     const oldApplication = this._applications.get(application.name);
+    if (
+      oldApplication &&
+      oldApplication.statusTimestamp &&
+      application.statusTimestamp &&
+      new Date(application.statusTimestamp) <
+        new Date(oldApplication.statusTimestamp)
+    ) {
+      return;
+    }
     if (!oldApplication && application.instances.length > 0) {
       this._applications.set(application.name, application);
       this._dispatchEvent('added', application);
