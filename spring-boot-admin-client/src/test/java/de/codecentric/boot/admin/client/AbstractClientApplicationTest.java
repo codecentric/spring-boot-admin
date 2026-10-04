@@ -37,6 +37,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.EventListener;
 
+import de.codecentric.boot.admin.client.config.SpringBootAdminClientInetUtilsAutoConfiguration;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.created;
@@ -144,7 +145,7 @@ public abstract class AbstractClientApplicationTest {
 	}
 
 	@SpringBootConfiguration
-	@EnableAutoConfiguration
+	@EnableAutoConfiguration(exclude = SpringBootAdminClientInetUtilsAutoConfiguration.class)
 	public static class TestClientApplication {
 
 		@Autowired
