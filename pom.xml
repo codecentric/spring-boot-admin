@@ -33,7 +33,7 @@
         <revision>4.1.4-SNAPSHOT</revision>
 
         <java.version>17</java.version>
-        <npm.version>12.1.0</npm.version>
+        <npm.version>12.2.0</npm.version>
         <node.version>v24.21.0</node.version>
 
         <require.maven.version>3.9</require.maven.version>
