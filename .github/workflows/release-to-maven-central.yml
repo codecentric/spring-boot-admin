@@ -109,26 +109,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
-
-      - name: free disk space
-        continue-on-error: true
-        run: |
-          df -h
-          sudo swapoff -a
-          sudo rm -f /swapfile
-          sudo apt clean
-          if [ -n "$(docker image ls -q)" ]; then
-            docker rmi -f $(docker image ls -aq) || true
-          fi
-          df -h
-
-      - name: Generate changelog
-        id: changelog
-        uses: metcalfc/changelog-generator@v5.0.1
-        with:
-          myToken: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v3
@@ -138,5 +118,5 @@ jobs:
           draft: false
           prerelease: ${{ contains(github.event.inputs.releaseversion, '-') }}
           make_latest: ${{ github.event.inputs.latest }}
-          body: ${{ steps.changelog.outputs.changelog }}
+          generate_release_notes: true
 
