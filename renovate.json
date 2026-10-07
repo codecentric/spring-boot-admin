@@ -55,6 +55,16 @@
       "allowedVersions": "<13"
     },
     {
+      "description": "Maven 3.10 breaks central-publishing-maven-plugin 0.11.0 (staged maven-metadata is not removed, Central rejects bundle with 'content that does NOT have a .pom file'); stay on 3.9.x",
+      "matchManagers": [
+        "maven-wrapper"
+      ],
+      "matchDepNames": [
+        "maven"
+      ],
+      "allowedVersions": "<3.10"
+    },
+    {
       "description": "PrimeVue went non-MIT (proprietary PrimeUI License) at v5; stay on last MIT major (4.x) for Apache-2.0 compliance",
       "matchPackageNames": [
         "primevue",
