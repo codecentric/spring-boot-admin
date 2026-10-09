@@ -18,6 +18,8 @@ package de.codecentric.boot.admin.server.notify.filter;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,6 +53,21 @@ class FilteringNotifierTest {
 	void setUp() {
 		repository = mock(InstanceRepository.class);
 		when(repository.find(instance.getId())).thenReturn(Mono.just(instance));
+	}
+
+	@Test
+	void test_injected_map_is_used() {
+		ConcurrentMap<String, NotificationFilter> backingMap = new ConcurrentHashMap<>();
+		FilteringNotifier notifier = new FilteringNotifier(new TestNotifier(), repository, backingMap);
+
+		ApplicationNameNotificationFilter filter = new ApplicationNameNotificationFilter("foo", null);
+		notifier.addFilter(filter);
+
+		assertThat(backingMap).containsKey(filter.getId());
+
+		notifier.removeFilter(filter.getId());
+
+		assertThat(backingMap).doesNotContainKey(filter.getId());
 	}
 
 	@Test
