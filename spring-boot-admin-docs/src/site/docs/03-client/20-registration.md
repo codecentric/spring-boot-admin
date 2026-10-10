@@ -184,6 +184,33 @@ spring:
 - **`IP`**: Use the IP address
 - **`CANONICAL`**: Use the canonical hostname
 
+### Spring Cloud InetUtils
+
+When a Spring Cloud `InetUtils` bean is available, the client uses it to select the local address for registration.
+The servlet and reactive factories retain their usual context paths and management URL handling.
+
+For example, prefer a network and ignore interfaces through Spring Cloud configuration:
+
+```yaml
+spring:
+  cloud:
+    inetutils:
+      preferred-networks:
+        - '192.168.'
+      ignored-interfaces:
+        - 'docker.*'
+  boot:
+    admin:
+      client:
+        instance:
+          service-host-type: IP
+```
+
+Explicit registration URLs, `server.address`, and `management.server.address` retain their usual precedence.
+If `InetUtils` returns no address, the client falls back to `InetAddress.getLocalHost()`.
+Applications without Spring Cloud continue to use the default factories.
+Custom `ApplicationFactory` beans and the Cloud Foundry factory take precedence over the InetUtils factories.
+
 ### Custom ApplicationFactory
 
 Create a custom factory for specialized registration logic:
