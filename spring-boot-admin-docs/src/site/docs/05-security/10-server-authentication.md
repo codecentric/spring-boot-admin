@@ -436,6 +436,16 @@ spring:
 
 **Security Configuration**:
 
+Spring Boot Admin serves its own username/password login page at `/login`, which knows nothing
+about OAuth2. Do **not** configure it as the OAuth2 login page (i.e. avoid
+`oauth2Login(oauth2 -> oauth2.loginPage(adminServer.path("/login")))`). That combination does not
+produce a working SSO flow: because `httpBasic()` is also present, Spring Security selects the
+HTTP-Basic entry point, so unauthenticated browser requests receive a `401` challenge instead of a
+redirect to your identity provider, and `/login` keeps showing the local username/password form
+with no link to the provider.
+
+Instead, leave the login page at its default and configure the entry point explicitly:
+
 ```java
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http,
@@ -450,9 +460,15 @@ public SecurityFilterChain filterChain(HttpSecurity http,
             .permitAll()
             .anyRequest().authenticated()
         )
-        .oauth2Login(oauth2 -> oauth2
-            .loginPage(adminServer.path("/login"))
-        )
+        .oauth2Login(Customizer.withDefaults())
+        // Keep HTTP-Basic so the Spring Boot Admin Client can still (de-)register itself.
+        // Clients send the "Authorization" header preemptively, so they never reach the
+        // entry point below - it only affects requests that carry no credentials at all.
+        .httpBasic(Customizer.withDefaults())
+        .exceptionHandling(exceptions -> exceptions
+            .defaultAuthenticationEntryPointFor(
+                new LoginUrlAuthenticationEntryPoint("/oauth2/authorization/keycloak"),
+                AnyRequestMatcher.INSTANCE))
         .logout(logout -> logout
             .logoutUrl(adminServer.path("/logout"))
             .logoutSuccessUrl(adminServer.path("/"))
@@ -463,6 +479,17 @@ public SecurityFilterChain filterChain(HttpSecurity http,
     return http.build();
 }
 ```
+
+The `keycloak` segment of `/oauth2/authorization/keycloak` is the registration id from the
+configuration above. With the entry point in place, browsers are redirected straight to the
+identity provider, while Spring Security's generated login page (shown at `/login`) still offers
+a link to it.
+
+:::note
+Without `httpBasic()` the Spring Boot Admin Client cannot register itself over the registration
+API, so only drop it when your instances are picked up by service discovery instead. Used on its
+own, `oauth2Login()` also redirects unauthenticated requests directly to the identity provider.
+:::
 
 ---
 
