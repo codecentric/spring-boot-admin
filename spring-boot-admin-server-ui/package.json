@@ -84,7 +84,7 @@
     "@types/lodash-es": "^4.17.7",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
-    "@vitejs/plugin-vue": "6.0.9",
+    "@vitejs/plugin-vue": "6.0.10",
     "@vue/test-utils": "2.5.1",
     "axios-mock-adapter": "^2.1.0",
     "eslint": "^10.0.0",
