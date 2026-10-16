@@ -69,6 +69,13 @@ spring:
               de-service-test-5: A large content
               de-service-test-6: A large content
             kubectl.kubernetes.io/last-applied-configuration: '{"name":"jvm.threads.peak","description":"The peak live thread count since the Java virtual machine started or peak was reset","baseUnit":"threads","measurements":[{"statistic":"VALUE","value":64.0}],"availableTags":[]}'
+            "[sidebar.links.0.label]": "Docs"
+            "[sidebar.links.0.url]": "https://docs.spring-boot-admin.com"
+            "[sidebar.links.1.label]": "A very long external sidebar link label that gets truncated"
+            "[sidebar.links.1.url]": "https://github.com/codecentric/spring-boot-admin/issues/5765"
+            "[sidebar.links.2.label]": "A very long iframe sidebar link label that gets truncated"
+            "[sidebar.links.2.url]": "https://docs.spring-boot-admin.com"
+            "[sidebar.links.2.iframe]": "true"
   config:
     import: optional:configserver:http://localhost:8888/
   jmx:
