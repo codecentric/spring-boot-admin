@@ -32,12 +32,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
-import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
-import de.codecentric.boot.admin.server.notify.Notifier;
 import de.codecentric.boot.admin.server.notify.filter.FilteringNotifier;
 import de.codecentric.boot.admin.server.notify.filter.NotificationFilter;
 
@@ -57,6 +55,8 @@ public class AdminServerHazelcastAutoConfiguration {
 	public static final String DEFAULT_NAME_NOTIFICATION_FILTERS_MAP = "spring-boot-admin-notification-filters";
 
 	public static final String SENT_NOTIFICATIONS_BEAN_NAME = "sentNotificationsMap";
+
+	public static final String NOTIFICATION_FILTERS_BEAN_NAME = "notificationFiltersMap";
 
 	@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP + "}")
 	private final String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
@@ -88,22 +88,20 @@ public class AdminServerHazelcastAutoConfiguration {
 		return hazelcastInstance.getMap(nameSentNotificationsMap);
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(Notifier.class)
-	@AutoConfigureBefore({ AdminServerNotifierAutoConfiguration.NotifierTriggerConfiguration.class })
-	public static class NotificationFilterConfiguration {
-
-		@Value("${spring.boot.admin.hazelcast.notification-filters:" + DEFAULT_NAME_NOTIFICATION_FILTERS_MAP + "}")
-		private final String nameNotificationFiltersMap = DEFAULT_NAME_NOTIFICATION_FILTERS_MAP;
-
-		@Bean
-		@ConditionalOnMissingBean(FilteringNotifier.class)
-		public FilteringNotifier filteringNotifier(HazelcastInstance hazelcastInstance, Notifier delegate,
-				InstanceRepository repository) {
-			IMap<String, NotificationFilter> filtersMap = hazelcastInstance.getMap(this.nameNotificationFiltersMap);
-			return new FilteringNotifier(delegate, repository, filtersMap);
-		}
-
+	/**
+	 * Distributed map holding the notification filters, so that filters are shared across
+	 * the cluster. Pass it to a {@link FilteringNotifier} declared in your application.
+	 * @param hazelcastInstance the Hazelcast instance
+	 * @param nameNotificationFiltersMap the name of the backing map
+	 * @return the map holding the notification filters
+	 */
+	@Bean(name = NOTIFICATION_FILTERS_BEAN_NAME)
+	@Lazy
+	@ConditionalOnMissingBean(name = NOTIFICATION_FILTERS_BEAN_NAME)
+	public IMap<String, NotificationFilter> notificationFiltersMap(HazelcastInstance hazelcastInstance,
+			@Value("${spring.boot.admin.hazelcast.notification-filters:" + DEFAULT_NAME_NOTIFICATION_FILTERS_MAP
+					+ "}") String nameNotificationFiltersMap) {
+		return hazelcastInstance.getMap(nameNotificationFiltersMap);
 	}
 
 }
