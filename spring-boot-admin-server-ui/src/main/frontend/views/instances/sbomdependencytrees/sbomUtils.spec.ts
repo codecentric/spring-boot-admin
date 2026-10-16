@@ -75,6 +75,154 @@ describe('normalizeData', () => {
   });
 });
 
+describe('cyclic dependencies', () => {
+  const graph = [
+    { ref: 'app', dependsOn: ['a'] },
+    { ref: 'a', dependsOn: ['b'] },
+    { ref: 'b', dependsOn: ['a'] },
+  ];
+
+  it.each([0, 1, 2])(
+    'detects a cycle back to the metadata root at index %s',
+    (index) => {
+      const dependencies = [
+        { ref: 'a', dependsOn: ['b'] },
+        { ref: 'b', dependsOn: ['app'] },
+      ];
+      dependencies.splice(index, 0, { ref: 'app', dependsOn: ['a'] });
+      expect(normalizeData(dependencies, 'app')).toEqual({
+        name: 'app',
+        children: [
+          {
+            name: 'a',
+            children: [{ name: 'b', children: [{ name: 'app', cycle: true }] }],
+          },
+        ],
+      });
+    },
+  );
+
+  it('terminates a reachable cycle without modifying the graph', () => {
+    const original = structuredClone(graph);
+    const tree = normalizeData(graph, 'app');
+    expect(tree).toEqual({
+      name: 'app',
+      children: [
+        {
+          name: 'a',
+          children: [{ name: 'b', children: [{ name: 'a', cycle: true }] }],
+        },
+      ],
+    });
+    expect(() => JSON.stringify(tree)).not.toThrow();
+    expect(graph).toEqual(original);
+  });
+
+  it('terminates a self-reference at the root', () => {
+    expect(normalizeData([{ ref: 'app', dependsOn: ['app'] }], 'app')).toEqual({
+      name: 'app',
+      children: [{ name: 'app', cycle: true }],
+    });
+  });
+
+  it('includes the root in the ancestor path', () => {
+    expect(
+      normalizeData(
+        [
+          { ref: 'app', dependsOn: ['a'] },
+          { ref: 'a', dependsOn: ['app'] },
+        ],
+        'app',
+      ),
+    ).toEqual({
+      name: 'app',
+      children: [{ name: 'a', children: [{ name: 'app', cycle: true }] }],
+    });
+  });
+
+  it('retains shared dependencies under independent parents', () => {
+    expect(
+      normalizeData(
+        [
+          { ref: 'app', dependsOn: ['a', 'b'] },
+          { ref: 'a', dependsOn: ['c'] },
+          { ref: 'b', dependsOn: ['c'] },
+          { ref: 'c', dependsOn: ['d'] },
+          { ref: 'd', dependsOn: [] },
+        ],
+        'app',
+      ),
+    ).toEqual({
+      name: 'app',
+      children: ['a', 'b'].map((name) => ({
+        name,
+        children: [
+          { name: 'c', children: [{ name: 'd', children: undefined }] },
+        ],
+      })),
+    });
+  });
+
+  it('compares full references rather than normalized labels', () => {
+    const jar = 'pkg:maven/example/lib@1?type=jar';
+    const pom = 'pkg:maven/example/lib@1?type=pom';
+    expect(
+      normalizeData(
+        [
+          { ref: jar, dependsOn: [pom] },
+          { ref: pom, dependsOn: [jar] },
+        ],
+        jar,
+      ),
+    ).toEqual({
+      name: 'example/lib@1',
+      children: [
+        {
+          name: 'example/lib@1',
+          children: [{ name: 'example/lib@1', cycle: true }],
+        },
+      ],
+    });
+  });
+
+  it('also protects direct calls to retrieveChildren', () => {
+    expect(retrieveChildren(['a'], [{ ref: 'a', dependsOn: ['a'] }])).toEqual([
+      { name: 'a', children: [{ name: 'a', cycle: true }] },
+    ]);
+  });
+
+  it('keeps noncyclic siblings and tolerates missing dependency records', () => {
+    expect(
+      normalizeData(
+        [
+          { ref: 'app', dependsOn: ['a', 'missing', 'leaf'] },
+          { ref: 'a', dependsOn: ['a'] },
+          { ref: 'leaf' },
+        ],
+        'app',
+      ),
+    ).toEqual({
+      name: 'app',
+      children: [
+        { name: 'a', children: [{ name: 'a', cycle: true }] },
+        { name: 'missing', children: undefined },
+        { name: 'leaf', children: undefined },
+      ],
+    });
+  });
+
+  it('filters a finite tree while preserving cycle markers', () => {
+    const tree = normalizeData(graph, 'app');
+    expect(filterTree(tree, 'a')?.children[0].children[0].children[0]).toEqual({
+      name: 'a',
+      cycle: true,
+      children: undefined,
+    });
+    expect(filterTree(tree, 'no-match')).toBeNull();
+    expect(filterTree(tree, '')).toBe(tree);
+  });
+});
+
 describe('normalizeNodeName', () => {
   it('should remove the path before the first forward slash', () => {
     const input = 'path/to/resource';

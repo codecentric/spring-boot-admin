@@ -39,6 +39,10 @@
         <div class="node-with-children w-3 h-3 rounded-full shadow-sm"></div>
         <span>{{ t('instances.sbom.legend.node_with_children') }}</span>
       </div>
+      <div class="flex items-center gap-2">
+        <span aria-hidden="true">↩</span>
+        <span>{{ t('instances.sbom.legend.cycle') }}</span>
+      </div>
     </div>
   </sba-instance-section>
 </template>
@@ -149,7 +153,7 @@ onBeforeUnmount(() => {
 
   // Clean up D3 elements
   if (rootNode.value && treeContainer.value) {
-    d3.select(treeContainer.value).select('#tooltip').remove();
+    d3.select(treeContainer.value).select('.sbom-tooltip').remove();
     d3.select(treeContainer.value).select('svg').selectAll('*').on('.', null);
   }
 });
@@ -176,5 +180,10 @@ onBeforeUnmount(() => {
 :deep(.edge) {
   stroke: #cccccc;
   stroke-width: 1;
+}
+
+:deep(.node-cycle) {
+  stroke: currentColor;
+  stroke-dasharray: 4 2;
 }
 </style>

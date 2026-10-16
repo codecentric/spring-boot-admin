@@ -16,7 +16,7 @@
 import * as d3 from 'd3';
 import { HierarchyNode, HierarchyPointNode, Selection, TreeLayout } from 'd3';
 
-const MARGIN = { top: 20, bottom: 20, left: 10 };
+const MARGIN = { top: 22, bottom: 22, right: 22, left: 22 };
 const MAX_ITEMS_IN_FRAME = 4;
 
 const extractGroupId = (dependency: string): string =>
@@ -28,6 +28,7 @@ const extractArtifactId = (dependency: string): string =>
 export type DependencyTreeData = {
   name: string;
   children?: DependencyTreeData[];
+  cycle?: boolean;
 };
 
 type HierarchyNodeData = HierarchyNode<DependencyTreeData>;
@@ -70,6 +71,8 @@ export type D3DependencyTree = {
   svg: Selection<SVGGElement, unknown, null, undefined>;
   gNode: Selection<SVGGElement, unknown, null, undefined>;
   gLink: Selection<SVGGElement, unknown, null, undefined>;
+  tooltip: Selection<HTMLDivElement, unknown, null, undefined>;
+  nodeWidth: number;
 };
 
 // Utility Functions
@@ -122,7 +125,8 @@ const updateDependencyTree = async (
   source: MyHierarchyNode,
   removeNodes = false,
 ): Promise<void> => {
-  const { root, treeLayout, svg, gNode, gLink, nodeWidth } = dependencyTree;
+  const { root, treeLayout, svg, gNode, gLink, nodeWidth, tooltip } =
+    dependencyTree;
   const nodes = root.descendants().reverse();
   const links = root.links();
 
@@ -139,7 +143,8 @@ const updateDependencyTree = async (
   );
 
   const height = right.x - left.x + MARGIN.top + MARGIN.bottom;
-  const width = rightWidth.y - leftWidth.y + MARGIN.left + nodeWidth;
+  const width =
+    rightWidth.y - leftWidth.y + MARGIN.left + nodeWidth + MARGIN.right;
   const treeContainerWidth =
     dependencyTree.treeContainer.getBoundingClientRect().width;
 
@@ -189,7 +194,8 @@ const updateDependencyTree = async (
     .attr('ry', 6)
     .attr('stroke-width', 1)
     .attr('fill-opacity', 0.8)
-    .attr('class', (d) => `node ${d._children ? 'node-with-children' : ''}`);
+    .attr('class', (d) => `node ${d._children ? 'node-with-children' : ''}`)
+    .classed('node-cycle', (d) => !!d.data.cycle);
 
   nodeEnter
     .append('text')
@@ -205,19 +211,21 @@ const updateDependencyTree = async (
     .attr('dy', '.75rem')
     .attr('x', 12)
     .attr('text-anchor', 'start')
-    .text((d) => extractArtifactId(d.data.name));
+    .text(
+      (d) => `${d.data.cycle ? '↩ ' : ''}${extractArtifactId(d.data.name)}`,
+    );
 
   nodeEnter
     .on('mouseover', (event, d) => {
-      d3.select('#tooltip').transition().style('opacity', 1).text(d.data.name);
+      tooltip.transition().style('opacity', 1).text(d.data.name);
     })
     .on('mouseout', () => {
-      d3.select('#tooltip').transition().style('opacity', 0);
+      tooltip.transition().style('opacity', 0);
     })
     .on('mousemove', (event) => {
-      d3.select('#tooltip')
-        .style('left', `${event.layerX + 10}px`)
-        .style('top', `${event.layerY + 10}px`);
+      tooltip
+        .style('left', `${event.clientX + 10}px`)
+        .style('top', `${event.clientY + 10}px`);
     });
 
   nodeEnter.each((d) => {
@@ -263,6 +271,7 @@ export const createDependencyTree = async (
   initFolding = true,
 ): Promise<D3DependencyTree> => {
   d3.select(treeContainer).select('svg').remove();
+  d3.select(treeContainer).select('.sbom-tooltip').remove();
 
   if (!treeData) return;
 
@@ -285,11 +294,17 @@ export const createDependencyTree = async (
     .attr('viewBox', [-MARGIN.left, -MARGIN.top, elementsWidth, dx])
     .attr('style', 'font-size: .75rem;');
 
-  d3.select(treeContainer)
+  const tooltip = d3
+    .select(treeContainer)
     .append('div')
-    .attr('id', 'tooltip')
-    .attr('class', 'border border-gray-200 bg-white rounded px-2 shadow')
-    .attr('style', 'position: absolute; opacity: 0; font-size: 0.85rem;');
+    .attr(
+      'class',
+      'sbom-tooltip border border-gray-200 bg-white rounded px-2 shadow',
+    )
+    .attr(
+      'style',
+      'position: fixed; pointer-events: none; z-index: 50; opacity: 0; font-size: 0.85rem;',
+    );
 
   const { gLink, gNode } = createGlobalLinkAndNode(svg);
 
@@ -301,6 +316,7 @@ export const createDependencyTree = async (
     treeLayout,
     gLink,
     nodeWidth,
+    tooltip,
   };
 
   initRootAndDescendants(d3DependencyTree, initFolding);
