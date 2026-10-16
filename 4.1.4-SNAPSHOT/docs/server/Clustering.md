@@ -71,6 +71,18 @@ public Config hazelcastConfig() {
 
             .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
+    // This map is used to share notification filter rules across all cluster nodes.
+
+    // Filters added on one node will automatically be visible to all other nodes.
+
+    MapConfig notificationFiltersMap = new MapConfig(DEFAULT_NAME_NOTIFICATION_FILTERS_MAP)
+
+            .setInMemoryFormat(InMemoryFormat.OBJECT)
+
+            .setBackupCount(1)
+
+            .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+
 
 
     Config config = new Config();
@@ -78,6 +90,8 @@ public Config hazelcastConfig() {
     config.addMapConfig(eventStoreMap);
 
     config.addMapConfig(sentNotificationsMap);
+
+    config.addMapConfig(notificationFiltersMap);
 
     config.setProperty("hazelcast.jmx", "true");
 
