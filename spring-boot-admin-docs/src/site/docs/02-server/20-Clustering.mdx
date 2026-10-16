@@ -86,3 +86,17 @@ public Config hazelcastConfig() {
     return config;
 }
 ```
+
+### Sharing notification filters
+
+The Hazelcast map `spring-boot-admin-notification-filters` (configurable via `spring.boot.admin.hazelcast.notification-filters`) is available as a bean named `notificationFiltersMap`. To share filters across the cluster, you pass it to the constructor of your own `FilteringNotifier`. This allows filter definitions to be replicated and kept in sync across all cluster nodes.
+
+```java
+@Bean
+@Primary
+public FilteringNotifier filteringNotifier(@Qualifier("mailNotifier") Notifier delegate,
+        InstanceRepository repository,
+        @Qualifier("notificationFiltersMap") ConcurrentMap<String, NotificationFilter> filters) {
+    return new FilteringNotifier(delegate, repository, filters);
+}
+```
