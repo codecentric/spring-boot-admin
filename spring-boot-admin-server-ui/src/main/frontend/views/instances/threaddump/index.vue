@@ -119,11 +119,10 @@ export default {
         entry.timeline[entry.timeline.length - 1].end = now;
       });
 
+      const returned = new Set(returnedThreadIds);
       this.threadOrder = [
         ...returnedThreadIds,
-        ...this.threadOrder.filter(
-          (threadId) => !returnedThreadIds.includes(threadId),
-        ),
+        ...this.threadOrder.filter((threadId) => !returned.has(threadId)),
       ];
     },
     async fetchThreaddump() {
