@@ -153,7 +153,7 @@ onBeforeUnmount(() => {
 
   // Clean up D3 elements
   if (rootNode.value && treeContainer.value) {
-    d3.select(treeContainer.value).select('#tooltip').remove();
+    d3.select(treeContainer.value).select('.sbom-tooltip').remove();
     d3.select(treeContainer.value).select('svg').selectAll('*').on('.', null);
   }
 });
