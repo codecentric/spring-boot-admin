@@ -32,7 +32,9 @@ const setUnknownFilter = async (
 };
 
 describe('TreeGraph root selection', () => {
-  beforeEach(() => vi.useFakeTimers({ ignoreMissingTimers: true }));
+  beforeEach(() =>
+    vi.useFakeTimers({ ignoreMissingTimers: true, shouldAdvanceTime: true }),
+  );
   afterEach(() => vi.useRealTimers());
 
   const application = new Application(applications[0]);
@@ -134,7 +136,7 @@ describe('TreeGraph', () => {
   };
 
   beforeEach(async () => {
-    vi.useFakeTimers({ ignoreMissingTimers: true });
+    vi.useFakeTimers({ ignoreMissingTimers: true, shouldAdvanceTime: true });
     await renderComponent();
   });
 
