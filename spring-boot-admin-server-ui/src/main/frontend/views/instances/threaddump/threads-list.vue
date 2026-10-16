@@ -63,7 +63,7 @@ export default {
   components: { ThreadListItem, threadTag },
   props: {
     threadTimelines: {
-      type: Object,
+      type: Array,
       required: true,
     },
   },
@@ -98,8 +98,8 @@ export default {
       return thread.timeline.find((entry) => entry.start === start).details;
     },
     getTimeExtent(timelines) {
-      return Object.entries(timelines)
-        .map(([, value]) => value.timeline)
+      return timelines
+        .map((value) => value.timeline)
         .map((timeline) => ({
           start: timeline[0].start,
           end: timeline[timeline.length - 1].end,
@@ -166,7 +166,8 @@ export default {
               .tickFormat((d) => moment(d).format('HH:mm:ss')),
           );
 
-        Object.entries(timelines).forEach(([threadId, value]) => {
+        timelines.forEach((value) => {
+          const { threadId } = value;
           const svg = d3.select(`#thread-${threadId}`).attr('width', width);
           const d = svg.selectAll('rect').data(value.timeline);
 
