@@ -45,6 +45,7 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 import de.codecentric.boot.admin.server.notify.Notifier;
 
 import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_EVENT_STORE_MAP;
+import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_NOTIFICATION_FILTERS_MAP;
 import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
 import static java.util.Collections.singletonList;
 import static org.springframework.http.HttpMethod.DELETE;
@@ -81,9 +82,17 @@ public class SpringBootAdminHazelcastApplication {
 					new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setMaxSizePolicy(MaxSizePolicy.PER_NODE))
 			.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
+		// This map is used to share notification filter rules across all cluster nodes.
+		// Filters added on one node will automatically be visible to all other nodes.
+		MapConfig notificationFiltersMap = new MapConfig(DEFAULT_NAME_NOTIFICATION_FILTERS_MAP)
+			.setInMemoryFormat(InMemoryFormat.OBJECT)
+			.setBackupCount(1)
+			.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+
 		Config config = new Config();
 		config.addMapConfig(eventStoreMap);
 		config.addMapConfig(sentNotificationsMap);
+		config.addMapConfig(notificationFiltersMap);
 		config.setProperty("hazelcast.jmx", "true");
 
 		// WARNING: This setups a local cluster, you change it to fit your needs.

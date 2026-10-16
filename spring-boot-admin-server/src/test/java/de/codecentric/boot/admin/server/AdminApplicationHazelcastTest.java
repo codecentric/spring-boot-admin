@@ -46,6 +46,7 @@ import reactor.test.StepVerifier;
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
 import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_EVENT_STORE_MAP;
+import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_NOTIFICATION_FILTERS_MAP;
 import static de.codecentric.boot.admin.server.config.AdminServerHazelcastAutoConfiguration.DEFAULT_NAME_SENT_NOTIFICATIONS_MAP;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -145,9 +146,15 @@ class AdminApplicationHazelcastTest extends AbstractAdminApplicationTest {
 				.setEvictionConfig(new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU))
 				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
 
+			MapConfig notificationFiltersMap = new MapConfig(DEFAULT_NAME_NOTIFICATION_FILTERS_MAP)
+				.setInMemoryFormat(InMemoryFormat.OBJECT)
+				.setBackupCount(1)
+				.setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+
 			Config config = new Config();
 			config.addMapConfig(eventStoreMap);
 			config.addMapConfig(sentNotificationsMap);
+			config.addMapConfig(notificationFiltersMap);
 			config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
 			TcpIpConfig tcpIpConfig = config.getNetworkConfig().getJoin().getTcpIpConfig();
 			tcpIpConfig.setEnabled(true);

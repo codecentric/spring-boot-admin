@@ -46,7 +46,7 @@ public class FilteringNotifier extends AbstractEventNotifier {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FilteringNotifier.class);
 
-	private final ConcurrentMap<String, NotificationFilter> filters = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, NotificationFilter> filters;
 
 	private final Notifier delegate;
 
@@ -55,9 +55,15 @@ public class FilteringNotifier extends AbstractEventNotifier {
 	private Duration cleanupInterval = Duration.ofSeconds(10);
 
 	public FilteringNotifier(Notifier delegate, InstanceRepository repository) {
+		this(delegate, repository, new ConcurrentHashMap<>());
+	}
+
+	public FilteringNotifier(Notifier delegate, InstanceRepository repository,
+			ConcurrentMap<String, NotificationFilter> filters) {
 		super(repository);
 		Assert.notNull(delegate, "'delegate' must not be null!");
 		this.delegate = delegate;
+		this.filters = filters;
 	}
 
 	@Override
