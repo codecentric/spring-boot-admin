@@ -58,8 +58,9 @@
           }"
           class="navbar-link navbar-link__group"
         >
-          <span v-html="group.icon" />
+          <span class="shrink-0" v-html="group.icon" />
           <span
+            class="navbar-link__label"
             v-text="
               hasMultipleViews(group)
                 ? getGroupTitle(group.id)
@@ -68,7 +69,7 @@
           />
           <button
             v-if="hasMultipleViews(group)"
-            class="ml-auto px-2 py-2 cursor-pointer hover:bg-sba-500/50 rounded"
+            class="shrink-0 ml-auto px-2 py-2 cursor-pointer hover:bg-sba-500/50 rounded"
             @click.prevent="toggleGroup(group.id)"
           >
             <font-awesome-icon
@@ -98,7 +99,9 @@
               class="navbar-link navbar-link__group_item"
               exact-active-class=""
             >
-              <component :is="view.handle" />
+              <span class="navbar-link__label">
+                <component :is="view.handle" />
+              </span>
             </router-link>
           </li>
         </ul>
@@ -127,23 +130,29 @@
                   name: 'instances/custom-link-view',
                   params: { instanceId: instance.id, url: view.href },
                 }"
+                :title="view.title"
                 active-class="navbar-link__active"
                 class="navbar-link navbar-link--custom navbar-link__group_item"
                 exact-active-class=""
               >
-                <component :is="view.handle" />
+                <span class="navbar-link__label">
+                  <component :is="view.handle" />
+                </span>
               </router-link>
               <a
                 v-else-if="view.href"
                 :href="view.href"
+                :title="view.title"
                 class="navbar-link navbar-link--custom navbar-link__group_item"
                 target="_blank"
                 rel="noopener"
               >
-                <component :is="view.handle" />
+                <span class="navbar-link__label">
+                  <component :is="view.handle" />
+                </span>
                 <font-awesome-icon
                   :icon="faArrowUpRightFromSquare"
-                  class="w-2 ml-1"
+                  class="w-2 ml-auto shrink-0"
                 />
               </a>
             </li>
@@ -187,6 +196,7 @@ const customLinksFromMetadata = computed(() => {
   return newVar.map((view) => {
     return {
       handle: () => h('span', { innerHTML: view.label }),
+      title: stripHtml(view.label),
       href: view.url,
       iframe: view.iframe || false,
       order: Number.MAX_SAFE_INTEGER,
@@ -273,6 +283,12 @@ function isGroupOpen(group: any) {
 function hasMultipleViews(group: any) {
   return group.views.length > 1;
 }
+
+function stripHtml(html: string = '') {
+  const element = document.createElement('div');
+  element.innerHTML = html;
+  return element.textContent ?? '';
+}
 </script>
 
 <style scoped>
@@ -289,8 +305,12 @@ a.navbar-link {
   @apply bg-sba-50/40 duration-300 ease-in-out flex  items-center overflow-hidden py-4 rounded text-sm transition whitespace-nowrap;
   @apply text-gray-700;
 }
+.navbar-link__label {
+  @apply min-w-0 truncate;
+}
+
 .navbar-link--custom {
-  @apply !px-6;
+  @apply !px-6 gap-2;
 }
 
 .navbar-link:hover,
