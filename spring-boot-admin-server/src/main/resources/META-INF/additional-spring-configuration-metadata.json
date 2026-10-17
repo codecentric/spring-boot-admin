@@ -33,6 +33,18 @@
       "defaultValue": "true"
     },
     {
+      "name": "spring.boot.admin.hazelcast.notification-filters",
+      "type": "java.lang.String",
+      "description": "Name of backing Hazelcast-Map for storing notification filters.",
+      "defaultValue": "spring-boot-admin-notification-filters"
+    },
+    {
+      "name": "spring.boot.admin.hazelcast.notification-filters-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enable the Hazelcast map for storing notification filters.",
+      "defaultValue": "true"
+    },
+    {
       "name": "spring.boot.admin.monitor.period",
       "type": "java.lang.Long",
       "deprecation": {

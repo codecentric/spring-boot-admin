@@ -86,9 +86,15 @@ class AdminServerAutoConfigurationTest {
 	@Test
 	void shouldDisableHazelcastEventStore() {
 		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
-			.withPropertyValues("spring.boot.admin.hazelcast.event-store-enabled=false")
+			.withPropertyValues("spring.boot.admin.hazelcast.event-store-enabled=false",
+					"spring.boot.admin.event-store.max-log-size-per-aggregate=10",
+					"spring.boot.admin.event-store.prune-info-updated-events=true")
 			.run((context) -> {
 				assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(InMemoryEventStore.class);
+				assertThat(context.getBean(InstanceEventStore.class)).extracting("maxLogSizePerAggregate")
+					.isEqualTo(10);
+				assertThat(context.getBean(InstanceEventStore.class)).extracting("pruneInfoUpdatedEvents")
+					.isEqualTo(true);
 				assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
 			});
 	}
@@ -99,10 +105,16 @@ class AdminServerAutoConfigurationTest {
 			.withPropertyValues("spring.boot.admin.hazelcast.sent-notifications-enabled=false")
 			.run((context) -> {
 				assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
-				assertThat(context).getBean(NotificationTrigger.class)
-					.isInstanceOf(NotificationTrigger.class)
-					.isNotInstanceOf(HazelcastNotificationTrigger.class);
+				assertThat(context).doesNotHaveBean(HazelcastNotificationTrigger.class);
 			});
+	}
+
+	@Test
+	void shouldDisableHazelcastNotificationFilters() {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
+			.withPropertyValues("spring.boot.admin.hazelcast.notification-filters-enabled=false")
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(AdminServerHazelcastAutoConfiguration.NOTIFICATION_FILTERS_BEAN_NAME));
 	}
 
 	@Test
