@@ -105,7 +105,7 @@ class EndpointDetectorTest {
 	}
 
 	@Test
-	void should_keep_endpoints_on_error() {
+	void should_propagate_error_and_keep_endpoints() {
 		// given
 		Registration registration = Registration.create("foo", "https://health").managementUrl("https://mgmt").build();
 		Endpoints originalEndpoints = Endpoints.single("info", "https://mgmt/info")
@@ -119,7 +119,7 @@ class EndpointDetectorTest {
 		when(strategy.detectEndpoints(any(Instance.class))).thenReturn(Mono.error(new IllegalStateException("x")));
 
 		// when
-		StepVerifier.create(detector.detectEndpoints(instance.getId())).verifyComplete();
+		StepVerifier.create(detector.detectEndpoints(instance.getId())).verifyError(IllegalStateException.class);
 
 		// then
 		StepVerifier.create(repository.find(instance.getId()))
