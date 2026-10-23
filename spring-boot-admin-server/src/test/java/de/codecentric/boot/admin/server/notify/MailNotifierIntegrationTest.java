@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.notify;
 
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.Map;
 
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.thymeleaf.context.Context;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
+import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.domain.values.Registration;
+import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 
 @SpringBootTest(properties = { "spring.mail.host=localhost", "spring.boot.admin.notify.mail=true" })
 class MailNotifierIntegrationTest implements WithAssertions {
@@ -70,6 +76,20 @@ class MailNotifierIntegrationTest implements WithAssertions {
 		}).rootCause()
 			.hasMessageContaining(
 					"Access is forbidden for type 'org.springframework.util.ReflectionUtils' in this expression context.");
+	}
+
+	@Test
+	void defaultTemplateRendersNestedStatusDetails() {
+		Instance instance = Instance.create(InstanceId.of("cafebabe"))
+			.register(Registration.create("application-name", "http://localhost:8081/actuator/health").build());
+		Map<String, Object> details = Map.of("Complex Value", Map.of("Nested Simple Value", "99!"));
+		Context ctx = new Context();
+		ctx.setVariable("instance", instance);
+		ctx.setVariable("event",
+				new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown(details)));
+		ctx.setVariable("lastStatus", "UP");
+
+		assertThat(mailNotifier.getBody(ctx)).contains("Nested Simple Value").contains("99!");
 	}
 
 	@EnableAdminServer
