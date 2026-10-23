@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.Map;
 
 import org.assertj.core.api.WithAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
@@ -40,6 +41,11 @@ class MailNotifierIntegrationTest implements WithAssertions {
 
 	@Autowired
 	MailNotifier mailNotifier;
+
+	@BeforeEach
+	void resetTemplate() {
+		mailNotifier.setTemplate("META-INF/spring-boot-admin-server/mail/status-changed.html");
+	}
 
 	@Test
 	void fileProtocolIsNotAllowed() {
@@ -80,16 +86,40 @@ class MailNotifierIntegrationTest implements WithAssertions {
 
 	@Test
 	void defaultTemplateRendersNestedStatusDetails() {
+		Map<String, Object> details = Map.of("Complex Value", Map.of("Nested Simple Value", "99!"));
+
+		assertThat(mailNotifier.getBody(statusChangedContext(details))).contains("Nested Simple Value").contains("99!");
+	}
+
+	@Test
+	void defaultTemplateRendersMultiLevelNestedStatusDetails() {
+		Map<String, Object> details = Map.of("Level 1", Map.of("Level 2", Map.of("Level 3", "deep value")));
+
+		assertThat(mailNotifier.getBody(statusChangedContext(details))).contains("Level 1")
+			.contains("Level 2")
+			.contains("Level 3")
+			.contains("deep value");
+	}
+
+	@Test
+	void customTemplateCanIncludeStatusDetailsFragmentOfDefaultTemplate() {
+		mailNotifier.setTemplate("/de/codecentric/boot/admin/server/notify/include-default-details.html");
+		Map<String, Object> details = Map.of("Level 1", Map.of("Level 2", "included value"));
+
+		assertThat(mailNotifier.getBody(statusChangedContext(details))).contains("Level 1")
+			.contains("Level 2")
+			.contains("included value");
+	}
+
+	private static Context statusChangedContext(Map<String, Object> details) {
 		Instance instance = Instance.create(InstanceId.of("cafebabe"))
 			.register(Registration.create("application-name", "http://localhost:8081/actuator/health").build());
-		Map<String, Object> details = Map.of("Complex Value", Map.of("Nested Simple Value", "99!"));
 		Context ctx = new Context();
 		ctx.setVariable("instance", instance);
 		ctx.setVariable("event",
 				new InstanceStatusChangedEvent(instance.getId(), instance.getVersion(), StatusInfo.ofDown(details)));
 		ctx.setVariable("lastStatus", "UP");
-
-		assertThat(mailNotifier.getBody(ctx)).contains("Nested Simple Value").contains("99!");
+		return ctx;
 	}
 
 	@EnableAdminServer
