@@ -35,6 +35,7 @@ import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.entities.SnapshottingInstanceRepository;
 import de.codecentric.boot.admin.server.eventstore.ConcurrentMapEventStore;
 import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
+import de.codecentric.boot.admin.server.eventstore.InMemoryEventStore;
 import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
@@ -80,6 +81,40 @@ class AdminServerAutoConfigurationTest {
 			.withUserConfiguration(TestHazelcastConfig.class)
 			.run((context) -> assertThat(context.getBean(InstanceEventStore.class)).extracting("maxLogSizePerAggregate")
 				.isEqualTo(10));
+	}
+
+	@Test
+	void shouldDisableHazelcastEventStore() {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
+			.withPropertyValues("spring.boot.admin.hazelcast.event-store-enabled=false",
+					"spring.boot.admin.event-store.max-log-size-per-aggregate=10",
+					"spring.boot.admin.event-store.prune-info-updated-events=true")
+			.run((context) -> {
+				assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(InMemoryEventStore.class);
+				assertThat(context.getBean(InstanceEventStore.class)).extracting("maxLogSizePerAggregate")
+					.isEqualTo(10);
+				assertThat(context.getBean(InstanceEventStore.class)).extracting("pruneInfoUpdatedEvents")
+					.isEqualTo(true);
+				assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
+			});
+	}
+
+	@Test
+	void shouldDisableHazelcastSentNotifications() {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
+			.withPropertyValues("spring.boot.admin.hazelcast.sent-notifications-enabled=false")
+			.run((context) -> {
+				assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
+				assertThat(context).doesNotHaveBean(HazelcastNotificationTrigger.class);
+			});
+	}
+
+	@Test
+	void shouldDisableHazelcastNotificationFilters() {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
+			.withPropertyValues("spring.boot.admin.hazelcast.notification-filters-enabled=false")
+			.run((context) -> assertThat(context.getBean(FilteringNotifier.class)).extracting("filters")
+				.isInstanceOf(java.util.concurrent.ConcurrentHashMap.class));
 	}
 
 	@Test
