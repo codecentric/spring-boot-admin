@@ -72,9 +72,12 @@ public class AdminServerHazelcastAutoConfiguration {
 	}
 
 	/**
-	 * Distributed map used to deduplicate notifications across the cluster. It is picked
-	 * up by {@link AdminServerNotifierAutoConfiguration}, which is evaluated after all
-	 * notifiers have been registered.
+	 * Distributed map used to deduplicate notifications across the cluster. It is exposed
+	 * as a bean because {@link AdminServerNotifierAutoConfiguration} must not reference
+	 * Hazelcast classes, as Hazelcast is optional. It obtains the map as a plain
+	 * {@code ConcurrentMap} through an {@code ObjectProvider}, which is resolved lazily
+	 * when the notification trigger is created. The result therefore does not depend on
+	 * the order in which the auto-configurations are evaluated.
 	 * @param hazelcastInstance the Hazelcast instance
 	 * @param nameSentNotificationsMap the name of the backing map
 	 * @return the map holding the version of the last event a notification was sent for
