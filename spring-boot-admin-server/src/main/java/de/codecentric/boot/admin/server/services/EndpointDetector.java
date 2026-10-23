@@ -52,7 +52,12 @@ public class EndpointDetector {
 			return Mono.empty();
 		}
 		log.debug("Detect endpoints for {}", instance);
-		return strategy.detectEndpoints(instance).map(instance::withEndpoints);
+		return strategy.detectEndpoints(instance).map(instance::withEndpoints).onErrorResume((e) -> {
+			log.warn("Endpoint detection for instance {} failed: {}. Keeping previously detected endpoints.",
+					instance.getId(), e.getMessage());
+			log.debug("Endpoint detection for instance {} failed.", instance.getId(), e);
+			return Mono.empty();
+		});
 	}
 
 }

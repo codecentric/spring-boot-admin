@@ -31,6 +31,7 @@ import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
@@ -177,7 +178,7 @@ class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	void should_return_empty_on_error() {
+	void should_return_error_on_transport_error() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
@@ -192,7 +193,7 @@ class QueryIndexEndpointStrategyTest {
 		// when
 		StepVerifier.create(strategy.detectEndpoints(instance))
 			// then
-			.verifyComplete();
+			.verifyError(WebClientRequestException.class);
 	}
 
 	@Test
@@ -259,6 +260,28 @@ class QueryIndexEndpointStrategyTest {
 			// then
 			.expectNext(Endpoints.single("metrics", "/mgmt/stats").withEndpoint("info", "/mgmt/info"))//
 			.verifyComplete();
+	}
+
+	@Test
+	void should_return_error_on_connection_refused() {
+		// given
+		WireMockServer closedServer = new WireMockServer(wireMockConfig().dynamicPort());
+		closedServer.start();
+		int port = closedServer.port();
+		closedServer.stop();
+
+		Instance instance = Instance.create(InstanceId.of("id"))
+			.register(Registration.create("test", "http://localhost:" + port + "/mgmt/health")
+				.managementUrl("http://localhost:" + port + "/mgmt")
+				.build());
+
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
+
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+			// then
+			.verifyError(WebClientRequestException.class);
 	}
 
 	private ReactorClientHttpConnector httpConnector() {

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -28,6 +29,7 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -65,6 +67,11 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 			.uri(managementUrl)
 			.exchangeToMono(this.convert(instance, managementUrl))
 			.onErrorResume((e) -> {
+				if (isTransportError(e)) {
+					// instance unreachable: probing would fail as well, so don't fall
+					// back
+					return Mono.error(e);
+				}
 				log.warn("Querying actuator-index for instance {} on '{}' failed: {}", instance.getId(), managementUrl,
 						e.getMessage());
 				log.debug("Querying actuator-index for instance {} on '{}' failed.", instance.getId(), managementUrl,
@@ -121,6 +128,10 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 			.map((e) -> Endpoint.of(e.getKey(), e.getValue().getHref()))
 			.toList();
 		return endpoints.isEmpty() ? Mono.empty() : Mono.just(Endpoints.of(endpoints));
+	}
+
+	private static boolean isTransportError(Throwable e) {
+		return e instanceof WebClientRequestException || e instanceof TimeoutException;
 	}
 
 	@Data
