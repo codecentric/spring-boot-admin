@@ -101,6 +101,17 @@ class AdminServerHazelcastAutoConfigurationTest {
 		});
 	}
 
+	@Test
+	void should_start_with_primary_filtering_notifier_wrapping_property_configured_notifier() {
+		this.contextRunner.withUserConfiguration(PrimaryFilteringNotifierConfig.class)
+			.withPropertyValues("spring.boot.admin.notify.slack.webhook-url:https://example.com")
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				assertThat(context).hasSingleBean(FilteringNotifier.class);
+				assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
+			});
+	}
+
 	public static class HazelcastOnlyConfig {
 
 		@Bean
@@ -129,6 +140,18 @@ class AdminServerHazelcastAutoConfigurationTest {
 		@Bean
 		@Primary
 		public FilteringNotifier filteringNotifier(@Qualifier("delegateNotifier") Notifier delegate,
+				InstanceRepository repository,
+				@Qualifier("notificationFiltersMap") ConcurrentMap<String, NotificationFilter> filters) {
+			return new FilteringNotifier(delegate, repository, filters);
+		}
+
+	}
+
+	public static class PrimaryFilteringNotifierConfig {
+
+		@Bean
+		@Primary
+		public FilteringNotifier filteringNotifier(@Qualifier("slackNotifier") Notifier delegate,
 				InstanceRepository repository,
 				@Qualifier("notificationFiltersMap") ConcurrentMap<String, NotificationFilter> filters) {
 			return new FilteringNotifier(delegate, repository, filters);
