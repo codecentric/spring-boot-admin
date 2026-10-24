@@ -86,3 +86,38 @@ public Config hazelcastConfig() {
     return config;
 }
 ```
+
+### Sharing notification filters
+
+The Hazelcast map `spring-boot-admin-notification-filters` (configurable via `spring.boot.admin.hazelcast.notification-filters`) is available as a bean named `notificationFiltersMap`. To share filters across the cluster, you pass it to the constructor of your own `FilteringNotifier`. This allows filter definitions to be replicated and kept in sync across all cluster nodes.
+
+```java
+@Bean
+@Primary
+public FilteringNotifier filteringNotifier(@Qualifier("mailNotifier") Notifier delegate,
+        InstanceRepository repository,
+        @Qualifier("notificationFiltersMap") ConcurrentMap<String, NotificationFilter> filters) {
+    return new FilteringNotifier(delegate, repository, filters);
+}
+```
+
+:::warning
+A `FilteringNotifier` that wraps another notifier can end up in a circular dependency with the `CompositeNotifier`.
+The `CompositeNotifier` is created when more than one `Notifier` bean exists and none of them is `@Primary`. It
+collects every `Notifier` bean, including your `FilteringNotifier`. If the `FilteringNotifier` receives its delegate
+as a plain `Notifier` parameter, Spring resolves that parameter to the `CompositeNotifier`, and the application
+fails to start with a `BeanCurrentlyInCreationException`.
+
+To avoid this, declare the `FilteringNotifier` as `@Primary` and inject the notifier it wraps by name with
+`@Qualifier` (or by its concrete type), as in the example above.
+:::
+
+```java
+// Do not do this: the plain Notifier parameter resolves to the CompositeNotifier,
+// which in turn needs this FilteringNotifier.
+@Bean
+public FilteringNotifier filteringNotifier(Notifier delegate, InstanceRepository repository,
+        @Qualifier("notificationFiltersMap") ConcurrentMap<String, NotificationFilter> filters) {
+    return new FilteringNotifier(delegate, repository, filters);
+}
+```
