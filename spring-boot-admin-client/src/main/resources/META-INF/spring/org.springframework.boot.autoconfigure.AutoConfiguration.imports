@@ -1,3 +1,4 @@
 de.codecentric.boot.admin.client.config.SpringBootAdminClientAutoConfiguration
 de.codecentric.boot.admin.client.config.SpringBootAdminClientCloudFoundryAutoConfiguration
+de.codecentric.boot.admin.client.config.SpringBootAdminClientInetUtilsAutoConfiguration
 de.codecentric.boot.admin.client.config.SpringNativeClientAutoConfiguration
