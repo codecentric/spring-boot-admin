@@ -98,9 +98,11 @@
                 class="health-group__body"
               >
                 <health-details
+                  v-for="([compName, compData], idx) in groupEntries(group)"
+                  :key="`${compName}_${idx}`"
                   :instance="instance"
-                  :health="group.data"
-                  :name="group.name"
+                  :name="compName"
+                  :health="compData"
                 />
               </div>
             </div>
@@ -147,18 +149,8 @@ export default defineComponent({
     health() {
       return this.instance.statusInfo;
     },
-    overallStatusClass(): string {
-      return (this.health?.status ?? 'unknown')
-        .toLowerCase()
-        .replace(/_/g, '-');
-    },
     hasComponents(): boolean {
-      const source = this.health?.details ?? this.health?.components;
-      return (
-        source != null &&
-        typeof source === 'object' &&
-        Object.keys(source).length > 0
-      );
+      return this.componentEntries.length > 0;
     },
     componentEntries(): [string, any][] {
       const source = this.health?.details ?? this.health?.components;
@@ -178,7 +170,7 @@ export default defineComponent({
       return false;
     },
     healthGroupsKey() {
-      return `${this.instance.id}:${this.instance.statusInfo?.status ?? ''}:${this.instance.statusTimestamp ?? ''}`;
+      return `${this.instance.id}:${JSON.stringify(this.instance.statusInfo ?? null)}:${this.instance.statusTimestamp ?? ''}`;
     },
   },
   watch: {
@@ -194,7 +186,7 @@ export default defineComponent({
     faChevronRight() {
       return faChevronRight;
     },
-    onInstanceChanged() {
+    async onInstanceChanged() {
       if (this.instance.id !== this.currentInstanceId) {
         this.currentInstanceId = this.instance.id;
         this.healthGroups = [];
@@ -202,7 +194,17 @@ export default defineComponent({
         this.healthGroupLoadingMap = {};
         this.healthGroupsError = null;
       }
-      this.fetchHealthGroups();
+      await this.fetchHealthGroups();
+      this.refreshOpenHealthGroups();
+    },
+    refreshOpenHealthGroups() {
+      this.healthGroups
+        .filter((group) => this.isHealthGroupOpen(group.name))
+        .forEach((group) => this.fetchGroupDetails(group.name, true));
+    },
+    groupEntries(group: { data: Record<string, any> | null }) {
+      const source = group.data?.details ?? group.data?.components;
+      return source && typeof source === 'object' ? Object.entries(source) : [];
     },
     isHealthGroupOpen(groupName: string) {
       return this.healthGroupOpenStatus[groupName]?.isOpen ?? false;
@@ -252,8 +254,10 @@ export default defineComponent({
         this.healthGroupsError = error as Error;
       }
     },
-    async fetchGroupDetails(groupName: string) {
-      this.healthGroupLoadingMap[groupName] = true;
+    async fetchGroupDetails(groupName: string, silent = false) {
+      if (!silent) {
+        this.healthGroupLoadingMap[groupName] = true;
+      }
 
       try {
         const res = await this.instance.fetchHealthGroup(groupName);
@@ -262,7 +266,7 @@ export default defineComponent({
         if (group) {
           group.data = res.data;
           this.healthGroupOpenStatus[groupName] = {
-            isOpen: true,
+            isOpen: silent ? this.isHealthGroupOpen(groupName) : true,
             collapsible: res.data !== undefined,
           };
         }
@@ -279,43 +283,9 @@ export default defineComponent({
 <style scoped>
 @reference "../../../index.css";
 
-/* ── Status colour tokens — sourced from theme.css @theme ──────────────── */
-.status--up {
-  --status-color: var(--color-status-up);
-}
-.status--down,
-.status--offline,
-.status--out-of-service {
-  --status-color: var(--color-status-down);
-}
-.status--restricted {
-  --status-color: var(--color-status-restricted);
-}
-.status--unknown {
-  --status-color: var(--color-status-unknown);
-}
-
 /* ── Outer panel wrapper ───────────────────────────────────────────────── */
 .health-panel {
   @apply -mx-4 -my-3 divide-y divide-gray-100;
-}
-
-/* ── Overview row (overall status) ────────────────────────────────────── */
-.health-overview {
-  @apply flex items-stretch bg-gray-50;
-}
-
-.health-overview__bar {
-  @apply w-1 shrink-0;
-  background-color: var(--status-color, var(--color-status-unknown));
-}
-
-.health-overview__label {
-  @apply w-52 shrink-0 px-4 py-3 text-sm font-semibold text-gray-700 self-center;
-}
-
-.health-overview__body {
-  @apply flex-1 py-3 min-w-0 self-center;
 }
 
 /* ── Component section ─────────────────────────────────────────────────── */
@@ -325,29 +295,34 @@ export default defineComponent({
 
 /* ── Health group ──────────────────────────────────────────────────────── */
 .health-group {
-  @apply bg-white border-b border-gray-100;
+  @apply border-b border-gray-100 bg-gray-50 last:border-b-0;
 }
 
 .health-group__header {
   @apply w-full flex items-center text-left
-         hover:bg-gray-50 transition-colors cursor-pointer
+         hover:bg-gray-100 transition-colors cursor-pointer
          border-none bg-transparent p-0;
 }
 
 .health-group__name {
-  @apply w-52 shrink-0 px-4 py-3 text-xs font-semibold text-gray-500
-         tracking-wide break-all self-center;
+  @apply w-52 shrink-0 px-4 py-2.5 text-sm font-medium text-gray-600
+         break-all self-center;
 }
 
 .health-group__body-col {
-  @apply flex-1 py-3 min-w-0 flex items-center gap-2;
+  @apply flex-1 py-2.5 min-w-0 flex items-center gap-2;
 }
 
 .health-group__chevron {
-  @apply text-gray-400 text-xs shrink-0 px-4 self-center;
+  @apply text-gray-400 shrink-0 px-4 self-center;
 }
 
 .health-group__body {
-  @apply border-t border-gray-100;
+  @apply border-t border-gray-100 divide-y divide-gray-100 bg-white;
+}
+
+.health-group__body :deep(.health-row__name),
+.health-group__body :deep(.health-section-header__name) {
+  @apply pl-8;
 }
 </style>
