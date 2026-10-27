@@ -177,17 +177,15 @@ const COLLAPSED_KEY = computed(
 );
 
 function readCollapsedFromStorage(): boolean {
-  if (!instance?.id) return false;
+  if (!instance?.id) return true;
   try {
     const stored = localStorage.getItem(COLLAPSED_KEY.value);
     if (stored !== null) return stored === 'true';
   } catch {
     // storage unavailable — fall back to default
   }
-  return false;
+  return true;
 }
-
-const isCollapsed = ref(readCollapsedFromStorage());
 
 type Details = {
   name: string;
@@ -220,6 +218,8 @@ const childHealth = computed(() =>
 const isComposite = computed(
   () => childHealth.value.length > 0 && details.value.length === 0,
 );
+
+const isCollapsed = ref(readCollapsedFromStorage());
 
 watch(COLLAPSED_KEY, () => {
   isCollapsed.value = readCollapsedFromStorage();
