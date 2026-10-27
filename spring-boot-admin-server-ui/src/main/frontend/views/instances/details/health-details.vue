@@ -27,10 +27,6 @@
       :aria-expanded="String(!isCollapsed)"
       @click="toggleCollapsed"
     >
-      <span
-        class="health-section-header__indicator"
-        :class="`status--${statusClass}`"
-      />
       <span class="health-section-header__name">{{ name }}</span>
       <div class="health-section-header__body">
         <sba-status-badge v-if="health.status" :status="health.status" />
@@ -63,8 +59,6 @@
     role="group"
     :aria-label="name"
   >
-    <div class="health-row__indicator" :class="`status--${statusClass}`" />
-
     <dt :id="`health-${id}__${safeNameId}`" class="health-row__name">
       {{ name }}
     </dt>
@@ -177,10 +171,6 @@ function safeDetailId(detailName: string, idx: number): string {
   return safe.length > 0 ? safe : `detail_${idx}`;
 }
 
-const statusClass = computed(() =>
-  (health?.status ?? 'unknown').toLowerCase().replace(/_/g, '-'),
-);
-
 const COLLAPSED_KEY = computed(
   () =>
     `de.codecentric.spring-boot-admin.health-details.${encodeURIComponent(name ?? '')}.${encodeURIComponent(instance?.id ?? '')}.collapsed`,
@@ -251,22 +241,6 @@ const toggleCollapsed = () => {
 <style scoped>
 @reference "../../../index.css";
 
-/* ── Status colour tokens — sourced from theme.css @theme ──────────────── */
-.status--up {
-  --status-color: var(--color-status-up);
-}
-.status--down,
-.status--out-of-service {
-  --status-color: var(--color-status-down);
-}
-.status--restricted {
-  --status-color: var(--color-status-restricted);
-}
-.status--offline,
-.status--unknown {
-  --status-color: var(--color-status-unknown);
-}
-
 /* ── Composite section header (flat, no card chrome) ───────────────────── */
 .health-section-header {
   @apply border-b border-gray-100 bg-gray-50 last:border-b-0;
@@ -277,14 +251,9 @@ const toggleCollapsed = () => {
          hover:bg-gray-100 transition-colors;
 }
 
-.health-section-header__indicator {
-  @apply w-1 shrink-0;
-  background-color: var(--status-color, var(--color-status-unknown));
-}
-
 .health-section-header__name {
-  @apply w-52 shrink-0 px-4 py-2.5 text-xs font-semibold text-gray-500
-         tracking-wide break-all self-center;
+  @apply w-52 shrink-0 px-4 py-2.5 text-sm font-medium text-gray-600
+         break-all self-center;
 }
 
 .health-section-header__body {
@@ -295,7 +264,7 @@ const toggleCollapsed = () => {
   @apply text-gray-400 self-center;
 }
 
-/* ── Children of composite: indented text, flush indicator bar ─────────── */
+/* ── Children of composite: indented text,  ─────────── */
 .health-section-children {
   @apply border-b border-gray-100 divide-y divide-gray-100;
 }
@@ -309,11 +278,6 @@ const toggleCollapsed = () => {
 .health-row {
   @apply flex items-stretch border-b border-gray-100 last:border-b-0
          even:bg-white odd:bg-gray-50;
-}
-
-.health-row__indicator {
-  @apply w-1 self-stretch shrink-0;
-  background-color: var(--status-color, var(--color-status-unknown));
 }
 
 .health-row__name {
