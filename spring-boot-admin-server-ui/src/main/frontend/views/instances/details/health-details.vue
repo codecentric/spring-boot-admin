@@ -294,7 +294,7 @@ const toggleCollapsed = () => {
 }
 
 .health-row__description {
-  @apply text-xs text-gray-500 italic;
+  @apply text-xs text-gray-500;
 }
 
 .health-row__toggle {
