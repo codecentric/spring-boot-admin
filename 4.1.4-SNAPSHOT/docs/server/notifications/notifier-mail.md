@@ -10,6 +10,10 @@ info
 
 To prevent disclosure of sensitive information, the default mail template doesn’t show any metadata of the instance. If you want to you show some of the metadata you can use a custom template.
 
+warning
+
+Since Thymeleaf 3.1.4, the expression objects `#ctx`, `#vars`, `#root`, `#this` and `#execInfo` cannot be accessed in restricted expression contexts, such as the template name of a fragment expression (`th:replace="${#execInfo.templateName} :: ..."`). Custom templates using them fail with `Access to variable '#execInfo' is forbidden in this context`. Compute the value in the controller or model instead, or reference the current template with `~{:: fragmentName}`.
+
 Add spring-boot-starter-mail to your dependencies
 
 ```
