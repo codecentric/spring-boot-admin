@@ -40,12 +40,11 @@
 <script>
 import { remove } from 'lodash-es';
 import moment from 'moment';
-import { take } from 'rxjs/operators';
 
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
-import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import { concatMap, retry, timer } from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 import threadsList from '@/views/instances/threaddump/threads-list';
@@ -141,12 +140,7 @@ export default {
     createSubscription() {
       this.errorFetch = null;
       return timer(0, sbaConfig.uiSettings.pollTimer.threaddump)
-        .pipe(
-          concatMap(this.fetchThreaddump),
-          retryWhen((err) => {
-            return err.pipe(delay(1000), take(2));
-          }),
-        )
+        .pipe(concatMap(this.fetchThreaddump), retry({ count: 2, delay: 1000 }))
         .subscribe({
           next: (threads) => {
             this.hasLoaded = true;
