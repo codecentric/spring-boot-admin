@@ -73,7 +73,8 @@ public final class Tags implements Serializable {
 				.stream()
 				.filter((e) -> e.getKey() != null)
 				.filter((e) -> e.getKey().toLowerCase().startsWith(flatPrefix))
-				.collect(toLinkedHashMap((e) -> e.getKey().substring(flatPrefix.length()), Map.Entry::getValue)));
+				.collect(toLinkedHashMap((e) -> e.getKey().substring(flatPrefix.length()),
+						(e) -> Objects.toString(e.getValue()))));
 		}
 
 		return new Tags(map.entrySet()
