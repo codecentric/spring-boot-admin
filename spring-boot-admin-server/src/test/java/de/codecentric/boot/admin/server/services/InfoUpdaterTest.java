@@ -167,6 +167,25 @@ class InfoUpdaterTest {
 	}
 
 	@Test
+	void should_update_info_with_null_flattened_tag_values() {
+		Instance instance = Instance.create(InstanceId.of("nullable-tags"))
+			.register(Registration.create("foo", this.wireMock.url("/health")).build())
+			.withEndpoints(Endpoints.single("info", this.wireMock.url("/info")))
+			.withStatusInfo(StatusInfo.ofUp());
+		StepVerifier.create(this.repository.save(instance)).expectNextCount(1).verifyComplete();
+		this.wireMock.stubFor(get("/info")
+			.willReturn(okJson("{\"tags.owner\":null,\"tags.region\":\"EU\",\"build.version\":\"1.2.3\"}")));
+
+		StepVerifier.create(this.updater.updateInfo(instance.getId())).verifyComplete();
+
+		StepVerifier.create(this.repository.find(instance.getId())).assertNext((updated) -> {
+			assertThat(updated.getInfo().getValues()).containsEntry("tags.owner", null);
+			assertThat(updated.getTags().getValues()).containsEntry("owner", "null").containsEntry("region", "EU");
+			assertThat(updated.getBuildVersion()).hasToString("1.2.3");
+		}).verifyComplete();
+	}
+
+	@Test
 	void should_clear_info_on_exception() {
 
 		// given
