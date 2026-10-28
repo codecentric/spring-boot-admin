@@ -107,13 +107,12 @@
 import { faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons';
 import { debounce } from 'lodash-es';
 import moment from 'moment';
-import { take } from 'rxjs/operators';
 
 import SbaCheckbox from '@/components/sba-checkbox';
 
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
-import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import { concatMap, retry, timer } from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import { Exchange } from '@/views/instances/httpexchanges/Exchange';
 import SbaExchangesChart from '@/views/instances/httpexchanges/exchanges-chart';
@@ -218,9 +217,7 @@ export default {
       return timer(0, 5000)
         .pipe(
           concatMap(this.fetchHttpExchanges),
-          retryWhen((err) => {
-            return err.pipe(delay(1000), take(2));
-          }),
+          retry({ count: 2, delay: 1000 }),
         )
         .subscribe({
           next: (exchanges) => {
