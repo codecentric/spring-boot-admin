@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.domain.values;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -72,8 +73,9 @@ public final class Tags implements Serializable {
 			return from(map.entrySet()
 				.stream()
 				.filter((e) -> e.getKey() != null)
-				.filter((e) -> e.getKey().toLowerCase().startsWith(flatPrefix))
-				.collect(toLinkedHashMap((e) -> e.getKey().substring(flatPrefix.length()), Map.Entry::getValue)));
+				.filter((e) -> e.getKey().toLowerCase(Locale.ROOT).startsWith(flatPrefix))
+				.collect(toLinkedHashMap((e) -> e.getKey().substring(flatPrefix.length()),
+						(e) -> Objects.toString(e.getValue()))));
 		}
 
 		return new Tags(map.entrySet()
