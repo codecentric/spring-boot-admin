@@ -71,7 +71,7 @@
         <maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
         <maven-exec-plugin.version>3.6.4</maven-exec-plugin.version>
-        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.6.1</maven-failsafe-plugin.version>
         <maven-install-plugin.version>3.2.0</maven-install-plugin.version>
         <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
@@ -365,8 +365,24 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <parallel>classesAndMethods</parallel>
-                        <useUnlimitedThreads>false</useUnlimitedThreads>
+                        <properties>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.enabled</name>
+                                <value>true</value>
+                            </property>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.mode.default</name>
+                                <value>same_thread</value>
+                            </property>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.mode.classes.default</name>
+                                <value>concurrent</value>
+                            </property>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.config.strategy</name>
+                                <value>dynamic</value>
+                            </property>
+                        </properties>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <rerunFailingTestsCount>2</rerunFailingTestsCount>
                         <includes>
