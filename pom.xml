@@ -365,8 +365,24 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <parallel>classesAndMethods</parallel>
-                        <useUnlimitedThreads>false</useUnlimitedThreads>
+                        <properties>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.enabled</name>
+                                <value>true</value>
+                            </property>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.mode.default</name>
+                                <value>same_thread</value>
+                            </property>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.mode.classes.default</name>
+                                <value>concurrent</value>
+                            </property>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.config.strategy</name>
+                                <value>dynamic</value>
+                            </property>
+                        </properties>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <rerunFailingTestsCount>2</rerunFailingTestsCount>
                         <includes>
