@@ -90,13 +90,12 @@
 <script>
 import { debounce, mapKeys } from 'lodash-es';
 import moment from 'moment';
-import { take } from 'rxjs/operators';
 
 import SbaCheckbox from '@/components/sba-checkbox';
 
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
-import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import { concatMap, retry, timer } from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import sbaTracesChart from '@/views/instances/httptrace/traces-chart';
 import sbaTracesList from '@/views/instances/httptrace/traces-list';
@@ -288,9 +287,7 @@ export default {
       return timer(0, 5000)
         .pipe(
           concatMap(this.fetchHttptrace),
-          retryWhen((err) => {
-            return err.pipe(delay(1000), take(2));
-          }),
+          retry({ count: 2, delay: 1000, resetOnSuccess: true }),
         )
         .subscribe({
           next: (traces) => {
