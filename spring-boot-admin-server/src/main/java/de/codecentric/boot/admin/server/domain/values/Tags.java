@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.domain.values;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
