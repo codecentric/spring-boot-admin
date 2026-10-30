@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -24,6 +26,7 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.Endpoints;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ChainingStrategyTest {
@@ -57,6 +60,21 @@ class ChainingStrategyTest {
 		ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.empty());
 		// when/then
 		StepVerifier.create(strategy.detectEndpoints(instance)).expectNext(Endpoints.empty()).verifyComplete();
+	}
+
+	@Test
+	void should_not_chain_on_error() {
+		AtomicBoolean subscribed = new AtomicBoolean(false);
+		Instance instance = Instance.create(InstanceId.of("id"));
+		ChainingStrategy strategy = new ChainingStrategy((a) -> Mono.error(new IllegalStateException("x")),
+				(a) -> Mono.fromCallable(() -> {
+					subscribed.set(true);
+					return Endpoints.single("id", "path");
+				}));
+
+		StepVerifier.create(strategy.detectEndpoints(instance)).verifyError(IllegalStateException.class);
+
+		assertThat(subscribed).isFalse();
 	}
 
 }
