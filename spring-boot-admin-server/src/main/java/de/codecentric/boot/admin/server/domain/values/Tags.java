@@ -72,7 +72,7 @@ public final class Tags implements Serializable {
 			return from(map.entrySet()
 				.stream()
 				.filter((e) -> e.getKey() != null)
-				.filter((e) -> e.getKey().toLowerCase().startsWith(flatPrefix))
+				.filter((e) -> e.getKey().toLowerCase(Locale.ROOT).startsWith(flatPrefix))
 				.collect(toLinkedHashMap((e) -> e.getKey().substring(flatPrefix.length()),
 						(e) -> Objects.toString(e.getValue()))));
 		}
