@@ -140,7 +140,10 @@ export default {
     createSubscription() {
       this.errorFetch = null;
       return timer(0, sbaConfig.uiSettings.pollTimer.threaddump)
-        .pipe(concatMap(this.fetchThreaddump), retry({ count: 2, delay: 1000 }))
+        .pipe(
+          concatMap(this.fetchThreaddump),
+          retry({ count: 2, delay: 1000, resetOnSuccess: true }),
+        )
         .subscribe({
           next: (threads) => {
             this.hasLoaded = true;

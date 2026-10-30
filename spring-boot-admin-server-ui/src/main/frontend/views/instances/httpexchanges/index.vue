@@ -217,7 +217,7 @@ export default {
       return timer(0, 5000)
         .pipe(
           concatMap(this.fetchHttpExchanges),
-          retry({ count: 2, delay: 1000 }),
+          retry({ count: 2, delay: 1000, resetOnSuccess: true }),
         )
         .subscribe({
           next: (exchanges) => {

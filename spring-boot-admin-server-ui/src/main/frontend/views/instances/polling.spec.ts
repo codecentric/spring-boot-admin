@@ -86,6 +86,23 @@ describe.each([
     expect(fetch.mock.calls.length).toBeGreaterThan(2);
   });
 
+  it('resets the retry count after a successful poll', async () => {
+    let calls = 0;
+    const fetch = vi.fn().mockImplementation(() => {
+      calls++;
+      return calls % 2 === 1
+        ? Promise.reject(new Error('Intermittent failure'))
+        : Promise.resolve([]);
+    });
+    const state = startPolling(fetch);
+
+    await vi.advanceTimersByTimeAsync(20000);
+
+    expect(fetch.mock.calls.length).toBeGreaterThan(6);
+    expect(state[errorProperty]).toBeNull();
+    expect(subscription.closed).toBe(false);
+  });
+
   it('does not retry after unsubscribing during the delay', async () => {
     const fetch = vi.fn().mockRejectedValue(new Error('Actuator unavailable'));
     const state = startPolling(fetch);

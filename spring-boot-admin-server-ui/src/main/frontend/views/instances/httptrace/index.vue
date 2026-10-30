@@ -285,7 +285,10 @@ export default {
     },
     createSubscription() {
       return timer(0, 5000)
-        .pipe(concatMap(this.fetchHttptrace), retry({ count: 2, delay: 1000 }))
+        .pipe(
+          concatMap(this.fetchHttptrace),
+          retry({ count: 2, delay: 1000, resetOnSuccess: true }),
+        )
         .subscribe({
           next: (traces) => {
             this.hasLoaded = true;
