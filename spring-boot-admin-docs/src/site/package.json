@@ -22,7 +22,7 @@
     "@signalwire/docusaurus-plugin-llms-txt": "^1.2.2",
     "clsx": "^2.1.1",
     "dotenv": "^18.0.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.0",
     "lodash.merge": "^4.6.2",
     "node-html-markdown": "^2.0.0",
     "prism-react-renderer": "^2.4.0",
