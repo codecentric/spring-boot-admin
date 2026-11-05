@@ -27,7 +27,9 @@ import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServe
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -56,6 +58,7 @@ import de.codecentric.boot.admin.client.registration.RegistrationApplicationList
 import de.codecentric.boot.admin.client.registration.RegistrationClient;
 import de.codecentric.boot.admin.client.registration.RestClientRegistrationClient;
 import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
+import de.codecentric.boot.admin.client.registration.ServletContainerApplicationFactory;
 import de.codecentric.boot.admin.client.registration.metadata.CompositeMetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.MetadataContributor;
 import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadataContributor;
@@ -64,8 +67,7 @@ import de.codecentric.boot.admin.client.registration.metadata.StartupDateMetadat
 @ConditionalOnWebApplication
 @Conditional(SpringBootAdminClientEnabledCondition.class)
 @AutoConfigureAfter({ WebEndpointAutoConfiguration.class, RestClientAutoConfiguration.class })
-@EnableConfigurationProperties({ ClientProperties.class, InstanceProperties.class, ServerProperties.class,
-		ManagementServerProperties.class })
+@EnableConfigurationProperties({ ClientProperties.class, InstanceProperties.class })
 public class SpringBootAdminClientAutoConfiguration {
 
 	@Bean
@@ -95,6 +97,8 @@ public class SpringBootAdminClientAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
+	@ConditionalOnClass(ServerProperties.class)
+	@EnableConfigurationProperties({ ServerProperties.class, ManagementServerProperties.class })
 	@AutoConfigureAfter(DispatcherServletAutoConfiguration.class)
 	public static class ServletConfiguration {
 
@@ -113,8 +117,33 @@ public class SpringBootAdminClientAutoConfiguration {
 
 	}
 
+	/**
+	 * Servlet application deployed to an external servlet container, where Spring Boot's
+	 * embedded web server infrastructure ({@code spring-boot-web-server}) is optional.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnWebApplication(type = Type.SERVLET)
+	@ConditionalOnMissingClass("org.springframework.boot.web.server.autoconfigure.ServerProperties")
+	public static class ServletContainerConfiguration {
+
+		@Bean
+		@Lazy(false)
+		@ConditionalOnMissingBean
+		public ApplicationFactory applicationFactory(InstanceProperties instance, ServletContext servletContext,
+				PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
+				ObjectProvider<List<MetadataContributor>> metadataContributors,
+				DispatcherServletPath dispatcherServletPath) {
+			return new ServletContainerApplicationFactory(instance, servletContext, pathMappedEndpoints, webEndpoint,
+					new CompositeMetadataContributor(metadataContributors.getIfAvailable(Collections::emptyList)),
+					dispatcherServletPath);
+		}
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
+	@ConditionalOnClass(ServerProperties.class)
+	@EnableConfigurationProperties({ ServerProperties.class, ManagementServerProperties.class })
 	public static class ReactiveConfiguration {
 
 		@Bean
