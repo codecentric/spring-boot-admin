@@ -2,7 +2,12 @@
 
 Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts. Also have a look at the [Spring Boot support for Hazelcast](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/).
 
-When using clustering, Spring Boot Admin Events and Notifications are replicated across the members in the cluster. The event store, sent-notifications map, and notification-filters map can be disabled independently with `spring.boot.admin.hazelcast.event-store-enabled=false`, `spring.boot.admin.hazelcast.sent-notifications-enabled=false`, and `spring.boot.admin.hazelcast.notification-filters-enabled=false`, respectively. All three are enabled by default for backward compatibility. The registered applications themselves are not replicated — each instance of Spring Boot Admin independently polls its own set of registered clients. This means each node monitors all applications, which may lead to increased load on the monitored services. If that is a concern, ensure that each application is registered with only one instance of Spring Boot Admin.
+When using clustering, Spring Boot Admin Events and Notifications are replicated across the members in the cluster. The event store, sent-notifications map, and notification-filters map can be disabled independently with `spring.boot.admin.hazelcast.event-store-enabled=false`, `spring.boot.admin.hazelcast.sent-notifications-enabled=false`, and `spring.boot.admin.hazelcast.notification-filters-enabled=false`, respectively. All three are enabled by default for backward compatibility. The switches are evaluated at runtime, so they also work with AOT / native images:
+
+* If the event store is disabled, every node keeps its own events in memory.
+* If the sent-notifications map is disabled, notifications are not deduplicated across the cluster, so every node sends its own notifications.
+* If the notification-filters map is disabled, the `notificationFiltersMap` bean is a local map, and filters are not shared.
+* `spring.boot.admin.hazelcast.enabled=false` disables all three. The registered applications themselves are not replicated — each instance of Spring Boot Admin independently polls its own set of registered clients. This means each node monitors all applications, which may lead to increased load on the monitored services. If that is a concern, ensure that each application is registered with only one instance of Spring Boot Admin.
 
 ![Architecture](/4.1.4-SNAPSHOT/assets/images/hazelcast-component-diagram-b537943d08d375e4794dd200b5bcde4c.png)
 
