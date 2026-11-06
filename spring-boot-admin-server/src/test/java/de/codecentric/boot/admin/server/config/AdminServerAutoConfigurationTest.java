@@ -51,7 +51,8 @@ class AdminServerAutoConfigurationTest {
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(ReactiveHttpClientAutoConfiguration.class,
 				WebClientAutoConfiguration.class, HazelcastAutoConfiguration.class, WebMvcAutoConfiguration.class,
-				AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class))
+				AdminServerHazelcastAutoConfiguration.class, AdminServerAutoConfiguration.class,
+				AdminServerNotifierAutoConfiguration.class))
 		.withUserConfiguration(AdminServerMarkerConfiguration.class);
 
 	@Test
@@ -68,9 +69,8 @@ class AdminServerAutoConfigurationTest {
 		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class).run((context) -> {
 			assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(HazelcastEventStore.class);
 			assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
-			assertThat(context).hasSingleBean(FilteringNotifier.class);
-			FilteringNotifier filteringNotifier = context.getBean(FilteringNotifier.class);
-			assertThat(filteringNotifier).extracting("filters").isInstanceOf(IMap.class);
+			assertThat(context).doesNotHaveBean(FilteringNotifier.class);
+			assertThat(context).getBean("notificationFiltersMap").isInstanceOf(IMap.class);
 		});
 	}
 
