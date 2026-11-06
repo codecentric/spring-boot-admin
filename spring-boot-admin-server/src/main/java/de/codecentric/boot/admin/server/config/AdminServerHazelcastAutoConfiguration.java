@@ -17,15 +17,17 @@
 package de.codecentric.boot.admin.server.config;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +46,6 @@ import de.codecentric.boot.admin.server.notify.filter.NotificationFilter;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(AdminServerMarkerConfiguration.Marker.class)
 @ConditionalOnSingleCandidate(HazelcastInstance.class)
-@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ AdminServerAutoConfiguration.class, AdminServerNotifierAutoConfiguration.class })
 @AutoConfigureAfter(HazelcastAutoConfiguration.class)
 @Lazy(false)
@@ -70,8 +71,7 @@ public class AdminServerHazelcastAutoConfiguration {
 		AdminServerProperties.EventStoreProperties eventStoreProperties = adminServerProperties.getEventStore();
 		int maxLogSizePerAggregate = eventStoreProperties.getMaxLogSizePerAggregate();
 		boolean pruneInfoUpdatedEvents = eventStoreProperties.isPruneInfoUpdatedEvents();
-		if (environment.getProperty("spring.boot.admin.hazelcast.enabled", Boolean.class, true)
-				&& environment.getProperty("spring.boot.admin.hazelcast.event-store-enabled", Boolean.class, true)) {
+		if (isEnabled(environment, "event-store-enabled")) {
 			IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
 			return new HazelcastEventStore(maxLogSizePerAggregate, map, pruneInfoUpdatedEvents);
 		}
@@ -85,37 +85,67 @@ public class AdminServerHazelcastAutoConfiguration {
 	 * {@code ConcurrentMap} through an {@code ObjectProvider}, which is resolved lazily
 	 * when the notification trigger is created. The result therefore does not depend on
 	 * the order in which the auto-configurations are evaluated.
+	 * <p>
+	 * If disabled with
+	 * {@code spring.boot.admin.hazelcast.sent-notifications-enabled=false}, this bean is
+	 * {@code null} and a plain notification trigger is created, so every node sends its
+	 * own notifications.
 	 * @param hazelcastInstance the Hazelcast instance
 	 * @param nameSentNotificationsMap the name of the backing map
-	 * @return the map holding the version of the last event a notification was sent for
+	 * @param environment the environment
+	 * @return the map holding the version of the last event a notification was sent for,
+	 * or {@code null} if disabled
 	 */
 	@Bean(name = SENT_NOTIFICATIONS_BEAN_NAME)
 	@Lazy
 	@ConditionalOnMissingBean(name = SENT_NOTIFICATIONS_BEAN_NAME)
-	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "sent-notifications-enabled",
-			matchIfMissing = true)
-	public IMap<InstanceId, Long> sentNotificationsMap(HazelcastInstance hazelcastInstance,
-			@Value("${spring.boot.admin.hazelcast.sent-notifications:" + DEFAULT_NAME_SENT_NOTIFICATIONS_MAP
-					+ "}") String nameSentNotificationsMap) {
+	@Nullable public IMap<InstanceId, Long> sentNotificationsMap(
+			HazelcastInstance hazelcastInstance, @Value("${spring.boot.admin.hazelcast.sent-notifications:"
+					+ DEFAULT_NAME_SENT_NOTIFICATIONS_MAP + "}") String nameSentNotificationsMap,
+			Environment environment) {
+		if (!isEnabled(environment, "sent-notifications-enabled")) {
+			return null;
+		}
 		return hazelcastInstance.getMap(nameSentNotificationsMap);
 	}
 
 	/**
 	 * Distributed map holding the notification filters, so that filters are shared across
 	 * the cluster. Pass it to a {@link FilteringNotifier} declared in your application.
+	 * <p>
+	 * If disabled with
+	 * {@code spring.boot.admin.hazelcast.notification-filters-enabled=false}, a local map
+	 * is returned, so the declaration of the {@link FilteringNotifier} does not need to
+	 * change, but filters are not shared.
 	 * @param hazelcastInstance the Hazelcast instance
 	 * @param nameNotificationFiltersMap the name of the backing map
+	 * @param environment the environment
 	 * @return the map holding the notification filters
 	 */
 	@Bean(name = NOTIFICATION_FILTERS_BEAN_NAME)
 	@Lazy
 	@ConditionalOnMissingBean(name = NOTIFICATION_FILTERS_BEAN_NAME)
-	@ConditionalOnProperty(prefix = "spring.boot.admin.hazelcast", name = "notification-filters-enabled",
-			matchIfMissing = true)
-	public IMap<String, NotificationFilter> notificationFiltersMap(HazelcastInstance hazelcastInstance,
-			@Value("${spring.boot.admin.hazelcast.notification-filters:" + DEFAULT_NAME_NOTIFICATION_FILTERS_MAP
-					+ "}") String nameNotificationFiltersMap) {
+	public ConcurrentMap<String, NotificationFilter> notificationFiltersMap(
+			HazelcastInstance hazelcastInstance, @Value("${spring.boot.admin.hazelcast.notification-filters:"
+					+ DEFAULT_NAME_NOTIFICATION_FILTERS_MAP + "}") String nameNotificationFiltersMap,
+			Environment environment) {
+		if (!isEnabled(environment, "notification-filters-enabled")) {
+			return new ConcurrentHashMap<>();
+		}
 		return hazelcastInstance.getMap(nameNotificationFiltersMap);
+	}
+
+	/**
+	 * Whether the given Hazelcast backed feature is enabled. This is decided at runtime
+	 * and not with {@code @ConditionalOnProperty}, because conditions are evaluated at
+	 * build time when AOT is used, and the properties would be ignored at runtime.
+	 * @param environment the environment
+	 * @param feature the name of the {@code spring.boot.admin.hazelcast.*} property
+	 * @return {@code true} if Hazelcast and the feature are enabled
+	 */
+	private static boolean isEnabled(Environment environment, String feature) {
+		return environment.getProperty("spring.boot.admin.hazelcast.enabled", Boolean.class, true)
+				&& environment.getProperty("spring.boot.admin.hazelcast." + feature, Boolean.class, true);
 	}
 
 }

@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentMap;
 
 import com.hazelcast.config.Config;
@@ -23,6 +24,7 @@ import com.hazelcast.map.IMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -110,6 +112,17 @@ class AdminServerHazelcastAutoConfigurationTest {
 				assertThat(context).hasSingleBean(FilteringNotifier.class);
 				assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
 			});
+	}
+
+	@Test
+	void should_not_use_build_time_conditions_for_runtime_switches() {
+		// Conditions are evaluated at build time with AOT, so the switches must be read
+		// at runtime inside the bean methods.
+		assertThat(AdminServerHazelcastAutoConfiguration.class.isAnnotationPresent(ConditionalOnProperty.class))
+			.isFalse();
+		for (Method method : AdminServerHazelcastAutoConfiguration.class.getDeclaredMethods()) {
+			assertThat(method.isAnnotationPresent(ConditionalOnProperty.class)).as(method.getName()).isFalse();
+		}
 	}
 
 	public static class HazelcastOnlyConfig {
