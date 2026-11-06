@@ -18,13 +18,10 @@ package de.codecentric.boot.admin.client.registration;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
-import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.autoconfigure.ServerProperties;
@@ -43,19 +40,11 @@ import de.codecentric.boot.admin.client.registration.metadata.MetadataContributo
  * @author Johannes Edmeier
  * @author Rene Felgenträger
  */
-public class DefaultApplicationFactory implements ApplicationFactory {
-
-	private final InstanceProperties instance;
+public class DefaultApplicationFactory extends AbstractApplicationFactory {
 
 	private final ServerProperties server;
 
 	private final ManagementServerProperties management;
-
-	private final PathMappedEndpoints pathMappedEndpoints;
-
-	private final WebEndpointProperties webEndpoint;
-
-	private final MetadataContributor metadataContributor;
 
 	@Nullable private Integer localServerPort;
 
@@ -64,38 +53,14 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 	public DefaultApplicationFactory(InstanceProperties instance, ManagementServerProperties management,
 			ServerProperties server, PathMappedEndpoints pathMappedEndpoints, WebEndpointProperties webEndpoint,
 			MetadataContributor metadataContributor) {
-		this.instance = instance;
+		super(instance, pathMappedEndpoints, webEndpoint, metadataContributor);
 		this.management = management;
 		this.server = server;
-		this.pathMappedEndpoints = pathMappedEndpoints;
-		this.webEndpoint = webEndpoint;
-		this.metadataContributor = metadataContributor;
 	}
 
 	@Override
-	public Application createApplication() {
-		return Application.create(getName())
-			.healthUrl(getHealthUrl())
-			.managementUrl(getManagementUrl())
-			.serviceUrl(getServiceUrl())
-			.metadata(getMetadata())
-			.build();
-	}
-
-	protected String getName() {
-		return this.instance.getName();
-	}
-
-	protected String getServiceUrl() {
-		if (this.instance.getServiceUrl() != null) {
-			return this.instance.getServiceUrl();
-		}
-
-		return UriComponentsBuilder.fromUriString(getServiceBaseUrl()).path(getServicePath()).toUriString();
-	}
-
 	protected String getServiceBaseUrl() {
-		String baseUrl = this.instance.getServiceBaseUrl();
+		String baseUrl = getInstance().getServiceBaseUrl();
 
 		if (StringUtils.hasText(baseUrl)) {
 			return baseUrl;
@@ -108,29 +73,9 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 			.toUriString();
 	}
 
-	protected String getServicePath() {
-		String path = this.instance.getServicePath();
-
-		if (StringUtils.hasText(path)) {
-			return path;
-		}
-
-		return "/";
-	}
-
-	protected String getManagementUrl() {
-		if (this.instance.getManagementUrl() != null) {
-			return this.instance.getManagementUrl();
-		}
-
-		return UriComponentsBuilder.fromUriString(getManagementBaseUrl())
-			.path("/")
-			.path(getEndpointsWebPath())
-			.toUriString();
-	}
-
+	@Override
 	protected String getManagementBaseUrl() {
-		String baseUrl = this.instance.getManagementBaseUrl();
+		String baseUrl = getInstance().getManagementBaseUrl();
 
 		if (StringUtils.hasText(baseUrl)) {
 			return baseUrl;
@@ -150,27 +95,6 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 
 	protected boolean isManagementPortEqual() {
 		return this.localManagementPort == null || this.localManagementPort.equals(this.localServerPort);
-	}
-
-	protected String getEndpointsWebPath() {
-		return this.webEndpoint.getBasePath();
-	}
-
-	protected String getHealthUrl() {
-		if (this.instance.getHealthUrl() != null) {
-			return this.instance.getHealthUrl();
-		}
-		return UriComponentsBuilder.fromUriString(getManagementBaseUrl())
-			.path("/")
-			.path(getHealthEndpointPath())
-			.toUriString();
-	}
-
-	protected Map<String, String> getMetadata() {
-		Map<String, String> metadata = new LinkedHashMap<>();
-		metadata.putAll(this.metadataContributor.getMetadata());
-		metadata.putAll(this.instance.getMetadata());
-		return metadata;
 	}
 
 	protected String getServiceHost() {
@@ -213,28 +137,16 @@ public class DefaultApplicationFactory implements ApplicationFactory {
 		return this.localManagementPort;
 	}
 
-	protected String getHealthEndpointPath() {
-		String health = this.pathMappedEndpoints.getPath(EndpointId.of("health"));
-		if (StringUtils.hasText(health)) {
-			return health;
-		}
-		String status = this.pathMappedEndpoints.getPath(EndpointId.of("status"));
-		if (StringUtils.hasText(status)) {
-			return status;
-		}
-		throw new IllegalStateException("Either health or status endpoint must be enabled!");
-	}
-
 	protected String getScheme(@Nullable Ssl ssl) {
 		return ((ssl != null) && ssl.isEnabled()) ? "https" : "http";
 	}
 
 	protected String getHost(InetAddress address) {
-		if (this.instance.isPreferIp()) {
+		if (getInstance().isPreferIp()) {
 			return address.getHostAddress();
 		}
 
-		return switch (this.instance.getServiceHostType()) {
+		return switch (getInstance().getServiceHostType()) {
 			case IP -> address.getHostAddress();
 			case HOST_NAME -> address.getHostName();
 			default -> address.getCanonicalHostName();

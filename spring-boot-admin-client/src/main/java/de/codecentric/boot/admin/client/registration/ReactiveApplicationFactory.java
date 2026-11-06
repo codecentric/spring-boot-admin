@@ -16,6 +16,7 @@
 
 package de.codecentric.boot.admin.client.registration;
 
+import org.jspecify.annotations.Nullable;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
@@ -49,15 +50,8 @@ public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 	}
 
 	@Override
-	protected String getServiceUrl() {
-		if (instance.getServiceUrl() != null) {
-			return instance.getServiceUrl();
-		}
-
-		return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
-			.path(getServicePath())
-			.path(getWebfluxBasePath())
-			.toUriString();
+	protected @Nullable String getContextPath() {
+		return getWebfluxBasePath();
 	}
 
 	@Override
