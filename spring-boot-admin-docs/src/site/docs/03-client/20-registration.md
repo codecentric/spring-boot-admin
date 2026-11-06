@@ -255,6 +255,41 @@ public class ReactiveApplicationFactory extends DefaultApplicationFactory {
 }
 ```
 
+### Servlet Container ApplicationFactory
+
+For WAR deployments to an external servlet container (e.g. Tomcat) where Spring Boot's embedded web server
+infrastructure (`spring-boot-web-server`) is not on the classpath:
+
+```java
+public class ServletContainerApplicationFactory implements ApplicationFactory {
+    // Uses servlet context path and dispatcher servlet path,
+    // but cannot detect host and port
+}
+```
+
+Automatically activated when `spring-boot-web-server` is missing, which is the default when the embedded container
+is declared as `provided` (Maven) or `providedRuntime` (Gradle).
+
+The application cannot determine the container's host and port, so `service-base-url` (or `service-url`) is required:
+
+```yaml title="application.yml"
+spring:
+  boot:
+    admin:
+      client:
+        instance:
+          service-base-url: http://my-tomcat:8080
+```
+
+With a WAR deployed as `demo.war`, the client registers:
+
+- service URL: `http://my-tomcat:8080/demo`
+- management URL: `http://my-tomcat:8080/demo/actuator`
+- health URL: `http://my-tomcat:8080/demo/actuator/health`
+
+A separate management port (`management.server.port`) is not supported in this mode; use `management-base-url` if
+actuator endpoints are reachable under a different URL.
+
 ### Cloud Foundry ApplicationFactory
 
 For Cloud Foundry deployments:
