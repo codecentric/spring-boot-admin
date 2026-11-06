@@ -1,0 +1,23 @@
+{
+  "name": "spring-boot-admin-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "description": "End-to-end smoke tests for Spring Boot Admin using Playwright",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "report": "playwright show-report target/playwright-report",
+    "typecheck": "tsc -p .",
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write",
+    "install:browsers": "playwright install --with-deps chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.19.2",
+    "prettier": "3.9.10",
+    "typescript": "6.0.3"
+  }
+}

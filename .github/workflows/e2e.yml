@@ -1,0 +1,68 @@
+name: E2E Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: playwright-smoke-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+          cache-dependency-path: '**/pom.xml'
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '26'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Build servlet sample
+        run: ./mvnw -B --no-transfer-progress install -DskipTests -pl spring-boot-admin-samples/spring-boot-admin-sample-servlet -am
+
+      - name: Install dependencies
+        working-directory: spring-boot-admin-e2e
+        run: npm ci
+
+      - name: Check formatting and types
+        working-directory: spring-boot-admin-e2e
+        run: |
+          npm run format
+          npm run typecheck
+
+      - name: Install Playwright browser
+        working-directory: spring-boot-admin-e2e
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        working-directory: spring-boot-admin-e2e
+        run: npm test
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            spring-boot-admin-e2e/target/playwright-report
+            spring-boot-admin-e2e/target/test-results
+            spring-boot-admin-e2e/target/logs
+          if-no-files-found: ignore
+          retention-days: 14
