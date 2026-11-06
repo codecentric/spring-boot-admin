@@ -131,9 +131,23 @@
 - Default: 
 
   `"spring-boot-admin-sent-notifications"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `spring.boot.admin.hazelcast.event-store-enabled`Enable the Hazelcast map for storing instance events.- Type: 
+
+  `java.lang.Boolean`
+
+- Default: 
+
+  `"true"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | `spring.boot.admin.ssrf-protection.allowed-cidrs`Additional IP addresses or CIDR ranges (IPv4 and IPv6) that are permitted even if they would otherwise be blocked by the default `InetAddressFilter.externalAddresses()` filter. Useful for intranet deployments where the Admin Server must reach services on private IP ranges.Examples: `192.168.1.100`, `192.168.1.0/24`, `10.0.0.0/8`, `fd00::/8`- Type: 
 
   `java.util.List<java.lang.String>`                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `spring.boot.admin.hazelcast.notification-filters`Name of backing Hazelcast-Map for storing notification filters.- Type: 
+
+  `java.lang.String`
+
+- Default: 
+
+  `"spring-boot-admin-notification-filters"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `spring.boot.admin.instance-auth.default-password`Default userpassword used for authentication to each instance. Individual values for specific instances can be overriden using \`spring.boot.admin.instance-auth.service-map.\*.user-password\`.<br />Default: null- Type: 
 
   `java.lang.String`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -146,12 +160,26 @@
 | `spring.boot.admin.ssrf-protection.allowed-schemes`URL schemes that are permitted. Any scheme not in this list is blocked. Default: http, https.- Type: 
 
   `java.util.Set<java.lang.String>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `spring.boot.admin.hazelcast.sent-notifications-enabled`Enable the Hazelcast map for storing sent notifications.- Type: 
+
+  `java.lang.Boolean`
+
+- Default: 
+
+  `"true"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `spring.boot.admin.event-store.prune-info-updated-events`Whether to keep only the latest INFO\_UPDATED event per instance instead of retaining all of them until compaction. Default: false (opt-in).- Type: 
 
   `java.lang.Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | `spring.boot.admin.event-store.max-log-size-per-aggregate`Maximum number of events to retain per instance aggregate. Default: `ConcurrentMapEventStore#DEFAULT_MAX_LOG_SIZE_PER_AGGREGATE`.- Type: 
 
   `java.lang.Integer`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `spring.boot.admin.hazelcast.notification-filters-enabled`Enable the Hazelcast map for storing notification filters.- Type: 
+
+  `java.lang.Boolean`
+
+- Default: 
+
+  `"true"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `spring.boot.admin.monitor.status-change-detection-strategy`Strategy to use to determine if, given two `StatusInfo` instances, they're different or not in order to decide if a `STATUS_UPDATED` event should be published or not.Defaults to `AdminServerProperties.MonitorProperties#DEFAULT_STATUS_CHANGE_DETECTION_STRATEGY` unless a different value is specified.- Type: 
 
   `de.codecentric.boot.admin.server.config.AdminServerProperties$MonitorProperties$StatusChangeDetectionStrategy`

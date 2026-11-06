@@ -203,6 +203,30 @@ hazelcast:
         enabled: false
 ```
 
+### Selective Clustering[​](#selective-clustering "Direct link to Selective Clustering")
+
+The event store, sent-notifications map, and notification-filters map can be disabled independently. All three maps are enabled by default:
+
+application.yml
+
+```
+spring:
+
+  boot:
+
+    admin:
+
+      hazelcast:
+
+        event-store-enabled: false
+
+        sent-notifications-enabled: true
+
+        notification-filters-enabled: false
+```
+
+When the event-store map is disabled, Spring Boot Admin uses its in-memory event store and still applies `spring.boot.admin.event-store.max-log-size-per-aggregate` and `spring.boot.admin.event-store.prune-info-updated-events`.
+
 ## Network Configuration[​](#network-configuration "Direct link to Network Configuration")
 
 ### Multicast (Development)[​](#multicast-development "Direct link to Multicast (Development)")
