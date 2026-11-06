@@ -233,6 +233,9 @@ public class CustomApplicationFactory implements ApplicationFactory {
 }
 ```
 
+To reuse the standard URL and metadata logic, extend `AbstractApplicationFactory` instead and implement only
+`getServiceBaseUrl()` and `getManagementBaseUrl()`.
+
 ## Specialized ApplicationFactories
 
 ### Servlet ApplicationFactory
@@ -261,7 +264,7 @@ For WAR deployments to an external servlet container (e.g. Tomcat) where Spring 
 infrastructure (`spring-boot-web-server`) is not on the classpath:
 
 ```java
-public class ServletContainerApplicationFactory implements ApplicationFactory {
+public class ServletContainerApplicationFactory extends AbstractApplicationFactory {
     // Uses servlet context path and dispatcher servlet path,
     // but cannot detect host and port
 }

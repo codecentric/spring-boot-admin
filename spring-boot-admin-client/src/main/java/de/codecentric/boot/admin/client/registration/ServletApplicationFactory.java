@@ -54,15 +54,8 @@ public class ServletApplicationFactory extends DefaultApplicationFactory {
 	}
 
 	@Override
-	protected String getServiceUrl() {
-		if (instance.getServiceUrl() != null) {
-			return instance.getServiceUrl();
-		}
-
-		return UriComponentsBuilder.fromUriString(getServiceBaseUrl())
-			.path(getServicePath())
-			.path(getServerContextPath())
-			.toUriString();
+	protected String getContextPath() {
+		return getServerContextPath();
 	}
 
 	@Override
