@@ -1,6 +1,8 @@
 {
   "navbar": {
     "signedInAs": "Angemeldet als",
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "user_menu": "Benutzermenü von {name}",
+    "show_children": "Einträge von {label} anzeigen"
   }
 }

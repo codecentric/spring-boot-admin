@@ -30,10 +30,17 @@
         <g
           v-for="col in cols + (row % 2 ? 0 : -1)"
           :key="`${col}-${row}`"
+          :aria-label="
+            item(col, row) ? labelForItem(item(col, row)) : undefined
+          "
           :class="classForItem(item(col, row))"
+          :role="item(col, row) ? 'button' : undefined"
+          :tabindex="item(col, row) ? 0 : undefined"
           :transform="translate(col, row)"
           class="hex"
           @click="click($event, col, row)"
+          @keydown.enter.prevent="click($event, col, row)"
+          @keydown.space.prevent="click($event, col, row)"
         >
           <path :d="hexPath" />
           <foreignObject
@@ -68,6 +75,10 @@ export default {
     classForItem: {
       type: Function,
       default: () => void 0,
+    },
+    labelForItem: {
+      type: Function,
+      default: () => undefined,
     },
   },
   emits: ['click'],

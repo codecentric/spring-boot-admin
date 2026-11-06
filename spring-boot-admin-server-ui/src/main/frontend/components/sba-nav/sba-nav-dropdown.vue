@@ -12,7 +12,7 @@
         <slot v-else name="label" />
       </a>
 
-      <MenuButton class="submenu-opener-button">
+      <MenuButton :aria-label="buttonLabel" class="submenu-opener-button">
         <span v-if="!href" class="submenu-opener-label">
           <span v-if="text" v-text="text" />
           <slot v-else-if="!text" name="label" />
@@ -57,6 +57,10 @@ defineProps({
   active: {
     type: Boolean,
     default: false,
+  },
+  buttonLabel: {
+    type: String,
+    default: undefined,
   },
 });
 </script>

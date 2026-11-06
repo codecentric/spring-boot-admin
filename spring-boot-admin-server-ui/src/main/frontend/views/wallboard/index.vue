@@ -73,6 +73,7 @@
         v-if="applicationsInitialized"
         :class-for-item="classForApplication"
         :items="applications"
+        :label-for-item="labelForApplication"
         @click="select"
       >
         <template #item="{ item: application }">
@@ -183,6 +184,12 @@ export default {
   },
   methods: {
     classNames,
+    labelForApplication(application: Application) {
+      return this.t('wallboard.application_label', {
+        name: application.name,
+        status: application.status,
+      });
+    },
     classForApplication(application: Application) {
       if (!application) {
         return null;
