@@ -1,0 +1,164 @@
+# Clustering
+
+Spring Boot Admin Server supports cluster replication via Hazelcast. It is automatically enabled when a `HazelcastConfig`- or `HazelcastInstance`-Bean is present. You can also configure the Hazelcast instance to be persistent, to keep the status over restarts. Also have a look at the [Spring Boot support for Hazelcast](http://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#boot-features-hazelcast/).
+
+When using clustering, Spring Boot Admin Events and Notifications are replicated across the members in the cluster. The event store, sent-notifications map, and notification-filters map can be disabled independently with `spring.boot.admin.hazelcast.event-store-enabled=false`, `spring.boot.admin.hazelcast.sent-notifications-enabled=false`, and `spring.boot.admin.hazelcast.notification-filters-enabled=false`, respectively. All three are enabled by default for backward compatibility. The switches are evaluated at runtime, so they also work with AOT / native images:
+
+* If the event store is disabled, every node keeps its own events in memory.
+* If the sent-notifications map is disabled, notifications are not deduplicated across the cluster, so every node sends its own notifications.
+* If the notification-filters map is disabled, the `notificationFiltersMap` bean is a local map, and filters are not shared.
+* `spring.boot.admin.hazelcast.enabled=false` disables all three. The registered applications themselves are not replicated — each instance of Spring Boot Admin independently polls its own set of registered clients. This means each node monitors all applications, which may lead to increased load on the monitored services. If that is a concern, ensure that each application is registered with only one instance of Spring Boot Admin.
+
+![Architecture](/4.1.5/assets/images/hazelcast-component-diagram-b537943d08d375e4794dd200b5bcde4c.png)
+
+info
+
+In the setup shown in the picture above, both Spring Boot Admin instances poll the monitored services for health checks. This means each service receives health check requests from every SBA node in the cluster.
+
+## Example Configuration[​](#example-configuration "Direct link to Example Configuration")
+
+The following example shows a simple Hazelcast configuration, which should work in most environments. It uses multicast for discovery, which may not be available in all networks and does not require a dedicated Hazelcast server. All instances (aka members) of the Spring Boot Admin Server when using this config, will form a cluster automatically.
+
+Keep in mind that Hazelcast has a lot of options to configure the network and discovery. Please refer to the [Hazelcast Documentation](https://docs.hazelcast.com/) for more details, as we do not offer any kind of support for Hazelcast itself. Also, this is just a basic example, you should adapt the configuration to your needs, especially regarding production readiness and network configuration.
+
+1. Add Hazelcast to your dependencies:
+
+pom.xml
+
+```
+<dependency>
+
+    <groupId>com.hazelcast</groupId>
+
+    <artifactId>hazelcast</artifactId>
+
+</dependency>
+```
+
+2. Instantiate a HazelcastConfig:
+
+HazelcastConfig.java
+
+```
+@Bean
+
+public Config hazelcastConfig() {
+
+    // This map is used to store the events.
+
+    // It should be configured to reliably hold all the data,
+
+    // Spring Boot Admin will compact the events, if there are too many
+
+    MapConfig eventStoreMap = new MapConfig(DEFAULT_NAME_EVENT_STORE_MAP).setInMemoryFormat(InMemoryFormat.OBJECT)
+
+            .setBackupCount(1)
+
+            .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+
+    // This map is used to deduplicate the notifications.
+
+    // If data in this map gets lost it should not be a big issue as it will atmost
+
+    // lead to
+
+    // the same notification to be sent by multiple instances
+
+    MapConfig sentNotificationsMap = new MapConfig(DEFAULT_NAME_SENT_NOTIFICATIONS_MAP)
+
+            .setInMemoryFormat(InMemoryFormat.OBJECT)
+
+            .setBackupCount(1)
+
+            .setEvictionConfig(
+
+                    new EvictionConfig().setEvictionPolicy(EvictionPolicy.LRU).setMaxSizePolicy(MaxSizePolicy.PER_NODE))
+
+            .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+
+    // This map is used to share notification filter rules across all cluster nodes.
+
+    // Filters added on one node will automatically be visible to all other nodes.
+
+    MapConfig notificationFiltersMap = new MapConfig(DEFAULT_NAME_NOTIFICATION_FILTERS_MAP)
+
+            .setInMemoryFormat(InMemoryFormat.OBJECT)
+
+            .setBackupCount(1)
+
+            .setMergePolicyConfig(new MergePolicyConfig(PutIfAbsentMergePolicy.class.getName(), 100));
+
+
+
+    Config config = new Config();
+
+    config.addMapConfig(eventStoreMap);
+
+    config.addMapConfig(sentNotificationsMap);
+
+    config.addMapConfig(notificationFiltersMap);
+
+    config.setProperty("hazelcast.jmx", "true");
+
+
+
+    // network and join configuration (simple defaults good for local/dev)
+
+    NetworkConfig network = config.getNetworkConfig();
+
+    network.setPort(5701).setPortAutoIncrement(true);
+
+
+
+    JoinConfig join = network.getJoin();
+
+    join.getMulticastConfig().setEnabled(true);
+
+
+
+    return config;
+
+}
+```
+
+### Sharing notification filters[​](#sharing-notification-filters "Direct link to Sharing notification filters")
+
+The Hazelcast map `spring-boot-admin-notification-filters` (configurable via `spring.boot.admin.hazelcast.notification-filters`) is available as a bean named `notificationFiltersMap`. To share filters across the cluster, you pass it to the constructor of your own `FilteringNotifier`. This allows filter definitions to be replicated and kept in sync across all cluster nodes.
+
+```
+@Bean
+
+@Primary
+
+public FilteringNotifier filteringNotifier(@Qualifier("mailNotifier") Notifier delegate,
+
+        InstanceRepository repository,
+
+        @Qualifier("notificationFiltersMap") ConcurrentMap<String, NotificationFilter> filters) {
+
+    return new FilteringNotifier(delegate, repository, filters);
+
+}
+```
+
+warning
+
+A `FilteringNotifier` that wraps another notifier can end up in a circular dependency with the `CompositeNotifier`. The `CompositeNotifier` is created when more than one `Notifier` bean exists and none of them is `@Primary`. It collects every `Notifier` bean, including your `FilteringNotifier`. If the `FilteringNotifier` receives its delegate as a plain `Notifier` parameter, Spring resolves that parameter to the `CompositeNotifier`, and the application fails to start with a `BeanCurrentlyInCreationException`.
+
+To avoid this, declare the `FilteringNotifier` as `@Primary` and inject the notifier it wraps by name with `@Qualifier` (or by its concrete type), as in the example above.
+
+```
+// Do not do this: the plain Notifier parameter resolves to the CompositeNotifier,
+
+// which in turn needs this FilteringNotifier.
+
+@Bean
+
+public FilteringNotifier filteringNotifier(Notifier delegate, InstanceRepository repository,
+
+        @Qualifier("notificationFiltersMap") ConcurrentMap<String, NotificationFilter> filters) {
+
+    return new FilteringNotifier(delegate, repository, filters);
+
+}
+```
