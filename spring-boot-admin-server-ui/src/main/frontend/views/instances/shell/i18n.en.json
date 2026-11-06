@@ -26,6 +26,9 @@
     },
     "custom-link": {
       "title": "Links"
-    }
+    },
+    "aria_label": "Instance navigation",
+    "expand_group": "Expand {group}",
+    "collapse_group": "Collapse {group}"
   }
 }

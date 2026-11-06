@@ -97,6 +97,28 @@ describe('Sidebar', () => {
     expect(screen.queryByText('Health')).not.toBeInTheDocument();
   });
 
+  it('labels the group toggle buttons and reflects their state', async () => {
+    const user = userEvent.setup();
+
+    await renderSidebar({ initialRouteName: 'instances/web/health' });
+
+    const collapseWeb = await screen.findByRole('button', {
+      name: 'sidebar.collapse_group',
+    });
+    expect(collapseWeb).toHaveAttribute('aria-expanded', 'true');
+
+    const expandData = screen.getByRole('button', {
+      name: 'sidebar.expand_group',
+    });
+    expect(expandData).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(expandData);
+
+    await waitFor(() => {
+      expect(expandData).toHaveAttribute('aria-expanded', 'true');
+    });
+  });
+
   it('truncates long custom link labels and keeps the full label as title', async () => {
     const longLabel =
       'A very long external sidebar link label that gets truncated';

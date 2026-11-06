@@ -56,7 +56,7 @@ export const addIframeView = (
       inheritAttrs: false,
       render() {
         return h('div', { class: 'external-view' }, [
-          h('iframe', { src: view.url }),
+          h('iframe', { src: view.url, title: view.label }),
         ]);
       },
     },

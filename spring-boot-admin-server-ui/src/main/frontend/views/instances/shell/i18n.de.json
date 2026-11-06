@@ -26,6 +26,9 @@
     },
     "custom-link": {
       "title": "Links"
-    }
+    },
+    "aria_label": "Instanz-Navigation",
+    "expand_group": "{group} aufklappen",
+    "collapse_group": "{group} zuklappen"
   }
 }

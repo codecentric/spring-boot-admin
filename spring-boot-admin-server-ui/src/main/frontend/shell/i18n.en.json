@@ -1,6 +1,8 @@
 {
   "navbar": {
     "signedInAs": "Signed in as",
-    "logout": "Log out"
+    "logout": "Log out",
+    "user_menu": "User menu of {name}",
+    "show_children": "Show entries of {label}"
   }
 }
