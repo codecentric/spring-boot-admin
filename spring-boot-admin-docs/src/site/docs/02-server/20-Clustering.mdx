@@ -17,6 +17,12 @@ The event store, sent-notifications map, and notification-filters map can be dis
 `spring.boot.admin.hazelcast.sent-notifications-enabled=false`, and
 `spring.boot.admin.hazelcast.notification-filters-enabled=false`, respectively.
 All three are enabled by default for backward compatibility.
+The switches are evaluated at runtime, so they also work with AOT / native images:
+
+- If the event store is disabled, every node keeps its own events in memory.
+- If the sent-notifications map is disabled, notifications are not deduplicated across the cluster, so every node sends its own notifications.
+- If the notification-filters map is disabled, the `notificationFiltersMap` bean is a local map, and filters are not shared.
+- `spring.boot.admin.hazelcast.enabled=false` disables all three.
 The registered applications themselves are not replicated — each instance of Spring Boot Admin independently polls
 its own set of registered clients. This means each node monitors all applications, which may lead to increased
 load on the monitored services. If that is a concern, ensure that each application is registered with only one

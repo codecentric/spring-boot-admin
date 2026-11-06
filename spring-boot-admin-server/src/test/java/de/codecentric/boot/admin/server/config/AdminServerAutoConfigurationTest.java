@@ -17,6 +17,7 @@
 package de.codecentric.boot.admin.server.config;
 
 import java.time.Duration;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.map.IMap;
@@ -110,11 +111,33 @@ class AdminServerAutoConfigurationTest {
 	}
 
 	@Test
-	void shouldDisableHazelcastNotificationFilters() {
+	void shouldUseLocalNotificationFiltersWhenHazelcastFiltersAreDisabled() {
 		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
 			.withPropertyValues("spring.boot.admin.hazelcast.notification-filters-enabled=false")
-			.run((context) -> assertThat(context)
-				.doesNotHaveBean(AdminServerHazelcastAutoConfiguration.NOTIFICATION_FILTERS_BEAN_NAME));
+			.run((context) -> {
+				assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
+				assertThat(context.getBean(AdminServerHazelcastAutoConfiguration.NOTIFICATION_FILTERS_BEAN_NAME))
+					.isInstanceOf(ConcurrentHashMap.class);
+			});
+	}
+
+	@Test
+	void shouldUseHazelcastNotificationFiltersByDefault() {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
+			.run((context) -> assertThat(
+					context.getBean(AdminServerHazelcastAutoConfiguration.NOTIFICATION_FILTERS_BEAN_NAME))
+				.isInstanceOf(IMap.class));
+	}
+
+	@Test
+	void shouldDisableAllHazelcastFeaturesAtRuntime() {
+		this.contextRunner.withUserConfiguration(TestHazelcastConfig.class)
+			.withPropertyValues("spring.boot.admin.hazelcast.enabled=false")
+			.run((context) -> {
+				assertThat(context).getBean(InstanceEventStore.class).isInstanceOf(InMemoryEventStore.class);
+				assertThat(context).getBean(NotificationTrigger.class)
+					.isNotInstanceOf(HazelcastNotificationTrigger.class);
+			});
 	}
 
 	@Test
