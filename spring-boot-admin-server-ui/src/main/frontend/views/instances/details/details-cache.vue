@@ -33,7 +33,7 @@
         />
         <dd
           :aria-labelledby="`metrics.cache.${index}.hits`"
-          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 sm:text-right"
           v-text="current.hit"
         />
       </template>
@@ -45,7 +45,7 @@
         />
         <dd
           :aria-labelledby="`metrics.cache.${index}.misses`"
-          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 sm:text-right"
           v-text="current.miss"
         />
       </template>
@@ -57,18 +57,19 @@
         />
         <dd
           :aria-labelledby="`metrics.cache.${index}.ratio`"
-          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 sm:text-right"
           v-text="ratio"
         />
       </template>
       <template v-if="current.size !== undefined">
         <dt
           :id="`metrics.cache.${index}.size`"
-          class="sm:col-span-4"
+          class="text-sm font-medium text-gray-500 sm:col-span-4"
           v-text="$t('instances.details.cache.size')"
         />
         <dd
           :aria-labelledby="`metrics.cache.${index}.size`"
+          class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 sm:text-right"
           v-text="current.size"
         />
       </template>
