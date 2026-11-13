@@ -33,7 +33,7 @@
         v-text="$t('instances.details.datasource.active_connections')"
       />
       <dd
-        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 sm:text-right"
         v-text="current.active"
       />
 
@@ -42,7 +42,7 @@
         v-text="$t('instances.details.datasource.min_connections')"
       />
       <dd
-        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 sm:text-right"
         v-text="current.min"
       />
 
@@ -52,12 +52,12 @@
       />
       <dd
         v-if="current.max >= 0"
-        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 sm:text-right"
         v-text="current.max"
       />
       <dd
         v-else
-        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2"
+        class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 sm:text-right"
         v-text="$t('instances.details.datasource.unlimited')"
       />
     </dl>
