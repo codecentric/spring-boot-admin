@@ -112,7 +112,7 @@
   ],
   "engines": {
     "npm": "12.2.2",
-    "node": "26.13.0"
+    "node": "26.13.1"
   },
   "msw": {
     "workerDirectory": [
