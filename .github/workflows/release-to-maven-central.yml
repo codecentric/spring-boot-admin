@@ -15,9 +15,14 @@ on:
 env:
   VERSION: ${{ github.event.inputs.releaseversion }}
 
+permissions:
+  contents: read
+
 jobs:
   publish-central-and-pages:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the generated documentation to the gh-pages branch
     steps:
       - run: echo "Will start a Maven Central upload with version ${{ github.event.inputs.releaseversion }}"
 
@@ -107,6 +112,8 @@ jobs:
   publish-github-release:
     needs: publish-central-and-pages
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the tag and the GitHub release
 
     steps:
       - name: Create GitHub Release

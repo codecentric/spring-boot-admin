@@ -8,6 +8,9 @@ on:
       - 2.*
       - 3.*
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -54,6 +57,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write # push the generated documentation to the gh-pages branch
+      packages: write # deploy the SNAPSHOT artifacts to GitHub Packages
 
     steps:
       - uses: actions/checkout@v7

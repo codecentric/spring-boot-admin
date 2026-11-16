@@ -16,9 +16,14 @@ on:
 env:
   VERSION: ${{ github.event.inputs.releaseversion }}
 
+permissions:
+  contents: read
+
 jobs:
   deploy-documentation:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the generated documentation to the gh-pages branch
 
     steps:
       - uses: actions/checkout@v7

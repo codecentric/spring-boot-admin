@@ -11,6 +11,9 @@ concurrency:
   group: e2e-${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   e2e:
     name: playwright-smoke-tests
