@@ -29,6 +29,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: refs/tags/${{ github.event.inputs.releaseversion }}
+          persist-credentials: false
 
       - name: Set up JDK
         uses: actions/setup-java@v6
