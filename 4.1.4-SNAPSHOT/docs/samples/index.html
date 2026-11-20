@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Sample Projects | Spring Boot Admin</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://docs.spring-boot-admin.com/4.1.4-SNAPSHOT/img/social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://docs.spring-boot-admin.com/4.1.4-SNAPSHOT/img/social-card.jpg"><meta data-rh="true" property="og:url" content="https://docs.spring-boot-admin.com/4.1.4-SNAPSHOT/docs/samples/"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Sample Projects | Spring Boot Admin"><meta data-rh="true" name="description" content="Spring Boot Admin includes several sample projects demonstrating different deployment scenarios and integration"><meta data-rh="true" property="og:description" content="Spring Boot Admin includes several sample projects demonstrating different deployment scenarios and integration"><link data-rh="true" rel="icon" href="/4.1.4-SNAPSHOT/img/favicon.png"><link data-rh="true" rel="canonical" href="https://docs.spring-boot-admin.com/4.1.4-SNAPSHOT/docs/samples/"><link data-rh="true" rel="alternate" href="https://docs.spring-boot-admin.com/4.1.4-SNAPSHOT/docs/samples/" hreflang="en"><link data-rh="true" rel="alternate" href="https://docs.spring-boot-admin.com/4.1.4-SNAPSHOT/docs/samples/" hreflang="x-default"><link data-rh="true" rel="preconnect" href="https://GUDRYGX7B3-dsn.algolia.net" crossorigin="anonymous"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Samples","item":"https://docs.spring-boot-admin.com/4.1.4-SNAPSHOT/docs/samples/"}]}</script><link rel="stylesheet" href="/4.1.4-SNAPSHOT/assets/css/styles.cdade387.css">
-<script src="/4.1.4-SNAPSHOT/assets/js/runtime~main.82134184.js" defer="defer"></script>
+<script src="/4.1.4-SNAPSHOT/assets/js/runtime~main.14cc6b16.js" defer="defer"></script>
 <script src="/4.1.4-SNAPSHOT/assets/js/main.34e673a0.js" defer="defer"></script>
 </head>
 <body>
@@ -33,9 +33,13 @@ patterns. These samples provide working examples you can use as starting points 
 <li class=""><strong><a class="" href="/4.1.4-SNAPSHOT/docs/07-mcp/">MCP Sample</a></strong> - AI assistant integration via Model Context Protocol</li>
 </ul>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="repository-location">Repository Location<a href="#repository-location" class="hash-link" aria-label="Direct link to Repository Location" title="Direct link to Repository Location" translate="no">​</a></h2>
-<p>All samples are available in
+<p>The samples listed above live in
 the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples" target="_blank" rel="noopener noreferrer" class="">Spring Boot Admin GitHub repository</a>:</p>
 <div class="language-text codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token plain">spring-boot-admin-samples/</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">├── spring-boot-admin-sample-servlet/</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">├── spring-boot-admin-sample-reactive/</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">├── spring-boot-admin-sample-war/</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">├── spring-boot-admin-sample-eureka/</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">├── spring-boot-admin-sample-consul/</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">├── spring-boot-admin-sample-zookeeper/</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">├── spring-boot-admin-sample-hazelcast/</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">├── spring-boot-admin-sample-custom-ui/</span><br></div><div class="token-line" style="color:#393A34"><span class="token plain">└── spring-boot-admin-sample-mcp/</span><br></div></code></pre></div></div>
+<p>Additional example projects covering specific use cases and infrastructure (discovery setups, proxies and similar) live
+in the separate
+<a href="https://github.com/codecentric/spring-boot-admin-runtime-playground" target="_blank" rel="noopener noreferrer" class="">spring-boot-admin-runtime-playground</a>
+repository.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="running-the-samples">Running the Samples<a href="#running-the-samples" class="hash-link" aria-label="Direct link to Running the Samples" title="Direct link to Running the Samples" translate="no">​</a></h2>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="prerequisites">Prerequisites<a href="#prerequisites" class="hash-link" aria-label="Direct link to Prerequisites" title="Direct link to Prerequisites" translate="no">​</a></h3>
 <ul>
@@ -133,14 +137,16 @@ the <a href="https://github.com/codecentric/spring-boot-admin/tree/master/spring
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="dependencies-issues">Dependencies Issues<a href="#dependencies-issues" class="hash-link" aria-label="Direct link to Dependencies Issues" title="Direct link to Dependencies Issues" translate="no">​</a></h3>
 <p>Update Spring Boot Admin version in parent POM and rebuild.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="contributing">Contributing<a href="#contributing" class="hash-link" aria-label="Direct link to Contributing" title="Direct link to Contributing" translate="no">​</a></h2>
-<p>To add a new sample:</p>
+<p>The samples in <code>spring-boot-admin-samples/</code> demonstrate core Spring Boot Admin features. New example projects for
+specific use cases and infrastructure belong in
+the <a href="https://github.com/codecentric/spring-boot-admin-runtime-playground" target="_blank" rel="noopener noreferrer" class="">spring-boot-admin-runtime-playground</a>
+repository instead.</p>
+<p>To add a new example there:</p>
 <ol>
-<li class="">Create directory under <code>spring-boot-admin-samples/</code></li>
-<li class="">Follow existing sample structure</li>
-<li class="">Add <code>README.md</code> with specific instructions</li>
-<li class="">Include <code>docker-compose.yml</code> if applicable</li>
-<li class="">Add tests</li>
-<li class="">Update samples documentation</li>
+<li class="">Create a directory for your use case, following the structure of the existing examples</li>
+<li class="">Add a <code>README.md</code> with step-by-step instructions</li>
+<li class="">Include a <code>docker-compose.yml</code> if the example needs infrastructure</li>
+<li class="">Add the example to the playground&#x27;s <code>README.md</code></li>
 </ol>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="see-also">See Also<a href="#see-also" class="hash-link" aria-label="Direct link to See Also" title="Direct link to See Also" translate="no">​</a></h2>
 <ul>

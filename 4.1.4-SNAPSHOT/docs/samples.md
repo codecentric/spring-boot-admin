@@ -23,7 +23,7 @@ Spring Boot Admin includes several sample projects demonstrating different deplo
 
 ## Repository Location[​](#repository-location "Direct link to Repository Location")
 
-All samples are available in the [Spring Boot Admin GitHub repository](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples):
+The samples listed above live in the [Spring Boot Admin GitHub repository](https://github.com/codecentric/spring-boot-admin/tree/master/spring-boot-admin-samples):
 
 ```
 spring-boot-admin-samples/
@@ -46,6 +46,8 @@ spring-boot-admin-samples/
 
 └── spring-boot-admin-sample-mcp/
 ```
+
+Additional example projects covering specific use cases and infrastructure (discovery setups, proxies and similar) live in the separate [spring-boot-admin-runtime-playground](https://github.com/codecentric/spring-boot-admin-runtime-playground) repository.
 
 ## Running the Samples[​](#running-the-samples "Direct link to Running the Samples")
 
@@ -310,14 +312,14 @@ Update Spring Boot Admin version in parent POM and rebuild.
 
 ## Contributing[​](#contributing "Direct link to Contributing")
 
-To add a new sample:
+The samples in `spring-boot-admin-samples/` demonstrate core Spring Boot Admin features. New example projects for specific use cases and infrastructure belong in the [spring-boot-admin-runtime-playground](https://github.com/codecentric/spring-boot-admin-runtime-playground) repository instead.
 
-1. Create directory under `spring-boot-admin-samples/`
-2. Follow existing sample structure
-3. Add `README.md` with specific instructions
-4. Include `docker-compose.yml` if applicable
-5. Add tests
-6. Update samples documentation
+To add a new example there:
+
+1. Create a directory for your use case, following the structure of the existing examples
+2. Add a `README.md` with step-by-step instructions
+3. Include a `docker-compose.yml` if the example needs infrastructure
+4. Add the example to the playground's `README.md`
 
 ## See Also[​](#see-also "Direct link to See Also")
 

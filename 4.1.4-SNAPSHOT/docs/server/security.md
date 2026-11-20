@@ -200,7 +200,7 @@ When using Spring Cloud Discovery, you must be aware that anybody who can query 
 
 tip
 
-When using this approach the SBA Server decides whether the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. For that please have a look at the samples in [joshiste/spring-boot-admin-samples](https://github.com/joshiste/spring-boot-admin-samples).
+When using this approach the SBA Server decides whether the user can access the registered applications. There are more complex solutions possible (using OAuth2) to let the clients decide if the user can access the endpoints. Implement this with your own `HttpHeadersProvider` that acquires a token and adds it as a bearer token. See [Server Authentication](/4.1.4-SNAPSHOT/docs/security/server-authentication.md) for the server side and [Actuator Security](/4.1.4-SNAPSHOT/docs/security/actuator-security.md) for the client side. Runnable example projects live in [spring-boot-admin-runtime-playground](https://github.com/codecentric/spring-boot-admin-runtime-playground).
 
 ### SBA Client[​](#sba-client "Direct link to SBA Client")
 
