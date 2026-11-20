@@ -33,8 +33,8 @@
         <revision>4.1.4-SNAPSHOT</revision>
 
         <java.version>17</java.version>
-        <npm.version>12.2.0</npm.version>
-        <node.version>v24.21.0</node.version>
+        <npm.version>12.2.2</npm.version>
+        <node.version>v26.13.1</node.version>
 
         <require.maven.version>[3.9,)</require.maven.version>
 
@@ -50,11 +50,11 @@
         <argLine/>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>4.1.1</spring-boot.version>
-        <spring-cloud.version>2025.1.3</spring-cloud.version>
-        <spring-ai.version>2.0.1</spring-ai.version>
+        <spring-boot.version>4.1.2</spring-boot.version>
+        <spring-cloud.version>2025.1.4</spring-cloud.version>
+        <spring-ai.version>2.0.2</spring-ai.version>
 
-        <jolokia-support-springboot.version>2.6.3</jolokia-support-springboot.version>
+        <jolokia-support-springboot.version>2.6.5</jolokia-support-springboot.version>
 
         <checkstyle.version>12.3.1</checkstyle.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
@@ -62,20 +62,20 @@
         <wiremock.version>3.13.2</wiremock.version>
         <hazelcast.version>5.7.0</hazelcast.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <jetty.version>12.1.14</jetty.version>
+        <jetty.version>12.1.15</jetty.version>
 
         <!-- plugin versions -->
-        <build-helper-maven-plugin.version>3.6.2</build-helper-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.8.0</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <!-- because of https://github.com/mojohaus/versions/issues/855 -->
-        <versions-maven-plugin.version>2.22.0</versions-maven-plugin.version>
+        <versions-maven-plugin.version>2.25.2</versions-maven-plugin.version>
         <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
         <maven-dependency-plugin.version>3.11.0</maven-dependency-plugin.version>
         <maven-deploy-plugin.version>3.2.0</maven-deploy-plugin.version>
-        <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
-        <maven-exec-plugin.version>3.6.4</maven-exec-plugin.version>
-        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.6.0</maven-failsafe-plugin.version>
+        <maven-enforcer-plugin.version>3.7.0</maven-enforcer-plugin.version>
+        <maven-exec-plugin.version>3.7.0</maven-exec-plugin.version>
+        <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.6.1</maven-failsafe-plugin.version>
         <maven-install-plugin.version>3.2.0</maven-install-plugin.version>
         <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
@@ -84,13 +84,13 @@
         <maven-war-plugin.version>3.5.1</maven-war-plugin.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.16</jacoco-maven-plugin.version>
         <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
-        <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
+        <flatten-maven-plugin.version>1.9.0</flatten-maven-plugin.version>
         <cyclonedx-maven-plugin.version>2.9.3</cyclonedx-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <spring-javaformat-maven-plugin.version>0.0.48</spring-javaformat-maven-plugin.version>
-        <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
+        <central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
         <spring-conf-prop-documenter-maven-plugin.version>0.7.2</spring-conf-prop-documenter-maven-plugin.version>
     </properties>
 
@@ -368,8 +368,24 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <parallel>classesAndMethods</parallel>
-                        <useUnlimitedThreads>false</useUnlimitedThreads>
+                        <properties>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.enabled</name>
+                                <value>true</value>
+                            </property>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.mode.default</name>
+                                <value>same_thread</value>
+                            </property>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.mode.classes.default</name>
+                                <value>concurrent</value>
+                            </property>
+                            <property>
+                                <name>junit.jupiter.execution.parallel.config.strategy</name>
+                                <value>dynamic</value>
+                            </property>
+                        </properties>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <rerunFailingTestsCount>2</rerunFailingTestsCount>
                         <argLine>@{argLine} -Xshare:off</argLine>

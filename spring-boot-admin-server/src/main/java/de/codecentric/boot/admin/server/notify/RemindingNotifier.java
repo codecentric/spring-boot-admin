@@ -109,8 +109,12 @@ public class RemindingNotifier extends AbstractEventNotifier {
 
 		return Flux.fromIterable(this.reminders.values())
 			.filter((reminder) -> reminder.getLastNotification().plus(this.reminderPeriod).isBefore(now))
-			.flatMap((reminder) -> this.delegate.notify(reminder.getEvent())
-				.doOnSuccess((signal) -> reminder.setLastNotification(now)))
+			.flatMap((reminder) -> Mono.defer(() -> this.delegate.notify(reminder.getEvent()))
+				.doOnSuccess((signal) -> reminder.setLastNotification(now))
+				.onErrorResume((error) -> {
+					log.warn("Failed to send reminder for instance {}", reminder.getEvent().getInstance(), error);
+					return Mono.empty();
+				}))
 			.then();
 	}
 

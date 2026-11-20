@@ -22,6 +22,8 @@ import org.jspecify.annotations.Nullable;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextClosedEvent;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
@@ -29,7 +31,7 @@ import reactor.core.scheduler.Schedulers;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
-public abstract class AbstractEventHandler<T extends InstanceEvent> {
+public abstract class AbstractEventHandler<T extends InstanceEvent> implements ApplicationListener<ContextClosedEvent> {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -74,6 +76,11 @@ public abstract class AbstractEventHandler<T extends InstanceEvent> {
 			this.scheduler.dispose();
 			this.scheduler = null;
 		}
+	}
+
+	@Override
+	public void onApplicationEvent(ContextClosedEvent event) {
+		stop();
 	}
 
 }

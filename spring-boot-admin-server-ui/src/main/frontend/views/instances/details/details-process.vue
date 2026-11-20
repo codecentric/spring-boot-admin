@@ -250,7 +250,7 @@ const fetchCpuLoadMetrics = async (): Promise<CpuLoadMetrics> => {
   };
 };
 
-let subscription: Subscription;
+const subscription = new Subscription();
 onMounted(async () => {
   try {
     await Promise.allSettled([
@@ -263,22 +263,28 @@ onMounted(async () => {
     hasLoaded.value = true;
   }
 
-  subscription = timer(0, sbaConfig.uiSettings.pollTimer.process)
-    .pipe(
-      concatMap(fetchCpuLoadMetrics),
-      retryWhen((err) => err.pipe(delay(1000, take(5)))),
-    )
-    .subscribe({
-      next: (data: CpuLoadMetrics) => {
-        processCpuLoad.value = data.processCpuLoad;
-        systemCpuLoad.value = data.systemCpuLoad;
-      },
-      error: (err: Error) => {
-        hasLoaded.value = true;
-        console.warn('Fetching CPU Usage metrics failed:', err);
-        error.value = err;
-      },
-    });
+  if (subscription.closed) {
+    return;
+  }
+
+  subscription.add(
+    timer(0, sbaConfig.uiSettings.pollTimer.process)
+      .pipe(
+        concatMap(fetchCpuLoadMetrics),
+        retryWhen((err) => err.pipe(delay(1000, take(5)))),
+      )
+      .subscribe({
+        next: (data: CpuLoadMetrics) => {
+          processCpuLoad.value = data.processCpuLoad;
+          systemCpuLoad.value = data.systemCpuLoad;
+        },
+        error: (err: Error) => {
+          hasLoaded.value = true;
+          console.warn('Fetching CPU Usage metrics failed:', err);
+          error.value = err;
+        },
+      }),
+  );
 });
 
 onUnmounted(() => {

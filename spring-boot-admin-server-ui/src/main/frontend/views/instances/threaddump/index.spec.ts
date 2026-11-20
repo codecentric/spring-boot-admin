@@ -57,6 +57,23 @@ describe('ThreadDump', () => {
     return render(ThreadDump, { props: { instance } });
   };
 
+  it('shows the final polling error and removes the loading spinner', async () => {
+    server.use(
+      http.get('/instances/:instanceId/actuator/threaddump', () =>
+        HttpResponse.json({}, { status: 503 }),
+      ),
+    );
+
+    renderComponent();
+
+    expect(
+      await screen.findByRole('alert', {}, { timeout: 4000 }),
+    ).toHaveTextContent('503');
+    expect(
+      screen.queryByTestId('instance-section-loading-spinner'),
+    ).not.toBeInTheDocument();
+  });
+
   it('renders threads in the order returned by the endpoint', async () => {
     responses = [[thread(42, 'second'), thread(7, 'first')]];
 

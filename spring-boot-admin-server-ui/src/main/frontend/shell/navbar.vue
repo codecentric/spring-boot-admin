@@ -37,7 +37,14 @@
           </sba-nav-item>
         </template>
         <template v-else>
-          <sba-nav-dropdown :href="item.href">
+          <sba-nav-dropdown
+            :href="item.href"
+            :button-label="
+              item.href
+                ? t('navbar.show_children', { label: labelOf(item) })
+                : undefined
+            "
+          >
             <template #label>
               <component :is="item.handle" />
             </template>
@@ -155,4 +162,7 @@ const changeLocale = (locale) => {
   i18n.locale.value = locale;
   moment.locale(locale);
 };
+
+const labelOf = (view) =>
+  view.label && i18n.te(view.label) ? t(view.label) : (view.label ?? view.name);
 </script>

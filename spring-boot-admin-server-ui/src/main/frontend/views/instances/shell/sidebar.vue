@@ -16,6 +16,7 @@
 
 <template>
   <aside
+    :aria-label="t('sidebar.aria_label')"
     :class="{ 'w-60': sidebarOpen }"
     class="h-full flex flex-col bg-white/80 border-r border-gray-200 backdrop-filter backdrop-blur-lg z-40 w-10 md:w-60 transition-all left-0 pb-14 fixed"
   >
@@ -69,6 +70,15 @@
           />
           <button
             v-if="hasMultipleViews(group)"
+            :aria-expanded="isGroupOpen(group)"
+            :aria-label="
+              t(
+                isGroupOpen(group)
+                  ? 'sidebar.collapse_group'
+                  : 'sidebar.expand_group',
+                { group: getGroupTitle(group.id) },
+              )
+            "
             class="shrink-0 ml-auto px-2 py-2 cursor-pointer hover:bg-sba-500/50 rounded"
             @click.prevent="toggleGroup(group.id)"
           >

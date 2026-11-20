@@ -61,6 +61,24 @@ class TagsTest {
 	}
 
 	@Test
+	void should_handle_null_values_consistently_in_flat_and_nested_tags() {
+		Map<String, Object> tags = new LinkedHashMap<>();
+		tags.put("owner", null);
+		tags.put("enabled", true);
+		tags.put("region", "EU");
+		Map<String, Object> flatTags = new LinkedHashMap<>();
+		tags.forEach((key, value) -> flatTags.put("tags." + key, value));
+		flatTags.put("unrelated", null);
+
+		Tags result = Tags.from(flatTags, "tags");
+
+		assertThat(result).isEqualTo(Tags.from(singletonMap("tags", tags), "tags"));
+		assertThat(result.getValues()).containsExactly(entry("owner", "null"), entry("enabled", "true"),
+				entry("region", "EU"));
+		assertThat(flatTags).containsEntry("tags.owner", null);
+	}
+
+	@Test
 	void should_append_tags() {
 		Tags tags = Tags.empty()
 			.append(Tags.from(singletonMap("tags.env", "test"), "tags"))

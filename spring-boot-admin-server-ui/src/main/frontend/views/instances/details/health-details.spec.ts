@@ -25,6 +25,7 @@ describe('HealthDetails', () => {
         'diskSpace',
         'diskSpace2',
         'ssl',
+        'Name',
       ];
       componentsToExpand.forEach((name) => {
         localStorage.setItem(
@@ -159,6 +160,7 @@ describe('HealthDetails', () => {
         'discoveryComposite',
         'discoveryClient',
         'diskSpace',
+        'root',
       ];
       componentsToExpand.forEach((name) => {
         localStorage.setItem(
@@ -232,8 +234,14 @@ describe('HealthDetails', () => {
 
   describe('Collapsible details functionality', () => {
     beforeEach(() => {
-      // Clear localStorage before each test
+      // Clear localStorage before each test and expand the components used below
       localStorage.clear();
+      ['db', 'parent', 'canary'].forEach((name) => {
+        localStorage.setItem(
+          `de.codecentric.spring-boot-admin.health-details.${name}.test-instance-123.collapsed`,
+          'false',
+        );
+      });
     });
 
     it('should show toggle button when details exist', async () => {
@@ -342,7 +350,8 @@ describe('HealthDetails', () => {
       expect(toggleButton).not.toBeInTheDocument();
     });
 
-    it('should start expanded by default', async () => {
+    it('should start collapsed by default', async () => {
+      localStorage.clear();
       const healthMock = {
         status: 'UP',
         details: {
@@ -359,8 +368,7 @@ describe('HealthDetails', () => {
         },
       });
 
-      // Details should not be visible initially
-      expect(screen.queryByText('HSQL Database Engine')).toBeInTheDocument();
+      expect(screen.getByText('HSQL Database Engine')).not.toBeVisible();
     });
 
     it('should hide details when toggle button is clicked', async () => {
@@ -543,6 +551,37 @@ describe('HealthDetails', () => {
       expect(canaryDetail.innerHTML).not.toContain('onerror');
       expect(document.querySelectorAll('img').length).toBe(0);
       expect((window as any).__xss).toBeUndefined();
+    });
+  });
+  describe('Plain primitive health values (e.g. OFFLINE timeout details)', () => {
+    it('should display plain string values when health is a primitive', async () => {
+      render(HealthDetails, {
+        props: {
+          name: 'exception',
+          health: 'java.util.concurrent.TimeoutException',
+          instance: mockInstance,
+        },
+      });
+
+      const group = await screen.findByRole('group', { name: 'exception' });
+      expect(group).toHaveTextContent('java.util.concurrent.TimeoutException');
+      expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    it('should sanitize HTML/script markup in plain string health values', async () => {
+      render(HealthDetails, {
+        props: {
+          name: 'message',
+          health:
+            'Timeout <img src="/__nonexistent__.png" onerror="window.__xss_plain = 1">',
+          instance: mockInstance,
+        },
+      });
+
+      const group = await screen.findByRole('group', { name: 'message' });
+      expect(group).toHaveTextContent('Timeout');
+      expect(group.innerHTML).not.toContain('<img');
+      expect((window as any).__xss_plain).toBeUndefined();
     });
   });
 });

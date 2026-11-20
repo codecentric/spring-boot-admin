@@ -478,9 +478,9 @@ server:
    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
    ```
 
-### Issue: Client registration fails with 403
+### Issue: Client registration fails with 403 or 401
 
-**Cause**: `/instances` endpoint not exempted from CSRF.
+**Cause**: `/instances` endpoint not exempted from CSRF. The `CsrfFilter` rejects the request with `403`; if the forwarded `/error` page also requires authentication, the client sees `401` instead.
 
 **Solution**: Add to `ignoringRequestMatchers`:
 

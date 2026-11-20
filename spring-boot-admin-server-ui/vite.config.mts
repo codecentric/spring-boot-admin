@@ -7,8 +7,8 @@ import { Plugin, defineConfig, loadEnv } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import vueDevTools from 'vite-plugin-vue-devtools';
 
-const frontendDir = resolve(__dirname, 'src/main/frontend');
-const outDir = resolve(__dirname, 'target/dist');
+const frontendDir = resolve(import.meta.dirname, 'src/main/frontend');
+const outDir = resolve(import.meta.dirname, 'target/dist');
 
 export default defineConfig(({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
@@ -30,7 +30,10 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       visualizer(() => {
         return {
-          filename: resolve(__dirname, 'target/vite.bundle-size-analyzer.html'),
+          filename: resolve(
+            import.meta.dirname,
+            'target/vite.bundle-size-analyzer.html',
+          ),
         };
       }),
       viteStaticCopy({
@@ -52,7 +55,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     test: {
-      root: __dirname,
+      root: import.meta.dirname,
       globals: true,
       environment: 'jsdom',
       setupFiles: [resolve(frontendDir, 'tests/setup.ts')],

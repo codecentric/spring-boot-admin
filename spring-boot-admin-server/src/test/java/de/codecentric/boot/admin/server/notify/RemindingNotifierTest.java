@@ -17,11 +17,13 @@
 package de.codecentric.boot.admin.server.notify;
 
 import java.time.Duration;
+import java.time.Instant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -42,7 +44,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class RemindingNotifierTest {
@@ -173,6 +179,69 @@ class RemindingNotifierTest {
 			.expectNext(errorTriggeringEvent, appDown, appDown)
 			.thenCancel()
 			.verify();
+	}
+
+	@ParameterizedTest
+	@ValueSource(booleans = { false, true })
+	void should_isolate_reminder_failures_and_retry_only_failed_notifications(boolean synchronousFailure) {
+		Notifier notifier = mock(Notifier.class);
+		when(notifier.notify(any())).thenReturn(Mono.empty());
+		RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
+		reminder.setReminderPeriod(Duration.ofHours(1));
+		InstanceEvent firstDown = new InstanceStatusChangedEvent(instance1.getId(), 0L, Instant.EPOCH,
+				StatusInfo.ofDown());
+		InstanceEvent secondDown = new InstanceStatusChangedEvent(instance2.getId(), 0L, Instant.EPOCH,
+				StatusInfo.ofDown());
+		StepVerifier.create(reminder.notify(firstDown)).verifyComplete();
+		StepVerifier.create(reminder.notify(secondDown)).verifyComplete();
+		clearInvocations(notifier);
+
+		IllegalStateException failure = new IllegalStateException("Notification failed");
+		if (synchronousFailure) {
+			when(notifier.notify(firstDown)).thenThrow(failure).thenReturn(Mono.empty());
+		}
+		else {
+			when(notifier.notify(firstDown)).thenReturn(Mono.error(failure), Mono.empty());
+		}
+
+		StepVerifier.create(reminder.sendReminders()).verifyComplete();
+		verify(notifier).notify(firstDown);
+		verify(notifier).notify(secondDown);
+		clearInvocations(notifier);
+
+		StepVerifier.create(reminder.sendReminders()).verifyComplete();
+		verify(notifier).notify(firstDown);
+		verify(notifier, never()).notify(secondDown);
+		clearInvocations(notifier);
+
+		StepVerifier.create(reminder.sendReminders()).verifyComplete();
+		verifyNoInteractions(notifier);
+	}
+
+	@Test
+	void should_not_cancel_another_in_flight_reminder_when_one_fails() {
+		Notifier notifier = mock(Notifier.class);
+		when(notifier.notify(any())).thenReturn(Mono.empty());
+		RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
+		reminder.setReminderPeriod(Duration.ofHours(1));
+		InstanceEvent firstDown = new InstanceStatusChangedEvent(instance1.getId(), 0L, Instant.EPOCH,
+				StatusInfo.ofDown());
+		InstanceEvent secondDown = new InstanceStatusChangedEvent(instance2.getId(), 0L, Instant.EPOCH,
+				StatusInfo.ofDown());
+		StepVerifier.create(reminder.notify(firstDown)).verifyComplete();
+		StepVerifier.create(reminder.notify(secondDown)).verifyComplete();
+		TestPublisher<Void> failed = TestPublisher.create();
+		TestPublisher<Void> pending = TestPublisher.create();
+		when(notifier.notify(firstDown)).thenReturn(failed.mono());
+		when(notifier.notify(secondDown)).thenReturn(pending.mono());
+
+		StepVerifier.create(reminder.sendReminders()).then(() -> {
+			failed.assertSubscribers(1);
+			pending.assertSubscribers(1);
+			failed.error(new IllegalStateException("Notification failed"));
+			pending.assertNotCancelled();
+			pending.complete();
+		}).verifyComplete();
 	}
 
 	@SuppressWarnings("deprecation")

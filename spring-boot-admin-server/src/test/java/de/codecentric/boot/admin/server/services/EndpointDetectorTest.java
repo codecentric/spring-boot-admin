@@ -104,4 +104,27 @@ class EndpointDetectorTest {
 			.verifyComplete();
 	}
 
+	@Test
+	void should_propagate_error_and_keep_endpoints() {
+		// given
+		Registration registration = Registration.create("foo", "https://health").managementUrl("https://mgmt").build();
+		Endpoints originalEndpoints = Endpoints.single("info", "https://mgmt/info")
+			.withEndpoint("health", "https://health");
+		Instance instance = Instance.create(InstanceId.of("id"))
+			.register(registration)
+			.withEndpoints(originalEndpoints)
+			.withStatusInfo(StatusInfo.ofUp());
+		StepVerifier.create(repository.save(instance)).expectNextCount(1).verifyComplete();
+
+		when(strategy.detectEndpoints(any(Instance.class))).thenReturn(Mono.error(new IllegalStateException("x")));
+
+		// when
+		StepVerifier.create(detector.detectEndpoints(instance.getId())).verifyError(IllegalStateException.class);
+
+		// then
+		StepVerifier.create(repository.find(instance.getId()))
+			.assertNext((app) -> assertThat(app.getEndpoints()).isEqualTo(originalEndpoints))
+			.verifyComplete();
+	}
+
 }

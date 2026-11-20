@@ -4,7 +4,7 @@ exports[`HealthDetails > Health .details > should format object details correctl
 <dd
   aria-label="validChains"
   aria-labelledby="health-detail-v-7__validChains"
-  class="col-span-4"
+  class="health-row__detail-value"
   data-v-4727d85f=""
   role="definition"
 >
