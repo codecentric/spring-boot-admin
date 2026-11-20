@@ -88,46 +88,6 @@
                         <doclint>none</doclint>
                     </configuration>
                 </plugin>
-                <plugin>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <configuration>
-                        <nonFilteredFileExtensions>
-                            <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>xls</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>docx</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>doc</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>pptx</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>zip</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>tar</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>gz</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>jar</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>class</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>so</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>dll</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>exe</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>png</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>jpeg</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>gif</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>bmp</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>tiff</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>ico</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>woff</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>eot</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>mp3</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>mp4</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>swf</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>ser</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>keystore</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>jks</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>p12</nonFilteredFileExtension>
-                            <nonFilteredFileExtension>pfx</nonFilteredFileExtension>
-                        </nonFilteredFileExtensions>
-                    </configuration>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
