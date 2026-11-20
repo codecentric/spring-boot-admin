@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Primary;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
+import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.NotificationTrigger;
 import de.codecentric.boot.admin.server.notify.Notifier;
@@ -112,6 +113,14 @@ class AdminServerHazelcastAutoConfigurationTest {
 				assertThat(context).hasSingleBean(FilteringNotifier.class);
 				assertThat(context).getBean(NotificationTrigger.class).isInstanceOf(HazelcastNotificationTrigger.class);
 			});
+	}
+
+	@Test
+	void should_use_configured_event_store_map_name() {
+		this.contextRunner.withPropertyValues("spring.boot.admin.hazelcast.event-store:custom-event-store")
+			.run((context) -> assertThat(context.getBean(InstanceEventStore.class)).extracting("eventLog")
+				.isInstanceOfSatisfying(IMap.class,
+						(map) -> assertThat(map.getName()).isEqualTo("custom-event-store")));
 	}
 
 	@Test
