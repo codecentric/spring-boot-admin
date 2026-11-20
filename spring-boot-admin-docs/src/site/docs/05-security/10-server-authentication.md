@@ -436,59 +436,53 @@ spring:
 
 **Security Configuration**:
 
-Spring Boot Admin serves its own username/password login page at `/login`, which knows nothing
-about OAuth2. Do **not** configure it as the OAuth2 login page (i.e. avoid
-`oauth2Login(oauth2 -> oauth2.loginPage(adminServer.path("/login")))`). That combination does not
-produce a working SSO flow: because `httpBasic()` is also present, Spring Security selects the
-HTTP-Basic entry point, so unauthenticated browser requests receive a `401` challenge instead of a
-redirect to your identity provider, and `/login` keeps showing the local username/password form
-with no link to the provider.
-
-Instead, leave the login page at its default and configure the entry point explicitly:
-
 ```java
 @Bean
 public SecurityFilterChain filterChain(HttpSecurity http,
                                        AdminServerProperties adminServer) throws Exception {
     http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(PathPatternRequestMatcher.withDefaults()
-                .matcher(adminServer.path("/assets/**")))
-            .permitAll()
-            .requestMatchers(PathPatternRequestMatcher.withDefaults()
-                .matcher(adminServer.path("/login")))
-            .permitAll()
-            .anyRequest().authenticated()
-        )
-        .oauth2Login(Customizer.withDefaults())
-        // Keep HTTP-Basic so the Spring Boot Admin Client can still (de-)register itself.
-        // Clients send the "Authorization" header preemptively, so they never reach the
-        // entry point below - it only affects requests that carry no credentials at all.
-        .httpBasic(Customizer.withDefaults())
-        .exceptionHandling(exceptions -> exceptions
-            .defaultAuthenticationEntryPointFor(
-                new LoginUrlAuthenticationEntryPoint("/oauth2/authorization/keycloak"),
-                AnyRequestMatcher.INSTANCE))
-        .logout(logout -> logout
-            .logoutUrl(adminServer.path("/logout"))
-            .logoutSuccessUrl(adminServer.path("/"))
-        );
-
-    // CSRF and other configurations...
-
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(PathPatternRequestMatcher.withDefaults()
+                            .matcher(adminServer.path("/assets/**")))
+                    .permitAll()
+                    .anyRequest().authenticated()
+            )
+            // No custom loginPage: Spring Security redirects browsers to the IdP.
+            .oauth2Login(Customizer.withDefaults())
+            // Lets Spring Boot Admin Clients register with Basic credentials.
+            .httpBasic(Customizer.withDefaults())
+            .logout(logout -> logout
+                    .logoutUrl(adminServer.path("/logout"))
+                    .logoutSuccessUrl(adminServer.path("/"))
+            )
+            .csrf(csrf -> csrf
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                    .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                    .ignoringRequestMatchers(
+                            PathPatternRequestMatcher.withDefaults()
+                                    .matcher(POST, adminServer.path("/instances")),
+                            PathPatternRequestMatcher.withDefaults()
+                                    .matcher(DELETE, adminServer.path("/instances/*")),
+                            PathPatternRequestMatcher.withDefaults()
+                                    .matcher(adminServer.path("/actuator/**"))));
+    // Also add the CustomCsrfFilter from the CSRF Protection page.
     return http.build();
 }
 ```
 
-The `keycloak` segment of `/oauth2/authorization/keycloak` is the registration id from the
-configuration above. With the entry point in place, browsers are redirected straight to the
-identity provider, while Spring Security's generated login page (shown at `/login`) still offers
-a link to it.
+:::warning
+Do not set `oauth2Login(oauth2 -> oauth2.loginPage(adminServer.path("/login")))`: `/login` is Spring Boot Admin's
+local username/password form and has no link to your identity provider.
+:::
+
+Keep `httpBasic()`, otherwise Spring Boot Admin Clients cannot register with their Basic credentials. Keep the CSRF
+exemptions for `POST /instances`, `DELETE /instances/*` and `/actuator/**`, otherwise client registration fails with
+`401`. See [CSRF Protection](./30-csrf-protection.md).
 
 :::note
-Without `httpBasic()` the Spring Boot Admin Client cannot register itself over the registration
-API, so only drop it when your instances are picked up by service discovery instead. Used on its
-own, `oauth2Login()` also redirects unauthenticated requests directly to the identity provider.
+Browser requests (`Accept: text/html`) are redirected to the identity provider. Requests without `Accept: text/html`,
+such as plain `curl` or XHR calls, get `401` by design. When a UI session expires, the UI lands on Spring Security's
+generated login page, which links to the identity provider.
 :::
 
 ---
