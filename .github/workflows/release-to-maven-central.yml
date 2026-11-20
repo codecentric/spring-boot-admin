@@ -15,9 +15,14 @@ on:
 env:
   VERSION: ${{ github.event.inputs.releaseversion }}
 
+permissions:
+  contents: read
+
 jobs:
   publish-central-and-pages:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the generated documentation to the gh-pages branch
     steps:
       - run: echo "Will start a Maven Central upload with version ${{ github.event.inputs.releaseversion }}"
 
@@ -33,12 +38,13 @@ jobs:
           fi
           df -h
 
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.ref }}
+          persist-credentials: false
 
       - name: Set up settings.xml for Maven Central Repository
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v6.3.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -54,7 +60,7 @@ jobs:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Cache node modules
-        uses: actions/cache@v6
+        uses: actions/cache@v6.1.0
         env:
           cache-name: cache-node-modules
         with:
@@ -107,11 +113,13 @@ jobs:
   publish-github-release:
     needs: publish-central-and-pages
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the tag and the GitHub release
 
     steps:
       - name: Create GitHub Release
         id: create_release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v3.0.4
         with:
           tag_name: ${{ github.event.inputs.releaseversion }}
           token: ${{ secrets.GITHUB_TOKEN }}
