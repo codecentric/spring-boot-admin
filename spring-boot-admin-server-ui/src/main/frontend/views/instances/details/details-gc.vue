@@ -116,7 +116,9 @@ export default {
         total_time: moment.duration(
           toMillis(measurements.total_time, response.data.baseUnit),
         ),
-        max: moment.duration(toMillis(measurements.max, response.data.baseUnit)),
+        max: moment.duration(
+          toMillis(measurements.max, response.data.baseUnit),
+        ),
       };
     },
     createSubscription() {
