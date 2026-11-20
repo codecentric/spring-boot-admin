@@ -1,17 +1,17 @@
 <!--
-  - Copyright 2014-2020 the original author or authors.
+- Copyright 2014-2020 the original author or authors.
   -
-  - Licensed under the Apache License, Version 2.0 (the "License");
-  - you may not use this file except in compliance with the License.
-  - You may obtain a copy of the License at
+- Licensed under the Apache License, Version 2.0 (the "License");
+- you may not use this file except in compliance with the License.
+- You may obtain a copy of the License at
   -
-  -     http://www.apache.org/licenses/LICENSE-2.0
+-     http://www.apache.org/licenses/LICENSE-2.0
   -
-  - Unless required by applicable law or agreed to in writing, software
-  - distributed under the License is distributed on an "AS IS" BASIS,
-  - WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  - See the License for the specific language governing permissions and
-  - limitations under the License.
+- Unless required by applicable law or agreed to in writing, software
+- distributed under the License is distributed on an "AS IS" BASIS,
+- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+- See the License for the specific language governing permissions and
+- limitations under the License.
   -->
 
 <template>
@@ -29,7 +29,10 @@
     >
       <span class="health-section-header__name">{{ name }}</span>
       <div class="health-section-header__body">
-        <sba-status-badge v-if="health.status" :status="health.status" />
+        <sba-status-badge
+          v-if="healthRecord?.status"
+          :status="healthRecord.status"
+        />
       </div>
       <font-awesome-icon
         :icon="faChevronRight"
@@ -69,25 +72,39 @@
       :aria-labelledby="`health-${id}__${safeNameId}`"
     >
       <div class="health-row__summary">
-        <sba-status-badge v-if="health.status" :status="health.status" />
-        <span v-if="health.description" class="health-row__description">
-          {{ health.description }}
-        </span>
-        <button
-          v-if="details && details.length > 0"
-          class="health-row__toggle"
-          :title="t('instances.details.health.toggle_details', { name })"
-          :aria-label="t('instances.details.health.toggle_details', { name })"
-          :aria-expanded="String(!isCollapsed)"
-          :aria-controls="`health-details-${id}__${safeNameId}`"
-          @click="toggleCollapsed"
-        >
-          <font-awesome-icon
-            :icon="faChevronRight"
-            class="transition-transform"
-            :class="{ 'rotate-90': !isCollapsed }"
+        <template v-if="isPlainValue">
+          <span
+            class="health-row__detail-value wrap-break-word whitespace-pre-wrap"
+            v-html="autolink(sanitizeHtml(String(health ?? '')))"
           />
-        </button>
+        </template>
+        <template v-else>
+          <sba-status-badge
+            v-if="healthRecord?.status"
+            :status="healthRecord.status"
+          />
+          <span
+            v-if="healthRecord?.description"
+            class="health-row__description"
+          >
+            {{ healthRecord.description }}
+          </span>
+          <button
+            v-if="details && details.length > 0"
+            class="health-row__toggle"
+            :title="t('instances.details.health.toggle_details', { name })"
+            :aria-label="t('instances.details.health.toggle_details', { name })"
+            :aria-expanded="String(!isCollapsed)"
+            :aria-controls="`health-details-${id}__${safeNameId}`"
+            @click="toggleCollapsed"
+          >
+            <font-awesome-icon
+              :icon="faChevronRight"
+              class="transition-transform"
+              :class="{ 'rotate-90': !isCollapsed }"
+            />
+          </button>
+        </template>
       </div>
 
       <dl
@@ -161,8 +178,16 @@ const id = useId();
 const { health, name, instance } = defineProps<{
   instance: Instance;
   name: string;
-  health: Record<string, any>;
+  health: unknown;
 }>();
+
+const isPlainValue = computed(
+  () => health === null || typeof health !== 'object',
+);
+
+const healthRecord = computed(() =>
+  isPlainValue.value ? null : (health as Record<string, any>),
+);
 
 const safeNameId = computed(() => (name ?? '').replace(/[^a-zA-Z0-9_-]/g, '_'));
 
@@ -196,7 +221,10 @@ const isChildHealth = (value: any) =>
   value !== null && typeof value === 'object' && 'status' in value;
 
 const healthEntries = computed(() => {
-  const source = health.details ?? health.components;
+  if (!healthRecord.value) {
+    return [];
+  }
+  const source = healthRecord.value.details ?? healthRecord.value.components;
   if (source && typeof source === 'object' && !Array.isArray(source)) {
     return Object.entries(source);
   }
