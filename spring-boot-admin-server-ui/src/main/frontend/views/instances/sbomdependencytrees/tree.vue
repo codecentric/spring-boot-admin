@@ -17,6 +17,11 @@
 <template>
   <sba-instance-section :error="error" :loading="isLoading">
     <sba-panel :title="sbomId">
+      <sba-alert
+        v-if="!isLoading && !error && !normalizedData"
+        severity="WARN"
+        :error="t('instances.dependencies.no_data_provided')"
+      />
       <div ref="treeContainer" class="x-scroller"></div>
     </sba-panel>
 
@@ -34,6 +39,10 @@
         <div class="node-with-children w-3 h-3 rounded-full shadow-sm"></div>
         <span>{{ t('instances.sbom.legend.node_with_children') }}</span>
       </div>
+      <div class="flex items-center gap-2">
+        <span aria-hidden="true">↩</span>
+        <span>{{ t('instances.sbom.legend.cycle') }}</span>
+      </div>
     </div>
   </sba-instance-section>
 </template>
@@ -44,6 +53,7 @@ import { debounce } from 'lodash-es';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import SbaAlert from '@/components/sba-alert.vue';
 import SbaPanel from '@/components/sba-panel.vue';
 
 import Instance from '@/services/instance';
@@ -68,11 +78,14 @@ const { t } = useI18n();
 
 const treeContainer = ref<HTMLElement | null>(null);
 const dependencies = ref<SbomDependency[]>([]);
+const rootRef = ref<string>();
 const rootNode = ref<D3DependencyTree | null>(null);
 const error = ref<string | null>(null);
-const isLoading = ref<boolean | null>(false);
+const isLoading = ref<boolean | null>(true);
 
-const normalizedData = computed(() => normalizeData(dependencies.value));
+const normalizedData = computed(() =>
+  normalizeData(dependencies.value, rootRef.value),
+);
 const filteredData = computed(() =>
   filterTree(normalizedData.value, props.filter || ''),
 );
@@ -82,7 +95,8 @@ const fetchSbomDependencies = async (sbomId: string): Promise<void> => {
   isLoading.value = true;
   try {
     const res = await props.instance.fetchSbom(sbomId);
-    dependencies.value = res.data.dependencies;
+    dependencies.value = res.data.dependencies ?? [];
+    rootRef.value = res.data.metadata?.component?.['bom-ref'];
     await renderTree();
   } catch (err) {
     console.warn('Fetching sbom failed:', err);
@@ -109,8 +123,8 @@ const rerenderOrUpdateTree = async (
   newVal: string,
   oldVal: string,
 ): Promise<void> => {
-  if (dependencies.value.length > 0) {
-    if (!newVal.trim() || newVal === oldVal) {
+  if (normalizedData.value) {
+    if (!rootNode.value || !newVal.trim() || newVal === oldVal) {
       await renderTree();
     } else {
       await updateTree();
@@ -139,7 +153,7 @@ onBeforeUnmount(() => {
 
   // Clean up D3 elements
   if (rootNode.value && treeContainer.value) {
-    d3.select(treeContainer.value).select('#tooltip').remove();
+    d3.select(treeContainer.value).select('.sbom-tooltip').remove();
     d3.select(treeContainer.value).select('svg').selectAll('*').on('.', null);
   }
 });
@@ -166,5 +180,10 @@ onBeforeUnmount(() => {
 :deep(.edge) {
   stroke: #cccccc;
   stroke-width: 1;
+}
+
+:deep(.node-cycle) {
+  stroke: currentColor;
+  stroke-dasharray: 4 2;
 }
 </style>

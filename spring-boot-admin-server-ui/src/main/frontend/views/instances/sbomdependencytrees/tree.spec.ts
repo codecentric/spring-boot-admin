@@ -1,11 +1,123 @@
-import { RenderResult, screen, waitFor } from '@testing-library/vue';
+import { RenderResult, fireEvent, screen, waitFor } from '@testing-library/vue';
+import { HttpResponse, http } from 'msw';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { applications } from '@/mocks/applications/data';
+import { server } from '@/mocks/server';
 import Application from '@/services/application';
 import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 import TreeGraph from '@/views/instances/sbomdependencytrees/tree.vue';
+
+describe('TreeGraph cyclic dependencies', () => {
+  beforeEach(() => vi.useFakeTimers({ ignoreMissingTimers: true }));
+  afterEach(() => vi.useRealTimers());
+
+  it('renders terminal cycle references and preserves them when filtering', async () => {
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+    server.use(
+      http.get('/instances/:instanceId/actuator/sbom/application', () =>
+        HttpResponse.json({
+          metadata: { component: { 'bom-ref': 'app' } },
+          dependencies: [
+            { ref: 'a', dependsOn: ['b'] },
+            { ref: 'app', dependsOn: ['a'] },
+            { ref: 'b', dependsOn: ['a'] },
+          ],
+        }),
+      ),
+    );
+    const component = render(TreeGraph, {
+      props: { instance, sbomId: 'application' },
+    });
+
+    await screen.findAllByText('app');
+    await fireEvent.click(screen.getAllByText('a')[0]);
+    await fireEvent.click(screen.getAllByText('b')[0]);
+    expect(screen.getByText('↩ a')).toBeInTheDocument();
+    expect(component.container.querySelectorAll('.node-cycle')).toHaveLength(1);
+    expect(screen.getByText('instances.sbom.legend.cycle')).toBeInTheDocument();
+
+    // Clicking a cycle reference must not expand it again.
+    const nodeCount = component.container.querySelectorAll('rect.node').length;
+    await fireEvent.click(screen.getByText('↩ a'));
+    expect(component.container.querySelectorAll('rect.node')).toHaveLength(
+      nodeCount,
+    );
+
+    await component.rerender({ filter: 'a' });
+    vi.advanceTimersByTime(2000);
+    expect(screen.getByText('↩ a')).toBeInTheDocument();
+    expect(component.container.querySelectorAll('.node-cycle')).toHaveLength(1);
+
+    await component.rerender({ filter: 'no-match' });
+    vi.advanceTimersByTime(2000);
+    expect(screen.getByTestId('treecontainer-svg')).not.toBeVisible();
+
+    await component.rerender({ filter: '' });
+    vi.advanceTimersByTime(2000);
+    expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
+    await fireEvent.click(screen.getAllByText('a')[0]);
+    await fireEvent.click(screen.getAllByText('b')[0]);
+    expect(screen.getByText('↩ a')).toBeInTheDocument();
+  });
+});
+
+describe('TreeGraph cyclic dependencies', () => {
+  beforeEach(() => vi.useFakeTimers({ ignoreMissingTimers: true }));
+  afterEach(() => vi.useRealTimers());
+
+  it('renders terminal cycle references and preserves them when filtering', async () => {
+    const application = new Application(applications[0]);
+    const instance = application.instances[0];
+    server.use(
+      http.get('/instances/:instanceId/actuator/sbom/application', () =>
+        HttpResponse.json({
+          metadata: { component: { 'bom-ref': 'app' } },
+          dependencies: [
+            { ref: 'app', dependsOn: ['a'] },
+            { ref: 'a', dependsOn: ['b'] },
+            { ref: 'b', dependsOn: ['a'] },
+          ],
+        }),
+      ),
+    );
+    const component = render(TreeGraph, {
+      props: { instance, sbomId: 'application' },
+    });
+
+    await screen.findAllByText('app');
+    await fireEvent.click(screen.getAllByText('a')[0]);
+    await fireEvent.click(screen.getAllByText('b')[0]);
+    expect(screen.getByText('↩ a')).toBeInTheDocument();
+    expect(component.container.querySelectorAll('.node-cycle')).toHaveLength(1);
+    expect(screen.getByText('instances.sbom.legend.cycle')).toBeInTheDocument();
+
+    // Clicking a cycle reference must not expand it again.
+    const nodeCount = component.container.querySelectorAll('rect.node').length;
+    await fireEvent.click(screen.getByText('↩ a'));
+    expect(component.container.querySelectorAll('rect.node')).toHaveLength(
+      nodeCount,
+    );
+
+    await component.rerender({ filter: 'a' });
+    vi.advanceTimersByTime(2000);
+    expect(screen.getByText('↩ a')).toBeInTheDocument();
+    expect(component.container.querySelectorAll('.node-cycle')).toHaveLength(1);
+
+    await component.rerender({ filter: 'no-match' });
+    vi.advanceTimersByTime(2000);
+    expect(screen.getByTestId('treecontainer-svg')).not.toBeVisible();
+
+    await component.rerender({ filter: '' });
+    vi.advanceTimersByTime(2000);
+    expect(screen.getByTestId('treecontainer-svg')).toBeVisible();
+    await fireEvent.click(screen.getAllByText('a')[0]);
+    await fireEvent.click(screen.getAllByText('b')[0]);
+    expect(screen.getByText('↩ a')).toBeInTheDocument();
+  });
+});
 
 const setUnknownFilter = async (
   dependencyTree: RenderResult,
@@ -29,6 +141,91 @@ const setUnknownFilter = async (
   });
 };
 
+describe('TreeGraph root selection', () => {
+  beforeEach(() =>
+    vi.useFakeTimers({ ignoreMissingTimers: true, shouldAdvanceTime: true }),
+  );
+  afterEach(() => vi.useRealTimers());
+
+  const application = new Application(applications[0]);
+  const instance: Instance = application.instances[0];
+  const dependencies = [
+    { ref: 'library-a', dependsOn: ['library-c'] },
+    { ref: 'root-app', dependsOn: ['library-a', 'library-b'] },
+    { ref: 'library-b', dependsOn: [] },
+    { ref: 'library-c', dependsOn: [] },
+  ];
+
+  it('uses the metadata root from the fetched SBOM', async () => {
+    server.use(
+      http.get('/instances/:instanceId/actuator/sbom/application', () =>
+        HttpResponse.json({
+          metadata: { component: { 'bom-ref': 'root-app' } },
+          dependencies,
+        }),
+      ),
+    );
+    render(TreeGraph, { props: { instance, sbomId: 'application' } });
+
+    expect(await screen.findAllByText('root-app')).not.toHaveLength(0);
+    expect(screen.getAllByText('library-a')).not.toHaveLength(0);
+    expect(screen.getAllByText('library-b')).not.toHaveLength(0);
+  });
+
+  it('renders the resolved root after clearing an initially unmatched filter', async () => {
+    server.use(
+      http.get('/instances/:instanceId/actuator/sbom/application', () =>
+        HttpResponse.json({
+          metadata: { component: { 'bom-ref': 'root-app' } },
+          dependencies,
+        }),
+      ),
+    );
+    const component = render(TreeGraph, {
+      props: { instance, sbomId: 'application', filter: 'no-match' },
+    });
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('instance-section-loading-spinner'),
+      ).not.toBeInTheDocument(),
+    );
+    expect(screen.queryByTestId('treecontainer-svg')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('instances.dependencies.no_data_provided'),
+    ).not.toBeInTheDocument();
+
+    await component.rerender({ filter: '' });
+    vi.advanceTimersByTime(2000);
+
+    expect(await screen.findAllByText('root-app')).not.toHaveLength(0);
+    expect(screen.getAllByText('library-b')).not.toHaveLength(0);
+  });
+
+  it.each([
+    { dependencies },
+    { metadata: { component: {} }, dependencies },
+    { metadata: { component: { 'bom-ref': 'missing' } }, dependencies },
+    { metadata: { component: { 'bom-ref': 'root-app' } } },
+    { metadata: { component: { 'bom-ref': 'root-app' } }, dependencies: [] },
+  ])(
+    'shows an empty state when the root cannot be resolved: %j',
+    async (sbom) => {
+      server.use(
+        http.get('/instances/:instanceId/actuator/sbom/application', () =>
+          HttpResponse.json(sbom),
+        ),
+      );
+      render(TreeGraph, { props: { instance, sbomId: 'application' } });
+
+      expect(
+        await screen.findByText('instances.dependencies.no_data_provided'),
+      ).toBeInTheDocument();
+      expect(screen.queryByTestId('treecontainer-svg')).not.toBeInTheDocument();
+      expect(screen.queryByText('library-a')).not.toBeInTheDocument();
+    },
+  );
+});
+
 describe('TreeGraph', () => {
   const application = new Application(applications[0]);
   const instance: Instance = application.instances[0];
@@ -49,7 +246,7 @@ describe('TreeGraph', () => {
   };
 
   beforeEach(async () => {
-    vi.useFakeTimers({ ignoreMissingTimers: true });
+    vi.useFakeTimers({ ignoreMissingTimers: true, shouldAdvanceTime: true });
     await renderComponent();
   });
 

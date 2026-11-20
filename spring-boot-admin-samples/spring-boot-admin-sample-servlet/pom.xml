@@ -109,7 +109,7 @@
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                             <outputName>bom</outputName>
                             <outputFormat>json</outputFormat>
-                            <skipAttach>true</skipAttach>
+                            <skipNotDeployed>false</skipNotDeployed>
                         </configuration>
                     </execution>
                 </executions>

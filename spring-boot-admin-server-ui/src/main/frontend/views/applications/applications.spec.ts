@@ -406,4 +406,33 @@ describe('Applications add notification filter', () => {
     expect(toast.querySelector('script')).toBeNull();
     expect((window as any).__xss).toBeUndefined();
   });
+
+  it('positions the notification filter popover panel as an absolute overlay', async () => {
+    vi.spyOn(NotificationFilter, 'getFilters').mockResolvedValue({
+      data: [
+        new NotificationFilter({
+          id: 'filter-id',
+          applicationName: 'an-application',
+          expiry: Date.now() + 5 * 60 * 1000,
+        }),
+      ],
+    } as any);
+
+    renderWithApplication(createApplication('an-application', 'instance-id'));
+
+    const button = await waitFor(() => {
+      const center = screen
+        .getAllByTitle('Notification filters')
+        .find((el) => !el.id.startsWith('nf-settings-'));
+      expect(center).toBeEnabled();
+      return center as HTMLElement;
+    });
+    await userEvent.click(button);
+
+    const panelRoot = (
+      await screen.findByText('Notification filters', { selector: 'div' })
+    ).closest('.absolute');
+    expect(panelRoot).toBeInTheDocument();
+    expect(panelRoot?.parentElement).toHaveClass('relative');
+  });
 });

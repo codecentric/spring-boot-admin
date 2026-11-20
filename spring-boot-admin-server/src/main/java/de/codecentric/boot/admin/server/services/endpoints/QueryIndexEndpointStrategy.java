@@ -16,10 +16,15 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -27,7 +32,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.codec.CodecException;
 import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
@@ -64,9 +71,12 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 			.get()
 			.uri(managementUrl)
 			.exchangeToMono(this.convert(instance, managementUrl))
-			.onErrorResume((e) -> {
+			// shortcut: failed detection is not retried until the next
+			// status/registration event, add scheduled re-detection if instances stay
+			// without endpoints
+			.onErrorResume((e) -> !isTransportError(e), (e) -> {
 				log.warn("Querying actuator-index for instance {} on '{}' failed: {}", instance.getId(), managementUrl,
-						e.getMessage());
+						e.toString());
 				log.debug("Querying actuator-index for instance {} on '{}' failed.", instance.getId(), managementUrl,
 						e);
 				return Mono.empty();
@@ -121,6 +131,21 @@ public class QueryIndexEndpointStrategy implements EndpointDetectionStrategy {
 			.map((e) -> Endpoint.of(e.getKey(), e.getValue().getHref()))
 			.toList();
 		return endpoints.isEmpty() ? Mono.empty() : Mono.just(Endpoints.of(endpoints));
+	}
+
+	// transport errors propagate instead of falling back: instance is unreachable, so
+	// probing would fail as well
+	public static boolean isTransportError(Throwable e) {
+		Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (Throwable t = e; t != null && seen.add(t); t = t.getCause()) {
+			if (t instanceof CodecException) {
+				return false; // malformed body, instance reachable -> allow fallback
+			}
+			if (t instanceof WebClientRequestException || t instanceof TimeoutException || t instanceof IOException) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Data

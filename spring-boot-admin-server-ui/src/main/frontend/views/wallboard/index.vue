@@ -73,6 +73,7 @@
         v-if="applicationsInitialized"
         :class-for-item="classForApplication"
         :items="applications"
+        :label-for-item="labelForApplication"
         @click="select"
       >
         <template #item="{ item: application }">
@@ -183,6 +184,12 @@ export default {
   },
   methods: {
     classNames,
+    labelForApplication(application: Application) {
+      return this.t('wallboard.application_label', {
+        name: application.name,
+        status: application.status,
+      });
+    },
     classForApplication(application: Application) {
       if (!application) {
         return null;
@@ -279,14 +286,14 @@ export default {
 }
 
 .up > path {
-  stroke: var(--color-green-400);
-  fill: var(--color-green-400);
+  stroke: var(--color-status-up);
+  fill: var(--color-status-up);
 }
 
 .down > path,
 .offline > path {
-  stroke: var(--color-red-400);
-  fill: var(--color-red-400);
+  stroke: var(--color-status-down);
+  fill: var(--color-status-down);
   stroke-width: 2;
 }
 
@@ -313,16 +320,16 @@ export default {
 
 .hex.down .hex__body::after {
   content: '!';
-  color: var(--color-red-500);
+  color: var(--color-status-down);
 }
 
 .hex.unknown .hex__body::after {
   content: '?';
-  color: var(--color-gray-500);
+  color: var(--color-status-unknown);
 }
 
 .restricted > path {
-  stroke: var(--color-yellow-500);
-  fill: var(--color-yellow-500);
+  stroke: var(--color-status-restricted);
+  fill: var(--color-status-restricted);
 }
 </style>

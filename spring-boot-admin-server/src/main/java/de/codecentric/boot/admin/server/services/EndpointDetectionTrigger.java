@@ -25,6 +25,7 @@ import reactor.core.publisher.Mono;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceStatusChangedEvent;
+import de.codecentric.boot.admin.server.services.endpoints.QueryIndexEndpointStrategy;
 
 public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent> {
 
@@ -47,7 +48,13 @@ public class EndpointDetectionTrigger extends AbstractEventHandler<InstanceEvent
 
 	protected Mono<Void> detectEndpoints(InstanceEvent event) {
 		return this.endpointDetector.detectEndpoints(event.getInstance()).onErrorResume((e) -> {
-			log.warn("Unexpected error while detecting endpoints for {}", event.getInstance(), e);
+			if (QueryIndexEndpointStrategy.isTransportError(e)) {
+				log.warn("Endpoint detection for {} failed, instance unreachable: {}", event.getInstance(),
+						e.toString());
+			}
+			else {
+				log.warn("Unexpected error while detecting endpoints for {}", event.getInstance(), e);
+			}
 			return Mono.empty();
 		});
 	}

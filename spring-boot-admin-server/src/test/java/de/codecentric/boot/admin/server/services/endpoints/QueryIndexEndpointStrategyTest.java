@@ -16,7 +16,11 @@
 
 package de.codecentric.boot.admin.server.services.endpoints;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.SocketException;
 import java.time.Duration;
+import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.SSLException;
 
@@ -27,10 +31,13 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
+import org.springframework.core.codec.DecodingException;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
@@ -56,6 +63,7 @@ import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilter
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.timeout;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class QueryIndexEndpointStrategyTest {
 
@@ -177,7 +185,7 @@ class QueryIndexEndpointStrategyTest {
 	}
 
 	@Test
-	void should_return_empty_on_error() {
+	void should_return_error_on_transport_error() {
 		// given
 		Instance instance = Instance.create(InstanceId.of("id"))
 			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
@@ -192,7 +200,7 @@ class QueryIndexEndpointStrategyTest {
 		// when
 		StepVerifier.create(strategy.detectEndpoints(instance))
 			// then
-			.verifyComplete();
+			.verifyError(WebClientRequestException.class);
 	}
 
 	@Test
@@ -259,6 +267,82 @@ class QueryIndexEndpointStrategyTest {
 			// then
 			.expectNext(Endpoints.single("metrics", "/mgmt/stats").withEndpoint("info", "/mgmt/info"))//
 			.verifyComplete();
+	}
+
+	@Test
+	void should_return_error_on_connection_refused() throws IOException {
+		// given
+		int port;
+		try (ServerSocket socket = new ServerSocket(0)) {
+			port = socket.getLocalPort();
+		}
+
+		Instance instance = Instance.create(InstanceId.of("id"))
+			.register(Registration.create("test", "http://localhost:" + port + "/mgmt/health")
+				.managementUrl("http://localhost:" + port + "/mgmt")
+				.build());
+
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
+
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+			// then
+			.verifyError(WebClientRequestException.class);
+	}
+
+	@Test
+	void should_return_error_on_timeout() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id"))
+			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
+				.managementUrl(this.wireMock.url("/mgmt"))
+				.build());
+
+		this.wireMock.stubFor(get("/mgmt").willReturn(okJson("{}").withFixedDelay(2000)));
+
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
+
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+			// then
+			.verifyError(TimeoutException.class);
+	}
+
+	@Test
+	void should_return_empty_on_invalid_body() {
+		// given
+		Instance instance = Instance.create(InstanceId.of("id"))
+			.register(Registration.create("test", this.wireMock.url("/mgmt/health"))
+				.managementUrl(this.wireMock.url("/mgmt"))
+				.build());
+
+		this.wireMock.stubFor(get("/mgmt")
+			.willReturn(ok("{invalid").withHeader("Content-Type", ApiVersion.LATEST.getProducedMimeType().toString())));
+
+		QueryIndexEndpointStrategy strategy = new QueryIndexEndpointStrategy(this.instanceWebClient,
+				this.apiMediaTypeHandler);
+
+		// when
+		StepVerifier.create(strategy.detectEndpoints(instance))
+			// then
+			.verifyComplete();
+	}
+
+	@Test
+	@Timeout(5)
+	void should_detect_transport_errors() {
+		assertThat(QueryIndexEndpointStrategy.isTransportError(new TimeoutException())).isTrue();
+		assertThat(QueryIndexEndpointStrategy.isTransportError(new RuntimeException(new SocketException("reset"))))
+			.isTrue();
+		assertThat(QueryIndexEndpointStrategy.isTransportError(new DecodingException("bad", new IOException())))
+			.isFalse();
+		assertThat(QueryIndexEndpointStrategy.isTransportError(new IllegalStateException())).isFalse();
+		RuntimeException a = new RuntimeException("a");
+		RuntimeException b = new RuntimeException("b", a);
+		a.initCause(b);
+		assertThat(QueryIndexEndpointStrategy.isTransportError(a)).isFalse();
 	}
 
 	private ReactorClientHttpConnector httpConnector() {

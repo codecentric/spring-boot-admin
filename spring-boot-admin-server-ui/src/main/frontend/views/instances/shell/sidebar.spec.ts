@@ -96,12 +96,61 @@ describe('Sidebar', () => {
     expect(screen.queryByText('Overview')).not.toBeInTheDocument();
     expect(screen.queryByText('Health')).not.toBeInTheDocument();
   });
+
+  it('labels the group toggle buttons and reflects their state', async () => {
+    const user = userEvent.setup();
+
+    await renderSidebar({ initialRouteName: 'instances/web/health' });
+
+    const collapseWeb = await screen.findByRole('button', {
+      name: 'sidebar.collapse_group',
+    });
+    expect(collapseWeb).toHaveAttribute('aria-expanded', 'true');
+
+    const expandData = screen.getByRole('button', {
+      name: 'sidebar.expand_group',
+    });
+    expect(expandData).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(expandData);
+
+    await waitFor(() => {
+      expect(expandData).toHaveAttribute('aria-expanded', 'true');
+    });
+  });
+
+  it('truncates long custom link labels and keeps the full label as title', async () => {
+    const longLabel =
+      'A very long external sidebar link label that gets truncated';
+
+    await renderSidebar({
+      initialRouteName: 'instances/web/health',
+      metadataParsed: {
+        sidebar: {
+          links: [
+            { label: `<b>${longLabel}</b>`, url: 'https://example.com' },
+            { label: longLabel, url: 'https://example.com', iframe: true },
+          ],
+        },
+      },
+    });
+
+    const links = await screen.findAllByTitle(longLabel);
+    expect(links).toHaveLength(2);
+    links.forEach((link) => {
+      expect(link.querySelector('.navbar-link__label')).toHaveTextContent(
+        longLabel,
+      );
+    });
+  });
 });
 
 async function renderSidebar({
   initialRouteName,
+  metadataParsed = {},
 }: {
   initialRouteName: string;
+  metadataParsed?: Record<string, any>;
 }) {
   const views = createViews();
   const router = createRouter({
@@ -155,7 +204,7 @@ async function renderSidebar({
           id: 'instance-1',
           registration: { name: 'test-app' },
           statusInfo: { status: 'UP' },
-          metadataParsed: {},
+          metadataParsed,
         } as Instance,
         application: {} as Application,
       },

@@ -17,8 +17,8 @@
 <template>
   <sba-panel class="shadow-xl">
     <template v-if="!activeFilter">
-      <div class="field">
-        <p class="control has-inline-text">
+      <div class="mb-3">
+        <p class="flex flex-wrap items-center gap-2 leading-9">
           <span
             v-html="
               sanitizeHtml(
@@ -27,7 +27,7 @@
                 }),
               )
             "
-          />&nbsp;
+          />
           <sba-select
             v-model="ttl"
             class="inline-flex"
@@ -37,8 +37,8 @@
           />
         </p>
       </div>
-      <div class="field is-grouped is-grouped-right">
-        <div class="control">
+      <div class="flex justify-end">
+        <div>
           <sba-button
             :class="{ 'is-loading': actionState === 'executing' }"
             @click.stop="addFilter"
@@ -51,8 +51,8 @@
       </div>
     </template>
     <template v-else>
-      <div class="field">
-        <p class="control has-inline-text">
+      <div class="mb-3">
+        <p class="flex flex-wrap items-center gap-2 leading-9">
           <span
             v-html="
               sanitizeHtml(
@@ -61,18 +61,20 @@
                 }),
               )
             "
-          />&nbsp;
-          <strong
-            v-text="
-              activeFilter.expiry
-                ? activeFilter.expiry.locale(currentLocale).fromNow(true)
-                : t('term.ever')
-            "
-          />.
+          />
+          <span>
+            <strong
+              v-text="
+                activeFilter.expiry
+                  ? activeFilter.expiry.locale(currentLocale).fromNow(true)
+                  : t('term.ever')
+              "
+            />.
+          </span>
         </p>
       </div>
-      <div class="field is-grouped is-grouped-right">
-        <div class="control">
+      <div class="flex justify-end">
+        <div>
           <sba-button
             :class="{ 'is-loading': actionState === 'executing' }"
             @click.stop="deleteActiveFilter"
@@ -154,10 +156,3 @@ export default {
   },
 };
 </script>
-
-<style>
-@reference "../../index.css";
-.control.has-inline-text {
-  line-height: 2.25em;
-}
-</style>

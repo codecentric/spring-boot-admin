@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.http.client.autoconfigure.HttpClientAutoConfiguration;
 import org.springframework.boot.restclient.autoconfigure.RestClientAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -34,8 +35,11 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 
+import de.codecentric.boot.admin.client.registration.ApplicationFactory;
 import de.codecentric.boot.admin.client.registration.ApplicationRegistrator;
 import de.codecentric.boot.admin.client.registration.RegistrationClient;
+import de.codecentric.boot.admin.client.registration.ServletApplicationFactory;
+import de.codecentric.boot.admin.client.registration.ServletContainerApplicationFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,6 +59,24 @@ class SpringBootAdminClientAutoConfigurationTest {
 	void active() {
 		this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
 			.run((context) -> assertThat(context).hasSingleBean(ApplicationRegistrator.class));
+	}
+
+	@Test
+	void servletWithEmbeddedWebServer() {
+		this.contextRunner.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
+			.run((context) -> assertThat(context).getBean(ApplicationFactory.class)
+				.isInstanceOf(ServletApplicationFactory.class));
+	}
+
+	@Test
+	void servletWithoutEmbeddedWebServer() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.boot.web.server."))
+			.withPropertyValues("spring.boot.admin.client.url:http://localhost:8081")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ApplicationRegistrator.class);
+				assertThat(context).getBean(ApplicationFactory.class)
+					.isInstanceOf(ServletContainerApplicationFactory.class);
+			});
 	}
 
 	@Test

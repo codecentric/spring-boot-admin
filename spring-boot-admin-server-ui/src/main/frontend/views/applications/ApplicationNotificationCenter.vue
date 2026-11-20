@@ -17,47 +17,50 @@
 
     <PopoverPanel
       v-slot="{ close }"
-      :as="SbaPanel"
-      class="absolute left-1/2 z-10 mt-3 w-screen max-w-xl -translate-x-1/2 transform px-4 sm:px-0 shadow-lg text-sm"
+      class="absolute left-1/2 z-10 mt-3 w-screen max-w-xl -translate-x-1/2 transform px-4 sm:px-0 text-sm"
     >
-      <div
-        class="font-semibold leading-5"
-        v-text="t('applications.actions.notification_filters')"
-      />
-      <div
-        class="mt-2 leading-5 text-slate-500"
-        v-text="t('notification_filter_center.description')"
-      />
-      <div
-        v-for="(filter, idx) in notificationFilters"
-        :key="filter.id"
-        :class="{
-          'mt-4': idx === 0,
-          'py-3': idx < notificationFiltersLength - 1,
-          'pt-3': idx >= notificationFiltersLength - 1,
-        }"
-        class="flex items-center border-t border-gray-50"
-      >
-        <div class="w-1/2">
-          {{ filter.instanceId || filter.applicationName }}
-        </div>
-        <div class="flex-1">
-          <strong
-            v-text="
-              filter.expiry
-                ? filter.expiry.locale(momentLocale).fromNow(true)
-                : t('term.ever')
-            "
+      <div class="shadow-lg rounded">
+        <SbaPanel>
+          <div
+            class="font-semibold leading-5"
+            v-text="t('applications.actions.notification_filters')"
           />
-        </div>
-        <div class="flex-none text-right text-red-700">
-          <button
-            :disabled="executing[filter.id]"
-            @click.stop="removeFilter(filter, close)"
+          <div
+            class="mt-2 leading-5 text-slate-500"
+            v-text="t('notification_filter_center.description')"
+          />
+          <div
+            v-for="(filter, idx) in notificationFilters"
+            :key="filter.id"
+            :class="{
+              'mt-4': idx === 0,
+              'py-3': idx < notificationFiltersLength - 1,
+              'pt-3': idx >= notificationFiltersLength - 1,
+            }"
+            class="flex items-center border-t border-gray-50"
           >
-            {{ t('term.delete') }}
-          </button>
-        </div>
+            <div class="w-1/2">
+              {{ filter.instanceId || filter.applicationName }}
+            </div>
+            <div class="flex-1">
+              <strong
+                v-text="
+                  filter.expiry
+                    ? filter.expiry.locale(momentLocale).fromNow(true)
+                    : t('term.ever')
+                "
+              />
+            </div>
+            <div class="flex-none text-right text-red-700">
+              <button
+                :disabled="executing[filter.id]"
+                @click.stop="removeFilter(filter, close)"
+              >
+                {{ t('term.delete') }}
+              </button>
+            </div>
+          </div>
+        </SbaPanel>
       </div>
     </PopoverPanel>
   </Popover>

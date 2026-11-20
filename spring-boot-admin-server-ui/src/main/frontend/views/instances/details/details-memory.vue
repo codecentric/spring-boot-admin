@@ -171,33 +171,30 @@ export default defineComponent({
     },
     prettyBytes,
     async fetchMetrics() {
-      const responseMax = this.instance.fetchMetric('jvm.memory.max', {
-        area: this.type,
-      });
-      const responseUsed = this.instance.fetchMetric('jvm.memory.used', {
-        area: this.type,
-      });
-      const hasMetaspace = (await responseUsed).data.availableTags.some(
+      const [responseMax, responseUsed, responseCommitted] = await Promise.all([
+        this.instance.fetchMetric('jvm.memory.max', { area: this.type }),
+        this.instance.fetchMetric('jvm.memory.used', { area: this.type }),
+        this.instance.fetchMetric('jvm.memory.committed', {
+          area: this.type,
+        }),
+      ]);
+      const hasMetaspace = responseUsed.data.availableTags.some(
         (tag) => tag.tag === 'id' && tag.values.includes('Metaspace'),
       );
-      const responeMetaspace =
+      const responseMetaspace =
         this.type === 'nonheap' && hasMetaspace
-          ? this.instance.fetchMetric('jvm.memory.used', {
+          ? await this.instance.fetchMetric('jvm.memory.used', {
               area: this.type,
               id: 'Metaspace',
             })
           : null;
-      const responseCommitted = this.instance.fetchMetric(
-        'jvm.memory.committed',
-        { area: this.type },
-      );
       return {
-        max: (await responseMax).data.measurements[0].value,
-        used: (await responseUsed).data.measurements[0].value,
-        metaspace: responeMetaspace
-          ? (await responeMetaspace).data.measurements[0].value
+        max: responseMax.data.measurements[0].value,
+        used: responseUsed.data.measurements[0].value,
+        metaspace: responseMetaspace
+          ? responseMetaspace.data.measurements[0].value
           : null,
-        committed: (await responseCommitted).data.measurements[0].value,
+        committed: responseCommitted.data.measurements[0].value,
       };
     },
     createSubscription() {

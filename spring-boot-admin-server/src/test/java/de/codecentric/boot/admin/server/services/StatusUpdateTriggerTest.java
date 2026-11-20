@@ -17,9 +17,12 @@
 package de.codecentric.boot.admin.server.services;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextClosedEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
@@ -105,6 +108,18 @@ class StatusUpdateTriggerTest {
 				this.instance.getRegistration()));
 		// then should not update
 		verify(this.updater, never()).updateStatus(this.instance.getId());
+	}
+
+	@Test
+	void should_cancel_in_flight_update_when_context_closes() {
+		AtomicBoolean cancelled = new AtomicBoolean();
+		when(this.updater.updateStatus(any())).thenReturn(Mono.<Void>never().doOnCancel(() -> cancelled.set(true)));
+
+		this.events.next(new InstanceRegisteredEvent(this.instance.getId(), this.instance.getVersion(),
+				this.instance.getRegistration()));
+		this.trigger.onApplicationEvent(new ContextClosedEvent(mock(ApplicationContext.class)));
+
+		await().untilTrue(cancelled);
 	}
 
 	@Test

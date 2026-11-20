@@ -32,7 +32,7 @@
       :title="$t('instances.threaddump.download_failed')"
     />
     <sba-panel>
-      <threads-list v-if="threads" :thread-timelines="threads" />
+      <threads-list v-if="threads" :thread-timelines="orderedThreads" />
     </sba-panel>
   </sba-instance-section>
 </template>
@@ -40,12 +40,11 @@
 <script>
 import { remove } from 'lodash-es';
 import moment from 'moment';
-import { take } from 'rxjs/operators';
 
 import subscribing from '@/mixins/subscribing';
 import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
-import { concatMap, delay, retryWhen, timer } from '@/utils/rxjs';
+import { concatMap, retry, timer } from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 import threadsList from '@/views/instances/threaddump/threads-list';
@@ -64,11 +63,17 @@ export default {
     errorFetch: null,
     errorDownload: null,
     threads: {},
+    threadOrder: [],
   }),
-  computed: {},
+  computed: {
+    orderedThreads() {
+      return this.threadOrder.map((threadId) => this.threads[threadId]);
+    },
+  },
   methods: {
     updateTimelines(threads) {
       const now = moment().valueOf();
+      const returnedThreadIds = threads.map((thread) => thread.threadId);
       //initialize with all known live threads, which will be removed from the list if still alive
       const terminatedThreads = Object.entries(this.threads)
         .filter(([, value]) => value.threadState !== 'TERMINATED')
@@ -112,6 +117,12 @@ export default {
         entry.threadState = 'TERMINATED';
         entry.timeline[entry.timeline.length - 1].end = now;
       });
+
+      const returned = new Set(returnedThreadIds);
+      this.threadOrder = [
+        ...returnedThreadIds,
+        ...this.threadOrder.filter((threadId) => !returned.has(threadId)),
+      ];
     },
     async fetchThreaddump() {
       const response = await this.instance.fetchThreaddump();
@@ -131,9 +142,7 @@ export default {
       return timer(0, sbaConfig.uiSettings.pollTimer.threaddump)
         .pipe(
           concatMap(this.fetchThreaddump),
-          retryWhen((err) => {
-            return err.pipe(delay(1000), take(2));
-          }),
+          retry({ count: 2, delay: 1000, resetOnSuccess: true }),
         )
         .subscribe({
           next: (threads) => {

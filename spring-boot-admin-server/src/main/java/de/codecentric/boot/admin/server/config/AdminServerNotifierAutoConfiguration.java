@@ -18,6 +18,7 @@ package de.codecentric.boot.admin.server.config;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.ConcurrentMap;
 
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.Credentials;
@@ -26,6 +27,8 @@ import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.core5.http.HttpHost;
 import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -52,10 +55,12 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import de.codecentric.boot.admin.server.domain.entities.InstanceRepository;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.notify.CompositeNotifier;
 import de.codecentric.boot.admin.server.notify.DingTalkNotifier;
 import de.codecentric.boot.admin.server.notify.DiscordNotifier;
 import de.codecentric.boot.admin.server.notify.FeiShuNotifier;
+import de.codecentric.boot.admin.server.notify.HazelcastNotificationTrigger;
 import de.codecentric.boot.admin.server.notify.HipchatNotifier;
 import de.codecentric.boot.admin.server.notify.LetsChatNotifier;
 import de.codecentric.boot.admin.server.notify.MailNotifier;
@@ -107,7 +112,12 @@ public class AdminServerNotifierAutoConfiguration {
 
 		@Bean(initMethod = "start", destroyMethod = "stop")
 		@ConditionalOnMissingBean(NotificationTrigger.class)
-		public NotificationTrigger notificationTrigger(Notifier notifier, Publisher<InstanceEvent> events) {
+		public NotificationTrigger notificationTrigger(Notifier notifier, Publisher<InstanceEvent> events,
+				@Qualifier(AdminServerHazelcastAutoConfiguration.SENT_NOTIFICATIONS_BEAN_NAME) ObjectProvider<ConcurrentMap<InstanceId, Long>> sentNotifications) {
+			ConcurrentMap<InstanceId, Long> sentNotificationsMap = sentNotifications.getIfAvailable();
+			if (sentNotificationsMap != null) {
+				return new HazelcastNotificationTrigger(notifier, events, sentNotificationsMap);
+			}
 			return new NotificationTrigger(notifier, events);
 		}
 

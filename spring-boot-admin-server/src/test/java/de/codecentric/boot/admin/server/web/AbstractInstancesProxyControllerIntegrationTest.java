@@ -41,6 +41,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.absent;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -54,6 +55,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.serverError;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.ALLOW;
+import static org.springframework.http.HttpHeaders.CONNECTION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 public abstract class AbstractInstancesProxyControllerIntegrationTest {
@@ -189,6 +191,41 @@ public abstract class AbstractInstancesProxyControllerIntegrationTest {
 			.isEqualTo("{\"error\": \"You're doing it wrong!\"}");
 
 		this.wireMock.verify(deleteRequestedFor(urlEqualTo("/instance1/delete")));
+	}
+
+	@Test
+	public void should_not_forward_connection_specific_request_headers() {
+		this.client.get()
+			.uri("/instances/{instanceId}/actuator/test", this.instanceId)
+			.header(CONNECTION, "X-Request-Hop")
+			.header("X-Request-Hop", "connection-specific")
+			.header("X-End-To-End", "retained")
+			.exchange()
+			.expectStatus()
+			.isOk();
+
+		this.wireMock.verify(getRequestedFor(urlEqualTo("/instance1/test")).withHeader("X-Request-Hop", absent())
+			.withHeader("X-End-To-End", equalTo("retained")));
+	}
+
+	@Test
+	public void should_not_forward_connection_specific_response_headers() {
+		this.wireMock.stubFor(
+				get(urlEqualTo("/instance1/test")).willReturn(ok("response").withHeader(CONNECTION, "X-Response-Hop")
+					.withHeader("X-Response-Hop", "connection-specific")
+					.withHeader("X-End-To-End", "retained")));
+
+		this.client.get()
+			.uri("/instances/{instanceId}/actuator/test", this.instanceId)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.doesNotExist("X-Response-Hop")
+			.expectHeader()
+			.valueEquals("X-End-To-End", "retained")
+			.expectBody(String.class)
+			.isEqualTo("response");
 	}
 
 	@Test

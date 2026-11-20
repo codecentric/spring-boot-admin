@@ -55,11 +55,11 @@
     </div>
 
     <div class="instance-grid">
-      <div>
-        <details-datasources v-if="hasDatasources" :instance="instance" />
+      <div v-if="hasDatasources">
+        <details-datasources :instance="instance" />
       </div>
-      <div>
-        <details-caches v-if="hasCaches" :instance="instance" />
+      <div v-if="hasCaches">
+        <details-caches :instance="instance" />
       </div>
     </div>
   </sba-instance-section>

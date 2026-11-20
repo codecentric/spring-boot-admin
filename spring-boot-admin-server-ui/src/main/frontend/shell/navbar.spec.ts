@@ -40,6 +40,9 @@ describe('Navbar', function () {
 
     expect(screen.getByTestId('usermenu')).toBeVisible();
     expect(screen.getByText('mail@example.org')).toBeVisible();
+    expect(
+      screen.getByRole('button', { name: 'User menu of mail@example.org' }),
+    ).toBeVisible();
   });
 
   it.each`

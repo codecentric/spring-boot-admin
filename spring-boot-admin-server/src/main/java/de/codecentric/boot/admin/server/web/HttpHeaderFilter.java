@@ -17,6 +17,8 @@
 package de.codecentric.boot.admin.server.web;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,21 +44,19 @@ public class HttpHeaderFilter {
 
 	public HttpHeaderFilter(Set<String> ignoredHeaders) {
 		this.ignoredHeaders = Stream.concat(ignoredHeaders.stream(), Arrays.stream(HOP_BY_HOP_HEADERS))
-			.map(String::toLowerCase)
+			.map((header) -> header.toLowerCase(Locale.ROOT))
 			.collect(Collectors.toSet());
 	}
 
 	public HttpHeaders filterHeaders(HttpHeaders headers) {
+		Set<String> excludedHeaders = new HashSet<>(this.ignoredHeaders);
+		headers.getConnection().forEach((header) -> excludedHeaders.add(header.toLowerCase(Locale.ROOT)));
 		HttpHeaders filtered = new HttpHeaders();
 		filtered.putAll(headers.headerSet()
 			.stream()
-			.filter((e) -> this.includeHeader(e.getKey()))
+			.filter((e) -> !excludedHeaders.contains(e.getKey().toLowerCase(Locale.ROOT)))
 			.collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
 		return filtered;
-	}
-
-	private boolean includeHeader(String header) {
-		return !this.ignoredHeaders.contains(header.toLowerCase());
 	}
 
 }

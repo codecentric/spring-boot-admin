@@ -10,6 +10,7 @@ changelog:
           - breaking-change
           - dependencies
           - bot
+          - "type: bug"
           - "type: dependency-upgrade"
           - "type: breaking-change"
     - title: Bug Fixes

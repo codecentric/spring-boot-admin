@@ -16,10 +16,12 @@
 
 package de.codecentric.boot.admin.server.notify.filter;
 
+import java.io.Serializable;
+
 import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 
-public interface NotificationFilter {
+public interface NotificationFilter extends Serializable {
 
 	String getId();
 

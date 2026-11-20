@@ -5,7 +5,7 @@
     sandbox="allow-scripts allow-same-origin"
     referrerpolicy="no-referrer"
     loading="lazy"
-    title="Google"
+    :title="String(params.url)"
   ></iframe>
 </template>
 

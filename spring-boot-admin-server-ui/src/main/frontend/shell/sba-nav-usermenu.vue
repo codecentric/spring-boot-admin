@@ -1,5 +1,8 @@
 <template>
-  <sba-nav-dropdown data-testid="usermenu">
+  <sba-nav-dropdown
+    :button-label="t('navbar.user_menu', { name: username })"
+    data-testid="usermenu"
+  >
     <template #label>
       <font-awesome-icon
         class="w-10 rounded-full white mr-2"
@@ -43,6 +46,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import SbaDropdownDivider from '@/components/sba-dropdown/sba-dropdown-divider.vue';
 import SbaDropdownItem from '@/components/sba-dropdown/sba-dropdown-item.vue';
@@ -51,6 +55,8 @@ import SbaNavDropdown from '@/components/sba-nav/sba-nav-dropdown.vue';
 import { useViewRegistry } from '@/composables/ViewRegistry';
 import { getCurrentUser } from '@/sba-config';
 import SbaDropdownLogoutItem from '@/shell/sba-dropdown-logout-item.vue';
+
+const { t } = useI18n();
 
 const currentUser = getCurrentUser();
 const username = currentUser ? currentUser.name : null;

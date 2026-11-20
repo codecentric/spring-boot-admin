@@ -17,6 +17,15 @@
       "datasourceTemplate": "node-version",
       "versioningTemplate": "node",
       "extractVersionTemplate": "^v?(?<version>.+)$"
+    },
+    {
+      "description": "Track npm version in frontend-maven-plugin <npm.version> property",
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)pom\\.xml$/"],
+      "matchStrings": ["<npm\\.version>(?<currentValue>[^<]+)</npm\\.version>"],
+      "depNameTemplate": "npm",
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
     }
   ],
   "packageRules": [
@@ -32,11 +41,9 @@
       "platformAutomerge": true
     },
     {
+      "description": "Do not update our own modules; their version is managed via the ${revision} property",
       "matchPackageNames": [
-        "org.apache.maven.plugins:maven-site-plugin",
-        "spring-boot-admin",
-        "de.codecentric:spring-boot-admin-server-mcp",
-        "de.codecentric:spring-boot-admin-starter-server-mcp"
+        "de.codecentric:spring-boot-admin**"
       ],
       "enabled": false
     },
@@ -46,6 +53,16 @@
         "com.puppycrawl.tools:checkstyle"
       ],
       "allowedVersions": "<13"
+    },
+    {
+      "description": "Maven 3.10 breaks central-publishing-maven-plugin 0.11.0 (staged maven-metadata is not removed, Central rejects bundle with 'content that does NOT have a .pom file'); stay on 3.9.x",
+      "matchManagers": [
+        "maven-wrapper"
+      ],
+      "matchDepNames": [
+        "maven"
+      ],
+      "allowedVersions": "<3.10"
     },
     {
       "description": "PrimeVue went non-MIT (proprietary PrimeUI License) at v5; stay on last MIT major (4.x) for Apache-2.0 compliance",
@@ -82,7 +99,6 @@
       "description": "Group all Node.js and npm version updates (pom.xml, .nvmrc, package.json engines, GitHub Actions) into one PR",
       "matchDepNames": ["node", "npm"],
       "matchDatasources": ["node-version", "npm"],
-      "matchDepTypes": ["engines", "node"],
       "groupName": "Node.js version",
       "groupSlug": "nodejs-version"
     }

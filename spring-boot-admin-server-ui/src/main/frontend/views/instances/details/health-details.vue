@@ -15,49 +15,85 @@
   -->
 
 <template>
-  <dl
-    class="px-4 py-3 even:bg-white odd:bg-gray-50 grid grid-cols-3"
+  <!-- Composite contributor: a section header row + collapsible indented children -->
+  <div
+    v-if="isComposite"
+    class="health-section-header"
     role="group"
     :aria-label="name"
   >
-    <dt
-      :id="`health-${id}__${safeNameId}`"
-      class="w-48 text-sm font-medium text-gray-500 items-center"
+    <div
+      class="health-section-header__row"
+      :aria-expanded="String(!isCollapsed)"
+      @click="toggleCollapsed"
     >
-      <div class="break-all">
-        {{ name }}
+      <span class="health-section-header__name">{{ name }}</span>
+      <div class="health-section-header__body">
+        <sba-status-badge v-if="health.status" :status="health.status" />
       </div>
+      <font-awesome-icon
+        :icon="faChevronRight"
+        class="health-section-header__chevron transition-transform px-4"
+        :class="{ 'rotate-90': !isCollapsed }"
+      />
+    </div>
+  </div>
+
+  <!-- Children of composite: indented, rendered as DOM siblings (outside role="group") -->
+  <template v-if="isComposite && !isCollapsed">
+    <div class="health-section-children">
+      <health-details
+        v-for="(child, idx) in childHealth"
+        :key="`${child.name}_${idx}`"
+        :instance="instance"
+        :name="child.name"
+        :health="child.value"
+      />
+    </div>
+  </template>
+
+  <!-- Leaf contributor: a single row with expandable detail grid -->
+  <dl
+    v-else-if="!isComposite"
+    class="health-row"
+    role="group"
+    :aria-label="name"
+  >
+    <dt :id="`health-${id}__${safeNameId}`" class="health-row__name">
+      {{ name }}
     </dt>
+
     <dd
       :id="`health-details-${id}__${safeNameId}`"
-      class="mt-1 text-sm text-gray-900 sm:mt-0 col-span-2"
+      class="health-row__body"
       :aria-labelledby="`health-${id}__${safeNameId}`"
     >
-      <div class="flex gap-1 items-center">
-        <div class="flex-1">
-          <sba-status-badge v-if="health.status" :status="health.status" />
-        </div>
-        <div v-if="details && details.length > 0" class="w-12 text-right">
-          <sba-button
-            class="p-0! border-none"
-            :title="t('instances.details.health.toggle_details', { name })"
-            :aria-label="t('instances.details.health.toggle_details', { name })"
-            :aria-expanded="String(!isCollapsed)"
-            :aria-controls="`health-details-${id}__${safeNameId}`"
-            @click="() => toggleCollapsed()"
-          >
-            <font-awesome-icon
-              :icon="faChevronRight"
-              class="transition-transform"
-              :class="{ 'rotate-90': !isCollapsed }"
-            />
-          </sba-button>
-        </div>
+      <div class="health-row__summary">
+        <sba-status-badge v-if="health.status" :status="health.status" />
+        <span v-if="health.description" class="health-row__description">
+          {{ health.description }}
+        </span>
+        <button
+          v-if="details && details.length > 0"
+          class="health-row__toggle"
+          :title="t('instances.details.health.toggle_details', { name })"
+          :aria-label="t('instances.details.health.toggle_details', { name })"
+          :aria-expanded="String(!isCollapsed)"
+          :aria-controls="`health-details-${id}__${safeNameId}`"
+          @click="toggleCollapsed"
+        >
+          <font-awesome-icon
+            :icon="faChevronRight"
+            class="transition-transform"
+            :class="{ 'rotate-90': !isCollapsed }"
+          />
+        </button>
       </div>
+
       <dl
         v-if="details && details.length > 0"
         v-show="!isCollapsed"
-        class="grid grid-cols-6 mt-2"
+        class="health-row__details"
       >
         <template
           v-for="(detail, idx) in details"
@@ -65,7 +101,7 @@
         >
           <dt
             :id="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
-            class="font-medium col-span-2"
+            class="health-row__detail-key"
             v-text="detail.name"
           />
           <dd
@@ -73,7 +109,7 @@
               name.toLowerCase().startsWith('diskspace') &&
               typeof detail.value === 'number'
             "
-            class="col-span-4"
+            class="health-row__detail-value"
             role="definition"
             :aria-label="detail.name"
             :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
@@ -83,7 +119,7 @@
             v-else-if="
               detail.value !== null && typeof detail.value === 'object'
             "
-            class="col-span-4"
+            class="health-row__detail-value"
             role="definition"
             :aria-label="detail.name"
             :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
@@ -98,20 +134,13 @@
             role="definition"
             :aria-label="detail.name"
             :aria-labelledby="`health-detail-${id}__${safeDetailId(detail.name, idx)}`"
-            class="wrap-break-word whitespace-pre-wrap col-span-4"
+            class="health-row__detail-value wrap-break-word whitespace-pre-wrap"
             v-html="autolink(sanitizeHtml(String(detail.value ?? '')))"
           />
         </template>
       </dl>
     </dd>
   </dl>
-  <health-details
-    v-for="(child, idx) in childHealth"
-    :key="`${child.name}_${idx}`"
-    :instance="instance"
-    :name="child.name"
-    :health="child.value"
-  />
 </template>
 
 <script lang="ts" setup>
@@ -135,10 +164,8 @@ const { health, name, instance } = defineProps<{
   health: Record<string, any>;
 }>();
 
-// Sanitised name safe for use in HTML id attributes
 const safeNameId = computed(() => (name ?? '').replace(/[^a-zA-Z0-9_-]/g, '_'));
 
-// Sanitise a detail key for use in HTML ids; fall back to its index when result would be empty
 function safeDetailId(detailName: string, idx: number): string {
   const safe = detailName.replace(/[^a-zA-Z0-9_-]/g, '_');
   return safe.length > 0 ? safe : `detail_${idx}`;
@@ -150,26 +177,23 @@ const COLLAPSED_KEY = computed(
 );
 
 function readCollapsedFromStorage(): boolean {
-  if (!instance?.id) return false;
+  if (!instance?.id) return true;
   try {
     const stored = localStorage.getItem(COLLAPSED_KEY.value);
     if (stored !== null) return stored === 'true';
   } catch {
     // storage unavailable — fall back to default
   }
-  return false;
+  return true;
 }
-
-const isCollapsed = ref(readCollapsedFromStorage());
 
 type Details = {
   name: string;
   value: unknown;
 };
 
-const isChildHealth = (value: any) => {
-  return value !== null && typeof value === 'object' && 'status' in value;
-};
+const isChildHealth = (value: any) =>
+  value !== null && typeof value === 'object' && 'status' in value;
 
 const healthEntries = computed(() => {
   const source = health.details ?? health.components;
@@ -191,6 +215,12 @@ const childHealth = computed(() =>
     .map(([name, value]) => ({ name, value })),
 );
 
+const isComposite = computed(
+  () => childHealth.value.length > 0 && details.value.length === 0,
+);
+
+const isCollapsed = ref(readCollapsedFromStorage());
+
 watch(COLLAPSED_KEY, () => {
   isCollapsed.value = readCollapsedFromStorage();
 });
@@ -210,6 +240,81 @@ const toggleCollapsed = () => {
 
 <style scoped>
 @reference "../../../index.css";
+
+/* ── Composite section header (flat, no card chrome) ───────────────────── */
+.health-section-header {
+  @apply border-b border-gray-100 bg-gray-50 last:border-b-0;
+}
+
+.health-section-header__row {
+  @apply w-full flex items-stretch text-left cursor-pointer select-none
+         hover:bg-gray-100 transition-colors;
+}
+
+.health-section-header__name {
+  @apply w-52 shrink-0 px-4 py-2.5 text-sm font-medium text-gray-600
+         break-all self-center;
+}
+
+.health-section-header__body {
+  @apply flex-1 py-2.5 min-w-0 self-center;
+}
+
+.health-section-header__chevron {
+  @apply text-gray-400 self-center;
+}
+
+/* ── Children of composite: indented text,  ─────────── */
+.health-section-children {
+  @apply border-b border-gray-100 divide-y divide-gray-100;
+}
+
+.health-section-children :deep(.health-row__name),
+.health-section-children :deep(.health-section-header__name) {
+  @apply pl-8;
+}
+
+/* ── Leaf row ──────────────────────────────────────────────────────────── */
+.health-row {
+  @apply flex items-stretch border-b border-gray-100 last:border-b-0
+         even:bg-white odd:bg-gray-50;
+}
+
+.health-row__name {
+  @apply w-52 shrink-0 px-4 pt-[calc(theme(spacing.3)+theme(spacing.1))] pb-3
+         text-sm font-medium text-gray-600 break-all self-start;
+}
+
+.health-row__body {
+  @apply flex-1 pr-4 py-3 min-w-0 self-start;
+}
+
+.health-row__summary {
+  @apply flex items-center gap-2 flex-wrap;
+}
+
+.health-row__description {
+  @apply text-xs text-gray-500;
+}
+
+.health-row__toggle {
+  @apply ml-auto text-gray-400 hover:text-gray-600 transition-colors
+         border-none bg-transparent cursor-pointer rounded;
+}
+
+/* ── Detail grid inside a leaf row ────────────────────────────────────── */
+.health-row__details {
+  @apply mt-2 grid grid-cols-6 gap-x-2 gap-y-1 text-sm;
+}
+
+.health-row__detail-key {
+  @apply col-span-2 font-medium text-gray-500 break-all;
+}
+
+.health-row__detail-value {
+  @apply col-span-4 text-gray-800 break-all;
+}
+
 :deep(a[href]) {
   @apply underline;
 }
