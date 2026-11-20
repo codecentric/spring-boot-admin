@@ -445,24 +445,71 @@ public SecurityFilterChain filterChain(HttpSecurity http,
             .requestMatchers(PathPatternRequestMatcher.withDefaults()
                 .matcher(adminServer.path("/assets/**")))
             .permitAll()
-            .requestMatchers(PathPatternRequestMatcher.withDefaults()
-                .matcher(adminServer.path("/login")))
-            .permitAll()
             .anyRequest().authenticated()
         )
-        .oauth2Login(oauth2 -> oauth2
-            .loginPage(adminServer.path("/login"))
-        )
+        // No custom loginPage: Spring Security redirects browsers to the IdP.
+        .oauth2Login(Customizer.withDefaults())
+        // Lets Spring Boot Admin Clients register with Basic credentials.
+        .httpBasic(Customizer.withDefaults())
         .logout(logout -> logout
             .logoutUrl(adminServer.path("/logout"))
             .logoutSuccessUrl(adminServer.path("/"))
+        )
+        .csrf(csrf -> csrf
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+            .ignoringRequestMatchers(
+                PathPatternRequestMatcher.withDefaults()
+                    .matcher(POST, adminServer.path("/instances")),
+                PathPatternRequestMatcher.withDefaults()
+                    .matcher(DELETE, adminServer.path("/instances/*")),
+                PathPatternRequestMatcher.withDefaults()
+                    .matcher(adminServer.path("/actuator/**"))
+            )
         );
 
-    // CSRF and other configurations...
+    // CustomCsrfFilter: see "Custom CSRF Filter" above
+    http.addFilterAfter(new CustomCsrfFilter(), BasicAuthenticationFilter.class);
 
     return http.build();
 }
+
+// Spring Boot's UserDetailsServiceAutoConfiguration backs off once a
+// ClientRegistrationRepository exists, so spring.security.user.* is ignored.
+// Define the Basic-auth user for registering clients explicitly.
+@Bean
+public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
+    UserDetails client = User.withUsername("client")
+        .password(passwordEncoder.encode(System.getenv("SBA_CLIENT_PASSWORD")))
+        .roles("CLIENT")
+        .build();
+    return new InMemoryUserDetailsManager(client);
+}
+
+@Bean
+public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+}
 ```
+
+:::warning
+Do not set `oauth2Login(oauth2 -> oauth2.loginPage(adminServer.path("/login")))`: `/login` is Spring Boot Admin's
+local username/password form and has no link to your identity provider.
+:::
+
+Keep `httpBasic()` and the `userDetailsService` bean, otherwise Spring Boot Admin Clients cannot register with their
+Basic credentials: with OAuth2 on the classpath, Spring Boot no longer creates a user from `spring.security.user.*`.
+Keep the CSRF exemptions for `POST /instances`, `DELETE /instances/*` and `/actuator/**`, otherwise client
+registration is rejected with `403` (or `401` when the error page itself requires authentication). See
+[CSRF Protection](./30-csrf-protection.md).
+
+:::note
+Browser requests (`Accept: text/html`) are redirected to the identity provider. Requests without `Accept: text/html`,
+such as plain `curl` or XHR calls, get `401` by design. When a UI session expires, the UI redirects to `login` relative
+to the Admin Server's context path. Without a context path this is Spring Security's generated `/login` page, which
+links to the identity provider. With `spring.boot.admin.context-path` set, it is Spring Boot Admin's own login form
+instead; users then need to reload the UI to be redirected to the identity provider.
+:::
 
 ---
 
