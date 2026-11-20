@@ -553,7 +553,7 @@ describe('HealthDetails', () => {
       expect((window as any).__xss).toBeUndefined();
     });
   });
-describe('Plain primitive health values (e.g. OFFLINE timeout details)', () => {
+  describe('Plain primitive health values (e.g. OFFLINE timeout details)', () => {
     it('should display plain string values when health is a primitive', async () => {
       render(HealthDetails, {
         props: {

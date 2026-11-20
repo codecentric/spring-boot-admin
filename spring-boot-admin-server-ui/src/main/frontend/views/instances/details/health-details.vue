@@ -29,7 +29,10 @@
     >
       <span class="health-section-header__name">{{ name }}</span>
       <div class="health-section-header__body">
-        <sba-status-badge v-if="healthRecord?.status" :status="healthRecord.status" />
+        <sba-status-badge
+          v-if="healthRecord?.status"
+          :status="healthRecord.status"
+        />
       </div>
       <font-awesome-icon
         :icon="faChevronRight"
@@ -76,8 +79,14 @@
           />
         </template>
         <template v-else>
-          <sba-status-badge v-if="healthRecord?.status" :status="healthRecord.status" />
-          <span v-if="healthRecord?.description" class="health-row__description">
+          <sba-status-badge
+            v-if="healthRecord?.status"
+            :status="healthRecord.status"
+          />
+          <span
+            v-if="healthRecord?.description"
+            class="health-row__description"
+          >
             {{ healthRecord.description }}
           </span>
           <button
