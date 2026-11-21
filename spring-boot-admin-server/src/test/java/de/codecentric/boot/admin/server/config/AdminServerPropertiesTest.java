@@ -16,6 +16,8 @@
 
 package de.codecentric.boot.admin.server.config;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,12 @@ class AdminServerPropertiesTest {
 		assertThat(serverConfig.getContextPath()).isEqualTo("/admin");
 
 		assertThat(serverConfig.getEventStore().getMaxLogSizePerAggregate()).isEqualTo(100);
+
+		assertThat(serverConfig.getMonitor().getConnectionPool().getMaxIdleTime()).isEqualTo(Duration.ofSeconds(15));
+		assertThat(serverConfig.getMonitor().getConnectionPool().getEvictionInterval())
+			.isEqualTo(Duration.ofSeconds(30));
+		assertThat(serverConfig.getMonitor().getConnectionPool().getInactivePoolTimeout())
+			.isEqualTo(Duration.ofMinutes(1));
 
 		assertThat(serverConfig.getMonitor().getStatusChangeDetectionStrategy())
 			.isEqualTo(StatusChangeDetectionStrategy.STATUS_ONLY);

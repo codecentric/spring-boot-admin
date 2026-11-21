@@ -20,15 +20,25 @@ import java.net.CookiePolicy;
 import java.util.List;
 
 import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.http.client.HttpClientSettings;
+import org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration;
+import org.springframework.boot.http.client.reactive.ClientHttpConnectorBuilder;
+import org.springframework.boot.http.client.reactive.ReactorClientHttpConnectorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.HttpResources;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
@@ -48,14 +58,55 @@ import de.codecentric.boot.admin.server.web.client.reactive.ReactiveHttpHeadersP
 
 @Configuration(proxyBeanMethods = false)
 @Lazy(false)
-public class AdminServerInstanceWebClientConfiguration {
+public class AdminServerInstanceWebClientConfiguration implements DisposableBean {
 
 	private final InstanceWebClient.Builder instanceWebClientBuilder;
 
+	private final ConnectionProvider connectionProvider;
+
 	public AdminServerInstanceWebClientConfiguration(ObjectProvider<InstanceWebClientCustomizer> customizers,
-			WebClient.Builder webClient) {
+			WebClient.Builder webClient, ObjectProvider<ClientHttpConnectorBuilder<?>> connectorBuilder,
+			ObjectProvider<HttpClientSettings> httpClientSettings, AdminServerProperties adminServerProperties,
+			ConfigurableListableBeanFactory beanFactory) {
+		// Reactor Netty's global pool keeps a pool per remote address forever. Instances
+		// come and go (e.g. pods get new addresses), so drop the pools of vanished ones.
+		// The connection limit per instance stays the one of the global pool.
+		AdminServerProperties.ConnectionPoolProperties connectionPool = adminServerProperties.getMonitor()
+			.getConnectionPool();
+		this.connectionProvider = ConnectionProvider.builder("spring-boot-admin-instances")
+			.maxConnections(HttpResources.get().maxConnections())
+			.maxIdleTime(connectionPool.getMaxIdleTime())
+			.evictInBackground(connectionPool.getEvictionInterval())
+			.disposeInactivePoolsInBackground(connectionPool.getEvictionInterval(),
+					connectionPool.getInactivePoolTimeout())
+			.build();
+		if (!hasUserDefinedConnector(beanFactory)
+				&& connectorBuilder.getIfAvailable() instanceof ReactorClientHttpConnectorBuilder reactorBuilder) {
+			ClientHttpConnector connector = reactorBuilder
+				.withHttpClientFactory(() -> HttpClient.create(this.connectionProvider))
+				.build(httpClientSettings.getIfAvailable(HttpClientSettings::defaults));
+			webClient.clientConnector(connector);
+		}
 		this.instanceWebClientBuilder = InstanceWebClient.builder(webClient);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(this.instanceWebClientBuilder));
+	}
+
+	// If the application declares its own ClientHttpConnector bean (e.g. to go through a
+	// proxy), Spring Boot has already set it on the WebClient.Builder. We keep it then
+	// and do not swap in the connector with our own connection pool.
+	private static boolean hasUserDefinedConnector(ConfigurableListableBeanFactory beanFactory) {
+		for (String name : beanFactory.getBeanNamesForType(ClientHttpConnector.class, false, false)) {
+			if (!beanFactory.containsBeanDefinition(name) || !ReactiveHttpClientAutoConfiguration.class.getName()
+				.equals(beanFactory.getBeanDefinition(name).getFactoryBeanName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void destroy() {
+		this.connectionProvider.dispose();
 	}
 
 	@Bean
