@@ -5,7 +5,7 @@
   "labels": [
     "type: dependency-upgrade"
   ],
-  "minimumReleaseAge": "5 days",
+  "minimumReleaseAge": "3 days",
   "internalChecksFilter": "strict",
   "customManagers": [
     {
