@@ -69,11 +69,19 @@ flowchart TB
         <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
     <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-hazelcast</artifactId>
+    </dependency>
+    <dependency>
         <groupId>com.hazelcast</groupId>
         <artifactId>hazelcast</artifactId>
     </dependency>
 </dependencies>
 ```
+
+`spring-boot-starter-hazelcast` is declared as an optional dependency of `spring-boot-admin-server`, so it is not
+pulled in transitively by `spring-boot-admin-starter-server`. Without it, Spring Boot does not auto-configure a
+`HazelcastInstance` and the Admin Server nodes do not form a cluster.
 
 ### Configure Hazelcast
 
