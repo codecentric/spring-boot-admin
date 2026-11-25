@@ -5,6 +5,8 @@
 [![codecov](https://codecov.io/gh/codecentric/spring-boot-admin/branch/master/graph/badge.svg?token=u5SWsZpj5S)](https://codecov.io/gh/codecentric/spring-boot-admin)
 ![Maven Central Version](https://img.shields.io/maven-central/v/de.codecentric/spring-boot-admin)
 
+<a href="README.zh-CN.md">简体中文</a>
+
 **Admin UI for Spring Boot applications**
 
 Spring Boot Admin provides a web-based dashboard for monitoring and
