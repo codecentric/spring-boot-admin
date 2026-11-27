@@ -83,7 +83,7 @@
         <frontend-maven-plugin.version>2.0.2</frontend-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.16</jacoco-maven-plugin.version>
         <git-commit-id-maven-plugin.version>4.9.10</git-commit-id-maven-plugin.version>
-        <flatten-maven-plugin.version>1.9.0</flatten-maven-plugin.version>
+        <flatten-maven-plugin.version>1.10.0</flatten-maven-plugin.version>
         <cyclonedx-maven-plugin.version>2.9.3</cyclonedx-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <spring-javaformat-maven-plugin.version>0.0.48</spring-javaformat-maven-plugin.version>
@@ -171,8 +171,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
-                    <configLocation>src/checkstyle/checkstyle.xml</configLocation>
-                    <headerLocation>src/checkstyle/checkstyle-header.txt</headerLocation>
+                    <configLocation>${maven.multiModuleProjectDirectory}/src/checkstyle/checkstyle.xml</configLocation>
+                    <headerLocation>${maven.multiModuleProjectDirectory}/src/checkstyle/checkstyle-header.txt</headerLocation>
                     <consoleOutput>true</consoleOutput>
                     <failOnViolation>true</failOnViolation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
