@@ -43,20 +43,15 @@ jobs:
           ref: ${{ github.ref }}
           persist-credentials: false
 
-      - name: Set up settings.xml for Maven Central Repository
+      - name: Set up JDK and import GPG key
         uses: actions/setup-java@v6.3.0
         with:
           distribution: 'temurin'
           java-version: '17'
-          server-id: central
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
           cache: 'maven'
         env:
-          MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Cache node modules
@@ -73,7 +68,7 @@ jobs:
         run: ./mvnw versions:set "-DnewVersion=${{ github.event.inputs.releaseversion }}" --no-transfer-progress
 
       - name: Publish package
-        run: ./mvnw -B deploy --no-transfer-progress -P central-deploy -DskipTests
+        run: ./mvnw -B deploy --no-transfer-progress -P central-deploy -DskipTests --settings .settings.xml -Dmaven.repository.credentialScope=strict
         env:
           #TODO: This is a workaround for NEXUS-27902 which uses XStream that fails on JVM >16
           JDK_JAVA_OPTIONS: "--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.desktop/java.awt.font=ALL-UNNAMED"
