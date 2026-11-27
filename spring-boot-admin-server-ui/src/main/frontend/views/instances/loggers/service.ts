@@ -52,41 +52,29 @@ export class ApplicationLoggers {
   }
 
   async fetchLoggers() {
-    let errors;
-    let levels;
-    let loggers;
+    const { responses } = await this.application.fetchLoggers();
+    const successful = responses.filter(
+      (r) => r.body && r.status >= 200 && r.status < 300,
+    );
 
-    try {
-      const { responses } = await this.application.fetchLoggers();
-      const successful = responses.filter(
-        (r) => r.body && r.status >= 200 && r.status < 299,
-      );
-
-      errors = responses
-        .filter((r) => r.status >= 400)
-        .map((r) => ({
-          instanceId: r.instanceId,
-          error: 'HTTP Status ' + r.status,
-        }));
-      loggers = Object.entries(
-        groupBy(
-          flatMap(successful, (r) =>
-            convertLoggers(r.body.loggers, r.instanceId),
-          ),
-          (l) => l.name,
-        ),
-      ).map(([name, configs]) => ({
-        name,
-        level: flatMap(configs, (c) => c.level),
+    const errors = responses
+      .filter((r) => r.status >= 400)
+      .map((r) => ({
+        instanceId: r.instanceId,
+        error: 'HTTP Status ' + r.status,
       }));
-      levels = union(...successful.map((r) => r.body.levels));
-    } catch {
-      console.warn('Failed to fetch loggers for some instances');
-
-      errors = [];
-      levels = [];
-      loggers = [];
-    }
+    const loggers = Object.entries(
+      groupBy(
+        flatMap(successful, (r) =>
+          convertLoggers(r.body.loggers, r.instanceId),
+        ),
+        (l) => l.name,
+      ),
+    ).map(([name, configs]) => ({
+      name,
+      level: flatMap(configs, (c) => c.level),
+    }));
+    const levels = union(...successful.map((r) => r.body.levels));
 
     return {
       errors,
@@ -96,23 +84,14 @@ export class ApplicationLoggers {
   }
 
   async configureLogger(name, level) {
-    let responses;
-
-    try {
-      responses = (await this.application.configureLogger(name, level))
-        .responses;
-    } catch {
-      responses = [];
-    }
-
-    const errors = responses
-      .filter((r) => r.status >= 400)
-      .map((r) => ({
-        instanceId: r.instanceId,
-        error: 'HTTP Status ' + r.status,
-      }));
-    if (errors.length > 0) {
-      console.warn('Failed to set loglevel for some instances', errors);
+    const { responses } = await this.application.configureLogger(name, level);
+    const failed = responses
+      .filter((response) => response.status < 200 || response.status >= 300)
+      .map((response) => `${response.instanceId} (HTTP ${response.status})`);
+    if (failed.length > 0) {
+      throw new Error(
+        `Failed to configure logger '${name}' on ${failed.join(', ')}`,
+      );
     }
   }
 }

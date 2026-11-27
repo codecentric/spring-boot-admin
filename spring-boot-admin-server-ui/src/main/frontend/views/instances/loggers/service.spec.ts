@@ -117,9 +117,37 @@ describe('ApplicationLoggers', () => {
   };
   const service = new ApplicationLoggers(application);
 
-  it('should configure loggers', () => {
-    service.configureLogger('ROOT', 'WARN');
+  it('configures the logger on all instances', async () => {
+    application.configureLogger.mockResolvedValue({
+      responses: [
+        { instanceId: 'first', status: 204 },
+        { instanceId: 'second', status: 204 },
+      ],
+    });
+    await service.configureLogger('ROOT', 'WARN');
     expect(application.configureLogger).toHaveBeenCalledWith('ROOT', 'WARN');
+  });
+
+  it('reports the instance that rejected a log level change', async () => {
+    application.configureLogger.mockResolvedValue({
+      responses: [
+        { instanceId: 'first', status: 204 },
+        { instanceId: 'second', status: 503 },
+      ],
+    });
+
+    await expect(service.configureLogger('ROOT', 'WARN')).rejects.toThrow(
+      /second.*503/,
+    );
+  });
+
+  it('propagates a failed request to the loggers view', async () => {
+    const error = new Error('Connection lost');
+    application.fetchLoggers.mockRejectedValueOnce(error);
+    application.configureLogger.mockRejectedValueOnce(error);
+
+    await expect(service.fetchLoggers()).rejects.toBe(error);
+    await expect(service.configureLogger('ROOT', 'WARN')).rejects.toBe(error);
   });
 
   it('should fetch loggers', async () => {
