@@ -129,7 +129,7 @@ public class InstanceDiscoveryListener {
 
 	protected void discover() {
 		log.debug("Discovering new instances from DiscoveryClient");
-		Flux.fromIterable(discoveryClient.getServices())
+		Flux.defer(() -> Flux.fromIterable(discoveryClient.getServices()))
 			.filter(this::shouldRegisterService)
 			.flatMapIterable(discoveryClient::getInstances)
 			.filter(this::shouldRegisterInstanceBasedOnMetadata)
