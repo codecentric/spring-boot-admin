@@ -38,7 +38,6 @@
 </template>
 
 <script>
-import { remove } from 'lodash-es';
 import moment from 'moment';
 
 import subscribing from '@/mixins/subscribing';
@@ -74,11 +73,6 @@ export default {
     updateTimelines(threads) {
       const now = moment().valueOf();
       const returnedThreadIds = threads.map((thread) => thread.threadId);
-      //initialize with all known live threads, which will be removed from the list if still alive
-      const terminatedThreads = Object.entries(this.threads)
-        .filter(([, value]) => value.threadState !== 'TERMINATED')
-        .map(([threadId]) => parseInt(threadId));
-
       threads.forEach((thread) => {
         if (!this.threads[thread.threadId]) {
           this.threads[thread.threadId] = {
@@ -109,20 +103,20 @@ export default {
             entry.timeline[entry.timeline.length - 1].end = now;
           }
         }
-        remove(terminatedThreads, (threadId) => threadId === thread.threadId);
-      });
-
-      terminatedThreads.forEach((threadId) => {
-        const entry = this.threads[threadId];
-        entry.threadState = 'TERMINATED';
-        entry.timeline[entry.timeline.length - 1].end = now;
       });
 
       const returned = new Set(returnedThreadIds);
-      this.threadOrder = [
-        ...returnedThreadIds,
-        ...this.threadOrder.filter((threadId) => !returned.has(threadId)),
-      ];
+      const missingThreadIds = this.threadOrder.filter(
+        (id) => !returned.has(id),
+      );
+      missingThreadIds.forEach((id) => {
+        const entry = this.threads[id];
+        if (entry.threadState !== 'TERMINATED') {
+          entry.threadState = 'TERMINATED';
+          entry.timeline[entry.timeline.length - 1].end = now;
+        }
+      });
+      this.threadOrder = [...returnedThreadIds, ...missingThreadIds];
     },
     async fetchThreaddump() {
       const response = await this.instance.fetchThreaddump();
