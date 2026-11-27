@@ -60,7 +60,7 @@
         </span>
       </div>
     </div>
-    <ul v-show="isOpen">
+    <ul v-if="isOpen">
       <tree-item
         v-for="(child, index) in item.startupStep.children"
         :key="index"
