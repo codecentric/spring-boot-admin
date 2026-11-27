@@ -51,18 +51,17 @@
                     class="divide-y divide-gray-200"
                   >
                     <template
-                      v-for="licenseItem in component.licenses
-                        .filter((license) => license.license)
-                        .map((license) => license.license)"
-                      :key="licenseItem.id ? licenseItem.id : licenseItem.name"
+                      v-for="{ license, expression } in component.licenses"
+                      :key="expression || license?.id || license?.name"
                     >
-                      <dt v-if="licenseItem.url">
-                        <a :href="licenseItem.url">{{
-                          licenseItem.id ? licenseItem.id : licenseItem.name
+                      <dt v-if="expression">{{ expression }}</dt>
+                      <dt v-else-if="license?.url">
+                        <a :href="license.url">{{
+                          license.id || license.name
                         }}</a>
                       </dt>
-                      <dt v-else>
-                        {{ licenseItem.id ? licenseItem.id : licenseItem.name }}
+                      <dt v-else-if="license">
+                        {{ license.id || license.name }}
                       </dt>
                     </template>
                   </dl>
@@ -204,8 +203,9 @@ export default {
         (component.publisher && component.publisher.match(regex)) ||
         (component.licenses &&
           component.licenses.some(
-            (license) =>
-              license.license && JSON.stringify(license.license).match(regex),
+            ({ license, expression }) =>
+              expression?.match(regex) ||
+              (license && JSON.stringify(license).match(regex)),
           ));
     },
     async fetchSbom(sbomId) {
