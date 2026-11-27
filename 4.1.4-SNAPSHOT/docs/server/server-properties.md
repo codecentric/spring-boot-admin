@@ -170,6 +170,13 @@
 | `spring.boot.admin.event-store.prune-info-updated-events`Whether to keep only the latest INFO\_UPDATED event per instance instead of retaining all of them until compaction. Default: false (opt-in).- Type: 
 
   `java.lang.Boolean`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `spring.boot.admin.monitor.connection-pool.max-idle-time`Time after which an idle connection to an instance is closed.- Type: 
+
+  `java.time.Duration`
+
+- Default: 
+
+  `"15000ms"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `spring.boot.admin.event-store.max-log-size-per-aggregate`Maximum number of events to retain per instance aggregate. Default: `ConcurrentMapEventStore#DEFAULT_MAX_LOG_SIZE_PER_AGGREGATE`.- Type: 
 
   `java.lang.Integer`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
@@ -187,3 +194,17 @@
 - Default: 
 
   `"status-only"`                                                                                                                                                                                                                                                                                                                                                               |
+| `spring.boot.admin.monitor.connection-pool.eviction-interval`Time interval to evict idle connections and to check for inactive pools.- Type: 
+
+  `java.time.Duration`
+
+- Default: 
+
+  `"30000ms"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `spring.boot.admin.monitor.connection-pool.inactive-pool-timeout`Time after which the connection pool of an instance that is no longer contacted (e.g. after it was deregistered) is disposed.- Type: 
+
+  `java.time.Duration`
+
+- Default: 
+
+  `"1m"`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
