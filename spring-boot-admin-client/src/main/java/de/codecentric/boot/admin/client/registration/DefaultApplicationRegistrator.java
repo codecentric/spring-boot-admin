@@ -17,7 +17,6 @@
 package de.codecentric.boot.admin.client.registration;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.LongAdder;
 
 import org.slf4j.Logger;
@@ -29,7 +28,7 @@ public class DefaultApplicationRegistrator implements ApplicationRegistrator {
 
 	private final ConcurrentHashMap<String, LongAdder> attempts = new ConcurrentHashMap<>();
 
-	private final AtomicReference<String> registeredId = new AtomicReference<>();
+	private final ConcurrentHashMap<String, String> registeredIds = new ConcurrentHashMap<>();
 
 	private final ApplicationFactory applicationFactory;
 
@@ -52,7 +51,7 @@ public class DefaultApplicationRegistrator implements ApplicationRegistrator {
 	 * @return true if successful registration on at least one admin server
 	 */
 	@Override
-	public boolean register() {
+	public synchronized boolean register() {
 		Application application = this.applicationFactory.createApplication();
 		boolean isRegistrationSuccessful = false;
 
@@ -78,7 +77,7 @@ public class DefaultApplicationRegistrator implements ApplicationRegistrator {
 	protected boolean register(Application application, String adminUrl, boolean firstAttempt) {
 		try {
 			String id = this.registrationClient.register(adminUrl, application);
-			if (this.registeredId.compareAndSet(null, id)) {
+			if (this.registeredIds.put(registrationKey(adminUrl), id) == null) {
 				LOGGER.info("Application registered itself as {}", id);
 			}
 			else {
@@ -101,16 +100,16 @@ public class DefaultApplicationRegistrator implements ApplicationRegistrator {
 	}
 
 	@Override
-	public void deregister() {
-		String id = this.registeredId.get();
-		if (id == null) {
-			return;
-		}
-
+	public synchronized void deregister() {
 		for (String adminUrl : this.adminUrls) {
+			String key = registrationKey(adminUrl);
+			String id = this.registeredIds.get(key);
+			if (id == null) {
+				continue;
+			}
 			try {
 				this.registrationClient.deregister(adminUrl, id);
-				this.registeredId.compareAndSet(id, null);
+				this.registeredIds.remove(key, id);
 				if (this.registerOnce) {
 					break;
 				}
@@ -124,7 +123,18 @@ public class DefaultApplicationRegistrator implements ApplicationRegistrator {
 
 	@Override
 	public String getRegisteredId() {
-		return this.registeredId.get();
+		for (String adminUrl : this.adminUrls) {
+			String id = this.registeredIds.get(adminUrl);
+			if (id != null) {
+				return id;
+			}
+		}
+		return null;
+	}
+
+	private String registrationKey(String adminUrl) {
+		// With register-once, all URLs are failover targets for the same registration.
+		return this.registerOnce ? this.adminUrls[0] : adminUrl;
 	}
 
 }
