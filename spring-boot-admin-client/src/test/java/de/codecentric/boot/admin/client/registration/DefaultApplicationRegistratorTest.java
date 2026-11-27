@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -136,19 +137,43 @@ class DefaultApplicationRegistratorTest {
 	}
 
 	@Test
-	void deregister_should_deregister_on_multiple_servers() {
+	void deregister_should_use_the_id_returned_by_each_server() {
+		String first = "http://sba:8080/instances";
+		String second = "http://sba2:8080/instances";
 		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
-				this.registrationClient, new String[] { "http://sba:8080/instances", "http://sba2:8080/instances" },
-				false);
+				this.registrationClient, new String[] { first, second }, false);
+		when(this.registrationClient.register(first, this.application)).thenReturn("first-id");
+		when(this.registrationClient.register(second, this.application)).thenReturn("second-id", "new-second-id");
 
-		when(this.registrationClient.register(any(), eq(this.application))).thenReturn("-id-");
+		registrator.register();
+		registrator.register();
+		registrator.deregister();
+
+		verify(this.registrationClient).deregister(first, "first-id");
+		verify(this.registrationClient).deregister(second, "new-second-id");
+		assertThat(registrator.getRegisteredId()).isNull();
+	}
+
+	@Test
+	void deregister_should_retry_only_the_server_that_failed() {
+		String first = "http://sba:8080/instances";
+		String second = "http://sba2:8080/instances";
+		ApplicationRegistrator registrator = new DefaultApplicationRegistrator(() -> this.application,
+				this.registrationClient, new String[] { first, second }, false);
+		when(this.registrationClient.register(first, this.application)).thenReturn("first-id");
+		when(this.registrationClient.register(second, this.application)).thenReturn("second-id");
+		doThrow(new RestClientException("Error")).doNothing()
+			.when(this.registrationClient)
+			.deregister(second, "second-id");
 
 		registrator.register();
 		registrator.deregister();
-		assertThat(registrator.getRegisteredId()).isNull();
+		assertThat(registrator.getRegisteredId()).isEqualTo("second-id");
+		registrator.deregister();
 
-		verify(this.registrationClient).deregister("http://sba:8080/instances", "-id-");
-		verify(this.registrationClient).deregister("http://sba2:8080/instances", "-id-");
+		verify(this.registrationClient).deregister(first, "first-id");
+		verify(this.registrationClient, times(2)).deregister(second, "second-id");
+		assertThat(registrator.getRegisteredId()).isNull();
 	}
 
 }
