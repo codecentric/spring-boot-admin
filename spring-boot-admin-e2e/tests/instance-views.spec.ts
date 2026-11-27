@@ -24,7 +24,7 @@ const views: Record<string, (main: Locator) => Locator> = {
   jolokia: (main) => main.getByRole('button', { name: 'java.lang', exact: true }),
   threaddump: (main) => main.getByRole('row', { name: /Reference Handler/ }),
   startup: (main) =>
-    main.getByRole('listitem').filter({ hasText: 'spring.boot.application.ready' }),
+    main.getByRole('listitem').filter({ hasText: 'spring.boot.application.starting' }),
   mappings: (main) => main.getByRole('columnheader', { name: 'dispatcherServlet' }),
   httpexchanges: (main) => main.getByRole('checkbox', { name: 'exclude /actuator/**' }),
   auditevents: (main) => main.getByRole('combobox', { name: 'Principal' }),
