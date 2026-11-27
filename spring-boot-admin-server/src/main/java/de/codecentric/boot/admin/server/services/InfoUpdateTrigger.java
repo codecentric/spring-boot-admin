@@ -26,6 +26,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEndpointsDetectedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
@@ -61,17 +62,21 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	@Override
 	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-		return publisher
+		return publisher.doOnNext((event) -> {
+			if (event instanceof InstanceDeregisteredEvent) {
+				this.intervalCheck.stopChecking(event.getInstance());
+			}
+		})
 			.filter((event) -> event instanceof InstanceEndpointsDetectedEvent
 					|| event instanceof InstanceStatusChangedEvent || event instanceof InstanceRegistrationUpdatedEvent)
-			.flatMap((event) -> this.updateInfo(event.getInstance()));
+			.flatMap((event) -> this.intervalCheck.checkNow(event.getInstance()));
 	}
 
 	protected Mono<Void> updateInfo(InstanceId instanceId) {
 		return this.infoUpdater.updateInfo(instanceId).onErrorResume((e) -> {
 			log.warn("Unexpected error while updating info for {}", instanceId, e);
 			return Mono.empty();
-		}).doFinally((s) -> this.intervalCheck.markAsChecked(instanceId));
+		}).doFinally((s) -> this.intervalCheck.markAsCheckedIfTracked(instanceId));
 	}
 
 	@Override
@@ -79,7 +84,7 @@ public class InfoUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 		super.start();
 		this.intervalCheck.start();
 		this.startupSubscription = Flux.from(this.existingInstanceIds)
-			.flatMap(this::updateInfo, halfCpus())
+			.flatMap(this.intervalCheck::checkNow, halfCpus())
 			.subscribe(null, (ex) -> log.warn("Unexpected error during startup info update", ex));
 	}
 

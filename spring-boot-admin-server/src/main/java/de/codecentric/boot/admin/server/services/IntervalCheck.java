@@ -108,6 +108,21 @@ public class IntervalCheck {
 		this.lastChecked.put(instanceId, Instant.now());
 	}
 
+	Mono<Void> checkNow(InstanceId instanceId) {
+		// The first check starts immediately. Only schedule another once it finishes.
+		this.lastChecked.putIfAbsent(instanceId, Instant.MAX);
+		return this.checkFn.apply(instanceId);
+	}
+
+	void stopChecking(InstanceId instanceId) {
+		this.lastChecked.remove(instanceId);
+	}
+
+	void markAsCheckedIfTracked(InstanceId instanceId) {
+		// An in-flight check may finish after the instance was deregistered.
+		this.lastChecked.replace(instanceId, Instant.now());
+	}
+
 	protected Publisher<Void> checkAllInstances() {
 		log.debug("check {} for all instances", this.name);
 		Instant expiration = Instant.now().minus(this.minRetention);

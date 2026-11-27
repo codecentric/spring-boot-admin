@@ -26,6 +26,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegistrationUpdatedEvent;
@@ -61,10 +62,14 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 
 	@Override
 	protected Publisher<Void> handle(Flux<InstanceEvent> publisher) {
-		return publisher
+		return publisher.doOnNext((event) -> {
+			if (event instanceof InstanceDeregisteredEvent) {
+				this.intervalCheck.stopChecking(event.getInstance());
+			}
+		})
 			.filter((event) -> event instanceof InstanceRegisteredEvent
 					|| event instanceof InstanceRegistrationUpdatedEvent)
-			.flatMap((event) -> updateStatus(event.getInstance()));
+			.flatMap((event) -> this.intervalCheck.checkNow(event.getInstance()));
 	}
 
 	protected Mono<Void> updateStatus(InstanceId instanceId) {
@@ -74,7 +79,7 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 				log.warn("Unexpected error while updating status for {}", instanceId, e);
 				return Mono.empty();
 			})
-			.doFinally((s) -> this.intervalCheck.markAsChecked(instanceId));
+			.doFinally((s) -> this.intervalCheck.markAsCheckedIfTracked(instanceId));
 	}
 
 	@Override
@@ -82,7 +87,7 @@ public class StatusUpdateTrigger extends AbstractEventHandler<InstanceEvent> {
 		super.start();
 		this.intervalCheck.start();
 		this.startupSubscription = Flux.from(this.existingInstanceIds)
-			.flatMap(this::updateStatus, halfCpus())
+			.flatMap(this.intervalCheck::checkNow, halfCpus())
 			.subscribe(null, (ex) -> log.warn("Unexpected error during startup status update", ex));
 	}
 

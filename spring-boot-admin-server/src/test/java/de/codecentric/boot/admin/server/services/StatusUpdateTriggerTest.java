@@ -28,6 +28,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.publisher.TestPublisher;
 
 import de.codecentric.boot.admin.server.domain.entities.Instance;
+import de.codecentric.boot.admin.server.domain.events.InstanceDeregisteredEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceInfoChangedEvent;
 import de.codecentric.boot.admin.server.domain.events.InstanceRegisteredEvent;
@@ -66,6 +67,35 @@ class StatusUpdateTriggerTest {
 				Duration.ofSeconds(10), Duration.ofSeconds(60));
 		this.trigger.start();
 		await().until(this.events::wasSubscribed);
+	}
+
+	@Test
+	void should_stop_polling_after_deregistration_even_if_an_update_finishes_later() {
+		this.trigger.stop();
+		TestPublisher<Void> pending = TestPublisher.create();
+		when(this.updater.updateStatus(this.instance.getId())).thenReturn(pending.mono(), Mono.empty());
+		TestPublisher<InstanceEvent> changes = TestPublisher.create();
+		StatusUpdateTrigger monitor = new StatusUpdateTrigger(this.updater, changes.flux(), Duration.ofMillis(20),
+				Duration.ZERO, Duration.ofSeconds(1));
+		try {
+			monitor.start();
+			await().until(changes::wasSubscribed);
+			InstanceId id = this.instance.getId();
+			changes.next(new InstanceRegisteredEvent(id, 1L, this.instance.getRegistration()));
+			pending.assertSubscribers(1);
+			changes.next(new InstanceDeregisteredEvent(id, 2L));
+			pending.complete();
+
+			InstanceId active = InstanceId.of("active");
+			changes.next(new InstanceRegistrationUpdatedEvent(active, 1L, this.instance.getRegistration()));
+			await().untilAsserted(() -> verify(this.updater, atLeast(3)).updateStatus(active));
+			verify(this.updater).updateStatus(id);
+			changes.next(new InstanceRegisteredEvent(id, 3L, this.instance.getRegistration()));
+			await().untilAsserted(() -> verify(this.updater, atLeast(3)).updateStatus(id));
+		}
+		finally {
+			monitor.stop();
+		}
 	}
 
 	@Test
