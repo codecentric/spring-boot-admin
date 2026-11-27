@@ -58,7 +58,6 @@ import { useApplicationStore } from '@/composables/useApplicationStore';
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
-import { compareBy } from '@/utils/collections';
 import {
   InstanceEvent,
   InstanceEventType,
@@ -124,19 +123,17 @@ export default {
   async created() {
     try {
       const response = await Instance.fetchEvents();
-      const events = response.data
-        .map((e, idx) => ({
-          ...e,
-          version: idx,
-        }))
-        .sort(compareBy((v) => v.timestamp))
-        .reverse()
-        .map((e) => new InstanceEvent(e));
-
-      const deduplicated = deduplicateInstanceEvents(events);
-      this.seenEventKeys = new Set(deduplicated.map((event) => event.key));
-      this.events = Object.freeze(deduplicated);
-      this.listOffset = events.length - deduplicated.length;
+      const history = response.data.map((event) => new InstanceEvent(event));
+      const merged = deduplicateInstanceEvents([...this.events, ...history]);
+      // Keep arrivals hidden by the pause button ahead of the visible history.
+      const visible = merged
+        .slice(this.listOffset)
+        .sort((a, b) => b.timestamp - a.timestamp);
+      this.events = Object.freeze([
+        ...merged.slice(0, this.listOffset),
+        ...visible,
+      ]);
+      this.seenEventKeys = new Set(merged.map((event) => event.key));
       this.error = null;
     } catch (error) {
       console.warn('Fetching events failed:', error);
