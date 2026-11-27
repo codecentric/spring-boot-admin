@@ -115,3 +115,44 @@ describe('store', () => {
     expect(removedListener).toHaveBeenCalled();
   });
 });
+
+describe('store listeners', () => {
+  it('removes the first registered listener', () => {
+    const store = new ApplicationStore();
+    const listener = vi.fn();
+
+    store.addEventListener('changed', listener);
+    store.removeEventListener('changed', listener);
+    store._dispatchEvent('changed');
+
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it('removes only the given listener when several are registered', () => {
+    const store = new ApplicationStore();
+    const first = vi.fn();
+    const second = vi.fn();
+    const third = vi.fn();
+
+    store.addEventListener('changed', first);
+    store.addEventListener('changed', second);
+    store.addEventListener('changed', third);
+    store.removeEventListener('changed', second);
+    store._dispatchEvent('changed');
+
+    expect(first).toHaveBeenCalledTimes(1);
+    expect(second).not.toHaveBeenCalled();
+    expect(third).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores removal of a listener that was never registered', () => {
+    const store = new ApplicationStore();
+    const registered = vi.fn();
+
+    store.addEventListener('changed', registered);
+    store.removeEventListener('changed', vi.fn());
+    store._dispatchEvent('changed');
+
+    expect(registered).toHaveBeenCalledTimes(1);
+  });
+});

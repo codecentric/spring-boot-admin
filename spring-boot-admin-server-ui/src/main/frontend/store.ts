@@ -74,7 +74,7 @@ export default class ApplicationStore {
     }
 
     const idx = this._listeners[type].indexOf(listener);
-    if (idx > 0) {
+    if (idx >= 0) {
       this._listeners[type].splice(idx, 1);
     }
   }
