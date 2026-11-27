@@ -15,14 +15,14 @@
  */
 import { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import saveAs from 'file-saver';
-import { Observable, concat, from, ignoreElements } from 'rxjs';
+import { Observable, from, switchMap } from 'rxjs';
 
 import axios, {
   addLanguageHeaderInterceptor,
   redirectOn401,
   registerErrorToastInterceptor,
 } from '../utils/axios';
-import waitForPolyfill from '../utils/eventsource-polyfill';
+import loadEventSource from '../utils/eventsource';
 import logtail, { getLogfileWindowMetadata } from '../utils/logtail';
 import uri from '../utils/uri';
 
@@ -95,20 +95,22 @@ class Instance {
   }
 
   static getEventStream() {
-    return concat(
-      from(waitForPolyfill()).pipe(ignoreElements()),
-      Observable.create((observer) => {
-        const eventSource = new EventSource('instances/events');
-        eventSource.onmessage = (message) =>
-          observer.next({
-            ...message,
-            data: JSON.parse(message.data),
-          });
-        eventSource.onerror = (err) => observer.error(err);
-        return () => {
-          eventSource.close();
-        };
-      }),
+    return from(loadEventSource()).pipe(
+      switchMap(
+        (openEventSource) =>
+          new Observable((observer) => {
+            const eventSource = openEventSource('instances/events');
+            eventSource.onmessage = (message) =>
+              observer.next({
+                ...message,
+                data: JSON.parse(message.data),
+              });
+            eventSource.onerror = (err) => observer.error(err);
+            return () => {
+              eventSource.close();
+            };
+          }),
+      ),
     );
   }
 

@@ -58,12 +58,15 @@ import { useApplicationStore } from '@/composables/useApplicationStore';
 import { useDateTimeFormatter } from '@/composables/useDateTimeFormatter';
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
+import { concatMap, retry, timer } from '@/utils/rxjs';
 import {
   InstanceEvent,
   InstanceEventType,
 } from '@/views/journal/InstanceEvent';
 import JournalTable from '@/views/journal/JournalTable.vue';
 import { deduplicateInstanceEvents } from '@/views/journal/deduplicate-events';
+
+const RECONNECT_DELAY = 5000;
 
 export default {
   components: { JournalTable, SbaAlert },
@@ -121,48 +124,61 @@ export default {
     },
   },
   async created() {
-    try {
-      const response = await Instance.fetchEvents();
-      const history = response.data.map((event) => new InstanceEvent(event));
-      const merged = deduplicateInstanceEvents([...this.events, ...history]);
-      // Keep arrivals hidden by the pause button ahead of the visible history.
-      const visible = merged
-        .slice(this.listOffset)
-        .sort((a, b) => b.timestamp - a.timestamp);
-      this.events = Object.freeze([
-        ...merged.slice(0, this.listOffset),
-        ...visible,
-      ]);
-      this.seenEventKeys = new Set(merged.map((event) => event.key));
-      this.error = null;
-    } catch (error) {
-      console.warn('Fetching events failed:', error);
-      this.error = this.t('journal.error.generic');
-    }
+    await this.loadEvents();
   },
   methods: {
     getName(instanceId) {
       return this.instanceNames[instanceId] || '?';
     },
+    async loadEvents() {
+      try {
+        const response = await Instance.fetchEvents();
+        const history = response.data.map((event) => new InstanceEvent(event));
+        const merged = deduplicateInstanceEvents([...this.events, ...history]);
+        // Keep arrivals hidden by the pause button ahead of the visible history.
+        const visible = merged
+          .slice(this.listOffset)
+          .sort((a, b) => b.timestamp - a.timestamp);
+        this.events = Object.freeze([
+          ...merged.slice(0, this.listOffset),
+          ...visible,
+        ]);
+        this.seenEventKeys = new Set(merged.map((event) => event.key));
+        this.error = null;
+      } catch (error) {
+        console.warn('Fetching events failed:', error);
+        this.error = this.t('journal.error.generic');
+      }
+    },
     createSubscription() {
-      return Instance.getEventStream().subscribe({
-        next: (message) => {
-          this.error = null;
-          const incomingEvent = new InstanceEvent(message.data);
-          if (this.seenEventKeys.has(incomingEvent.key)) {
-            return;
-          }
-          this.seenEventKeys.add(incomingEvent.key);
-          this.events = Object.freeze([incomingEvent, ...this.events]);
-          if (!this.autoUpdate) {
-            this.listOffset += 1;
-          }
-        },
-        error: (error) => {
-          console.warn('Listening for events failed:', error);
-          this.error = this.t('journal.error.generic');
-        },
-      });
+      return Instance.getEventStream()
+        .pipe(
+          retry({
+            // Reconnect after a failed or silent connection. The events that were missed in the meantime are
+            // loaded again before the stream is resumed.
+            delay: (error) => {
+              console.warn('Listening for events failed:', error);
+              this.error = this.t('journal.error.generic');
+              return timer(RECONNECT_DELAY).pipe(
+                concatMap(() => this.loadEvents()),
+              );
+            },
+          }),
+        )
+        .subscribe({
+          next: (message) => {
+            this.error = null;
+            const incomingEvent = new InstanceEvent(message.data);
+            if (this.seenEventKeys.has(incomingEvent.key)) {
+              return;
+            }
+            this.seenEventKeys.add(incomingEvent.key);
+            this.events = Object.freeze([incomingEvent, ...this.events]);
+            if (!this.autoUpdate) {
+              this.listOffset += 1;
+            }
+          },
+        });
     },
   },
   install({ viewRegistry }) {
