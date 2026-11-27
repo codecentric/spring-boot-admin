@@ -46,6 +46,7 @@ class AdminServerInstanceWebClientConfigurationTest {
 			assertThat(context).hasSingleBean(BasicAuthHttpHeaderProvider.class);
 			assertThat(context).getBeanNames(InstanceExchangeFilterFunction.class)
 				.containsExactly("addHeadersInstanceExchangeFilter", "rewriteEndpointUrlInstanceExchangeFilter",
+						"ssrfAllowedHostsInstanceExchangeFilter", "credentialsAllowedHostsInstanceExchangeFilter",
 						"setDefaultAcceptHeaderInstanceExchangeFilter", "legacyEndpointConverterInstanceExchangeFilter",
 						"logfileAcceptWorkaround", "cookieHandlingInstanceExchangeFilter",
 						"retryInstanceExchangeFilter", "timeoutInstanceExchangeFilter");

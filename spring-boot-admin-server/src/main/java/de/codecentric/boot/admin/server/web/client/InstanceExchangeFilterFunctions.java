@@ -39,8 +39,10 @@ import reactor.core.publisher.Mono;
 
 import de.codecentric.boot.admin.server.domain.values.Endpoint;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
+import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 import de.codecentric.boot.admin.server.web.client.cookies.PerInstanceCookieStore;
 import de.codecentric.boot.admin.server.web.client.exception.ResolveEndpointException;
+import de.codecentric.boot.admin.server.web.client.exception.SsrfProtectionException;
 import de.codecentric.boot.admin.server.web.client.reactive.ReactiveHttpHeadersProvider;
 
 import static java.util.Arrays.asList;
@@ -80,6 +82,61 @@ public final class InstanceExchangeFilterFunctions {
 
 			return next.exchange(requestWithAdditionalHeaders);
 		}).switchIfEmpty(Mono.defer(() -> next.exchange(request)));
+	}
+
+	/**
+	 * Removes server-managed Basic credentials from requests whose final URL is not
+	 * permitted to receive them. Must be applied after {@link #rewriteEndpointUrl()} so
+	 * that the check is performed against the final outbound URL.
+	 * @param basicAuthHttpHeaderProvider the provider selecting the credentials
+	 * @return the filter function
+	 */
+	public static InstanceExchangeFilterFunction enforceCredentialsAllowedHosts(
+			BasicAuthHttpHeaderProvider basicAuthHttpHeaderProvider) {
+		return (instance, request, next) -> {
+			if (!request.url().isAbsolute() || basicAuthHttpHeaderProvider.isAllowedFor(instance, request.url())) {
+				return next.exchange(request);
+			}
+			String credentials = basicAuthHttpHeaderProvider.getHeaders(instance).getFirst(HttpHeaders.AUTHORIZATION);
+			List<String> authorization = request.headers().get(HttpHeaders.AUTHORIZATION);
+			if (credentials == null || authorization == null || !authorization.contains(credentials)) {
+				return next.exchange(request);
+			}
+			log.warn(
+					"Not sending server-managed credentials for instance {} to '{}': host is not allowed for "
+							+ "the credentials of service '{}'",
+					instance.getId(), request.url(), instance.getRegistration().getName());
+			List<String> remaining = authorization.stream().filter((value) -> !value.equals(credentials)).toList();
+			ClientRequest filtered = ClientRequest.from(request).headers((headers) -> {
+				if (remaining.isEmpty()) {
+					headers.remove(HttpHeaders.AUTHORIZATION);
+				}
+				else {
+					headers.put(HttpHeaders.AUTHORIZATION, remaining);
+				}
+			}).build();
+			return next.exchange(filtered);
+		};
+	}
+
+	/**
+	 * Rejects requests whose final URL does not satisfy the configured SSRF host
+	 * restrictions. Must be applied after {@link #rewriteEndpointUrl()} so that the check
+	 * is performed against the final outbound URL.
+	 * @param ssrfUrlValidator the validator to use
+	 * @return the filter function
+	 */
+	public static InstanceExchangeFilterFunction enforceSsrfAllowedHosts(SsrfUrlValidator ssrfUrlValidator) {
+		return (instance, request, next) -> {
+			try {
+				ssrfUrlValidator.validateHost(request.url());
+			}
+			catch (SsrfProtectionException ex) {
+				log.warn("SSRF protection blocked request for instance {}: {}", instance.getId(), ex.getMessage());
+				return Mono.error(ex);
+			}
+			return next.exchange(request);
+		};
 	}
 
 	public static InstanceExchangeFilterFunction rewriteEndpointUrl() {

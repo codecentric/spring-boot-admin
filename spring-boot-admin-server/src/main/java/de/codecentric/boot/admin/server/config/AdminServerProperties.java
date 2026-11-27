@@ -252,6 +252,15 @@ public class AdminServerProperties {
 		 */
 		private Map<String, InstanceCredentials> serviceMap = new HashMap<>();
 
+		/**
+		 * Hosts the default credentials may be sent to. Supports exact hostnames, exact
+		 * IP addresses and leading wildcards (e.g. {@code *.svc.cluster.local}). The host
+		 * of the final outbound request URL must match one of these patterns, otherwise
+		 * the default credentials are not sent. When empty, the default credentials are
+		 * sent to every instance (not recommended).
+		 */
+		private List<String> defaultAllowedHosts = new ArrayList<>();
+
 	}
 
 	@lombok.Data
@@ -290,6 +299,14 @@ public class AdminServerProperties {
 		 * {@code fd00::/8}
 		 */
 		private List<String> allowedCidrs = new ArrayList<>();
+
+		/**
+		 * Hosts that instance URLs may point to. Supports exact hostnames, exact IP
+		 * addresses and leading wildcards (e.g. {@code *.svc.cluster.local}). When
+		 * configured, every registered and outbound URL must match one of these patterns,
+		 * in addition to passing the address filter. When empty, any host is permitted.
+		 */
+		private List<String> allowedHosts = new ArrayList<>();
 
 	}
 

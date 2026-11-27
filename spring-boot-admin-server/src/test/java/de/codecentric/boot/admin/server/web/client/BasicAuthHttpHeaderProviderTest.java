@@ -16,7 +16,10 @@
 
 package de.codecentric.boot.admin.server.web.client;
 
+import java.net.URI;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
@@ -101,6 +104,39 @@ class BasicAuthHttpHeaderProviderTest {
 		Instance instance = Instance.create(InstanceId.of("id")).register(registration);
 		assertThat(this.headersProviderEnableInstanceAuth.getHeaders(instance).get(HttpHeaders.AUTHORIZATION))
 			.containsOnly("Basic dGVzdDpkcm93c3NhcA==");
+	}
+
+	@Test
+	void isAllowedFor_respects_allowed_hosts() {
+		BasicAuthHttpHeaderProvider provider = new BasicAuthHttpHeaderProvider("client", "client",
+				Map.of("sb-admin-server", new InstanceCredentials("admin", "admin", List.of("*.svc.cluster.local"))),
+				List.of("default.example.com"));
+
+		Instance service = Instance.create(InstanceId.of("id"))
+			.register(Registration.create("sb-admin-server", "https://health").build());
+		assertThat(provider.isAllowedFor(service, URI.create("http://a.svc.cluster.local/health"))).isTrue();
+		assertThat(provider.isAllowedFor(service, URI.create("https://attacker.example/health"))).isFalse();
+
+		Instance other = Instance.create(InstanceId.of("id"))
+			.register(Registration.create("xyz-server", "https://health").build());
+		assertThat(provider.isAllowedFor(other, URI.create("https://default.example.com/health"))).isTrue();
+		assertThat(provider.isAllowedFor(other, URI.create("https://attacker.example/health"))).isFalse();
+
+		Instance metadata = Instance.create(InstanceId.of("id"))
+			.register(Registration.create("sb-admin-server", "https://health")
+				.metadata("username", "test")
+				.metadata("userpassword", "drowssap")
+				.build());
+		assertThat(provider.isAllowedFor(metadata, URI.create("https://attacker.example/health"))).isTrue();
+	}
+
+	@Test
+	void reports_credentials_without_allowed_hosts() {
+		BasicAuthHttpHeaderProvider provider = new BasicAuthHttpHeaderProvider("client", "client",
+				Map.of("bound", new InstanceCredentials("a", "a", List.of("bound.example.com")), "unbound",
+						new InstanceCredentials("b", "b")));
+		assertThat(provider.getCredentialsWithoutAllowedHosts()).containsExactly("default", "unbound");
+		assertThat(this.headersProvider.getCredentialsWithoutAllowedHosts()).isEmpty();
 	}
 
 }

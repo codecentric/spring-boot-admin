@@ -392,4 +392,62 @@ class SsrfUrlValidatorTest {
 
 	}
 
+	@Nested
+	class AllowedHosts {
+
+		@BeforeEach
+		void setUp() {
+			properties.setAllowedHosts(java.util.List.of("*.example.com", "93.184.216.34"));
+		}
+
+		@Test
+		void allows_matchingHost() {
+			assertThatCode(() -> validator.validateHost(URI.create("https://app.example.com/actuator/health")))
+				.doesNotThrowAnyException();
+			assertThatCode(() -> validator.validateHost(URI.create("http://93.184.216.34/health")))
+				.doesNotThrowAnyException();
+		}
+
+		@Test
+		void blocks_publicHostNotInAllowedHosts() {
+			assertThatThrownBy(() -> validator.validate("https://attacker.example/health"))
+				.isInstanceOf(SsrfProtectionException.class)
+				.hasMessageContaining("does not match any of the allowed hosts");
+			assertThatThrownBy(() -> validator.validateHost(URI.create("https://attacker.example/health")))
+				.isInstanceOf(SsrfProtectionException.class)
+				.hasMessageContaining("does not match any of the allowed hosts");
+		}
+
+		@Test
+		void blocks_suffixLookalikes() {
+			assertThatThrownBy(() -> validator.validateHost(URI.create("https://example.com.evil.net/health")))
+				.isInstanceOf(SsrfProtectionException.class);
+			assertThatThrownBy(() -> validator.validateHost(URI.create("https://evilexample.com/health")))
+				.isInstanceOf(SsrfProtectionException.class);
+			assertThatThrownBy(() -> validator.validateHost(URI.create("https://app.example.com@evil.net/health")))
+				.isInstanceOf(SsrfProtectionException.class);
+		}
+
+		@Test
+		void stillAppliesAddressFilter() {
+			properties.setAllowedHosts(java.util.List.of("localhost"));
+			assertThatThrownBy(() -> validator.validate("http://localhost/health"))
+				.isInstanceOf(SsrfProtectionException.class)
+				.hasMessageContaining("not permitted by the configured InetAddressFilter");
+		}
+
+		@Test
+		void ignoresRelativeUris() {
+			assertThatCode(() -> validator.validateHost(URI.create("/health"))).doesNotThrowAnyException();
+		}
+
+		@Test
+		void doesNothing_whenDisabled() {
+			properties.setEnabled(false);
+			assertThatCode(() -> validator.validateHost(URI.create("https://attacker.example/health")))
+				.doesNotThrowAnyException();
+		}
+
+	}
+
 }

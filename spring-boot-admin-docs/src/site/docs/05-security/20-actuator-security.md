@@ -338,14 +338,30 @@ spring:
           my-service:
             user-name: my-service-actuator
             user-password: ${MY_SERVICE_PASSWORD}
+            # Only send these credentials to matching hosts
+            allowed-hosts:
+              - "*.my-service.svc.cluster.local"
           another-service:
             user-name: another-actuator
             user-password: ${ANOTHER_SERVICE_PASSWORD}
+            allowed-hosts:
+              - "another-service.example.com"
 
         # Fallback for services not in service-map
         default-user-name: default-actuator
         default-password: ${DEFAULT_PASSWORD}
+        default-allowed-hosts:
+          - "*.svc.cluster.local"
 ```
+
+:::warning
+Service-map entries are selected by the registration name, which is chosen by the registering client. Without
+`allowed-hosts`, any client that can register an instance can claim another service's name, point its URLs to a server
+it controls and receive that service's credentials. Always configure `allowed-hosts` for every service-map entry and
+`default-allowed-hosts` for the default credentials. The check is performed against the final outbound URL of every
+request (health, info, endpoint detection and proxy requests); if the host does not match, the request is sent without
+credentials.
+:::
 
 **Client (my-service)**:
 

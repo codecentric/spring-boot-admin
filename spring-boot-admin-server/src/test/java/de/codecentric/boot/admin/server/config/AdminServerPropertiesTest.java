@@ -50,6 +50,11 @@ class AdminServerPropertiesTest {
 		assertThat(serverConfig.getInstanceAuth().getServiceMap().get("my-service").getUserName()).isEqualTo("me");
 		assertThat(serverConfig.getInstanceAuth().getServiceMap().get("my-service").getUserPassword())
 			.isEqualTo("secret");
+		assertThat(serverConfig.getInstanceAuth().getServiceMap().get("my-service").getAllowedHosts())
+			.containsExactly("my-service.example.com", "*.my-service.svc.cluster.local");
+		assertThat(serverConfig.getInstanceAuth().getDefaultAllowedHosts()).containsExactly("*.svc.cluster.local");
+
+		assertThat(serverConfig.getSsrfProtection().getAllowedHosts()).containsExactly("*.example.com");
 	}
 
 }

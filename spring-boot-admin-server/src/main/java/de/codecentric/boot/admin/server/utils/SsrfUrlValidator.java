@@ -44,6 +44,10 @@ import de.codecentric.boot.admin.server.web.client.exception.SsrfProtectionExcep
  * (auto-configured via {@code AdminServerAutoConfiguration}) blocks all private,
  * loopback, and link-local addresses via
  * {@link InetAddressFilter#externalAddresses()}.</li>
+ * <li><b>Host allowlist</b> – if {@code spring.boot.admin.ssrf-protection.allowed-hosts}
+ * is configured, the hostname must match one of the configured patterns (exact hosts or
+ * leading wildcards such as {@code *.svc.cluster.local}). This check is applied in
+ * addition to the address filter.</li>
  * </ol>
  *
  * <p>
@@ -123,7 +127,42 @@ public class SsrfUrlValidator {
 			throw new SsrfProtectionException("URL '" + url
 					+ "' contains a host that cannot be parsed and validated. Rejecting to prevent bypass.");
 		}
+		checkAllowedHost(url, host);
 		checkAddress(url, host);
+	}
+
+	/**
+	 * Validates the scheme and host of the given URI against the configured SSRF
+	 * protection rules without resolving the host. Intended for outbound requests where
+	 * address filtering is enforced by the HTTP client at connection time.
+	 * @param uri the URI to validate (may be {@code null} or relative, which is skipped)
+	 * @throws SsrfProtectionException if the URI violates a protection rule and
+	 * protection is enabled
+	 */
+	public void validateHost(@Nullable URI uri) {
+		if (!properties.isEnabled() || uri == null || !uri.isAbsolute()) {
+			return;
+		}
+		String url = uri.toString();
+		checkScheme(url, uri.getScheme());
+		String host = uri.getHost();
+		if (host == null && uri.getAuthority() != null) {
+			throw new SsrfProtectionException("URL '" + url
+					+ "' contains a host that cannot be parsed and validated. Rejecting to prevent bypass.");
+		}
+		checkAllowedHost(url, host);
+	}
+
+	private void checkAllowedHost(String url, @Nullable String host) {
+		HostPatternMatcher allowedHosts = HostPatternMatcher.of(properties.getAllowedHosts());
+		if (allowedHosts.isEmpty()) {
+			return;
+		}
+		if (!allowedHosts.matches(host)) {
+			throw new SsrfProtectionException("URL '" + url + "' is blocked: host '" + host
+					+ "' does not match any of the allowed hosts " + allowedHosts
+					+ ". Configure 'spring.boot.admin.ssrf-protection.allowed-hosts' to adjust.");
+		}
 	}
 
 	private void checkScheme(String url, @Nullable String scheme) {

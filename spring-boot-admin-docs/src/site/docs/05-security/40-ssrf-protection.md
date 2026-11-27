@@ -156,6 +156,36 @@ for the full API.
 
 ---
 
+## Restricting Allowed Hosts
+
+Address filtering only blocks internal destinations — public addresses remain reachable. To additionally restrict
+which hosts instance URLs may point to, configure `allowed-hosts`:
+
+```yaml
+spring:
+  boot:
+    admin:
+      ssrf-protection:
+        enabled: true
+        allowed-hosts:
+          - "*.svc.cluster.local"     # any subdomain, but not svc.cluster.local itself
+          - "monitoring.example.com"  # exact host
+        allowed-cidrs:
+          - "10.0.0.0/8"              # still required for hosts resolving to private addresses
+```
+
+When `allowed-hosts` is configured, a URL is only permitted if its host matches one of the patterns **and** its
+address passes the address filter. The host check is applied at registration, in the proxy and to the final URL of
+every outbound request (including endpoint URLs discovered from the actuator index).
+
+:::tip
+`allowed-hosts` applies to all instances. To bind server-managed credentials to the hosts of a particular service, use
+`spring.boot.admin.instance-auth.service-map.<name>.allowed-hosts` and
+`spring.boot.admin.instance-auth.default-allowed-hosts` (see [Actuator Security](./20-actuator-security.md)).
+:::
+
+---
+
 ## Allowing Additional Schemes
 
 By default only `http` and `https` are permitted. To add a custom scheme:
@@ -181,6 +211,7 @@ spring:
 | `spring.boot.admin.ssrf-protection.enabled` | `boolean` | `false` | Enable SSRF URL validation |
 | `spring.boot.admin.ssrf-protection.allowed-schemes` | `Set<String>` | `http, https` | URL schemes that are permitted |
 | `spring.boot.admin.ssrf-protection.allowed-cidrs` | `List<String>` | _(empty)_ | IP addresses or CIDR ranges (IPv4 and IPv6) that are permitted in addition to public addresses. Examples: `192.168.1.0/24`, `10.0.0.0/8`, `fd00::/8` |
+| `spring.boot.admin.ssrf-protection.allowed-hosts` | `List<String>` | _(empty)_ | Host patterns instance URLs must match (exact hosts, IP addresses or leading wildcards such as `*.svc.cluster.local`). When empty, any host passing the address filter is permitted. |
 
 For finer-grained control over address filtering, expose a custom `InetAddressFilter` bean (see [Allowing Internal Services](#allowing-internal-services)).
 

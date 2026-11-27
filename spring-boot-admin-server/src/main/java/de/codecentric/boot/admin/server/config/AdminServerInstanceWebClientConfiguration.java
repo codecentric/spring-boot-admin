@@ -20,6 +20,8 @@ import java.net.CookiePolicy;
 import java.util.List;
 
 import org.reactivestreams.Publisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,6 +33,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
+import de.codecentric.boot.admin.server.utils.SsrfUrlValidator;
 import de.codecentric.boot.admin.server.web.client.BasicAuthHttpHeaderProvider;
 import de.codecentric.boot.admin.server.web.client.CompositeHttpHeadersProvider;
 import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
@@ -49,6 +52,8 @@ import de.codecentric.boot.admin.server.web.client.reactive.ReactiveHttpHeadersP
 @Configuration(proxyBeanMethods = false)
 @Lazy(false)
 public class AdminServerInstanceWebClientConfiguration {
+
+	private static final Logger log = LoggerFactory.getLogger(AdminServerInstanceWebClientConfiguration.class);
 
 	private final InstanceWebClient.Builder instanceWebClientBuilder;
 
@@ -103,6 +108,30 @@ public class AdminServerInstanceWebClientConfiguration {
 			@ConditionalOnMissingBean(name = "rewriteEndpointUrlInstanceExchangeFilter")
 			public InstanceExchangeFilterFunction rewriteEndpointUrlInstanceExchangeFilter() {
 				return InstanceExchangeFilterFunctions.rewriteEndpointUrl();
+			}
+
+			@Bean
+			@Order(15)
+			@ConditionalOnMissingBean(name = "ssrfAllowedHostsInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction ssrfAllowedHostsInstanceExchangeFilter(
+					ObjectProvider<SsrfUrlValidator> ssrfUrlValidator) {
+				SsrfUrlValidator validator = ssrfUrlValidator.getIfAvailable();
+				if (validator == null) {
+					return (instance, request, next) -> next.exchange(request);
+				}
+				return InstanceExchangeFilterFunctions.enforceSsrfAllowedHosts(validator);
+			}
+
+			@Bean
+			@Order(16)
+			@ConditionalOnMissingBean(name = "credentialsAllowedHostsInstanceExchangeFilter")
+			public InstanceExchangeFilterFunction credentialsAllowedHostsInstanceExchangeFilter(
+					ObjectProvider<BasicAuthHttpHeaderProvider> basicAuthHttpHeaderProvider) {
+				BasicAuthHttpHeaderProvider provider = basicAuthHttpHeaderProvider.getIfAvailable();
+				if (provider == null) {
+					return (instance, request, next) -> next.exchange(request);
+				}
+				return InstanceExchangeFilterFunctions.enforceCredentialsAllowedHosts(provider);
 			}
 
 			@Bean
@@ -167,8 +196,19 @@ public class AdminServerInstanceWebClientConfiguration {
 			AdminServerProperties.InstanceAuthProperties instanceAuth = adminServerProperties.getInstanceAuth();
 
 			if (instanceAuth.isEnabled()) {
-				return new BasicAuthHttpHeaderProvider(instanceAuth.getDefaultUserName(),
-						instanceAuth.getDefaultPassword(), instanceAuth.getServiceMap());
+				BasicAuthHttpHeaderProvider provider = new BasicAuthHttpHeaderProvider(
+						instanceAuth.getDefaultUserName(), instanceAuth.getDefaultPassword(),
+						instanceAuth.getServiceMap(), instanceAuth.getDefaultAllowedHosts());
+				List<String> unbound = provider.getCredentialsWithoutAllowedHosts();
+				if (!unbound.isEmpty()) {
+					log.warn(
+							"Server-managed instance credentials {} are not bound to any allowed hosts and will be "
+									+ "sent to any URL registered under the corresponding name. Configure "
+									+ "'spring.boot.admin.instance-auth.service-map.<name>.allowed-hosts' and "
+									+ "'spring.boot.admin.instance-auth.default-allowed-hosts' to restrict them.",
+							unbound);
+				}
+				return provider;
 			}
 			else {
 				return new BasicAuthHttpHeaderProvider();

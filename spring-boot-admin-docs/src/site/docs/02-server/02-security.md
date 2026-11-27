@@ -181,14 +181,31 @@ spring.boot.admin:
     enabled: true
     default-user-name: "${some.user.name.from.secret}"
     default-password: "${some.user.password.from.secret}"
+    default-allowed-hosts:
+      - "*.monitoring.svc.cluster.local"
     service-map:
       my-first-service-to-monitor:
         user-name: "${some.user.name.from.secret}"
         user-password: "${some.user.password.from.secret}"
+        allowed-hosts:
+          - "my-first-service.example.com"
       my-second-service-to-monitor:
         user-name: "${some.user.name.from.secret}"
         user-password: "${some.user.password.from.secret}"
+        allowed-hosts:
+          - "*.my-second-service.svc.cluster.local"
 ```
+
+:::warning
+The service-map entry is selected by the name the instance registers with. Since a registering client chooses that name
+itself, always bind server-managed credentials to the hosts that are allowed to receive them using `allowed-hosts`
+(per service) and `default-allowed-hosts` (for the default credentials). Credentials are only sent if the host of the
+outbound request URL matches one of the patterns; otherwise the request is sent without them. Exact hostnames, exact IP
+addresses and leading wildcards (`*.example.com`, matching any subdomain but not `example.com` itself) are supported.
+
+Without `allowed-hosts`, credentials are sent to any URL registered under the corresponding name, and a warning is
+logged at startup.
+:::
 
 ### Eureka
 

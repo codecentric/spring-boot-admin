@@ -42,6 +42,7 @@ import de.codecentric.boot.admin.server.domain.entities.Instance;
 import de.codecentric.boot.admin.server.domain.values.InstanceId;
 import de.codecentric.boot.admin.server.domain.values.Registration;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
+import de.codecentric.boot.admin.server.web.client.exception.SsrfProtectionException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -101,6 +102,19 @@ class SsrfConnectionFilterTest {
 				.retrieve()
 				.bodyToMono(String.class)
 				.block()).hasRootCauseInstanceOf(FilteredHostException.class)));
+	}
+
+	@Test
+	void shouldBlockHostNotInAllowedHostsWhenSsrfProtectionEnabled() {
+		this.contextRunner
+			.withPropertyValues("spring.boot.admin.ssrf-protection.enabled=true",
+					"spring.boot.admin.ssrf-protection.allowed-hosts=*.svc.cluster.local")
+			.run(withInstanceWebClient((client) -> assertThatThrownBy(() -> client.get()
+				.uri("https://attacker.example/health")
+				.retrieve()
+				.bodyToMono(String.class)
+				.block()).isInstanceOf(SsrfProtectionException.class)
+				.hasMessageContaining("does not match any of the allowed hosts")));
 	}
 
 	private String get(WebClient client) {
