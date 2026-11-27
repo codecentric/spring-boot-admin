@@ -47,7 +47,7 @@
         <maven.site.skip>true</maven.site.skip>
 
         <!-- used dependencies versions -->
-        <spring-boot.version>4.1.2</spring-boot.version>
+        <spring-boot.version>4.2.0</spring-boot.version>
         <spring-cloud.version>2026.0.0</spring-cloud.version>
         <spring-ai.version>2.1.0</spring-ai.version>
 
