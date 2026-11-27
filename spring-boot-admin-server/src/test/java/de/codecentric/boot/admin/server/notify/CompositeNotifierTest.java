@@ -63,4 +63,17 @@ class CompositeNotifierTest {
 		assertThat(notifier2.getEvents()).containsOnly(APP_DOWN);
 	}
 
+	@Test
+	void should_notify_remaining_delegates_when_one_throws_before_returning_a_publisher() {
+		Notifier throwing = (event) -> {
+			throw new IllegalStateException("Notification unavailable");
+		};
+		TestNotifier next = new TestNotifier();
+		CompositeNotifier composite = new CompositeNotifier(Arrays.asList(throwing, next));
+
+		StepVerifier.create(composite.notify(APP_DOWN)).verifyComplete();
+
+		assertThat(next.getEvents()).containsOnly(APP_DOWN);
+	}
+
 }
