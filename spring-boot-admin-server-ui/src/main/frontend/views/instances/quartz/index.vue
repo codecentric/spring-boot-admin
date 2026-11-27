@@ -5,20 +5,17 @@
       <error-alert :error="state.error" />
 
       <!-- No Data State -->
-      <no-data-alert
-        :show="!computed.hasJobs && !computed.hasTriggers && !state.error"
-      />
+      <no-data-alert :show="!hasData && !state.error" />
 
       <!-- Main Content -->
-      <template
-        v-if="!state.error && (computed.hasJobs || computed.hasTriggers)"
-      >
+      <template v-if="hasData">
         <!-- Summary Cards -->
         <quartz-summary
+          v-if="!state.error"
           :job-count="state.jobDetails.length"
           :trigger-count="state.triggerDetails.length"
-          :active-trigger-count="computed.activeTriggerCount"
-          :paused-trigger-count="computed.pausedTriggerCount"
+          :active-trigger-count="activeTriggerCount"
+          :paused-trigger-count="pausedTriggerCount"
         />
 
         <!-- Jobs Section -->
@@ -32,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, computed as vueComputed } from 'vue';
+import { computed, onMounted, reactive } from 'vue';
 
 import ErrorAlert from './error-alert.vue';
 import JobsSection from './jobs-section.vue';
@@ -41,21 +38,12 @@ import QuartzSummary from './quartz-summary.vue';
 import TriggersSection from './triggers-section.vue';
 
 import Instance from '@/services/instance';
-import { QuartzActuatorService } from '@/services/quartz-actuator';
+import {
+  type JobDetail,
+  QuartzActuatorService,
+  type TriggerDetail,
+} from '@/services/quartz-actuator';
 import '@/views/ViewGroup';
-
-interface JobDetail {
-  group: string;
-  name: string;
-  [key: string]: unknown;
-}
-
-interface TriggerDetail {
-  group: string;
-  name: string;
-  state: string;
-  [key: string]: unknown;
-}
 
 interface ComponentState {
   jobDetails: JobDetail[];
@@ -77,48 +65,35 @@ const state = reactive<ComponentState>({
   hasLoaded: false,
 });
 
-const computed = {
-  hasJobs: vueComputed(() => state.jobDetails && state.jobDetails.length > 0),
-  hasTriggers: vueComputed(
-    () => state.triggerDetails && state.triggerDetails.length > 0,
-  ),
-  activeTriggerCount: vueComputed(
-    () =>
-      state.triggerDetails.filter((t) => t.state && t.state !== 'PAUSED')
-        .length,
-  ),
-  pausedTriggerCount: vueComputed(
-    () => state.triggerDetails.filter((t) => t.state === 'PAUSED').length,
-  ),
-};
+const hasData = computed(
+  () => state.jobDetails.length > 0 || state.triggerDetails.length > 0,
+);
+const activeTriggerCount = computed(
+  () =>
+    state.triggerDetails.filter((t) => t.state && t.state !== 'PAUSED').length,
+);
+const pausedTriggerCount = computed(
+  () => state.triggerDetails.filter((t) => t.state === 'PAUSED').length,
+);
 
-const loadData = async (instance: Instance): Promise<void> => {
-  state.hasLoaded = false;
-  state.error = null;
+onMounted(async () => {
+  const [jobs, triggers] = await Promise.allSettled([
+    QuartzActuatorService.fetchAllJobs(props.instance),
+    QuartzActuatorService.fetchAllTriggers(props.instance),
+  ]);
+  if (jobs.status === 'fulfilled') state.jobDetails = jobs.value;
+  if (triggers.status === 'fulfilled') state.triggerDetails = triggers.value;
 
-  try {
-    const [jobsResults, triggersResults] = await Promise.all([
-      Promise.allSettled([QuartzActuatorService.fetchAllJobs(instance)]),
-      Promise.allSettled([QuartzActuatorService.fetchAllTriggers(instance)]),
-    ]);
-
-    state.jobDetails = jobsResults
-      .filter((r) => r.status === 'fulfilled')
-      .flatMap((r) => (r as PromiseFulfilledResult<JobDetail>).value);
-
-    state.triggerDetails = triggersResults
-      .filter((r) => r.status === 'fulfilled')
-      .flatMap((r) => (r as PromiseFulfilledResult<TriggerDetail>).value);
-  } catch (error) {
-    console.warn('Fetching Quartz data failed:', error);
-    state.error = error instanceof Error ? error : new Error(String(error));
-  } finally {
-    state.hasLoaded = true;
+  const failure = [jobs, triggers].find(
+    (result) => result.status === 'rejected',
+  );
+  if (failure) {
+    state.error =
+      failure.reason instanceof Error
+        ? failure.reason
+        : new Error(String(failure.reason));
   }
-};
-
-onMounted(() => {
-  loadData(props.instance);
+  state.hasLoaded = true;
 });
 </script>
 

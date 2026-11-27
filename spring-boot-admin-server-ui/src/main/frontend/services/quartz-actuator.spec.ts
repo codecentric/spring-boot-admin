@@ -299,6 +299,17 @@ describe('QuartzActuatorService', () => {
       expect(result[0].name).toBe('job1');
     });
 
+    it('propagates the detail failure when no listed job could be loaded', async () => {
+      mockInstance.axios.get
+        .mockResolvedValueOnce({
+          data: { groups: { main: { jobs: ['daily'] } } },
+        })
+        .mockRejectedValueOnce(new Error('Service unavailable'));
+      await expect(
+        QuartzActuatorService.fetchAllJobs(mockInstance as any),
+      ).rejects.toThrow('Service unavailable');
+    });
+
     it('should return empty array when no jobs exist', async () => {
       const mockGroupsResponse = {
         data: {
@@ -628,6 +639,17 @@ describe('QuartzActuatorService', () => {
       // Should return only successful trigger
       expect(result).toHaveLength(1);
       expect(result[0].name).toBe('trigger1');
+    });
+
+    it('propagates the detail failure when no listed trigger could be loaded', async () => {
+      mockInstance.axios.get
+        .mockResolvedValueOnce({
+          data: { groups: { main: { triggers: ['nightly'] } } },
+        })
+        .mockRejectedValueOnce(new Error('Service unavailable'));
+      await expect(
+        QuartzActuatorService.fetchAllTriggers(mockInstance as any),
+      ).rejects.toThrow('Service unavailable');
     });
 
     it('should return empty array when no triggers exist', async () => {

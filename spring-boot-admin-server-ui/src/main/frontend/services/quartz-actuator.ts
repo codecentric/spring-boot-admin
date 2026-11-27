@@ -18,6 +18,19 @@ import { AxiosResponse } from 'axios';
 import uri from '../utils/uri';
 import Instance from './instance';
 
+async function collectDetails<T>(
+  requests: Promise<AxiosResponse<T>>[],
+): Promise<T[]> {
+  const results = await Promise.allSettled(requests);
+  const details = results.flatMap((result) =>
+    result.status === 'fulfilled' ? [result.value.data] : [],
+  );
+  if (details.length === 0 && results[0]?.status === 'rejected') {
+    throw results[0].reason;
+  }
+  return details;
+}
+
 /**
  * Quartz Actuator Service
  *
@@ -82,13 +95,7 @@ export class QuartzActuatorService {
       }
     }
 
-    const results = await Promise.allSettled(promises);
-    return results
-      .filter((r) => r.status === 'fulfilled')
-      .map(
-        (r) =>
-          (r as PromiseFulfilledResult<AxiosResponse<JobDetail>>).value.data,
-      );
+    return collectDetails(promises);
   }
 
   /**
@@ -145,14 +152,7 @@ export class QuartzActuatorService {
       }
     }
 
-    const results = await Promise.allSettled(promises);
-    return results
-      .filter((r) => r.status === 'fulfilled')
-      .map(
-        (r) =>
-          (r as PromiseFulfilledResult<AxiosResponse<TriggerDetail>>).value
-            .data,
-      );
+    return collectDetails(promises);
   }
 
   /**
