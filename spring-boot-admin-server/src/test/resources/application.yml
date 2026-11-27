@@ -6,9 +6,6 @@ spring:
         name: spring-boot-admin-server-test
     jmx:
         enabled: false
-    mvc:
-      pathmatch:
-        matching-strategy: ant_path_matcher
 management:
   info:
     env:
