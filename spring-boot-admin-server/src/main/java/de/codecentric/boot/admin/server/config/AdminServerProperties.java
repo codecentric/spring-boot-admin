@@ -186,6 +186,11 @@ public class AdminServerProperties {
 		private Map<String, Duration> timeout = new HashMap<>();
 
 		/**
+		 * Connection pool for the requests to the monitored instances.
+		 */
+		private ConnectionPoolProperties connectionPool = new ConnectionPoolProperties();
+
+		/**
 		 * Strategy to determine if two {@link StatusInfo} instances are different or not.
 		 */
 		public enum StatusChangeDetectionStrategy {
@@ -218,6 +223,30 @@ public class AdminServerProperties {
 			}
 
 		}
+
+	}
+
+	@lombok.Data
+	public static class ConnectionPoolProperties {
+
+		/**
+		 * Time after which an idle connection to an instance is closed.
+		 */
+		@DurationUnit(ChronoUnit.MILLIS)
+		private Duration maxIdleTime = Duration.ofMillis(15_000L);
+
+		/**
+		 * Time interval to evict idle connections and to check for inactive pools.
+		 */
+		@DurationUnit(ChronoUnit.MILLIS)
+		private Duration evictionInterval = Duration.ofMillis(30_000L);
+
+		/**
+		 * Time after which the connection pool of an instance that is no longer contacted
+		 * (e.g. after it was deregistered) is disposed.
+		 */
+		@DurationUnit(ChronoUnit.MILLIS)
+		private Duration inactivePoolTimeout = Duration.ofMinutes(1L);
 
 	}
 
