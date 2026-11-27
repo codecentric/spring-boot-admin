@@ -29,6 +29,7 @@ import org.springframework.util.Assert;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.SignalType;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.retry.Retry;
@@ -108,9 +109,9 @@ public class RemindingNotifier extends AbstractEventNotifier {
 		Instant now = Instant.now();
 
 		return Flux.fromIterable(this.reminders.values())
-			.filter((reminder) -> reminder.getLastNotification().plus(this.reminderPeriod).isBefore(now))
+			.filter((reminder) -> reminder.startIfDue(now, this.reminderPeriod))
 			.flatMap((reminder) -> Mono.defer(() -> this.delegate.notify(reminder.getEvent()))
-				.doOnSuccess((signal) -> reminder.setLastNotification(now))
+				.doFinally(reminder::finishDelivery)
 				.onErrorResume((error) -> {
 					log.warn("Failed to send reminder for instance {}", reminder.getEvent().getInstance(), error);
 					return Mono.empty();
@@ -167,11 +168,28 @@ public class RemindingNotifier extends AbstractEventNotifier {
 
 		private final InstanceEvent event;
 
-		private Instant lastNotification;
+		private volatile Instant lastNotification;
+
+		private boolean delivering;
 
 		private Reminder(InstanceEvent event) {
 			this.event = event;
 			this.lastNotification = event.getTimestamp();
+		}
+
+		private synchronized boolean startIfDue(Instant now, Duration period) {
+			if (this.delivering || !this.lastNotification.plus(period).isBefore(now)) {
+				return false;
+			}
+			this.delivering = true;
+			return true;
+		}
+
+		private synchronized void finishDelivery(SignalType signal) {
+			if (signal == SignalType.ON_COMPLETE) {
+				this.lastNotification = Instant.now();
+			}
+			this.delivering = false;
 		}
 
 		public Instant getLastNotification() {
