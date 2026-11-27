@@ -133,6 +133,7 @@ export default {
     availableMetrics: [],
     selectedMetric: null,
     stateFetchingTags: null,
+    tagRequestId: 0,
     availableTags: null,
     selectedTags: null,
     isOldMetrics: false,
@@ -234,19 +235,22 @@ export default {
       }
     },
     async fetchAvailableTags(metricName) {
+      const requestId = ++this.tagRequestId;
       this.availableTags = null;
+      this.selectedTags = {};
       this.stateFetchingTags = 'executing';
       try {
         const response = await this.instance.fetchMetric(metricName);
+        if (requestId !== this.tagRequestId) return;
         this.availableTags = response.data.availableTags;
         this.stateFetchingTags = 'completed';
-        this.selectedTags = {};
         if (this.availableTags) {
           this.availableTags.forEach(
             (t) => (this.selectedTags[t.tag] = undefined),
           );
         }
       } catch (error) {
+        if (requestId !== this.tagRequestId) return;
         console.warn('Fetching metric tags failed:', error);
         this.stateFetchingTags = 'failed';
       }
