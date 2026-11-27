@@ -30,6 +30,7 @@
       >
         <router-view
           v-if="instance"
+          :key="instance.id"
           :application="application"
           :instance="instance"
         />
