@@ -114,8 +114,8 @@ export default {
     metricFetchToken: 0,
   }),
   computed: {
-    instanceUpdateKey() {
-      return this.instance.id;
+    metricsInstanceId() {
+      return this.instance.hasEndpoint('metrics') ? this.instance.id : null;
     },
     hasCaches() {
       return this.hasMetric('cache.gets');
@@ -143,7 +143,7 @@ export default {
     },
   },
   watch: {
-    instanceUpdateKey: {
+    metricsInstanceId: {
       handler() {
         this.fetchMetricIndex();
       },
@@ -155,18 +155,16 @@ export default {
       return this.metrics && this.metrics.includes(metric);
     },
     async fetchMetricIndex() {
-      // Reset immediately so SSE updates can't leave stale gating behind.
+      const token = ++this.metricFetchToken;
       this.metrics = [];
       this.error = null;
 
-      if (!this.instance.hasEndpoint('metrics')) {
+      if (this.metricsInstanceId === null) {
         this.hasLoaded = true;
         return;
       }
 
-      const token = ++this.metricFetchToken;
       this.hasLoaded = false;
-      this.error = null;
       try {
         const res = await this.instance.fetchMetrics();
         if (token !== this.metricFetchToken) {
