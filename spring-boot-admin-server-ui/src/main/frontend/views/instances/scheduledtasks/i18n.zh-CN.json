@@ -3,6 +3,10 @@
     "scheduledtasks": {
       "label": "计划任务",
       "no_scheduledtasks": "没有计划任务。",
+      "custom": {
+        "title": "自定义触发器",
+        "trigger": "触发器"
+      },
       "cron": {
         "expression": "表达式",
         "runnable": "可运行",

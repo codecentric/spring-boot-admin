@@ -6,6 +6,10 @@
       "last_execution": "Last Execution",
       "last_execution_status": "Last Execution State",
       "next_execution": "Next Execution",
+      "custom": {
+        "title": "Custom Triggers",
+        "trigger": "Trigger"
+      },
       "cron": {
         "expression": "Expression",
         "runnable": "Runnable",

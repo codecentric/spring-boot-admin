@@ -3,6 +3,10 @@
     "scheduledtasks": {
       "label": "Tâches programmées",
       "no_scheduledtasks": "Aucune tâches présente.",
+      "custom": {
+        "title": "Déclencheurs personnalisés",
+        "trigger": "Déclencheur"
+      },
       "cron": {
         "expression": "Expression",
         "runnable": "Exécutable",

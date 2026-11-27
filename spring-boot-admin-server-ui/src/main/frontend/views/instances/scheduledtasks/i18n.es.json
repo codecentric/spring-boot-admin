@@ -3,6 +3,10 @@
     "scheduledtasks": {
       "label": "Tareas programadas",
       "no_scheduledtasks": "No se encontraron tareas programadas.",
+      "custom": {
+        "title": "Disparadores personalizados",
+        "trigger": "Disparador"
+      },
       "cron": {
         "expression": "Expresión",
         "runnable": "Ejecutable",

@@ -6,6 +6,10 @@
       "last_execution": "上次執行",
       "last_execution_status": "上次執行狀態",
       "next_execution": "下次執行",
+      "custom": {
+        "title": "自訂觸發器",
+        "trigger": "觸發器"
+      },
       "cron": {
         "expression": "表達式",
         "runnable": "可執行項目",

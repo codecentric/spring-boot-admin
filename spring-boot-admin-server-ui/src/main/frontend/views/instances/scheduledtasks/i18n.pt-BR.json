@@ -3,6 +3,10 @@
     "scheduledtasks": {
       "label": "Tarefas Agendados",
       "no_scheduledtasks": "Nenhuma tarefa agendada presente.",
+      "custom": {
+        "title": "Gatilhos personalizados",
+        "trigger": "Gatilho"
+      },
       "cron": {
         "expression": "Expressão",
         "runnable": "Executável",

@@ -3,6 +3,10 @@
     "scheduledtasks": {
       "label": "Fastsett verkefni",
       "no_scheduledtasks": "Engin fastsett verkefni",
+      "custom": {
+        "title": "Sérsniðnir kveikjar",
+        "trigger": "Kveikja"
+      },
       "cron": {
         "expression": "Expression",
         "runnable": "Runnable",

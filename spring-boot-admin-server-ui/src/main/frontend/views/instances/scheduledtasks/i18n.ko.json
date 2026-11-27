@@ -3,6 +3,10 @@
     "scheduledtasks": {
       "label": "스케쥴 작업",
       "no_scheduledtasks": "스케쥴 작업이 없습니다.",
+      "custom": {
+        "title": "사용자 정의 트리거",
+        "trigger": "트리거"
+      },
       "cron": {
         "expression": "표현식",
         "runnable": "실행가능",
