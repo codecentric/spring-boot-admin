@@ -36,7 +36,7 @@
         <npm.version>12.2.3</npm.version>
         <node.version>v26.13.1</node.version>
 
-        <require.maven.version>3.9</require.maven.version>
+        <require.maven.version>[3.9,)</require.maven.version>
 
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <resource.delimiter>@</resource.delimiter>
