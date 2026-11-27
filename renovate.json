@@ -86,6 +86,16 @@
       "allowedVersions": "<0.8"
     },
     {
+      "description": "Spring Boot, Spring Cloud and Spring AI release trains must be upgraded together",
+      "matchPackageNames": [
+        "org.springframework.boot:**",
+        "org.springframework.cloud:spring-cloud-dependencies",
+        "org.springframework.ai:**"
+      ],
+      "groupName": "Spring release train",
+      "groupSlug": "spring-release-train"
+    },
+    {
       "description": "Group all Node.js and npm version updates (pom.xml, .nvmrc, package.json engines, GitHub Actions) into one PR",
       "matchDepNames": ["node", "npm"],
       "matchDatasources": ["node-version", "npm"],
