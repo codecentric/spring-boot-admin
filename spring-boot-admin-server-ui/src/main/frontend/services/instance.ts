@@ -373,13 +373,13 @@ class Instance {
     type,
     principal,
   }: {
-    after: Date;
+    after?: Date;
     type?: string;
     principal?: string;
   }) {
     return this.axios.get(uri`actuator/auditevents`, {
       params: {
-        after: after.toISOString(),
+        after: after?.toISOString(),
         type: type,
         principal: principal,
       },

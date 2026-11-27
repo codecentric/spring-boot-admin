@@ -39,11 +39,10 @@
           />
 
           <sba-input
-            :value="formatDate(filter.after)"
+            v-model="filter.after"
             name="filter_datetime"
             placeholder="Date"
             type="datetime-local"
-            @input="filter.after = parseDate($event.target.value)"
           />
         </div>
       </sba-sticky-subnav>
@@ -128,7 +127,7 @@ export default {
     error: null,
     events: [],
     filter: {
-      after: moment().startOf('day'),
+      after: moment().startOf('day').format(moment.HTML5_FMT.DATETIME_LOCAL),
       type: null,
       principal: null,
     },
@@ -142,17 +141,16 @@ export default {
     },
   },
   methods: {
-    formatDate(value) {
-      return value.format(moment.HTML5_FMT.DATETIME_LOCAL);
-    },
-    parseDate(value) {
-      return moment(value, moment.HTML5_FMT.DATETIME_LOCAL, true).toDate();
-    },
     async fetchAuditevents() {
       this.isLoading = !this.hasLoadedInitially;
 
       try {
-        const response = await this.instance.fetchAuditevents(this.filter);
+        const response = await this.instance.fetchAuditevents({
+          ...this.filter,
+          after: this.filter.after
+            ? moment(this.filter.after).toDate()
+            : undefined,
+        });
         const converted = response.data.events.map(
           (event) => new Auditevent(event),
         );
