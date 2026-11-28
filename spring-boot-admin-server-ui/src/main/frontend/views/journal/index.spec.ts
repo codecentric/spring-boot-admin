@@ -15,8 +15,8 @@
  */
 import { fireEvent, screen, waitFor } from '@testing-library/vue';
 import { HttpResponse, http } from 'msw';
-import { Subject } from 'rxjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Observable, Subject } from 'rxjs';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 
 import JournalView from './index.vue';
@@ -163,5 +163,80 @@ describe('Journal View', () => {
     expect(appOneText).toBeDefined();
     const appTwoText = await screen.findAllByText('App Two Updated');
     expect(appTwoText).toBeDefined();
+  });
+
+  describe('when the event stream breaks', () => {
+    const registered = (name: string, version: number) => ({
+      instance: 'instance-1',
+      version,
+      type: InstanceEventType.REGISTERED,
+      timestamp: new Date('2023-01-01T10:00:00Z'),
+      registration: { name },
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    });
+
+    it('reconnects and loads the events that were missed meanwhile', async () => {
+      let history = [registered('BEFORE OUTAGE', 1)];
+      server.use(
+        http.get('**/instances/events', () => HttpResponse.json(history)),
+      );
+
+      const connections: Array<(event: unknown) => void> = [];
+      let failing: (error: Error) => void = () => {};
+      vi.spyOn(Instance, 'getEventStream').mockImplementation(
+        () =>
+          new Observable((observer) => {
+            failing = (error) => observer.error(error);
+            connections.push((event) => observer.next({ data: event }));
+          }) as any,
+      );
+
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      render(JournalView, {
+        global: {
+          stubs: {
+            JournalTable: {
+              props: ['events'],
+              template:
+                '<ul><li v-for="event in events" :key="event.key">{{event.version}}</li></ul>',
+            },
+          },
+        },
+      });
+      await screen.findByText('1');
+      expect(connections).toHaveLength(1);
+
+      history = [registered('BEFORE OUTAGE', 1), registered('MISSED', 2)];
+      failing(new Error('No activity within 30000 milliseconds.'));
+      await vi.advanceTimersByTimeAsync(5000);
+
+      await vi.waitFor(() => expect(connections).toHaveLength(2));
+      await screen.findByText('2');
+
+      connections[1](registered('AFTER RECONNECT', 3));
+      await screen.findByText('3');
+    });
+
+    it('keeps trying while the server is not reachable', async () => {
+      server.use(http.get('**/instances/events', () => HttpResponse.json([])));
+      let attempts = 0;
+      vi.spyOn(Instance, 'getEventStream').mockImplementation(
+        () =>
+          new Observable((observer) => {
+            attempts += 1;
+            observer.error(new Error('connection refused'));
+          }) as any,
+      );
+
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      render(JournalView);
+      await vi.advanceTimersByTimeAsync(5000 * 3 + 100);
+
+      expect(attempts).toBeGreaterThanOrEqual(3);
+    });
   });
 });

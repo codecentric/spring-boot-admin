@@ -15,13 +15,13 @@
  */
 import { AxiosInstance } from 'axios';
 import { sortBy } from 'lodash-es';
-import { Observable, concat, from, ignoreElements } from 'rxjs';
+import { Observable, from, switchMap } from 'rxjs';
 
 import axios, {
   addLanguageHeaderInterceptor,
   redirectOn401,
 } from '../utils/axios';
-import waitForPolyfill from '../utils/eventsource-polyfill';
+import loadEventSource from '../utils/eventsource';
 import uri from '../utils/uri';
 import Instance, { DOWN_STATES, UNKNOWN_STATES, UP_STATES } from './instance';
 
@@ -140,19 +140,21 @@ class Application {
   }
 
   static getStream(): Observable<ApplicationStream | unknown> {
-    return concat(
-      from(waitForPolyfill()).pipe(ignoreElements()),
-      Observable.create((observer) => {
-        const eventSource = new EventSource('applications');
-        eventSource.onmessage = (message) =>
-          observer.next({
-            ...message,
-            data: Application._transformResponse(message.data),
-          } as ApplicationStream);
+    return from(loadEventSource()).pipe(
+      switchMap(
+        (openEventSource) =>
+          new Observable((observer) => {
+            const eventSource = openEventSource('applications');
+            eventSource.onmessage = (message) =>
+              observer.next({
+                ...message,
+                data: Application._transformResponse(message.data),
+              } as ApplicationStream);
 
-        eventSource.onerror = (err) => observer.error(err);
-        return () => eventSource.close();
-      }),
+            eventSource.onerror = (err) => observer.error(err);
+            return () => eventSource.close();
+          }),
+      ),
     );
   }
 
