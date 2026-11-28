@@ -99,7 +99,7 @@ public class DefaultApplicationFactory extends AbstractApplicationFactory {
 
 	protected String getServiceHost() {
 		InetAddress address = this.server.getAddress();
-		if (address == null) {
+		if (address == null || address.isAnyLocalAddress()) {
 			address = getLocalHost();
 		}
 		return getHost(address);
@@ -107,7 +107,7 @@ public class DefaultApplicationFactory extends AbstractApplicationFactory {
 
 	protected String getManagementHost() {
 		InetAddress address = this.management.getAddress();
-		if (address != null) {
+		if (address != null && !address.isAnyLocalAddress()) {
 			return getHost(address);
 		}
 		return getServiceHost();
