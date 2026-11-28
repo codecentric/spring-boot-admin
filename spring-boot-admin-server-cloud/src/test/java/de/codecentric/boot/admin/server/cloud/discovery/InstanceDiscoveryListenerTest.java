@@ -67,6 +67,21 @@ class InstanceDiscoveryListenerTest {
 	}
 
 	@Test
+	void should_recover_after_service_listing_fails_at_startup() {
+		when(this.discovery.getServices()).thenThrow(new IllegalStateException("Registry unavailable"))
+			.thenReturn(singletonList("service"));
+		when(this.discovery.getInstances("service"))
+			.thenReturn(singletonList(new DefaultServiceInstance("test-1", "service", "localhost", 80, false)));
+
+		this.listener.onApplicationReady(null);
+		this.listener.onApplicationEvent(new HeartbeatEvent(this, 1));
+
+		StepVerifier.create(this.registry.getInstances())
+			.assertNext((instance) -> assertThat(instance.getRegistration().getName()).isEqualTo("service"))
+			.verifyComplete();
+	}
+
+	@Test
 	void should_discover_instances_when_application_is_ready() {
 		when(this.discovery.getServices()).thenReturn(Collections.singletonList("service"));
 		when(this.discovery.getInstances("service")).thenReturn(
