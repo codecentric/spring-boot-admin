@@ -108,15 +108,17 @@ public class RemindingNotifier extends AbstractEventNotifier {
 	protected Mono<Void> sendReminders() {
 		Instant now = Instant.now();
 
-		return Flux.fromIterable(this.reminders.values())
-			.filter((reminder) -> reminder.startIfDue(now, this.reminderPeriod))
-			.flatMap((reminder) -> Mono.defer(() -> this.delegate.notify(reminder.getEvent()))
+		return Flux.fromIterable(this.reminders.values()).flatMap((reminder) -> Mono.defer(() -> {
+			if (!reminder.startIfDue(now, this.reminderPeriod)) {
+				return Mono.empty();
+			}
+			return Mono.defer(() -> this.delegate.notify(reminder.getEvent()))
 				.doFinally(reminder::finishDelivery)
 				.onErrorResume((error) -> {
 					log.warn("Failed to send reminder for instance {}", reminder.getEvent().getInstance(), error);
 					return Mono.empty();
-				}))
-			.then();
+				});
+		})).then();
 	}
 
 	protected boolean shouldStartReminder(InstanceEvent event) {
