@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { screen } from '@testing-library/vue';
+import { fireEvent, screen, waitFor } from '@testing-library/vue';
 import { HttpResponse, http } from 'msw';
+import { Subject } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 
@@ -23,6 +24,7 @@ import JournalView from './index.vue';
 import { useApplicationStore } from '@/composables/useApplicationStore';
 import { server } from '@/mocks/server';
 import Application from '@/services/application';
+import Instance from '@/services/instance';
 import { render } from '@/test-utils';
 import {
   InstanceEvent,
@@ -53,6 +55,51 @@ describe('Journal View', () => {
       ]),
       error: ref(null),
     });
+  });
+
+  it('merges history with events received while the initial request is pending', async () => {
+    const history = Promise.withResolvers<void>();
+    const stream = new Subject<{ data: InstanceEvent }>();
+    vi.spyOn(Instance, 'getEventStream').mockReturnValueOnce(stream);
+    const event = (version: number) =>
+      new InstanceEvent({
+        instance: 'one',
+        version,
+        type: InstanceEventType.INFO_CHANGED,
+        timestamp: new Date(2025, 0, 1, 0, version),
+      });
+    server.use(
+      http.get('**/instances/events', async () => {
+        await history.promise;
+        return HttpResponse.json([event(5), event(6)]);
+      }),
+    );
+    render(JournalView, {
+      global: {
+        stubs: {
+          JournalTable: {
+            props: ['events'],
+            template:
+              '<ul><li v-for="event in events" :key="event.key">{{event.version}}</li></ul>',
+          },
+        },
+      },
+    });
+    stream.next({ data: event(6) });
+    await screen.findByText('6');
+    const autoUpdate = screen.getByRole('button');
+    await fireEvent.click(autoUpdate);
+    stream.next({ data: event(7) });
+    history.resolve();
+    await screen.findByText('5');
+    expect(screen.queryByText('7')).not.toBeInTheDocument();
+    await fireEvent.click(autoUpdate);
+    stream.next({ data: event(5) });
+    await waitFor(() =>
+      expect(
+        screen.getAllByRole('listitem').map((row) => row.textContent),
+      ).toEqual(['7', '6', '5']),
+    );
   });
 
   it('should update instance names when registration is updated', async () => {
