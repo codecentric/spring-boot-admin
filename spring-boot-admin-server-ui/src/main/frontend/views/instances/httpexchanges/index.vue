@@ -106,12 +106,12 @@
 <script>
 import { faArrowsDownToLine } from '@fortawesome/free-solid-svg-icons';
 import { debounce } from 'lodash-es';
-import moment from 'moment';
 
 import SbaCheckbox from '@/components/sba-checkbox';
 
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
+import { newHttpRecords } from '@/utils/newHttpRecords';
 import { concatMap, retry, timer } from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import { Exchange } from '@/views/instances/httpexchanges/Exchange';
@@ -142,6 +142,7 @@ export default {
     hasLoaded: false,
     error: null,
     exchanges: [],
+    newRecords: newHttpRecords(),
     listOffset: 0,
     faArrowsDownToLine,
     filter: {
@@ -161,7 +162,9 @@ export default {
     },
 
     visibleExchanges() {
-      return this.filterExchanges(this.exchanges.slice(this.listOffset));
+      return this.filterExchanges(
+        this.exchanges.slice(this.listOffset).sort((a, b) => b.compareTo(a)),
+      );
     },
 
     listedExchanges() {
@@ -178,11 +181,6 @@ export default {
           !exchange.timestamp.isBefore(start) &&
           !exchange.timestamp.isAfter(end),
       );
-    },
-    lastTimestamp() {
-      return this.exchanges.length > 0
-        ? this.exchanges[0].timestamp
-        : moment(0);
     },
   },
 
@@ -207,11 +205,9 @@ export default {
     },
     async fetchHttpExchanges() {
       const response = await this.instance.fetchHttpExchanges();
-      const exchanges = response.data.exchanges
-        .map((exchange) => new Exchange(exchange))
-        .filter((exchange) => exchange.timestamp.isAfter(this.lastTimestamp));
-      exchanges.sort((a, b) => -1 * a.compareTo(b));
-      return exchanges;
+      return this.newRecords(response.data.exchanges).map(
+        (exchange) => new Exchange(exchange),
+      );
     },
     createSubscription() {
       return timer(0, 5000)
@@ -222,6 +218,7 @@ export default {
         .subscribe({
           next: (exchanges) => {
             this.hasLoaded = true;
+            if (!exchanges.length) return;
             if (this.exchanges.length > 0) {
               this.listOffset += exchanges.length;
             }

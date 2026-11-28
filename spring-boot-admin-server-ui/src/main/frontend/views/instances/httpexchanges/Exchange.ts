@@ -72,7 +72,7 @@ export class Exchange {
   }
 
   compareTo(other: Exchange) {
-    return this.timestamp.isAfter(other.timestamp);
+    return this.timestamp.valueOf() - other.timestamp.valueOf();
   }
 
   isPending() {
