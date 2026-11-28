@@ -35,7 +35,7 @@
             name="filter"
             type="search"
             @paste="handlePaste"
-            @keyup.enter="fetchSessionsByUsername()"
+            @keyup.enter="fetch()"
           />
         </div>
       </sba-sticky-subnav>
@@ -94,12 +94,16 @@ export default {
     sessions: [],
     isLoading: false,
     currentRouteName: null,
+    requestId: 0,
+    scheduleFetch: debounce(function () {
+      this.fetch();
+    }, 250),
   }),
   watch: {
     '$route.query': {
       immediate: true,
       handler() {
-        this.filter = Object.entries(this.$route.query).reduce(
+        const filter = Object.entries(this.$route.query).reduce(
           (acc, [name, value]) => {
             acc.type = name;
             acc.value = value;
@@ -107,6 +111,7 @@ export default {
           },
           { type: 'username', value: '' },
         );
+        if (!isEqual(filter, this.filter)) this.filter = filter;
       },
     },
     filter: {
@@ -123,40 +128,54 @@ export default {
             query: oldQuery,
           });
         }
-        this.fetch();
+        this.requestId++;
+        this.sessions = [];
+        this.error = null;
+        this.isLoading = Boolean(this.filter.value);
+        this.scheduleFetch();
       },
     },
   },
   mounted() {
     this.currentRouteName = this.$route.name;
   },
+  beforeUnmount() {
+    this.scheduleFetch.cancel();
+    this.requestId++;
+  },
   methods: {
-    fetch: debounce(async function () {
+    async fetch() {
+      this.scheduleFetch.cancel();
+      const requestId = ++this.requestId;
       this.error = null;
       if (!this.filter.value) {
         this.sessions = [];
+        this.isLoading = false;
         return;
       }
 
       this.isLoading = true;
       try {
-        if (this.filter.type === 'sessionId') {
-          this.sessions = await this.fetchSession();
-        } else {
-          this.sessions = await this.fetchSessionsByUsername();
-        }
+        const sessions =
+          this.filter.type === 'sessionId'
+            ? await this.fetchSession()
+            : await this.fetchSessionsByUsername();
+        if (requestId === this.requestId) this.sessions = sessions;
       } catch (error) {
-        console.warn('Fetching sessions failed:', error);
-        this.error = error;
+        if (requestId === this.requestId) {
+          console.warn('Fetching sessions failed:', error);
+          this.error = error;
+        }
+      } finally {
+        if (requestId === this.requestId) this.isLoading = false;
       }
-      this.isLoading = false;
-    }, 250),
+    },
     async fetchSession() {
       try {
         const response = await this.instance.fetchSession(this.filter.value);
         return [new Session(response.data)];
       } catch (error) {
-        if (error.response.status === 404) {
+        if (error.response?.status === 404) {
           return [];
         } else {
           throw error;
