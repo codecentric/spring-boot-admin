@@ -75,6 +75,16 @@ const applicationResultSuccess = {
 
 describe('responseHandler', () => {
   describe('On Instance level', () => {
+    it('returns an array-valued attribute without treating its contents as response statuses', () => {
+      const value = [{ status: 500, count: 2 }];
+      expect(
+        responseHandler({ status: 200, data: { status: 200, value } }),
+      ).toEqual({
+        state: STATE_COMPLETED,
+        result: value,
+      });
+    });
+
     it('should succeed when a correct return value is given', () => {
       const { state, result } = responseHandler(instanceResultSuccess);
 
@@ -93,6 +103,30 @@ describe('responseHandler', () => {
   });
 
   describe('On Application level', () => {
+    it('reports the failed response when a successful instance is listed first', () => {
+      const { state, error } = responseHandler({
+        data: [
+          applicationResultSuccess.data[0],
+          applicationResultFailed.data[0],
+        ],
+      });
+      expect(state).toBe(STATE_FAILED);
+      expect(error.message).toContain('Cannot convert string');
+      expect(error.stacktrace).toContain('IllegalArgumentException');
+    });
+
+    it('reports an upstream HTTP error without a Jolokia response body', () => {
+      const { state, error } = responseHandler({
+        data: [
+          applicationResultSuccess.data[0],
+          { instanceId: 'second', status: 503 },
+        ],
+      });
+      expect(state).toBe(STATE_FAILED);
+      expect(error.message).toContain('503');
+      expect(error.message).toContain('second');
+    });
+
     it('should succeed when a correct return value is given', () => {
       const { state, result } = responseHandler(applicationResultSuccess);
 
