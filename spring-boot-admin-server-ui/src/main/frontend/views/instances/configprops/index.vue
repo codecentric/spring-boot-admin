@@ -82,30 +82,20 @@ const filterConfigurationProperties = (needle) => (propertySource) => {
   };
 };
 
-function flattenBean(obj, prefix = '') {
-  if (Object(obj) !== obj) {
-    return { [prefix]: obj };
-  }
-
-  if (Array.isArray(obj)) {
-    if (obj.length === 0) {
-      return { [prefix]: [] };
-    } else {
-      return obj
-        .map((value, idx) => flattenBean(value, `${prefix}[${idx}]`))
-        .reduce((c, n) => ({ ...c, ...n }), {});
-    }
+function flattenBean(value, prefix = '', properties = Object.create(null)) {
+  if (Object(value) !== value || isEmpty(value)) {
+    properties[prefix] = value;
   } else {
-    if (isEmpty(obj)) {
-      return { [prefix]: {} };
-    } else {
-      return Object.entries(obj)
-        .map(([name, value]) =>
-          flattenBean(value, prefix ? `${prefix}.${name}` : name),
-        )
-        .reduce((c, n) => ({ ...c, ...n }), {});
+    for (const [name, child] of Object.entries(value)) {
+      const path = Array.isArray(value)
+        ? `${prefix}[${name}]`
+        : prefix
+          ? `${prefix}.${name}`
+          : name;
+      flattenBean(child, path, properties);
     }
   }
+  return properties;
 }
 
 const flattenConfigurationPropertiesBeans = (configprops) => {
@@ -148,17 +138,16 @@ export default {
     filter: null,
   }),
   computed: {
+    flattenedBeans() {
+      return this.configprops
+        ? flattenConfigurationPropertiesBeans(this.configprops)
+        : [];
+    },
     configurationPropertiesBeans() {
-      if (!this.configprops) {
-        return [];
-      }
-      const configurationProperties = flattenConfigurationPropertiesBeans(
-        this.configprops,
-      );
       if (!this.filter) {
-        return configurationProperties;
+        return this.flattenedBeans;
       }
-      return configurationProperties
+      return this.flattenedBeans
         .map(filterConfigurationProperties(this.filter.toLowerCase()))
         .filter((ps) => ps && Object.keys(ps.properties).length > 0);
     },
