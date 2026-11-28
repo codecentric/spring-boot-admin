@@ -61,18 +61,17 @@ public class AdminServerHazelcastAutoConfiguration {
 
 	public static final String NOTIFICATION_FILTERS_BEAN_NAME = "notificationFiltersMap";
 
-	@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP + "}")
-	private final String nameEventStoreMap = DEFAULT_NAME_EVENT_STORE_MAP;
-
 	@Bean
 	@ConditionalOnMissingBean(InstanceEventStore.class)
 	public InstanceEventStore eventStore(HazelcastInstance hazelcastInstance,
-			AdminServerProperties adminServerProperties, Environment environment) {
+			AdminServerProperties adminServerProperties, Environment environment,
+			@Value("${spring.boot.admin.hazelcast.event-store:" + DEFAULT_NAME_EVENT_STORE_MAP
+					+ "}") String nameEventStoreMap) {
 		AdminServerProperties.EventStoreProperties eventStoreProperties = adminServerProperties.getEventStore();
 		int maxLogSizePerAggregate = eventStoreProperties.getMaxLogSizePerAggregate();
 		boolean pruneInfoUpdatedEvents = eventStoreProperties.isPruneInfoUpdatedEvents();
 		if (isEnabled(environment, "event-store-enabled")) {
-			IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(this.nameEventStoreMap);
+			IMap<InstanceId, List<InstanceEvent>> map = hazelcastInstance.getMap(nameEventStoreMap);
 			return new HazelcastEventStore(maxLogSizePerAggregate, map, pruneInfoUpdatedEvents);
 		}
 		return new InMemoryEventStore(maxLogSizePerAggregate, pruneInfoUpdatedEvents);
