@@ -100,6 +100,10 @@ export default {
       type: Instance,
       required: true,
     },
+    cacheTag: {
+      type: String,
+      default: 'name',
+    },
     cacheName: {
       type: String,
       required: true,
@@ -185,7 +189,7 @@ export default {
       if (this.shouldFetchCacheHits) {
         try {
           const response = await this.instance.fetchMetric('cache.gets', {
-            name: this.cacheName,
+            [this.cacheTag]: this.cacheName,
             result: 'hit',
           });
           return response.data.measurements[0].value;
@@ -203,7 +207,7 @@ export default {
       if (this.shouldFetchCacheMisses) {
         try {
           const response = await this.instance.fetchMetric('cache.gets', {
-            name: this.cacheName,
+            [this.cacheTag]: this.cacheName,
             result: 'miss',
           });
           return response.data.measurements[0].value;
@@ -224,7 +228,7 @@ export default {
           const response = await this.instance.fetchMetric(
             'cache.size',
             {
-              name: this.cacheName,
+              [this.cacheTag]: this.cacheName,
             },
             { suppressToast: suppressFn },
           );
