@@ -20,6 +20,28 @@ describe('Dependencies', () => {
   const application = new Application(applications[0]);
   const instance = application.instances[0];
 
+  it('renders and filters license expressions as declared in the SBOM', async () => {
+    server.use(
+      http.get('*/actuator/sbom', () =>
+        HttpResponse.json({ ids: ['application'] }),
+      ),
+      http.get('*/actuator/sbom/application', () =>
+        HttpResponse.json({
+          components: [
+            { name: 'parser', licenses: [{ expression: 'MIT OR Apache-2.0' }] },
+            { name: 'other', licenses: [{ license: { id: 'ISC' } }] },
+          ],
+        }),
+      ),
+    );
+    render(Dependencies, { props: { instance } });
+    expect(await screen.findByText('MIT OR Apache-2.0')).toBeVisible();
+    await userEvent.type(screen.getByLabelText('Filter'), 'Apache');
+    expect(await screen.findByText('application (1/2)')).toBeVisible();
+    expect(screen.getByText('parser')).toBeVisible();
+    expect(screen.queryByText('other')).not.toBeInTheDocument();
+  });
+
   describe('Render correctly', () => {
     beforeEach(() => {
       render(Dependencies, {
