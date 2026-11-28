@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.65.1",
-    "@types/node": "26.6.7",
+    "@types/node": "26.6.10",
     "prettier": "3.10.1",
     "typescript": "6.0.3"
   }
