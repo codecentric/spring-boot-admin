@@ -95,6 +95,7 @@ import SbaCheckbox from '@/components/sba-checkbox';
 
 import subscribing from '@/mixins/subscribing';
 import Instance from '@/services/instance';
+import { newHttpRecords } from '@/utils/newHttpRecords';
 import { concatMap, retry, timer } from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import sbaTracesChart from '@/views/instances/httptrace/traces-chart';
@@ -210,6 +211,7 @@ export default {
     hasLoaded: false,
     error: null,
     traces: [],
+    newRecords: newHttpRecords(),
     listOffset: 0,
     filter: {
       excludeActuator: true,
@@ -238,7 +240,7 @@ export default {
       return null;
     },
     filteredTraces() {
-      return this.filterTraces(this.traces);
+      return this.filterTraces([...this.traces].sort((a, b) => b.compareTo(a)));
     },
     newTracesCount() {
       return this.selection
@@ -246,7 +248,9 @@ export default {
         : this.filterTraces(this.traces.slice(0, this.listOffset)).length;
     },
     listedTraces() {
-      const traces = this.filterTraces(this.traces.slice(this.listOffset));
+      const traces = this.filterTraces(
+        this.traces.slice(this.listOffset).sort((a, b) => b.compareTo(a)),
+      );
       if (!this.selection) {
         return traces;
       }
@@ -255,9 +259,6 @@ export default {
         (trace) =>
           !trace.timestamp.isBefore(start) && !trace.timestamp.isAfter(end),
       );
-    },
-    lastTimestamp() {
-      return this.traces.length > 0 ? this.traces[0].timestamp : moment(0);
     },
   },
   watch: {
@@ -277,11 +278,9 @@ export default {
     },
     async fetchHttptrace() {
       const response = await this.instance.fetchHttptrace();
-      const traces = response.data.traces
-        .map((trace) => new Trace(trace))
-        .filter((trace) => trace.timestamp.isAfter(this.lastTimestamp));
-      traces.sort((a, b) => -1 * a.compareTo(b));
-      return traces;
+      return this.newRecords(response.data.traces).map(
+        (trace) => new Trace(trace),
+      );
     },
     createSubscription() {
       return timer(0, 5000)
@@ -292,6 +291,7 @@ export default {
         .subscribe({
           next: (traces) => {
             this.hasLoaded = true;
+            if (!traces.length) return;
             if (this.traces.length > 0) {
               this.listOffset += traces.length;
             }
