@@ -1,106 +1,65 @@
-import { waitFor } from '@testing-library/vue';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { reactive } from 'vue';
+import { flushPromises, mount } from '@vue/test-utils';
+import { expect, it } from 'vitest';
+import { defineComponent, nextTick } from 'vue';
+import { createMemoryHistory, createRouter } from 'vue-router';
 
-import { useRouterState } from '@/utils/useRouterState';
+import { useRouterState } from './useRouterState';
 
-const routerReplace = vi.fn();
-const mockedQuery = vi.fn().mockReturnValue({});
+async function mountFilters(url: string) {
+  const Dashboard = defineComponent({
+    setup: () => ({ filters: useRouterState({ q: '', wordWrap: true }) }),
+    template: '<input v-model="filters.q" />',
+  });
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ name: 'dashboard', path: '/', component: Dashboard }],
+  });
+  await router.push(url);
+  const wrapper = mount(Dashboard, { global: { plugins: [router] } });
+  return { router, wrapper, filters: wrapper.vm.filters };
+}
 
-vi.mock('vue-router', () => {
-  return {
-    useRouter: () => ({
-      replace: routerReplace,
-    }),
-    useRoute: () =>
-      reactive({
-        get query() {
-          return mockedQuery();
-        },
-      }),
-  };
+it('keeps a numeric-looking application or instance search intact on reload', async () => {
+  const { filters } = await mountFilters('/?q=007-orders&wordWrap=false');
+  expect(filters.q).toBe('007-orders');
+  expect(filters.wordWrap).toBe(false);
 });
 
-describe('useRouterState', () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
+it('restores filters on back navigation and keeps the URL editable afterwards', async () => {
+  const { router, wrapper, filters } = await mountFilters('/?other=keep');
+  await router.push('/?q=orders&wordWrap=false&other=keep');
+  await nextTick();
+  expect(filters.q).toBe('orders');
+  expect(filters.wordWrap).toBe(false);
+  router.back();
+  await flushPromises();
+  expect(filters.q).toBe('');
+  expect(filters.wordWrap).toBe(true);
+  await wrapper.get('input').setValue('billing');
+  await flushPromises();
+  expect(router.currentRoute.value.query).toMatchObject({
+    q: 'billing',
+    other: 'keep',
   });
+});
 
-  it('should initialize routerState with the initial query parameters', async () => {
-    mockedQuery.mockReturnValue({
-      string: 'foo',
-      boolean: 'true',
-      number: '0',
-      float: '0.123',
-    });
-
-    const routerState = useRouterState();
-
-    await waitFor(() => {
-      expect(routerState).toEqual({
-        string: 'foo',
-        boolean: true,
-        number: 0,
-        float: 0.123,
-      });
-    });
+it('retains unrelated query parameters and decodes scalar values without defaults', async () => {
+  const { router, wrapper, filters } = await mountFilters(
+    '/?page=2&ratio=0.25&enabled=false&tag=a&tag=b',
+  );
+  expect(filters).toMatchObject({
+    page: 2,
+    ratio: 0.25,
+    enabled: false,
+    tag: ['a', 'b'],
   });
-
-  it('should call router with initial state', () => {
-    useRouterState({
-      foo: 'bar',
-    });
-
-    waitFor(() => {
-      expect(routerReplace).toHaveBeenCalledWith({
-        query: {
-          foo: 'bar',
-        },
-      });
-    });
-  });
-
-  it('should extend existing query params', () => {
-    mockedQuery.mockReturnValue({
-      foo: 'bar',
-    });
-
-    const routerState = useRouterState({
-      bar: 'baz',
-    });
-
-    waitFor(() => {
-      expect(routerReplace).toHaveBeenCalledWith({
-        query: {
-          foo: 'bar',
-          bar: 'baz',
-        },
-      });
-      expect(routerState).toEqual({
-        foo: 'bar',
-        bar: 'baz',
-      });
-    });
-  });
-
-  it('should override existing query params', () => {
-    mockedQuery.mockReturnValue({
-      foo: 'bar',
-    });
-
-    const routerState = useRouterState({
-      foo: 'baz',
-    });
-
-    waitFor(() => {
-      expect(routerReplace).toHaveBeenCalledWith({
-        query: {
-          foo: 'baz',
-        },
-      });
-      expect(routerState).toEqual({
-        foo: 'baz',
-      });
-    });
+  await wrapper.get('input').setValue('api');
+  await flushPromises();
+  expect(router.currentRoute.value.query).toMatchObject({
+    page: '2',
+    ratio: '0.25',
+    enabled: 'false',
+    tag: ['a', 'b'],
+    q: 'api',
   });
 });

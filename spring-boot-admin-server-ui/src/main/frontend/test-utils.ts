@@ -5,7 +5,7 @@ import { merge } from 'lodash-es';
 import PrimeVue from 'primevue/config';
 import Tooltip from 'primevue/tooltip';
 import { createI18n } from 'vue-i18n';
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createMemoryHistory, createRouter } from 'vue-router';
 
 import components from './components/index';
 import SbaModalPlugin from './plugins/modal';
@@ -38,7 +38,7 @@ export const render = (testComponent, options?): RenderResult => {
   }
 
   router = createRouter({
-    history: createWebHashHistory(),
+    history: createMemoryHistory(),
     routes: routes,
   });
 
