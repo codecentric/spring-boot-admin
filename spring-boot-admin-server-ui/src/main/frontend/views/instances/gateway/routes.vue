@@ -57,22 +57,19 @@ import addRoute from '@/views/instances/gateway/add-route';
 import refreshRouteCache from '@/views/instances/gateway/refresh-route-cache';
 import routesList from '@/views/instances/gateway/routes-list';
 
-const routeDefinitionMatches = (routeDef, keyword) => {
-  if (!routeDef) {
-    return false;
-  }
-  const predicate = (value) => String(value).toLowerCase().includes(keyword);
-  return (
-    (routeDef.uri && anyValueMatches(routeDef.uri.toString(), predicate)) ||
-    anyValueMatches(routeDef.predicates, predicate) ||
-    anyValueMatches(routeDef.filters, predicate)
-  );
-};
-
 const routeMatches = (route, keyword) => {
-  return (
-    route.route_id.toString().toLowerCase().includes(keyword) ||
-    routeDefinitionMatches(route.route_definition, keyword)
+  const definition = route.route_definition;
+  return anyValueMatches(
+    [
+      route.route_id,
+      route.uri,
+      route.predicate,
+      route.filters,
+      definition?.uri,
+      definition?.predicates,
+      definition?.filters,
+    ],
+    (value) => value != null && String(value).toLowerCase().includes(keyword),
   );
 };
 
