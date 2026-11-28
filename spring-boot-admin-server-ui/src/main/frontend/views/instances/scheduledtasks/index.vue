@@ -24,13 +24,16 @@
     </div>
 
     <div class="flex flex-col">
-      <template v-if="hasCronData">
-        <sba-panel :title="$t('instances.scheduledtasks.cron.title')" seamless>
+      <template v-for="schedule in triggerSchedules" :key="schedule.type">
+        <sba-panel
+          :title="$t(`instances.scheduledtasks.${schedule.type}.title`)"
+          seamless
+        >
           <table class="table w-full table-striped">
             <thead>
               <tr>
                 <th v-text="$t('instances.scheduledtasks.cron.runnable')" />
-                <th v-text="$t('instances.scheduledtasks.cron.expression')" />
+                <th v-text="$t(schedule.columnLabel)" />
                 <th v-text="$t('instances.scheduledtasks.next_execution')" />
                 <th v-text="$t('instances.scheduledtasks.last_execution')" />
                 <th
@@ -38,7 +41,10 @@
                 />
               </tr>
             </thead>
-            <tbody v-for="task in cron" :key="task.runnable.target">
+            <tbody
+              v-for="task in schedule.tasks"
+              :key="task.runnable.target + (task.expression ?? task.trigger)"
+            >
               <tr>
                 <td
                   class="scheduledtasks__target"
@@ -47,8 +53,12 @@
                 />
                 <td
                   class="font-mono text-sm"
-                  :title="task.expression"
-                  v-text="formatCron(task.expression)"
+                  :title="task.expression ?? task.trigger"
+                  v-text="
+                    schedule.type === 'cron'
+                      ? formatCron(task.expression)
+                      : task.trigger
+                  "
                 />
                 <scheduled-task-executions :task="task" />
               </tr>
@@ -205,12 +215,24 @@ export default {
     hasLoaded: false,
     error: null,
     cron: null,
+    custom: null,
     fixedDelay: null,
     fixedRate: null,
   }),
   computed: {
-    hasCronData: function () {
-      return this.cron && this.cron.length;
+    triggerSchedules() {
+      return [
+        {
+          type: 'cron',
+          tasks: this.cron,
+          columnLabel: 'instances.scheduledtasks.cron.expression',
+        },
+        {
+          type: 'custom',
+          tasks: this.custom,
+          columnLabel: 'instances.scheduledtasks.custom.trigger',
+        },
+      ].filter((schedule) => schedule.tasks?.length);
     },
     hasFixedDelayData: function () {
       return this.fixedDelay && this.fixedDelay.length;
@@ -220,7 +242,9 @@ export default {
     },
     hasData: function () {
       return (
-        this.hasCronData || this.hasFixedDelayData || this.hasFixedRateData
+        this.triggerSchedules.length ||
+        this.hasFixedDelayData ||
+        this.hasFixedRateData
       );
     },
   },
@@ -233,6 +257,7 @@ export default {
       try {
         const res = await this.instance.fetchScheduledTasks();
         this.cron = res.data.cron;
+        this.custom = res.data.custom;
         this.fixedDelay = res.data.fixedDelay;
         this.fixedRate = res.data.fixedRate;
       } catch (error) {

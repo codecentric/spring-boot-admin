@@ -3,6 +3,10 @@
     "scheduledtasks": {
       "label": "Geplante Tasks",
       "no_scheduledtasks": "Keine geplanten Aufgaben.",
+      "custom": {
+        "title": "Benutzerdefinierte Trigger",
+        "trigger": "Trigger"
+      },
       "cron": {
         "expression": "Expression",
         "runnable": "Runnable",

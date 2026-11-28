@@ -3,6 +3,10 @@
     "scheduledtasks": {
       "label": "Планировщик заданий",
       "no_scheduledtasks": "Нет запланированных заданий.",
+      "custom": {
+        "title": "Пользовательские триггеры",
+        "trigger": "Триггер"
+      },
       "cron": {
         "expression": "Выражение",
         "runnable": "Выполняемый объект",
