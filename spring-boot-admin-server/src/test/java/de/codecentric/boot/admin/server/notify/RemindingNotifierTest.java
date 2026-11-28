@@ -94,6 +94,46 @@ class RemindingNotifierTest {
 	}
 
 	@Test
+	void should_skip_a_reminder_that_is_still_being_delivered() {
+		Notifier notifier = mock(Notifier.class);
+		when(notifier.notify(any())).thenReturn(Mono.empty());
+		RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
+		reminder.setReminderPeriod(Duration.ofHours(1));
+		InstanceEvent down = new InstanceStatusChangedEvent(instance1.getId(), 0L, Instant.EPOCH, StatusInfo.ofDown());
+		StepVerifier.create(reminder.notify(down)).verifyComplete();
+
+		TestPublisher<Void> pending = TestPublisher.create();
+		when(notifier.notify(down)).thenReturn(pending.mono());
+		clearInvocations(notifier);
+		StepVerifier.create(reminder.sendReminders()).then(() -> {
+			pending.assertSubscribers(1);
+			StepVerifier.create(reminder.sendReminders()).expectComplete().verify(Duration.ofSeconds(1));
+			verify(notifier).notify(down);
+			pending.complete();
+		}).verifyComplete();
+		StepVerifier.create(reminder.sendReminders()).verifyComplete();
+		verify(notifier).notify(down);
+	}
+
+	@Test
+	void should_retry_a_cancelled_delivery_on_the_next_check() {
+		Notifier notifier = mock(Notifier.class);
+		when(notifier.notify(any())).thenReturn(Mono.empty());
+		RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
+		reminder.setReminderPeriod(Duration.ofHours(1));
+		InstanceEvent down = new InstanceStatusChangedEvent(instance1.getId(), 0L, Instant.EPOCH, StatusInfo.ofDown());
+		StepVerifier.create(reminder.notify(down)).verifyComplete();
+
+		TestPublisher<Void> pending = TestPublisher.create();
+		when(notifier.notify(down)).thenReturn(pending.mono(), Mono.empty());
+		StepVerifier.create(reminder.sendReminders()).then(() -> pending.assertSubscribers(1)).thenCancel().verify();
+		pending.assertCancelled();
+		clearInvocations(notifier);
+		StepVerifier.create(reminder.sendReminders()).verifyComplete();
+		verify(notifier).notify(down);
+	}
+
+	@Test
 	void should_remind_only_down_events() {
 		TestNotifier notifier = new TestNotifier();
 		RemindingNotifier reminder = new RemindingNotifier(notifier, this.repository);
