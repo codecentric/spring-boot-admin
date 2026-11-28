@@ -53,6 +53,8 @@ public class ApplicationTools {
 	 * are registered
 	 */
 	@McpTool(name = "list-applications",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "List all Spring Boot applications currently registered with Spring Boot Admin. "
 					+ "Returns name, status (UP/DOWN/UNKNOWN), instance ID and management URL for each instance.")
 	public Mono<String> listApplications() {

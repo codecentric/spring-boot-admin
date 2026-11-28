@@ -52,6 +52,8 @@ public class MetricsTools {
 	 * @return plain-text list of metric names, or an error message
 	 */
 	@McpTool(name = "list-metrics",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "List all available metric names for a registered Spring Boot application. "
 					+ "Use the returned names with get-metrics to fetch specific values.")
 	public Mono<String> listMetrics(@McpToolParam(description = "The registered application name (case-sensitive)",
@@ -67,6 +69,8 @@ public class MetricsTools {
 	 * @return plain-text metric value with unit, or an error message
 	 */
 	@McpTool(name = "get-metrics",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "Fetch the current value of a specific metric for a registered Spring Boot application. "
 					+ "Common metrics: jvm.memory.used, jvm.memory.max, system.cpu.usage, "
 					+ "http.server.requests, jvm.threads.live. Use list-metrics to discover available names.")

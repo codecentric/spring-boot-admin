@@ -37,9 +37,7 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.noContent;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.rewriteEndpointUrl;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -165,41 +163,6 @@ class LoggersToolsTest {
 		when(this.instanceRepository.findByName("ghost")).thenReturn(Flux.empty());
 
 		StepVerifier.create(this.loggersTools.getLogger("ghost", "com.example.Foo"))
-			.assertNext((result) -> assertThat(result).isEqualTo("Application 'ghost' not found in registry."))
-			.verifyComplete();
-	}
-
-	@Test
-	void setLoggerLevel_success_returnsConfirmation() {
-		when(this.instanceRepository.findByName("payment-service")).thenReturn(Flux.just(instance("payment-service")));
-
-		this.wireMock.stubFor(post(urlEqualTo("/actuator/loggers/com.example.PaymentService")).willReturn(noContent()));
-
-		StepVerifier.create(this.loggersTools.setLoggerLevel("payment-service", "com.example.PaymentService", "DEBUG"))
-			.assertNext((result) -> {
-				assertThat(result).contains("com.example.PaymentService");
-				assertThat(result).contains("payment-service");
-				assertThat(result).contains("DEBUG");
-			})
-			.verifyComplete();
-	}
-
-	@Test
-	void setLoggerLevel_nullLevel_resetsToInherited() {
-		when(this.instanceRepository.findByName("payment-service")).thenReturn(Flux.just(instance("payment-service")));
-
-		this.wireMock.stubFor(post(urlEqualTo("/actuator/loggers/com.example.PaymentService")).willReturn(noContent()));
-
-		StepVerifier.create(this.loggersTools.setLoggerLevel("payment-service", "com.example.PaymentService", null))
-			.assertNext((result) -> assertThat(result).contains("inherited"))
-			.verifyComplete();
-	}
-
-	@Test
-	void setLoggerLevel_appNotFound_returnsNotFoundMessage() {
-		when(this.instanceRepository.findByName("ghost")).thenReturn(Flux.empty());
-
-		StepVerifier.create(this.loggersTools.setLoggerLevel("ghost", "com.example.Foo", "DEBUG"))
 			.assertNext((result) -> assertThat(result).isEqualTo("Application 'ghost' not found in registry."))
 			.verifyComplete();
 	}

@@ -37,7 +37,6 @@ import de.codecentric.boot.admin.server.domain.values.StatusInfo;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.noContent;
-import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static de.codecentric.boot.admin.server.web.client.InstanceExchangeFilterFunctions.rewriteEndpointUrl;
@@ -46,13 +45,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class OperationsToolsTest {
+class LoggerLevelToolsTest {
 
 	private final WireMockServer wireMock = new WireMockServer(Options.DYNAMIC_PORT);
 
 	private InstanceRepository instanceRepository;
 
-	private OperationsTools operationsTools;
+	private LoggerLevelTools loggerLevelTools;
 
 	@BeforeAll
 	static void setUpClass() {
@@ -70,7 +69,7 @@ class OperationsToolsTest {
 		this.instanceRepository = mock(InstanceRepository.class);
 		when(this.instanceRepository.find(any())).thenReturn(Mono.empty());
 		InstanceWebClient instanceWebClient = InstanceWebClient.builder().filter(rewriteEndpointUrl()).build();
-		this.operationsTools = new OperationsTools(
+		this.loggerLevelTools = new LoggerLevelTools(
 				new ActuatorClient(this.instanceRepository, instanceWebClient, Duration.ofMillis(450)));
 	}
 
@@ -88,56 +87,37 @@ class OperationsToolsTest {
 	}
 
 	@Test
-	void restartApplication_success_returnsConfirmation() {
+	void setLoggerLevel_success_returnsConfirmation() {
 		when(this.instanceRepository.findByName("payment-service")).thenReturn(Flux.just(instance("payment-service")));
 
-		this.wireMock.stubFor(post(urlEqualTo("/actuator/restart")).willReturn(noContent()));
+		this.wireMock.stubFor(post(urlEqualTo("/actuator/loggers/com.example.PaymentService")).willReturn(noContent()));
 
-		StepVerifier.create(this.operationsTools.restartApplication("payment-service"))
-			.assertNext((result) -> assertThat(result).contains("payment-service restart initiated successfully"))
+		StepVerifier
+			.create(this.loggerLevelTools.setLoggerLevel("payment-service", "com.example.PaymentService", "DEBUG"))
+			.assertNext((result) -> {
+				assertThat(result).contains("com.example.PaymentService");
+				assertThat(result).contains("payment-service");
+				assertThat(result).contains("DEBUG");
+			})
 			.verifyComplete();
 	}
 
 	@Test
-	void restartApplication_appNotFound_returnsNotFoundMessage() {
-		when(this.instanceRepository.findByName("ghost")).thenReturn(Flux.empty());
+	void setLoggerLevel_nullLevel_resetsToInherited() {
+		when(this.instanceRepository.findByName("payment-service")).thenReturn(Flux.just(instance("payment-service")));
 
-		StepVerifier.create(this.operationsTools.restartApplication("ghost"))
-			.assertNext((result) -> assertThat(result).isEqualTo("Application 'ghost' not found in registry."))
+		this.wireMock.stubFor(post(urlEqualTo("/actuator/loggers/com.example.PaymentService")).willReturn(noContent()));
+
+		StepVerifier.create(this.loggerLevelTools.setLoggerLevel("payment-service", "com.example.PaymentService", null))
+			.assertNext((result) -> assertThat(result).contains("inherited"))
 			.verifyComplete();
 	}
 
 	@Test
-	void refreshConfiguration_withChanges_returnsChangedKeys() {
-		when(this.instanceRepository.findByName("order-service")).thenReturn(Flux.just(instance("order-service")));
-
-		this.wireMock.stubFor(post(urlEqualTo("/actuator/refresh"))
-			.willReturn(okJson("[\"spring.datasource.url\",\"app.timeout\"]")));
-
-		StepVerifier.create(this.operationsTools.refreshConfiguration("order-service")).assertNext((result) -> {
-			assertThat(result).contains("Configuration refreshed for order-service");
-			assertThat(result).contains("spring.datasource.url");
-		}).verifyComplete();
-	}
-
-	@Test
-	void refreshConfiguration_noChanges_returnsNoChangesMessage() {
-		when(this.instanceRepository.findByName("checkout-service"))
-			.thenReturn(Flux.just(instance("checkout-service")));
-
-		this.wireMock.stubFor(post(urlEqualTo("/actuator/refresh")).willReturn(okJson("[]")));
-
-		StepVerifier.create(this.operationsTools.refreshConfiguration("checkout-service")).assertNext((result) -> {
-			assertThat(result).contains("Configuration refreshed for checkout-service");
-			assertThat(result).contains("No properties changed");
-		}).verifyComplete();
-	}
-
-	@Test
-	void refreshConfiguration_appNotFound_returnsNotFoundMessage() {
+	void setLoggerLevel_appNotFound_returnsNotFoundMessage() {
 		when(this.instanceRepository.findByName("ghost")).thenReturn(Flux.empty());
 
-		StepVerifier.create(this.operationsTools.refreshConfiguration("ghost"))
+		StepVerifier.create(this.loggerLevelTools.setLoggerLevel("ghost", "com.example.Foo", "DEBUG"))
 			.assertNext((result) -> assertThat(result).isEqualTo("Application 'ghost' not found in registry."))
 			.verifyComplete();
 	}

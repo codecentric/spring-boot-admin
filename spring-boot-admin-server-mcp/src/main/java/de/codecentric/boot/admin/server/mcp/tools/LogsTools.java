@@ -59,6 +59,8 @@ public class LogsTools {
 	 * @return plain-text log tail, or an error message
 	 */
 	@McpTool(name = "get-logs",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "Fetch the last N lines from the logfile of a registered Spring Boot application. "
 					+ "Requires logging.file.name or logging.file.path to be configured in the application. "
 					+ "Default is 50 lines, maximum is 500.")

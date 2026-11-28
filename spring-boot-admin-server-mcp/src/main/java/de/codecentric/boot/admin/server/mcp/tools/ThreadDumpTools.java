@@ -62,6 +62,8 @@ public class ThreadDumpTools {
 	 * @return plain-text thread dump summary, or an error message
 	 */
 	@McpTool(name = "get-thread-dump",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "Retrieve a thread dump from a registered Spring Boot application via its "
 					+ "/actuator/threaddump endpoint. Returns all threads with their state and stack traces. "
 					+ "Useful for diagnosing deadlocks, hung threads, and thread pool saturation. "

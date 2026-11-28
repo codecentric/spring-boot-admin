@@ -30,10 +30,12 @@ import de.codecentric.boot.admin.server.mcp.tools.CachesTools;
 import de.codecentric.boot.admin.server.mcp.tools.EnvTools;
 import de.codecentric.boot.admin.server.mcp.tools.HealthTools;
 import de.codecentric.boot.admin.server.mcp.tools.HttpExchangesTools;
+import de.codecentric.boot.admin.server.mcp.tools.LoggerLevelTools;
 import de.codecentric.boot.admin.server.mcp.tools.LoggersTools;
 import de.codecentric.boot.admin.server.mcp.tools.LogsTools;
 import de.codecentric.boot.admin.server.mcp.tools.MetricsTools;
-import de.codecentric.boot.admin.server.mcp.tools.OperationsTools;
+import de.codecentric.boot.admin.server.mcp.tools.RefreshTools;
+import de.codecentric.boot.admin.server.mcp.tools.RestartTools;
 import de.codecentric.boot.admin.server.mcp.tools.ScheduledTasksTools;
 import de.codecentric.boot.admin.server.mcp.tools.ThreadDumpTools;
 import de.codecentric.boot.admin.server.web.client.InstanceWebClient;
@@ -122,19 +124,31 @@ public class McpAutoConfiguration {
 	}
 
 	/**
-	 * Creates the {@link OperationsTools} bean for performing write operations on
-	 * applications.
+	 * Creates the {@link RestartTools} bean for restarting applications. Never created in
+	 * read-only mode.
 	 * @param actuatorClient the shared actuator call helper
-	 * @return the configured {@link OperationsTools}
+	 * @return the configured {@link RestartTools}
 	 */
 	@Bean
-	@OnMcpToolEnabled("operations")
-	public OperationsTools operationsTools(ActuatorClient actuatorClient) {
-		return new OperationsTools(actuatorClient);
+	@OnMcpToolEnabled(value = "restart", write = true)
+	public RestartTools restartTools(ActuatorClient actuatorClient) {
+		return new RestartTools(actuatorClient);
 	}
 
 	/**
-	 * Creates the {@link LoggersTools} bean for querying and configuring log levels.
+	 * Creates the {@link RefreshTools} bean for refreshing application configuration.
+	 * Never created in read-only mode.
+	 * @param actuatorClient the shared actuator call helper
+	 * @return the configured {@link RefreshTools}
+	 */
+	@Bean
+	@OnMcpToolEnabled(value = "refresh", write = true)
+	public RefreshTools refreshTools(ActuatorClient actuatorClient) {
+		return new RefreshTools(actuatorClient);
+	}
+
+	/**
+	 * Creates the read-only {@link LoggersTools} bean for querying log levels.
 	 * @param actuatorClient the shared actuator call helper
 	 * @return the configured {@link LoggersTools}
 	 */
@@ -142,6 +156,19 @@ public class McpAutoConfiguration {
 	@OnMcpToolEnabled("loggers")
 	public LoggersTools loggersTools(ActuatorClient actuatorClient) {
 		return new LoggersTools(actuatorClient);
+	}
+
+	/**
+	 * Creates the {@link LoggerLevelTools} bean for changing log levels at runtime.
+	 * Requires the {@code loggers} category to be enabled as well and is never created in
+	 * read-only mode.
+	 * @param actuatorClient the shared actuator call helper
+	 * @return the configured {@link LoggerLevelTools}
+	 */
+	@Bean
+	@OnMcpToolEnabled(value = "logger-levels", requires = "loggers", write = true)
+	public LoggerLevelTools loggerLevelTools(ActuatorClient actuatorClient) {
+		return new LoggerLevelTools(actuatorClient);
 	}
 
 	/**

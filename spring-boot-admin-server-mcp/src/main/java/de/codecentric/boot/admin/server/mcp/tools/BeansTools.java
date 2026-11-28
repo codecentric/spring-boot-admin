@@ -56,6 +56,8 @@ public class BeansTools {
 	 * an error message
 	 */
 	@McpTool(name = "list-beans",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "List all beans in the Spring application context of a registered Spring Boot application "
 					+ "via its /actuator/beans endpoint. Provide an optional 'filter' to return only beans whose "
 					+ "name or type contains that text (case-insensitive). Returns bean name, type, scope, and "
