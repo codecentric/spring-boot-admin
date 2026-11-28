@@ -27,6 +27,9 @@ workflows:
         - 'actions/upload-artifact@v7.0.2'
     '.github/workflows/issue-metrics.yml':
         - 'github-community-projects/issue-metrics@v5.0.3'
+    '.github/workflows/plumber.yml':
+        - 'actions/checkout@v7.0.1'
+        - 'getplumber/plumber@v0.7.23'
     '.github/workflows/release-to-maven-central.yml':
         - 'actions/cache@v6.1.0'
         - 'actions/checkout@v7.0.1'
@@ -61,6 +64,11 @@ dependencies:
         commit: 'sha1-949feb2413d6458794dcd2491c4babbbce0c15c1'
         owner_id: 44036562
         repo_id: 189476904
+    'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9':
+        ref: 'v7.0.2'
+        commit: 'sha1-cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        owner_id: 44036562
+        repo_id: 192625955
     'actions/upload-artifact@v7.0.2':
         ref: 'v7.0.2'
         commit: 'sha1-cf430e030ddbb5b0abf93d22962f4752f3646cd9'
@@ -73,11 +81,24 @@ dependencies:
         repo_id: 200299178
         uses:
             - 'actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd'
+    'getplumber/plumber@v0.7.23':
+        ref: 'v0.7.23'
+        commit: 'sha1-ec8cb3a7edd6a324b33e85109b627b2df6023d94'
+        owner_id: 255179076
+        repo_id: 1137327132
+        uses:
+            - 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+            - 'github/codeql-action@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee'
     'github-community-projects/issue-metrics@v5.0.3':
         ref: 'v5.0.3'
         commit: 'sha1-671528652402b9b8a33da44b5c693b3161bc090f'
         owner_id: 151565802
         repo_id: 648340231
+    'github/codeql-action@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee':
+        ref: 'v4.39.0'
+        commit: 'sha1-6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee'
+        owner_id: 9919
+        repo_id: 259445878
     'jamesives/github-pages-deploy-action@v4.9.0':
         ref: 'v4.9.0'
         commit: 'sha1-fa24774553152dd7873cd16ebd8d959b010c5445'
