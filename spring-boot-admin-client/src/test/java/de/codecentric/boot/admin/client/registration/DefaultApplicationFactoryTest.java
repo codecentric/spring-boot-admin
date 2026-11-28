@@ -21,6 +21,8 @@ import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.endpoint.EndpointId;
@@ -130,6 +132,24 @@ class DefaultApplicationFactoryTest {
 
 		Application app = factory.createApplication();
 		assertThat(app.getManagementUrl()).matches("http://\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}\\.\\d{0,3}:8081/actuator");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "0.0.0.0", "::" })
+	void should_advertise_a_host_when_listening_on_all_interfaces(String wildcard) throws UnknownHostException {
+		instanceProperties.setPreferIp(true);
+		when(pathMappedEndpoints.getPath(EndpointId.of("health"))).thenReturn("/actuator/health");
+		publishApplicationReadyEvent(factory, 8080, 8081);
+
+		Application expected = factory.createApplication();
+		server.setAddress(InetAddress.getByName(wildcard));
+		management.setAddress(InetAddress.getByName(wildcard));
+		Application app = factory.createApplication();
+		assertThat(app.getServiceUrl()).isEqualTo(expected.getServiceUrl());
+		assertThat(app.getHealthUrl()).isEqualTo(expected.getHealthUrl());
+
+		server.setAddress(InetAddress.getByName("192.0.2.12"));
+		assertThat(factory.createApplication().getManagementUrl()).isEqualTo("http://192.0.2.12:8081/actuator");
 	}
 
 	@Test
