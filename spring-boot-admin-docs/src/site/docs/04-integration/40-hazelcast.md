@@ -87,77 +87,77 @@ pulled in transitively by `spring-boot-admin-starter-server`. Without it, Spring
 
 ```java title="HazelcastConfig.java"
 import com.hazelcast.config.Config;
+import com.hazelcast.config.EvictionConfig;
+import com.hazelcast.config.EvictionPolicy;
+import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.MergePolicyConfig;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.map.IMap;
+import com.hazelcast.config.MaxSizePolicy;
 import com.hazelcast.spi.merge.PutIfAbsentMergePolicy;
-import de.codecentric.boot.admin.server.domain.events.InstanceEvent;
-import de.codecentric.boot.admin.server.domain.values.InstanceId;
-import de.codecentric.boot.admin.server.eventstore.HazelcastEventStore;
-import de.codecentric.boot.admin.server.eventstore.InstanceEventStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 @Configuration
 public class HazelcastConfig {
 
     @Bean
     public Config hazelcastConfig() {
-        MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store")
+        MapConfig eventStoreMap = new MapConfig("spring-boot-admin-event-store")
+            .setInMemoryFormat(InMemoryFormat.OBJECT)
+            .setBackupCount(1)
+            .setMergePolicyConfig(new MergePolicyConfig(
+                PutIfAbsentMergePolicy.class.getName(), 100));
+
+        MapConfig sentNotificationsMap = new MapConfig("spring-boot-admin-sent-notifications")
+            .setInMemoryFormat(InMemoryFormat.OBJECT)
+            .setBackupCount(1)
+            .setEvictionConfig(new EvictionConfig()
+                .setEvictionPolicy(EvictionPolicy.LRU)
+                .setMaxSizePolicy(MaxSizePolicy.PER_NODE))
+            .setMergePolicyConfig(new MergePolicyConfig(
+                PutIfAbsentMergePolicy.class.getName(), 100));
+
+        MapConfig notificationFiltersMap = new MapConfig("spring-boot-admin-notification-filters")
+            .setInMemoryFormat(InMemoryFormat.OBJECT)
             .setBackupCount(1)
             .setMergePolicyConfig(new MergePolicyConfig(
                 PutIfAbsentMergePolicy.class.getName(), 100));
 
         Config config = new Config();
-        config.addMapConfig(mapConfig);
+        config.addMapConfig(eventStoreMap);
+        config.addMapConfig(sentNotificationsMap);
+        config.addMapConfig(notificationFiltersMap);
         config.setProperty("hazelcast.jmx", "true");
 
-        // Network configuration
+        // Development example: use multicast for cluster discovery.
         config.getNetworkConfig()
-            .setPort(5701)
-            .setPortAutoIncrement(true)
             .getJoin()
             .getMulticastConfig()
             .setEnabled(true);
 
         return config;
     }
-
-    @Bean
-    public HazelcastInstance hazelcastInstance(Config hazelcastConfig) {
-        return Hazelcast.newHazelcastInstance(hazelcastConfig);
-    }
-
-    @Bean
-    public InstanceEventStore eventStore(HazelcastInstance hazelcastInstance) {
-        IMap<InstanceId, List<InstanceEvent>> map =
-            hazelcastInstance.getMap("spring-boot-admin-event-store");
-        return new HazelcastEventStore(100, map);
-    }
 }
 ```
 
-### Basic Configuration
+The Hazelcast starter uses this `Config` bean to create the `HazelcastInstance`. Do not create a `HazelcastInstance` or
+an `InstanceEventStore` bean for the standard setup; Spring Boot Admin configures those automatically.
+
+To load an external Hazelcast XML or YAML file instead, point Spring Boot at it with `spring.hazelcast.config`:
 
 ```yaml title="application.yml"
 spring:
-  application:
-    name: spring-boot-admin-server
-
-hazelcast:
-  network:
-    port: 5701
-    port-auto-increment: true
-    join:
-      multicast:
-        enabled: true
-      tcp-ip:
-        enabled: false
+  hazelcast:
+    config: classpath:hazelcast.yaml
 ```
+
+The referenced file must use Hazelcast's configuration format. Hazelcast settings placed directly under `hazelcast.*` in
+Spring Boot's `application.yml` are not bound as Spring Boot application properties.
+
+### Basic Configuration
+
+The `Config` bean above uses Hazelcast's default multicast discovery. For a different discovery mechanism, configure the
+Hazelcast `Config` bean or use an external Hazelcast configuration file via `spring.hazelcast.config`.
 
 ### Selective Clustering
 
@@ -182,6 +182,10 @@ When the sent-notifications map is disabled, notifications are not deduplicated 
 sends its own notifications. When the notification-filters map is disabled, the `notificationFiltersMap` bean is a
 local map, and filters are not shared. All switches are evaluated at runtime and work with AOT.
 
+These switches apply to Spring Boot Admin's auto-configured beans. If you declare your own `InstanceEventStore` bean,
+it replaces the auto-configured event store, so `event-store-enabled` no longer selects between the Hazelcast and
+in-memory stores. A `Config` bean alone does not disable these switches.
+
 ## Network Configuration
 
 ### Multicast (Development)
@@ -197,15 +201,8 @@ config.getNetworkConfig()
     .setMulticastPort(54327);
 ```
 
-```yaml
-hazelcast:
-  network:
-    join:
-      multicast:
-        enabled: true
-        multicast-group: 224.2.2.3
-        multicast-port: 54327
-```
+For a Hazelcast YAML configuration file, set the equivalent Hazelcast `network.join.multicast` options in that file and
+load it with `spring.hazelcast.config` as shown above.
 
 ### TCP/IP (Production)
 
@@ -226,19 +223,8 @@ config.getNetworkConfig()
     .addMember("192.168.1.102");
 ```
 
-```yaml
-hazelcast:
-  network:
-    join:
-      multicast:
-        enabled: false
-      tcp-ip:
-        enabled: true
-        members:
-          - 192.168.1.100
-          - 192.168.1.101
-          - 192.168.1.102
-```
+For a Hazelcast YAML configuration file, put the member list under Hazelcast's `network.join.tcp-ip` configuration and
+load the file with `spring.hazelcast.config` as shown above.
 
 ### Kubernetes
 
@@ -283,14 +269,16 @@ MapConfig mapConfig = new MapConfig("spring-boot-admin-event-store")
 
 Limit events per instance:
 
-```java
-@Bean
-public InstanceEventStore eventStore(HazelcastInstance hazelcastInstance) {
-    IMap<InstanceId, List<InstanceEvent>> map =
-        hazelcastInstance.getMap("spring-boot-admin-event-store");
-    return new HazelcastEventStore(500, map);  // Max 500 events per instance
-}
+```yaml title="application.yml"
+spring:
+  boot:
+    admin:
+      event-store:
+        max-log-size-per-aggregate: 500
 ```
+
+This setting applies to the auto-configured Hazelcast and in-memory event stores. A custom `InstanceEventStore` bean
+must apply its own retention limit.
 
 ## High Availability Setup
 
@@ -358,7 +346,6 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - HAZELCAST_MEMBERS=admin1,admin2,admin3
       - SERVER_PORT=8080
 
   admin2:
@@ -366,7 +353,6 @@ services:
     ports:
       - "8081:8080"
     environment:
-      - HAZELCAST_MEMBERS=admin1,admin2,admin3
       - SERVER_PORT=8080
 
   admin3:
@@ -374,7 +360,6 @@ services:
     ports:
       - "8082:8080"
     environment:
-      - HAZELCAST_MEMBERS=admin1,admin2,admin3
       - SERVER_PORT=8080
 
   nginx:
@@ -389,18 +374,19 @@ services:
       - admin3
 ```
 
+This Compose snippet only starts the services; it does not configure Hazelcast discovery. `HAZELCAST_MEMBERS` is not
+read by Spring Boot Admin or Hazelcast by default. Configure discovery in the Hazelcast `Config` bean or an external
+Hazelcast configuration file, and make that configuration available to every container. Member addresses must be
+reachable on the Compose network.
+
 ## Monitoring Hazelcast
 
 ### Management Center
 
 Use Hazelcast Management Center:
 
-```yaml
-hazelcast:
-  management-center:
-    enabled: true
-    url: http://localhost:8083/mancenter
-```
+Configure and connect Management Center using Hazelcast's own settings for the version in use; the
+`hazelcast.management-center.*` keys are not Spring Boot properties.
 
 ### JMX Monitoring
 
