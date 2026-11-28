@@ -18,16 +18,16 @@
   <div>
     <details-cache
       v-for="(cache, index) in caches"
-      :key="cache"
+      :key="`${cache.tag}:${cache.name}`"
+      :cache-tag="cache.tag"
       :index="index"
-      :cache-name="cache"
+      :cache-name="cache.name"
       :instance="instance"
     />
   </div>
 </template>
 
 <script>
-import { uniq } from 'lodash-es';
 import { take } from 'rxjs/operators';
 
 import subscribing from '@/mixins/subscribing';
@@ -51,10 +51,15 @@ export default {
   methods: {
     async fetchCaches() {
       const response = await this.instance.fetchMetric('cache.gets');
-      return uniq(
-        response.data.availableTags.filter((tag) => tag.tag === 'name')[0]
-          .values,
-      );
+      const tags = response.data.availableTags;
+      const caches = new Map();
+      for (const tag of ['cache', 'name']) {
+        const names = tags.find((entry) => entry.tag === tag)?.values ?? [];
+        for (const name of names) {
+          caches.set(name, { name, tag });
+        }
+      }
+      return [...caches.values()];
     },
     createSubscription() {
       return timer(0, sbaConfig.uiSettings.pollTimer.cache)
@@ -65,8 +70,8 @@ export default {
           }),
         )
         .subscribe({
-          next: (names) => {
-            this.caches = names;
+          next: (caches) => {
+            this.caches = caches;
           },
           error: (error) => {
             console.warn('Fetching caches failed:', error);
