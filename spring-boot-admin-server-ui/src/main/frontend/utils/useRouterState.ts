@@ -1,80 +1,66 @@
 import { isEqual } from 'lodash-es';
-import qs from 'qs';
 import { UnwrapNestedRefs, reactive, watch } from 'vue';
-import { LocationQuery, useRoute, useRouter } from 'vue-router';
+import {
+  LocationQuery,
+  LocationQueryRaw,
+  useRoute,
+  useRouter,
+} from 'vue-router';
 
-/**
- * Hook to synchronize the query parameters of the current route with a reactive object.
- *
- * @param initialState The initial state of the reactive object.
- * @returns The reactive object.
- */
+function decodeQuery(query: LocationQuery, defaults: object) {
+  return Object.fromEntries(
+    Object.entries(query).map(([key, value]) => {
+      if (
+        typeof value !== 'string' ||
+        typeof Reflect.get(defaults, key) === 'string'
+      )
+        return [key, value];
+      if (value === 'true' || value === 'false') return [key, value === 'true'];
+      if (value.trim() && Number.isFinite(Number(value)))
+        return [key, Number(value)];
+      return [key, value];
+    }),
+  );
+}
+
+/** Keep dashboard controls in sync with the current route's query parameters. */
 export function useRouterState<T extends object>(
   initialState: T = {} as T,
 ): UnwrapNestedRefs<T> {
   const route = useRoute();
   const router = useRouter();
-
-  let routerState = reactive({
+  const readState = () => ({
     ...initialState,
-    ...correctTypesInRouterQuery(route.query),
+    ...decodeQuery(route.query, initialState),
   });
+  const state = reactive(readState());
 
-  watch(route, (_route) => {
-    const queryParams = JSON.stringify(_route.query);
-    routerState = parseQueryParams(queryParams);
-  });
-
-  watch(routerState, (newValue: any) => {
-    const to = {
-      name: route.name,
-      query: {
-        ...route.query,
-        ...newValue,
-      },
-    };
-    const routerQueryKeys = Object.keys(route.query);
-    const newRouterQueryKeys = Object.keys({ ...route.query, ...newValue });
-    if (isEqual(routerQueryKeys, newRouterQueryKeys)) {
-      router.replace(to);
-    } else {
-      router.push(to);
-    }
-  });
-
-  return routerState;
-}
-
-function parseQueryParams(queryParams: string) {
-  return qs.parse(queryParams, {
-    decoder: (str, defaultDecoder, charset, type) => {
-      const bools = {
-        true: true,
-        false: false,
-      };
-      if (type === 'value' && typeof bools[str] === 'boolean') {
-        return bools[str];
-      } else {
-        return defaultDecoder(str);
+  watch(
+    () => route.query,
+    () => {
+      const next = readState();
+      for (const key of Object.keys(state)) {
+        if (!(key in next)) Reflect.deleteProperty(state, key);
       }
+      Object.assign(state, next);
     },
-  });
-}
-
-function correctTypesInRouterQuery(query: LocationQuery) {
-  return (
-    query !== undefined &&
-    JSON.parse(JSON.stringify(query), (_, value) => {
-      if (value === 'false') return false;
-      if (value === 'true') return true;
-
-      const float = Number.parseFloat(value);
-      if (!isNaN(float)) return float;
-
-      const number = Number.parseInt(value);
-      if (!isNaN(number)) return number;
-
-      return value;
-    })
   );
+
+  watch(state, () => {
+    const current = readState();
+    const query: LocationQueryRaw = { ...route.query };
+    let push = false;
+    for (const [key, value] of Object.entries(state)) {
+      if (isEqual(value, current[key])) continue;
+      query[key] =
+        Array.isArray(value) || value == null ? value : String(value);
+      if (!(key in route.query)) push = true;
+    }
+    if (isEqual(query, route.query)) return;
+    const target = { name: route.name, query };
+    if (push) router.push(target);
+    else router.replace(target);
+  });
+
+  return state;
 }
