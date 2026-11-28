@@ -58,6 +58,8 @@ public class EnvTools {
 	 * error message
 	 */
 	@McpTool(name = "get-env",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "Resolve a single configuration property or environment variable for a registered "
 					+ "Spring Boot application by calling its /actuator/env/{name} endpoint. Works for "
 					+ "environment variables (e.g. HELLO), system properties and application properties. "
@@ -85,6 +87,8 @@ public class EnvTools {
 	 * or an error message
 	 */
 	@McpTool(name = "list-env",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "Retrieve environment properties for a registered Spring Boot application by calling "
 					+ "its /actuator/env endpoint. Returns properties grouped by their property source "
 					+ "(e.g. systemEnvironment, systemProperties, application config). Provide an optional "

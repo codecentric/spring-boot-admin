@@ -414,14 +414,18 @@ Then pass credentials in the MCP client configuration:
 | `spring.boot.admin.mcp.enabled` | `false` | Enable the MCP server integration |
 | `spring.boot.admin.mcp.timeout` | `450ms` | Timeout for actuator calls made by MCP tools |
 | `spring.boot.admin.mcp.thread-dump-timeout` | `10s` | Timeout for `/actuator/threaddump` calls, which can be slower than standard endpoints |
+| `spring.boot.admin.mcp.read-only` | `false` | Read-only mode. When `true`, no write tool (`restart-application`, `refresh-configuration`, `set-logger-level`) is registered, regardless of the `tools.*` flags |
 | `spring.boot.admin.mcp.tools.enabled`         | `true`                            | Global default for all tool categories. When `false`, every category is disabled unless its individual flag explicitly overrides it to `true`. |
 | `spring.boot.admin.mcp.tools.applications`    | `true`                            | Register the `list-applications` tool                                                                                         |
 | `spring.boot.admin.mcp.tools.health`          | `true`                            | Register the `get-health` and `get-status` tools                                                                              |
 | `spring.boot.admin.mcp.tools.metrics`         | `true`                            | Register the `list-metrics` and `get-metrics` tools                                                                           |
 | `spring.boot.admin.mcp.tools.env`             | `true`                            | Register the `get-env` and `list-env` tools                                                                                   |
 | `spring.boot.admin.mcp.tools.logs`            | `true`                            | Register the `get-logs` tool                                                                                                  |
-| `spring.boot.admin.mcp.tools.operations`      | `true`                            | Register the write tools `restart-application` and `refresh-configuration`                                                    |
+| `spring.boot.admin.mcp.tools.operations`      | –                                 | **Deprecated** since 4.1.6, use `spring.boot.admin.mcp.read-only`. `false` is equivalent to `read-only=true`; an explicit `true` acts as the default for `restart`, `refresh`, and `logger-levels` |
+| `spring.boot.admin.mcp.tools.restart`         | `true`                            | Register the write tool `restart-application`                                                                                 |
+| `spring.boot.admin.mcp.tools.refresh`         | `true`                            | Register the write tool `refresh-configuration`                                                                               |
 | `spring.boot.admin.mcp.tools.loggers`         | `true`                            | Register the `list-loggers`, `get-logger`, and `set-logger-level` tools                                                       |
+| `spring.boot.admin.mcp.tools.logger-levels`   | `true`                            | Register the write tool `set-logger-level` (also requires `loggers`)                                         |
 | `spring.boot.admin.mcp.tools.thread-dump`     | `true`                            | Register the `get-thread-dump` tool                                                                                           |
 | `spring.boot.admin.mcp.tools.http-exchanges`  | `true`                            | Register the `get-http-exchanges` tool                                                                                        |
 | `spring.boot.admin.mcp.tools.scheduled-tasks` | `true`                            | Register the `get-scheduled-tasks` tool                                                                                       |
@@ -442,8 +446,15 @@ spring.boot.admin.mcp.tools.health: true
 spring.boot.admin.mcp.tools.metrics: true
 ```
 
-For a read-only monitoring deployment, set `spring.boot.admin.mcp.tools.operations=false` to suppress the
-`restart-application` and `refresh-configuration` tools. Changes take effect on server restart.
+For a read-only monitoring deployment, set `spring.boot.admin.mcp.read-only=true`. This suppresses every tool that
+changes the state of a monitored application (`restart-application`, `refresh-configuration`, and
+`set-logger-level`) and cannot be overridden by individual `tools.*` flags. The deprecated
+`spring.boot.admin.mcp.tools.operations=false` has the same effect. Read-only tools such as `list-loggers`
+and `get-logger` remain available. Changes take effect on server restart.
+
+```properties
+spring.boot.admin.mcp.read-only=true
+```
 :::
 
 ## Sample Application

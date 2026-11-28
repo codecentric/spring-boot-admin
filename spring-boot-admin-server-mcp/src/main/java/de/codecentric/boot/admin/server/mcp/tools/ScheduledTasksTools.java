@@ -52,6 +52,8 @@ public class ScheduledTasksTools {
 	 * @return plain-text listing of scheduled tasks, or an error message
 	 */
 	@McpTool(name = "get-scheduled-tasks",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "List all scheduled tasks (@Scheduled methods) and their configuration for a registered "
 					+ "Spring Boot application via its /actuator/scheduledtasks endpoint. Returns cron expressions, "
 					+ "fixed-rate, and fixed-delay settings. Useful for verifying that batch jobs and cron tasks "

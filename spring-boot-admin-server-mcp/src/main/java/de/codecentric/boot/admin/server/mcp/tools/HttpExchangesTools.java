@@ -56,6 +56,8 @@ public class HttpExchangesTools {
 	 * @return plain-text listing of recent HTTP exchanges, or an error message
 	 */
 	@McpTool(name = "get-http-exchanges",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "Retrieve recent HTTP exchanges (requests and responses) for a registered Spring Boot "
 					+ "application via its /actuator/httpexchanges endpoint. Returns method, URI, status code, "
 					+ "and duration for each exchange. Useful for tracing requests and debugging client errors. "

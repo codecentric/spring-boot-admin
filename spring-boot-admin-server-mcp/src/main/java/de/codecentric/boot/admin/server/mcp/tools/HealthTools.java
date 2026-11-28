@@ -61,6 +61,8 @@ public class HealthTools {
 	 * the actuator call fails
 	 */
 	@McpTool(name = "get-health",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "Fetch health details for a registered Spring Boot application by calling its "
 					+ "/actuator/health endpoint. Returns overall status and per-component breakdown.")
 	public Mono<String> getHealth(@McpToolParam(description = "The registered application name (case-sensitive)",
@@ -80,6 +82,8 @@ public class HealthTools {
 	 * @return plain-text status line, or an error message if the app is not found
 	 */
 	@McpTool(name = "get-status",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "Return the cached health status (UP/DOWN/UNKNOWN/etc.) for a registered "
 					+ "Spring Boot application from the registry — no actuator call is made. "
 					+ "Use get-health for full component details.")

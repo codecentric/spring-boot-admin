@@ -23,52 +23,25 @@ import org.springframework.ai.mcp.annotation.McpToolParam;
 import reactor.core.publisher.Mono;
 
 /**
- * MCP tools for performing write operations on registered Spring Boot applications.
+ * MCP write tool for refreshing the configuration of registered Spring Boot applications.
  *
  * <ul>
- * <li>{@code restart-application} — restarts the application via
- * {@code /actuator/restart}</li>
  * <li>{@code refresh-configuration} — refreshes the application configuration via
  * {@code /actuator/refresh}</li>
  * </ul>
  */
-public class OperationsTools {
+public class RefreshTools {
 
-	private static final Logger log = LoggerFactory.getLogger(OperationsTools.class);
+	private static final Logger log = LoggerFactory.getLogger(RefreshTools.class);
 
 	private final ActuatorClient actuatorClient;
 
 	/**
-	 * Creates a new {@code OperationsTools} instance.
+	 * Creates a new {@code RefreshTools} instance.
 	 * @param actuatorClient the shared actuator call helper
 	 */
-	public OperationsTools(ActuatorClient actuatorClient) {
+	public RefreshTools(ActuatorClient actuatorClient) {
 		this.actuatorClient = actuatorClient;
-	}
-
-	/**
-	 * Restarts the named application by calling its {@code /actuator/restart} endpoint.
-	 * Requires the actuator restart endpoint to be enabled and exposed in the monitored
-	 * application.
-	 * @param applicationName the registered application name (case-sensitive)
-	 * @return confirmation message or an error message
-	 */
-	@McpTool(name = "restart-application",
-			description = "Restart a registered Spring Boot application via its /actuator/restart endpoint. "
-					+ "Requires management.endpoint.restart.enabled=true in the monitored application.")
-	public Mono<String> restartApplication(@McpToolParam(
-			description = "The registered application name (case-sensitive)", required = true) String applicationName) {
-		return this.actuatorClient.withInstance(applicationName, (instance) -> {
-			String url = instance.getRegistration().getManagementUrl() + "/restart";
-			return this.actuatorClient.postBodiless(instance, url, "{}", log, "restart of " + applicationName)
-				.map((status) -> {
-					if ((status >= 200) && (status < 300)) {
-						return applicationName + " restart initiated successfully.";
-					}
-					return "Restart returned unexpected status " + status + " for " + applicationName + ".";
-				})
-				.onErrorResume((ex) -> Mono.just("Error restarting " + applicationName + ": " + ex.getMessage()));
-		});
 	}
 
 	/**
@@ -79,6 +52,8 @@ public class OperationsTools {
 	 * @return confirmation message listing refreshed keys, or an error message
 	 */
 	@McpTool(name = "refresh-configuration",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = false, destructiveHint = true, idempotentHint = false,
+					openWorldHint = false),
 			description = "Refresh the configuration of a registered Spring Boot application via its "
 					+ "/actuator/refresh endpoint. Requires Spring Cloud Context (spring-cloud-starter) "
 					+ "on the monitored application's classpath.")

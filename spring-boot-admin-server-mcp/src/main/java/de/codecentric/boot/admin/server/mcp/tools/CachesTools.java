@@ -50,6 +50,8 @@ public class CachesTools {
 	 * @return plain-text listing of caches grouped by cache manager, or an error message
 	 */
 	@McpTool(name = "list-caches",
+			annotations = @McpTool.McpAnnotations(readOnlyHint = true, destructiveHint = false, idempotentHint = true,
+					openWorldHint = false),
 			description = "List all caches registered in the CacheManager(s) of a registered Spring Boot application "
 					+ "via its /actuator/caches endpoint. Returns cache names grouped by their CacheManager. "
 					+ "Useful for identifying stale or oversized caches. "

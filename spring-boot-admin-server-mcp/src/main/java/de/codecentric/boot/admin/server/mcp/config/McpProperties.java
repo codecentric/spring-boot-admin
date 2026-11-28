@@ -19,6 +19,7 @@ package de.codecentric.boot.admin.server.mcp.config;
 import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for the Spring Boot Admin MCP server integration.
@@ -74,6 +75,15 @@ public class McpProperties {
 	 * actuator endpoints. Defaults to {@code 10s}.
 	 */
 	private Duration threadDumpTimeout = Duration.ofSeconds(10);
+
+	/**
+	 * Whether the MCP server runs in read-only mode. When {@code true}, no tool that
+	 * changes the state of a monitored application ({@code restart-application},
+	 * {@code refresh-configuration}, {@code set-logger-level}) is registered, regardless
+	 * of the individual {@code tools.*} flags. Defaults to {@code false}. The deprecated
+	 * {@code tools.operations=false} has the same effect.
+	 */
+	private boolean readOnly = false;
 
 	/**
 	 * Server-side toggles controlling which MCP tool categories are registered and
@@ -141,16 +151,36 @@ public class McpProperties {
 		private boolean logs = true;
 
 		/**
-		 * Whether the write operation tools ({@code restart-application} and
-		 * {@code refresh-configuration}) are available.
+		 * Whether the write tools are available.
+		 * @deprecated since 4.1.6 for removal, use
+		 * {@code spring.boot.admin.mcp.read-only} instead. {@code false} is equivalent to
+		 * {@code read-only=true}; an explicit {@code true} acts as the default for the
+		 * {@code restart}, {@code refresh} and {@code logger-levels} categories.
 		 */
-		private boolean operations = true;
+		@Deprecated(since = "4.1.6", forRemoval = true)
+		private Boolean operations;
 
 		/**
-		 * Whether the {@code list-loggers}, {@code get-logger}, and
-		 * {@code set-logger-level} tools are available.
+		 * Whether the write tool {@code restart-application} is available.
+		 */
+		private boolean restart = true;
+
+		/**
+		 * Whether the write tool {@code refresh-configuration} is available.
+		 */
+		private boolean refresh = true;
+
+		/**
+		 * Whether the logger tools are available. Disabling it removes
+		 * {@code list-loggers}, {@code get-logger} and {@code set-logger-level}.
 		 */
 		private boolean loggers = true;
+
+		/**
+		 * Whether the write tool {@code set-logger-level} is available. Also requires
+		 * {@code loggers} to be enabled.
+		 */
+		private boolean loggerLevels = true;
 
 		/**
 		 * Whether the {@code get-thread-dump} tool is available.
@@ -176,6 +206,32 @@ public class McpProperties {
 		 * Whether the {@code list-beans} tool is available.
 		 */
 		private boolean beans = true;
+
+		/**
+		 * Returns the deprecated {@code operations} flag.
+		 * @return the configured value, or {@code null} when not set
+		 * @deprecated since 4.1.6 for removal, use
+		 * {@code spring.boot.admin.mcp.read-only} instead
+		 */
+		@Deprecated(since = "4.1.6", forRemoval = true)
+		@DeprecatedConfigurationProperty(replacement = "spring.boot.admin.mcp.read-only",
+				reason = "Use read-only=true to disable all write tools, or the restart, refresh and "
+						+ "logger-levels flags to control individual write tools.",
+				since = "4.1.6")
+		public Boolean getOperations() {
+			return this.operations;
+		}
+
+		/**
+		 * Sets the deprecated {@code operations} flag.
+		 * @param operations the value to set
+		 * @deprecated since 4.1.6 for removal, use
+		 * {@code spring.boot.admin.mcp.read-only} instead
+		 */
+		@Deprecated(since = "4.1.6", forRemoval = true)
+		public void setOperations(Boolean operations) {
+			this.operations = operations;
+		}
 
 	}
 
