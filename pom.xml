@@ -48,7 +48,7 @@
 
         <!-- used dependencies versions -->
         <spring-boot.version>4.1.2</spring-boot.version>
-        <spring-cloud.version>2025.1.5</spring-cloud.version>
+        <spring-cloud.version>2026.0.0</spring-cloud.version>
         <spring-ai.version>2.1.0</spring-ai.version>
 
         <jolokia-support-springboot.version>2.6.5</jolokia-support-springboot.version>
