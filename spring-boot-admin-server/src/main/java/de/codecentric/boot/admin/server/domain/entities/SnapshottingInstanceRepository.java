@@ -84,7 +84,8 @@ public class SnapshottingInstanceRepository extends EventsourcingInstanceReposit
 	public void start() {
 		Flux<InstanceEvent> initialEvents = this.eventStore.findAll()
 			.groupBy(InstanceEvent::getInstance)
-			.flatMap((events) -> events.sort(byVersion));
+			// Each group waits for the entire history before emitting its sorted events.
+			.flatMap((events) -> events.sort(byVersion), Integer.MAX_VALUE);
 		this.subscription = initialEvents.concatWith(this.eventStore).subscribe(this::updateSnapshot);
 	}
 

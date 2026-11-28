@@ -63,6 +63,21 @@ class SnapshottingInstanceRepositoryTest extends AbstractInstanceRepositoryTest 
 	}
 
 	@Test
+	void should_restore_snapshots_and_subscribe_to_live_events_for_large_histories() {
+		this.repository.stop();
+		int instanceCount = 1024;
+		when(this.eventStore.findAll()).thenReturn(Flux.range(0, instanceCount)
+			.map((i) -> new InstanceRegisteredEvent(InstanceId.of("restored-" + i), 0L,
+					this.instance.getRegistration())));
+
+		this.repository.start();
+
+		StepVerifier.create(this.repository.findAll()).expectNextCount(instanceCount).verifyComplete();
+		StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
+		StepVerifier.create(this.repository.find(this.instance.getId())).expectNext(this.instance).verifyComplete();
+	}
+
+	@Test
 	void should_return_instance_from_cache() {
 		// given
 		StepVerifier.create(this.repository.save(this.instance)).expectNext(this.instance).verifyComplete();
